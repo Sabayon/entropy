@@ -1,21 +1,30 @@
 TODO list
+  - server-side: expired packages check
+  - add i18n support
+  - client: check lock file on repo sync
+  - server-side: EAPI-2 don't remove indexes but copy a db over and work on it
+  - server-side: improve RDEPEND check output
+  - server-side: add libtest to reagent
+  - server-side: make reagent deptest a blocker to db commits
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - server-side: check rdepend function with pandodl
   - server-side: move officialrepositoryid settings away from repositories.conf
   - implement pdepend support in dependencies sorting
-  - add i18n support
+  - implement package sets (meta packages list)
   - Community repositories
   - implement notice board
   - implement configuration files snapshot tool
-  - create a meta-packages list
   - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
+  - documentation + man page
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
+    - i18n support for category descs
+    - configuration menu (equo.conf + others interface)
     - package masking menu
-    - applet from critical to up to date
+    - install tbz2
     - Popularity feature / Your Ego service
     - Category <-> Image dictionary (for the properties menu)
     - Skip Mirror buttons

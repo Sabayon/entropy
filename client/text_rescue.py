@@ -489,29 +489,28 @@ def pythonUpdater():
     for pdir in mydirs:
         print_info(red("    # ")+blue("/usr/lib/%s" % (pdir,) ))
 
-    old_pdir = os.path.join("/usr/lib/",mydirs[0])
-    print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
+    old_pdirs = mydirs[:-1]
+    idpackages = set()
+    for mydir in old_pdirs:
+        old_pdir = os.path.join("/usr/lib/",mydir)
+        print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
+        old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
+        idpackages |= text_query.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
 
-    old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
-    idpackages = text_query.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
     if not idpackages:
-        print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python." % (old_pdir,)))
+        print_info(brown(" @@ ")+blue("There are no files in (%s) belonging to your old Python installation." % (', '.join(old_pdirs),)))
         return 0
-    print_info(brown(" @@ ")+blue("These are the installed packages whose have files in %s:" % (red(old_pdir),)))
+    print_info(brown(" @@ ")+blue("These are the installed packages with files in (%s):" % (red(', '.join(old_pdirs)),)))
 
-    atoms = set()
+    keyslots = set()
     for idpackage in idpackages:
-        atom = Equo.clientDbconn.retrieveAtom(idpackage)
-        atoms.add((atom, idpackage))
-        print_info(red("    # ")+atom)
+        key, slot = Equo.clientDbconn.retrieveKeySlot(idpackage)
+        keyslots.add((key,slot))
+        print_info(red("    # ")+key+":"+slot)
 
     print_info(brown(" @@ ")+blue("Searching inside available repositories..."))
-    atoms = list(atoms)
-    atoms.sort()
     matchedAtoms = set()
-    for meta in atoms:
-        atomkey = Equo.entropyTools.dep_getkey(meta[0])
-        slot = Equo.clientDbconn.retrieveSlot(meta[1])
+    for atomkey,slot in keyslots:
         print_info(brown("   @@ ")+red("Matching ")+bold(atomkey)+red(":")+darkgreen(slot), back = True)
         match = Equo.atomMatch(atomkey, matchSlot = slot)
         if match[0] != -1:
@@ -521,7 +520,7 @@ def pythonUpdater():
 
     # now show, then ask or exit (if pretend)
     if not matchedAtoms:
-        print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python and are stored in configured repositories." % (old_pdir,)))
+        print_info(brown(" @@ ")+blue("There are no files in (%s) belonging to your old Python installation stored in the repositories." % (', '.join(old_pdirs),)))
         return 0
 
     rc = text_ui.installPackages(atomsdata = matchedAtoms)

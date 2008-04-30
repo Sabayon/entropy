@@ -36,12 +36,12 @@ from entropyapi import EquoConnection, QueueExecutor
 from entropy import ErrorReportInterface
 
 # GTK Imports
-import gtk,gobject
+import gtk, gobject
 import thread
 import exceptions
 from etpgui.widgets import UI, Controller
 from etpgui import *
-from spritz_setup import fakeoutfile, fakeinfile,cleanMarkupSting
+from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupSting
 
 
 # spritz imports
@@ -60,11 +60,11 @@ class SpritzController(Controller):
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'spritz' )
         addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'spritz' )
-        pkginfo_ui = UI( const.GLADE_FILE , 'pkgInfo', 'spritz' )
+
         advinfo_ui = UI( const.GLADE_FILE , 'advInfo', 'spritz' )
         wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'spritz' )
         # init the Controller Class to connect signals.
-        Controller.__init__( self, ui, addrepo_ui, pkginfo_ui, wait_ui, advinfo_ui )
+        Controller.__init__( self, ui, addrepo_ui, wait_ui, advinfo_ui )
 
         self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
@@ -353,7 +353,7 @@ class SpritzController(Controller):
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
         self.repoMirrorsView.store.clear()
-        for x in repodata['packages']:
+        for x in repodata['plain_packages']:
             self.repoMirrorsView.add(x)
         idx = 0
         # XXX hackish way fix it
@@ -362,7 +362,7 @@ class SpritzController(Controller):
             if repodata['dbcformat'] == self.addrepo_ui.repodbcformatEntry.get_active_text():
                 break
             idx += 1
-        self.addrepo_ui.repodbEntry.set_text(repodata['database'])
+        self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
 
     def on_repoSubmitEdit_clicked( self, widget ):
         repodata = self.__getRepodata()
@@ -392,9 +392,9 @@ class SpritzController(Controller):
                 errors.append(_('Duplicated Repository Identifier'))
         if not repodata['description']:
             repodata['description'] = "No description"
-        if not repodata['packages']:
+        if not repodata['plain_packages']:
             errors.append(_("No download mirrors"))
-        if not repodata['database'] or not (repodata['database'].startswith("http://") or repodata['database'].startswith("ftp://") or repodata['database'].startswith("file://")):
+        if not repodata['plain_database'] or not (repodata['plain_database'].startswith("http://") or repodata['plain_database'].startswith("ftp://") or repodata['plain_database'].startswith("file://")):
             errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
         return errors
 
@@ -402,9 +402,9 @@ class SpritzController(Controller):
         repodata = {}
         repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
         repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
-        repodata['packages'] = self.repoMirrorsView.get_all()
+        repodata['plain_packages'] = self.repoMirrorsView.get_all()
         repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
-        repodata['database'] = self.addrepo_ui.repodbEntry.get_text()
+        repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
         return repodata
 
     def on_repoSubmit_clicked( self, widget ):
@@ -754,6 +754,10 @@ class SpritzController(Controller):
             if data:
                 self.loadAdvInfoMenu(data)
 
+    def loadPkgInfoMenu(self, pkg):
+        mymenu = PkgInfoMenu(self.Equo, pkg, self.ui.main)
+        mymenu.load()
+
     def on_pkg_doubleclick( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
         ( model, iterator ) = widget.get_selection().get_selected()
@@ -761,185 +765,6 @@ class SpritzController(Controller):
             pkg = model.get_value( iterator, 0 )
             if pkg:
                 self.loadPkgInfoMenu(pkg)
-
-    def loadPkgInfoMenu( self, pkg ):
-
-        match = pkg.matched_atom
-        if match[1] == 0:
-            dbc = self.Equo.clientDbconn
-        else:
-            dbc = self.Equo.openRepositoryDatabase(match[1])
-        avail = dbc.isIDPackageAvailable(match[0])
-        if not avail:
-            return
-
-        # set package image
-        pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
-        heart_pixmap = const.PIXMAPS_PATH+'/heart.png'
-
-        self.pkginfo_ui.pkgImage.set_from_file(pkg_pixmap)
-        self.pkginfo_ui.vote1.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote2.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote3.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote4.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
-
-        self.pkgProperties_selected = pkg
-        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (pkg.name,))
-        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupSting(pkg.description),))
-
-        bold_items = [  self.pkginfo_ui.locationLabel,
-                        self.pkginfo_ui.homepageLabel,
-                        self.pkginfo_ui.versionLabel,
-                        self.pkginfo_ui.slotLabel,
-                        self.pkginfo_ui.tagLabel,
-                        self.pkginfo_ui.revisionLabel,
-                        self.pkginfo_ui.branchLabel,
-                        self.pkginfo_ui.eapiLabel,
-                        self.pkginfo_ui.downloadLabel,
-                        self.pkginfo_ui.checksumLabel,
-                        self.pkginfo_ui.downSizeLabel,
-                        self.pkginfo_ui.installSizeLabel,
-                        self.pkginfo_ui.creationDateLabel,
-                        self.pkginfo_ui.useFlagsLabel,
-                        self.pkginfo_ui.chostLabel,
-                        self.pkginfo_ui.cflagsLabel,
-                        self.pkginfo_ui.cxxflagsLabel,
-                        self.pkginfo_ui.eclassesLabel,
-                        self.pkginfo_ui.maskedLabel,
-                        self.pkginfo_ui.messagesLabel,
-                        self.pkginfo_ui.triggerLabel,
-                        self.pkginfo_ui.configProtectLabel
-        ]
-        for item in bold_items:
-            t = item.get_text()
-            item.set_markup("<b>%s</b>" % (t,))
-
-        dbconn = self.Entropy.clientDbconn
-        repo = pkg.matched_atom[1]
-        if repo == 0:
-            # from installed
-            self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
-        else:
-            dbconn = self.Entropy.openRepositoryDatabase(repo)
-            self.pkginfo_ui.location.set_markup("%s" % (etpRepositories[repo]['description'],))
-
-        self.pkginfo_ui.version.set_markup( "%s" % (pkg.onlyver,) )
-        tag = pkg.tag
-        if not tag: tag = "None"
-        self.pkginfo_ui.tag.set_markup( "%s" % (tag,) )
-        self.pkginfo_ui.slot.set_markup( "%s" % (pkg.slot,) )
-        self.pkginfo_ui.revision.set_markup( "%s" % (pkg.revision,) )
-        self.pkginfo_ui.branch.set_markup( "%s" % (pkg.release,) )
-        self.pkginfo_ui.eapi.set_markup( "%s" % (pkg.api,) )
-        self.pkginfo_ui.homepage.set_markup( "%s" % (pkg.homepage,) )
-
-        # license view
-        self.licenseModel.clear()
-        self.licenseView.set_model( self.licenseModel )
-        licenses = pkg.lic
-        licenses = licenses.split()
-        for x in licenses:
-            self.licenseModel.append(None,[x])
-
-        self.pkginfo_ui.download.set_markup( "%s" % (pkg.binurl,) )
-        self.pkginfo_ui.checksum.set_markup( "%s" % (pkg.digest,) )
-        self.pkginfo_ui.pkgsize.set_markup( "%s" % (pkg.sizeFmt,) )
-        self.pkginfo_ui.instsize.set_markup( "%s" % (pkg.disksizeFmt,) )
-        self.pkginfo_ui.creationdate.set_markup( "%s" % (pkg.epochFmt,) )
-        self.pkginfo_ui.useflags.set_markup( "%s" % (' '.join(pkg.useflags),) )
-        # compile flags
-        chost, cflags, cxxflags = pkg.compileflags
-        self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
-        self.pkginfo_ui.cxxflags.set_markup( "%s" % (cxxflags,) )
-        self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
-        # messages
-        messages = pkg.messages
-        mbuffer = gtk.TextBuffer()
-        mbuffer.set_text('\n'.join(messages))
-        self.pkginfo_ui.messagesTextView.set_buffer(mbuffer)
-        # eclasses
-        eclasses = ' '.join(pkg.eclasses)
-        self.pkginfo_ui.eclasses.set_markup( "%s" % (eclasses,) )
-        # masked ?
-        masked = 'False'
-        idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
-        if idpackage_masked == -1:
-            masked = 'True, %s' % (etpConst['packagemaskingreasons'][idmasking_reason],)
-        self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
-
-        # sources view
-        self.sourcesModel.clear()
-        self.sourcesView.set_model( self.sourcesModel )
-        mirrors = set()
-        sources = pkg.sources
-        for x in sources:
-            if x.startswith("mirror://"):
-                mirrors.add(x.split("/")[2])
-            self.sourcesModel.append(None,[x])
-
-        # mirrors view
-        self.mirrorsReferenceModel.clear()
-        self.mirrorsReferenceView.set_model(self.mirrorsReferenceModel)
-        for mirror in mirrors:
-            mirrorinfo = dbconn.retrieveMirrorInfo(mirror)
-            if mirrorinfo:
-                # add parent
-                parent = self.mirrorsReferenceModel.append(None,[mirror])
-                for info in mirrorinfo:
-                    self.mirrorsReferenceModel.append(parent,[info])
-
-        # keywords view
-        self.keywordsModel.clear()
-        self.keywordsView.set_model( self.keywordsModel )
-        keywords = pkg.keywords
-        for x in keywords:
-            self.keywordsModel.append(None,[x])
-
-        # dependencies view
-        self.dependenciesModel.clear()
-        self.dependenciesView.set_model( self.dependenciesModel )
-        deps = pkg.dependencies
-        conflicts = pkg.conflicts
-        for x in deps:
-            self.dependenciesModel.append(None,[x])
-        for x in conflicts:
-            self.dependenciesModel.append(None,[x])
-
-        # depends view
-        self.dependsModel.clear()
-        self.dependsView.set_model( self.dependsModel )
-        depends = pkg.dependsFmt
-        for x in depends:
-            self.dependsModel.append(None,[x])
-
-        # needed view
-        self.neededModel.clear()
-        self.neededView.set_model( self.neededModel )
-        neededs = pkg.needed
-        for x in neededs:
-            self.neededModel.append(None,[x])
-
-        # content view
-        self.contentModel.clear()
-        self.contentView.set_model( self.contentModel )
-
-        # trigger
-        trigger = pkg.trigger
-        mtrigger = gtk.TextBuffer()
-        mtrigger.set_text(trigger)
-        self.pkginfo_ui.triggerTextView.set_buffer(mtrigger)
-
-        # CONFIG_PROTECT Stuff
-        protect = pkg.protect
-        protect_mask = pkg.protect_mask
-        for item in protect.split():
-            self.configProtectModel.append(None,[item,'protect'])
-        for item in protect_mask.split():
-            self.configProtectModel.append(None,[item,'mask'])
-
-        self.pkginfo_ui.pkgInfo.show()
-
 
     def on_license_double_clicked( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
@@ -973,18 +798,6 @@ class SpritzController(Controller):
 
     def destroy_read_license_dialog( self, widget ):
         self.read_license_dialog.destroy()
-
-    def on_showContentButton_clicked( self, widget ):
-        content = self.pkgProperties_selected.contentExt
-        for x in content:
-            self.contentModel.append(None,[x[0],x[1]])
-
-    def on_closeInfo_clicked( self, widget ):
-        self.pkginfo_ui.pkgInfo.hide()
-
-    def on_pkgInfo_delete_event(self, widget, path):
-        self.pkginfo_ui.pkgInfo.hide()
-        return True
 
     def on_advInfo_delete_event(self, widget, path):
         self.advinfo_ui.advInfo.hide()
@@ -1039,10 +852,8 @@ class SpritzController(Controller):
         """ Handle selection of row in Comps Category  view  """
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
-            id = model.get_value( iterator, 2 )
-            isCategory = model.get_value( iterator, 4 )
-            if isCategory:
-                self.populateCategoryPackages(id)
+            id = model.get_value( iterator, 0 )
+            self.populateCategoryPackages(id)
         self.unsetBusy()
 
     def on_FileQuit( self, widget ):
@@ -1090,7 +901,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         self.console.set_pty(self.pty[0])
         self.resetProgressText()
-        self.setupPkgPropertiesView()
+        self.pkgProperties_selected = None
         self.setupAdvPropertiesView()
 
     def setupAdvisories(self):
@@ -1121,91 +932,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         column = gtk.TreeViewColumn( _( "Reference" ), cell, markup = 0 )
         self.referencesView.append_column( column )
         self.referencesView.set_model( self.referencesModel )
-
-    def setupPkgPropertiesView(self):
-
-        # license view
-        self.licenseView = self.pkginfo_ui.licenseView
-        self.licenseModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "License name" ), cell, markup = 0 )
-        self.licenseView.append_column( column )
-        self.licenseView.set_model( self.licenseModel )
-
-        # sources view
-        self.sourcesView = self.pkginfo_ui.sourcesView
-        self.sourcesModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Sources" ), cell, markup = 0 )
-        self.sourcesView.append_column( column )
-        self.sourcesView.set_model( self.sourcesModel )
-
-        # mirrors view
-        self.mirrorsReferenceView = self.pkginfo_ui.mirrorsReferenceView
-        self.mirrorsReferenceModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Mirrors" ), cell, markup = 0 )
-        self.mirrorsReferenceView.append_column( column )
-        self.mirrorsReferenceView.set_model( self.mirrorsReferenceModel )
-
-        # keywords view
-        self.keywordsView = self.pkginfo_ui.keywordsView
-        self.keywordsModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Keywords" ), cell, markup = 0 )
-        self.keywordsView.append_column( column )
-        self.keywordsView.set_model( self.keywordsModel )
-
-        # dependencies view
-        self.dependenciesView = self.pkginfo_ui.dependenciesView
-        self.dependenciesModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Dependencies" ), cell, markup = 0 )
-        self.dependenciesView.append_column( column )
-        self.dependenciesView.set_model( self.dependenciesModel )
-
-        # depends view
-        self.dependsView = self.pkginfo_ui.dependsView
-        self.dependsModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Depends" ), cell, markup = 0 )
-        self.dependsView.append_column( column )
-        self.dependsView.set_model( self.dependsModel )
-
-        # needed view
-        self.neededView = self.pkginfo_ui.neededView
-        self.neededModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Needed libraries" ), cell, markup = 0 )
-        self.neededView.append_column( column )
-        self.neededView.set_model( self.neededModel )
-
-        # protect view
-        self.configProtectView = self.pkginfo_ui.configProtectView
-        self.configProtectModel = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Protected item" ), cell, markup = 0 )
-        self.configProtectView.append_column( column )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Type" ), cell, markup = 1 )
-        self.configProtectView.append_column( column )
-        self.configProtectView.set_model( self.configProtectModel )
-
-        # content view
-        self.contentView = self.pkginfo_ui.contentView
-        self.contentModel = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "File" ), cell, markup = 0 )
-        column.set_resizable( True )
-        self.contentView.append_column( column )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Type" ), cell, markup = 1 )
-        column.set_resizable( True )
-        self.contentView.append_column( column )
-        self.contentView.set_model( self.contentModel )
-
-        self.pkgProperties_selected = None
-
 
     def setupEditor(self):
 
@@ -1417,7 +1143,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
         if bootstrap:
             self.endWorking()
 
-        self.pkgView.populate(allpkgs)
+        empty = False
+        if not allpkgs and action == "updates":
+            allpkgs = self.etpbase.getPackages('fake_updates')
+            empty = True
+
+        self.pkgView.populate(allpkgs, empty = empty)
         self.progress.total.show()
 
         if self.doProgress: self.progress.hide() #Hide Progress
@@ -1498,7 +1229,10 @@ if __name__ == "__main__":
     gtkEventThread = ProcessGtkEventsThread()
     try:
         gtkEventThread.start()
-        gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
+        try:
+            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
+        except gobject.GError:
+            pass
         mainApp = SpritzApplication()
         gtk.main()
     except SystemExit, e:

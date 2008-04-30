@@ -127,14 +127,16 @@ class SpritzConf:
     color_console_background = '#FFFFFF'
     color_console_font = '#000000'
     color_pkgdesc = '#68228B'
-    color_install = 'darkgreen'
-    color_update = 'red'
     color_normal = 'black'
-    color_obsolete = 'blue'
+    color_install = 'darkgreen'
+    color_update = 'darkgreen'
+    color_obsolete = 'red'
     filelist = True
     changelog = False
     disable_repo_page = False
     branding_title = 'Spritz Package Manager'
+    dummy_empty = 0
+    dummy_category = 1
 
 def cleanMarkupSting(msg):
     import gobject

@@ -53,7 +53,8 @@ class etpDatabase:
         self.xcache = xcache
         self.dbname = dbname
         self.indexing = indexing
-        if not self.entropyTools.is_user_in_entropy_group(): # forcing since we won't have write access to db
+        if not self.entropyTools.is_user_in_entropy_group():
+            # forcing since we won't have write access to db
             self.indexing = False
         # live systems don't like wasting RAM
         if self.entropyTools.islive():
@@ -345,7 +346,12 @@ class etpDatabase:
                 # lock database
                 self.doServerDatabaseSyncLock(self.noUpload)
                 # now run queue
-                self.runTreeUpdatesActions(update_actions)
+                try:
+                    self.runTreeUpdatesActions(update_actions)
+                except:
+                    # destroy digest
+                    self.setRepositoryUpdatesDigest(self.server_repo, "-1")
+                    raise
 
                 # store new actions
                 self.addRepositoryUpdatesActions(self.server_repo,update_actions)
@@ -473,7 +479,17 @@ class etpDatabase:
 
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
-            self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            try:
+                self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
+            except:
+                import traceback
+                traceback.print_exc()
+                self.updateProgress(
+                    bold("WARNING: ")+red("Cannot complete quickpkg for atoms: ")+blue(str(list(quickpkg_atoms)))+red(", do it manually."),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
             self.commitChanges()
 
         # discard cache
@@ -652,7 +668,23 @@ class etpDatabase:
                 type = "warning",
                 header = blue("  # ")
             )
-            mypath = self.ServiceInterface.quickpkg(myatom,self.ServiceInterface.get_local_store_directory(self.server_repo))
+            mydest = self.ServiceInterface.get_local_store_directory(self.server_repo)
+            try:
+                mypath = self.ServiceInterface.quickpkg(myatom,mydest)
+            except:
+                # remove broken bin before raising
+                mypath = os.path.join(mydest,os.path.basename(myatom)+etpConst['packagesext'])
+                if os.path.isfile(mypath):
+                    os.remove(mypath)
+                import traceback
+                traceback.print_exc()
+                self.updateProgress(
+                    bold("WARNING: ")+red("Cannot complete quickpkg for atom: ")+blue(myatom)+red(", do it manually."),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                continue
             package_paths.add(mypath)
         packages_data = [(x,branch,False) for x in package_paths]
         idpackages = self.ServiceInterface.add_packages_to_repository(packages_data, repo = self.server_repo)
@@ -746,6 +778,7 @@ class etpDatabase:
         if (catid == -1):
             # create category
             catid = self.addCategory(etpData['category'])
+
 
         # create new license if it doesn't exist
         licid = self.isLicenseAvailable(etpData['license'])
@@ -1076,6 +1109,17 @@ class etpDatabase:
             # save
             dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
+        # Update category description
+        if not self.clientDatabase:
+            mycategory = etpData['category']
+            descdata = {}
+            try:
+                descdata = self.get_category_description_from_disk(mycategory)
+            except (IOError,OSError,EOFError):
+                pass
+            if descdata:
+                self.setCategoryDescription(mycategory,descdata)
+
         return idpackage, revision, etpData
 
     # Update already available atom in db
@@ -1402,6 +1446,16 @@ class etpDatabase:
         self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid,idpackage,))
         self.commitChanges()
 
+    def setCategoryDescription(self, category, description_data):
+        self.checkReadOnly()
+        self.cursor.execute('DELETE FROM categoriesdescription WHERE category = (?)', (category,))
+        for locale in description_data:
+            mydesc = description_data[locale]
+            #if type(mydesc) is unicode:
+            #    mydesc = mydesc.encode('raw_unicode_escape')
+            self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?,?)', (category,locale,mydesc,))
+        self.commitChanges()
+
     def setName(self, idpackage, name):
         self.checkReadOnly()
         self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name,idpackage,))
@@ -1571,6 +1625,15 @@ class etpDatabase:
     def getApi(self):
         self.cursor.execute('SELECT max(etpapi) FROM baseinfo')
         return self.cursor.fetchone()[0]
+
+    def getCategory(self, idcategory):
+        self.cursor.execute('SELECT category from categories WHERE idcategory = (?)', (idcategory,))
+        return self.cursor.fetchone()[0]
+
+    def get_category_description_from_disk(self, category):
+        if not self.ServiceInterface:
+            return {}
+        return self.ServiceInterface.SpmService.get_category_description_data(category)
 
     def getIDPackage(self, atom, branch = etpConst['branch']):
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
@@ -1784,7 +1847,7 @@ class etpDatabase:
     def fetchone2set(self, item):
         return set(item)
 
-    def clearCache(self, all = False):
+    def clearCache(self, all = False, depends = False):
         self.live_cache.clear()
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
@@ -1798,6 +1861,10 @@ class etpDatabase:
             do_clear(etpCache['dbInfo']+"/"+self.dbname+"/")
         do_clear(etpCache['dbMatch']+"/"+self.dbname+"/")
         do_clear(etpCache['dbSearch']+"/"+self.dbname+"/")
+        if depends:
+            do_clear(etpCache['depends_tree'])
+            do_clear(etpCache['dep_tree'])
+            do_clear(etpCache['filter_satisfied_deps'])
 
     def fetchInfoCache(self, idpackage, function, extra_hash = 0):
         if self.xcache:
@@ -2354,6 +2421,17 @@ class etpDatabase:
         self.storeInfoCache(idpackage,'retrieveCategory',cat)
         return cat
 
+    def retrieveCategoryDescription(self, category):
+        data = {}
+        if not self.doesTableExist("categoriesdescription"):
+            return data
+        #self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.cursor.execute('SELECT description,locale FROM categoriesdescription WHERE category = (?)', (category,))
+        description_data = self.cursor.fetchall()
+        for description,locale in description_data:
+            data[locale] = description
+        return data
+
     def retrieveLicensedata(self, idpackage):
 
         cache = self.fetchInfoCache(idpackage,'retrieveLicensedata')
@@ -2502,13 +2580,14 @@ class etpDatabase:
             return -1
         return result[0]
 
-    def isFileAvailable(self, myfile):
+    def isFileAvailable(self, myfile, get_id = False):
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
-        result = self.cursor.fetchone()
-        rc = False
-        if result:
-            rc = True
-        return rc
+        result = self.cursor.fetchall()
+        if get_id:
+            return self.fetchall2set(result)
+        elif result:
+            return True
+        return False
 
     def resolveNeeded(self, needed, elfclass = -1):
 
@@ -3147,8 +3226,14 @@ class etpDatabase:
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
+        if not self.doesTableExist("entropy_misc_counters"):
+            self.createEntropyMiscCountersTable()
+
         if not self.doesColumnInTableExist("dependencies","type"):
             self.createDependenciesTypeColumn()
+
+        if not self.doesTableExist("categoriesdescription"):
+            self.createCategoriesdescriptionTable()
 
         # these are the tables moved to INTEGER PRIMARY KEY AUTOINCREMENT
         autoincrement_tables = [
@@ -3177,6 +3262,14 @@ class etpDatabase:
                                             header = blue(" !!! ")
                             )
             self.createAllIndexes()
+
+        # do manual atoms update
+        if os.access(self.dbFile,os.W_OK) and \
+            (self.dbname != etpConst['genericdbid']):
+                old_readonly = self.readOnly
+                self.readOnly = False
+                self.fixKdeDepStrings()
+                self.readOnly = old_readonly
 
         self.connection.commit()
 
@@ -3216,6 +3309,74 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE '+totable)
         self.commitChanges()
         return True
+
+    def fixKdeDepStrings(self):
+
+        # check if we need to do it
+        cur_id = self.getForcedAtomsUpdateId()
+        if cur_id >= etpConst['misc_counters']['forced_atoms_update_ids']['kde']:
+            return
+
+        self.updateProgress(
+            red("Entropy database: fixing KDE dep strings on %s. Please wait..." % (self.dbname,)),
+            importance = 1,
+            type = "warning",
+            header = blue(" !!! ")
+        )
+
+        # uhu, let's roooock
+        search_deps = {
+            ">=kde-base/kdelibs-3.0": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.1": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.2": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.3": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.4": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.5": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.0": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.0.0": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.0.5": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.1": 'kde-base/kdelibs:3.5',
+            ">=kde-base/kdelibs-3.1.0": 'kde-base/kdelibs:3.5',
+
+        }
+        self.cursor.execute('select iddependency,dependency from dependenciesreference')
+        depdata = self.cursor.fetchall()
+        for iddepedency, depstring in depdata:
+            if depstring in search_deps:
+                self.setDependency(iddepedency, search_deps[depstring])
+
+        # regenerate depends
+        while 1: # avoid users interruption
+            self.regenerateDependsTable()
+            break
+
+        self.setForcedAtomsUpdateId(etpConst['misc_counters']['forced_atoms_update_ids']['kde'])
+        self.commitChanges()
+        # drop all cache
+        self.clearCache(all = True, depends = True)
+
+
+    def getForcedAtomsUpdateId(self):
+        self.cursor.execute(
+            'SELECT counter FROM entropy_misc_counters WHERE idtype = (?)',
+            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
+        )
+        myid = self.cursor.fetchone()
+        if not myid:
+            return self.setForcedAtomsUpdateId(0)
+        return myid[0]
+
+    def setForcedAtomsUpdateId(self, myid):
+        self.cursor.execute(
+            'DELETE FROM entropy_misc_counters WHERE idtype = (?)',
+            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
+        )
+        self.cursor.execute(
+            'INSERT INTO entropy_misc_counters VALUES (?,?)',
+            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],myid)
+        )
+        return myid
 
     def validateDatabase(self):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
@@ -3654,6 +3815,9 @@ class etpDatabase:
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
 
+    def createCategoriesdescriptionTable(self):
+        self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR, locale VARCHAR, description VARCHAR );')
+
     def createTreeupdatesTable(self):
         self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
 
@@ -3662,6 +3826,9 @@ class etpDatabase:
 
     def createSizesTable(self):
         self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
+
+    def createEntropyMiscCountersTable(self):
+        self.cursor.execute('CREATE TABLE entropy_misc_counters ( idtype INTEGER PRIMARY KEY, counter INTEGER );')
 
     def createDependenciesTypeColumn(self):
         self.cursor.execute('ALTER TABLE dependencies ADD COLUMN type INTEGER;')
@@ -3799,24 +3966,9 @@ class etpDatabase:
 ##   Dependency handling functions
 #
 
-    def __get_match_hash(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
-        c_hash = str(hash(atom)) + \
-                 str(hash(matchSlot)) + \
-                 str(hash(matchTag)) + \
-                 str(hash(matchRevision)) + \
-                 str(hash(tuple(matchBranches))) + \
-                 str(hash(caseSensitive)) + \
-                 str(hash(multiMatch)) + \
-                 str(hash(packagesFilter)) + \
-                 str(hash(matchRevision)) + \
-                 str(hash(extendedResults))
-        #c_hash = str(hash(c_hash))
-        return c_hash
-
-
-    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
+    def atomMatchFetchCache(self, *args):
         if self.xcache:
-            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            c_hash = str(hash(tuple(args)))
             try:
                 cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
                 if cached != None:
@@ -3824,14 +3976,14 @@ class etpDatabase:
             except (EOFError, IOError):
                 return None
 
-    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
+    def atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
-            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            c_hash = str(hash(tuple(args)))
             try:
                 sperms = False
                 if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbMatch']+"/"+self.dbname)):
                     sperms = True
-                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
+                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,kwargs['result'])
                 if sperms:
                     const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
             except IOError:
@@ -3841,8 +3993,10 @@ class etpDatabase:
     # idpackageValidatorCache = {} >> function cache
     def idpackageValidator(self,idpackage):
 
-        reponame = self.dbname[5:]
+        if self.dbname == etpConst['clientdbid']:
+            return idpackage,0
 
+        reponame = self.dbname[5:]
         cached = idpackageValidatorCache.get((idpackage,reponame))
         if cached != None:
             return cached
@@ -4065,7 +4219,17 @@ class etpDatabase:
         if not atom:
             return -1,1
 
-        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter, matchRevision,extendedResults)
+        cached = self.atomMatchFetchCache(
+            atom,
+            caseSensitive,
+            matchSlot,
+            multiMatch,
+            matchBranches,
+            matchTag,
+            packagesFilter,
+            matchRevision,
+            extendedResults
+        )
         if cached != None:
             return cached
 
@@ -4246,7 +4410,7 @@ class etpDatabase:
 
         if not foundIDs:
             # package not found
-            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (-1,1))
             return -1,1
 
         ### FILLING dbpkginfo
@@ -4384,30 +4548,30 @@ class etpDatabase:
         if not dbpkginfo:
             if extendedResults:
                 x = (-1,1,None,None,None)
-                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
                 return x
             else:
-                self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (-1,1))
                 return -1,1
 
         if multiMatch:
             if extendedResults:
                 x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo]),0
-                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
                 return x
             else:
                 x = set([x[0] for x in dbpkginfo])
-                self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (x,0))
                 return x,0
 
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
             if extendedResults:
                 x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])),0
-                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
                 return x
             else:
-                self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (x[0],0))
                 return x[0],0
 
         dbpkginfo = list(dbpkginfo)
@@ -4421,8 +4585,8 @@ class etpDatabase:
         x = pkgdata[newer]
         if extendedResults:
             x = (x,0,newer[0],newer[1],newer[2]),0
-            self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
             return x
         else:
-            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (x,0))
             return x,0

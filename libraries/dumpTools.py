@@ -30,27 +30,31 @@ except ImportError:
    @input: name of the object, object
    @output: status code
 '''
-def dumpobj(name, object, completePath = False):
+def dumpobj(name, object, completePath = False, ignoreExceptions = True):
     while 1: # trap ctrl+C
-        if completePath:
-            dmpfile = name
-        else:
-            dump_path = os.path.join(etpConst['dumpstoragedir'],name)
-            dump_dir = os.path.dirname(dump_path)
-            #dump_name = os.path.basename(dump_path)
-            if not os.path.isdir(dump_dir):
-                os.makedirs(dump_dir,0775)
-                const_setup_perms(dump_dir,etpConst['entropygid'])
-            dmpfile = dump_path+".dmp"
-        if os.path.isfile(dmpfile):
-            os.remove(dmpfile)
-        f = open(dmpfile,"wb")
-        pickle.dump(object,f)
-        os.chmod(dmpfile,0664)
-        if etpConst['entropygid'] != None:
-            os.chown(dmpfile,-1,etpConst['entropygid'])
-        f.flush()
-        f.close()
+        try:
+            if completePath:
+                dmpfile = name
+            else:
+                dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+                dump_dir = os.path.dirname(dump_path)
+                #dump_name = os.path.basename(dump_path)
+                if not os.path.isdir(dump_dir):
+                    os.makedirs(dump_dir,0775)
+                    const_setup_perms(dump_dir,etpConst['entropygid'])
+                dmpfile = dump_path+".dmp"
+            if os.path.isfile(dmpfile):
+                os.remove(dmpfile)
+            f = open(dmpfile,"wb")
+            pickle.dump(object,f)
+            os.chmod(dmpfile,0664)
+            if etpConst['entropygid'] != None:
+                os.chown(dmpfile,-1,etpConst['entropygid'])
+            f.flush()
+            f.close()
+        except (EOFError,IOError,OSError):
+            if not ignoreExceptions:
+                raise
         break
 
 '''
@@ -92,11 +96,7 @@ def loadobj(name, completePath = False):
             x = None
             try:
                 x = pickle.load(f)
-            except ValueError:
-                pass
-            except EOFError:
-                pass
-            except pickle.UnpicklingError:
+            except (ValueError,EOFError,IOError,OSError,pickle.UnpicklingError):
                 pass
             f.close()
             return x
