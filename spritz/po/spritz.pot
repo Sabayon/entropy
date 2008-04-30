@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-24 21:02+0200\n"
+"POT-Creation-Date: 2008-04-30 09:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,7 +64,7 @@ msgstr ""
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../src/dialogs.py:397 ../src/dialogs.py:403 ../src/views.py:423
+#: ../src/dialogs.py:397 ../src/dialogs.py:403 ../src/views.py:434
 #: ../src/spritz.py:916
 msgid "Package"
 msgstr ""
@@ -90,7 +90,7 @@ msgid "To be removed"
 msgstr ""
 
 #: ../src/dialogs.py:468 ../src/dialogs.py:479 ../src/dialogs.py:490
-#: ../src/dialogs.py:501
+#: ../src/dialogs.py:501 ../src/views.py:470
 msgid "No description"
 msgstr ""
 
@@ -132,7 +132,7 @@ msgid "Show Installed Packages"
 msgstr ""
 
 #. Setup Vertical Toolbar
-#: ../src/gui.py:296 ../src/views.py:587
+#: ../src/gui.py:296 ../src/views.py:645
 msgid "Packages"
 msgstr ""
 
@@ -144,7 +144,7 @@ msgstr ""
 msgid "Package Queue"
 msgstr ""
 
-#: ../src/gui.py:299 ../src/packages.py:210
+#: ../src/gui.py:299 ../src/packages.py:192
 msgid "Repository Selection"
 msgstr ""
 
@@ -206,116 +206,120 @@ msgstr ""
 msgid "These are the packages that would be removed"
 msgstr ""
 
-#: ../src/packages.py:206
+#: ../src/packages.py:188
 msgid "No updates available"
 msgstr ""
 
-#: ../src/packages.py:207
+#: ../src/packages.py:189
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
-#: ../src/packages.py:208
+#: ../src/packages.py:190
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../src/packages.py:209 ../src/spritz.py:418 ../src/spritz.py:463
+#: ../src/packages.py:191 ../src/spritz.py:418 ../src/spritz.py:463
 msgid "Update Repositories"
 msgstr ""
 
-#: ../src/views.py:41
+#: ../src/views.py:44
 msgid "Categories"
 msgstr ""
 
-#: ../src/views.py:424 ../src/views.py:894
+#: ../src/views.py:65
+msgid "Selection"
+msgstr ""
+
+#: ../src/views.py:435 ../src/views.py:952
 msgid "Repository"
 msgstr ""
 
-#: ../src/views.py:592 ../src/views.py:748 ../src/views.py:956
+#: ../src/views.py:650 ../src/views.py:806 ../src/views.py:1014
 #: ../src/spritz.glade.h:23
 msgid "Description"
 msgstr ""
 
-#: ../src/views.py:628
+#: ../src/views.py:686
 msgid "Packages To Reinstall"
 msgstr ""
 
-#: ../src/views.py:632
+#: ../src/views.py:690
 msgid "Packages To Update"
 msgstr ""
 
-#: ../src/views.py:636
+#: ../src/views.py:694
 msgid "Packages To Install"
 msgstr ""
 
-#: ../src/views.py:640
+#: ../src/views.py:698
 msgid "Packages To Remove"
 msgstr ""
 
-#: ../src/views.py:669
+#: ../src/views.py:727
 msgid "Proposed"
 msgstr ""
 
-#: ../src/views.py:676
+#: ../src/views.py:734
 msgid "Destination"
 msgstr ""
 
-#: ../src/views.py:683
+#: ../src/views.py:741
 msgid "Rev."
 msgstr ""
 
-#: ../src/views.py:725
+#: ../src/views.py:783
 msgid "Status"
 msgstr ""
 
-#: ../src/views.py:732
+#: ../src/views.py:790
 msgid "GLSA id."
 msgstr ""
 
-#: ../src/views.py:740
+#: ../src/views.py:798
 msgid "Package key"
 msgstr ""
 
-#: ../src/views.py:833
+#: ../src/views.py:891
 msgid "No advisories"
 msgstr ""
 
-#: ../src/views.py:834
+#: ../src/views.py:892
 msgid "There are no items to show"
 msgstr ""
 
-#: ../src/views.py:894
+#: ../src/views.py:952
 msgid "Filename"
 msgstr ""
 
-#: ../src/views.py:914 ../src/spritz.py:383 ../src/spritz.py:418
+#: ../src/views.py:972 ../src/spritz.py:383 ../src/spritz.py:418
 msgid "You should press the button"
 msgstr ""
 
-#: ../src/views.py:914 ../src/spritz.py:383 ../src/spritz.py:463
+#: ../src/views.py:972 ../src/spritz.py:383 ../src/spritz.py:463
 msgid "Regenerate Cache"
 msgstr ""
 
-#: ../src/views.py:914 ../src/spritz.py:383 ../src/spritz.py:418
+#: ../src/views.py:972 ../src/spritz.py:383 ../src/spritz.py:418
 #: ../src/spritz.py:463
 msgid "now"
 msgstr ""
 
-#: ../src/views.py:934
+#: ../src/views.py:992
 msgid "Active"
 msgstr ""
 
-#: ../src/views.py:944 ../src/spritz.glade.h:82
+#: ../src/views.py:1002 ../src/spritz.glade.h:83
 msgid "Update"
 msgstr ""
 
 #. Setup revision column
-#: ../src/views.py:952 ../src/spritz.glade.h:62
+#: ../src/views.py:1010 ../src/spritz.glade.h:63
 msgid "Revision"
 msgstr ""
 
 #. Setup reponame & repofile column's
-#: ../src/views.py:955
+#: ../src/views.py:1013
 msgid "Repository Identifier"
 msgstr ""
 
@@ -972,230 +976,230 @@ msgid "Messages"
 msgstr ""
 
 #: ../src/spritz.glade.h:44
-msgid "Package Info."
+msgid "O_ther"
 msgstr ""
 
 #: ../src/spritz.glade.h:45
-msgid "Package Information"
+msgid "Package Info."
 msgstr ""
 
 #: ../src/spritz.glade.h:46
-msgid "Package Size"
+msgid "Package Information"
 msgstr ""
 
 #: ../src/spritz.glade.h:47
-msgid "Please Confirm"
+msgid "Package Size"
 msgstr ""
 
 #: ../src/spritz.glade.h:48
+msgid "Please Confirm"
+msgstr ""
+
+#: ../src/spritz.glade.h:49
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 
-#: ../src/spritz.glade.h:49
+#: ../src/spritz.glade.h:50
 msgid "Purge"
 msgstr ""
 
-#: ../src/spritz.glade.h:50
+#: ../src/spritz.glade.h:51
 msgid "Q_ueue packages in selected Advisory"
 msgstr ""
 
-#: ../src/spritz.glade.h:51
+#: ../src/spritz.glade.h:52
 msgid "R_egenerate Cache"
 msgstr ""
 
-#: ../src/spritz.glade.h:52
+#: ../src/spritz.glade.h:53
 msgid "References"
 msgstr ""
 
-#: ../src/spritz.glade.h:53
+#: ../src/spritz.glade.h:54
 msgid "Reinstall"
 msgstr ""
 
-#: ../src/spritz.glade.h:54
+#: ../src/spritz.glade.h:55
 msgid "Reinstall the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:55
+#: ../src/spritz.glade.h:56
 msgid "Remove"
 msgstr ""
 
-#: ../src/spritz.glade.h:56
+#: ../src/spritz.glade.h:57
 msgid "Remove the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:57
+#: ../src/spritz.glade.h:58
 msgid "Remove the selected package and its configuration"
 msgstr ""
 
-#: ../src/spritz.glade.h:58
+#: ../src/spritz.glade.h:59
 msgid "Repositories options"
 msgstr ""
 
-#: ../src/spritz.glade.h:59
+#: ../src/spritz.glade.h:60
 msgid "Repository information"
 msgstr ""
 
-#: ../src/spritz.glade.h:60
+#: ../src/spritz.glade.h:61
 msgid "Resolution"
 msgstr ""
 
-#: ../src/spritz.glade.h:61
+#: ../src/spritz.glade.h:62
 msgid "Revised"
 msgstr ""
 
-#: ../src/spritz.glade.h:63
+#: ../src/spritz.glade.h:64
 msgid "S_end Error Report"
 msgstr ""
 
-#: ../src/spritz.glade.h:64
+#: ../src/spritz.glade.h:65
 msgid "Show all"
 msgstr ""
 
-#: ../src/spritz.glade.h:65
+#: ../src/spritz.glade.h:66
 msgid "Show applied"
 msgstr ""
 
-#: ../src/spritz.glade.h:66
+#: ../src/spritz.glade.h:67
 msgid "Show unapplied"
 msgstr ""
 
-#: ../src/spritz.glade.h:67
+#: ../src/spritz.glade.h:68
 msgid "Slot"
 msgstr ""
 
-#: ../src/spritz.glade.h:68
+#: ../src/spritz.glade.h:69
 msgid "Soon!"
 msgstr ""
 
-#: ../src/spritz.glade.h:69
+#: ../src/spritz.glade.h:70
 msgid "Spritz Package Manager"
 msgstr ""
 
-#: ../src/spritz.glade.h:70
+#: ../src/spritz.glade.h:71
 msgid "Synopsis"
 msgstr ""
 
-#: ../src/spritz.glade.h:71
+#: ../src/spritz.glade.h:72
 msgid "USE Flags"
 msgstr ""
 
-#: ../src/spritz.glade.h:72
+#: ../src/spritz.glade.h:73
 msgid "Undo Install"
 msgstr ""
 
-#: ../src/spritz.glade.h:73
+#: ../src/spritz.glade.h:74
 msgid "Undo Install action"
 msgstr ""
 
-#: ../src/spritz.glade.h:74
+#: ../src/spritz.glade.h:75
 msgid "Undo Purge"
 msgstr ""
 
-#: ../src/spritz.glade.h:75
+#: ../src/spritz.glade.h:76
 msgid "Undo Purge action"
 msgstr ""
 
-#: ../src/spritz.glade.h:76
+#: ../src/spritz.glade.h:77
 msgid "Undo Reinstall"
 msgstr ""
 
-#: ../src/spritz.glade.h:77
+#: ../src/spritz.glade.h:78
 msgid "Undo Reinstall action"
 msgstr ""
 
-#: ../src/spritz.glade.h:78
+#: ../src/spritz.glade.h:79
 msgid "Undo Remove"
 msgstr ""
 
-#: ../src/spritz.glade.h:79
+#: ../src/spritz.glade.h:80
 msgid "Undo Remove action"
 msgstr ""
 
-#: ../src/spritz.glade.h:80
+#: ../src/spritz.glade.h:81
 msgid "Undo Update"
 msgstr ""
 
-#: ../src/spritz.glade.h:81
+#: ../src/spritz.glade.h:82
 msgid "Undo Update action"
 msgstr ""
 
-#: ../src/spritz.glade.h:83
+#: ../src/spritz.glade.h:84
 msgid "Update the selected package"
 msgstr ""
 
-#: ../src/spritz.glade.h:84
+#: ../src/spritz.glade.h:85
 msgid "Updates"
 msgstr ""
 
-#: ../src/spritz.glade.h:85
+#: ../src/spritz.glade.h:86
 msgid "Version"
 msgstr ""
 
-#: ../src/spritz.glade.h:86
+#: ../src/spritz.glade.h:87
 msgid "Website"
 msgstr ""
 
-#: ../src/spritz.glade.h:87
+#: ../src/spritz.glade.h:88
 msgid "What you were doing"
 msgstr ""
 
-#: ../src/spritz.glade.h:88
+#: ../src/spritz.glade.h:89
 msgid "Workaround"
 msgstr ""
 
-#: ../src/spritz.glade.h:89
+#: ../src/spritz.glade.h:90
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
 
-#: ../src/spritz.glade.h:91
+#: ../src/spritz.glade.h:92
 msgid "Your E-mail"
 msgstr ""
 
-#: ../src/spritz.glade.h:92
+#: ../src/spritz.glade.h:93
 msgid "Your Full Name"
 msgstr ""
 
-#: ../src/spritz.glade.h:93
+#: ../src/spritz.glade.h:94
 msgid "_Accept License"
 msgstr ""
 
-#: ../src/spritz.glade.h:94
+#: ../src/spritz.glade.h:95
 msgid "_Add All"
 msgstr ""
 
-#: ../src/spritz.glade.h:95
+#: ../src/spritz.glade.h:96
 msgid "_Branch ..."
 msgstr ""
 
-#: ../src/spritz.glade.h:96
+#: ../src/spritz.glade.h:97
 msgid "_Details"
 msgstr ""
 
-#: ../src/spritz.glade.h:97
+#: ../src/spritz.glade.h:98
 msgid "_File"
 msgstr ""
 
-#: ../src/spritz.glade.h:98
+#: ../src/spritz.glade.h:99
 msgid "_Force repositories update"
 msgstr ""
 
-#: ../src/spritz.glade.h:99
+#: ../src/spritz.glade.h:100
 msgid "_Help"
 msgstr ""
 
-#: ../src/spritz.glade.h:100
+#: ../src/spritz.glade.h:101
 msgid "_Insert String"
 msgstr ""
 
-#: ../src/spritz.glade.h:101
-msgid "_More"
-msgstr ""
-
 #: ../src/spritz.glade.h:102
-msgid "_Other"
+msgid "_More"
 msgstr ""
 
 #: ../src/spritz.glade.h:103

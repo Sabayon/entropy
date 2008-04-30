@@ -473,7 +473,6 @@ class EntropyPackageView:
                     cat_desc = cat_desc_data[_LOCALE]
                 elif cat_desc_data.has_key('en'):
                     cat_desc = cat_desc_data['en']
-                cat_desc = cat_desc[:70].strip()+"..."
                 cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupSting(cat_desc),)
                 mydummy = DummyEntropyPackage(
                         namedesc = cat_text,
