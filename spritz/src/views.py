@@ -502,11 +502,17 @@ class EntropyPackageView:
         return True
 
     def set_pixbuf_to_cell(self, cell, filename):
-        pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
-        cell.set_property( 'pixbuf', pixbuf )
+        try:
+            pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+            cell.set_property( 'pixbuf', pixbuf )
+        except gobject.GError:
+            pass
 
     def set_pixbuf_to_image(self, img, filename):
-        img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+        try:
+            img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+        except gobject.GError:
+            pass
 
     def create_text_column( self, hdr, property, size, sortcol = None, expand = False, set_height = 0):
         """

@@ -2467,7 +2467,8 @@ class EquoInterface(TextInterface):
                         # put to 0 - reenable mirror, welcome back uri!
                         etpRemoteFailures[uri] = 0
 
-                remaining.remove(uri)
+                if uri in remaining:
+                    remaining.remove(uri)
                 continue
 
             do_resume = True
@@ -2516,7 +2517,8 @@ class EquoInterface(TextInterface):
                                         )
                         if rc == -4: # user discarded fetch
                             return 1
-                        remaining.remove(uri)
+                        if uri in remaining:
+                            remaining.remove(uri)
                         break
                 except KeyboardInterrupt:
                     break
