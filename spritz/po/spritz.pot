@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-30 09:51+0200\n"
+"POT-Creation-Date: 2008-04-30 16:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,7 +144,7 @@ msgstr ""
 msgid "Package Queue"
 msgstr ""
 
-#: ../src/gui.py:299 ../src/packages.py:192
+#: ../src/gui.py:299 ../src/packages.py:185
 msgid "Repository Selection"
 msgstr ""
 
@@ -206,21 +206,22 @@ msgstr ""
 msgid "These are the packages that would be removed"
 msgstr ""
 
+#. load a pixmap inside the treeview
+#: ../src/packages.py:185
+#, python-format
+msgid "Try clicking the %s button in the %s page"
+msgstr ""
+
+#: ../src/packages.py:185 ../src/spritz.py:418 ../src/spritz.py:463
+msgid "Update Repositories"
+msgstr ""
+
 #: ../src/packages.py:188
 msgid "No updates available"
 msgstr ""
 
 #: ../src/packages.py:189
 msgid "It seems that your system is already up-to-date. Good!"
-msgstr ""
-
-#: ../src/packages.py:190
-#, python-format
-msgid "Try clicking the %s button in the %s page"
-msgstr ""
-
-#: ../src/packages.py:191 ../src/spritz.py:418 ../src/spritz.py:463
-msgid "Update Repositories"
 msgstr ""
 
 #: ../src/views.py:44
@@ -549,37 +550,37 @@ msgstr ""
 msgid "Calculating"
 msgstr ""
 
-#: ../src/spritz.py:1164
+#: ../src/spritz.py:1165
 msgid "Running tasks"
 msgstr ""
 
-#: ../src/spritz.py:1170
+#: ../src/spritz.py:1171
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:1181
+#: ../src/spritz.py:1182
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../src/spritz.py:1206
+#: ../src/spritz.py:1207
 msgid "No packages selected"
 msgstr ""
 
-#: ../src/spritz.py:1265
+#: ../src/spritz.py:1266
 msgid "Exception caught"
 msgstr ""
 
-#: ../src/spritz.py:1266
+#: ../src/spritz.py:1267
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../src/spritz.py:1275
+#: ../src/spritz.py:1276
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../src/spritz.py:1277
+#: ../src/spritz.py:1278
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 

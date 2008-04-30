@@ -182,16 +182,13 @@ class EntropyPackages:
                         yield yp
         elif mask == "fake_updates":
             # load a pixmap inside the treeview
+            msg2 = _("Try clicking the %s button in the %s page") % ( _("Update Repositories"),_("Repository Selection"),)
 
-            msg = "<big><b><span foreground='#FF0000'>%s</span></b></big>" + \
-            "\n<span foreground='darkblue'>%s.\n%s</span>" % (
-                _('No updates available'),
-                _("It seems that your system is already up-to-date. Good!"),
-                _("Try clicking the %s button in the %s page") % (
-                    _("Update Repositories"),
-                    _("Repository Selection"),
-                ),
-            )
+            msg = "<big><b><span foreground='#FF0000'>%s</span></b></big>\n<span foreground='darkblue'>%s.\n%s</span>" % (
+                    _('No updates available'),
+                    _("It seems that your system is already up-to-date. Good!"),
+                    msg2,
+                )
             myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SpritzConf.dummy_empty)
             yield myobj
 
