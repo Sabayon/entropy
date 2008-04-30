@@ -27,7 +27,7 @@ from etpgui import *
 from entropyConstants import *
 
 
-from i18n import _
+from i18n import _,_LOCALE
 
 TOGGLE_WIDTH = 12
 
@@ -469,8 +469,9 @@ class EntropyPackageView:
             for category in cats:
                 cat_desc = _("No description")
                 cat_desc_data = self.Equo.get_category_description_data(category)
-                # XXX: temp support only EN
-                if cat_desc_data.has_key('en'):
+                if cat_desc_data.has_key(_LOCALE):
+                    cat_desc = cat_desc_data[_LOCALE]
+                elif cat_desc_data.has_key('en'):
                     cat_desc = cat_desc_data['en']
                 cat_desc = cat_desc[:70].strip()+"..."
                 cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupSting(cat_desc),)

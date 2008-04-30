@@ -3966,24 +3966,9 @@ class etpDatabase:
 ##   Dependency handling functions
 #
 
-    def __get_match_hash(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
-        c_hash = str(hash(atom)) + \
-                 str(hash(matchSlot)) + \
-                 str(hash(matchTag)) + \
-                 str(hash(matchRevision)) + \
-                 str(hash(tuple(matchBranches))) + \
-                 str(hash(caseSensitive)) + \
-                 str(hash(multiMatch)) + \
-                 str(hash(packagesFilter)) + \
-                 str(hash(matchRevision)) + \
-                 str(hash(extendedResults))
-        #c_hash = str(hash(c_hash))
-        return c_hash
-
-
-    def atomMatchFetchCache(self, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
+    def atomMatchFetchCache(self, *args):
         if self.xcache:
-            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            c_hash = str(hash(tuple(args)))
             try:
                 cached = dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
                 if cached != None:
@@ -3991,14 +3976,14 @@ class etpDatabase:
             except (EOFError, IOError):
                 return None
 
-    def atomMatchStoreCache(self, result, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults):
+    def atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
-            c_hash = self.__get_match_hash(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            c_hash = str(hash(tuple(args)))
             try:
                 sperms = False
                 if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbMatch']+"/"+self.dbname)):
                     sperms = True
-                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,result)
+                dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,kwargs['result'])
                 if sperms:
                     const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
             except IOError:
@@ -4234,7 +4219,17 @@ class etpDatabase:
         if not atom:
             return -1,1
 
-        cached = self.atomMatchFetchCache(atom,caseSensitive,matchSlot,multiMatch,matchBranches,matchTag,packagesFilter, matchRevision,extendedResults)
+        cached = self.atomMatchFetchCache(
+            atom,
+            caseSensitive,
+            matchSlot,
+            multiMatch,
+            matchBranches,
+            matchTag,
+            packagesFilter,
+            matchRevision,
+            extendedResults
+        )
         if cached != None:
             return cached
 
@@ -4415,7 +4410,7 @@ class etpDatabase:
 
         if not foundIDs:
             # package not found
-            self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (-1,1))
             return -1,1
 
         ### FILLING dbpkginfo
@@ -4553,30 +4548,30 @@ class etpDatabase:
         if not dbpkginfo:
             if extendedResults:
                 x = (-1,1,None,None,None)
-                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
                 return x
             else:
-                self.atomMatchStoreCache((-1,1), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (-1,1))
                 return -1,1
 
         if multiMatch:
             if extendedResults:
                 x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo]),0
-                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
                 return x
             else:
                 x = set([x[0] for x in dbpkginfo])
-                self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (x,0))
                 return x,0
 
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
             if extendedResults:
                 x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])),0
-                self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
                 return x
             else:
-                self.atomMatchStoreCache((x[0],0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+                self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (x[0],0))
                 return x[0],0
 
         dbpkginfo = list(dbpkginfo)
@@ -4590,8 +4585,8 @@ class etpDatabase:
         x = pkgdata[newer]
         if extendedResults:
             x = (x,0,newer[0],newer[1],newer[2]),0
-            self.atomMatchStoreCache(x, atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = x)
             return x
         else:
-            self.atomMatchStoreCache((x,0), atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults)
+            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (x,0))
             return x,0

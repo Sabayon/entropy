@@ -1992,7 +1992,11 @@ class EquoInterface(TextInterface):
 
     def get_category_description_data(self, category, repo = etpConst['officialrepositoryid']):
         dbconn = self.openRepositoryDatabase(repo)
-        data = dbconn.retrieveCategoryDescription(category)
+        data = {}
+        try:
+            data = dbconn.retrieveCategoryDescription(category)
+        except self.databaseTools.dbapi2.OperationalError:
+            pass
         if not data:
             for repo in self.validRepositories:
                 dbconn = self.openRepositoryDatabase(repo)
