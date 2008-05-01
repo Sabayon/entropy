@@ -110,17 +110,19 @@ class QueueExecutor:
             Package = self.Entropy.Package()
             Package.prepare((idpackage,),"remove", metaopts)
 
-            self.Entropy.updateProgress(
-                                            "Removing: "+Package.infoDict['removeatom'],
-                                            importance = 2,
-                                            count = (currentremovalqueue,totalremovalqueue)
-                                        )
+            if not Package.infoDict.has_key('remove_installed_vanished'):
+                self.Entropy.updateProgress(
+                                                "Removing: "+Package.infoDict['removeatom'],
+                                                importance = 2,
+                                                count = (currentremovalqueue,totalremovalqueue)
+                                            )
 
-            rc = Package.run()
-            if rc != 0:
-                return -1,rc
+                rc = Package.run()
+                if rc != 0:
+                    return -1,rc
 
-            Package.kill()
+                Package.kill()
+
             self.Entropy.cycleDone()
             del metaopts
             del Package
@@ -156,6 +158,10 @@ class QueueExecutor:
 class Equo(EquoInterface):
 
     def __init__(self):
+        self.progressLog = None
+        self.output = None
+        self.progress = None
+        self.urlFetcher = None
         EquoInterface.__init__(self)
         self.xcache = True # force xcache enabling
 
@@ -169,26 +175,29 @@ class Equo(EquoInterface):
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
         count_str = ""
-        if count:
-            count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
-            if importance == 0:
-                progress_text = text
-            else:
-                progress_text = str(int(round((float(count[0])/count[1])*100,1)))+"%"
-            self.progress.set_progress( round((float(count[0])/count[1]),1), progress_text )
+        if self.progress:
+            if count:
+                count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
+                if importance == 0:
+                    progress_text = text
+                else:
+                    progress_text = str(int(round((float(count[0])/count[1])*100,1)))+"%"
+                self.progress.set_progress( round((float(count[0])/count[1]),1), progress_text )
+            if importance == 1:
+                myfunc = self.progress.set_subLabel
+            elif importance == 2:
+                myfunc = self.progress.set_mainLabel
+            elif importance == 3:
+                # show warning popup
+                # FIXME: interface with popup !
+                myfunc = self.progress.set_extraLabel
+            if importance > 0:
+                myfunc(count_str+text)
 
-        if importance == 1:
-            myfunc = self.progress.set_subLabel
-        elif importance == 2:
-            myfunc = self.progress.set_mainLabel
-        elif importance == 3:
-            # show warning popup
-            # FIXME: interface with popup !
-            myfunc = self.progress.set_extraLabel
-        if importance > 0:
-            myfunc(count_str+text)
-        if not back:
+        if not back and self.progressLog:
             self.progressLog(count_str+text)
+        elif not back:
+            print count_str+text
 
     def cycleDone(self):
         self.progress.total.next()

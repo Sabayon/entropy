@@ -28,6 +28,7 @@
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
+import exceptionTools
 Equo = EquoInterface(noclientdb = True)
 
 def test_spm():
@@ -38,6 +39,13 @@ def test_spm():
     except:
         print_error(darkred(" * ")+bold("Source Package Manager backend")+red(" is not available."))
         return None
+
+def test_clientdb():
+    try:
+        Equo.clientDbconn.validateDatabase()
+    except exceptionTools.SystemDatabaseError:
+        print_error(darkred(" * ")+bold("Installed packages database")+red(" is not available."))
+        return 1
 
 def database(options):
 
@@ -293,9 +301,14 @@ def database(options):
         return 0
 
     elif (options[0] == "depends"):
-	print_info(red("  Regenerating depends caching table..."))
-	Equo.clientDbconn.regenerateDependsTable()
-	print_info(red("  Depends caching table regenerated successfully."))
+
+        rc = test_clientdb()
+        if rc != None:
+            return rc
+
+        print_info(red("  Regenerating depends caching table..."))
+        Equo.clientDbconn.regenerateDependsTable()
+        print_info(red("  Depends caching table regenerated successfully."))
         return 0
 
     elif (options[0] == "counters"):
@@ -303,6 +316,10 @@ def database(options):
         Spm = test_spm()
         if Spm == None:
             return 1
+
+        rc = test_clientdb()
+        if rc != None:
+            return rc
 
         print_info(red("  Regenerating counters table. Please wait..."))
         Equo.clientDbconn.regenerateCountersTable(Spm.get_vdb_path(), output = True)
@@ -314,6 +331,10 @@ def database(options):
         Spm = test_spm()
         if Spm == None:
             return 1
+
+        rc = test_clientdb()
+        if rc != None:
+            return rc
 
         print_info(red(" Scanning Portage and Entropy databases for differences..."))
 
@@ -375,7 +396,15 @@ def database(options):
             # then exit gracefully
             return 0
 
-        if (toBeRemoved):
+        # check lock file
+        gave_up = Equo.lock_check(Equo._resources_run_check_lock)
+        if gave_up:
+            print_info(red(" Entropy locked, giving up."))
+            return 2
+
+        Equo._resources_run_create_lock()
+
+        if toBeRemoved:
             print_info(brown(" @@ ")+blue("Someone removed these packages. Would be removed from the Entropy database:"))
 
             for x in toBeRemoved:
@@ -393,22 +422,21 @@ def database(options):
                     Equo.clientDbconn.removePackage(x)
                 print_info(brown(" @@ ")+blue("Database removal complete."))
 
-        if (toBeAdded):
+        if toBeAdded:
             print_info(brown(" @@ ")+blue("Someone added these packages. Would be added/updated into the Entropy database:"))
             for x in toBeAdded:
                 print_info(darkgreen("   # ")+red(x[0]))
             rc = "Yes"
             if etpUi['ask']: rc = Equo.askQuestion(">>   Continue with adding?")
             if rc == "No":
+                Equo._resources_run_remove_lock()
                 return 0
             # now analyze
 
             totalqueue = str(len(toBeAdded))
             queue = 0
-            for item in toBeAdded:
+            for atom,counter in toBeAdded:
                 queue += 1
-                counter = item[1]
-                atom = item[0]
                 print_info(red(" ++ ")+bold("(")+blue(str(queue))+"/"+red(totalqueue)+bold(") ")+">>> Adding "+darkgreen(atom))
                 if not os.path.isdir(etpConst['entropyunpackdir']):
                     os.makedirs(etpConst['entropyunpackdir'])
@@ -449,6 +477,7 @@ def database(options):
 
             print_info(brown(" @@ ")+blue("Database update completed."))
 
+        Equo._resources_run_remove_lock()
         return 0
 
     else:
@@ -489,39 +518,37 @@ def pythonUpdater():
     for pdir in mydirs:
         print_info(red("    # ")+blue("/usr/lib/%s" % (pdir,) ))
 
-    old_pdir = os.path.join("/usr/lib/",mydirs[0])
-    print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
+    old_pdirs = mydirs[:-1]
+    idpackages = set()
+    for mydir in old_pdirs:
+        old_pdir = os.path.join("/usr/lib/",mydir)
+        print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
+        old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
+        idpackages |= text_query.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
 
-    old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
-    idpackages = text_query.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
     if not idpackages:
-        print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python." % (old_pdir,)))
+        print_info(brown(" @@ ")+blue("There are no files in (%s) belonging to your old Python installation." % (', '.join(old_pdirs),)))
         return 0
-    print_info(brown(" @@ ")+blue("These are the installed packages whose have files in %s:" % (red(old_pdir),)))
+    print_info(brown(" @@ ")+blue("These are the installed packages with files in (%s):" % (red(', '.join(old_pdirs)),)))
 
-    atoms = set()
+    keyslots = set()
     for idpackage in idpackages:
-        atom = Equo.clientDbconn.retrieveAtom(idpackage)
-        atoms.add((atom, idpackage))
-        print_info(red("    # ")+atom)
+        key, slot = Equo.clientDbconn.retrieveKeySlot(idpackage)
+        keyslots.add((key,slot))
+        print_info(red("    # ")+key+":"+slot)
 
     print_info(brown(" @@ ")+blue("Searching inside available repositories..."))
-    atoms = list(atoms)
-    atoms.sort()
     matchedAtoms = set()
-    for meta in atoms:
-        atomkey = Equo.entropyTools.dep_getkey(meta[0])
-        slot = Equo.clientDbconn.retrieveSlot(meta[1])
+    for atomkey,slot in keyslots:
         print_info(brown("   @@ ")+red("Matching ")+bold(atomkey)+red(":")+darkgreen(slot), back = True)
         match = Equo.atomMatch(atomkey, matchSlot = slot)
         if match[0] != -1:
             matchedAtoms.add((atomkey+":"+slot,match))
-    del atoms
     del idpackages
 
     # now show, then ask or exit (if pretend)
     if not matchedAtoms:
-        print_info(brown(" @@ ")+blue("There are no files in %s whose belong to your old Python and are stored in configured repositories." % (old_pdir,)))
+        print_info(brown(" @@ ")+blue("There are no files in (%s) belonging to your old Python installation stored in the repositories." % (', '.join(old_pdirs),)))
         return 0
 
     rc = text_ui.installPackages(atomsdata = matchedAtoms)

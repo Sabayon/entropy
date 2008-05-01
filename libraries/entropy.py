@@ -52,6 +52,9 @@ class matchContainer:
 '''
 class EquoInterface(TextInterface):
 
+    import dumpTools
+    import databaseTools
+    import entropyTools
     def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
 
         self.MaskingParser = None
@@ -61,12 +64,7 @@ class EquoInterface(TextInterface):
         self.spmCache = {}
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
-        import dumpTools
-        self.dumpTools = dumpTools
-        import databaseTools
-        self.databaseTools = databaseTools
-        import entropyTools
-        self.entropyTools = entropyTools
+
         self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
@@ -88,6 +86,21 @@ class EquoInterface(TextInterface):
         if shell_xcache:
             self.xcache = False
 
+        # now if we are on live, we should disable it
+        # are we running on a livecd? (/proc/cmdline has "cdroot")
+        if self.entropyTools.islive():
+            self.xcache = False
+        elif (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
+            self.xcache = False
+        elif not user_xcache:
+            self.validate_repositories_cache()
+
+        if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
+            try:
+                self.purge_cache(False)
+            except:
+                pass
+
         if self.openclientdb:
             self.openClientDatabase()
         self.FileUpdates = self.FileUpdatesInterfaceLoader()
@@ -99,21 +112,6 @@ class EquoInterface(TextInterface):
         if self.repo_validation:
             self.validate_repositories()
 
-        # now if we are on live, we should disable it
-        # are we running on a livecd? (/proc/cmdline has "cdroot")
-        if self.entropyTools.islive():
-            self.xcache = False
-
-        if (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
-            self.xcache = False
-        elif not user_xcache:
-            self.validate_repositories_cache()
-
-        if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
-            try:
-                self.purge_cache(False)
-            except:
-                pass
 
     def __del__(self):
         if self.clientDbconn != None:
@@ -193,7 +191,7 @@ class EquoInterface(TextInterface):
         f.flush()
         f.close()
 
-    def sync_loop_check(self, check_function):
+    def lock_check(self, check_function):
 
         lock_count = 0
         max_lock_count = 600
@@ -233,7 +231,7 @@ class EquoInterface(TextInterface):
         if cached == None:
             # invalidate matching cache
             try:
-                self.repository_move_clear_cache(all = True)
+                self.repository_move_clear_cache()
             except IOError:
                 pass
         elif type(cached) is tuple:
@@ -245,7 +243,7 @@ class EquoInterface(TextInterface):
                 difflist = cached - myrepolist # before minus now
                 for repoid in difflist:
                     try:
-                        self.repository_move_clear_cache(repoid, all = True)
+                        self.repository_move_clear_cache(repoid)
                     except IOError:
                         pass
         try:
@@ -418,15 +416,25 @@ class EquoInterface(TextInterface):
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
             (etpRepositories[repositoryName]['configprotectmask'] == None):
 
-            etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-            etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+            try:
+                etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
+            except self.databaseTools.dbapi2.OperationalError:
+                etpRepositories[repositoryName]['configprotect'] = []
+            try:
+                etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
+            except self.databaseTools.dbapi2.OperationalError:
+                etpRepositories[repositoryName]['configprotectmask'] = []
+
             etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
 
             etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
             etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
         if (repositoryName not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
-            conn.clientUpdatePackagesData(self.clientDbconn)
+            try:
+                conn.clientUpdatePackagesData(self.clientDbconn)
+            except self.databaseTools.dbapi2.OperationalError:
+                pass
         return conn
 
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None):
@@ -437,7 +445,7 @@ class EquoInterface(TextInterface):
         else:
             indexing = self.indexing
         if dbname == None:
-            dbname = "generic"
+            dbname = etpConst['genericdbid']
         return self.databaseTools.etpDatabase(  readOnly = readOnly,
                                                 dbFile = dbfile,
                                                 clientDatabase = True,
@@ -449,7 +457,7 @@ class EquoInterface(TextInterface):
 
     def listAllAvailableBranches(self):
         branches = set()
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             branches.update(dbconn.listAllBranches())
         return branches
@@ -463,7 +471,6 @@ class EquoInterface(TextInterface):
         if self.entropyTools.is_user_in_entropy_group():
             skip = set()
             if not client_purge:
-                skip.add("/"+etpCache['dbInfo']+"/"+etpConst['clientdbid']) # it's ok this way
                 skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
                 skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
             for key in etpCache:
@@ -564,7 +571,7 @@ class EquoInterface(TextInterface):
     def find_belonging_dependency(self, matched_atoms):
         crying_atoms = set()
         for atom in matched_atoms:
-            for repo in etpRepositories:
+            for repo in self.validRepositories:
                 rdbconn = self.openRepositoryDatabase(repo)
                 riddep = rdbconn.searchDependency(atom)
                 if riddep != -1:
@@ -766,7 +773,7 @@ class EquoInterface(TextInterface):
                                 )
 
             # match libraries
-            for repoid in etpRepositoriesOrder:
+            for repoid in self.validRepositories:
                 self.updateProgress(
                                         blue("Repository id: ")+darkgreen(repoid),
                                         importance = 1,
@@ -864,7 +871,7 @@ class EquoInterface(TextInterface):
         match_exp = re.compile(match_string,re.IGNORECASE)
 
         matched = {}
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             # get names
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
@@ -1253,7 +1260,7 @@ class EquoInterface(TextInterface):
         return dbpkginfo
 
 
-    def repository_move_clear_cache(self, repoid = None, all = False):
+    def repository_move_clear_cache(self, repoid = None):
         self.clear_dump_cache(etpCache['world_available'])
         self.clear_dump_cache(etpCache['world_update'])
         self.clear_dump_cache(etpCache['check_package_update'])
@@ -1262,8 +1269,6 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['dep_tree'])
         if repoid != None:
             self.clear_dump_cache(etpCache['dbMatch']+"/"+repoid+"/")
-            if all:
-                self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/")
             self.clear_dump_cache(etpCache['dbSearch']+"/"+repoid+"/")
 
 
@@ -1279,6 +1284,7 @@ class EquoInterface(TextInterface):
 
         if repodata['repoid'].endswith(etpConst['packagesext']): # dynamic repository
             try:
+                # no need # etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
                 etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
                 etpRepositories[repodata['repoid']]['smartpackage'] = repodata['smartpackage']
                 etpRepositories[repodata['repoid']]['dbpath'] = repodata['dbpath']
@@ -1289,8 +1295,10 @@ class EquoInterface(TextInterface):
             etpRepositoriesOrder.insert(0,repodata['repoid'])
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
-            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['packages']]
-            etpRepositories[repodata['repoid']]['database'] = repodata['database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
+            etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
+            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['plain_packages']]
+            etpRepositories[repodata['repoid']]['plain_database'] = repodata['plain_database']
+            etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
             etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
             etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']
             # set dbrevision
@@ -1306,6 +1314,7 @@ class EquoInterface(TextInterface):
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
             initConfig_entropyConstants(etpSys['rootdir'])
+        self.validate_repositories()
 
     def removeRepository(self, repoid, disable = False):
 
@@ -1323,7 +1332,7 @@ class EquoInterface(TextInterface):
             if repoid in etpRepositoriesOrder:
                 etpRepositoriesOrder.remove(repoid)
 
-            self.repository_move_clear_cache(repoid, all = True)
+            self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
@@ -1333,6 +1342,8 @@ class EquoInterface(TextInterface):
                 self.entropyTools.saveRepositorySettings(repodata, remove = True)
             initConfig_entropyConstants(etpSys['rootdir'])
 
+        self.validate_repositories()
+
     def shiftRepository(self, repoid, toidx):
         # update etpRepositoriesOrder
         etpRepositoriesOrder.remove(repoid)
@@ -1340,14 +1351,16 @@ class EquoInterface(TextInterface):
         self.entropyTools.writeOrderedRepositoriesEntries()
         initConfig_entropyConstants(etpSys['rootdir'])
         self.repository_move_clear_cache(repoid)
+        self.validate_repositories()
 
     def enableRepository(self, repoid):
-        self.repository_move_clear_cache(repoid, all = True)
+        self.repository_move_clear_cache(repoid)
         # save new etpRepositories to file
         repodata = {}
         repodata['repoid'] = repoid
         self.entropyTools.saveRepositorySettings(repodata, enable = True)
         initConfig_entropyConstants(etpSys['rootdir'])
+        self.validate_repositories()
 
     def disableRepository(self, repoid):
         # update etpRepositories
@@ -1371,6 +1384,7 @@ class EquoInterface(TextInterface):
             repodata['repoid'] = repoid
             self.entropyTools.saveRepositorySettings(repodata, disable = True)
             initConfig_entropyConstants(etpSys['rootdir'])
+        self.validate_repositories()
 
 
     '''
@@ -1515,7 +1529,11 @@ class EquoInterface(TextInterface):
             if mydep[1][0] == "!":
                 xmatch = self.clientDbconn.atomMatch(mydep[1][1:])
                 if xmatch[0] != -1:
-                    conflicts.add(xmatch[0])
+                    myreplacement = self._lookup_conflict_replacement(mydep[1][1:], xmatch[0], deep_deps = deep_deps)
+                    if myreplacement != None:
+                        mybuffer.push((mydep[0]+1,myreplacement))
+                    else:
+                        conflicts.add(xmatch[0])
                 mydep = mybuffer.pop()
                 continue
 
@@ -1616,6 +1634,19 @@ class EquoInterface(TextInterface):
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
+    def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
+        if self.entropyTools.isjustname(conflict_atom):
+            return None
+        conflict_match = self.atomMatch(conflict_atom)
+        mykey, myslot = self.clientDbconn.retrieveKeySlot(client_idpackage)
+        new_match = self.atomMatch(mykey, matchSlot = myslot)
+        if (conflict_match == new_match) or (new_match[1] == 1):
+            return None
+        action = self.get_package_action(new_match)
+        if (action == 0) and (not deep_deps):
+            return None
+        return "%s:%s" % (mykey,myslot,)
+
     def _lookup_inverse_dependencies(self, match, clientmatch):
 
         cmpstat = self.get_package_action(match)
@@ -1648,9 +1679,12 @@ class EquoInterface(TextInterface):
         if self.xcache:
             c_hash = str(hash(tuple(match)))+str(hash(deep_deps))+str(hash(clientmatch[0]))
             c_hash = str(hash(c_hash))
-            cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
-            if cached != None:
-                return cached
+            try:
+                cached = self.dumpTools.loadobj(etpCache['library_breakage']+c_hash)
+                if cached != None:
+                    return cached
+            except (IOError,OSError):
+                pass
 
         # these should be pulled in before
         repo_atoms = set()
@@ -1736,7 +1770,7 @@ class EquoInterface(TextInterface):
         if self.xcache:
             try:
                 self.dumpTools.dumpobj(etpCache['library_breakage']+c_hash,client_atoms)
-            except IOError:
+            except (OSError,IOError):
                 pass
 
         return client_atoms
@@ -1811,6 +1845,23 @@ class EquoInterface(TextInterface):
                 pass
         return deptree,0
 
+    def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
+        remove_depends = set()
+        for d_idpackage in depends:
+            mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
+            for mydep in mydeps:
+                matches, rslt = self.clientDbconn.atomMatch(mydep, multiMatch = True)
+                if rslt == 1:
+                    continue
+                if idpackage in matches and len(matches) > 1:
+                    # are all in depends?
+                    for mymatch in matches:
+                        if mymatch not in depends and mymatch not in monotree:
+                            remove_depends.add(d_idpackage)
+                            break
+        depends -= remove_depends
+        return depends
+
     '''
     @description: generates a depends tree using provided idpackages (from client database)
                     !!! you can see it as the function that generates the removal tree
@@ -1859,13 +1910,14 @@ class EquoInterface(TextInterface):
                 # obtain its depends
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
-                depends = [x for x in depends if x not in monotree and not self.clientDbconn.isSystemPackage(x)]
+                depends = set([x for x in depends if x not in monotree])
+                depends = set([x for x in depends if not self.clientDbconn.isSystemPackage(x)])
+                if depends:
+                    depends = self._filter_depends_multimatched_atoms(idpackage, depends, monotree)
                 if depends: # something depends on idpackage
-                    for x in depends:
-                        if x not in tree[treedepth]:
-                            tree[treedepth].add(x)
-                            monotree.add(x)
-                            treeview.add(x)
+                    tree[treedepth] |= depends
+                    monotree |= depends
+                    treeview |= depends
                 elif deep: # if deep, grab its dependencies and check
 
                     mydeps = set()
@@ -1878,7 +1930,7 @@ class EquoInterface(TextInterface):
                     mydeps = [x for x in mydeps if x not in monotree and (not self.clientDbconn.isSystemPackage(x))]
                     for x in mydeps:
                         mydepends = self.clientDbconn.retrieveDepends(x)
-                        mydepends = set([y for y in mydepends if y not in monotree])
+                        mydepends -= set([y for y in mydepends if y not in monotree])
                         if not mydepends:
                             tree[treedepth].add(x)
                             monotree.add(x)
@@ -1921,7 +1973,7 @@ class EquoInterface(TextInterface):
 
     def list_repo_categories(self):
         categories = set()
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             catsdata = dbconn.listAllCategories()
             categories.update(set([x[1] for x in catsdata]))
@@ -1929,11 +1981,26 @@ class EquoInterface(TextInterface):
 
     def list_repo_packages_in_category(self, category):
         pkg_matches = set()
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             catsdata = dbconn.searchPackagesByCategory(category, branch = etpConst['branch'])
             pkg_matches.update(set([(x[1],repo) for x in catsdata]))
         return pkg_matches
+
+    def get_category_description_data(self, category, repo = etpConst['officialrepositoryid']):
+        dbconn = self.openRepositoryDatabase(repo)
+        data = {}
+        try:
+            data = dbconn.retrieveCategoryDescription(category)
+        except self.databaseTools.dbapi2.OperationalError:
+            pass
+        if not data:
+            for repo in self.validRepositories:
+                dbconn = self.openRepositoryDatabase(repo)
+                data = dbconn.retrieveCategoryDescription(category)
+                if data:
+                    break
+        return data
 
     def list_installed_packages_in_category(self, category):
         pkg_matches = set([x[1] for x in self.clientDbconn.searchPackagesByCategory(category)])
@@ -1941,12 +2008,15 @@ class EquoInterface(TextInterface):
 
     def all_repositories_checksum(self):
         sum_hashes = ''
-        for repo in etpRepositories:
+        for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
-            except exceptionTools.RepositoryError:
+            except (exceptionTools.RepositoryError):
                 continue # repo not available
-            sum_hashes += dbconn.database_checksum()
+            try:
+                sum_hashes += dbconn.database_checksum()
+            except (self.databaseTools.dbapi2.OperationalError):
+                pass
         return sum_hashes
 
     def get_available_packages_chash(self, branch):
@@ -1954,8 +2024,7 @@ class EquoInterface(TextInterface):
         # client digest not needed, cache is kept updated
         c_hash = str(hash(repo_digest)) + \
                  str(hash(branch)) + \
-                 str(hash(tuple(etpRepositories))) + \
-                 str(hash(tuple(etpRepositoriesOrder)))
+                 str(hash(tuple(self.validRepositories)))
         c_hash = str(hash(c_hash))
         return c_hash
 
@@ -1976,8 +2045,8 @@ class EquoInterface(TextInterface):
                     pass
 
         available = []
-        self.setTotalCycles(len(etpRepositoriesOrder))
-        for repo in etpRepositoriesOrder:
+        self.setTotalCycles(len(self.validRepositories))
+        for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
             except exceptionTools.RepositoryError:
@@ -2014,18 +2083,21 @@ class EquoInterface(TextInterface):
         if self.xcache:
             if db_digest == None:
                 db_digest = self.all_repositories_checksum()
-            c_hash = str(hash(db_digest)) + \
-                     str(hash(empty_deps)) + \
-                     str(hash(tuple(etpRepositories))) + \
-                     str(hash(tuple(etpRepositoriesOrder))) + \
-                     str(hash(branch))
-            c_hash = str(hash(c_hash))
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch)
             disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
             if disk_cache != None:
                 try:
                     return disk_cache['r']
                 except (KeyError, TypeError):
                     return None
+
+    def get_world_update_cache_hash(self, db_digest, empty_deps, branch):
+        c_hash = str(hash(db_digest)) + \
+                    str(hash(empty_deps)) + \
+                    str(hash(tuple(self.validRepositories))) + \
+                    str(hash(tuple(etpRepositoriesOrder))) + \
+                    str(hash(branch))
+        return str(hash(c_hash))
 
     def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
 
@@ -2055,11 +2127,15 @@ class EquoInterface(TextInterface):
             # check against broken entries, or removed during iteration
             if mystrictdata == None:
                 continue
-            match = self.atomMatch(     mystrictdata[0],
-                                        matchSlot = mystrictdata[1],
-                                        matchBranches = (branch,),
-                                        extendedResults = True
-                                  )
+            try:
+                match = self.atomMatch(     mystrictdata[0],
+                                            matchSlot = mystrictdata[1],
+                                            matchBranches = (branch,),
+                                            extendedResults = True
+                                    )
+            except (self.databaseTools.dbapi2.OperationalError):
+                # ouch, but don't crash here
+                continue
             # now compare
             # version: mystrictdata[2]
             # tag: mystrictdata[3]
@@ -2092,18 +2168,13 @@ class EquoInterface(TextInterface):
             maskedresults = self.atomMatch(mystrictdata[0], matchSlot = mystrictdata[1], matchBranches = (branch,), packagesFilter = False)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
-                # look for packages that would match key with any slot (for eg, gcc updates)
+                # look for packages that would match key with any slot (for eg: gcc, kernel updates)
                 matchresults = self.atomMatch(mystrictdata[0], matchBranches = (branch,))
                 if matchresults[0] != -1:
                     update.append(matchresults)
 
         if self.xcache:
-            c_hash = str(hash(db_digest)) + \
-                     str(hash(empty_deps)) + \
-                     str(hash(tuple(etpRepositories))) + \
-                     str(hash(tuple(etpRepositoriesOrder))) + \
-                     str(hash(branch))
-            c_hash = str(hash(c_hash))
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch)
             data = {}
             data['r'] = (update, remove, fine,)
             data['empty_deps'] = empty_deps
@@ -2209,10 +2280,13 @@ class EquoInterface(TextInterface):
 
     def retrieveRemovalQueue(self, idpackages, deep = False):
         queue = []
-        treeview = self.generate_depends_tree(idpackages, deep = deep)
-        for x in range(len(treeview[0]))[::-1]:
-            for y in treeview[0][x]:
-                queue.append(y)
+        if not idpackages:
+            return queue
+        treeview, status = self.generate_depends_tree(idpackages, deep = deep)
+        if status == 0:
+            for x in range(len(treeview))[::-1]:
+                for y in treeview[x]:
+                    queue.append(y)
         return queue
 
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):
@@ -2389,7 +2463,8 @@ class EquoInterface(TextInterface):
                         # put to 0 - reenable mirror, welcome back uri!
                         etpRemoteFailures[uri] = 0
 
-                remaining.remove(uri)
+                if uri in remaining:
+                    remaining.remove(uri)
                 continue
 
             do_resume = True
@@ -2438,7 +2513,8 @@ class EquoInterface(TextInterface):
                                         )
                         if rc == -4: # user discarded fetch
                             return 1
-                        remaining.remove(uri)
+                        if uri in remaining:
+                            remaining.remove(uri)
                         break
                 except KeyboardInterrupt:
                     break
@@ -3828,22 +3904,31 @@ class PackageInterface:
 
         portDbDir = Spm.get_vdb_path()
         removePath = portDbDir+atom
-        try:
-            shutil.rmtree(removePath,True)
-        except:
-            pass
         key = self.Entropy.entropyTools.dep_getkey(atom)
-        othersInstalled = Spm.get_installed_atoms(key) #FIXME: really slow
-        if othersInstalled == None:
-            world_file = os.path.join(etpConst['systemroot'],'var/lib/portage/world')
+        others_installed = Spm.search_keys(key)
+        slot = self.infoDict['slot']
+        tag = self.infoDict['versiontag'] # FIXME: kernel tag, hopefully to 0
+        if tag: slot = "0"
+        if os.path.isdir(removePath):
+            shutil.rmtree(removePath,True)
+        elif others_installed:
+            for myatom in others_installed:
+                myslot = Spm.get_package_slot(myatom)
+                if myslot != slot:
+                    continue
+                shutil.rmtree(portDbDir+myatom,True)
+
+        if not others_installed:
+            world_file = os.path.join(etpConst['systemroot'],'/var/lib/portage/world')
             world_file_tmp = world_file+".entropy.tmp"
-            if os.access(world_file,os.W_OK):
+            if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
                 new = open(world_file_tmp,"w")
                 old = open(world_file,"r")
                 line = old.readline()
                 while line:
-                    if line.find(key) == -1:
-                        new.write(line)
+                    if line.find(key) != -1:
+                        continue
+                    new.write(line)
                     line = old.readline()
                 new.flush()
                 new.close()
@@ -4212,8 +4297,8 @@ class PackageInterface:
                 copystat = True
 
             if copystat:
-                user = os.stat(path)[4]
-                group = os.stat(path)[5]
+                user = os.stat(path)[stat.ST_UID]
+                group = os.stat(path)[stat.ST_GID]
                 os.chown(topath,user,group)
                 shutil.copystat(path,topath)
 
@@ -4273,8 +4358,8 @@ class PackageInterface:
                     # symlink don't need permissions, also until os.walk ends they might be broken
                     # XXX also, added os.access() check because there might be directories/files unwriteable
                     # what to do otherwise?
-                    user = os.stat(imagepathDir)[4]
-                    group = os.stat(imagepathDir)[5]
+                    user = os.stat(imagepathDir)[stat.ST_UID]
+                    group = os.stat(imagepathDir)[stat.ST_GID]
                     os.chown(rootdir,user,group)
                     shutil.copystat(imagepathDir,rootdir)
 
@@ -4295,7 +4380,9 @@ class PackageInterface:
 
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]
-                    if self.Entropy.clientDbconn.isFileAvailable(todbfile):
+                    # self.infoDict['removeidpackage']
+                    avail = self.Entropy.clientDbconn.isFileAvailable(todbfile, get_id = True)
+                    if (self.infoDict['removeidpackage'] not in avail) and avail:
                         self.Entropy.updateProgress(
                                                 red("Collision found during install for ")+tofile+" - cannot overwrite",
                                                 importance = 1,
@@ -4310,17 +4397,19 @@ class PackageInterface:
                 tofile_before_protect = tofile
 
                 try:
+
                     for x in protect:
                         x = x.encode('raw_unicode_escape')
                         if tofile.startswith(x):
                             protected = True
                             break
-                    if (protected): # check if perhaps, file is masked, so unprotected
-                        for x in mask:
-                            x = x.encode('raw_unicode_escape')
-                            if tofile.startswith(x):
-                                protected = False
-                                break
+
+                    if protected: # check if perhaps, file is masked, so unprotected
+                        newmask = [x.encode('raw_unicode_escape') for x in mask]
+                        if tofile in newmask:
+                            protected = False
+                        elif os.path.dirname(tofile) in newmask:
+                            protected = False
 
                     if not os.path.lexists(tofile):
                         protected = False # file doesn't exist
@@ -4332,7 +4421,7 @@ class PackageInterface:
                         protected = False # it's not a file
 
                     # request new tofile then
-                    if (protected):
+                    if protected:
                         if tofile not in etpConst['configprotectskip']:
                             tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
                             if not prot_status:
@@ -4759,7 +4848,7 @@ class PackageInterface:
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
-        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 20
 
@@ -4832,6 +4921,7 @@ class PackageInterface:
         self.infoDict['triggers'] = {}
         self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
         self.infoDict['slot'] = self.Entropy.clientDbconn.retrieveSlot(idpackage)
+        self.infoDict['versiontag'] = self.Entropy.clientDbconn.retrieveVersionTag(idpackage)
         self.infoDict['removeidpackage'] = idpackage
         self.infoDict['diffremoval'] = False
         removeConfig = False
@@ -5077,14 +5167,15 @@ class FileUpdatesInterface:
             try:
                 z = self.load_cache()
                 if z != None:
-                    self.scandata = z.copy()
-                    return z
+                    self.scandata = z
+                    return self.scandata
             except:
                 pass
 
         # open client database to fill etpConst['dbconfigprotect']
         scandata = {}
         counter = 0
+        name_cache = set()
         for path in etpConst['dbconfigprotect']:
             # it's a file?
             scanfile = False
@@ -5096,7 +5187,7 @@ class FileUpdatesInterface:
             for currentdir,subdirs,files in os.walk(path):
                 for item in files:
 
-                    if (scanfile):
+                    if scanfile:
                         if path != item:
                             continue
 
@@ -5107,27 +5198,37 @@ class FileUpdatesInterface:
                         number = item[5:9]
                         try:
                             int(number)
-                        except:
+                        except ValueError:
                             continue # not a valid etc-update file
                         if item[9] != "_": # no valid format provided
                             continue
 
+                        if item in name_cache:
+                            continue # skip, already done
+                        name_cache.add(item)
+
                         mydict = self.generate_dict(filepath)
                         if mydict['automerge']:
                             self.Entropy.updateProgress(
-                                                    darkred("Automerging file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
-                                                    importance = 0,
-                                                    type = "info"
-                                                )
+                                darkred("Automerging file: %s") % (
+                                    darkgreen(etpConst['systemroot'] + mydict['source']),
+                                ),
+                                importance = 0,
+                                type = "info"
+                            )
                             if os.path.isfile(etpConst['systemroot']+mydict['source']):
                                 try:
-                                    shutil.move(etpConst['systemroot']+mydict['source'],etpConst['systemroot']+mydict['destination'])
+                                    shutil.move(    etpConst['systemroot']+mydict['source'],
+                                                    etpConst['systemroot']+mydict['destination']
+                                    )
                                 except IOError:
                                     self.Entropy.updateProgress(
-                                                    darkred("I/O Error :: Cannot automerge file: %s") % ( darkgreen(etpConst['systemroot']+mydict['source']) ),
-                                                    importance = 1,
-                                                    type = "warning"
-                                                )
+                                        darkred("I/O Error :: Cannot automerge file: %s") % (
+                                            darkgreen(etpConst['systemroot'] + mydict['source']),
+                                        ),
+                                        importance = 1,
+                                        type = "warning"
+                                    )
                             continue
                         else:
                             counter += 1
@@ -5135,10 +5236,11 @@ class FileUpdatesInterface:
 
                         try:
                             self.Entropy.updateProgress(
-                                            "("+blue(str(counter))+") "+red(" file: ")+os.path.dirname(filepath)+"/"+os.path.basename(filepath)[10:],
-                                            importance = 1,
-                                            type = "info"
-                                        )
+                                "("+blue(str(counter))+") " + red(" file: ") + \
+                                os.path.dirname(filepath) + "/" + os.path.basename(filepath)[10:],
+                                importance = 1,
+                                type = "info"
+                            )
                         except:
                             pass # possible encoding issues
         # store data
@@ -5156,16 +5258,27 @@ class FileUpdatesInterface:
             if isinstance(sd, dict):
                 # quick test if data is reliable
                 try:
+
                     taint = False
+                    name_cache = set()
+                    # scan data
                     for x in sd:
-                        if not os.path.isfile(etpConst['systemroot']+sd[x]['source']):
+                        mysource = sd[x]['source']
+
+                        # filter dupies
+                        if mysource in name_cache:
+                            sd.pop(x)
+                            continue
+
+                        if not os.path.isfile(etpConst['systemroot']+mysource):
                             taint = True
-                            break
-                    if (not taint):
-                        return sd
-                    else:
+                        name_cache.add(mysource)
+
+                    if taint:
                         raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
-                except:
+                    return sd
+
+                except (KeyError,EOFError):
                     raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
             else:
                 raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
@@ -5469,10 +5582,8 @@ class RepoInterface:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        # there is no need to remove dbInfo because
         # idpackages are PRIMARY KEY AUTOINCREMENT, so
         # an idpackage won't be used more than once
-        #self.Entropy.clear_dump_cache(etpCache['dbInfo']+"/"+repo+"/")
         self.Entropy.clear_dump_cache(etpCache['dbMatch']+repo+"/")
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo+"/")
 
@@ -5831,7 +5942,7 @@ class RepoInterface:
                                         header = darkred(" @@ ")
                             )
 
-        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 3
 
@@ -8138,7 +8249,15 @@ timeout=10
                                     )
                 return "(hd0,0)"
             match = re.subn("[a-z/]","",gboot)
-            gpartnum = str(int(match[0])-1)
+            try:
+                gpartnum = str(int(match[0])-1)
+            except ValueError:
+                self.Entropy.updateProgress(
+                                        bold(" QA Warning: ") + brown("Grub translation of %s not supported. Cannot properly configure grub.conf. Defaulting to (hd0,0)") % (gboot,),
+                                        importance = 0,
+                                        header = red("   ##")
+                                    )
+                return "(hd0,0)"
             # now match with grub
             device_map = etpConst['packagestmpdir']+"/grub.map"
             if os.path.isfile(device_map):
@@ -8385,10 +8504,10 @@ class PackageMaskingParser:
     def __removeRepoCache(self, repoid = None):
         if os.path.isdir(etpConst['dumpstoragedir']):
             if repoid:
-                self.Entropy.repository_move_clear_cache(repoid, all = True)
+                self.Entropy.repository_move_clear_cache(repoid)
             else:
                 for repoid in etpRepositoriesOrder:
-                    self.Entropy.repository_move_clear_cache(repoid, all = True)
+                    self.Entropy.repository_move_clear_cache(repoid)
         else:
             os.makedirs(etpConst['dumpstoragedir'])
 
@@ -9068,7 +9187,7 @@ class SecurityInterface:
                                 footer = red(" ...")
                             )
 
-        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 7
 
@@ -9313,6 +9432,18 @@ class PortageInterface:
         sysoutput.extend(etpConst['spm']['system_packages']) # add our packages
         return sysoutput
 
+    def get_category_description_data(self, category):
+        from xml.dom import minidom
+        data = {}
+        portdir = self.portage.settings['PORTDIR']
+        myfile = os.path.join(portdir,category,"metadata.xml")
+        if os.access(myfile,os.R_OK) and os.path.isfile(myfile):
+            doc = minidom.parse(myfile)
+            longdescs = doc.getElementsByTagName("longdescription")
+            for longdesc in longdescs:
+                data[longdesc.getAttribute("lang").strip()] = ' '.join([x.strip() for x in longdesc.firstChild.data.strip().split("\n")])
+        return data
+
     def get_config_protect_and_mask(self):
         config_protect = self.portage.settings['CONFIG_PROTECT']
         config_protect = config_protect.split()
@@ -9409,6 +9540,18 @@ class PortageInterface:
         if rc:
             return rc
         return None
+
+    def search_keys(self, key):
+        key_split = key.split("/")
+        cat = key_split[0]
+        name = key_split[1]
+        cat_dir = os.path.join(self.get_vdb_path(),cat)
+        if not os.path.isdir(cat_dir):
+            return None
+        dir_content = [os.path.join(cat,x) for x in os.listdir(cat_dir) if x.startswith(name)]
+        if not dir_content:
+            return None
+        return dir_content
 
     # create a .tbz2 file in the specified path
     def quickpkg(self, atom, dirpath):
@@ -9927,26 +10070,26 @@ class PortageInterface:
             appDbDir = self.get_vdb_path()
         else:
             appDbDir = dbdir
-        dbDirs = os.listdir(appDbDir)
         installedAtoms = set()
-        for pkgsdir in dbDirs:
-            if not os.path.isdir(appDbDir+pkgsdir):
-                continue
-            pkgdir = os.listdir(appDbDir+pkgsdir)
-            for pdir in pkgdir:
-                pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
-                pkgatom = pkgcat+"/"+pdir
-                if pkgatom.find("-MERGING-") == -1:
-                    # get counter
-                    try:
-                        f = open(appDbDir+pkgsdir+"/"+pdir+"/"+etpConst['spm']['xpak_entries']['counter'],"r")
-                        counter = int(f.readline().strip())
-                        f.close()
-                    except IOError:
-                        continue
-                    except ValueError:
-                        continue
-                    installedAtoms.add((pkgatom,counter))
+
+        for current_dirpath, subdirs, files in os.walk(appDbDir):
+            pvs = os.listdir(current_dirpath)
+            for mypv in pvs:
+                if mypv.startswith("-MERGING-"):
+                    continue
+                mypvpath = current_dirpath+"/"+mypv
+                if not os.path.isdir(mypvpath):
+                    continue
+                mycounter_file = mypvpath+"/"+etpConst['spm']['xpak_entries']['counter']
+                if not os.access(mycounter_file,os.R_OK):
+                    continue
+                f = open(mycounter_file)
+                try:
+                    counter = int(f.readline().strip())
+                except (IOError, ValueError):
+                    f.close()
+                    continue
+                installedAtoms.add((os.path.basename(current_dirpath)+"/"+mypv,counter))
         return installedAtoms
 
     def refill_counter(self, dbdir = None):
@@ -12099,8 +12242,7 @@ class ServerInterface(TextInterface):
     def get_local_database_file(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        path = os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
-        return path
+        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
 
     def get_local_store_directory(self, repo = None):
         if repo == None:

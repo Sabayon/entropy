@@ -22,9 +22,10 @@ Author: Vladimir Bormotov <bor@vb.dn.ua>
 # This file is a copy of the yum i18n.py file, modified to use
 # yumex as translation domain.
 
+_LOCALE = None
 try:
     import gettext
-    import sys
+    import sys, os
     if sys.version_info[0] == 2:
         t = gettext.translation('spritz')
         _ = t.gettext
@@ -33,10 +34,18 @@ try:
         gettext.textdomain('spritz')
         _ = gettext.gettext
 
-except:
-    def _(str):
-        """pass given string as-is"""
-        return str
+    _LOCALE_FULL = os.getenv('LC_ALL')
+    if _LOCALE_FULL == None:
+        _LOCALE_FULL = os.getenv('LANG')
+    if _LOCALE_FULL == None:
+        _LOCALE_FULL = os.getenv('LANGUANGE')
 
-if __name__ == '__main__':
-    pass
+    if _LOCALE_FULL:
+        _LOCALE = _LOCALE_FULL.split('.')[0]
+        _LOCALE = _LOCALE.split('_')[0]
+        _LOCALE = _LOCALE.lower()
+
+except:
+    def _(mystr):
+        """pass given string as-is"""
+        return mystr

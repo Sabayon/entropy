@@ -19,10 +19,31 @@
 
 from entropyConstants import *
 from entropyapi import EquoConnection
-import types
+from spritz_setup import cleanMarkupSting, SpritzConf
 
-class PackageWrapper:
+class DummyEntropyPackage:
+
+    def __init__(self, namedesc = None, dummy_type = -1, onlyname = ''):
+        self.matched_atom = (0,0)
+        self.namedesc = namedesc
+        self.queued = None
+        self.repoid = ''
+        self.color = None
+        self.action = None
+        self.dbconn = None
+        self.dummy_type = dummy_type
+        self.onlyname = onlyname
+
+class EntropyPackage:
+
     def __init__(self, matched_atom, avail):
+
+        self.queued = None
+        self.action = None
+        self.dummy_type = None
+        self.available = avail
+        self.do_purge = False
+        self.color = SpritzConf.color_normal
 
         if matched_atom[1] == 0:
             self.dbconn = EquoConnection.clientDbconn
@@ -30,23 +51,17 @@ class PackageWrapper:
         else:
             self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
             self.from_installed = False
+
         self.matched_atom = matched_atom
         self.installed_match = None
-        self.available = avail
-        self.do_purge = False
 
     def __str__(self):
         return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
 
     def __cmp__(self, pkg):
-        n1 = str(self)
-        n2 = str(pkg)
-        if n1 > n2:
-            return 1
-        elif n1 == n2:
+        if pkg.matched_atom == self.matched_atom:
             return 0
-        else:
-            return -1
+        return 1
 
     def getPkg(self):
         return self.matched_atom
@@ -58,11 +73,11 @@ class PackageWrapper:
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     def getNameDesc(self):
-        t = self.getName()
-        desc = self.getDescription()
-        if len(desc) > 43:
-            desc = desc[:43]+"..."
-        t += "\n<small>%s</small>" % (desc,)
+        t = cleanMarkupSting('/'.join(self.getName().split("/")[1:]))
+        desc = cleanMarkupSting(self.getDescription())
+        if len(desc) > 56:
+            desc = desc[:56].rstrip()+"..."
+        t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
         return t
 
     def getOnlyName(self):
@@ -168,7 +183,8 @@ class PackageWrapper:
         return self.dbconn.retrieveNeeded(self.matched_atom[0])
 
     def getCompileFlags(self):
-        return self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+        flags = self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+        return flags
 
     def getSources(self):
         return self.dbconn.retrieveSources(self.matched_atom[0])
@@ -221,7 +237,7 @@ class PackageWrapper:
     def getAttr(self,attr):
         x = None
         if attr == "description":
-            x = self.dbconn.retrieveDescription(self.matched_atom[0])
+            x = cleanMarkupSting(self.dbconn.retrieveDescription(self.matched_atom[0]))
         elif attr == "category":
             x = self.dbconn.retrieveCategory(self.matched_atom[0])
         elif attr == "license":

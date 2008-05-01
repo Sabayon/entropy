@@ -206,7 +206,7 @@ def update(options):
             if rc == "Yes":
                 for idpackage,repoid in toBeInjected:
                     dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
-                    atom = mydbconn.retrieveAtom(idpackage)
+                    atom = dbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("Transforming from database: ")+red(atom))
                     Entropy.transform_package_into_injected(idpackage, repo = repoid)
                 print_info(brown(" @@ ")+blue("Database transform complete."))

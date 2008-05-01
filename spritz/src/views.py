@@ -19,12 +19,15 @@
 
 import gtk
 import gobject
-from spritz_setup import const,cleanMarkupSting
+from spritz_setup import const, cleanMarkupSting, SpritzConf
 from etpgui.widgets import UI
+from packages import DummyEntropyPackage
+from entropyapi import EquoConnection
 from etpgui import *
 from entropyConstants import *
 
-from i18n import _
+
+from i18n import _,_LOCALE
 
 TOGGLE_WIDTH = 12
 
@@ -56,12 +59,17 @@ class SpritzCategoryView:
                 self.model.append(None,[el,el])
 
 class EntropyPackageView:
-    def __init__( self, treeview, qview, ui, etpbase ):
+    def __init__( self, treeview, qview, ui, etpbase, main_window ):
 
-        self.selection_width = 20
+        self.Equo = EquoConnection
+        self.pkgcolumn_text = _("Selection")
+        self.selection_width = 34
+        self.show_reinstall = True
+        self.show_purge = True
         self.loaded_widget = None
         self.loaded_reinstallable = None
         self.loaded_event = None
+        self.main_window = main_window
         self.event_click_pos = 0,0
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
@@ -173,8 +181,12 @@ class EntropyPackageView:
         self.installed_undoreinstall.hide()
         self.installed_undopurge.hide()
         self.installed_remove.show()
-        self.installed_reinstall.show()
-        self.installed_purge.show()
+        self.installed_reinstall.hide()
+        if self.show_reinstall:
+            self.installed_reinstall.show()
+        self.installed_purge.hide()
+        if self.show_purge:
+            self.installed_purge.show()
 
     def hide_installed_packages_menu(self):
         self.installed_undoremove.hide()
@@ -190,7 +202,10 @@ class EntropyPackageView:
         if pkg:
             do = True
             self.etpbase.selected_treeview_item = pkg
-        self.ui.pkgInfoButton.set_sensitive(do)
+        try:
+            self.ui.pkgInfoButton.set_sensitive(do)
+        except AttributeError:
+            pass
 
     def load_menu(self, widget, event):
         self.loaded_widget = widget
@@ -215,7 +230,7 @@ class EntropyPackageView:
             return
 
         self.event_click_pos = x,y
-        if column.get_title() != "   S":
+        if column.get_title() != self.pkgcolumn_text:
             return
 
         if obj:
@@ -233,7 +248,7 @@ class EntropyPackageView:
         event_y = self.loaded_event.y
         # FIXME: find a better way to properly position menu
         while event_y > self.selection_width+5:
-            event_y -= self.selection_width+4
+            event_y -= self.selection_width+5
         abs_y += (self.selection_width-event_y)
         return int(abs_x),int(abs_y),True
 
@@ -242,7 +257,8 @@ class EntropyPackageView:
         if obj.queued:
             self.hide_install_menu()
             self.install_undoinstall.show()
-        self.install_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+        #self.install_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+        self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def run_updates_menu_stuff(self, obj):
         do_show = True
@@ -250,7 +266,8 @@ class EntropyPackageView:
         if obj.queued:
             self.hide_updates_menu()
             self.updates_undoupdate.show()
-        self.updates_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time)
+        #self.updates_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time)
+        self.updates_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
 
     def run_installed_menu_stuff(self, obj):
         do_show = True
@@ -271,8 +288,8 @@ class EntropyPackageView:
                 self.installed_remove.hide()
                 self.installed_purge.hide()
 
-            reinstallable_list = self.etpbase.getPackages("reinstallable")
-            if str(obj) not in reinstallable_list:
+            reinstallable = self.etpbase.isReinstallable(obj.matched_atom[0])
+            if not reinstallable:
                 if obj.syspkg:
                     do_show = False
                 self.installed_reinstall.hide()
@@ -280,7 +297,9 @@ class EntropyPackageView:
                 self.set_loaded_reinstallable(obj)
                 if not self.loaded_reinstallable:
                     self.installed_reinstall.hide()
-        if do_show: self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+        if do_show:
+            #self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
+            self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def set_loaded_reinstallable(self, obj):
         reinstallables = self.etpbase.getPackages("reinstallable")
@@ -291,7 +310,7 @@ class EntropyPackageView:
                 break
 
     def on_remove_activate(self, widget, do_purge = False):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         oldqueued = obj.queued
@@ -304,10 +323,10 @@ class EntropyPackageView:
             obj.queued = oldqueued
             obj.do_purge = oldpurge
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def on_reinstall_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         oldqueued = obj.queued
@@ -319,25 +338,25 @@ class EntropyPackageView:
             obj.queued = oldqueued
             self.loaded_reinstallable.queued = oldqueued_reinstallable
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def on_undoreinstall_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         obj.queued = None
         self.remove_queued(self.loaded_reinstallable)
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def on_undoremove_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         self.remove_queued(obj)
         obj.do_purge = False
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
 
     def remove_queued(self, obj):
         oldqueued = obj.queued
@@ -373,7 +392,7 @@ class EntropyPackageView:
         self.view.queue_draw()
 
     def on_install_update_activate(self, widget, action):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         oldqueued = obj.queued
@@ -382,76 +401,132 @@ class EntropyPackageView:
         if status != 0:
             obj.queued = oldqueued
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
         self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
-        busyCursor(self.ui.main)
+        busyCursor(self.main_window)
         model, iter = self.loaded_widget.get_selection().get_selected()
         obj = self.store.get_value( iter, 0 )
         self.remove_queued(obj)
         self.queueView.refresh()
-        normalCursor(self.ui.main)
+        normalCursor(self.main_window)
         self.view.queue_draw()
 
     def setupView( self ):
-        store = gtk.TreeStore( gobject.TYPE_PYOBJECT )#, gobject.TYPE_STRING )
+
+        store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.set_model( store )
 
+        myheight = 35
         # Setup resent column
         cell1 = gtk.CellRendererPixbuf()
+        cell1.set_property('height', myheight)
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
-        column1 = gtk.TreeViewColumn( "   S", cell1 )
+        column1 = gtk.TreeViewColumn( self.pkgcolumn_text, cell1 )
         column1.set_cell_data_func( cell1, self.new_pixbuf )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( self.selection_width+20 )
+        column1.set_fixed_width( self.selection_width+40 )
         column1.set_sort_column_id( -1 )
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        #self.create_text_column( _( "Package" ), 'name' , size=300)
-        self.create_text_column( _( "Package" ), 'namedesc' , size=300)
-        self.create_text_column( _( "Rev." ), 'revision' , size=40 )
-        self.create_text_column( _( "Slot" ), 'slot' , size = 40 )
-        self.create_text_column( _( "Repository" ), 'repoid', size = 100 )
-        self.view.set_search_column( 1 )
-        self.view.set_enable_search(False)
+        self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True, set_height = myheight)
+        self.create_text_column( _( "Repository" ), 'repoid', size = 130, set_height = myheight)
+
         return store
 
     def clear(self):
         self.store.clear()
 
-    def populate(self, pkgs, widget = None):
+    def populate(self, pkgs, widget = None, empty = False):
         self.clear()
+        search_col = 0
         if widget == None:
-            self.ui.viewPkg.set_model(None)
+            widget = self.ui.viewPkg
+
+        widget.set_model(None)
+        widget.set_model(self.store)
+
+        if empty:
+
+            for po in pkgs:
+                self.store.append( None, (po,) )
+            widget.set_property('headers-visible',False)
+            widget.set_property('enable-search',False)
+
         else:
-            widget.set_model(None)
-        for po in pkgs:
-            self.store.append( None, (po,) ) # str(po)) )
-        if widget == None:
-            self.ui.viewPkg.set_model(self.store)
-        else:
-            widget.set_model(self.store)
+
+            categories = {}
+            for po in pkgs:
+                mycat = po.cat
+                if not categories.has_key(mycat):
+                    categories[mycat] = []
+                categories[mycat].append(po)
+
+            cats = categories.keys()
+            cats.sort()
+            for category in cats:
+                cat_desc = _("No description")
+                cat_desc_data = self.Equo.get_category_description_data(category)
+                if cat_desc_data.has_key(_LOCALE):
+                    cat_desc = cat_desc_data[_LOCALE]
+                elif cat_desc_data.has_key('en'):
+                    cat_desc = cat_desc_data['en']
+                cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupSting(cat_desc),)
+                mydummy = DummyEntropyPackage(
+                        namedesc = cat_text,
+                        dummy_type = SpritzConf.dummy_category,
+                        onlyname = category
+                )
+                mydummy.color = '#9C7234'
+                parent = self.store.append( None, (mydummy,) )
+                for po in categories[category]:
+                    self.store.append( parent, (po,) )
+
+            widget.set_search_column( search_col )
+            widget.set_search_equal_func(self.atom_search)
+            widget.set_property('headers-visible',True)
+            widget.set_property('enable-search',True)
+
+        self.view.expand_all()
+
+
+
+
+    def atom_search(self, model, column, key, iterator):
+        obj = model.get_value( iterator, 0 )
+        if obj:
+            return not obj.onlyname.startswith(key)
+        return True
 
     def set_pixbuf_to_cell(self, cell, filename):
-        pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
-        cell.set_property( 'pixbuf', pixbuf )
+        try:
+            pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+            cell.set_property( 'pixbuf', pixbuf )
+        except gobject.GError:
+            pass
 
     def set_pixbuf_to_image(self, img, filename):
-        img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+        try:
+            img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+        except gobject.GError:
+            pass
 
-    def create_text_column( self, hdr, property, size, sortcol = None):
+    def create_text_column( self, hdr, property, size, sortcol = None, expand = False, set_height = 0):
         """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
         """
         cell = gtk.CellRendererText()    # Size Column
+        if set_height:
+            cell.set_property('height', set_height)
         column = gtk.TreeViewColumn( hdr, cell )
         column.set_resizable( True )
         column.set_cell_data_func( cell, self.get_data_text, property )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( size )
+        column.set_expand(expand)
         column.set_sort_column_id( -1 )
         self.view.append_column( column )
         return column
@@ -460,7 +535,61 @@ class EntropyPackageView:
         obj = model.get_value( iter, 0 )
         if obj:
             cell.set_property('markup',getattr( obj, property ))
-            cell.set_property('foreground',obj.color)
+            if obj.color:
+                self.set_line_status(obj, cell)
+                cell.set_property('foreground',obj.color)
+
+    def new_pixbuf( self, column, cell, model, iter ):
+        """ 
+        Cell Data function for recent Column, shows pixmap
+        if recent Value is True.
+        """
+        pkg = model.get_value( iter, 0 )
+        if pkg:
+
+            self.set_line_status(pkg, cell)
+
+            if pkg.dummy_type == SpritzConf.dummy_empty:
+                cell.set_property( 'stock-id', 'gtk-apply' )
+                return
+
+            if pkg.dummy_type == SpritzConf.dummy_category:
+                cell.set_property( 'icon-name', 'package-x-generic' )
+                return
+
+            if not pkg.queued:
+                if pkg.action in ["r","rr"]:
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
+                elif pkg.action == "i":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_new)
+                else:
+                    self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
+            else:
+                if pkg.queued == "r" and not pkg.do_purge:
+                    self.set_pixbuf_to_cell(cell, self.pkg_remove)
+                if pkg.queued == "r" and pkg.do_purge:
+                    self.set_pixbuf_to_cell(cell, self.pkg_purge)
+                elif pkg.queued == "rr":
+                    self.set_pixbuf_to_cell(cell, self.pkg_reinstall)
+                elif pkg.queued == "i":
+                    self.set_pixbuf_to_cell(cell, self.pkg_install)
+                elif pkg.queued == "u":
+                    self.set_pixbuf_to_cell(cell, self.pkg_update)
+
+        else:
+            cell.set_property( 'visible', False )
+
+    def set_line_status(self, obj, cell, stype = "cell-background"):
+        if obj.queued == "r":
+            cell.set_property(stype,'#FFE2A3')
+        elif obj.queued == "u":
+            cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "i":
+            cell.set_property(stype,'#D895FF')
+        elif obj.queued == "rr":
+            cell.set_property(stype,'#B7BEFF')
+        elif not obj.queued:
+            cell.set_property(stype,None)
 
     def selectAll(self):
         list = [x[0] for x in self.store if not x[0].queued == x[0].action]
@@ -500,35 +629,6 @@ class EntropyPackageView:
         self.clearUpdates()
         self.queueView.refresh()
         self.view.queue_draw()
-
-    def new_pixbuf( self, column, cell, model, iter ):
-        """ 
-        Cell Data function for recent Column, shows pixmap
-        if recent Value is True.
-        """
-        pkg = model.get_value( iter, 0 )
-        if pkg:
-            if not pkg.queued:
-                if pkg.action in ["r","rr"]:
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
-                elif pkg.action == "i":
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_new)
-                else:
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
-            else:
-                if pkg.queued == "r" and not pkg.do_purge:
-                    self.set_pixbuf_to_cell(cell, self.pkg_remove)
-                if pkg.queued == "r" and pkg.do_purge:
-                    self.set_pixbuf_to_cell(cell, self.pkg_purge)
-                elif pkg.queued == "rr":
-                    self.set_pixbuf_to_cell(cell, self.pkg_reinstall)
-                elif pkg.queued == "i":
-                    self.set_pixbuf_to_cell(cell, self.pkg_install)
-                elif pkg.queued == "u":
-                    self.set_pixbuf_to_cell(cell, self.pkg_update)
-
-        else:
-            cell.set_property( 'visible', False )
 
 class EntropyQueueView:
     """ Queue View Class"""
@@ -812,7 +912,9 @@ class EntropyAdvisoriesView:
 
 
 class CategoriesView:
+
     def __init__( self, treeview,qview):
+
         self.view = treeview
         self.model = self.setup_view()
         self.queue = qview.queue
@@ -824,151 +926,28 @@ class CategoriesView:
 
     def setup_view( self ):
         """ Setup Group View  """
-        model = gtk.TreeStore(gobject.TYPE_BOOLEAN, # Installed
-                              gobject.TYPE_STRING,  # Group Name
-                              gobject.TYPE_STRING,  # Group Id
-                              gobject.TYPE_BOOLEAN, # In queue
-                              gobject.TYPE_BOOLEAN) # isCategory
-
-
+        model = gtk.ListStore(gobject.TYPE_STRING)
         self.view.set_model( model )
-        column = gtk.TreeViewColumn(None, None)
-        # Selection checkbox
-        selection = gtk.CellRendererToggle()    # Selection
-        selection.set_property( 'activatable', True )
-        column.pack_start(selection, False)
-        column.set_cell_data_func( selection, self.setCheckbox )
-        selection.connect( "toggled", self.on_toggled )
-        self.view.append_column( column )
 
         column = gtk.TreeViewColumn(None, None)
-        # Queue Status (install/remove group)
-        state = gtk.CellRendererPixbuf()    # Queue Status
-        state.set_property('stock-size', 1)
-        column.pack_start(state, False)
-        column.set_cell_data_func( state, self.queue_pixbuf )
-
-        # category/group icons 
-        icon = gtk.CellRendererPixbuf()
-        icon.set_property('stock-size', 1)
-        column.pack_start(icon, False)
-        column.set_cell_data_func( icon, self.grp_pixbuf )
-
         category = gtk.CellRendererText()
         column.pack_start(category, False)
-        column.add_attribute(category, 'markup', 1)
-
+        column.add_attribute(category, 'markup', 0)
         self.view.append_column( column )
         self.view.set_headers_visible(False)
+
         return model
-
-    def setCheckbox( self, column, cell, model, iter ):
-        isCategory = model.get_value( iter, 4 )
-        state = model.get_value( iter, 0 )
-        if isCategory:
-            cell.set_property( 'visible', False)
-        else:
-            cell.set_property( 'visible', True)
-            cell.set_property('active',state)
-
-    def on_toggled( self, widget, path ):
-        """ Group selection handler """
-        iter = self.model.get_iter( path )
-        grpid = self.model.get_value( iter, 2 )
-        inst = self.model.get_value( iter, 0 )
-        action = self.queue.hasGroup(grpid)
-        if action:
-            self.queue.removeGroup(grpid,action)
-            self._updatePackages(grpid,False,None)
-            self.model.set_value( iter, 3,False )
-        else:
-            if inst:
-                self.queue.addGroup(grpid,'r') # Add for remove
-                self._updatePackages(grpid,True,'r')
-            else:
-                self.queue.addGroup(grpid,'i') # Add for install
-                self._updatePackages(grpid,True,'i')
-            self.model.set_value( iter, 3,True )
-        self.model.set_value( iter, 0, not inst )
-
-
-    def _updatePackages(self,id,add,action):
-        grp = self.etpbase.comps.return_group(id)
-        pkgs = self.etpbase._getByGroup(grp,['m','d'])
-        # Add group packages to queue
-        if add: 
-            for po in pkgs:
-                if not po.queued: 
-                    if action == 'i' and po.available : # Install
-                            po.queued = po.action
-                            self.queue.add(po)
-                            po.set_select( True )
-                    elif action == 'r' and not po.available: # Remove
-                            po.queued = po.action 
-                            self.queue.add(po)
-                            po.set_select( False )
-        # Remove group packages from queue
-        else:
-            for po in pkgs:
-                if po.queued:
-                    po.queued = None
-                    self.queue.remove(po)
-                    po.set_select( not po.selected )
-        self.queueView.refresh()
 
     def populate(self,data):
         self.model.clear()
         for cat in data:
-            self.model.append(None,[None,cat,cat,False,True])
-
-    def queue_pixbuf( self, column, cell, model, iter ):
-        """ 
-        Cell Data function for recent Column, shows pixmap
-        if recent Value is True.
-        """
-        grpid = model.get_value( iter, 2 )
-        queued = model.get_value( iter, 3 )
-        action = self.queue.hasGroup(grpid)
-        if action:
-            if action ==  'i':
-                icon = 'network-server'
-            else:
-                icon = 'edit-delete'
-            cell.set_property( 'visible', True )
-            cell.set_property( 'icon-name', icon )
-        cell.set_property( 'visible', queued )
-
-    def grp_pixbuf( self, column, cell, model, iter ):
-        """ 
-        Cell Data function for recent Column, shows pixmap
-        if recent Value is True.
-        """
-        grpid = model.get_value( iter, 2 )
-        pix = None
-        fn = "/usr/share/pixmaps/comps/%s.png" % grpid
-        if os.access(fn, os.R_OK):
-            pix = self._get_pix(fn)
-        if pix:
-            cell.set_property( 'visible', True )
-            cell.set_property( 'pixbuf', pix )
-        else:
-            cell.set_property( 'visible', False )
-
-
-    def _get_pix(self, fn):
-        imgsize = 24
-        pix = gtk.gdk.pixbuf_new_from_file(fn)
-        if pix.get_height() != imgsize or pix.get_width() != imgsize:
-            pix = pix.scale_simple(imgsize, imgsize,
-                                   gtk.gdk.INTERP_BILINEAR)
-        return pix
-
+            self.model.append([cat])
 
 class EntropyRepoView:
     """ 
     This class controls the repo TreeView
     """
-    def __init__( self, widget, EquoConnection, ui):
+    def __init__( self, widget, ui):
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
         self.store = self.setup_view()

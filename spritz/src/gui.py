@@ -198,14 +198,14 @@ class SpritzGUI:
         self.etpbase = etpbase
         self.queue = SpritzQueue()
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg,self.queueView, self.ui, self.etpbase)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main)
         self.filesView = EntropyFilesView(self.ui.filesView)
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView, self.ui, self.etpbase)
         self.queue.connect_objects(self.Entropy, self.etpbase, self.pkgView, self.ui)
         #self.catView = SpritzCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
-        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase)
-        self.repoView = EntropyRepoView(self.ui.viewRepo, self.Entropy, self.ui)
+        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase, self.ui.main)
+        self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
@@ -300,30 +300,36 @@ class SpritzGUI:
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
         self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
-        style = self.ui.leftEvent.get_style()
 
     def createButton( self, text, icon, page,first = None ):
-          if first:
-              button = gtk.RadioButton( None )
-              self.firstButton = button
-          else:
-              button = gtk.RadioButton( self.firstButton )
-          button.connect( "clicked", self.on_PageButton_changed, page )
-          button.connect( "pressed", self.on_PageButton_pressed, page )
+        if first:
+            button = gtk.RadioButton( None )
+            self.firstButton = button
+        else:
+            button = gtk.RadioButton( self.firstButton )
+        button.connect( "clicked", self.on_PageButton_changed, page )
+        button.connect( "pressed", self.on_PageButton_pressed, page )
 
-          button.set_relief( gtk.RELIEF_NONE )
-          button.set_mode( False )
+        button.set_relief( gtk.RELIEF_NONE )
+        button.set_mode( False )
 
-          p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+icon )
-          pix = gtk.Image()
-          pix.set_from_pixbuf( p )
-          pix.show()
+        iconpath = os.path.join(const.PIXMAPS_PATH,icon)
+        pix = None
+        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                pix = gtk.Image()
+                pix.set_from_pixbuf( p )
+                pix.show()
+            except gobject.GError:
+                pass
 
-          self.tooltip.set_tip(button,text)
-          button.add(pix)
-          button.show()
-          self.ui.content.pack_start( button, False )
-          self.pageButtons[page] = button
+        self.tooltip.set_tip(button,text)
+        if pix != None:
+            button.add(pix)
+        button.show()
+        self.ui.content.pack_start( button, False )
+        self.pageButtons[page] = button
 
     def setPage( self, page ):
         self.activePage = page

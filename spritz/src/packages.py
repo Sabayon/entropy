@@ -17,8 +17,9 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-from etpgui.packages import PackageWrapper
+from etpgui.packages import EntropyPackage, DummyEntropyPackage
 import logging
+from spritz_setup import SpritzConf
 
 #import yum.misc as misc
 #import yum.Errors as Errors
@@ -26,25 +27,8 @@ import logging
 
 from i18n import _
 
-color_normal = 'black'
-color_install = 'darkgreen'
-color_update = 'blue'
-color_obsolete = 'red'
-
-class EntropyPackage( PackageWrapper ):
-    """ This class contains a yumPackage and some extra features used by
-    yumex """
-
-    def __init__( self, matched_atom, avail=True ):
-        global color_normal
-        PackageWrapper.__init__( self, matched_atom, avail )
-        self.visible = True
-        self.queued = None
-        self.action = None
-        self.obsolete = False
-        self.color = color_normal
-
 class EntropyPackages:
+
     def __init__(self, EquoInstance):
         self.Entropy = EquoInstance
         self.logger = logging.getLogger('yumex.Packages')
@@ -86,7 +70,7 @@ class EntropyPackages:
         return self._categoryPackages[cat]
 
     def populateCategory(self, category):
-        global color_install,color_update,color_obsolete
+
         catsdata = self.Entropy.list_repo_packages_in_category(category)
         catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
         pkgsdata = []
@@ -99,11 +83,11 @@ class EntropyPackages:
                 ok = True
             elif install_status == 2:
                 yp.action = 'u'
-                yp.color = color_update
+                yp.color = SpritzConf.color_update
                 ok = True
             #elif install_status == 3:
             #    yp.action = 'r'
-            #    yp.color = color_install
+            #    yp.color = SpritzConf.color_install
             #    ok = True
             if ok: pkgsdata.append(yp)
         del catsdata
@@ -163,13 +147,12 @@ class EntropyPackages:
         return yp
 
     def _getPackages(self,mask):
-        global color_install,color_update,color_obsolete
         #print "mask:",mask
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
                 yp = self.getPackageItem((idpackage,0),True)
                 yp.action = 'r'
-                yp.color = color_install
+                yp.color = SpritzConf.color_install
                 yield yp
         elif mask == 'available':
             # Get the rest of the available packages.
@@ -184,19 +167,37 @@ class EntropyPackages:
             for pkgdata in updates:
                 yp = self.getPackageItem(pkgdata,True)
                 yp.action = 'u'
-                yp.color = color_update
+                yp.color = SpritzConf.color_update
                 yield yp
         elif mask == "reinstallable":
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
-                atom = self.Entropy.clientDbconn.retrieveAtom(idpackage)
-                upd, matched = self.Entropy.check_package_update(atom)
-                if (not upd) and matched:
-                    if matched[0] != -1:
-                        yp = self.getPackageItem(matched,True)
-                        yp.installed_match = (idpackage,0)
-                        yp.action = 'rr'
-                        yp.color = color_install
-                        yield yp
+                matched = self.isReinstallable(idpackage)
+                if not matched:
+                    continue
+                yp = self.getPackageItem(matched,True)
+                yp.installed_match = (idpackage,0)
+                yp.action = 'rr'
+                yp.color = SpritzConf.color_install
+                yield yp
+
+        elif mask == "fake_updates":
+            # load a pixmap inside the treeview
+            msg2 = _("Try clicking the %s button in the %s page") % ( _("Update Repositories"),_("Repository Selection"),)
+
+            msg = "<big><b><span foreground='#FF0000'>%s</span></b></big>\n<span foreground='darkblue'>%s.\n%s</span>" % (
+                    _('No updates available'),
+                    _("It seems that your system is already up-to-date. Good!"),
+                    msg2,
+                )
+            myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SpritzConf.dummy_empty)
+            yield myobj
+
+    def isReinstallable(self, client_idpackage):
+        atom = self.Entropy.clientDbconn.retrieveAtom(client_idpackage)
+        upd, matched = self.Entropy.check_package_update(atom)
+        if (not upd) and matched:
+            if matched[0] != -1:
+                return matched
 
     def getCategories(self):
         catlist = []
