@@ -3927,6 +3927,10 @@ class PackageInterface:
                 line = old.readline()
                 while line:
                     if line.find(key) != -1:
+                        line = old.readline()
+                        continue
+                    if line.find(key+":"+slot) != -1:
+                        line = old.readline()
                         continue
                     new.write(line)
                     line = old.readline()
