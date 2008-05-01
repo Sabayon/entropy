@@ -383,7 +383,6 @@ ETP_LOGPRI_ERROR = "[ ERROR ]"
 etpCache = {
     'configfiles': 'conf/scanfs', # used to store information about files that should be merged using "equo conf merge"
     'dbMatch': 'match/db', # db atom match cache
-    'dbInfo': 'info/db', # db data retrieval cache
     'dbSearch': 'search/db', # db search cache
     'atomMatch': 'atom_match/atom_match_', # used to store info about repository dependencies solving
     'install': 'resume/resume_install', # resume cache (install)

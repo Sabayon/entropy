@@ -188,7 +188,8 @@ class EntropyPackage:
         return self.dbconn.retrieveNeeded(self.matched_atom[0])
 
     def getCompileFlags(self):
-        return self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+        flags = self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+        return flags
 
     def getSources(self):
         return self.dbconn.retrieveSources(self.matched_atom[0])

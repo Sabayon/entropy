@@ -413,7 +413,7 @@ class etpDatabase:
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
 
             # clear client cache
-            clientDbconn.clearCache(all = True)
+            clientDbconn.clearCache()
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
@@ -493,7 +493,7 @@ class etpDatabase:
             self.commitChanges()
 
         # discard cache
-        self.clearCache(all = True)
+        self.clearCache()
 
 
     # -- move action:
@@ -1624,11 +1624,16 @@ class etpDatabase:
 
     def getApi(self):
         self.cursor.execute('SELECT max(etpapi) FROM baseinfo')
-        return self.cursor.fetchone()[0]
+        api = self.cursor.fetchone()
+        if api: api = api[0]
+        else: api = -1
+        return api
 
     def getCategory(self, idcategory):
         self.cursor.execute('SELECT category from categories WHERE idcategory = (?)', (idcategory,))
-        return self.cursor.fetchone()[0]
+        cat = self.cursor.fetchone()
+        if cat: cat = cat[0]
+        return cat
 
     def get_category_description_from_disk(self, category):
         if not self.ServiceInterface:
@@ -1847,7 +1852,7 @@ class etpDatabase:
     def fetchone2set(self, item):
         return set(item)
 
-    def clearCache(self, all = False, depends = False):
+    def clearCache(self, depends = False):
         self.live_cache.clear()
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
@@ -1857,41 +1862,12 @@ class etpDatabase:
                     item = os.path.join(dump_dir,item)
                     if os.path.isfile(item):
                         os.remove(item)
-        if all:
-            do_clear(etpCache['dbInfo']+"/"+self.dbname+"/")
         do_clear(etpCache['dbMatch']+"/"+self.dbname+"/")
         do_clear(etpCache['dbSearch']+"/"+self.dbname+"/")
         if depends:
             do_clear(etpCache['depends_tree'])
             do_clear(etpCache['dep_tree'])
             do_clear(etpCache['filter_satisfied_deps'])
-
-    def fetchInfoCache(self, idpackage, function, extra_hash = 0):
-        if self.xcache:
-
-            c_hash = str(hash(function)) + str(extra_hash)
-            c_match = str(idpackage)
-            try:
-                cached = dumpTools.loadobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash)
-                if cached != None:
-                    return cached
-            except EOFError:
-                pass
-
-
-    def storeInfoCache(self, idpackage, function, info_cache_data, extra_hash = 0):
-        if self.xcache:
-            c_hash = str(hash(function)) + str(extra_hash)
-            c_match = str(idpackage)
-            try:
-                sperms = False
-                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbInfo']+"/"+self.dbname)):
-                    sperms = True
-                dumpTools.dumpobj(etpCache['dbInfo']+"/"+self.dbname+"/"+c_match+"/"+c_hash,info_cache_data)
-                if sperms:
-                    const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
-            except (IOError, OSError):
-                pass
 
     def fetchSearchCache(self, key, function, extra_hash = 0):
         if self.xcache:
@@ -1976,234 +1952,128 @@ class etpDatabase:
         self.commitChanges()
 
     def retrieveAtom(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveAtom')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        atom = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveAtom',atom)
-        return atom
+        atom = self.cursor.fetchone()
+        if atom:
+            return atom[0]
 
     def retrieveBranch(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveBranch')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        br = self.cursor.fetchone()[0]
-
-        self.storeInfoCache(idpackage,'retrieveBranch',br)
-        return br
+        br = self.cursor.fetchone()
+        if br:
+            return br[0]
 
     def retrieveTrigger(self, idpackage):
-
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
         if trigger:
             trigger = trigger[0]
         else:
             trigger = ''
-
         return trigger
 
     def retrieveDownloadURL(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveDownloadURL')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        download = self.cursor.fetchone()[0]
-
-        self.storeInfoCache(idpackage,'retrieveDownloadURL',download)
-        return download
+        download = self.cursor.fetchone()
+        if download:
+            return download[0]
 
     def retrieveDescription(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveDescription')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        description = self.cursor.fetchone()[0]
-
-        self.storeInfoCache(idpackage,'retrieveDescription',description)
-        return description
+        description = self.cursor.fetchone()
+        if description:
+            return description[0]
 
     def retrieveHomepage(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveHomepage')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        home = self.cursor.fetchone()[0]
-
-        self.storeInfoCache(idpackage,'retrieveHomepage',home)
-        return home
+        home = self.cursor.fetchone()
+        if home:
+            return home[0]
 
     def retrieveCounter(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveCounter')
-        #if cache != None: return cache
-
         counter = -1
         self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
         mycounter = self.cursor.fetchone()
         if mycounter:
-            counter = mycounter[0]
-
-        #self.storeInfoCache(idpackage,'retrieveCounter',int(counter))
-        return int(counter)
+            return mycounter[0]
+        return counter
 
     def retrieveMessages(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveMessages')
-        if cache != None: return cache
-
         messages = []
         try:
             self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
             messages = self.fetchall2list(self.cursor.fetchall())
         except:
             pass
-
-        self.storeInfoCache(idpackage,'retrieveMessages',messages)
         return messages
 
     # in bytes
     def retrieveSize(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveSize')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT size FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        size = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveSize',size)
-        return size
+        size = self.cursor.fetchone()
+        if size:
+            return size[0]
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveOnDiskSize')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone() # do not use [0]!
         if not size:
             size = 0
         else:
             size = size[0]
-
-        #self.storeInfoCache(idpackage,'retrieveOnDiskSize',size)
         return size
 
     def retrieveDigest(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveDigest')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT digest FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        digest = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveDigest',digest)
-        return digest
+        digest = self.cursor.fetchone()
+        if digest:
+            return digest[0]
 
     def retrieveName(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveName')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT name FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        name = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveName',name)
-        return name
+        name = self.cursor.fetchone()
+        if name:
+            return name[0]
 
     def retrieveKeySlot(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveKey')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         data = self.cursor.fetchone()
-
-        self.storeInfoCache(idpackage,'retrieveKey',data)
         return data
 
     def retrieveVersion(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveVersion')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT version FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        ver = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveVersion',ver)
-        return ver
+        ver = self.cursor.fetchone()
+        if ver:
+            return ver[0]
 
     def retrieveRevision(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveRevision')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        rev = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveRevision',rev)
-        return rev
+        rev = self.cursor.fetchone()
+        if rev:
+            return rev[0]
 
     def retrieveDateCreation(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveDateCreation')
-        #if cache != None: return cache
-
-        self.cursor.execute('SELECT "datecreation" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        date = self.cursor.fetchone()[0]
-        if not date:
-            date = "N/A" #FIXME: to be removed?
-
-        #self.storeInfoCache(idpackage,'retrieveDateCreation',date)
-        return date
+        self.cursor.execute('SELECT datecreation FROM extrainfo WHERE idpackage = (?)', (idpackage,))
+        date = self.cursor.fetchone()
+        if date:
+            return date[0]
 
     def retrieveApi(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveApi')
-        #if cache != None: return cache
-
-        self.cursor.execute('SELECT "etpapi" FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        api = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveApi',api)
-        return api
+        self.cursor.execute('SELECT etpapi FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        api = self.cursor.fetchone()
+        if api:
+            return api[0]
 
     def retrieveUseflags(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveUseflags')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT flagname FROM useflags,useflagsreference WHERE useflags.idpackage = (?) and useflags.idflag = useflagsreference.idflag', (idpackage,))
-        flags = self.fetchall2set(self.cursor.fetchall())
-
-        self.storeInfoCache(idpackage,'retrieveUseflags',flags)
-        return flags
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveEclasses(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveEclasses')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = (?) and eclasses.idclass = eclassesreference.idclass', (idpackage,))
-        classes = self.fetchall2set(self.cursor.fetchall())
-
-        self.storeInfoCache(idpackage,'retrieveEclasses',classes)
-        return classes
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeeded(self, idpackage, extended = False, format = False):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveNeeded')
-        #if cache != None: return cache
-
         if extended:
             self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
             needed = self.cursor.fetchall()
@@ -2217,55 +2087,26 @@ class etpDatabase:
                 data[lib] = elfclass
             needed = data
 
-        #self.storeInfoCache(idpackage,'retrieveNeeded',needed)
         return needed
 
     def retrieveConflicts(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveConflicts')
-        if cache != None: return cache
-
-        self.cursor.execute('SELECT "conflict" FROM conflicts WHERE idpackage = (?)', (idpackage,))
-        confl = self.fetchall2set(self.cursor.fetchall())
-
-        self.storeInfoCache(idpackage,'retrieveConflicts',confl)
-        return confl
+        self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveProvide(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveProvide')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT atom FROM provide WHERE idpackage = (?)', (idpackage,))
-        provide = self.fetchall2set(self.cursor.fetchall())
-
-        #self.storeInfoCache(idpackage,'retrieveProvide',provide)
-        return provide
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependenciesList(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveDependenciesList')
-        if cache != None: return cache
-
         deps = self.retrieveDependencies(idpackage)
         conflicts = self.retrieveConflicts(idpackage)
         for x in conflicts:
             if x[0] != "!":
                 x = "!"+x
             deps.add(x)
-        del conflicts
-
-        self.storeInfoCache(idpackage,'retrieveDependenciesList',deps)
         return deps
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None):
-
-        cache = self.fetchInfoCache(
-                        idpackage,
-                        'retrieveDependencies',
-                        extra_hash = hash(str(hash(extended))+str(hash(deptype)))
-        )
-        if cache != None: return cache
 
         searchdata = [idpackage]
 
@@ -2281,84 +2122,45 @@ class etpDatabase:
             self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency'+depstring, searchdata)
             deps = self.fetchall2set(self.cursor.fetchall())
 
-        self.storeInfoCache(idpackage,'retrieveDependencies',deps)
         return deps
 
     def retrieveIdDependencies(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveIdDependencies')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = (?)', (idpackage,))
-        iddeps = self.fetchall2set(self.cursor.fetchall())
-
-        self.storeInfoCache(idpackage,'retrieveIdDependencies',iddeps)
-        return iddeps
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependencyFromIddependency(self, iddependency):
         self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
-        return self.cursor.fetchone()[0]
+        dep = self.cursor.fetchone()
+        if dep: dep = dep[0]
+        return dep
 
     def retrieveKeywords(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveKeywords')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT keywordname FROM keywords,keywordsreference WHERE keywords.idpackage = (?) and keywords.idkeyword = keywordsreference.idkeyword', (idpackage,))
-        kw = self.fetchall2set(self.cursor.fetchall())
-
-        self.storeInfoCache(idpackage,'retrieveKeywords',kw)
-        return kw
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveProtect(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveProtect')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT protect FROM configprotect,configprotectreference WHERE configprotect.idpackage = (?) and configprotect.idprotect = configprotectreference.idprotect', (idpackage,))
         protect = self.cursor.fetchone()
         if not protect:
             protect = ''
         else:
             protect = protect[0]
-
-	self.storeInfoCache(idpackage,'retrieveProtect',protect)
-	return protect
+        return protect
 
     def retrieveProtectMask(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveProtectMask')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT protect FROM configprotectmask,configprotectreference WHERE idpackage = (?) and configprotectmask.idprotect= configprotectreference.idprotect', (idpackage,))
         protect = self.cursor.fetchone()
         if not protect:
             protect = ''
         else:
             protect = protect[0]
-
-        self.storeInfoCache(idpackage,'retrieveProtectMask',protect)
         return protect
 
     def retrieveSources(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveSources')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
-        sources = self.fetchall2set(self.cursor.fetchall())
-
-        self.storeInfoCache(idpackage,'retrieveSources',sources)
-        return sources
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveContent(self, idpackage, extended = False, contentType = None):
-
-        c_hash = -4
-        if extended:
-            c_hash += 2
-        c_hash += hash(contentType)
-        cache = self.fetchInfoCache(idpackage,'retrieveContent', extra_hash = c_hash)
-        if cache != None: return cache
 
         # like portage does
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -2380,30 +2182,19 @@ class etpDatabase:
         else:
             fl = self.fetchall2set(self.cursor.fetchall())
 
-        self.storeInfoCache(idpackage,'retrieveContent',fl, extra_hash = c_hash)
         return fl
 
     def retrieveSlot(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveSlot')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT slot FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        ver = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveSlot',ver)
-        return ver
+        slot = self.cursor.fetchone()
+        if slot:
+            return slot[0]
 
     def retrieveVersionTag(self, idpackage):
-
-        #cache = self.fetchInfoCache(idpackage,'retrieveVersionTag')
-        #if cache != None: return cache
-
         self.cursor.execute('SELECT versiontag FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        vtag = self.cursor.fetchone()[0]
-
-        #self.storeInfoCache(idpackage,'retrieveVersionTag',ver)
-        return vtag
+        vtag = self.cursor.fetchone()
+        if vtag:
+            return vtag[0]
 
     def retrieveMirrorInfo(self, mirrorname):
         self.cursor.execute('SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
@@ -2411,15 +2202,10 @@ class etpDatabase:
         return mirrorlist
 
     def retrieveCategory(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveCategory')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
-        cat = self.cursor.fetchone()[0]
-
-        self.storeInfoCache(idpackage,'retrieveCategory',cat)
-        return cat
+        cat = self.cursor.fetchone()
+        if cat:
+            return cat[0]
 
     def retrieveCategoryDescription(self, category):
         data = {}
@@ -2433,9 +2219,6 @@ class etpDatabase:
         return data
 
     def retrieveLicensedata(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveLicensedata')
-        if cache != None: return cache
 
         # insert license information
         if not self.doesTableExist("licensedata"):
@@ -2453,16 +2236,11 @@ class etpDatabase:
             self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
             lictext = self.cursor.fetchone()
             if lictext != None:
-                #licdata[licname] = unicode(lictext[0],'raw_unicode_escape','replace')
                 licdata[licname] = str(lictext[0])
 
-        self.storeInfoCache(idpackage,'retrieveLicensedata',licdata)
         return licdata
 
     def retrieveLicensedataKeys(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveLicensedataKeys')
-        if cache != None: return cache
 
         if not self.doesTableExist("licensedata"):
             return set()
@@ -2478,10 +2256,10 @@ class etpDatabase:
             if licidentifier:
                 licdata.add(licidentifier[0])
 
-        self.storeInfoCache(idpackage,'retrieveLicensedataKeys',licdata)
         return licdata
 
     def retrieveLicenseText(self, license_name):
+
         if not self.doesTableExist("licensedata"):
             return None
 
@@ -2491,34 +2269,19 @@ class etpDatabase:
         text = self.cursor.fetchone()
         if not text:
             return None
-	#return unicode(text[0],'raw_unicode_escape','replace')
-	return str(text[0])
+        return str(text[0])
 
     def retrieveLicense(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveLicense')
-        if cache != None: return cache
-
         self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = (?) and baseinfo.idlicense = licenses.idlicense', (idpackage,))
-        licname = self.cursor.fetchone()[0]
-
-        self.storeInfoCache(idpackage,'retrieveLicense',licname)
-        return licname
+        licname = self.cursor.fetchone()
+        if licname:
+            return licname[0]
 
     def retrieveCompileFlags(self, idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'retrieveCompileFlags')
-        if cache != None: return cache
-
-        self.cursor.execute('SELECT "idflags" FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        idflag = self.cursor.fetchone()[0]
-        # now get the flags
-        self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags WHERE idflags = (?)', (idflag,))
+        self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags,extrainfo WHERE extrainfo.idpackage = (?) and extrainfo.idflags = flags.idflags', (idpackage,))
         flags = self.cursor.fetchone()
         if not flags:
             flags = ("N/A","N/A","N/A")
-
-        self.storeInfoCache(idpackage,'retrieveCompileFlags',flags)
         return flags
 
     def retrieveDepends(self, idpackage, atoms = False, key_slot = False):
@@ -2732,55 +2495,50 @@ class etpDatabase:
         return False
 
     def isInjected(self,idpackage):
-
-        cache = self.fetchInfoCache(idpackage,'isInjected')
-        if cache != None: return cache
-
         try:
             self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
         except:
             # readonly database?
             return False
-
         result = self.cursor.fetchone()
         rslt = False
         if result:
             rslt = True
-
-        self.storeInfoCache(idpackage,'isInjected',rslt)
         return rslt
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 
-	self.cursor.execute('SELECT idflags FROM flags WHERE chost = (?) AND cflags = (?) AND cxxflags = (?)', (chost,cflags,cxxflags,))
+        self.cursor.execute('SELECT idflags FROM flags WHERE chost = (?) AND cflags = (?) AND cxxflags = (?)', 
+            (chost,cflags,cxxflags,)
+        )
         result = self.cursor.fetchone()
-	if not result:
-	    return -1
-	return result[0]
+        if not result:
+            return -1
+        return result[0]
 
     def searchBelongs(self, file, like = False, branch = None, branch_operator = "="):
-	
-	branchstring = ''
+
+        branchstring = ''
         searchkeywords = [file]
-	if branch:
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and baseinfo.branch '+branch_operator+' (?)'
+            branchstring = ' and baseinfo.branch '+branch_operator+' (?)'
 
-	if (like):
-	    self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file LIKE (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
-	else:
-	    self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file = (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
+        if like:
+            self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file LIKE (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
+        else:
+            self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file = (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
 
-	return self.fetchall2set(self.cursor.fetchall())
+        return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages that uses the eclass provided '''
     def searchEclassedPackages(self, eclass, atoms = False): # atoms = return atoms directly
-	if atoms:
-	    self.cursor.execute('SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference WHERE eclassesreference.classname = (?) and eclassesreference.idclass = eclasses.idclass and eclasses.idpackage = baseinfo.idpackage', (eclass,))
-	    return self.cursor.fetchall()
-	else:
-	    self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = (?)', (eclass,))
-	    return self.fetchall2set(self.cursor.fetchall())
+        if atoms:
+            self.cursor.execute('SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference WHERE eclassesreference.classname = (?) and eclassesreference.idclass = eclasses.idclass and eclasses.idpackage = baseinfo.idpackage', (eclass,))
+            return self.cursor.fetchall()
+        else:
+            self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = (?)', (eclass,))
+            return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages whose versiontag matches the one provided '''
     def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
@@ -2867,26 +2625,26 @@ class etpDatabase:
         return self.fetchall2set(self.cursor.fetchall())
 
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None):
-	
+
         searchkeywords = ["%"+keyword+"%"]
         slotstring = ''
-	if slot:
+        if slot:
             searchkeywords.append(slot)
-	    slotstring = ' and slot = (?)'
-	tagstring = ''
-	if tag:
+            slotstring = ' and slot = (?)'
+        tagstring = ''
+        if tag:
             searchkeywords.append(tag)
-	    tagstring = ' and versiontag = (?)'
-	branchstring = ''
-	if branch:
+            tagstring = ' and versiontag = (?)'
+        branchstring = ''
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and branch = (?)'
-	
-	if (sensitive):
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
-	else:
-	    self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
-	return self.cursor.fetchall()
+            branchstring = ' and branch = (?)'
+
+        if (sensitive):
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
+        else:
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
+        return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None, justid = False):
 
@@ -2946,21 +2704,21 @@ class etpDatabase:
 
 
     def searchPackagesByCategory(self, keyword, like = False, branch = None):
-	
+
         searchkeywords = [keyword]
-	branchstring = ''
-	if branch:
+        branchstring = ''
+        if branch:
             searchkeywords.append(branch)
-	    branchstring = ' and branch = (?)'
-	
+            branchstring = ' and branch = (?)'
+
         if like:
             self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category LIKE (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
         else:
             self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
-	
-	results = self.cursor.fetchall()
 
-	return results
+        results = self.cursor.fetchall()
+
+        return results
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None, justid = False):
 
@@ -3046,11 +2804,6 @@ class etpDatabase:
 
     def listAllIdpackages(self, branch = None, branch_operator = "=", order_by = None):
 
-        # XXX if you will decide to re-enable this, consider that you have to clean this cache
-        # each time a package is updated/installed/removed
-        #cache = self.fetchInfoCache(hash(branch),'listAllIdpackages')
-        #if cache != None: return cache
-
         branchstring = ''
         orderbystring = ''
         searchkeywords = []
@@ -3066,7 +2819,6 @@ class etpDatabase:
             results = self.fetchall2list(self.cursor.fetchall())
         else:
             results = self.fetchall2set(self.cursor.fetchall())
-        #self.storeInfoCache(hash(branch),'listAllIdpackages',results)
         return results
 
     def listAllDependencies(self, only_deps = False):
@@ -3354,7 +3106,7 @@ class etpDatabase:
         self.setForcedAtomsUpdateId(etpConst['misc_counters']['forced_atoms_update_ids']['kde'])
         self.commitChanges()
         # drop all cache
-        self.clearCache(all = True, depends = True)
+        self.clearCache(depends = True)
 
 
     def getForcedAtomsUpdateId(self):
@@ -3941,10 +3693,8 @@ class etpDatabase:
         depends = self.listAllDependencies()
         count = 0
         total = len(depends)
-        for depend in depends:
+        for iddep,atom in depends:
             count += 1
-            atom = depend[1]
-            iddep = depend[0]
             if output:
                 self.updateProgress(
                                         red("Resolving %s") % (darkgreen(atom),),
@@ -4094,7 +3844,6 @@ class etpDatabase:
                     if keyword_data:
                         if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
                             idpackageValidatorCache[(idpackage,reponame)] = idpackage,4
-                            #self.storeInfoCache(idpackage,'idpackageValidator',(idpackage,4))
                             return idpackage,4
                         keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword+"_ids")
                         if keyword_data_ids == None:

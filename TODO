@@ -1,7 +1,6 @@
 TODO list
   - server-side: expired packages check
   - add i18n support
-  - client: check lock file on repo sync
   - server-side: EAPI-2 don't remove indexes but copy a db over and work on it
   - server-side: improve RDEPEND check output
   - server-side: add libtest to reagent

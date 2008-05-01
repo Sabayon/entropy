@@ -191,7 +191,7 @@ class EquoInterface(TextInterface):
         f.flush()
         f.close()
 
-    def sync_loop_check(self, check_function):
+    def lock_check(self, check_function):
 
         lock_count = 0
         max_lock_count = 600
@@ -231,7 +231,7 @@ class EquoInterface(TextInterface):
         if cached == None:
             # invalidate matching cache
             try:
-                self.repository_move_clear_cache(all = True)
+                self.repository_move_clear_cache()
             except IOError:
                 pass
         elif type(cached) is tuple:
@@ -243,7 +243,7 @@ class EquoInterface(TextInterface):
                 difflist = cached - myrepolist # before minus now
                 for repoid in difflist:
                     try:
-                        self.repository_move_clear_cache(repoid, all = True)
+                        self.repository_move_clear_cache(repoid)
                     except IOError:
                         pass
         try:
@@ -471,7 +471,6 @@ class EquoInterface(TextInterface):
         if self.entropyTools.is_user_in_entropy_group():
             skip = set()
             if not client_purge:
-                skip.add("/"+etpCache['dbInfo']+"/"+etpConst['clientdbid']) # it's ok this way
                 skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
                 skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
             for key in etpCache:
@@ -1261,7 +1260,7 @@ class EquoInterface(TextInterface):
         return dbpkginfo
 
 
-    def repository_move_clear_cache(self, repoid = None, all = False):
+    def repository_move_clear_cache(self, repoid = None):
         self.clear_dump_cache(etpCache['world_available'])
         self.clear_dump_cache(etpCache['world_update'])
         self.clear_dump_cache(etpCache['check_package_update'])
@@ -1270,8 +1269,6 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['dep_tree'])
         if repoid != None:
             self.clear_dump_cache(etpCache['dbMatch']+"/"+repoid+"/")
-            if all:
-                self.clear_dump_cache(etpCache['dbInfo']+"/"+repoid+"/")
             self.clear_dump_cache(etpCache['dbSearch']+"/"+repoid+"/")
 
 
@@ -1335,7 +1332,7 @@ class EquoInterface(TextInterface):
             if repoid in etpRepositoriesOrder:
                 etpRepositoriesOrder.remove(repoid)
 
-            self.repository_move_clear_cache(repoid, all = True)
+            self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
@@ -1357,7 +1354,7 @@ class EquoInterface(TextInterface):
         self.validate_repositories()
 
     def enableRepository(self, repoid):
-        self.repository_move_clear_cache(repoid, all = True)
+        self.repository_move_clear_cache(repoid)
         # save new etpRepositories to file
         repodata = {}
         repodata['repoid'] = repoid
@@ -2027,8 +2024,7 @@ class EquoInterface(TextInterface):
         # client digest not needed, cache is kept updated
         c_hash = str(hash(repo_digest)) + \
                  str(hash(branch)) + \
-                 str(hash(tuple(self.validRepositories))) + \
-                 str(hash(tuple(etpRepositoriesOrder)))
+                 str(hash(tuple(self.validRepositories)))
         c_hash = str(hash(c_hash))
         return c_hash
 
@@ -2049,8 +2045,8 @@ class EquoInterface(TextInterface):
                     pass
 
         available = []
-        self.setTotalCycles(len(etpRepositoriesOrder))
-        for repo in etpRepositoriesOrder:
+        self.setTotalCycles(len(self.validRepositories))
+        for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
             except exceptionTools.RepositoryError:
@@ -4852,7 +4848,7 @@ class PackageInterface:
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
-        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 20
 
@@ -5586,10 +5582,8 @@ class RepoInterface:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        # there is no need to remove dbInfo because
         # idpackages are PRIMARY KEY AUTOINCREMENT, so
         # an idpackage won't be used more than once
-        #self.Entropy.clear_dump_cache(etpCache['dbInfo']+"/"+repo+"/")
         self.Entropy.clear_dump_cache(etpCache['dbMatch']+repo+"/")
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo+"/")
 
@@ -5948,7 +5942,7 @@ class RepoInterface:
                                         header = darkred(" @@ ")
                             )
 
-        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 3
 
@@ -8510,10 +8504,10 @@ class PackageMaskingParser:
     def __removeRepoCache(self, repoid = None):
         if os.path.isdir(etpConst['dumpstoragedir']):
             if repoid:
-                self.Entropy.repository_move_clear_cache(repoid, all = True)
+                self.Entropy.repository_move_clear_cache(repoid)
             else:
                 for repoid in etpRepositoriesOrder:
-                    self.Entropy.repository_move_clear_cache(repoid, all = True)
+                    self.Entropy.repository_move_clear_cache(repoid)
         else:
             os.makedirs(etpConst['dumpstoragedir'])
 
@@ -9193,7 +9187,7 @@ class SecurityInterface:
                                 footer = red(" ...")
                             )
 
-        gave_up = self.Entropy.sync_loop_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 7
 

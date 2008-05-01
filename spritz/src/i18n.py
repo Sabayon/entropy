@@ -22,6 +22,7 @@ Author: Vladimir Bormotov <bor@vb.dn.ua>
 # This file is a copy of the yum i18n.py file, modified to use
 # yumex as translation domain.
 
+_LOCALE = None
 try:
     import gettext
     import sys, os
@@ -39,7 +40,6 @@ try:
     if _LOCALE_FULL == None:
         _LOCALE_FULL = os.getenv('LANGUANGE')
 
-    _LOCALE = None
     if _LOCALE_FULL:
         _LOCALE = _LOCALE_FULL.split('.')[0]
         _LOCALE = _LOCALE.split('_')[0]
