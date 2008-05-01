@@ -3919,7 +3919,7 @@ class PackageInterface:
                 shutil.rmtree(portDbDir+myatom,True)
 
         if not others_installed:
-            world_file = os.path.join(etpConst['systemroot'],'/var/lib/portage/world')
+            world_file = etpConst['systemroot']+'/var/lib/portage/world'
             world_file_tmp = world_file+".entropy.tmp"
             if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
                 new = open(world_file_tmp,"w")
