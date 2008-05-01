@@ -862,7 +862,6 @@ class EquoInterface(TextInterface):
 
     def get_meant_packages(self, search_term):
         import re
-        #match_string = ''.join(["(%s)?" % (x,) for x in search_term])
         match_string = ''
         for x in search_term:
             if x.isalpha():
@@ -1668,6 +1667,12 @@ class EquoInterface(TextInterface):
                     found = True
                     break
             if not found:
+                mymatch = self.atomMatch(key, matchSlot = slot)
+                if mymatch[0] == -1:
+                    continue
+                cmpstat = self.get_package_action(mymatch)
+                if cmpstat == 0:
+                    continue
                 keyslots.add((key,slot))
 
         return keyslots
