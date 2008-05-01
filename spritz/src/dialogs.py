@@ -183,7 +183,7 @@ class PkgInfoMenu:
         self.pkginfo_ui.vote4.set_from_file(heart_pixmap)
         self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
 
-        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (pkg.name,))
+        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupSting(pkg.name),))
         self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupSting(pkg.description),))
 
         bold_items = [  self.pkginfo_ui.locationLabel,
@@ -217,9 +217,9 @@ class PkgInfoMenu:
         if repo == 0:
             self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
         else:
-            self.pkginfo_ui.location.set_markup("%s" % (self.entropyConstants.etpRepositories[repo]['description'],))
+            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupSting(self.entropyConstants.etpRepositories[repo]['description']),))
 
-        self.pkginfo_ui.version.set_markup( "%s" % (pkg.onlyver,) )
+        self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupSting(pkg.onlyver),) )
         tag = pkg.tag
         if not tag: tag = "None"
         self.pkginfo_ui.tag.set_markup( "%s" % (tag,) )
@@ -227,7 +227,7 @@ class PkgInfoMenu:
         self.pkginfo_ui.revision.set_markup( "%s" % (pkg.revision,) )
         self.pkginfo_ui.branch.set_markup( "%s" % (pkg.release,) )
         self.pkginfo_ui.eapi.set_markup( "%s" % (pkg.api,) )
-        self.pkginfo_ui.homepage.set_markup( "%s" % (pkg.homepage,) )
+        self.pkginfo_ui.homepage.set_markup( "%s" % (cleanMarkupSting(pkg.homepage),) )
 
         # license view
         self.licenseModel.clear()
@@ -297,23 +297,23 @@ class PkgInfoMenu:
         deps = pkg.dependencies
         conflicts = pkg.conflicts
         for x in deps:
-            self.dependenciesModel.append(None,[x])
+            self.dependenciesModel.append(None,[cleanMarkupSting(x)])
         for x in conflicts:
-            self.dependenciesModel.append(None,["!"+x])
+            self.dependenciesModel.append(None,[cleanMarkupSting("!"+x)])
 
         # depends view
         self.dependsModel.clear()
         self.dependsView.set_model( self.dependsModel )
         depends = pkg.dependsFmt
         for x in depends:
-            self.dependsModel.append(None,[x])
+            self.dependsModel.append(None,[cleanMarkupSting(x)])
 
         # needed view
         self.neededModel.clear()
         self.neededView.set_model( self.neededModel )
         neededs = pkg.needed
         for x in neededs:
-            self.neededModel.append(None,[x])
+            self.neededModel.append(None,[cleanMarkupSting(x)])
 
         # content view
         self.contentModel.clear()
