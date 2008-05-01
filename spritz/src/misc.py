@@ -179,12 +179,15 @@ class SpritzQueue:
 
             xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
             toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
-            mydepends = set()
+            mydepends = set(self.Entropy.retrieveRemovalQueue([x.matched_atom[0] for x in pkgs]))
+            mydependencies = set()
             for pkg in pkgs:
-                mydepends |= self.Entropy.clientDbconn.retrieveDepends(pkg.matched_atom[0])
+                mydeps = self.Entropy.get_deep_dependency_list(self.Entropy.clientDbconn, pkg.matched_atom[0])
+                mydependencies |= set([x for x in mydeps if x in xlist])
             # what are in queue?
             mylist = set(xlist)
             mylist -= mydepends
+            mylist |= mydependencies
             if mylist:
                 xlist = self.elaborateReinsert(mylist, xlist, accept_reinsert)
 
@@ -235,9 +238,9 @@ class SpritzQueue:
 
             mypkgs = []
             for pkg in pkgs:
-                status = self.checkSystemPackage(pkg)
-                if status:
-                    mypkgs.append(pkg)
+                if not self.checkSystemPackage(pkg):
+                    continue
+                mypkgs.append(pkg)
             pkgs = mypkgs
 
             if not pkgs:
@@ -267,28 +270,39 @@ class SpritzQueue:
             remove_todo = []
             install_todo = []
             if runQueue:
+                icache = set([x.matched_atom for x in self.packages[actions[0]]+self.packages[actions[1]]+self.packages[actions[2]]])
+                my_icache = set()
                 self.etpbase.getRawPackages('updates')
                 self.etpbase.getRawPackages('available')
                 self.etpbase.getRawPackages('reinstallable')
                 for matched_atom in runQueue:
+                    if matched_atom in my_icache:
+                        continue
+                    my_icache.add(matched_atom)
+                    if matched_atom in icache:
+                        continue
                     dep_pkg = self.etpbase.getPackageItem(matched_atom,True)
                     if not dep_pkg:
                         continue
-                    if (dep_pkg not in self.packages[actions[0]] + \
-                            self.packages[actions[1]] + \
-                            self.packages[actions[2]]) and \
-                            (dep_pkg not in install_todo):
-                                install_todo.append(dep_pkg)
+                    install_todo.append(dep_pkg)
+                del my_icache,icache
 
             if removalQueue:
+                my_rcache = set()
+                rcache = set([x.matched_atom[0] for x in self.packages['r']])
                 self.etpbase.getRawPackages('installed')
                 for idpackage in removalQueue:
+                    if idpackage in my_rcache:
+                        continue
+                    my_rcache.add(idpackage)
+                    if idpackage in rcache:
+                        continue
                     mymatch = (idpackage,0)
                     rem_pkg = self.etpbase.getPackageItem(mymatch,True)
                     if not rem_pkg:
                         continue
-                    if rem_pkg not in remove_todo:
-                        remove_todo.append(rem_pkg)
+                    remove_todo.append(rem_pkg)
+                del my_rcache,rcache
 
             if install_todo or remove_todo:
                 ok = True
@@ -336,17 +350,25 @@ class SpritzQueue:
     def elaborateRemoval(self, mylist, nodeps, accept):
         if nodeps:
             return 0
+
+        r_cache = set([x.matched_atom[0] for x in self.packages['r']])
         removalQueue = self.Entropy.retrieveRemovalQueue(mylist)
+
         if removalQueue:
             todo = []
+            my_rcache = set()
             self.etpbase.getRawPackages('installed')
             for idpackage in removalQueue:
-                mymatch = (idpackage,0)
-                rem_pkg = self.etpbase.getPackageItem(mymatch,True)
+                if idpackage in my_rcache:
+                    continue
+                my_rcache.add(idpackage)
+                if idpackage in r_cache:
+                    continue
+                rem_pkg = self.etpbase.getPackageItem((idpackage,0),True)
                 if not rem_pkg:
                     continue
-                if rem_pkg not in self.packages[rem_pkg.action] and (rem_pkg not in todo):
-                    todo.append(rem_pkg)
+                todo.append(rem_pkg)
+            del r_cache, my_rcache
 
             if todo:
                 ok = True
@@ -362,7 +384,7 @@ class SpritzQueue:
                         size = abs(size)
                         bottom_text = _("Needed space")
                     size = self.Entropy.entropyTools.bytesIntoHuman(size)
-                    confirmDialog = self.dialogs.ConfirmationDialog( 
+                    confirmDialog = self.dialogs.ConfirmationDialog(
                         self.ui.main,
                         todo,
                         top_text = _("These are the packages that would be removed"),
@@ -376,8 +398,8 @@ class SpritzQueue:
 
                 if ok:
                     for rem_pkg in todo:
-                        rem_pkg.queued = rem_pkg.action
                         if rem_pkg not in self.packages[rem_pkg.action]:
+                            rem_pkg.queued = rem_pkg.action
                             self.packages[rem_pkg.action].append(rem_pkg)
                 else:
                     return -10

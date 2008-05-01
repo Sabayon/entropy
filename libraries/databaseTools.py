@@ -1488,7 +1488,11 @@ class etpDatabase:
 
     def insertDependencies(self, idpackage, depdata):
 
+        dcache = set()
         for dep in depdata:
+
+            if dep in dcache:
+                continue
 
             iddep = self.isDependencyAvailable(dep)
             if (iddep == -1):
@@ -1499,6 +1503,8 @@ class etpDatabase:
                 deptype = depdata[dep]
             else:
                 deptype = 0
+
+            dcache.add(dep)
 
             self.cursor.execute(
                 'INSERT into dependencies VALUES '

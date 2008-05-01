@@ -299,7 +299,7 @@ class PkgInfoMenu:
         for x in deps:
             self.dependenciesModel.append(None,[x])
         for x in conflicts:
-            self.dependenciesModel.append(None,[x])
+            self.dependenciesModel.append(None,["!"+x])
 
         # depends view
         self.dependsModel.clear()

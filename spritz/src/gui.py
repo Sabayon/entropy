@@ -302,27 +302,34 @@ class SpritzGUI:
         self.createButton( _( "Output" ), "button-output.png", 'output' )
 
     def createButton( self, text, icon, page,first = None ):
-          if first:
-              button = gtk.RadioButton( None )
-              self.firstButton = button
-          else:
-              button = gtk.RadioButton( self.firstButton )
-          button.connect( "clicked", self.on_PageButton_changed, page )
-          button.connect( "pressed", self.on_PageButton_pressed, page )
+        if first:
+            button = gtk.RadioButton( None )
+            self.firstButton = button
+        else:
+            button = gtk.RadioButton( self.firstButton )
+        button.connect( "clicked", self.on_PageButton_changed, page )
+        button.connect( "pressed", self.on_PageButton_pressed, page )
 
-          button.set_relief( gtk.RELIEF_NONE )
-          button.set_mode( False )
+        button.set_relief( gtk.RELIEF_NONE )
+        button.set_mode( False )
 
-          p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+icon )
-          pix = gtk.Image()
-          pix.set_from_pixbuf( p )
-          pix.show()
+        iconpath = os.path.join(const.PIXMAPS_PATH,icon)
+        pix = None
+        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                pix = gtk.Image()
+                pix.set_from_pixbuf( p )
+                pix.show()
+            except gobject.GError:
+                pass
 
-          self.tooltip.set_tip(button,text)
-          button.add(pix)
-          button.show()
-          self.ui.content.pack_start( button, False )
-          self.pageButtons[page] = button
+        self.tooltip.set_tip(button,text)
+        if pix != None:
+            button.add(pix)
+        button.show()
+        self.ui.content.pack_start( button, False )
+        self.pageButtons[page] = button
 
     def setPage( self, page ):
         self.activePage = page

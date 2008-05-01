@@ -288,8 +288,8 @@ class EntropyPackageView:
                 self.installed_remove.hide()
                 self.installed_purge.hide()
 
-            reinstallable_list = self.etpbase.getPackages("reinstallable")
-            if str(obj) not in reinstallable_list:
+            reinstallable = self.etpbase.isReinstallable(obj.matched_atom[0])
+            if not reinstallable:
                 if obj.syspkg:
                     do_show = False
                 self.installed_reinstall.hide()

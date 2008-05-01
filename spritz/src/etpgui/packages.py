@@ -59,14 +59,9 @@ class EntropyPackage:
         return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
 
     def __cmp__(self, pkg):
-        n1 = str(self)
-        n2 = str(pkg)
-        if n1 > n2:
-            return 1
-        elif n1 == n2:
+        if pkg.matched_atom == self.matched_atom:
             return 0
-        else:
-            return -1
+        return 1
 
     def getPkg(self):
         return self.matched_atom

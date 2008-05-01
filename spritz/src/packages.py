@@ -171,15 +171,15 @@ class EntropyPackages:
                 yield yp
         elif mask == "reinstallable":
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
-                atom = self.Entropy.clientDbconn.retrieveAtom(idpackage)
-                upd, matched = self.Entropy.check_package_update(atom)
-                if (not upd) and matched:
-                    if matched[0] != -1:
-                        yp = self.getPackageItem(matched,True)
-                        yp.installed_match = (idpackage,0)
-                        yp.action = 'rr'
-                        yp.color = SpritzConf.color_install
-                        yield yp
+                matched = self.isReinstallable(idpackage)
+                if not matched:
+                    continue
+                yp = self.getPackageItem(matched,True)
+                yp.installed_match = (idpackage,0)
+                yp.action = 'rr'
+                yp.color = SpritzConf.color_install
+                yield yp
+
         elif mask == "fake_updates":
             # load a pixmap inside the treeview
             msg2 = _("Try clicking the %s button in the %s page") % ( _("Update Repositories"),_("Repository Selection"),)
@@ -191,6 +191,13 @@ class EntropyPackages:
                 )
             myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SpritzConf.dummy_empty)
             yield myobj
+
+    def isReinstallable(self, client_idpackage):
+        atom = self.Entropy.clientDbconn.retrieveAtom(client_idpackage)
+        upd, matched = self.Entropy.check_package_update(atom)
+        if (not upd) and matched:
+            if matched[0] != -1:
+                return matched
 
     def getCategories(self):
         catlist = []

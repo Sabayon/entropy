@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-04-30 16:51+0200\n"
+"POT-Creation-Date: 2008-05-01 13:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,58 +64,58 @@ msgstr ""
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../src/dialogs.py:397 ../src/dialogs.py:403 ../src/views.py:434
+#: ../src/dialogs.py:398 ../src/dialogs.py:404 ../src/views.py:434
 #: ../src/spritz.py:916
 msgid "Package"
 msgstr ""
 
-#: ../src/dialogs.py:420 ../src/dialogs.py:462
+#: ../src/dialogs.py:421 ../src/dialogs.py:463
 msgid "To be reinstalled"
 msgstr ""
 
-#: ../src/dialogs.py:426 ../src/dialogs.py:473
+#: ../src/dialogs.py:427 ../src/dialogs.py:474
 msgid "To be installed"
 msgstr ""
 
-#: ../src/dialogs.py:432 ../src/dialogs.py:484
+#: ../src/dialogs.py:433 ../src/dialogs.py:485
 msgid "To be updated"
 msgstr ""
 
-#: ../src/dialogs.py:438
+#: ../src/dialogs.py:439
 msgid "To be downgraded"
 msgstr ""
 
-#: ../src/dialogs.py:444 ../src/dialogs.py:495
+#: ../src/dialogs.py:445 ../src/dialogs.py:496
 msgid "To be removed"
 msgstr ""
 
-#: ../src/dialogs.py:468 ../src/dialogs.py:479 ../src/dialogs.py:490
-#: ../src/dialogs.py:501 ../src/views.py:470
+#: ../src/dialogs.py:469 ../src/dialogs.py:480 ../src/dialogs.py:491
+#: ../src/dialogs.py:502 ../src/views.py:470
 msgid "No description"
 msgstr ""
 
-#: ../src/dialogs.py:634
+#: ../src/dialogs.py:635
 msgid "About"
 msgstr ""
 
-#: ../src/dialogs.py:729
+#: ../src/dialogs.py:730
 msgid "Hey!"
 msgstr ""
 
-#: ../src/dialogs.py:733
+#: ../src/dialogs.py:734
 msgid "Spritz Question"
 msgstr ""
 
-#: ../src/dialogs.py:748 ../src/misc.py:91 ../src/misc.py:256
+#: ../src/dialogs.py:749 ../src/misc.py:91 ../src/misc.py:259
 msgid "Attention"
 msgstr ""
 
-#: ../src/dialogs.py:802
+#: ../src/dialogs.py:803
 msgid "License"
 msgstr ""
 
 #. new
-#: ../src/dialogs.py:805
+#: ../src/dialogs.py:806
 msgid "Accepted"
 msgstr ""
 
@@ -176,33 +176,33 @@ msgid ""
 "your last selection. Do you agree?"
 msgstr ""
 
-#: ../src/misc.py:257
+#: ../src/misc.py:260
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr ""
 
-#: ../src/misc.py:306
+#: ../src/misc.py:320
 msgid "Needed disk space"
 msgstr ""
 
-#: ../src/misc.py:309
+#: ../src/misc.py:323
 msgid "Freed disk space"
 msgstr ""
 
-#: ../src/misc.py:313
+#: ../src/misc.py:327
 msgid "These are the packages that would be installed/updated"
 msgstr ""
 
-#: ../src/misc.py:360
+#: ../src/misc.py:382
 msgid "Freed space"
 msgstr ""
 
-#: ../src/misc.py:363
+#: ../src/misc.py:385
 msgid "Needed space"
 msgstr ""
 
-#: ../src/misc.py:368
+#: ../src/misc.py:390
 msgid "These are the packages that would be removed"
 msgstr ""
 
@@ -550,37 +550,37 @@ msgstr ""
 msgid "Calculating"
 msgstr ""
 
-#: ../src/spritz.py:1165
+#: ../src/spritz.py:1164
 msgid "Running tasks"
 msgstr ""
 
-#: ../src/spritz.py:1171
+#: ../src/spritz.py:1170
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../src/spritz.py:1182
+#: ../src/spritz.py:1181
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../src/spritz.py:1207
+#: ../src/spritz.py:1206
 msgid "No packages selected"
 msgstr ""
 
-#: ../src/spritz.py:1266
+#: ../src/spritz.py:1265
 msgid "Exception caught"
 msgstr ""
 
-#: ../src/spritz.py:1267
+#: ../src/spritz.py:1266
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../src/spritz.py:1276
+#: ../src/spritz.py:1275
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../src/spritz.py:1278
+#: ../src/spritz.py:1277
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 

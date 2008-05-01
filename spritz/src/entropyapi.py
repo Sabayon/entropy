@@ -110,17 +110,19 @@ class QueueExecutor:
             Package = self.Entropy.Package()
             Package.prepare((idpackage,),"remove", metaopts)
 
-            self.Entropy.updateProgress(
-                                            "Removing: "+Package.infoDict['removeatom'],
-                                            importance = 2,
-                                            count = (currentremovalqueue,totalremovalqueue)
-                                        )
+            if not Package.infoDict.has_key('remove_installed_vanished'):
+                self.Entropy.updateProgress(
+                                                "Removing: "+Package.infoDict['removeatom'],
+                                                importance = 2,
+                                                count = (currentremovalqueue,totalremovalqueue)
+                                            )
 
-            rc = Package.run()
-            if rc != 0:
-                return -1,rc
+                rc = Package.run()
+                if rc != 0:
+                    return -1,rc
 
-            Package.kill()
+                Package.kill()
+
             self.Entropy.cycleDone()
             del metaopts
             del Package
