@@ -393,6 +393,7 @@ class ConfirmationDialog:
 
     def setup_view( self, view ):
         model = gtk.TreeStore( gobject.TYPE_STRING )
+        model.set_sort_column_id( 0, gtk.SORT_ASCENDING )
         view.set_model( model )
         self.create_text_column( _( "Package" ), view, 0 )
         return model
