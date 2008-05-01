@@ -111,6 +111,22 @@ class PkgInfoMenu:
         self.keywordsView.append_column( column )
         self.keywordsView.set_model( self.keywordsModel )
 
+        # useflags view
+        self.useflagsView = self.pkginfo_ui.useflagsView
+        self.useflagsModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "USE flags" ), cell, markup = 0 )
+        self.useflagsView.append_column( column )
+        self.useflagsView.set_model( self.useflagsModel )
+
+        # eclasses view
+        self.eclassesView = self.pkginfo_ui.eclassesView
+        self.eclassesModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Eclasses" ), cell, markup = 0 )
+        self.eclassesView.append_column( column )
+        self.eclassesView.set_model( self.eclassesModel )
+
         # dependencies view
         self.dependenciesView = self.pkginfo_ui.dependenciesView
         self.dependenciesModel = gtk.TreeStore( gobject.TYPE_STRING )
@@ -199,11 +215,9 @@ class PkgInfoMenu:
                         self.pkginfo_ui.downSizeLabel,
                         self.pkginfo_ui.installSizeLabel,
                         self.pkginfo_ui.creationDateLabel,
-                        self.pkginfo_ui.useFlagsLabel,
                         self.pkginfo_ui.chostLabel,
                         self.pkginfo_ui.cflagsLabel,
                         self.pkginfo_ui.cxxflagsLabel,
-                        self.pkginfo_ui.eclassesLabel,
                         self.pkginfo_ui.maskedLabel,
                         self.pkginfo_ui.messagesLabel,
                         self.pkginfo_ui.triggerLabel,
@@ -242,7 +256,6 @@ class PkgInfoMenu:
         self.pkginfo_ui.pkgsize.set_markup( "%s" % (pkg.sizeFmt,) )
         self.pkginfo_ui.instsize.set_markup( "%s" % (pkg.disksizeFmt,) )
         self.pkginfo_ui.creationdate.set_markup( "%s" % (pkg.epochFmt,) )
-        self.pkginfo_ui.useflags.set_markup( "%s" % (' '.join(pkg.useflags),) )
         # compile flags
         chost, cflags, cxxflags = pkg.compileflags
         self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
@@ -253,9 +266,6 @@ class PkgInfoMenu:
         mbuffer = gtk.TextBuffer()
         mbuffer.set_text('\n'.join(messages))
         self.pkginfo_ui.messagesTextView.set_buffer(mbuffer)
-        # eclasses
-        eclasses = ' '.join(pkg.eclasses)
-        self.pkginfo_ui.eclasses.set_markup( "%s" % (eclasses,) )
         # masked ?
         masked = 'False'
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
@@ -287,9 +297,20 @@ class PkgInfoMenu:
         # keywords view
         self.keywordsModel.clear()
         self.keywordsView.set_model( self.keywordsModel )
-        keywords = pkg.keywords
-        for x in keywords:
+        for x in pkg.keywords:
             self.keywordsModel.append(None,[x])
+
+        # useflags view
+        self.useflagsModel.clear()
+        self.useflagsView.set_model( self.useflagsModel )
+        for x in pkg.useflags:
+            self.useflagsModel.append([cleanMarkupSting(x)])
+
+        # eclasses view
+        self.eclassesModel.clear()
+        self.eclassesView.set_model( self.eclassesModel )
+        for x in pkg.eclasses:
+            self.eclassesModel.append([cleanMarkupSting(x)])
 
         # dependencies view
         self.dependenciesModel.clear()
