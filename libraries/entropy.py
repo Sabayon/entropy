@@ -15631,9 +15631,11 @@ class ServerMirrorsInterface:
             return True
         return False
 
-    def create_expiration_file(self, package_file, branch, repo = None):
+    def create_expiration_file(self, package_file, branch, repo = None, gentle = False):
         pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
         pkg_path += etpConst['packagesexpirationfileext']
+        if gentle and os.path.isfile(pkg_path):
+            return
         f = open(pkg_path,"w")
         f.flush()
         f.close()
@@ -15697,7 +15699,7 @@ class ServerMirrorsInterface:
                 if expired:
                     removal.append(package)
                 else:
-                    self.create_expiration_file(package, mybranch, repo)
+                    self.create_expiration_file(package, mybranch, repo, gentle = True)
 
             # fill returning data
             branch_data[mybranch]['removal'] = removal[:]
