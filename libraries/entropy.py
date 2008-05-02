@@ -14533,6 +14533,20 @@ class ServerMirrorsInterface:
             )
 
             self.sync_database_treeupdates(repo)
+            self.close_server_databases()
+
+            # backup current database to avoid re-indexing
+            old_dbpath = self.Entropy.get_local_database_file(repo)
+            backup_dbpath = old_dbpath+".up_backup"
+            copy_back = False
+            if not pretend:
+                try:
+                    if os.path.isfile(backup_dbpath):
+                        os.remove(backup_dbpath)
+                    shutil.copy2(old_dbpath,backup_dbpath)
+                    copy_back = True
+                except:
+                    pass
 
             self.shrink_database_and_close(repo)
 
@@ -14577,6 +14591,15 @@ class ServerMirrorsInterface:
                     upload_errors = True
                     broken_uris |= m_broken_uris
                     continue
+
+                # copy db back
+                if copy_back and os.path.isfile(backup_dbpath):
+                    self.close_server_databases()
+                    further_backup_dbpath = old_dbpath+".security_backup"
+                    if os.path.isfile(further_backup_dbpath):
+                        os.remove(further_backup_dbpath)
+                    shutil.copy2(old_dbpath,further_backup_dbpath)
+                    shutil.move(backup_dbpath,old_dbpath)
 
             # unlock
             self.lock_mirrors_for_download(False,[uri], repo = repo)
