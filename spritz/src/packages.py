@@ -75,7 +75,7 @@ class EntropyPackages:
         catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
         pkgsdata = []
         for pkgdata in catsdata:
-            yp = self.getPackageItem(pkgdata,True)
+            yp, new = self.getPackageItem(pkgdata,True)
             install_status = yp.install_status
             ok = False
             if install_status == 1:
@@ -139,18 +139,20 @@ class EntropyPackages:
         return self._packages[flt]
 
     def getPackageItem(self, pkgdata, avail):
+        new = False
         if self.pkgCache.has_key((pkgdata,avail)):
             yp = self.pkgCache[(pkgdata,avail)]
         else:
+            new = True
             yp = EntropyPackage(pkgdata, avail)
             self.pkgCache[(pkgdata,avail)] = yp
-        return yp
+        return yp, new
 
     def _getPackages(self,mask):
         #print "mask:",mask
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
-                yp = self.getPackageItem((idpackage,0),True)
+                yp, new = self.getPackageItem((idpackage,0),True)
                 yp.action = 'r'
                 yp.color = SpritzConf.color_install
                 yield yp
@@ -158,14 +160,14 @@ class EntropyPackages:
             # Get the rest of the available packages.
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
-                yp = self.getPackageItem(pkgdata,True)
+                yp, new = self.getPackageItem(pkgdata,True)
                 yp.action = 'i'
                 yield yp
         elif mask == 'updates':
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
             for pkgdata in updates:
-                yp = self.getPackageItem(pkgdata,True)
+                yp, new = self.getPackageItem(pkgdata,True)
                 yp.action = 'u'
                 yp.color = SpritzConf.color_update
                 yield yp
@@ -174,7 +176,7 @@ class EntropyPackages:
                 matched = self.isReinstallable(idpackage)
                 if not matched:
                     continue
-                yp = self.getPackageItem(matched,True)
+                yp, new = self.getPackageItem(matched,True)
                 yp.installed_match = (idpackage,0)
                 yp.action = 'rr'
                 yp.color = SpritzConf.color_install
@@ -197,7 +199,11 @@ class EntropyPackages:
         upd, matched = self.Entropy.check_package_update(atom)
         if (not upd) and matched:
             if matched[0] != -1:
-                return matched
+                inst_rev = self.Entropy.clientDbconn.retrieveRevision(client_idpackage)
+                dbconn = self.Entropy.openRepositoryDatabase(matched[1])
+                avail_rev = dbconn.retrieveRevision(matched[0])
+                if avail_rev == inst_rev:
+                    return matched
 
     def getCategories(self):
         catlist = []

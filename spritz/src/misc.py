@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from i18n import _
-from spritz_setup import cleanMarkupSting
+from spritz_setup import cleanMarkupSting, SpritzConf
 
 class SpritzQueue:
 
@@ -281,7 +281,7 @@ class SpritzQueue:
                     my_icache.add(matched_atom)
                     if matched_atom in icache:
                         continue
-                    dep_pkg = self.etpbase.getPackageItem(matched_atom,True)
+                    dep_pkg, new = self.etpbase.getPackageItem(matched_atom,True)
                     if not dep_pkg:
                         continue
                     install_todo.append(dep_pkg)
@@ -298,7 +298,7 @@ class SpritzQueue:
                     if idpackage in rcache:
                         continue
                     mymatch = (idpackage,0)
-                    rem_pkg = self.etpbase.getPackageItem(mymatch,True)
+                    rem_pkg, new = self.etpbase.getPackageItem(mymatch,True)
                     if not rem_pkg:
                         continue
                     remove_todo.append(rem_pkg)
@@ -364,7 +364,7 @@ class SpritzQueue:
                 my_rcache.add(idpackage)
                 if idpackage in r_cache:
                     continue
-                rem_pkg = self.etpbase.getPackageItem((idpackage,0),True)
+                rem_pkg, new = self.etpbase.getPackageItem((idpackage,0),True)
                 if not rem_pkg:
                     continue
                 todo.append(rem_pkg)

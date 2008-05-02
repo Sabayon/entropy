@@ -1,7 +1,5 @@
 TODO list
-  - server-side: expired packages check
   - add i18n support
-  - server-side: EAPI-2 don't remove indexes but copy a db over and work on it
   - server-side: improve RDEPEND check output
   - server-side: add libtest to reagent
   - server-side: make reagent deptest a blocker to db commits
@@ -20,7 +18,6 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - i18n support for category descs
     - configuration menu (equo.conf + others interface)
     - package masking menu
     - install tbz2

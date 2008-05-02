@@ -1444,8 +1444,8 @@ class EquoInterface(TextInterface):
                     installedVer = "0"
                     installedTag = ''
                     installedRev = 0
-                if installedRev == 9999: # any revision is fine
-                    repo_pkgrev = 9999
+                #if installedRev == 9999: # any revision is fine
+                #    repo_pkgrev = 9999
 
                 if (deep_deps):
                     vcmp = self.entropyTools.entropyCompareVersions(
@@ -2161,7 +2161,7 @@ class EquoInterface(TextInterface):
                     # different tags
                     update.append((match[0][0],match[1]))
                     continue
-                elif (mystrictdata[4] != 9999) and (mystrictdata[4] != match[0][3]):
+                elif (mystrictdata[4] != match[0][3]):
                     # different revision
                     update.append((match[0][0],match[1]))
                     continue

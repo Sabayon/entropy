@@ -592,22 +592,29 @@ class EntropyPackageView:
             cell.set_property(stype,None)
 
     def selectAll(self):
-        list = [x[0] for x in self.store if not x[0].queued == x[0].action]
-        if not list:
+
+        mylist = []
+        for parent in self.store:
+            for child in parent.iterchildren():
+                mylist += [x for x in child if x.queued != x.action]
+
+        if not mylist:
             return
-        for obj in list:
+
+        for obj in mylist:
             obj.queued = obj.action
+
         self.clearUpdates()
         self.updates['u'] = self.queue.packages['u'][:]
         self.updates['i'] = self.queue.packages['i'][:]
         self.updates['r'] = self.queue.packages['r'][:]
-        status, myaction = self.queue.add(list)
+        status, myaction = self.queue.add(mylist)
         if status == 0:
             self.updates['u'] = [x for x in self.queue.packages['u'] if x not in self.updates['u']]
             self.updates['i'] = [x for x in self.queue.packages['i'] if x not in self.updates['i']]
             self.updates['r'] = [x for x in self.queue.packages['r'] if x not in self.updates['r']]
         else:
-            for obj in list:
+            for obj in mylist:
                 obj.queued = None
         self.queueView.refresh()
         self.view.queue_draw()
@@ -619,7 +626,12 @@ class EntropyPackageView:
         self.updates['i'] = []
 
     def deselectAll(self):
-        xlist = [x[0] for x in self.store if x[0].queued == x[0].action]
+
+        xlist = []
+        for parent in self.store:
+            for child in parent.iterchildren():
+                xlist += [x for x in child if x.queued == x.action]
+
         xlist += [x for x in self.updates['u']+self.updates['i']+self.updates['r'] if x not in xlist]
         if not xlist:
             return

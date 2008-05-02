@@ -279,14 +279,18 @@ class SpritzGUI:
 
         #widget.set_relief( gtk.RELIEF_NONE )
         widget.set_mode( False )
-        p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+tag+".png" )
-        pix = self.ui.rbUpdatesImage
-        if tag == "available":
-            pix = self.ui.rbAvailableImage
-        elif tag == "installed":
-            pix = self.ui.rbInstalledImage
-        pix.set_from_pixbuf( p )
-        pix.show()
+
+        try:
+            p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+tag+".png" )
+            pix = self.ui.rbUpdatesImage
+            if tag == "available":
+                pix = self.ui.rbAvailableImage
+            elif tag == "installed":
+                pix = self.ui.rbInstalledImage
+            pix.set_from_pixbuf( p )
+            pix.show()
+        except gobject.GError:
+            pass
 
         self.tooltip.set_tip(widget,tip)
         self.packageRB[tag] = widget

@@ -184,7 +184,7 @@ class SpritzController(Controller):
                     self.etpbase.getPackages('available') + \
                     self.etpbase.getPackages('reinstallable')
         for match in matches:
-            resolved.append(self.etpbase.getPackageItem(match,True))
+            resolved.append(self.etpbase.getPackageItem(match,True)[0])
 
         for obj in resolved:
             if obj in self.queue.packages['i'] + \
