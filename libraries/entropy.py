@@ -2054,7 +2054,8 @@ class EquoInterface(TextInterface):
         for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
-            except exceptionTools.RepositoryError:
+                dbconn.validateDatabase()
+            except (exceptionTools.RepositoryError,exceptionTools.SystemDatabaseError):
                 self.cycleDone()
                 continue
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')

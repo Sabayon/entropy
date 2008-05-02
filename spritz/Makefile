@@ -23,6 +23,7 @@ install:
 	mkdir -p $(DESTDIR)/usr/share/pixmaps/spritz/applet
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/autostart
+	mkdir -p $(DESTDIR)/etc/xdg/autostart
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
@@ -37,7 +38,8 @@ install:
 	chmod +x $(DESTDIR)/usr/bin/spritz
 	chmod +x $(DESTDIR)/usr/bin/etp-applet-gui
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.
-	install -m644 $(MISCDIR)/etp-applet.desktop $(DESTDIR)/usr/share/autostart/.	
+	install -m644 $(MISCDIR)/etp-applet.desktop $(DESTDIR)/usr/share/autostart/.
+	install -m644 $(MISCDIR)/etp-applet.desktop $(DESTDIR)/etc/xdg/autostart/.
 	for d in $(SUBDIRS); do make DESTDIR=`cd $(DESTDIR); pwd` -C $$d install; [ $$? = 0 ] || exit 1; done
 
 
