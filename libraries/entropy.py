@@ -14533,7 +14533,7 @@ class ServerMirrorsInterface:
             )
 
             self.sync_database_treeupdates(repo)
-            self.close_server_databases()
+            self.Entropy.close_server_databases()
 
             # backup current database to avoid re-indexing
             old_dbpath = self.Entropy.get_local_database_file(repo)
@@ -14594,7 +14594,7 @@ class ServerMirrorsInterface:
 
                 # copy db back
                 if copy_back and os.path.isfile(backup_dbpath):
-                    self.close_server_databases()
+                    self.Entropy.close_server_databases()
                     further_backup_dbpath = old_dbpath+".security_backup"
                     if os.path.isfile(further_backup_dbpath):
                         os.remove(further_backup_dbpath)
