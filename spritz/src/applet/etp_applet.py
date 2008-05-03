@@ -256,7 +256,7 @@ class rhnApplet:
         self.last_error_is_exception = 0
         self.last_error_is_network_error = 0
         self.change_number = 0
-        self.available_packages = set()
+        self.available_packages = []
         self.last_alert = None
 
         self.gtkEventThread = ProcessGtkEventsThread()
@@ -583,15 +583,7 @@ class rhnApplet:
         if not etp_applet_config.settings['APPLET_ENABLED']:
             return
 
-        locked = entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
-        if locked:
-            if not self.skip_check_locked or (force == 1):
-                if force == 1:
-                    self.last_alert = ('','')
-                self.show_alert( _("Information"), _("Another Entropy instance is running. Skipping check.") )
-                self.skip_check_locked = True
-            return
-        self.skip_check_locked = False
+        locked = self.Entropy.application_lock_check(silent = True)
 
         self.start_working()
         old_tip = self.tooltip_text
@@ -606,71 +598,73 @@ class rhnApplet:
         self.last_error = None
         self.last_error_is_network_error = 0
         self.error_threshold = 0
-        self.available_packages = set()
+        self.available_packages = []
 
-        # compare repos
-        repositories_to_update, rc = self.compare_repositories_status()
-        if repositories_to_update and rc == 0:
-            repos = repositories_to_update.keys()
+        rc = 0
+        if not locked:
 
-            try:
-                repoConn = self.Entropy.Repositories(repos, fetchSecurity = False, noEquoCheck = True)
-            except exceptionTools.MissingParameter:
-                self.last_error = "%s: %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)
+            # compare repos
+            repositories_to_update, rc = self.compare_repositories_status()
+            if repositories_to_update and rc == 0:
+                repos = repositories_to_update.keys()
+
+                try:
+                    repoConn = self.Entropy.Repositories(repos, fetchSecurity = False, noEquoCheck = True)
+                except exceptionTools.MissingParameter:
+                    self.last_error = "%s: %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)
+                    self.error_threshold += 1
+                except exceptionTools.OnlineMirrorError:
+                    self.last_error = _("Repository Network Error")
+                    self.last_error_is_network_error = 1
+                except Exception, e:
+                    self.error_threshold += 1
+                    self.last_error_is_exception = 1
+                    self.last_error = "%s: %s" % (_('Unhandled exception'),e,)
+                else:
+                    # -128: sync error, something bad happened
+                    # -2: repositories not available (all)
+                    # -1: not able to update all the repositories
+                    rc = repoConn.sync()
+                    rc = rc*-1
+
+            if rc == 1:
+                err = _("No repositories specified. Cannot check for package updates.")
+                self.show_alert( _("Updates: attention"), err )
                 self.error_threshold += 1
-            except exceptionTools.OnlineMirrorError:
-                self.last_error = _("Repository Network Error")
+                self.last_error = err
+            elif rc == 2:
+                err = _("Cannot connect to the Updates Service, you're probably not connected to the world.")
+                self.show_alert( _("Updates: connection issues"), err )
                 self.last_error_is_network_error = 1
-            except Exception, e:
+                self.last_error = err
+            elif rc == -1:
+                err = _("Not all the repositories have been fetched for checking")
+                self.show_alert( _("Updates: repository issues"), err )
+                self.last_error_is_network_error = 1
+                self.last_error = err
+            elif rc == -2:
+                err = _("No repositories found online")
+                self.show_alert( _("Updates: repository issues"), err )
+                self.last_error_is_network_error = 1
+                self.last_error = err
+            elif rc == -128:
+                err = _("Synchronization errors. Cannot update repositories. Check logs.")
+                self.show_alert( _("Updates: sync issues"), err )
+                self.error_threshold += 1
+                self.last_error = err
+            elif type(rc) is str:
+                self.show_alert( _("Updates: unhandled error"), rc )
                 self.error_threshold += 1
                 self.last_error_is_exception = 1
-                self.last_error = "%s: %s" % (_('Unhandled exception'),e,)
-            else:
-                # -128: sync error, something bad happened
-                # -2: repositories not available (all)
-                # -1: not able to update all the repositories
-                rc = repoConn.sync()
-                rc = rc*-1
+                self.last_error = rc
 
-        if rc == 1:
-            err = _("No repositories specified. Cannot check for package updates.")
-            self.show_alert( _("Updates: attention"), err )
-            self.error_threshold += 1
-            self.last_error = err
-        elif rc == 2:
-            err = _("Cannot connect to the Updates Service, you're probably not connected to the world.")
-            self.show_alert( _("Updates: connection issues"), err )
-            self.last_error_is_network_error = 1
-            self.last_error = err
-        elif rc == -1:
-            err = _("Not all the repositories have been fetched for checking")
-            self.show_alert( _("Updates: repository issues"), err )
-            self.last_error_is_network_error = 1
-            self.last_error = err
-        elif rc == -2:
-            err = _("No repositories found online")
-            self.show_alert( _("Updates: repository issues"), err )
-            self.last_error_is_network_error = 1
-            self.last_error = err
-        elif rc == -128:
-            err = _("Synchronization errors. Cannot update repositories. Check logs.")
-            self.show_alert( _("Updates: sync issues"), err )
-            self.error_threshold += 1
-            self.last_error = err
-        elif type(rc) is str:
-            self.show_alert( _("Updates: unhandled error"), rc )
-            self.error_threshold += 1
-            self.last_error_is_exception = 1
-            self.last_error = rc
-
-        if self.last_error_is_network_error:
-            self.update_tooltip(_("Updates: connection issues"))
-            self.set_state("DISCONNECTED")
-            self.disable_refresh_timer()
-            self.enable_network_timer()
-            self.end_working()
-            return False
-
+            if self.last_error_is_network_error:
+                self.update_tooltip(_("Updates: connection issues"))
+                self.set_state("DISCONNECTED")
+                self.disable_refresh_timer()
+                self.enable_network_timer()
+                self.end_working()
+                return False
 
         try:
             update, remove, fine = self.Entropy.calculate_world_updates()
@@ -700,7 +694,7 @@ class rhnApplet:
             return False
 
         if update:
-            self.available_packages = update.copy()
+            self.available_packages = update[:]
             self.set_state("CRITICAL")
             msg = "%s %d %s" % (_("There are"),len(update),_("updates available."),)
             self.update_tooltip(msg)
