@@ -51,9 +51,7 @@ from entropy import EquoInterface, RepoInterface, urlFetcher
 class Entropy(EquoInterface):
 
     def __init__(self):
-        EquoInterface.__init__(self, noclientdb = True, indexing = False, user_xcache = True) #, xcache = False)
-        self.xcache = True
-        self.clientDbconn.xcache = True
+        EquoInterface.__init__(self, noclientdb = True)
         self.nocolor()
 
     def connect_progress_objects(self, appletInterface):
@@ -177,6 +175,7 @@ class rhnApplet:
         self.never_viewed_consent = 1
         self.never_viewed_notices = 1
 
+        self.skip_check_locked = False
         self.current_image = None
         self.refresh_timeout_tag = None
         self.animate_timeout_tag = None
@@ -584,6 +583,16 @@ class rhnApplet:
         if not etp_applet_config.settings['APPLET_ENABLED']:
             return
 
+        locked = entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
+        if locked:
+            if not self.skip_check_locked or (force == 1):
+                if force == 1:
+                    self.last_alert = ('','')
+                self.show_alert( _("Information"), _("Another Entropy instance is running. Skipping check.") )
+                self.skip_check_locked = True
+            return
+        self.skip_check_locked = False
+
         self.start_working()
         old_tip = self.tooltip_text
         old_state = self.current_state
@@ -604,8 +613,6 @@ class rhnApplet:
         if repositories_to_update and rc == 0:
             repos = repositories_to_update.keys()
 
-            oldxcache = self.Entropy.xcache
-            self.Entropy.xcache = False # to disable cache generation by RepoInterface
             try:
                 repoConn = self.Entropy.Repositories(repos, fetchSecurity = False, noEquoCheck = True)
             except exceptionTools.MissingParameter:
@@ -624,7 +631,6 @@ class rhnApplet:
                 # -1: not able to update all the repositories
                 rc = repoConn.sync()
                 rc = rc*-1
-            self.Entropy.xcache = oldxcache
 
         if rc == 1:
             err = _("No repositories specified. Cannot check for package updates.")

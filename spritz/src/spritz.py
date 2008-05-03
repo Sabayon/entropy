@@ -867,9 +867,14 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
 
-        SpritzController.__init__( self )
         self.Equo = EquoConnection
+        locked = self.Equo._resources_run_check_lock()
+        if locked:
+            okDialog( None, _("Entropy resources are locked and not accessible. " + \
+                "Another Entropy application is running. Sorry, can't load Spritz.") )
+            sys.exit(1)
 
+        SpritzController.__init__( self )
         SpritzGUI.__init__(self, self.Equo, self.etpbase)
         self.logger = logging.getLogger("yumex.main")
 

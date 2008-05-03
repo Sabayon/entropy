@@ -189,11 +189,12 @@ def ebeep(count = 5):
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
         mycount -= 1
 
-def applicationLockCheck(option = None, gentle = False):
-    if (etpConst['applicationlock']):
-        print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
-        print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
-        if (not gentle):
+def applicationLockCheck(option = None, gentle = False, silent = False):
+    if etpConst['applicationlock']:
+        if not silent:
+            print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
+            print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
+        if not gentle:
             sys.exit(10)
         else:
             return True

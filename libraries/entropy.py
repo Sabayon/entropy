@@ -191,6 +191,20 @@ class EquoInterface(TextInterface):
         f.flush()
         f.close()
 
+    def application_lock_check(self, silent = False):
+        # check if another instance is running
+        locked = self.entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
+        if locked:
+            if not silent:
+                self.updateProgress(
+                    red("Another Entropy instance is currently active, cannot synchronize repositories."),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" @@ ")
+                )
+            return True
+        return False
+
     def lock_check(self, check_function):
 
         lock_count = 0
@@ -4862,6 +4876,11 @@ class PackageInterface:
         if gave_up:
             return 20
 
+        locked = self.Entropy.application_lock_check()
+        if locked:
+            self.Entropy._resources_run_remove_lock()
+            return 21
+
         # lock
         self.Entropy._resources_run_create_lock()
 
@@ -5946,7 +5965,7 @@ class RepoInterface:
         self.Entropy.closeAllRepositoryDatabases()
 
         # let's dance!
-        self.Entropy.updateProgress(    darkgreen("Repositories syncronization..."),
+        self.Entropy.updateProgress(    darkgreen("Repositories synchronization..."),
                                         importance = 2,
                                         type = "info",
                                         header = darkred(" @@ ")
@@ -5955,6 +5974,11 @@ class RepoInterface:
         gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 3
+
+        locked = self.Entropy.application_lock_check()
+        if locked:
+            self.Entropy._resources_run_remove_lock()
+            return 4
 
         # lock
         self.Entropy._resources_run_create_lock()
@@ -9200,6 +9224,11 @@ class SecurityInterface:
         gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
             return 7
+
+        locked = self.Entropy.application_lock_check()
+        if locked:
+            self.Entropy._resources_run_remove_lock()
+            return 4
 
         # lock
         self.Entropy._resources_run_create_lock()

@@ -1893,11 +1893,13 @@ class etpDatabase:
             c_match = str(key)
             try:
                 sperms = False
-                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbSearch']+"/"+self.dbname)):
+                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbSearch'],self.dbname)):
+                    sperms = True
+                elif not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbSearch'],self.dbname,c_match)):
                     sperms = True
                 dumpTools.dumpobj(etpCache['dbSearch']+"/"+self.dbname+"/"+c_match+"/"+c_hash,search_cache_data)
                 if sperms:
-                    const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
+                    const_setup_perms(os.path.join(etpConst['dumpstoragedir'],etpCache['dbSearch']),etpConst['entropygid'])
             except IOError:
                 pass
 

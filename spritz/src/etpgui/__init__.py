@@ -58,6 +58,8 @@ class ProcessGtkEventsThread(Thread):
             while not self.__active.isSet():
                 self.__active.wait()
             self.dosleep()
+            if not gtk:
+                continue
             while gtk.events_pending():      # process gtk events
                 gtk.main_iteration()
                 self.dosleep()

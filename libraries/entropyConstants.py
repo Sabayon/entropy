@@ -1292,7 +1292,7 @@ def const_setup_perms(mydir, gid):
             cur_gid = os.stat(currentdir)[stat.ST_GID]
             if cur_gid != gid:
                 os.chown(currentdir,-1,gid)
-            cur_mod = const_get_chmod(mydir)
+            cur_mod = const_get_chmod(currentdir)
             if cur_mod != oct(0775):
                 os.chmod(currentdir,0775)
         except OSError:
