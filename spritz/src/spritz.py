@@ -1165,7 +1165,15 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.resetProgressText()
 
     def processPackageQueue( self, pkgs, doAll=False):
-        """ Workflow for processing package queue """
+
+        # preventive check against other instances
+        locked = self.Equo.application_lock_check()
+        if locked:
+            okDialog(self.ui.main, _("Another Entropy instance is running. Cannot process queue."))
+            self.progress.reset_progress()
+            self.setPage('packages')
+            return False
+
         self.setStatus( _( "Running tasks" ) )
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
         state = True

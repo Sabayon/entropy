@@ -193,11 +193,13 @@ class EquoInterface(TextInterface):
 
     def application_lock_check(self, silent = False):
         # check if another instance is running
+        etpConst['applicationlock'] = False
+        const_setupEntropyPid()
         locked = self.entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
         if locked:
             if not silent:
                 self.updateProgress(
-                    red("Another Entropy instance is currently active, cannot synchronize repositories."),
+                    red("Another Entropy instance is currently active, cannot satisfy your request."),
                     importance = 1,
                     type = "error",
                     header = darkred(" @@ ")
