@@ -5234,9 +5234,9 @@ class FileUpdatesInterface:
                         if item[9] != "_": # no valid format provided
                             continue
 
-                        if item in name_cache:
+                        if filepath in name_cache:
                             continue # skip, already done
-                        name_cache.add(item)
+                        name_cache.add(filepath)
 
                         mydict = self.generate_dict(filepath)
                         if mydict['automerge']:
