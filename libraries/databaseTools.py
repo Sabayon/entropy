@@ -412,6 +412,9 @@ class etpDatabase:
             # store new digest into database
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
 
+            # store new actions
+            clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'],update_actions)
+
             # clear client cache
             clientDbconn.clearCache()
 
@@ -2082,6 +2085,13 @@ class etpDatabase:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeeded(self, idpackage, extended = False, format = False):
+
+        if extended and not self.doesColumnInTableExist("needed","elfclass"):
+            if format:
+                return {}
+            else:
+                return []
+
         if extended:
             self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
             needed = self.cursor.fetchall()
@@ -3619,7 +3629,7 @@ class etpDatabase:
     def createNeededElfclassColumn(self):
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE needed ADD COLUMN elfclass INTEGER;')
-            self.cursor.execute('UPDATE needed SET elfclass = (?)', (-1,))
+            self.cursor.execute('UPDATE needed SET elfclass = -1')
         except:
             pass
 
