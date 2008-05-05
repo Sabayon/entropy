@@ -534,7 +534,11 @@ class EntropyPackageView:
     def get_data_text( self, column, cell, model, iter, property ):
         obj = model.get_value( iter, 0 )
         if obj:
-            cell.set_property('markup',getattr( obj, property ))
+            try:
+                mydata = getattr( obj, property )
+                cell.set_property('markup',mydata)
+            except self.Equo.databaseTools.dbapi2.ProgrammingError:
+                pass
             if obj.color:
                 self.set_line_status(obj, cell)
                 cell.set_property('foreground',obj.color)

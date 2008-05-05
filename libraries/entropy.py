@@ -340,15 +340,18 @@ class EquoInterface(TextInterface):
         if not self.noclientdb:
             conn.validateDatabase()
         if not etpConst['dbconfigprotect']:
-            if not self.noclientdb:
 
+            if conn.doesTableExist('configprotect') and conn.doesTableExist('configprotectreference'):
                 etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
+            if conn.doesTableExist('configprotectmask') and conn.doesTableExist('configprotectreference'):
                 etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-                etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
-                etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
 
-                etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
-                etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
+            etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
+            etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
+
+            etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpConst['dbconfigprotect']]
+            etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpConst['dbconfigprotectmask']]
+
         self.clientDbconn = conn
         return self.clientDbconn
 
