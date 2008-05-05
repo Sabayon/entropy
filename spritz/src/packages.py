@@ -94,7 +94,10 @@ class EntropyPackages:
         self._categoryPackages[category] = pkgsdata
 
     def populateCategories(self):
-        self.categories = self.Entropy.list_repo_categories()
+        try:
+            self.categories = self.Entropy.list_repo_categories()
+        except self.Entropy.databaseTools.dbapi2.OperationalError:
+            self.categories.clear()
 
     def getPackages(self,flt):
         if flt == 'all':
