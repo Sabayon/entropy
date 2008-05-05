@@ -26,3 +26,8 @@ TODO list
     - Skip Mirror buttons
     - button to stop the queue
     - show the number of packages found in a list
+
+
+
+Notes:
+- when supporting more than one ":" in atoms, remember to fix treeupdates functions accordingly
