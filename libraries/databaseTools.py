@@ -366,7 +366,7 @@ class etpDatabase:
     # check for repository packages updates
     # this will read database treeupdates* tables and do
     # changes required if running as root.
-    def clientUpdatePackagesData(self, clientDbconn):
+    def clientUpdatePackagesData(self, clientDbconn, force = False):
 
         repository = self.dbname[len(etpConst['dbnamerepoprefix']):]
         etpConst['client_treeupdatescalled'].add(repository)
@@ -385,7 +385,7 @@ class etpDatabase:
         if not doRescan:
             client_digest = clientDbconn.retrieveRepositoryUpdatesDigest(repository)
 
-        if doRescan or (str(stored_digest) != str(client_digest)):
+        if doRescan or (str(stored_digest) != str(client_digest)) or force:
 
             # reset database tables
             clientDbconn.clearTreeupdatesEntries(repository)
@@ -486,6 +486,7 @@ class etpDatabase:
                                     header = darkred(" * ")
                                 )
             if self.clientDatabase:
+                myroot = etpConst['systemroot']+"/"
                 os.system("fixpackages &> /dev/null")
             else:
                 os.system("fixpackages")
