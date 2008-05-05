@@ -280,6 +280,16 @@ class EquoInterface(TextInterface):
         else:
             raise exceptionTools.InvalidData("InvalidData: nothing to backup in etpConst with %s key" % (setting_name,))
 
+    def set_priority(self, low = 0):
+        default_nice = etpConst['default_nice']
+        current_nice = etpConst['current_nice']
+        delta = current_nice - default_nice
+        try:
+            etpConst['current_nice'] = os.nice(delta*-1+low)
+        except OSError:
+            pass
+        return current_nice # aka, the old value
+
     def switchChroot(self, chroot = ""):
         # clean caches
         self.purge_cache()
@@ -5895,6 +5905,8 @@ class RepoInterface:
                                 )
 
                 if self.Entropy.indexing:
+                    # renice a bit, to avoid eating resources
+                    old_prio = self.Entropy.set_priority(15)
                     self.Entropy.updateProgress(
                                                     red("Indexing Repository metadata ..."),
                                                     importance = 1,
@@ -5913,6 +5925,7 @@ class RepoInterface:
                             self.Entropy.clientDbconn.createAllIndexes()
                     except:
                         pass
+                    self.Entropy.set_priority(old_prio)
                 # update revision in etpRepositories
                 self.Entropy.update_repository_revision(repo)
 

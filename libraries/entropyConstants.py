@@ -651,6 +651,9 @@ def const_defaultSettings(rootdir):
         'sysgroup': "entropy",
         'defaultumask': 022,
         'storeumask': 002,
+        'gentle_nice': 15,
+        'current_nice': 0,
+        'default_nice': 0,
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {
@@ -763,6 +766,13 @@ def const_defaultSettings(rootdir):
         },
 
     }
+
+    # set current nice level
+    try:
+        myConst['current_nice'] = os.nice(0)
+    except OSError:
+        pass
+
     etpConst.update(myConst)
 
 
