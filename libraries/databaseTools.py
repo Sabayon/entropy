@@ -431,6 +431,7 @@ class etpDatabase:
                 to_slot = doaction[3]
                 category = atom.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
+                found = False
                 if matches[1] == 0:
                     # found atom, check slot and category
                     for idpackage in matches[0]:
@@ -439,15 +440,38 @@ class etpDatabase:
                         if mycategory == category:
                             if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
                                 new_actions.append(action)
+                                found = True
+                                break
+                    if found:
+                        continue
+                # if we get here it means found == False
+                # search into dependencies
+                atom_key = self.entropyTools.dep_getkey(atom)
+                dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
+                dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) and self.entropyTools.dep_getkey(x) == atom_key]
+                if dep_atoms:
+                    new_actions.append(action)
             elif doaction[0] == "move":
-                atom = doaction[1]
+                atom = doaction[1] # usually a key
                 category = atom.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
+                found = False
                 if matches[1] == 0:
                     for idpackage in matches[0]:
                         mycategory = self.retrieveCategory(idpackage)
                         if (mycategory == category) and (action not in new_actions):
                             new_actions.append(action)
+                            found = True
+                            break
+                    if found:
+                        continue
+                # if we get here it means found == False
+                # search into dependencies
+                atom_key = self.entropyTools.dep_getkey(atom)
+                dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
+                dep_atoms = [x for x in dep_atoms if self.entropyTools.dep_getkey(x) == atom_key]
+                if dep_atoms:
+                    new_actions.append(action)
         return new_actions
 
     # this is the place to add extra actions support
@@ -514,51 +538,51 @@ class etpDatabase:
         matches = self.atomMatch(key_from, multiMatch = True)
         iddependencies_idpackages = set()
 
-        for idpackage in matches[0]:
+        if matches[1] == 0:
 
-            slot = self.retrieveSlot(idpackage)
-            old_atom = self.retrieveAtom(idpackage)
-            new_atom = old_atom.replace(key_from,key_to)
+            for idpackage in matches[0]:
 
-            ### UPDATE DATABASE
-            # update category
-            self.setCategory(idpackage, cat_to)
-            # update name
-            self.setName(idpackage, name_to)
-            # update atom
-            self.setAtom(idpackage, new_atom)
+                slot = self.retrieveSlot(idpackage)
+                old_atom = self.retrieveAtom(idpackage)
+                new_atom = old_atom.replace(key_from,key_to)
 
-            # look for packages we need to quickpkg again
-            # note: quickpkg_queue is simply ignored if self.clientDatabase
-            quickpkg_queue.add(key_to+":"+str(slot))
-            iddeps = self.searchDependency(key_from, like = True, multi = True)
-            for iddep in iddeps:
-                # update string
-                mydep = self.retrieveDependencyFromIddependency(iddep)
-                mydep_key = self.entropyTools.dep_getkey(mydep)
-                if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
-                    continue              # become x11-libs/qscintilla if we don't do this check
-                mydep = mydep.replace(key_from,key_to)
+                ### UPDATE DATABASE
+                # update category
+                self.setCategory(idpackage, cat_to)
+                # update name
+                self.setName(idpackage, name_to)
+                # update atom
+                self.setAtom(idpackage, new_atom)
 
-                # now update
-                # dependstable on server is always re-generated
-                self.setDependency(iddep, mydep)
+                # look for packages we need to quickpkg again
+                # note: quickpkg_queue is simply ignored if self.clientDatabase
+                quickpkg_queue.add(key_to+":"+str(slot))
 
-                # we have to repackage also package owning this iddep
-                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
+                if not self.clientDatabase:
 
+                    # check for injection and warn the developer
+                    injected = self.isInjected(idpackage)
+                    if injected:
+                        self.updateProgress(
+                            bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(new_atom),),
+                            importance = 1,
+                            type = "warning",
+                            header = darkred(" * ")
+                        )
 
-            if not self.clientDatabase:
-
-                # check for injection and warn the developer
-                injected = self.isInjected(idpackage)
-                if injected:
-                    self.updateProgress(
-                        bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(new_atom),),
-                        importance = 1,
-                        type = "warning",
-                        header = darkred(" * ")
-                    )
+        iddeps = self.searchDependency(key_from, like = True, multi = True)
+        for iddep in iddeps:
+            # update string
+            mydep = self.retrieveDependencyFromIddependency(iddep)
+            mydep_key = self.entropyTools.dep_getkey(mydep)
+            if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
+                continue              # become x11-libs/qscintilla if we don't do this check
+            mydep = mydep.replace(key_from,key_to)
+            # now update
+            # dependstable on server is always re-generated
+            self.setDependency(iddep, mydep)
+            # we have to repackage also package owning this iddep
+            iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
 
         self.commitChanges()
         quickpkg_queue = list(quickpkg_queue)
@@ -588,42 +612,45 @@ class etpDatabase:
         matches = self.atomMatch(atom, multiMatch = True)
         iddependencies_idpackages = set()
 
-        for idpackage in matches[0]:
+        if matches[1] == 0:
 
-            ### UPDATE DATABASE
-            # update slot
-            self.setSlot(idpackage, slot_to)
+            for idpackage in matches[0]:
 
-            # look for packages we need to quickpkg again
-            # note: quickpkg_queue is simply ignored if self.clientDatabase
-            quickpkg_queue.add(atom+":"+str(slot_to))
-            iddeps = self.searchDependency(atomkey, like = True, multi = True)
-            for iddep in iddeps:
-                # update string
-                mydep = self.retrieveDependencyFromIddependency(iddep)
-                if mydep.find(":"+str(slot_from)) != -1: # probably slotted dep
-                    mydep = mydep.replace(":"+str(slot_from),":"+str(slot_to))
-                else:
-                    continue # it's fine
+                ### UPDATE DATABASE
+                # update slot
+                self.setSlot(idpackage, slot_to)
 
-                # now update
-                # dependstable on server is always re-generated
-                self.setDependency(iddep, mydep)
+                # look for packages we need to quickpkg again
+                # note: quickpkg_queue is simply ignored if self.clientDatabase
+                quickpkg_queue.add(atom+":"+str(slot_to))
 
-                # we have to repackage also package owning this iddep
-                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
+                if not self.clientDatabase:
 
-            if not self.clientDatabase:
+                    # check for injection and warn the developer
+                    injected = self.isInjected(idpackage)
+                    if injected:
+                        self.updateProgress(
+                            bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(atom),),
+                            importance = 1,
+                            type = "warning",
+                            header = darkred(" * ")
+                        )
 
-                # check for injection and warn the developer
-                injected = self.isInjected(idpackage)
-                if injected:
-                    self.updateProgress(
-                                            bold("INJECT: ")+red("Package %s has been injected. You need to quickpkg it manually to update embedded database !!! Repository database will be updated anyway.") % (blue(atom),),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = darkred(" * ")
-                                        )
+        iddeps = self.searchDependency(atomkey, like = True, multi = True)
+        for iddep in iddeps:
+            # update string
+            mydep = self.retrieveDependencyFromIddependency(iddep)
+            mydep_key = self.entropyTools.dep_getkey(mydep)
+            if mydep_key != atomkey:
+                continue
+            if not mydep.endswith(":"+slot_from): # probably slotted dep
+                continue
+            mydep = mydep.replace(":"+slot_from,":"+slot_to)
+            # now update
+            # dependstable on server is always re-generated
+            self.setDependency(iddep, mydep)
+            # we have to repackage also package owning this iddep
+            iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
 
         self.commitChanges()
         for idpackage_owner in iddependencies_idpackages:
@@ -2621,12 +2648,15 @@ class etpDatabase:
 	return self.fetchall2set(self.cursor.fetchall())
 
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
-    def searchDependency(self, dep, like = False, multi = False):
+    def searchDependency(self, dep, like = False, multi = False, strings = False):
         sign = "="
         if like:
             sign = "LIKE"
             dep = "%"+dep+"%"
-        self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency '+sign+' (?)', (dep,))
+        item = 'iddependency'
+        if strings:
+            item = 'dependency'
+        self.cursor.execute('SELECT '+item+' FROM dependenciesreference WHERE dependency '+sign+' (?)', (dep,))
         if multi:
             return self.fetchall2set(self.cursor.fetchall())
         else:
