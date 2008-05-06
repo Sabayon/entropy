@@ -9468,6 +9468,17 @@ class PortageInterface:
             import portage.const as portage_const
         self.portage_const = portage_const
 
+    def run_fixpackages(self, myroot = None):
+        if myroot == None:
+            myroot = etpConst['systemroot']+"/"
+        mydb = {}
+        mydb[myroot] = {}
+        mydb[myroot]['vartree'] = self._get_portage_vartree(myroot)
+        mydb[myroot]['porttree'] = self._get_portage_portagetree(myroot)
+        mydb[myroot]['bintree'] = self._get_portage_binarytree(myroot)
+        mydb[myroot]['virtuals'] = self.portage.settings.getvirtuals(myroot)
+        self.portage._global_updates(mydb, {}) # always force
+
     def get_third_party_mirrors(self, mirrorname):
         x = []
         if self.portage.thirdpartymirrors.has_key(mirrorname):
@@ -9554,6 +9565,37 @@ class PortageInterface:
 
         mytree = self.portage.vartree(root=root)
         etpConst['spm']['cache']['portage']['vartree'][root] = mytree
+        return mytree
+
+    def _get_portage_portagetree(self, root):
+
+        if not etpConst['spm']['cache'].has_key('portage'):
+            etpConst['spm']['cache']['portage'] = {}
+        if not etpConst['spm']['cache']['portage'].has_key('portagetree'):
+            etpConst['spm']['cache']['portage']['portagetree'] = {}
+
+        cached = etpConst['spm']['cache']['portage']['portagetree'].get(root)
+        if cached != None:
+            return cached
+
+        mytree = self.portage.portagetree(root=root)
+        etpConst['spm']['cache']['portage']['portagetree'][root] = mytree
+        return mytree
+
+    def _get_portage_binarytree(self, root):
+
+        if not etpConst['spm']['cache'].has_key('portage'):
+            etpConst['spm']['cache']['portage'] = {}
+        if not etpConst['spm']['cache']['portage'].has_key('binarytree'):
+            etpConst['spm']['cache']['portage']['binarytree'] = {}
+
+        cached = etpConst['spm']['cache']['portage']['binarytree'].get(root)
+        if cached != None:
+            return cached
+
+        pkgdir = root+self.portage.settings['PKGDIR']
+        mytree = self.portage.binarytree(root,pkgdir)
+        etpConst['spm']['cache']['portage']['binarytree'][root] = mytree
         return mytree
 
     def _get_portage_config(self, config_root, root):

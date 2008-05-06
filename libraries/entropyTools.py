@@ -1309,15 +1309,19 @@ def spawnFunction(f, *args, **kwds):
 # tar* uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 
-    import tarfile
-
     if extractPath is None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
         raise exceptionTools.FileNotFound('archive does not exist')
 
+    _tarfile = True
+    try:
+        import tarfile
+    except ImportError:
+        _tarfile = False
+
     ### XXX dirty bastard workaround for buggy python2.4's tarfile
-    if sys.version[:3] == "2.4":
+    if sys.version[:3] == "2.4" or not _tarfile:
         rc = compat_uncompressTarBz2(filepath, extractPath)
         return rc
 

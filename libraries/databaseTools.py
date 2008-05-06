@@ -486,10 +486,13 @@ class etpDatabase:
                                     header = darkred(" * ")
                                 )
             if self.clientDatabase:
-                myroot = etpConst['systemroot']+"/"
-                os.system("fixpackages &> /dev/null")
+                try:
+                    Spm = self.ServiceInterface.Spm()
+                    Spm.run_fixpackages()
+                except:
+                    pass
             else:
-                os.system("fixpackages")
+                self.ServiceInterface.SpmService.run_fixpackages()
 
         quickpkg_atoms = set()
         for action in actions:
