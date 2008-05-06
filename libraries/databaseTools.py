@@ -423,6 +423,10 @@ class etpDatabase:
     def filterTreeUpdatesActions(self, actions):
         new_actions = []
         for action in actions:
+
+            if action in new_actions: # skip dupies
+                continue
+
             doaction = action.split()
             if doaction[0] == "slotmove":
                 # slot move
