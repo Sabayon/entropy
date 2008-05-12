@@ -3234,6 +3234,9 @@ class etpDatabase:
             elif name.startswith("sqlite_"):
                 continue
             else:
+                t_cmd = "CREATE TABLE"
+                if sql.startswith(t_cmd):
+                    sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
                 dumpfile.write("%s;\n" % sql)
 
             self.cursor.execute("PRAGMA table_info('%s')" % name)

@@ -5831,6 +5831,8 @@ class RepoInterface:
                 if os.path.isfile(dbfile):
                     os.remove(dbfile)
                 dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
+                #dbconn.initializeDatabase()
+                #dbconn.createAllIndexes()
                 rc = dbconn.doDatabaseImport(dumpfile, dbfile)
                 dbconn.closeDB()
                 del dbconn
