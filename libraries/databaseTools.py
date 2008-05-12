@@ -3213,7 +3213,7 @@ class etpDatabase:
         retcode = subprocess.call(sqlite3_exec, shell = True)
         return retcode
 
-    def doDatabaseExport(self, dumpfile):
+    def doDatabaseExport(self, dumpfile, gentle_with_tables = True):
 
         dumpfile.write("BEGIN TRANSACTION;\n")
         self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type=='table'")
@@ -3235,7 +3235,7 @@ class etpDatabase:
                 continue
             else:
                 t_cmd = "CREATE TABLE"
-                if sql.startswith(t_cmd):
+                if sql.startswith(t_cmd) and gentle_with_tables:
                     sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
                 dumpfile.write("%s;\n" % sql)
 

@@ -5831,8 +5831,6 @@ class RepoInterface:
                 if os.path.isfile(dbfile):
                     os.remove(dbfile)
                 dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
-                #dbconn.initializeDatabase()
-                #dbconn.createAllIndexes()
                 rc = dbconn.doDatabaseImport(dumpfile, dbfile)
                 dbconn.closeDB()
                 del dbconn
@@ -15747,7 +15745,8 @@ class ServerMirrorsInterface:
         mtime = self.entropyTools.getFileUnixMtime(pkg_path)
         delta = int(etpConst['packagesexpirationdays'])*24*3600
         currmtime = time.time()
-        if currmtime - mtime > delta:
+        file_delta = currmtime - mtime
+        if file_delta > delta:
             return True
         return False
 
