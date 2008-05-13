@@ -789,7 +789,7 @@ class etpDatabase:
 
         return removelist
 
-    def addPackage(self, etpData, revision = -1):
+    def addPackage(self, etpData, revision = -1, idpackage = None, do_remove = True, do_commit = True):
 
         self.checkReadOnly()
         self.live_cache.clear()
@@ -801,15 +801,16 @@ class etpDatabase:
                 etpData['revision'] = 0 # revision not specified
                 revision = 0
 
-        removelist = self.retrieve_packages_to_remove(
-                        etpData['name'],
-                        etpData['category'],
-                        etpData['slot'],
-                        etpConst['branch'],
-                        etpData['injected']
-        )
-        for pkg in removelist:
-            self.removePackage(pkg)
+        if do_remove:
+            removelist = self.retrieve_packages_to_remove(
+                            etpData['name'],
+                            etpData['category'],
+                            etpData['slot'],
+                            etpConst['branch'],
+                            etpData['injected']
+            )
+            for pkg in removelist:
+                self.removePackage(pkg)
 
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(etpData['category'])
@@ -855,23 +856,33 @@ class etpDatabase:
             # create category
             idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
 
+        mybaseinfo_data = [
+            pkgatom,
+            catid,
+            etpData['name'],
+            etpData['version'],
+            etpData['versiontag'],
+            revision,
+            etpData['branch'],
+            etpData['slot'],
+            licid,
+            etpData['etpapi'],
+            trigger
+        ]
+
+        myidpackage_string = 'NULL'
+        if type(idpackage) is int:
+            myidpackage_string = '?'
+            mybaseinfo_data.insert(0,idpackage)
+        else:
+            idpackage = None
         self.cursor.execute(
                 'INSERT into baseinfo VALUES '
-                '(NULL,?,?,?,?,?,?,?,?,?,?,?)'
-                , (	pkgatom,
-                        catid,
-                        etpData['name'],
-                        etpData['version'],
-                        etpData['versiontag'],
-                        revision,
-                        etpData['branch'],
-                        etpData['slot'],
-                        licid,
-                        etpData['etpapi'],
-                        trigger,
-                        )
+                '('+myidpackage_string+',?,?,?,?,?,?,?,?,?,?,?)'
+                , mybaseinfo_data
         )
-        idpackage = self.cursor.lastrowid
+        if idpackage == None:
+            idpackage = self.cursor.lastrowid
 
         # extrainfo
         self.cursor.execute(
@@ -1120,7 +1131,8 @@ class etpDatabase:
             )
 
         self.clearCache()
-        self.commitChanges()
+        if do_commit:
+            self.commitChanges()
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
@@ -1203,7 +1215,7 @@ class etpDatabase:
             return self.addPackage(etpData, revision = curRevision)
 
 
-    def removePackage(self,idpackage):
+    def removePackage(self, idpackage, do_cleanup = True, do_commit = True):
 
         self.checkReadOnly()
         self.live_cache.clear()
@@ -1314,17 +1326,14 @@ class etpDatabase:
         # Remove from dependstable if exists
         self.removePackageFromDependsTable(idpackage)
 
-        # Cleanups if at least one package has been removed
-        self.cleanupUseflags()
-        self.cleanupSources()
-        self.cleanupEclasses()
-        self.cleanupNeeded()
-        self.cleanupDependencies()
+        if do_cleanup:
+            # Cleanups if at least one package has been removed
+            self.doCleanups()
+            # clear caches
+            self.clearCache()
 
-        # clear caches
-        self.clearCache()
-
-        self.commitChanges()
+        if do_commit:
+            self.commitChanges()
 
     def removeMirrorEntries(self,mirrorname):
         self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = "'+mirrorname+'"')
@@ -1622,6 +1631,12 @@ class etpDatabase:
         self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
         return diff
 
+    def doCleanups(self):
+        self.cleanupUseflags()
+        self.cleanupSources()
+        self.cleanupEclasses()
+        self.cleanupNeeded()
+        self.cleanupDependencies()
 
     def cleanupUseflags(self):
         self.checkReadOnly()
@@ -3072,6 +3087,7 @@ class etpDatabase:
             self.createAllIndexes()
 
         # do manual atoms update
+        # FIXME: remove this ASAP (0.16.x branch)
         if os.access(self.dbFile,os.W_OK) and \
             (self.dbname != etpConst['genericdbid']):
                 old_readonly = self.readOnly
@@ -3196,16 +3212,87 @@ class etpDatabase:
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
+    def alignDatabases(self, dbconn, force = False, output_header = "  "):
+
+        myids = self.listAllIdpackages()
+        outids = dbconn.listAllIdpackages()
+        added_ids = outids - myids
+        removed_ids = myids - outids
+
+        if not force:
+            if len(added_ids) > 120: # too much hassle
+                return 0
+            if len(removed_ids) > 120: # too much hassle
+                return 0
+
+        if not added_ids and not removed_ids:
+            return -1
+
+        self.updateProgress(
+            red("Syncing current database, please wait..."),
+            importance = 1,
+            type = "info",
+            header = output_header,
+            back = True
+        )
+        maxcount = len(removed_ids)
+        mycount = 0
+        for idpackage in removed_ids:
+            mycount += 1
+            self.updateProgress(
+                red("Removing package: ") + blue(str(self.retrieveAtom(idpackage))),
+                importance = 0,
+                type = "info",
+                header = output_header,
+                back = True,
+                count = (mycount,maxcount)
+            )
+            self.removePackage(idpackage, do_cleanup = False, do_commit = False)
+        maxcount = len(added_ids)
+        mycount = 0
+        for idpackage in added_ids:
+            mycount += 1
+            self.updateProgress(
+                red("Adding package: ") + blue(str(dbconn.retrieveAtom(idpackage))),
+                importance = 0,
+                type = "info",
+                header = output_header,
+                back = True,
+                count = (mycount,maxcount)
+            )
+            mydata = dbconn.getPackageData(idpackage)
+            self.addPackage(
+                mydata,
+                revision = mydata['revision'],
+                idpackage = idpackage,
+                do_remove = False,
+                do_commit = False
+            )
+
+        # do some cleanups
+        self.doCleanups()
+        # clear caches
+        self.clearCache()
+        self.commitChanges()
+        self.regenerateDependsTable(output = False)
+
+        # verify both checksums, if they don't match, bomb out
+        mycheck = self.database_checksum(do_order = True)
+        outcheck = dbconn.database_checksum(do_order = True)
+        if mycheck == outcheck:
+            return 1
+        return 0
+
     def checkDatabaseApi(self):
 
         dbapi = self.getApi()
         if dbapi > etpConst['etpapi']:
             self.updateProgress(
-                                            red("Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as possible !"),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = " * ! * ! * ! * "
-                            )
+                red("Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as possible !"),
+                importance = 1,
+                type = "warning",
+                header = " * ! * ! * ! * "
+            )
 
     def doDatabaseImport(self, dumpfile, dbfile):
         import subprocess
@@ -3297,11 +3384,29 @@ class etpDatabase:
             columns.append(row[1])
         return columns
 
-    def database_checksum(self):
+    def database_checksum(self, do_order = False):
         # primary keys are now autoincrement
-        self.cursor.execute('select idpackage from baseinfo')
+        idpackage_order = ''
+        idcategory_order = ''
+        idlicense_order = ''
+        idflags_order = ''
+        if do_order:
+            idpackage_order = ' order by idpackage'
+            idcategory_order = ' order by idcategory'
+            idlicense_order = ' order by idlicense'
+            idflags_order = ' order by idflags'
+
+        self.cursor.execute('select idpackage from baseinfo'+idpackage_order)
+        a_hash = hash(tuple(self.cursor.fetchall()))
+        self.cursor.execute('select idpackage from extrainfo'+idpackage_order)
+        b_hash = hash(tuple(self.cursor.fetchall()))
+        self.cursor.execute('select idcategory from categories'+idcategory_order)
         c_hash = hash(tuple(self.cursor.fetchall()))
-        return str(c_hash)
+        self.cursor.execute('select idlicense from licenses'+idlicense_order)
+        d_hash = hash(tuple(self.cursor.fetchall()))
+        self.cursor.execute('select idflags from flags'+idflags_order)
+        e_hash = hash(tuple(self.cursor.fetchall()))
+        return str(a_hash)+str(b_hash)+str(c_hash)+str(d_hash)+str(e_hash)
 
 
 ########################################################

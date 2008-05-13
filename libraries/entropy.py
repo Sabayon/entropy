@@ -5819,6 +5819,7 @@ class RepoInterface:
                     self.Entropy.cycleDone()
                     continue
 
+            do_eapi2_db_update_transfer = False
             if self.dbformat_eapi == 2:
                 # load the dump into database
                 self.Entropy.updateProgress(    red("Injecting downloaded dump ") + darkgreen(etpConst[cmethod[3]])+red(", please wait ..."),
@@ -5827,13 +5828,33 @@ class RepoInterface:
                                                 header = "\t"
                                 )
                 dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
+                dbfile_old = dbfile+".sync"
                 dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
+
                 if os.path.isfile(dbfile):
-                    os.remove(dbfile)
+                    shutil.move(dbfile,dbfile_old)
+                    do_eapi2_db_update_transfer = True
                 dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
                 rc = dbconn.doDatabaseImport(dumpfile, dbfile)
                 dbconn.closeDB()
-                del dbconn
+                dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
+
+                if do_eapi2_db_update_transfer:
+                    old_dbconn = self.Entropy.openGenericDatabase(dbfile_old, xcache = False, indexing_override = False)
+                    upd_rc = 0
+                    try:
+                        upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
+                    except self.Entropy.databaseTools.dbapi2.OperationalError:
+                        pass
+                    except self.Entropy.databaseTools.dbapi2.IntegrityError:
+                        pass
+                    old_dbconn.closeDB()
+                    del old_dbconn
+                    if upd_rc > 0:
+                        # -1 means no changes, == force used
+                        # 0 means too much hassle
+                        shutil.move(dbfile_old,dbfile)
+
                 # remove the dump
                 os.remove(dumpfile)
                 if rc != 0:
