@@ -812,32 +812,25 @@ class etpDatabase:
             for pkg in removelist:
                 self.removePackage(pkg)
 
+        ### create new ids
+
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(etpData['category'])
-        if (catid == -1):
-            # create category
-            catid = self.addCategory(etpData['category'])
-
+        if catid == -1: catid = self.addCategory(etpData['category'])
 
         # create new license if it doesn't exist
         licid = self.isLicenseAvailable(etpData['license'])
-        if (licid == -1):
-            # create category
-            licid = self.addLicense(etpData['license'])
+        if licid == -1: licid = self.addLicense(etpData['license'])
 
-        # insert license information
-        mylicenses = etpData['licensedata'].keys()
-        for mylicense in mylicenses:
-            found = self.isLicensedataKeyAvailable(mylicense)
-            if not found:
-                text = etpData['licensedata'][mylicense]
-                self.cursor.execute(
-                    'INSERT into licensedata VALUES '
-                    '(?,?,?)'
-                    , (	mylicense,
-                            buffer(text),
-                            0,
-                ))
+        idprotect = self.isProtectAvailable(etpData['config_protect'])
+        if idprotect == -1: idprotect = self.addProtect(etpData['config_protect'])
+
+        idprotect_mask = self.isProtectAvailable(etpData['config_protect_mask'])
+        if idprotect_mask == -1: idprotect_mask = self.addProtect(etpData['config_protect_mask'])
+
+        idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+        if idflags == -1: idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+
 
         # look for configured versiontag
         versiontag = ""
@@ -850,11 +843,6 @@ class etpDatabase:
 
         # baseinfo
         pkgatom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
-        # create new idflag if it doesn't exist
-        idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
-        if (idflags == -1):
-            # create category
-            idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
 
         mybaseinfo_data = [
             pkgatom,
@@ -900,235 +888,38 @@ class etpDatabase:
         )
         ### other information iserted below are not as critical as these above
 
-        # content, a list
-        self.insertContent(idpackage,etpData['content'])
-
-        etpData['counter'] = int(etpData['counter']) # cast to integer
-        if etpData['counter'] != -1 and not (etpData['injected']):
-
-            if etpData['counter'] <= -2:
-                # special cases
-                etpData['counter'] = self.getNewNegativeCounter()
-
-            try:
-                self.cursor.execute(
-                'INSERT into counters VALUES '
-                '(?,?,?)'
-                , ( etpData['counter'],
-                    idpackage,
-                    etpData['branch'],
-                    )
-                )
-            except dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
-                self.migrateCountersTable()
-                self.cursor.execute(
-                'INSERT into counters VALUES '
-                '(?,?,?)'
-                , ( etpData['counter'],
-                    idpackage,
-                    etpData['branch'],
-                    )
-                )
-            except:
-                if self.dbname == etpConst['clientdbid']: # force only for client database
-                    if self.doesTableExist("counters"):
-                        raise
-                    self.cursor.execute(
-                    'INSERT into counters VALUES '
-                    '(?,?,?)'
-                    , ( etpData['counter'],
-                        idpackage,
-                        etpData['branch'],
-                        )
-                    )
-                elif self.dbname.startswith(etpConst['serverdbid']):
-                    raise
-
-        # on disk size
-        self.cursor.execute(
-        'INSERT into sizes VALUES '
-        '(?,?)'
-        , (	idpackage,
-            etpData['disksize'],
-            )
-        )
-
-        # trigger blob
-        self.cursor.execute(
-        'INSERT into triggers VALUES '
-        '(?,?)'
-        , (	idpackage,
-            buffer(etpData['trigger']),
-        ))
-
-        # eclasses table
-        for var in etpData['eclasses']:
-
-            idclass = self.isEclassAvailable(var)
-            if (idclass == -1):
-                # create eclass
-                idclass = self.addEclass(var)
-
-            self.cursor.execute(
-                'INSERT into eclasses VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        idclass,
-                        )
-            )
-
-        # needed table
-        for mydata in etpData['needed']:
-
-            needed = mydata[0]
-            elfclass = mydata[1]
-            idneeded = self.isNeededAvailable(needed)
-
-            if (idneeded == -1):
-                # create eclass
-                idneeded = self.addNeeded(needed)
-
-            self.cursor.execute(
-                'INSERT into needed VALUES '
-                '(?,?,?)'
-                , (	idpackage,
-                        idneeded,
-                        elfclass,
-                        )
-            )
-
-        # dependencies, a list
+        # tables using a select
+        self.insertEclasses(idpackage, etpData['eclasses'])
+        self.insertNeeded(idpackage, etpData['needed'])
         self.insertDependencies(idpackage, etpData['dependencies'])
+        self.insertSources(idpackage, etpData['sources'])
+        self.insertUseflags(idpackage, etpData['useflags'])
+        self.insertKeywords(idpackage, etpData['keywords'])
+        self.insertLicenses(etpData['licensedata'])
+        self.insertMirrors(etpData['mirrorlinks'])
 
-        # provide
-        for atom in etpData['provide']:
-            self.cursor.execute(
-                'INSERT into provide VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        atom,
-                        )
-            )
-
+        # not depending on other tables == no select done
+        self.insertContent(idpackage,etpData['content'])
+        etpData['counter'] = int(etpData['counter']) # cast to integer
+        etpData['counter'] = self.insertPortageCounter(
+                                idpackage,
+                                etpData['counter'],
+                                etpData['branch'],
+                                etpData['injected']
+        )
+        self.insertOnDiskSize(idpackage, etpData['disksize'])
+        self.insertTrigger(idpackage, etpData['trigger'])
+        self.insertConflicts(idpackage, etpData['conflicts'])
+        self.insertProvide(idpackage, etpData['provide'])
+        self.insertMessages(idpackage, etpData['messages'])
+        self.insertConfigProtect(idpackage, idprotect)
+        self.insertConfigProtect(idpackage, idprotect_mask, mask = True)
         # injected?
         if etpData['injected']:
-            self.setInjected(idpackage)
-
-        # compile messages
-        for message in etpData['messages']:
-            self.cursor.execute(
-            'INSERT into messages VALUES '
-            '(?,?)'
-            , (	idpackage,
-                    message,
-                    )
-            )
-
+            self.setInjected(idpackage, do_commit = False)
         # is it a system package?
         if etpData['systempackage']:
-            self.cursor.execute(
-                'INSERT into systempackages VALUES '
-                '(?)'
-                , (	idpackage,
-                        )
-            )
-
-        # create new protect if it doesn't exist
-        idprotect = self.isProtectAvailable(etpData['config_protect'])
-        if (idprotect == -1):
-            # create category
-            idprotect = self.addProtect(etpData['config_protect'])
-        # fill configprotect
-        self.cursor.execute(
-                'INSERT into configprotect VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        idprotect,
-                        )
-        )
-
-        idprotect = self.isProtectAvailable(etpData['config_protect_mask'])
-        if (idprotect == -1):
-            # create category
-            idprotect = self.addProtect(etpData['config_protect_mask'])
-        # fill configprotect
-        self.cursor.execute(
-                'INSERT into configprotectmask VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        idprotect,
-                        )
-        )
-
-        # conflicts, a list
-        for conflict in etpData['conflicts']:
-            self.cursor.execute(
-                'INSERT into conflicts VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        conflict,
-                        )
-            )
-
-        # mirrorlinks, always update the table
-        for mirrordata in etpData['mirrorlinks']:
-            mirrorname = mirrordata[0]
-            mirrorlist = mirrordata[1]
-            # remove old
-            self.removeMirrorEntries(mirrorname)
-            # add new
-            self.addMirrors(mirrorname,mirrorlist)
-
-        # sources, a list
-        for source in etpData['sources']:
-
-            if (not source) or (source == "") or (not self.entropyTools.is_valid_string(source)):
-                continue
-
-            idsource = self.isSourceAvailable(source)
-            if (idsource == -1):
-                # create category
-                idsource = self.addSource(source)
-
-            self.cursor.execute(
-                'INSERT into sources VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        idsource,
-                        )
-            )
-
-        # useflags, a list
-        for flag in etpData['useflags']:
-
-            iduseflag = self.isUseflagAvailable(flag)
-            if (iduseflag == -1):
-                # create category
-                iduseflag = self.addUseflag(flag)
-
-            self.cursor.execute(
-                'INSERT into useflags VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        iduseflag,
-                        )
-            )
-
-        # create new keyword if it doesn't exist
-        for key in etpData['keywords']:
-
-            idkeyword = self.isKeywordAvailable(key)
-            if (idkeyword == -1):
-                # create category
-                idkeyword = self.addKeyword(key)
-
-            self.cursor.execute(
-                'INSERT into keywords VALUES '
-                '(?,?)'
-                , (	idpackage,
-                        idkeyword,
-                        )
-            )
+            self.setSystemPackage(idpackage, do_commit = False)
 
         self.clearCache()
         if do_commit:
@@ -1457,7 +1248,13 @@ class etpDatabase:
             return idflag
         raise exceptionTools.CorruptionError("CorruptionError: I tried to insert compile flags but then, fetching it returned -1. There's something broken.")
 
-    def setInjected(self, idpackage):
+    def setSystemPackage(self, idpackage, do_commit = True):
+        self.checkReadOnly()
+        self.cursor.execute('INSERT into systempackages VALUES (?)', (idpackage,))
+        if do_commit:
+            self.commitChanges()
+
+    def setInjected(self, idpackage, do_commit = True):
         self.checkReadOnly()
         if not self.isInjected(idpackage):
             self.cursor.execute(
@@ -1465,7 +1262,8 @@ class etpDatabase:
                 '(?)'
                 , ( idpackage, )
             )
-        self.commitChanges()
+        if do_commit:
+            self.commitChanges()
 
     # date expressed the unix way
     def setDateCreation(self, idpackage, date):
@@ -1536,6 +1334,7 @@ class etpDatabase:
     def insertDependencies(self, idpackage, depdata):
 
         dcache = set()
+        deps = set()
         for dep in depdata:
 
             if dep in dcache:
@@ -1551,16 +1350,14 @@ class etpDatabase:
             else:
                 deptype = 0
 
+            deps.add((idpackage,iddep,deptype,))
             dcache.add(dep)
 
-            self.cursor.execute(
-                'INSERT into dependencies VALUES '
-                '(?,?,?)'
-                , (	idpackage,
-                        iddep,
-                        deptype,
-                        )
-            )
+        def myiter():
+            for item in deps:
+                yield item
+
+        self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', myiter())
 
     def removeContent(self, idpackage):
         self.checkReadOnly()
@@ -1577,6 +1374,193 @@ class etpDatabase:
                 yield (idpackage,xfile,contenttype,)
 
         self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',myiter())
+
+    def insertLicenses(self, licenses_data):
+
+        mylicenses = licenses_data.keys()
+        mydata = []
+        for mylicense in mylicenses:
+            found = self.isLicensedataKeyAvailable(mylicense)
+            if found:
+                continue
+            mydata.append((mylicense,buffer(licenses_data[mylicense]),0,))
+
+        def myiter():
+            for item in mydata:
+                yield item
+
+        self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',myiter())
+
+    def insertConfigProtect(self, idpackage, idprotect, mask = False):
+
+        mytable = 'configprotect'
+        if mask: mytable += 'mask'
+        self.cursor.execute('INSERT into '+mytable+' VALUES (?,?)', (idpackage,idprotect,))
+
+
+    def insertMirrors(self, mirrors):
+
+        for mirrorname,mirrorlist in mirrors:
+            # remove old
+            self.removeMirrorEntries(mirrorname)
+            # add new
+            self.addMirrors(mirrorname,mirrorlist)
+
+    def insertKeywords(self, idpackage, keywords):
+
+        mydata = set()
+        for key in keywords:
+            idkeyword = self.isKeywordAvailable(key)
+            if (idkeyword == -1):
+                # create category
+                idkeyword = self.addKeyword(key)
+            mydata.add((idpackage,idkeyword,))
+
+        def myiter():
+            for item in mydata:
+                yield item
+
+        self.cursor.executemany('INSERT into keywords VALUES (?,?)',myiter())
+
+    def insertUseflags(self, idpackage, useflags):
+
+        mydata = set()
+        for flag in useflags:
+            iduseflag = self.isUseflagAvailable(flag)
+            if (iduseflag == -1):
+                # create category
+                iduseflag = self.addUseflag(flag)
+            mydata.add((idpackage,iduseflag,))
+
+        def myiter():
+            for item in mydata:
+                yield item
+
+        self.cursor.executemany('INSERT into useflags VALUES (?,?)',myiter())
+
+    def insertSources(self, idpackage, sources):
+
+        mydata = set()
+        for source in sources:
+            if (not source) or (source == "") or (not self.entropyTools.is_valid_string(source)):
+                continue
+            idsource = self.isSourceAvailable(source)
+            if (idsource == -1):
+                # create category
+                idsource = self.addSource(source)
+            mydata.add((idpackage,idsource,))
+
+        def myiter():
+            for item in mydata:
+                yield item
+
+        self.cursor.executemany('INSERT into sources VALUES (?,?)',myiter())
+
+    def insertConflicts(self, idpackage, conflicts):
+
+        def myiter():
+            for conflict in conflicts:
+                yield (idpackage,conflict,)
+
+        self.cursor.executemany('INSERT into conflicts VALUES (?,?)',myiter())
+
+    def insertMessages(self, idpackage, messages):
+
+        def myiter():
+            for message in messages:
+                yield (idpackage,message,)
+
+        self.cursor.executemany('INSERT into messages VALUES (?,?)',myiter())
+
+    def insertProvide(self, idpackage, provides):
+
+        def myiter():
+            for atom in provides:
+                yield (idpackage,atom,)
+
+        self.cursor.executemany('INSERT into provide VALUES (?,?)',myiter())
+
+    def insertNeeded(self, idpackage, neededs):
+
+        mydata = set()
+        for needed,elfclass in neededs:
+            idneeded = self.isNeededAvailable(needed)
+            if idneeded == -1:
+                # create eclass
+                idneeded = self.addNeeded(needed)
+            mydata.add((idpackage,idneeded,elfclass))
+
+        def myiter():
+            for item in mydata:
+                yield item
+
+        self.cursor.executemany('INSERT into needed VALUES (?,?,?)',myiter())
+
+    def insertEclasses(self, idpackage, eclasses):
+
+        mydata = set()
+        for eclass in eclasses:
+            idclass = self.isEclassAvailable(eclass)
+            if (idclass == -1):
+                # create eclass
+                idclass = self.addEclass(eclass)
+            mydata.add((idpackage,idclass))
+
+        def myiter():
+            for item in mydata:
+                yield item
+
+        self.cursor.executemany('INSERT into eclasses VALUES (?,?)',myiter())
+
+    def insertOnDiskSize(self, idpackage, mysize):
+        self.cursor.execute('INSERT into sizes VALUES (?,?)', (idpackage,mysize,))
+
+    def insertTrigger(self, idpackage, trigger):
+        self.cursor.execute('INSERT into triggers VALUES (?,?)', (idpackage,buffer(trigger),))
+
+    def insertPortageCounter(self, idpackage, counter, branch, injected):
+
+        if (counter != -1) and not injected:
+
+            if counter <= -2:
+                # special cases
+                counter = self.getNewNegativeCounter()
+
+            try:
+                self.cursor.execute(
+                'INSERT into counters VALUES '
+                '(?,?,?)'
+                , ( counter,
+                    idpackage,
+                    branch,
+                    )
+                )
+            except dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
+                self.migrateCountersTable()
+                self.cursor.execute(
+                'INSERT into counters VALUES '
+                '(?,?,?)'
+                , ( counter,
+                    idpackage,
+                    branch,
+                    )
+                )
+            except:
+                if self.dbname == etpConst['clientdbid']: # force only for client database
+                    if self.doesTableExist("counters"):
+                        raise
+                    self.cursor.execute(
+                    'INSERT into counters VALUES '
+                    '(?,?,?)'
+                    , ( counter,
+                        idpackage,
+                        branch,
+                        )
+                    )
+                elif self.dbname.startswith(etpConst['serverdbid']):
+                    raise
+
+        return counter
 
     def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
@@ -3212,7 +3196,7 @@ class etpDatabase:
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
-    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 250):
+    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 220):
 
         myids = self.listAllIdpackages()
         outids = dbconn.listAllIdpackages()
@@ -3248,6 +3232,7 @@ class etpDatabase:
                 count = (mycount,maxcount)
             )
             self.removePackage(idpackage, do_cleanup = False, do_commit = False)
+
         maxcount = len(added_ids)
         mycount = 0
         for idpackage in added_ids:
@@ -3396,15 +3381,15 @@ class etpDatabase:
             idlicense_order = ' order by idlicense'
             idflags_order = ' order by idflags'
 
-        self.cursor.execute('select idpackage from baseinfo'+idpackage_order)
+        self.cursor.execute('select * from baseinfo'+idpackage_order)
         a_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select idpackage from extrainfo'+idpackage_order)
+        self.cursor.execute('select * from extrainfo'+idpackage_order)
         b_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select idcategory from categories'+idcategory_order)
+        self.cursor.execute('select * from categories'+idcategory_order)
         c_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select idlicense from licenses'+idlicense_order)
+        self.cursor.execute('select * from licenses'+idlicense_order)
         d_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select idflags from flags'+idflags_order)
+        self.cursor.execute('select * from flags'+idflags_order)
         e_hash = hash(tuple(self.cursor.fetchall()))
         return str(a_hash)+str(b_hash)+str(c_hash)+str(d_hash)+str(e_hash)
 
