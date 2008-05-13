@@ -3212,7 +3212,7 @@ class etpDatabase:
         if rslt == None:
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: table extrainfo not found. Either does not exist or corrupted.")
 
-    def alignDatabases(self, dbconn, force = False, output_header = "  "):
+    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 250):
 
         myids = self.listAllIdpackages()
         outids = dbconn.listAllIdpackages()
@@ -3220,9 +3220,9 @@ class etpDatabase:
         removed_ids = myids - outids
 
         if not force:
-            if len(added_ids) > 120: # too much hassle
+            if len(added_ids) > align_limit: # too much hassle
                 return 0
-            if len(removed_ids) > 120: # too much hassle
+            if len(removed_ids) > align_limit: # too much hassle
                 return 0
 
         if not added_ids and not removed_ids:

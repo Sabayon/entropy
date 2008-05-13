@@ -2353,10 +2353,7 @@ class EquoInterface(TextInterface):
                 # XXX check if stupid users removed idpackage while this whole instance is running
                 if not self.clientDbconn.isIDPackageAvailable(x):
                     continue
-                myremmatch |= set([{
-                        (self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),
-                        self.clientDbconn.retrieveSlot(x)): x
-                }])
+                myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x})
             for packageInfo in install:
                 dbconn = self.openRepositoryDatabase(packageInfo[1])
                 testtuple = (
@@ -5436,6 +5433,7 @@ class RepoInterface:
         self.noEquoCheck = noEquoCheck
         self.alreadyUpdated = 0
         self.notAvailable = 0
+        self.valid_eapis = [1,2]
         self.reset_dbformat_eapi()
 
         # check etpRepositories
@@ -5460,6 +5458,15 @@ class RepoInterface:
             import subprocess
             rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null", shell = True)
             if rc != 0: self.dbformat_eapi = 1
+
+        eapi_env = os.getenv("FORCE_EAPI")
+        if eapi_env != None:
+            try:
+                myeapi = int(eapi_env)
+            except (ValueError,TypeError,):
+                return
+            if myeapi in self.valid_eapis:
+                self.dbformat_eapi = myeapi
 
 
     def __validate_repository_id(self, repoid):
@@ -5795,6 +5802,9 @@ class RepoInterface:
                                                 header = "\t"
                                 )
 
+            # dealing with EAPI
+            rc = 0
+
             if self.dbformat_eapi == 2 and db_down_status:
                 rc = self.check_downloaded_database(repo, cmethod)
                 if rc != 0:
@@ -5813,6 +5823,18 @@ class RepoInterface:
                                             type = "info",
                                             header = "\t"
                                        )
+
+            do_db_update_transfer = False
+            dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
+            dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
+            dbfile_old = dbfile+".sync"
+            if os.path.isfile(dbfile):
+                try:
+                    shutil.move(dbfile,dbfile_old)
+                    do_db_update_transfer = True
+                except:
+                    pass
+
             # unpack database
             self.__unpack_downloaded_database(repo, cmethod)
 
@@ -5823,9 +5845,17 @@ class RepoInterface:
                     self.__remove_repository_files(repo, cmethod)
                     self.syncErrors = True
                     self.Entropy.cycleDone()
+                    if do_db_update_transfer:
+                        try:
+                            os.remove(dbfile_old)
+                        except OSError:
+                            pass
                     continue
 
-            do_eapi2_db_update_transfer = False
+            # re-validate
+            if not os.path.isfile(dbfile):
+                do_db_update_transfer = False
+
             if self.dbformat_eapi == 2:
                 # load the dump into database
                 self.Entropy.updateProgress(    red("Injecting downloaded dump ") + darkgreen(etpConst[cmethod[3]])+red(", please wait ..."),
@@ -5833,19 +5863,14 @@ class RepoInterface:
                                                 type = "info",
                                                 header = "\t"
                                 )
-                dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
-                dbfile_old = dbfile+".sync"
-                dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
-
-                if os.path.isfile(dbfile):
-                    shutil.move(dbfile,dbfile_old)
-                    do_eapi2_db_update_transfer = True
                 dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
                 rc = dbconn.doDatabaseImport(dumpfile, dbfile)
                 dbconn.closeDB()
-                dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
 
-                if do_eapi2_db_update_transfer:
+            if self.dbformat_eapi in (1,2,):
+
+                dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
+                if do_db_update_transfer:
                     old_dbconn = self.Entropy.openGenericDatabase(dbfile_old, xcache = False, indexing_override = False)
                     upd_rc = 0
                     try:
@@ -5861,16 +5886,18 @@ class RepoInterface:
                         # 0 means too much hassle
                         shutil.move(dbfile_old,dbfile)
 
-                # remove the dump
-                os.remove(dumpfile)
-                if rc != 0:
-                    # delete all
-                    self.__remove_repository_files(repo, cmethod)
-                    self.syncErrors = True
-                    self.Entropy.cycleDone()
-                    continue
-                if os.path.isfile(dbfile):
-                    self.Entropy.setup_default_file_perms(dbfile)
+                if self.dbformat_eapi == 2:
+                    # remove the dump
+                    os.remove(dumpfile)
+
+            if rc != 0:
+                # delete all
+                self.__remove_repository_files(repo, cmethod)
+                self.syncErrors = True
+                self.Entropy.cycleDone()
+                continue
+            if os.path.isfile(dbfile):
+                self.Entropy.setup_default_file_perms(dbfile)
 
             # database is going to be updated
             self.dbupdated = True
