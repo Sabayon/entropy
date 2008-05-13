@@ -1,6 +1,7 @@
 TODO list
   - server/client-side: upload/download make.conf and package.* from portage
   - add i18n support
+  - server-side: automatic RSS generation through idpackage differential scanning
   - server-side: improve RDEPEND check output
   - server-side: add libtest to reagent
   - server-side: make reagent deptest a blocker to db commits
