@@ -2353,10 +2353,16 @@ class EquoInterface(TextInterface):
                 # XXX check if stupid users removed idpackage while this whole instance is running
                 if not self.clientDbconn.isIDPackageAvailable(x):
                     continue
-                myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x})
+                myremmatch |= set([{
+                        (self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),
+                        self.clientDbconn.retrieveSlot(x)): x
+                }])
             for packageInfo in install:
                 dbconn = self.openRepositoryDatabase(packageInfo[1])
-                testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),dbconn.retrieveSlot(packageInfo[0]))
+                testtuple = (
+                    self.entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),
+                    dbconn.retrieveSlot(packageInfo[0])
+                )
                 if testtuple in myremmatch:
                     # remove from removalQueue
                     if myremmatch[testtuple] in removal:
@@ -7826,7 +7832,17 @@ class TriggerInterface:
 
         self.myebuild_moved = None
         if os.path.isfile(myebuild):
-            myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
+            try:
+                myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
+            except EOFError, e:
+                # stuff on system is broken, ignore it
+                self.Entropy.updateProgress(
+                    darkred(" !!! Ebuild: pkg_prerm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ##")
+                )
+                return 0
 
         if os.path.isfile(myebuild):
 

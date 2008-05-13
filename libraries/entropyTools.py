@@ -1384,7 +1384,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 def bytesIntoHuman(bytes):
     size = str(round(float(bytes)/1024,1))
     if bytes < 1024:
-        size = str(bytes)+"b"
+        size = str(round(float(bytes)))+"b"
     elif bytes < 1023999:
         size += "kB"
     elif bytes > 1023999:
