@@ -131,15 +131,17 @@ class EquoInterface(TextInterface):
                 self.openRepositoryDatabase(repoid)
                 self.validRepositories.append(repoid)
             except exceptionTools.RepositoryError:
+                t = _("Repository") + repoid + _("is not available") + ". " + _("Cannot validate")
                 self.updateProgress(
-                                    darkred("Repository %s is not available. Cannot validate" % (repoid,)),
+                                    darkred(t),
                                     importance = 1,
                                     type = "warning"
                                    )
                 continue # repo not available
             except self.databaseTools.dbapi2.OperationalError:
+                t = _("Repository") + repoid + _("is corrupted") + ". " + _("Cannot validate")
                 self.updateProgress(
-                                    darkred("Repository %s is corrupted. Cannot validate" % (repoid,)),
+                                    darkred(t),
                                     importance = 1,
                                     type = "warning"
                                    )
@@ -199,7 +201,7 @@ class EquoInterface(TextInterface):
         if locked:
             if not silent:
                 self.updateProgress(
-                    red("Another Entropy instance is currently active, cannot satisfy your request."),
+                    red(_("Another Entropy instance is currently active, cannot satisfy your request.")),
                     importance = 1,
                     type = "error",
                     header = darkred(" @@ ")
@@ -218,26 +220,34 @@ class EquoInterface(TextInterface):
             locked = check_function()
             if not locked:
                 if lock_count > 0:
-                    self.updateProgress(    blue("Resources unlocked, let's go!"),
-                                                    importance = 1,
-                                                    type = "info",
-                                                    header = darkred(" @@ ")
-                                        )
+                    self.updateProgress(
+                        blue(_("Resources unlocked, let's go!")),
+                        importance = 1,
+                        type = "info",
+                        header = darkred(" @@ ")
+                    )
                 break
             if lock_count >= max_lock_count:
-                self.updateProgress(    blue("Resources still locked after %s minutes, giving up!") % (max_lock_count*sleep_seconds/60,),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = darkred(" @@ ")
-                                    )
+                mycalc = max_lock_count*sleep_seconds/60
+                self.updateProgress(
+                    blue(_("Resources still locked after %s minutes, giving up!")) % (mycalc,),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" @@ ")
+                )
                 return True # gave up
             lock_count += 1
-            self.updateProgress(    blue("Resources locked, sleeping %s seconds, check #%s/%s") % (sleep_seconds,lock_count,max_lock_count,),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = darkred(" @@ "),
-                                            back = True
-                                )
+            self.updateProgress(
+                blue(_("Resources locked, sleeping %s seconds, check #%s/%s")) % (
+                        sleep_seconds,
+                        lock_count,
+                        max_lock_count,
+                ),
+                importance = 1,
+                type = "warning",
+                header = darkred(" @@ "),
+                back = True
+            )
             time.sleep(sleep_seconds)
         return False # yay!
 
@@ -278,7 +288,8 @@ class EquoInterface(TextInterface):
                 myinst = etpConst[setting_name]
             etpConst['backed_up'].update({setting_name: myinst})
         else:
-            raise exceptionTools.InvalidData("InvalidData: nothing to backup in etpConst with %s key" % (setting_name,))
+            t = _("Nothing to backup in etpConst with %s key") % (setting_name,)
+            raise exceptionTools.InvalidData("InvalidData: %s" % (t,))
 
     def set_priority(self, low = 0):
         default_nice = etpConst['default_nice']
@@ -337,7 +348,12 @@ class EquoInterface(TextInterface):
         if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
             os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
         if (not self.noclientdb) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
-            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: system database not found or corrupted: %s" % (etpConst['etpdatabaseclientfilepath'],) )
+            t = _("System database not found or corrupted")
+            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: %s: %s" % (
+                    t,
+                    etpConst['etpdatabaseclientfilepath'],
+                )
+            )
         conn = self.databaseTools.etpDatabase(  readOnly = False,
                                                 dbFile = etpConst['etpdatabaseclientfilepath'],
                                                 clientDatabase = True,
@@ -366,15 +382,20 @@ class EquoInterface(TextInterface):
         return self.clientDbconn
 
     def clientDatabaseSanityCheck(self):
-        self.updateProgress(darkred("Sanity Check: system database"), importance = 2, type = "warning")
+        self.updateProgress(
+            darkred(_("Sanity Check") + ": " + _("system database")),
+            importance = 2,
+            type = "warning"
+        )
         idpkgs = self.clientDbconn.listAllIdpackages()
         length = len(idpkgs)
         count = 0
         errors = False
+        scanning_txt = _("Scanning...")
         for x in idpkgs:
             count += 1
             self.updateProgress(
-                                    darkgreen("Scanning..."),
+                                    darkgreen(scanning_txt),
                                     importance = 0,
                                     type = "info",
                                     back = True,
@@ -384,18 +405,29 @@ class EquoInterface(TextInterface):
             try:
                 self.clientDbconn.getPackageData(x)
             except Exception ,e:
+                self.entropyTools.printTraceback()
                 errors = True
                 self.updateProgress(
-                                        darkred("Errors on idpackage %s, exception: %s, error: %s") %  (str(x), str(Exception),str(e)),
-                                        importance = 0,
-                                        type = "warning"
-                                   )
+                    darkred(_("Errors on idpackage %s, error: %s")) % (x,str(e)),
+                    importance = 0,
+                    type = "warning"
+                )
 
         if not errors:
-            self.updateProgress(darkred("Sanity Check: %s") % (bold("PASSED"),), importance = 2, type = "warning")
+            t = _("Sanity Check") + ": %s" % (bold(_("PASSED")),)
+            self.updateProgress(
+                darkred(t),
+                importance = 2,
+                type = "warning"
+            )
             return 0
         else:
-            self.updateProgress(darkred("Sanity Check: %s") % (bold("CORRUPUTED"),), importance = 2, type = "warning")
+            t = _("Sanity Check") + ": %s" % (bold(_("CORRUPTED")),)
+            self.updateProgress(
+                darkred(t),
+                importance = 2,
+                type = "warning"
+            )
             return -1
 
     def openRepositoryDatabase(self, repoid):
@@ -431,16 +463,30 @@ class EquoInterface(TextInterface):
         # load the masking parser
         if etpConst['packagemasking'] == None:
             self.parse_masking_settings()
-
         if repositoryName.endswith(etpConst['packagesext']):
             xcache = False
+
         dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
+            t = _("Repository %s hasn't been downloaded yet.") % (repositoryName,)
             if repositoryName not in repo_error_messages_cache:
-                self.updateProgress(darkred("Repository %s hasn't been downloaded yet !!!") % (repositoryName,), importance = 2, type = "warning")
+                self.updateProgress(
+                    darkred(t),
+                    importance = 2,
+                    type = "warning"
+                )
                 repo_error_messages_cache.add(repositoryName)
-            raise exceptionTools.RepositoryError("RepositoryError: repository %s hasn't been downloaded yet." % (repositoryName,))
-        conn = self.databaseTools.etpDatabase(readOnly = True, dbFile = dbfile, clientDatabase = True, dbname = etpConst['dbnamerepoprefix']+repositoryName, xcache = xcache, indexing = indexing, OutputInterface = self)
+            raise exceptionTools.RepositoryError("RepositoryError: %s" % (t,))
+
+        conn = self.databaseTools.etpDatabase(
+            readOnly = True,
+            dbFile = dbfile,
+            clientDatabase = True,
+            dbname = etpConst['dbnamerepoprefix']+repositoryName,
+            xcache = xcache,
+            indexing = indexing,
+            OutputInterface = self
+        )
         # initialize CONFIG_PROTECT
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
             (etpRepositories[repositoryName]['configprotectmask'] == None):
@@ -503,10 +549,21 @@ class EquoInterface(TextInterface):
                 skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
                 skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
             for key in etpCache:
-                if showProgress: self.updateProgress(darkred("Cleaning %s => *.dmp...") % (etpCache[key],), importance = 1, type = "warning", back = True)
+                if showProgress:
+                    self.updateProgress(
+                        darkred(_("Cleaning %s => *.dmp...")) % (etpCache[key],),
+                        importance = 1,
+                        type = "warning",
+                        back = True
+                    )
                 self.clear_dump_cache(etpCache[key], skip = skip)
 
-            if showProgress: self.updateProgress(darkgreen("Cache is now empty."), importance = 2, type = "info")
+            if showProgress:
+                self.updateProgress(
+                    darkgreen(_("Cache is now empty.")),
+                    importance = 2,
+                    type = "info"
+                )
 
     def generate_cache(self, depcache = True, configcache = True, client_purge = True):
         # clean first of all
@@ -517,14 +574,30 @@ class EquoInterface(TextInterface):
             self.do_configcache()
 
     def do_configcache(self):
-        self.updateProgress(darkred("Configuration files"), importance = 2, type = "warning")
-        self.updateProgress(red("Scanning hard disk"), importance = 1, type = "warning")
+        self.updateProgress(
+            darkred(_("Configuration files")),
+            importance = 2,
+            type = "warning"
+        )
+        self.updateProgress(
+            red(_("Scanning hard disk")),
+            importance = 1,
+            type = "warning"
+        )
         self.FileUpdates.scanfs(dcache = False)
-        self.updateProgress(darkred("Cache generation complete."), importance = 2, type = "info")
+        self.updateProgress(
+            darkred(_("Cache generation complete.")),
+            importance = 2,
+            type = "info"
+        )
 
     def do_depcache(self):
 
-        self.updateProgress(darkgreen("Resolving metadata"), importance = 1, type = "warning")
+        self.updateProgress(
+            darkgreen(_("Resolving metadata")),
+            importance = 1,
+            type = "warning"
+        )
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
         try:
@@ -537,7 +610,11 @@ class EquoInterface(TextInterface):
         except:
             pass
 
-        self.updateProgress(darkred("Dependencies cache filled."), importance = 2, type = "warning")
+        self.updateProgress(
+            darkred(_("Dependencies cache filled.")),
+            importance = 2,
+            type = "warning"
+        )
 
     def clear_dump_cache(self, dump_name, skip = []):
         dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
@@ -578,7 +655,7 @@ class EquoInterface(TextInterface):
             count += 1
             atom = dbconn.retrieveAtom(xidpackage)
             self.updateProgress(
-                                    darkgreen(" Checking ")+bold(atom),
+                                    darkgreen(_("Checking %s") % (bold(atom),)),
                                     importance = 0,
                                     type = "info",
                                     back = True,

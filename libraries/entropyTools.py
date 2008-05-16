@@ -105,6 +105,10 @@ class parallelTask(threading.Thread):
         else:
             self.function()
 
+def printTraceback():
+    import traceback
+    traceback.print_exc()
+
 def printException(returndata = False):
     import traceback
     if not returndata: traceback.print_exc()
