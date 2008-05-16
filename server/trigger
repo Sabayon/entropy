@@ -48,7 +48,7 @@
 		'cxxflags': u'-Os -march=x86-64 -pipe',
 		'dependencies': set([]),
 		'chost': u'x86_64-pc-linux-gnu',
-		'systempackage': 'xxx',
+		'systempackage': True,
 		'name': u'zlib',
 		'license': u'ZLIB',
 		'counter': 14629,

@@ -1771,13 +1771,13 @@ class etpDatabase:
                         flags,
                         licenses
                 WHERE 
-                        baseinfo.idpackage = '"""+str(idpackage)+"""' 
+                        baseinfo.idpackage = (?) 
                         and baseinfo.idpackage = extrainfo.idpackage 
                         and baseinfo.idcategory = categories.idcategory 
                         and extrainfo.idflags = flags.idflags
                         and baseinfo.idlicense = licenses.idlicense
         """
-        self.cursor.execute(sql)
+        self.cursor.execute(sql, (idpackage,))
         return self.cursor.fetchone()
 
     def getTriggerInfo(self, idpackage):
@@ -1804,76 +1804,56 @@ class etpDatabase:
     def getPackageData(self, idpackage, get_content = True):
         data = {}
 
-        mydata = self.getBaseData(idpackage)
+        atom, data['name'], data['version'], data['versiontag'], \
+        data['description'], data['category'], data['chost'], \
+        data['cflags'], data['cxxflags'],data['homepage'], \
+        data['license'], data['branch'], data['download'], \
+        data['digest'], data['slot'], data['etpapi'], \
+        data['datecreation'], data['size'], data['revision']  = self.getBaseData(idpackage)
 
-        data['name'] = mydata[1]
-        data['version'] = mydata[2]
-        data['versiontag'] = mydata[3]
-        data['description'] = mydata[4]
-        data['category'] = mydata[5]
-
-        data['chost'] = mydata[6]
-        data['cflags'] = mydata[7]
-        data['cxxflags'] = mydata[8]
-
-        data['homepage'] = mydata[9]
-        data['useflags'] = self.retrieveUseflags(idpackage)
-        data['license'] = mydata[10]
-
-        data['keywords'] = self.retrieveKeywords(idpackage)
-
-        data['branch'] = mydata[11]
-        data['download'] = mydata[12]
-        data['digest'] = mydata[13]
-        data['sources'] = self.retrieveSources(idpackage)
-        data['counter'] = self.retrieveCounter(idpackage) # cannot insert into the sql above
+        ### risky to add to the sql above
+        data['counter'] = self.retrieveCounter(idpackage)
         data['messages'] = self.retrieveMessages(idpackage)
-        data['trigger'] = self.retrieveTrigger(idpackage) #FIXME: needed for now because of new column
+        data['trigger'] = self.retrieveTrigger(idpackage)
+        data['disksize'] = self.retrieveOnDiskSize(idpackage)
 
-        if (self.isSystemPackage(idpackage)):
-            data['systempackage'] = 'xxx'
-        else:
-            data['systempackage'] = ''
+        data['injected'] = self.isInjected(idpackage)
+        data['systempackage'] = False
+        if self.isSystemPackage(idpackage):
+            data['systempackage'] = True
 
         data['config_protect'] = self.retrieveProtect(idpackage)
         data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
-
+        data['useflags'] = self.retrieveUseflags(idpackage)
+        data['keywords'] = self.retrieveKeywords(idpackage)
+        data['sources'] = self.retrieveSources(idpackage)
         data['eclasses'] = self.retrieveEclasses(idpackage)
         data['needed'] = self.retrieveNeeded(idpackage, extended = True)
+        data['provide'] = self.retrieveProvide(idpackage)
+        data['conflicts'] = self.retrieveConflicts(idpackage)
+        data['licensedata'] = self.retrieveLicensedata(idpackage)
 
         mirrornames = set()
         for x in data['sources']:
             if x.startswith("mirror://"):
-                mirrorname = x.split("/")[2]
-                mirrornames.add(mirrorname)
+                mirrornames.add(x.split("/")[2])
         data['mirrorlinks'] = []
         for mirror in mirrornames:
-            mirrorlinks = self.retrieveMirrorInfo(mirror)
-            data['mirrorlinks'].append([mirror,mirrorlinks])
+            data['mirrorlinks'].append([mirror,self.retrieveMirrorInfo(mirror)])
 
-        data['slot'] = mydata[14]
-        data['injected'] = self.isInjected(idpackage)
         data['content'] = {}
         if get_content:
+            mydc = {}
             mycontent = self.retrieveContent(idpackage, extended = True)
-            for xfile,filetype in mycontent:
-                data['content'][xfile] = filetype
+            for xfile, filetype in mycontent:
+                mydc[xfile] = filetype
+            data['content'] = mydc
 
-        data['dependencies'] = {}
+        mydeps = {}
         depdata = self.retrieveDependencies(idpackage, extended = True)
         for dep,deptype in depdata:
-            data['dependencies'][dep] = deptype
-        data['provide'] = self.retrieveProvide(idpackage)
-        data['conflicts'] = self.retrieveConflicts(idpackage)
-
-        data['etpapi'] = mydata[15]
-        data['datecreation'] = mydata[16]
-        data['size'] = mydata[17]
-        data['revision'] = mydata[18]
-        # cannot do this too, for backward compat
-        data['disksize'] = self.retrieveOnDiskSize(idpackage)
-
-        data['licensedata'] = self.retrieveLicensedata(idpackage)
+            mydeps[dep] = deptype
+        data['dependencies'] = mydeps
 
         return data
 
@@ -2547,16 +2527,11 @@ class etpDatabase:
         return False
 
     def isInjected(self,idpackage):
-        try:
-            self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
-        except:
-            # readonly database?
-            return False
+        self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
         result = self.cursor.fetchone()
-        rslt = False
         if result:
-            rslt = True
-        return rslt
+            return True
+        return False
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 
@@ -3846,15 +3821,15 @@ class etpDatabase:
             count += 1
             if output:
                 self.updateProgress(
-                                        red("Resolving %s") % (darkgreen(atom),),
+                                        red("Resolving %s") % (atom,),
                                         importance = 0,
                                         type = "info",
                                         back = True,
                                         count = (count,total)
                                     )
-            match = self.atomMatch(atom)
-            if (match[0] != -1):
-                self.addDependRelationToDependsTable(iddep,match[0])
+            idpackage, rc = self.atomMatch(atom)
+            if (idpackage != -1):
+                self.addDependRelationToDependsTable(iddep,idpackage)
         del depends
         # now validate dependstable
         self.sanitizeDependsTable()

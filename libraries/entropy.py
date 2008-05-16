@@ -3460,14 +3460,14 @@ class EquoInterface(TextInterface):
                 back = True
             )
         # write only if it's a systempackage
-        data['systempackage'] = ''
+        data['systempackage'] = False
         systemPackages = Spm.get_atoms_in_system()
         for x in systemPackages:
             x = self.entropyTools.dep_getkey(x)
             y = data['category']+"/"+data['name']
             if x == y:
                 # found
-                data['systempackage'] = "xxx"
+                data['systempackage'] = True
                 break
 
         if not silent:
@@ -12366,8 +12366,7 @@ class ServerInterface(TextInterface):
                     ),
                     importance = 1,
                     type = "info",
-                    header = brown(" @@ "),
-                    back = True
+                    header = brown(" @@ ")
                 )
             dbconn.removePackage(idpackage)
         self.close_server_database(dbconn)

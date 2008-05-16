@@ -8,6 +8,7 @@ TODO list
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - server-side: check rdepend function with pandodl
   - server-side: move officialrepositoryid settings away from repositories.conf
+  - make.profile support (saving profile information into the db)
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - Community repositories

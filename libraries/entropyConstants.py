@@ -487,13 +487,10 @@ def initConfig_entropyConstants(rootdir):
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
 
-    shell_repoid = os.getenv('ETP_REPO')
-    if shell_repoid:
-        etpConst['officialrepositoryid'] = shell_repoid
+    const_setupWithEnvironment()
 
 def initConfig_clientConstants():
     const_readEquoSettings()
-
 
 def const_defaultSettings(rootdir):
 
@@ -1292,6 +1289,21 @@ def const_configureServerRepoPaths():
                             "database",
                             etpSys['arch']
                         )+"/"
+
+
+def const_setupWithEnvironment():
+
+    shell_repoid = os.getenv('ETP_REPO')
+    if shell_repoid:
+        etpConst['officialrepositoryid'] = shell_repoid
+
+    expiration_days = os.getenv('ETP_EXPIRATION_DAYS')
+    if expiration_days:
+        try:
+            expiration_days = int(expiration_days)
+            etpConst['packagesexpirationdays'] = expiration_days
+        except ValueError:
+            pass
 
 
 def const_setup_perms(mydir, gid):

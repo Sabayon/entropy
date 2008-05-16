@@ -175,7 +175,7 @@ elif (options[0] == "deptest"):
 elif (options[0] == "libtest"):
     import server_reagent
     rc = server_reagent.Entropy.libraries_test()
-    server_reagent.Entropy.close_server_databases()
+    x = server_reagent.Entropy.close_server_databases()
     sys.exit(rc)
 
 # deptest tool
