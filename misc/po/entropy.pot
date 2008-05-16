@@ -1,0 +1,121 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2008-05-16 17:57+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../../libraries/entropy.py:134 ../../libraries/entropy.py:142
+msgid "Repository"
+msgstr ""
+
+#: ../../libraries/entropy.py:134
+msgid "is not available"
+msgstr ""
+
+#: ../../libraries/entropy.py:134 ../../libraries/entropy.py:142
+msgid "Cannot validate"
+msgstr ""
+
+#: ../../libraries/entropy.py:142
+msgid "is corrupted"
+msgstr ""
+
+#: ../../libraries/entropy.py:204
+msgid ""
+"Another Entropy instance is currently active, cannot satisfy your request."
+msgstr ""
+
+#: ../../libraries/entropy.py:224
+msgid "Resources unlocked, let's go!"
+msgstr ""
+
+#: ../../libraries/entropy.py:233
+#, python-format
+msgid "Resources still locked after %s minutes, giving up!"
+msgstr ""
+
+#: ../../libraries/entropy.py:241
+#, python-format
+msgid "Resources locked, sleeping %s seconds, check #%s/%s"
+msgstr ""
+
+#: ../../libraries/entropy.py:291
+#, python-format
+msgid "Nothing to backup in etpConst with %s key"
+msgstr ""
+
+#: ../../libraries/entropy.py:351
+msgid "System database not found or corrupted"
+msgstr ""
+
+#: ../../libraries/entropy.py:386 ../../libraries/entropy.py:417
+#: ../../libraries/entropy.py:425
+msgid "Sanity Check"
+msgstr ""
+
+#: ../../libraries/entropy.py:386
+msgid "system database"
+msgstr ""
+
+#: ../../libraries/entropy.py:394
+msgid "Scanning..."
+msgstr ""
+
+#: ../../libraries/entropy.py:411
+#, python-format
+msgid "Errors on idpackage %s, error: %s"
+msgstr ""
+
+#: ../../libraries/entropy.py:417
+msgid "PASSED"
+msgstr ""
+
+#: ../../libraries/entropy.py:425
+msgid "CORRUPTED"
+msgstr ""
+
+#: ../../libraries/entropy.py:471
+#, python-format
+msgid "Repository %s hasn't been downloaded yet."
+msgstr ""
+
+#: ../../libraries/entropy.py:554
+#, python-format
+msgid "Cleaning %s => *.dmp..."
+msgstr ""
+
+#: ../../libraries/entropy.py:563
+msgid "Cache is now empty."
+msgstr ""
+
+#: ../../libraries/entropy.py:578
+msgid "Configuration files"
+msgstr ""
+
+#: ../../libraries/entropy.py:583
+msgid "Scanning hard disk"
+msgstr ""
+
+#: ../../libraries/entropy.py:589
+msgid "Cache generation complete."
+msgstr ""
+
+#: ../../libraries/entropy.py:597
+msgid "Resolving metadata"
+msgstr ""
+
+#: ../../libraries/entropy.py:614
+msgid "Dependencies cache filled."
+msgstr ""
