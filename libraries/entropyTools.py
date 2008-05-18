@@ -1454,6 +1454,9 @@ def convertUnixTimeToHumanTime(unixtime):
 def getCurrentUnixTime():
     return time.time()
 
+def getYear():
+    return time.strftime("%Y")
+
 def convertSecondsToFancyOutput(seconds):
 
     mysecs = seconds
