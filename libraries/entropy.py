@@ -753,7 +753,7 @@ class EquoInterface(TextInterface):
             dbconn = self.clientDbconn
 
         self.updateProgress(
-                                blue("Libraries test"),
+                                blue(_("Libraries test")),
                                 importance = 2,
                                 type = "info",
                                 header = red(" @@ ")
@@ -768,7 +768,7 @@ class EquoInterface(TextInterface):
         # open /etc/ld.so.conf
         if not os.path.isfile(etpConst['systemroot']+"/etc/ld.so.conf"):
             self.updateProgress(
-                                    blue("Cannot find ")+red(etpConst['systemroot']+"/etc/ld.so.conf"),
+                                    blue(_("Cannot find "))+red(etpConst['systemroot']+"/etc/ld.so.conf"),
                                     importance = 1,
                                     type = "error",
                                     header = red(" @@ ")
@@ -806,13 +806,15 @@ class EquoInterface(TextInterface):
                         executables.add(filepath[len(etpConst['systemroot']):])
 
         self.updateProgress(
-                                blue("Collecting broken executables"),
+                                blue(_("Collecting broken executables")),
                                 importance = 2,
                                 type = "info",
                                 header = red(" @@ ")
                             )
+        t = red(_("Attention")) + ": " + \
+            blue(_("don't worry about libraries that are shown here but not later."))
         self.updateProgress(
-                                red("Attention: ")+blue("don't worry about libraries that are shown here but not later."),
+                                t,
                                 importance = 1,
                                 type = "info",
                                 header = red(" @@ ")
@@ -823,22 +825,25 @@ class EquoInterface(TextInterface):
         plain_brokenexecs = set()
         total = len(executables)
         count = 0
+        scan_txt = blue(_("Scanning libraries..."))
         for executable in executables:
             count += 1
-            self.updateProgress(
-                                    red(etpConst['systemroot']+executable),
-                                    importance = 0,
-                                    type = "info",
-                                    count = (count,total),
-                                    back = True,
-                                    percent = True,
-                                    header = "  "
-                                )
+            if (count%10 == 0) or (count == total) or (count == 1):
+                self.updateProgress(
+                    scan_txt,
+                    importance = 0,
+                    type = "info",
+                    count = (count,total),
+                    back = True,
+                    percent = True,
+                    header = "  "
+                )
             if not etpConst['systemroot']:
                 stdin, stdouterr = os.popen4("ldd "+executable)
             else:
                 if not os.access(etpConst['systemroot']+"/bin/sh",os.X_OK):
-                    raise exceptionTools.FileNotFound("FileNotFound: /bin/sh not found.")
+                    t = _("not found")
+                    raise exceptionTools.FileNotFound("FileNotFound: /bin/sh %s." % (t,))
                 stdin, stdouterr = os.popen4("echo 'ldd "+executable+"' | chroot "+etpConst['systemroot'])
             output = stdouterr.readlines()
             if '\n'.join(output).find("not found") != -1:
@@ -872,7 +877,7 @@ class EquoInterface(TextInterface):
         if not etpSys['serverside']:
 
             self.updateProgress(
-                                    blue("Trying to match packages"),
+                                    blue(_("Trying to match packages")),
                                     importance = 1,
                                     type = "info",
                                     header = red(" @@ ")
@@ -880,8 +885,9 @@ class EquoInterface(TextInterface):
 
             # match libraries
             for repoid in self.validRepositories:
+                t = blue("%s: %s") % (_("Repository id"),darkgreen(repoid),)
                 self.updateProgress(
-                                        blue("Repository id: ")+darkgreen(repoid),
+                                        t,
                                         importance = 1,
                                         type = "info",
                                         header = red(" @@ ")
@@ -1147,7 +1153,8 @@ class EquoInterface(TextInterface):
 
         if server_repos:
             if not serverInstance:
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: server_repos needs serverInstance")
+                t = _("server_repos needs serverInstance")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (t,))
             valid_repos = server_repos[:]
         else:
             valid_repos = self.validRepositories
@@ -1385,7 +1392,8 @@ class EquoInterface(TextInterface):
             etpRepositories[repodata['repoid']]['configprotect'] = None
             etpRepositories[repodata['repoid']]['configprotectmask'] = None
         except KeyError:
-            raise exceptionTools.InvalidData("InvalidData: repodata dictionary is corrupted")
+            t = _("repodata dictionary is corrupted")
+            raise exceptionTools.InvalidData("InvalidData: %s" % (t,))
 
         if repodata['repoid'].endswith(etpConst['packagesext']): # dynamic repository
             try:
@@ -1911,11 +1919,12 @@ class EquoInterface(TextInterface):
         error_generated = 0
         error_tree = set()
 
+        sort_dep_text = _("Sorting dependencies")
         for atomInfo in matched_atoms:
 
             count += 1
             if (count%10 == 0) or (count == atomlen) or (count == 1):
-                self.updateProgress("Sorting dependencies", importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
+                self.updateProgress(sort_dep_text, importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
 
             # check if atomInfo is in matchfilter
             newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, matchfilter = matchfilter)
@@ -2003,6 +2012,7 @@ class EquoInterface(TextInterface):
         self.clientDbconn.retrieveDepends(idpackages[0])
         count = 0
 
+        rem_dep_text = _("Calculating removable depends of")
         while 1:
             treedepth += 1
             tree[treedepth] = set()
@@ -2010,7 +2020,13 @@ class EquoInterface(TextInterface):
 
                 count += 1
                 p_atom = self.clientDbconn.retrieveAtom(idpackage)
-                self.updateProgress(blue("Calculating removable depends of %s") % (red(p_atom),), importance = 0, type = "info", back = True, header = '|/-\\'[count%4]+" ")
+                self.updateProgress(
+                    blue(rem_dep_text + " %s" % (red(p_atom),)),
+                    importance = 0,
+                    type = "info",
+                    back = True,
+                    header = '|/-\\'[count%4]+" "
+                )
 
                 systempkg = self.clientDbconn.isSystemPackage(idpackage)
                 if (idpackage in dependscache) or systempkg:
@@ -2157,6 +2173,7 @@ class EquoInterface(TextInterface):
 
         available = []
         self.setTotalCycles(len(self.validRepositories))
+        avail_dep_text = _("Calculating available packages for")
         for repo in self.validRepositories:
             try:
                 dbconn = self.openRepositoryDatabase(repo)
@@ -2169,7 +2186,16 @@ class EquoInterface(TextInterface):
             maxlen = len(idpackages)
             for idpackage in idpackages:
                 count += 1
-                self.updateProgress("Calculating available packages for %s" % (repo,), importance = 0, type = "info", back = True, header = "::", count = (count,maxlen), percent = True, footer = " ::")
+                self.updateProgress(
+                    avail_dep_text + " %s" % (repo,),
+                    importance = 0,
+                    type = "info",
+                    back = True,
+                    header = "::",
+                    count = (count,maxlen),
+                    percent = True,
+                    footer = " ::"
+                )
                 # ignore masked packages
                 idpackage, idreason = dbconn.idpackageValidator(idpackage)
                 if idpackage == -1:
@@ -2233,7 +2259,16 @@ class EquoInterface(TextInterface):
 
             count += 1
             if (count%10 == 0) or (count == maxlen) or (count == 1):
-                self.updateProgress("Calculating world packages", importance = 0, type = "info", back = True, header = ":: ", count = (count,maxlen), percent = True, footer = " ::")
+                self.updateProgress(
+                    _("Calculating world packages"),
+                    importance = 0,
+                    type = "info",
+                    back = True,
+                    header = ":: ",
+                    count = (count,maxlen),
+                    percent = True,
+                    footer = " ::"
+                )
 
             mystrictdata = self.clientDbconn.getStrictData(idpackage)
             # check against broken entries, or removed during iteration
@@ -2561,12 +2596,16 @@ class EquoInterface(TextInterface):
             if self.get_failing_mirror_status(uri) >= 30:
                 # ohohoh!
                 etpRemoteFailures[uri] = 30 # set to 30 for convenience
+                mytxt = mirrorCountText
+                mytxt += blue(" %s: ") % (_("Mirror"),)
+                mytxt += red(self.entropyTools.spliturl(url)[1])
+                mytxt += " - %s." % (_("maximum failure threshold reached"),)
                 self.updateProgress(
-                                        mirrorCountText+blue(" Mirror: ")+red(self.entropyTools.spliturl(url)[1])+" - maximum failure threshold reached.",
-                                        importance = 1,
-                                        type = "warning",
-                                        header = red("   ## ")
-                                    )
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
 
                 if self.get_failing_mirror_status(uri) == 30:
                     self.add_failing_mirror(uri,45) # put to 75 then decrement by 4 so we won't reach 30 anytime soon ahahaha
@@ -2585,41 +2624,52 @@ class EquoInterface(TextInterface):
             do_resume = True
             while 1:
                 try:
+                    mytxt = mirrorCountText
+                    mytxt += blue("%s: ") % (_("Downloading from"),)
+                    mytxt += red(self.entropyTools.spliturl(url)[1])
                     # now fetch the new one
                     self.updateProgress(
-                                            mirrorCountText+blue("Downloading from: ")+red(self.entropyTools.spliturl(url)[1]),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = red("   ## ")
-                                        )
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = red("   ## ")
+                    )
                     rc, data_transfer, resumed = self.fetch_file(url, digest, do_resume)
                     if rc == 0:
+                        mytxt = mirrorCountText
+                        mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
+                        mytxt += red(self.entropyTools.spliturl(url)[1])
+                        mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
                         self.updateProgress(
-                                            mirrorCountText+blue("Successfully downloaded from: ")+red(self.entropyTools.spliturl(url)[1])+blue(" at "+str(self.entropyTools.bytesIntoHuman(data_transfer))+"/sec"),
-                                            importance = 1,
-                                            type = "info",
-                                            header = red("   ## ")
-                                        )
+                            mytxt,
+                            importance = 1,
+                            type = "info",
+                            header = red("   ## ")
+                        )
                         return 0
                     elif resumed:
                         do_resume = False
                         continue
                     else:
-                        error_message = mirrorCountText+blue("Error downloading from: ")+red(self.entropyTools.spliturl(url)[1])
+                        error_message = mirrorCountText
+                        error_message += blue("%s: %s") % (
+                            _("Error downloading from"),
+                            red(self.entropyTools.spliturl(url)[1]),
+                        )
                         # something bad happened
                         if rc == -1:
-                            error_message += " - file not available on this mirror."
+                            error_message += " - %s." % (_("file not available on this mirror"),)
                         elif rc == -2:
                             self.add_failing_mirror(uri,1)
-                            error_message += " - wrong checksum."
+                            error_message += " - %s." % (_("wrong checksum"),)
                         elif rc == -3:
                             #self.add_failing_mirror(uri,2)
                             error_message += " - not found."
                         elif rc == -4:
-                            error_message += blue(" - discarded download.")
+                            error_message += " - %s." % (_("discarded download"),)
                         else:
                             self.add_failing_mirror(uri, 5)
-                            error_message += " - unknown reason."
+                            error_message += " - %s." % (_("unknown reason"),)
                         self.updateProgress(
                                             error_message,
                                             importance = 1,
@@ -2872,41 +2922,47 @@ class EquoInterface(TextInterface):
 
     def scan_missing_dependencies(self, idpackages, dbconn, ask = True, repo = etpConst['officialrepositoryid']):
 
+        scan_msg = blue(_("Now searching for missing RDEPENDs"))
         self.updateProgress(
-                        "[repo:%s] %s..." % (
-                                    darkgreen(repo),
-                                    blue("Now searching for missing RDEPENDs"),
-                                ),
-                        importance = 1,
-                        type = "info",
-                        header = red(" @@ ")
+            "[repo:%s] %s..." % (
+                        darkgreen(repo),
+                        scan_msg,
+                    ),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
         )
+        scan_msg = blue(_("scanning for missing RDEPENDs"))
+        count = 0
+        maxcount = len(idpackages)
         for idpackage in idpackages:
+            count += 1
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
-                            "[repo:%s] %s: %s" % (
-                                        darkgreen(repo),
-                                        blue("scanning for missing RDEPENDs"),
-                                        darkgreen(atom),
-                                    ),
-                            importance = 1,
-                            type = "info",
-                            header = blue(" @@ "),
-                            back = True
+                "[repo:%s] %s: %s" % (
+                            darkgreen(repo),
+                            scan_msg,
+                            darkgreen(atom),
+                        ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True,
+                count = (count,maxcount,)
             )
             missing = self.get_missing_rdepends(dbconn, idpackage)
             if not missing:
                 continue
             self.updateProgress(
-                            "[repo:%s] %s: %s %s:" % (
-                                        darkgreen(repo),
-                                        blue("package"),
-                                        darkgreen(atom),
-                                        blue("is missing the following dependencies"),
-                                    ),
-                            importance = 1,
-                            type = "info",
-                            header = red(" @@ ")
+                "[repo:%s] %s: %s %s:" % (
+                            darkgreen(repo),
+                            blue("package"),
+                            darkgreen(atom),
+                            blue(_("is missing the following dependencies")),
+                        ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
             )
             for dependency in missing:
                 self.updateProgress(
@@ -2916,55 +2972,56 @@ class EquoInterface(TextInterface):
                         header = blue("    # ")
                 )
             if ask:
-                rc = self.askQuestion("Do you want to add them?")
+                rc = self.askQuestion(_("Do you want to add them?"))
                 if rc == "No":
                     continue
-                rc = self.askQuestion("Selectively?")
+                rc = self.askQuestion(_("Selectively?"))
                 if rc == "Yes":
                     newmissing = set()
                     for dependency in missing:
                         self.updateProgress(
-                                "[repo:%s|%s] %s" % (
-                                        darkgreen(repo),
-                                        brown(atom),
-                                        blue(dependency),
-                                ),
-                                importance = 0,
-                                type = "info",
-                                header = blue(" @@ ")
+                            "[repo:%s|%s] %s" % (
+                                    darkgreen(repo),
+                                    brown(atom),
+                                    blue(dependency),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = blue(" @@ ")
                         )
-                        rc = self.askQuestion("Want to add?")
+                        rc = self.askQuestion(_("Want to add?"))
                         if rc == "Yes":
                             newmissing.add(dependency)
                     missing = newmissing
             dbconn.insertDependencies(idpackage,missing)
             dbconn.commitChanges()
             self.updateProgress(
-                    "[repo:%s] %s: %s" % (
-                                darkgreen(repo),
-                                darkgreen(atom),
-                                blue("missing dependencies added"),
-                            ),
-                    importance = 1,
-                    type = "info",
-                    header = red(" @@ ")
+                "[repo:%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkgreen(atom),
+                            blue(_("missing dependencies added")),
+                        ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
             )
 
     # This function extracts all the info from a .tbz2 file and returns them
     def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
+        if not silent:
+            self.updateProgress(
+                red(info_package+_("Extacting package metadata")+" ..."),
+                importance = 0,
+                type = "info",
+                header = brown(" * "),
+                back = True
+            )
+
         data = {}
         info_package = bold(os.path.basename(package))+": "
 
         filepath = package
-        if not silent:
-            self.updateProgress(
-                        red(info_package+"Getting package name/version..."),
-                        importance = 0,
-                        type = "info",
-                        header = brown(" * "),
-                        back = True
-                    )
         tbz2File = package
         package = package.split(etpConst['packagesext'])[0]
         package = self.entropyTools.remove_entropy_revision(package)
@@ -2993,46 +3050,12 @@ class EquoInterface(TextInterface):
         data['name'] = pkgname
         data['version'] = pkgver
 
-        if not silent:
-            self.updateProgress(
-                        red(info_package+"Getting package md5..."),
-                        importance = 0,
-                        type = "info",
-                        header = brown(" * "),
-                        back = True
-                    )
         # .tbz2 md5
         data['digest'] = self.entropyTools.md5sum(tbz2File)
-
-        if not silent:
-            self.updateProgress(
-                        red(info_package+"Getting package mtime..."),
-                        importance = 0,
-                        type = "info",
-                        header = brown(" * "),
-                        back = True
-                    )
         data['datecreation'] = str(self.entropyTools.getFileUnixMtime(tbz2File))
-
-        if not silent:
-            self.updateProgress(
-                        red(info_package+"Getting package size..."),
-                        importance = 0,
-                        type = "info",
-                        header = brown(" * "),
-                        back = True
-                    )
         # .tbz2 byte size
         data['size'] = str(os.stat(tbz2File)[6])
 
-        if not silent:
-            self.updateProgress(
-                        red(info_package+"Unpacking package data..."),
-                        importance = 0,
-                        type = "info",
-                        header = brown(" * "),
-                        back = True
-                    )
         # unpack file
         tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
         if not os.path.isdir(tbz2TmpDir):
@@ -3041,37 +3064,14 @@ class EquoInterface(TextInterface):
             os.makedirs(tbz2TmpDir)
         self.entropyTools.extractXpak(tbz2File,tbz2TmpDir)
 
-        if not silent:
-            self.updateProgress(
-                        red(info_package+"Getting package CHOST..."),
-                        importance = 0,
-                        type = "info",
-                        header = brown(" * "),
-                        back = True
-                    )
         # Fill chost
         f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['chost'],"r")
         data['chost'] = f.readline().strip()
         f.close()
 
-        if not silent:
-            self.updateProgress(
-                    red(info_package+"Setting package branch..."),
-                    importance = 0,
-                    type = "info",
-                    header = brown(" * "),
-                    back = True
-                )
+        # Fill branch
         data['branch'] = etpBranch
 
-        if not silent:
-            self.updateProgress(
-                    red(info_package+"Getting package description..."),
-                    importance = 0,
-                    type = "info",
-                    header = brown(" * "),
-                    back = True
-                )
         # Fill description
         data['description'] = ""
         try:
@@ -3081,14 +3081,6 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                    red(info_package+"Getting package homepage..."),
-                    importance = 0,
-                    type = "info",
-                    header = brown(" * "),
-                    back = True
-                )
         # Fill homepage
         data['homepage'] = ""
         try:
@@ -3098,14 +3090,6 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                    red(info_package+"Getting package slot information..."),
-                    importance = 0,
-                    type = "info",
-                    header = brown(" * "),
-                    back = True
-                )
         # fill slot, if it is
         data['slot'] = ""
         try:
@@ -3115,28 +3099,12 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                    red(info_package+"Getting package injection information..."),
-                    importance = 0,
-                    type = "info",
-                    header = brown(" * "),
-                    back = True
-                )
         # fill slot, if it is
         if inject:
             data['injected'] = True
         else:
             data['injected'] = False
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package eclasses information..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # fill eclasses list
         data['eclasses'] = []
         try:
@@ -3146,14 +3114,6 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package needed libraries information..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # fill needed list
         data['needed'] = set()
         try:
@@ -3177,14 +3137,6 @@ class EquoInterface(TextInterface):
             pass
         data['needed'] = list(data['needed'])
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package content..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         data['content'] = {}
         if os.path.isfile(tbz2TmpDir+etpConst['spm']['xpak_entries']['contents']):
             f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['contents'],"r")
@@ -3205,7 +3157,12 @@ class EquoInterface(TextInterface):
                         datafile = datafile[:-3]
                         datafile = ' '.join(datafile)
                     else:
-                        raise exceptionTools.InvalidData("InvalidData: "+str(datafile)+" not supported. Probably portage API changed.")
+                        myexc = "InvalidData: %s %s. %s." % (
+                            datafile,
+                            _("not supported"),
+                            _("Probably Portage API has changed"),
+                        )
+                        raise exceptionTools.InvalidData(myexc)
                     outcontent.add((datafile,datatype))
                 except:
                     pass
@@ -3283,27 +3240,11 @@ class EquoInterface(TextInterface):
             if (matchatom == data['name']+"-"+data['version']):
                 kernelstuff_kernel = True
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package category..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # Fill category
         f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['category'],"r")
         data['category'] = f.readline().strip()
         f.close()
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package download URL..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # Fill download relative URI
         if (kernelstuff):
             data['versiontag'] = kmodver
@@ -3314,16 +3255,10 @@ class EquoInterface(TextInterface):
             versiontag = "#"+data['versiontag']
         else:
             versiontag = ""
-        data['download'] = etpConst['packagesrelativepath']+data['branch']+"/"+data['category']+":"+data['name']+"-"+data['version']+versiontag+etpConst['packagesext']
+        data['download'] = etpConst['packagesrelativepath'] + data['branch'] + "/"
+        data['download'] += data['category']+":"+data['name']+"-"+data['version']
+        data['download'] += versiontag+etpConst['packagesext']
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package counter..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # Fill counter
         try:
             f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['counter'],"r")
@@ -3333,27 +3268,11 @@ class EquoInterface(TextInterface):
             data['counter'] = -2 # -2 values will be insterted as incremental negative values into the database
 
         data['trigger'] = ""
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package external trigger availability..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
             f = open(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername'],"rb")
             data['trigger'] = f.read()
             f.close()
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package CFLAGS..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # Fill CFLAGS
         data['cflags'] = ""
         try:
@@ -3363,14 +3282,6 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package CXXFLAGS..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # Fill CXXFLAGS
         data['cxxflags'] = ""
         try:
@@ -3380,14 +3291,6 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting source package supported ARCHs..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # fill KEYWORDS
         data['keywords'] = []
         try:
@@ -3403,14 +3306,6 @@ class EquoInterface(TextInterface):
         except IOError:
             pass
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package dependencies..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
 
         f = open(tbz2TmpDir+etpConst['spm']['xpak_entries']['rdepend'],"r")
         rdepend = f.readline().strip()
@@ -3457,14 +3352,6 @@ class EquoInterface(TextInterface):
 
         Spm = self.Spm()
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package metadata information..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         portage_metadata = Spm.calculate_dependencies(iuse, use, lics, depend, rdepend, pdepend, provide, sources)
 
         data['provide'] = portage_metadata['PROVIDE'].split()
@@ -3510,14 +3397,6 @@ class EquoInterface(TextInterface):
                         data['licensedata'][mylicense] = f.read()
                         f.close()
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting package mirrors list..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # manage data['sources'] to create data['mirrorlinks']
         # =mirror://openoffice|link1|link2|link3
         data['mirrorlinks'] = []
@@ -3526,16 +3405,9 @@ class EquoInterface(TextInterface):
                 # parse what mirror I need
                 mirrorURI = i.split("/")[2]
                 mirrorlist = Spm.get_third_party_mirrors(mirrorURI)
-                data['mirrorlinks'].append([mirrorURI,mirrorlist]) # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
+                data['mirrorlinks'].append([mirrorURI,mirrorlist])
+                # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting System Packages List..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # write only if it's a systempackage
         data['systempackage'] = False
         systemPackages = Spm.get_atoms_in_system()
@@ -3547,14 +3419,6 @@ class EquoInterface(TextInterface):
                 data['systempackage'] = True
                 break
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting CONFIG_PROTECT/CONFIG_PROTECT_MASK List..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # write only if it's a systempackage
         protect, mask = Spm.get_config_protect_and_mask()
         data['config_protect'] = protect
@@ -3587,21 +3451,14 @@ class EquoInterface(TextInterface):
                     data['messages'].append(message)
         else:
             if not silent:
+                mytxt = "%s, %s" % (_("not set"),_("have you configured make.conf properly?"),)
                 self.updateProgress(
-                    red(etpConst['logdir']+"/elog")+" not set, have you configured make.conf properly?",
+                    red(etpConst['logdir']+"/elog ")+mytxt,
                     importance = 1,
                     type = "warning",
                     header = brown(" * ")
                 )
 
-        if not silent:
-            self.updateProgress(
-                red(info_package+"Getting Entropy API version..."),
-                importance = 0,
-                type = "info",
-                header = brown(" * "),
-                back = True
-            )
         # write API info
         data['etpapi'] = etpConst['etpapi']
 
@@ -3615,7 +3472,7 @@ class EquoInterface(TextInterface):
 
         if not silent:
             self.updateProgress(
-                red(info_package+"Done"),
+                red(info_package+_("Package extraction complete")),
                 importance = 0,
                 type = "info",
                 header = brown(" * "),
@@ -3669,7 +3526,8 @@ class PackageInterface:
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
+            mytxt = _("A valid Equo instance or subclass is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
         self.infoDict = {}
         self.prepared = False
@@ -3686,15 +3544,18 @@ class PackageInterface:
 
     def error_on_prepared(self):
         if self.prepared:
-            raise exceptionTools.PermissionDenied("PermissionDenied: already prepared")
+            mytxt = _("Already prepared")
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
     def error_on_not_prepared(self):
         if not self.prepared:
-            raise exceptionTools.PermissionDenied("PermissionDenied: not yet prepared")
+            mytxt = _("Not yet prepared")
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
     def check_action_validity(self, action):
         if action not in self.valid_actions:
-            raise exceptionTools.InvalidData("InvalidData: action must be in %s" % (str(self.valid_actions),))
+            mytxt = _("Action must be in")
+            raise exceptionTools.InvalidData("InvalidData: %s %s" % (mytxt,self.valid_actions,))
 
     def match_checksum(self):
         self.error_on_not_prepared()
@@ -3702,54 +3563,55 @@ class PackageInterface:
         match = False
         while dlcount <= 5:
             self.Entropy.updateProgress(
-                                    blue("Checking package checksum..."),
-                                    importance = 0,
-                                    type = "info",
-                                    header = red("   ## "),
-                                    back = True
-                                )
+                blue(_("Checking package checksum...")),
+                importance = 0,
+                type = "info",
+                header = red("   ## "),
+                back = True
+            )
             dlcheck = self.Entropy.check_needed_package_download(self.infoDict['download'], checksum = self.infoDict['checksum'])
             if dlcheck == 0:
                 self.Entropy.updateProgress(
-                                        blue("Package checksum matches."),
-                                        importance = 0,
-                                        type = "info",
-                                        header = red("   ## ")
-                                    )
+                    blue(_("Package checksum matches.")),
+                    importance = 0,
+                    type = "info",
+                    header = red("   ## ")
+                )
                 self.infoDict['verified'] = True
                 match = True
                 break # file downloaded successfully
             else:
                 dlcount += 1
                 self.Entropy.updateProgress(
-                                        blue("Package checksum does not match. Redownloading... attempt #"+str(dlcount)),
-                                        importance = 0,
-                                        type = "info",
-                                        header = red("   ## "),
-                                        back = True
-                                    )
+                    blue(_("Package checksum does not match. Redownloading... attempt #%s") % (dlcount,)),
+                    importance = 0,
+                    type = "info",
+                    header = red("   ## "),
+                    back = True
+                )
                 fetch = self.Entropy.fetch_file_on_mirrors(
-                                            self.infoDict['repository'],
-                                            self.infoDict['download'],
-                                            self.infoDict['checksum']
-                                        )
+                            self.infoDict['repository'],
+                            self.infoDict['download'],
+                            self.infoDict['checksum']
+                        )
                 if fetch != 0:
                     self.Entropy.updateProgress(
-                                        blue("Cannot properly fetch package! Quitting."),
-                                        importance = 0,
-                                        type = "info",
-                                        header = red("   ## ")
-                                    )
+                        blue(_("Cannot properly fetch package! Quitting.")),
+                        importance = 0,
+                        type = "info",
+                        header = red("   ## ")
+                    )
                     return fetch
                 else:
                     self.infoDict['verified'] = True
         if (not match):
+            mytxt = _("Cannot properly fetch package or checksum does not match. Try download latest repositories.")
             self.Entropy.updateProgress(
-                                            blue("Cannot properly fetch package or checksum does not match. Try download latest repositories."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = red("   ## ")
-                                        )
+                blue(mytxt),
+                importance = 0,
+                type = "info",
+                header = red("   ## ")
+            )
             return 1
         return 0
 
@@ -3824,16 +3686,16 @@ class PackageInterface:
                         f.flush()
                         f.close()
                         self.infoDict['xpakstatus'] = self.Entropy.entropyTools.unpackXpak(
-                                                        xpakPath,
-                                                        self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                            xpakPath,
+                            self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
                         )
                     else:
                         self.infoDict['xpakstatus'] = None
                     del xpakdata
                 else:
                     self.infoDict['xpakstatus'] = self.Entropy.entropyTools.extractXpak(
-                                                                self.infoDict['pkgpath'],
-                                                                self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+                        self.infoDict['pkgpath'],
+                        self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
                     )
             else:
                 # link xpakdir to self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
@@ -3845,9 +3707,9 @@ class PackageInterface:
 
             # create fake portage ${D} linking it to imagedir
             portage_db_fakedir = os.path.join(
-                                                self.infoDict['unpackdir'],
-                                                "portage/"+self.infoDict['category'] + "/" + self.infoDict['name'] + "-" + self.infoDict['version']
-                                            )
+                self.infoDict['unpackdir'],
+                "portage/"+self.infoDict['category'] + "/" + self.infoDict['name'] + "-" + self.infoDict['version']
+            )
 
             os.makedirs(portage_db_fakedir,0755)
             # now link it to self.infoDict['imagedir']
@@ -3864,12 +3726,13 @@ class PackageInterface:
 
         # remove from database
         if self.infoDict['removeidpackage'] != -1:
+            mytxt = "%s: " % (_("Removing from Entropy"),)
             self.Entropy.updateProgress(
-                                    blue("Removing from Entropy: ")+red(self.infoDict['removeatom']),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red("   ## ")
-                                )
+                blue(mytxt) + red(self.infoDict['removeatom']),
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
             self.__remove_package_from_database()
 
         # Handle gentoo database
@@ -3884,7 +3747,9 @@ class PackageInterface:
 
     def __remove_content_from_system(self):
 
-        # load CONFIG_PROTECT and its mask - client database at this point has been surely opened, so our dicts are already filled
+        # load CONFIG_PROTECT and its mask
+        # client database at this point has been surely opened,
+        # so our dicts are already filled
         protect = etpConst['dbconfigprotect']
         mask = etpConst['dbconfigprotectmask']
 
@@ -3896,13 +3761,19 @@ class PackageInterface:
 
                 if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(etpConst['systemroot']+item):
                     # in this way we filter out directories
+                    mytxt = red(_("Collision found during removal of")) + " " + etpConst['systemroot']+item + " - "
+                    mytxt += red(_("cannot overwrite"))
                     self.Entropy.updateProgress(
-                                            red("Collision found during remove of ")+etpConst['systemroot']+item+red(" - cannot overwrite"),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = red("   ## ")
-                                        )
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Collision found during remove of "+etpConst['systemroot']+item+" - cannot overwrite")
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = red("   ## ")
+                    )
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "Collision found during remove of "+etpConst['systemroot']+item+" - cannot overwrite"
+                    )
                     continue
 
             protected = False
@@ -3928,29 +3799,40 @@ class PackageInterface:
                     pass # some filenames are buggy encoded
 
 
-            if (protected):
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_VERBOSE,"[remove] Protecting config file: "+etpConst['systemroot']+item)
+            if protected:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_VERBOSE,
+                    "[remove] Protecting config file: "+etpConst['systemroot']+item
+                )
+                mytxt = "[%s] %s: %s" % (
+                    red(_("remove")),
+                    brown(_("Protecting config file")),
+                    etpConst['systemroot']+item,
+                )
                 self.Entropy.updateProgress(
-                                        red("[remove] Protecting config file: ")+etpConst['systemroot']+item,
-                                        importance = 1,
-                                        type = "warning",
-                                        header = red("   ## ")
-                                    )
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
             else:
                 try:
                     os.lstat(etpConst['systemroot']+item)
                 except OSError:
                     continue # skip file, does not exist
                 except UnicodeEncodeError:
+                    mytxt = brown(_("This package contains a badly encoded file !!!"))
                     self.Entropy.updateProgress(
-                                            red("QA: ")+brown("this package contains a badly encoded file"),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = darkred("   ## ")
-                                        )
+                        red("QA: ")+mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred("   ## ")
+                    )
                     continue # file has a really bad encoding
 
-                if os.path.isdir(etpConst['systemroot']+item) and os.path.islink(etpConst['systemroot']+item): # S_ISDIR returns False for directory symlinks, so using os.path.isdir
+                if os.path.isdir(etpConst['systemroot']+item) and os.path.islink(etpConst['systemroot']+item):
+                    # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                     # valid directory symlink
                     directories.add((etpConst['systemroot']+item,"link"))
                 elif os.path.isdir(etpConst['systemroot']+item):
@@ -4070,7 +3952,7 @@ class PackageInterface:
 
     '''
     @description: remove the package from the installed packages database..
-                    This function is a wrapper around databaseTools.removePackage that will let us to add our custom things
+        This function is a wrapper around databaseTools.removePackage that will let us to add our custom things
     @output: 0 = all fine, >0 = error!
     '''
     def __remove_package_from_database(self):
@@ -4114,7 +3996,11 @@ class PackageInterface:
                 if self.action == "install":
                     if self.matched_atom in update:
                         update.remove(self.matched_atom)
-                        self.Entropy.dumpTools.dumpobj(cache_file, {'r':(update, remove, fine),'empty_deps': empty_deps}, completePath = True)
+                        self.Entropy.dumpTools.dumpobj(
+                            cache_file,
+                            {'r':(update, remove, fine),'empty_deps': empty_deps},
+                            completePath = True
+                        )
                 else:
                     key, slot = self.Entropy.clientDbconn.retrieveKeySlot(self.infoDict['removeidpackage'])
                     matches = self.Entropy.atomMatch(key, matchSlot = slot, multiMatch = True, multiRepo = True)
@@ -4131,7 +4017,11 @@ class PackageInterface:
                             taint = True
                             remove.remove(match)
                     if taint:
-                        self.Entropy.dumpTools.dumpobj(cache_file, {'r':(update, remove, fine),'empty_deps': empty_deps}, completePath = True)
+                        self.Entropy.dumpTools.dumpobj(
+                            cache_file,
+                            {'r':(update, remove, fine),'empty_deps': empty_deps},
+                            completePath = True
+                        )
 
         elif (not self.Entropy.xcache) or (self.action in ("install",)):
             self.Entropy.clear_dump_cache(etpCache['world_update'])
@@ -4193,7 +4083,11 @@ class PackageInterface:
         # clear on-disk cache
         self.__clear_cache()
 
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing package: "+str(self.infoDict['atom']))
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "Installing package: %s" % (self.infoDict['atom'],)
+        )
 
         # copy files over - install
         rc = self.__move_image_to_system()
@@ -4201,30 +4095,42 @@ class PackageInterface:
             return rc
 
         # inject into database
+        mytxt = blue("%s: %s") % (_("Updating database"),red(self.infoDict['atom']),)
         self.Entropy.updateProgress(
-                                blue("Updating database: ")+red(self.infoDict['atom']),
-                                importance = 1,
-                                type = "info",
-                                header = red("   ## ")
-                            )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
         newidpackage = self._install_package_into_database()
-        #newidpackage = self.Entropy.entropyTools.spawnFunction( self._install_package_into_database ) it hangs on live systems!
+        # newidpackage = self.Entropy.entropyTools.spawnFunction( self._install_package_into_database )
+        # ^^ it hangs on live systems!
 
         # remove old files and gentoo stuff
         if (self.infoDict['removeidpackage'] != -1):
             # doing a diff removal
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Remove old package: "+str(self.infoDict['removeatom']))
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Remove old package: %s" % (self.infoDict['removeatom'],)
+            )
             self.infoDict['removeidpackage'] = -1 # disabling database removal
 
-            compatstring = ''
             if etpConst['gentoo-compat']:
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Entropy and Gentoo database entry for "+str(self.infoDict['removeatom']))
-                compatstring = " ## w/Gentoo compatibility"
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "Removing Entropy and Gentoo database entry for %s" % (self.infoDict['removeatom'],)
+                )
             else:
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing Entropy (only) database entry for "+str(self.infoDict['removeatom']))
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "Removing Entropy (only) database entry for %s" % (self.infoDict['removeatom'],)
+                )
 
             self.Entropy.updateProgress(
-                                    blue("Cleaning old package files...")+compatstring,
+                                    blue(_("Cleaning old package files...")),
                                     importance = 1,
                                     type = "info",
                                     header = red("   ## ")
@@ -4232,8 +4138,12 @@ class PackageInterface:
             self.__remove_package()
 
         rc = 0
-        if (etpConst['gentoo-compat']):
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Installing new Gentoo database entry: "+str(self.infoDict['atom']))
+        if etpConst['gentoo-compat']:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Installing new Gentoo database entry: %s" % (self.infoDict['atom'],)
+            )
             rc = self._install_package_into_gentoo_database(newidpackage)
 
         return rc
@@ -4325,15 +4235,13 @@ class PackageInterface:
                     # update counter inside clientDatabase
                     self.Entropy.clientDbconn.insertCounter(newidpackage,counter)
                 else:
+                    mytxt = brown(_("Cannot update Gentoo counter, destination %s does not exist.") % (destination,))
                     self.Entropy.updateProgress(
-                                                red("QA: ")+brown("cannot update Gentoo counter, destination %s does not exist." % 
-                                                        (destination,)
-                                                ),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = darkred("   ## ")
-                                        )
-
+                        red("QA: ")+mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred("   ## ")
+                    )
 
         return 0
 
@@ -4449,19 +4357,25 @@ class PackageInterface:
 
                 # if our directory is a file on the live system
                 elif os.path.isfile(rootdir): # really weird...!
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+rootdir+" is a file when it should be a directory !! Removing in 20 seconds...")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "WARNING!!! %s is a file when it should be a directory !! Removing in 20 seconds..." % (rootdir,)
+                    )
+                    mytxt = darkred(_("%s is a file when should be a directory !! Removing in 20 seconds...") % (rootdir,))
                     self.Entropy.updateProgress(
-                                            bold(rootdir)+red(" is a file when it should be a directory !! Removing in 20 seconds..."),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = red(" *** ")
-                                        )
+                        red("QA: ")+mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = red(" !!! ")
+                    )
                     self.Entropy.entropyTools.ebeep(10)
                     time.sleep(20)
                     os.remove(rootdir)
 
                 # if our directory is a symlink instead, then copy the symlink
-                if os.path.islink(imagepathDir) and not os.path.isdir(rootdir): # for security we skip live items that are dirs
+                if os.path.islink(imagepathDir) and not os.path.isdir(rootdir):
+                    # for security we skip live items that are dirs
                     tolink = os.readlink(imagepathDir)
                     if os.path.islink(rootdir):
                         os.remove(rootdir)
@@ -4502,13 +4416,19 @@ class PackageInterface:
                     # self.infoDict['removeidpackage']
                     avail = self.Entropy.clientDbconn.isFileAvailable(todbfile, get_id = True)
                     if (self.infoDict['removeidpackage'] not in avail) and avail:
+                        mytxt = darkred(_("Collision found during install for"))
+                        mytxt += " %s - %s" % (blue(tofile),darkred(_("cannot overwrite")),)
                         self.Entropy.updateProgress(
-                                                red("Collision found during install for ")+tofile+" - cannot overwrite",
-                                                importance = 1,
-                                                type = "warning",
-                                                header = darkred("   ## ")
-                                            )
-                        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! Collision found during install for "+tofile+" - cannot overwrite")
+                            red("QA: ")+mytxt,
+                            importance = 1,
+                            type = "warning",
+                            header = darkred("   ## ")
+                        )
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "WARNING!!! Collision found during install for %s - cannot overwrite" % (tofile,)
+                        )
                         continue
 
                 # -- CONFIGURATION FILE PROTECTION --
@@ -4549,39 +4469,46 @@ class PackageInterface:
                                 oldtofile = tofile
                                 if oldtofile.find("._cfg") != -1:
                                     oldtofile = os.path.dirname(oldtofile)+"/"+os.path.basename(oldtofile)[10:]
-                                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Protecting config file: "+oldtofile)
+                                self.Entropy.clientLog.log(
+                                    ETP_LOGPRI_INFO,
+                                    ETP_LOGLEVEL_NORMAL,
+                                    "Protecting config file: %s" % (oldtofile,)
+                                )
+                                mytxt = red("%s: %s") % (_("Protecting config file"),oldtofile,)
                                 self.Entropy.updateProgress(
-                                                        red("Protecting config file: ")+oldtofile,
-                                                        importance = 1,
-                                                        type = "warning",
-                                                        header = darkred("   ## ")
-                                                    )
+                                    mytxt,
+                                    importance = 1,
+                                    type = "warning",
+                                    header = darkred("   ## ")
+                                )
                         else:
-                            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Skipping config file installation, as stated in equo.conf: "+tofile)
+                            self.Entropy.clientLog.log(
+                                ETP_LOGPRI_INFO,
+                                ETP_LOGLEVEL_NORMAL,
+                                "Skipping config file installation, as stated in equo.conf: %s" % (tofile,)
+                            )
+                            mytxt = "%s: %s" % (_("Skipping file installation"),tofile,)
                             self.Entropy.updateProgress(
-                                                    red("Skipping file installation: ")+tofile,
-                                                    importance = 1,
-                                                    type = "warning",
-                                                    header = darkred("   ## ")
-                                                )
+                                mytxt,
+                                importance = 1,
+                                type = "warning",
+                                header = darkred("   ## ")
+                            )
                             continue
 
                     # -- CONFIGURATION FILE PROTECTION --
 
                 except Exception, e:
+                    self.Entropy.entropyTools.printTraceback()
                     protected = False # safely revert to false
                     tofile = tofile_before_protect
+                    mytxt = darkred("%s: %s") % (_("Cannot check CONFIG PROTECTION. Error"),e,)
                     self.Entropy.updateProgress(
-                                                red("QA: ")+brown("cannot check CONFIG PROTECTION. Exception: %s :: error: %s" % (
-                                                        str(Exception),
-                                                        str(e),
-                                                        )
-                                                ),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = darkred("   ## ")
-                                        )
-                    pass # some files are buggy encoded
+                        red("QA: ")+mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred("   ## ")
+                    )
 
                 try:
 
@@ -4594,13 +4521,18 @@ class PackageInterface:
 
                     # if our file is a dir on the live system
                     if os.path.isdir(tofile) and not os.path.islink(tofile): # really weird...!
-                        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"WARNING!!! "+tofile+" is a directory when it should be a file !! Removing in 20 seconds...")
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "WARNING!!! %s is a directory when it should be a file !! Removing in 20 seconds..." % (tofile,)
+                        )
+                        mytxt = _("%s is a directory when it should be a file !! Removing in 20 seconds...") % (tofile,)
                         self.Entropy.updateProgress(
-                                                bold(tofile)+red(" is a directory when it should be a file !! Removing in 20 seconds..."),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = red(" *** ")
-                                            )
+                            red("QA: ")+darkred(mytxt),
+                            importance = 1,
+                            type = "warning",
+                            header = red(" !!! ")
+                        )
                         self.Entropy.entropyTools.ebeep(10)
                         time.sleep(20)
                         try:
@@ -4639,31 +4571,37 @@ class PackageInterface:
 
     def fetch_step(self):
         self.error_on_not_prepared()
+        mytxt = "%s: %s" % (blue(_("Downloading archive")),red(os.path.basename(self.infoDict['download'])),)
         self.Entropy.updateProgress(
-                                            blue("Fetching archive: ")+red(os.path.basename(self.infoDict['download'])),
-                                            importance = 1,
-                                            type = "info",
-                                            header = red("   ## ")
-                                    )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
         rc = self.Entropy.fetch_file_on_mirrors(
-                                                    self.infoDict['repository'],
-                                                    self.infoDict['download'],
-                                                    self.infoDict['checksum'],
-                                                    self.infoDict['verified']
-                                                )
+            self.infoDict['repository'],
+            self.infoDict['download'],
+            self.infoDict['checksum'],
+            self.infoDict['verified']
+        )
         if rc != 0:
+            mytxt = "%s. %s: %s" % (
+                red(_("Package cannot be fetched. Try to update repositories and retry")),
+                blue(_("Error")),
+                rc,
+            )
             self.Entropy.updateProgress(
-                                            red("Package cannot be fetched. Try to update repositories and retry. Error: %s" % (str(rc),)),
-                                            importance = 1,
-                                            type = "error",
-                                            header = darkred("   ## ")
-                                    )
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = darkred("   ## ")
+            )
             return rc
         return 0
 
     def vanished_step(self):
         self.Entropy.updateProgress(
-            blue("Installed package in queue vanished, skipping."),
+            blue(_("Installed package in queue vanished, skipping.")),
             importance = 1,
             type = "info",
             header = red("   ## ")
@@ -4679,84 +4617,103 @@ class PackageInterface:
         self.error_on_not_prepared()
 
         if not self.infoDict['merge_from']:
+            mytxt = "%s: %s" % (blue(_("Unpacking package")),red(os.path.basename(self.infoDict['download'])),)
             self.Entropy.updateProgress(
-                                                blue("Unpacking package: ")+red(os.path.basename(self.infoDict['download'])),
-                                                importance = 1,
-                                                type = "info",
-                                                header = red("   ## ")
-                                        )
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+        )
         else:
+            mytxt = "%s: %s" % (blue(_("Merging package")),red(os.path.basename(self.infoDict['atom'])),)
             self.Entropy.updateProgress(
-                                                blue("Merging package: ")+red(os.path.basename(self.infoDict['atom'])),
-                                                importance = 1,
-                                                type = "info",
-                                                header = red("   ## ")
-                                        )
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
         rc = self.__unpack_package()
         if rc != 0:
             if rc == 512:
-                errormsg = red("You are running out of disk space. I bet, you're probably Michele. Error 512")
+                errormsg = "%s. %s. %s: 512" % (
+                    red(_("You are running out of disk space")),
+                    red(_("I bet, you're probably Michele")),
+                    blue(_("Error")),
+                )
             else:
-                errormsg = red("An error occured while trying to unpack the package. Check if your system is healthy. Error "+str(rc))
+                errormsg = "%s. %s. %s: %s" % (
+                    red(_("An error occured while trying to unpack the package")),
+                    red(_("Check if your system is healthy")),
+                    blue(_("Error")),
+                    rc,
+                )
             self.Entropy.updateProgress(
-                                            errormsg,
-                                            importance = 1,
-                                            type = "error",
-                                            header = red("   ## ")
-                                    )
+                errormsg,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
         return rc
 
     def install_step(self):
         self.error_on_not_prepared()
-        compatstring = ''
-        if etpConst['gentoo-compat']:
-            compatstring = " ## w/Gentoo compatibility"
+        mytxt = "%s: %s" % (blue(_("Installing package")),red(self.infoDict['atom']),)
         self.Entropy.updateProgress(
-                                            blue("Installing package: ")+red(self.infoDict['atom'])+compatstring,
-                                            importance = 1,
-                                            type = "info",
-                                            header = red("   ## ")
-                                    )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
         rc = self.__install_package()
         if rc != 0:
+            mytxt = "%s. %s. %s: %s" % (
+                red(_("An error occured while trying to install the package")),
+                red(_("Check if your system is healthy")),
+                blue(_("Error")),
+                rc,
+            )
             self.Entropy.updateProgress(
-                                            red("An error occured while trying to install the package. Check if your system is healthy. Error %s" % (str(rc),)),
-                                            importance = 1,
-                                            type = "error",
-                                            header = red("   ## ")
-                                    )
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
         return rc
 
     def remove_step(self):
         self.error_on_not_prepared()
-        compatstring = ''
-        if etpConst['gentoo-compat']:
-            compatstring = " ## w/Gentoo compatibility"
+        mytxt = "%s: %s" % (blue(_("Removing data")),red(self.infoDict['removeatom']),)
         self.Entropy.updateProgress(
-                                            blue("Removing data: ")+red(self.infoDict['removeatom'])+compatstring,
-                                            importance = 1,
-                                            type = "info",
-                                            header = red("   ## ")
-                                    )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
         rc = self.__remove_package()
         if rc != 0:
-            errormsg = red("An error occured while trying to remove the package. Check if you have enough disk space on your hard disk. Error %s " % (str(rc),))
+            mytxt = "%s. %s. %s: %s" % (
+                red(_("An error occured while trying to remove the package")),
+                red(_("heck if you have enough disk space on your hard disk")),
+                blue(_("Error")),
+                rc,
+            )
             self.Entropy.updateProgress(
-                                            errormsg,
-                                            importance = 1,
-                                            type = "error",
-                                            header = red("   ## ")
-                                    )
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
         return rc
 
     def cleanup_step(self):
         self.error_on_not_prepared()
+        mytxt = "%s: %s" % (blue(_("Cleaning")),red(self.infoDict['atom']),)
         self.Entropy.updateProgress(
-                                        blue('Cleaning: ')+red(self.infoDict['atom']),
-                                        importance = 1,
-                                        type = "info",
-                                        header = red("   ## ")
-                                    )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
         tdict = {}
         tdict['unpackdir'] = self.infoDict['unpackdir']
         task = self.Entropy.entropyTools.parallelTask(self.__cleanup_package, tdict)
@@ -4774,21 +4731,26 @@ class PackageInterface:
         self.error_on_not_prepared()
         # get messages
         if self.infoDict['messages']:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Message from "+self.infoDict['atom']+" :")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Message from %s:" % (self.infoDict['atom'],)
+            )
+            mytxt = "%s:" % (darkgreen(_("Compilation messages")),)
             self.Entropy.updateProgress(
-                                                darkgreen("Gentoo ebuild messages:"),
-                                                importance = 0,
-                                                type = "warning",
-                                                header = brown("   ## ")
-                                        )
+                mytxt,
+                importance = 0,
+                type = "warning",
+                header = brown("   ## ")
+            )
         for msg in self.infoDict['messages']:
             self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
             self.Entropy.updateProgress(
-                                                msg,
-                                                importance = 0,
-                                                type = "warning",
-                                                header = brown("   ## ")
-                                        )
+                msg,
+                importance = 0,
+                type = "warning",
+                header = brown("   ## ")
+            )
         if self.infoDict['messages']:
             self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"End message.")
 
@@ -4893,20 +4855,24 @@ class PackageInterface:
             self.xterm_title = xterm_header
 
             if step == "fetch":
-                self.xterm_title += ' Fetching: '+os.path.basename(self.infoDict['download'])
+                mytxt = _("Fetching")
+                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.fetch_step()
 
             elif step == "checksum":
-                self.xterm_title += ' Verifying: '+os.path.basename(self.infoDict['download'])
+                mytxt = _("Verifying")
+                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.checksum_step()
 
             elif step == "unpack":
                 if not self.infoDict['merge_from']:
-                    self.xterm_title += ' Unpacking: '+os.path.basename(self.infoDict['download'])
+                    mytxt = _("Unpacking")
+                    self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
                 else:
-                    self.xterm_title += ' Merging: '+os.path.basename(self.infoDict['atom'])
+                    mytxt = _("Merging")
+                    self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.unpack_step()
 
@@ -4914,12 +4880,14 @@ class PackageInterface:
                 rc = self.removeconflict_step()
 
             elif step == "install":
-                self.xterm_title += ' Installing: '+self.infoDict['atom']
+                mytxt = _("Installing")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.install_step()
 
             elif step == "remove":
-                self.xterm_title += ' Removing: '+self.infoDict['removeatom']
+                mytxt = _("Removing")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.remove_step()
 
@@ -4930,27 +4898,32 @@ class PackageInterface:
                 rc = self.logmessages_step()
 
             elif step == "cleanup":
-                self.xterm_title += ' Cleaning: '+self.infoDict['atom']
+                mytxt = _("Cleaning")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.cleanup_step()
 
             elif step == "postinstall":
-                self.xterm_title += ' Postinstall: '+self.infoDict['atom']
+                mytxt = _("Postinstall")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.postinstall_step()
 
             elif step == "preinstall":
-                self.xterm_title += ' Preinstall: '+self.infoDict['atom']
+                mytxt = _("Preinstall")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.preinstall_step()
 
             elif step == "preremove":
-                self.xterm_title += ' Preremove: '+self.infoDict['removeatom']
+                mytxt = _("Preremove")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.preremove_step()
 
             elif step == "postremove":
-                self.xterm_title += ' Postremove: '+self.infoDict['removeatom']
+                mytxt = _("Postremove")
+                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.postremove_step()
 
@@ -4990,11 +4963,11 @@ class PackageInterface:
 
         if rc != 0:
             self.Entropy.updateProgress(
-                                                blue("An error occured. Action aborted."),
-                                                importance = 2,
-                                                type = "error",
-                                                header = darkred("   ## ")
-                                        )
+                blue(_("An error occured. Action aborted.")),
+                importance = 2,
+                type = "error",
+                header = darkred("   ## ")
+            )
         return rc
 
     '''
@@ -5152,9 +5125,17 @@ class PackageInterface:
             installedTag = self.Entropy.clientDbconn.retrieveVersionTag(self.infoDict['removeidpackage'])
             installedRev = self.Entropy.clientDbconn.retrieveRevision(self.infoDict['removeidpackage'])
             pkgcmp = self.Entropy.entropyTools.entropyCompareVersions(
-                                                        (self.infoDict['version'],self.infoDict['versiontag'],self.infoDict['revision']),
-                                                        (installedVer,installedTag,installedRev)
-                                                    )
+                (
+                    self.infoDict['version'],
+                    self.infoDict['versiontag'],
+                    self.infoDict['revision'],
+                ),
+                (
+                    installedVer,
+                    installedTag,
+                    installedRev,
+                )
+            )
             if pkgcmp == 0:
                 self.infoDict['removeidpackage'] = -1
             else:
@@ -5243,7 +5224,8 @@ class FileUpdatesInterface:
             self.Entropy.dumpTools = dumpTools
         else:
             if not isinstance(EquoInstance,EquoInterface):
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
+                mytxt = _("A valid Equo instance or subclass is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
             self.Entropy = EquoInstance
 
         self.scandata = None
@@ -5252,7 +5234,10 @@ class FileUpdatesInterface:
         self.scanfs(dcache = True)
         self.do_backup(key)
         if os.access(etpConst['systemroot'] + self.scandata[key]['source'], os.R_OK):
-            shutil.move(etpConst['systemroot'] + self.scandata[key]['source'], etpConst['systemroot'] + self.scandata[key]['destination'])
+            shutil.move(
+                etpConst['systemroot'] + self.scandata[key]['source'],
+                etpConst['systemroot'] + self.scandata[key]['destination']
+            )
         self.remove_from_cache(key)
 
     def remove_file(self, key):
@@ -5267,10 +5252,16 @@ class FileUpdatesInterface:
         self.scanfs(dcache = True)
         if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+self.scandata[key]['destination']):
             bcount = 0
-            backupfile = etpConst['systemroot'] + os.path.dirname(self.scandata[key]['destination']) + "/._equo_backup." + unicode(bcount) + "_" + os.path.basename(self.scandata[key]['destination'])
+            backupfile = etpConst['systemroot'] + \
+                os.path.dirname(self.scandata[key]['destination']) + \
+                "/._equo_backup." + unicode(bcount) + "_" + \
+                os.path.basename(self.scandata[key]['destination'])
             while os.path.lexists(backupfile):
                 bcount += 1
-                backupfile = etpConst['systemroot'] + os.path.dirname(self.scandata[key]['destination']) + "/._equo_backup." + unicode(bcount) + "_" + os.path.basename(self.scandata[key]['destination'])
+                backupfile = etpConst['systemroot'] + \
+                os.path.dirname(self.scandata[key]['destination']) + \
+                "/._equo_backup." + unicode(bcount) + "_" + \
+                os.path.basename(self.scandata[key]['destination'])
             try:
                 shutil.copy2(etpConst['systemroot'] + self.scandata[key]['destination'],backupfile)
             except IOError:
@@ -5333,8 +5324,10 @@ class FileUpdatesInterface:
 
                         mydict = self.generate_dict(filepath)
                         if mydict['automerge']:
+                            mytxt = _("Automerging file")
                             self.Entropy.updateProgress(
-                                darkred("Automerging file: %s") % (
+                                darkred("%s: %s") % (
+                                    mytxt,
                                     darkgreen(etpConst['systemroot'] + mydict['source']),
                                 ),
                                 importance = 0,
@@ -5345,11 +5338,16 @@ class FileUpdatesInterface:
                                     shutil.move(    etpConst['systemroot']+mydict['source'],
                                                     etpConst['systemroot']+mydict['destination']
                                     )
-                                except IOError:
+                                except IOError, e:
+                                    mytxt = "%s :: %s: %s. %s: %s" % (
+                                        red(_("I/O Error")),
+                                        red(_("Cannot automerge file")),
+                                        brown(etpConst['systemroot'] + mydict['source']),
+                                        blue("Error"),
+                                        e,
+                                    )
                                     self.Entropy.updateProgress(
-                                        darkred("I/O Error :: Cannot automerge file: %s") % (
-                                            darkgreen(etpConst['systemroot'] + mydict['source']),
-                                        ),
+                                        mytxt,
                                         importance = 1,
                                         type = "warning"
                                     )
@@ -5376,6 +5374,7 @@ class FileUpdatesInterface:
         return scandata
 
     def load_cache(self):
+        mytxt = _("Cache is corrupted")
         try:
             sd = self.Entropy.dumpTools.loadobj(etpCache['configfiles'])
             # check for corruption?
@@ -5399,15 +5398,15 @@ class FileUpdatesInterface:
                         name_cache.add(mysource)
 
                     if taint:
-                        raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+                        raise exceptionTools.CacheCorruptionError("CacheCorruptionError: %s." % (mytxt,))
                     return sd
 
                 except (KeyError,EOFError):
-                    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+                    raise exceptionTools.CacheCorruptionError("CacheCorruptionError: %s." % (mytxt,))
             else:
-                raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+                raise exceptionTools.CacheCorruptionError("CacheCorruptionError: %s." % (mytxt,))
         except:
-            raise exceptionTools.CacheCorruptionError("CacheCorruptionError: cache is corrupted.")
+            raise exceptionTools.CacheCorruptionError("CacheCorruptionError: %s." % (mytxt,))
 
     '''
     @description: prints information about config files that should be updated
@@ -5451,7 +5450,8 @@ class FileUpdatesInterface:
         try:
             int(number)
         except:
-            raise exceptionTools.InvalidDataType("InvalidDataType: invalid config file number '0000->9999'.")
+            mytxt = _("Invalid config file number")
+            raise exceptionTools.InvalidDataType("InvalidDataType: %s '0000->9999'." % (mytxt,))
         tofilepath = currentdir+"/"+tofile
         mydict = {}
         mydict['revision'] = number
@@ -5498,7 +5498,8 @@ class RepoInterface:
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
 
         if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
+            mytxt = _("A valid Equo instance or subclass is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = EquoInstance
         self.reponames = reponames
@@ -5515,12 +5516,14 @@ class RepoInterface:
 
         # check etpRepositories
         if not etpRepositories:
-            raise exceptionTools.MissingParameter("MissingParameter: no repositories specified in %s" % (etpConst['repositoriesconf'],))
+            mytxt = _("No repositories specified in %s") % (etpConst['repositoriesconf'],)
+            raise exceptionTools.MissingParameter("MissingParameter: %s" % (mytxt,))
 
         # Test network connectivity
         conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
         if not conntest:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Cannot connect to %s" % (etpConst['conntestlink'],))
+            mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         if not self.reponames:
             for x in etpRepositories:
@@ -5548,7 +5551,8 @@ class RepoInterface:
 
     def __validate_repository_id(self, repoid):
         if repoid not in self.reponames:
-            raise exceptionTools.InvalidData("InvalidData: repository is not listed in self.reponames")
+            mytxt = _("Repository is not listed in self.reponames")
+            raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
 
     def __validate_compression_method(self, repo):
 
@@ -5556,7 +5560,8 @@ class RepoInterface:
 
         cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
         if cmethod == None:
-            raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+            mytxt = _("Wrong database compression method")
+            raise exceptionTools.InvalidDataType("InvalidDataType: %s" % (mytxt,))
         return cmethod
 
     def __ensure_repository_path(self, repo):
@@ -5571,17 +5576,21 @@ class RepoInterface:
 
     def __construct_paths(self, item, repo, cmethod):
 
-        if item not in ("db","rev","ck","lock","mask","dbdump","dbdumpck","lic_whitelist"):
-            raise exceptionTools.InvalidData("InvalidData: supported db, rev, ck, lock")
+        supported_items = ("db","rev","ck","lock","mask","dbdump","dbdumpck","lic_whitelist")
+        if item not in supported_items:
+            mytxt = _("Supported items: %s") % (supported_items,)
+            raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
 
         if item == "db":
             if cmethod == None:
-                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
+                mytxt = _("For %s, cmethod can't be None") % (item,)
+                raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
             url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[2]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
         elif item == "dbdump":
             if cmethod == None:
-                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
+                mytxt = _("For %s, cmethod can't be None") % (item,)
+                raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
             url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[3]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[3]]
         elif item == "rev":
@@ -5627,7 +5636,8 @@ class RepoInterface:
             if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
         else:
-            raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
+            mytxt = _("self.dbformat_eapi must be in (1,2)")
+            raise exceptionTools.InvalidData('InvalidData: %s' % (mytxt,))
 
     def __unpack_downloaded_database(self, repo, cmethod):
 
@@ -5640,7 +5650,8 @@ class RepoInterface:
             path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
             os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
         else:
-            raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
+            mytxt = _("self.dbformat_eapi must be in (1,2)")
+            raise exceptionTools.InvalidData('InvalidData: %s' % (mytxt,))
 
         self.Entropy.setup_default_file_perms(path)
         return path
@@ -5668,7 +5679,8 @@ class RepoInterface:
             except:
                 return -1
         else:
-            raise exceptionTools.InvalidData('self.dbformat_eapi must be in (1,2)')
+            mytxt = _("self.dbformat_eapi must be in (1,2)")
+            raise exceptionTools.InvalidData('InvalidData: %s' % (mytxt,))
 
         rc = self.Entropy.entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+dbfile,md5hash)
         return rc
@@ -5748,36 +5760,46 @@ class RepoInterface:
         if self.dbformat_eapi == 2:
             dbfilename = etpConst[cmethod[3]]
         # verify checksum
-        self.Entropy.updateProgress(    red("Checking downloaded database ") + darkgreen(dbfilename)+red(" ..."),
-                                        importance = 0,
-                                        back = True,
-                                        type = "info",
-                                        header = "\t"
-                        )
+        mytxt = "%s %s %s" % (red(_("Checking downloaded database")),darkgreen(dbfilename),red("..."))
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            back = True,
+            type = "info",
+            header = "\t"
+        )
         db_status = self.__verify_database_checksum(repo, cmethod)
         if db_status == -1:
-            self.Entropy.updateProgress(    red("Cannot open digest. Cannot verify database integrity !"),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = "\t"
-                            )
+            mytxt = "%s. %s !" % (red(_("Cannot open digest")),red(_("Cannot verify database integrity")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = "\t"
+            )
         elif db_status:
-            self.Entropy.updateProgress(    red("Downloaded database status: ")+bold("OK"),
-                                            importance = 1,
-                                            type = "info",
-                                            header = "\t"
-                            )
+            mytxt = "%s: %s" % (red(_("Downloaded database status")),bold(_("OK")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = "\t"
+            )
         else:
-            self.Entropy.updateProgress(    red("Downloaded database status: ")+darkred("ERROR"),
-                                            importance = 1,
-                                            type = "error",
-                                            header = "\t"
-                            )
-            self.Entropy.updateProgress(    red("An error occured while checking database integrity. Giving up."),
-                                            importance = 1,
-                                            type = "error",
-                                            header = "\t"
-                            )
+            mytxt = "%s: %s" % (red(_("Downloaded database status")),darkred(_("ERROR")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = "\t"
+            )
+            mytxt = "%s. %s" % (red(_("An error occured while checking database integrity")),red(_("Giving up")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = "\t"
+            )
             return 1
         return 0
 
@@ -5791,31 +5813,38 @@ class RepoInterface:
             self.reset_dbformat_eapi()
             repocount += 1
 
-            self.Entropy.updateProgress(    bold("%s") % ( etpRepositories[repo]['description'] ),
-                                            importance = 2,
-                                            type = "info",
-                                            count = (repocount, repolength),
-                                            header = blue("  # ")
-                               )
-            self.Entropy.updateProgress(    red("Database URL: ") + darkgreen(etpRepositories[repo]['database']),
-                                            importance = 1,
-                                            type = "info",
-                                            header = blue("  # ")
-                               )
-            self.Entropy.updateProgress(    red("Database local path: ") + darkgreen(etpRepositories[repo]['dbpath']),
-                                            importance = 0,
-                                            type = "info",
-                                            header = blue("  # ")
-                               )
+            self.Entropy.updateProgress(
+                bold("%s") % ( etpRepositories[repo]['description'] ),
+                importance = 2,
+                type = "info",
+                count = (repocount, repolength),
+                header = blue("  # ")
+            )
+            mytxt = "%s: %s" % (red(_("Database URL")),darkgreen(etpRepositories[repo]['database']),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue("  # ")
+            )
+            mytxt = "%s: %s" % (red(_("Database local path")),darkgreen(etpRepositories[repo]['dbpath']),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # ")
+            )
 
             # check if database is already updated to the latest revision
             update = self.is_repository_updatable(repo)
             if not update:
-                self.Entropy.updateProgress(    bold("Attention: ") + red("database is already up to date."),
-                                                importance = 1,
-                                                type = "info",
-                                                header = "\t"
-                                )
+                mytxt = "%s: %s." % (bold(_("Attention")),red(_("database is already up to date")),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = "\t"
+                )
                 self.Entropy.cycleDone()
                 self.alreadyUpdated += 1
                 continue
@@ -5823,11 +5852,17 @@ class RepoInterface:
             # get database lock
             unlocked = self.is_repository_unlocked(repo)
             if not unlocked:
-                self.Entropy.updateProgress(    bold("Attention: ") + red("repository is being updated. Try again in a few minutes."),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = "\t"
-                                )
+                mytxt = "%s: %s. %s." % (
+                    bold(_("Attention")),
+                    red(_("Repository is being updated")),
+                    red(_("Try again in a few minutes")),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "\t"
+                )
                 self.Entropy.cycleDone()
                 continue
 
@@ -5837,11 +5872,13 @@ class RepoInterface:
             self.__ensure_repository_path(repo)
 
             # starting to download
-            self.Entropy.updateProgress(    red("Downloading repository database ..."),
-                                            importance = 1,
-                                            type = "info",
-                                            header = "\t"
-                            )
+            mytxt = "%s ..." % (red(_("Downloading repository database")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = "\t"
+            )
             down_status = False
             if self.dbformat_eapi == 2:
                 down_status = self.download_item("dbdump", repo, cmethod)
@@ -5849,11 +5886,13 @@ class RepoInterface:
                 self.dbformat_eapi = 1
                 down_status = self.download_item("db", repo, cmethod)
             if not down_status:
-                self.Entropy.updateProgress(    bold("Attention: ") + red("database does not exist online."),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = "\t"
-                                )
+                mytxt = "%s: %s." % (bold(_("Attention")),red(_("database does not exist online")),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "\t"
+                )
                 self.Entropy.cycleDone()
                 self.notAvailable += 1
                 continue
@@ -5864,20 +5903,24 @@ class RepoInterface:
                 hashfile = etpConst[cmethod[4]]
                 downitem = 'dbdumpck'
 
+            mytxt = "%s %s %s" % (red(_("Downloading checksum")),darkgreen(hashfile),red("..."),)
             # download checksum
-            self.Entropy.updateProgress(    red("Downloading checksum ") + darkgreen(hashfile)+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t"
+            )
 
             db_down_status = self.download_item(downitem, repo, cmethod)
             if not db_down_status:
-                self.Entropy.updateProgress(    red("Cannot fetch checksum. Cannot verify database integrity !"),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = "\t"
-                                )
+                mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),red(_("Cannot verify database integrity")),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "\t"
+                )
 
             # dealing with EAPI
             rc = 0
@@ -5895,11 +5938,13 @@ class RepoInterface:
             if self.dbformat_eapi == 1:
                 file_to_unpack = etpConst['etpdatabasefile']
 
-            self.Entropy.updateProgress(    red("Unpacking database to ") + darkgreen(file_to_unpack)+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                                       )
+            mytxt = "%s %s %s" % (red(_("Unpacking database to")),darkgreen(file_to_unpack),red("..."),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t"
+            )
 
             do_db_update_transfer = False
             dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
@@ -5935,11 +5980,18 @@ class RepoInterface:
 
             if self.dbformat_eapi == 2:
                 # load the dump into database
-                self.Entropy.updateProgress(    red("Injecting downloaded dump ") + darkgreen(etpConst[cmethod[3]])+red(", please wait ..."),
-                                                importance = 0,
-                                                type = "info",
-                                                header = "\t"
-                                )
+                mytxt = "%s %s, %s %s" % (
+                    red(_("Injecting downloaded dump")),
+                    darkgreen(etpConst[cmethod[3]]),
+                    red(_("please wait")),
+                    red("..."),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    type = "info",
+                    header = "\t"
+                )
                 dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
                 rc = dbconn.doDatabaseImport(dumpfile, dbfile)
                 dbconn.closeDB()
@@ -5980,71 +6032,98 @@ class RepoInterface:
             self.dbupdated = True
 
             # download packages.db.mask
-            self.Entropy.updateProgress(    red("Downloading package mask ")+darkgreen(etpConst['etpdatabasemaskfile'])+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t",
-                                            back = True
-                            )
+            mytxt = "%s %s %s" % (
+                red(_("Downloading package mask")),
+                darkgreen(etpConst['etpdatabasemaskfile']),
+                red("..."),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t",
+                back = True
+            )
             mask_status = self.download_item("mask", repo)
             if not mask_status:
-                mask_message = red("No %s available. It's ok." % (etpConst['etpdatabasemaskfile'],))
+                mask_message = "%s: %s." % (blue(etpConst['etpdatabasemaskfile']),red(_("not available, It's ok")))
             else:
-                mask_message = red("Downloaded %s. Awesome :-)" % (etpConst['etpdatabasemaskfile'],))
-            self.Entropy.updateProgress(    mask_message,
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                            )
+                mask_message = "%s: %s." % (blue(etpConst['etpdatabasemaskfile']),red(_("downloaded, awesome :-)")))
+            self.Entropy.updateProgress(
+                mask_message,
+                importance = 0,
+                type = "info",
+                header = "\t"
+            )
 
+            mytxt = "%s %s %s" % (
+                red(_("Downloading license whitelist")),
+                darkgreen(etpConst['etpdatabaselicwhitelistfile']),
+                red("..."),
+            )
             # download packages.db.lic_whitelist
-            self.Entropy.updateProgress(    red("Downloading license whitelist ")+darkgreen(etpConst['etpdatabaselicwhitelistfile'])+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t",
-                                            back = True
-                            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t",
+                back = True
+            )
             lic_status = self.download_item("lic_whitelist", repo)
             if not lic_status:
-                lic_message = red("No %s available. It's ok." % (etpConst['etpdatabaselicwhitelistfile'],))
+                lic_message = "%s: %s." % (blue(etpConst['etpdatabaselicwhitelistfile']),red(_("not available, It's ok")))
             else:
-                lic_message = red("Downloaded %s. Cool :-)" % (etpConst['etpdatabaselicwhitelistfile'],))
-            self.Entropy.updateProgress(    lic_message,
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                            )
+                lic_message = "%s: %s." % (blue(etpConst['etpdatabaselicwhitelistfile']),red(_("downloaded, cool :-)")))
+            self.Entropy.updateProgress(
+                lic_message,
+                importance = 0,
+                type = "info",
+                header = "\t"
+            )
 
+            mytxt = "%s %s %s" % (
+                red(_("Downloading revision")),
+                darkgreen(etpConst['etpdatabaserevisionfile']),
+                red("..."),
+            )
             # download revision
-            self.Entropy.updateProgress(    red("Downloading revision ")+darkgreen(etpConst['etpdatabaserevisionfile'])+red(" ..."),
-                                            importance = 0,
-                                            type = "info",
-                                            header = "\t"
-                            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t"
+            )
             rev_status = self.download_item("rev", repo)
             if not rev_status:
-                self.Entropy.updateProgress(    red("Cannot download repository revision, don't ask me why !"),
-                                                importance = 1,
-                                                type = "warning",
-                                                header = "\t"
-                                )
+                self.Entropy.updateProgress(
+                    red(_("Cannot download repository revision, don't ask me why !")),
+                    importance = 1,
+                    type = "warning",
+                    header = "\t"
+                )
             else:
-                self.Entropy.updateProgress(    red("Updated repository revision: ")+bold(str(self.Entropy.get_repository_revision(repo))),
-                                                importance = 1,
-                                                type = "info",
-                                                header = "\t"
-                                )
+                mytxt = "%s: %s" % (
+                    red(_("Updated repository revision")),
+                    bold(str(self.Entropy.get_repository_revision(repo))),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = "\t"
+                )
 
                 if self.Entropy.indexing:
                     # renice a bit, to avoid eating resources
                     old_prio = self.Entropy.set_priority(15)
+                    mytxt = red("%s ...") % (_("Indexing Repository metadata"),)
                     self.Entropy.updateProgress(
-                                                    red("Indexing Repository metadata ..."),
-                                                    importance = 1,
-                                                    type = "info",
-                                                    header = "\t",
-                                                    back = True
-                                    )
+                        mytxt,
+                        importance = 1,
+                        type = "info",
+                        header = "\t",
+                        back = True
+                    )
                     dbconn = self.Entropy.openRepositoryDatabase(repo)
                     dbconn.createAllIndexes()
                     # get list of indexes
@@ -6076,18 +6155,22 @@ class RepoInterface:
                     securityConn = self.Entropy.Security()
                     securityConn.fetch_advisories()
                 except Exception, e:
-                    self.Entropy.updateProgress(    red("Advisories fetch error: %s: %s.") % (str(Exception),str(e),),
-                                                    importance = 1,
-                                                    type = "warning",
-                                                    header = darkred(" @@ ")
-                                    )
+                    self.Entropy.entropyTools.printTraceback()
+                    mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" @@ ")
+                    )
 
         if self.syncErrors:
-            self.Entropy.updateProgress(    red("Something bad happened. Please have a look."),
-                                            importance = 1,
-                                            type = "warning",
-                                            header = darkred(" @@ ")
-                            )
+            self.Entropy.updateProgress(
+                red(_("Something bad happened. Please have a look.")),
+                importance = 1,
+                type = "warning",
+                header = darkred(" @@ ")
+            )
             self.syncErrors = True
             self.Entropy._resources_run_remove_lock()
             return 128
@@ -6101,11 +6184,17 @@ class RepoInterface:
 
         if rc:
             self.newEquo = True
-            self.Entropy.updateProgress(    blue("A new ")+bold("Equo")+blue(" release is available. Please ")+bold("install it")+blue(" before any other package."),
-                                            importance = 1,
-                                            type = "info",
-                                            header = darkred(" !! ")
-                            )
+            mytxt = "%s: %s. %s." % (
+                bold("Equo/Entropy"),
+                blue(_("a new release is available")),
+                darkred(_("Mind to install it before any other package")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = bold(" !!! ")
+            )
         return 0
 
     def sync(self):
@@ -6114,11 +6203,13 @@ class RepoInterface:
         self.Entropy.closeAllRepositoryDatabases()
 
         # let's dance!
-        self.Entropy.updateProgress(    darkgreen("Repositories synchronization..."),
-                                        importance = 2,
-                                        type = "info",
-                                        header = darkred(" @@ ")
-                            )
+        mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 2,
+            type = "info",
+            header = darkred(" @@ ")
+        )
 
         gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
@@ -6158,11 +6249,8 @@ class FtpInterface:
 
         if not isinstance(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, TextInterface, ServerInterface)):
-                raise exceptionTools.IncorrectParameter(
-                            "IncorrectParameter: a valid TextInterface based instance is needed, was: %s" % (
-                                    str(EntropyInterface),
-                                )
-                )
+                mytxt = _("A valid TextInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
 
         self.Entropy = EntropyInterface
         import entropyTools
@@ -6224,16 +6312,18 @@ class FtpInterface:
                 continue
 
         if self.verbose:
+            mytxt = _("connecting with user")
             self.Entropy.updateProgress(
-                "[ftp:%s] connecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.ftphost),mytxt,blue(self.ftpuser),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
             )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         if self.verbose:
+            mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.ftphost),mytxt,blue(self.ftpdir),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -6260,16 +6350,18 @@ class FtpInterface:
                     raise
                 continue
         if self.verbose:
+            mytxt = _("reconnecting with user")
             self.Entropy.updateProgress(
-                "[ftp:%s] reconnecting with user: %s" % (darkgreen(self.ftphost),blue(self.ftpuser),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.ftphost),mytxt,blue(self.ftpuser),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
             )
         self.ftpconn.login(self.ftpuser,self.ftppassword)
         if self.verbose:
+            mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(self.ftpdir),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.ftphost),mytxt,blue(self.ftpdir),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -6291,8 +6383,9 @@ class FtpInterface:
 
     def setCWD(self,mydir):
         if self.verbose:
+            mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] switching to: %s" % (darkgreen(self.ftphost),blue(mydir),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.ftphost),mytxt,blue(mydir),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -6393,7 +6486,10 @@ class FtpInterface:
             myUploadPercentage = str(myUploadPercentage)+"%"
 
             # create text
-            currentText = brown("    <-> Upload status: ")+green(str(myUploadSize))+"/"+red(str(self.myFileSize))+" kB "+brown("[")+str(myUploadPercentage)+brown("]")
+            mytxt = _("Upload status")
+            currentText = brown("    <-> %s: " % (mytxt,)) + \
+                green(str(myUploadSize)) + "/" + red(str(self.myFileSize)) + " kB " + \
+                brown("[") + str(myUploadPercentage) + brown("]")
             print_info(currentText, back = True)
             # XXX too slow, reimplement self.updateProgress and do whatever you want
             #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
@@ -6434,12 +6530,19 @@ class FtpInterface:
             except Exception, e: # connection reset by peer
                 import traceback
                 traceback.print_exc()
-                self.Entropy.updateProgress("", importance = 0, type = "info")
-                self.Entropy.updateProgress(red("Upload issue: %s, retrying... #%s") % (str(e),str(i+1)),
-                                    importance = 1,
-                                    type = "warning",
-                                    header = "  "
-                                   )
+                self.Entropy.updateProgress(" ", importance = 0, type = "info")
+                mytxt = red("%s: %s, %s... #%s") % (
+                    _("Upload issue"),
+                    e,
+                    _("retrying"),
+                    i+1,
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "  "
+                    )
                 self.reconnectHost() # reconnect
                 if self.isFileAvailable(filename):
                     self.deleteFile(filename)
@@ -6458,8 +6561,17 @@ class FtpInterface:
             self.mykByteCount += float(len(buf))/1024
             # create text
             cnt = round(self.mykByteCount,1)
-            currentText = brown("    <-> Download status: ")+green(str(cnt))+"/"+red(str(self.myFileSize))+" kB"
-            self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True, count = (cnt, self.myFileSize), percent = True )
+            mytxt = _("Download status")
+            currentText = brown("    <-> %s: " % (mytxt,)) + green(str(cnt)) + "/" + \
+                red(str(self.myFileSize)) + " kB"
+            self.Entropy.updateProgress(
+                currentText,
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (cnt, self.myFileSize),
+                percent = True
+            )
 
         # look if the file exist
         if self.isFileAvailable(filename):
@@ -6690,7 +6802,13 @@ class urlFetcher:
 
     def updateProgress(self):
 
-        currentText = darkred("    Fetch: ")+darkgreen(str(round(float(self.downloadedsize)/1024,1)))+"/"+red(str(round(self.remotesize,1))) + " kB"
+        mytxt = _("Fetch")
+        eta_txt = _("ETA")
+        sec_txt = _("sec") # as in XX kb/sec
+
+        currentText = darkred("    %s: " % (mytxt,)) + \
+            darkgreen(str(round(float(self.downloadedsize)/1024,1))) + "/" + \
+            red(str(round(self.remotesize,1))) + " kB"
         # create progress bar
         barsize = 10
         bartext = "["
@@ -6707,7 +6825,8 @@ class urlFetcher:
                 bartext += " "
                 diffbarsize -= 1
             if self.showSpeed:
-                bartext += "] => "+str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec ~ ETA: "+str(self.time_remaining)
+                bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(self.datatransfer),)
+                bartext += "/%s : %s: %s" % (sec_txt,eta_txt,self.time_remaining,)
             else:
                 bartext += "]"
             average = str(self.average)
@@ -6738,19 +6857,23 @@ class urlFetcher:
             self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
             self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
         except:
-            self.time_remaining = "(infinite)"
+            self.time_remaining = "(%s)" % (_("infinite"),)
 
 
 class rssFeed:
 
+    import entropyTools
     def __init__(self, filename, maxentries = 100):
 
         self.feed_title = etpConst['systemname']+" Online Repository Status"
         self.feed_title = self.feed_title.strip()
-        self.feed_description = "Keep you updated on what's going on in the Official "+etpConst['systemname']+" Repository."
+        self.feed_description = "Keep you updated on what's going on in the %s Repository." % (etpConst['systemname'],)
         self.feed_language = "en-EN"
         self.feed_editor = etpConst['rss-managing-editor']
-        self.feed_copyright = etpConst['systemname']+" (C) 2007-2009"
+        self.feed_copyright = "%s - (C) %s" % (
+            etpConst['systemname'],
+            self.entropyTools.getYear(),
+        )
 
         self.file = filename
         self.items = {}
@@ -6822,7 +6945,9 @@ class rssFeed:
         if link:
             self.items[self.itemscounter]['guid'] = link
         else:
-            self.items[self.itemscounter]['guid'] = "sabayonlinux.org~"+description+str(self.itemscounter)
+            myguid = etpConst['systemname'].lower()
+            myguid = myguid.replace(" ","")
+            self.items[self.itemscounter]['guid'] = myguid+"~"+description+str(self.itemscounter)
         return self.itemscounter
 
     def removeEntry(self, id):
@@ -6942,10 +7067,12 @@ class rssFeed:
 
 class TriggerInterface:
 
+    import entropyTools
     def __init__(self, EquoInstance, phase, pkgdata):
 
         if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Entropy Instance is needed")
+            mytxt = _("A valid Entropy Instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = EquoInstance
         self.clientLog = self.Entropy.clientLog
@@ -6967,11 +7094,18 @@ class TriggerInterface:
                 Spm = self.Entropy.Spm()
                 self.Spm = Spm
             except Exception, e:
+                self.entropyTools.printTraceback()
+                mytxt = darkred("%s, %s: %s, %s !") % (
+                    _("Portage interface can't be loaded"),
+                    _("Error"),
+                    e,
+                    _("please fix"),
+                )
                 self.Entropy.updateProgress(
-                                        red("Portage interface can't be loaded due to %s: (%s), please fix it !" % (str(Exception),str(e)) ),
-                                        importance = 0,
-                                        header = bold(" !!! ")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = bold(" !!! ")
+                )
                 self.gentoo_compat = False
 
         self.phase = phase
@@ -6980,7 +7114,8 @@ class TriggerInterface:
 
     def phaseValidation(self):
         if self.phase not in self.validPhases:
-            raise exceptionTools.InvalidData("InvalidData: valid phases are %s" % (self.validPhases,))
+            mytxt = "%s: %s" % (_("Valid phases"),self.validPhases,)
+            raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
 
     def prepare(self):
         self.triggers = eval("self."+self.phase)()
@@ -7089,7 +7224,8 @@ class TriggerInterface:
             else:
                 if x.startswith('/lib/modules/'):
                     try:
-                        functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
+                        functions.remove("ebuild_postinstall")
+                        # disabling gentoo postinstall since we reimplemented it
                     except:
                         pass
                     functions.add('kernelmod')
@@ -7193,12 +7329,14 @@ class TriggerInterface:
         # Gentoo hook
         if self.gentoo_compat:
             functions.add('ebuild_preremove')
-            functions.add('ebuild_postremove') # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
+            functions.add('ebuild_postremove')
+            # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
 
         # opengl configuration
         if (self.pkgdata['category'] == "x11-drivers") and (self.pkgdata['name'].startswith("nvidia-") or self.pkgdata['name'].startswith("ati-")):
             try:
-                functions.remove("ebuild_preremove") # disabling gentoo postinstall since we reimplemented it
+                functions.remove("ebuild_preremove")
+                # disabling gentoo postinstall since we reimplemented it
                 functions.remove("ebuild_postremove")
             except:
                 pass
@@ -7266,11 +7404,12 @@ class TriggerInterface:
     def trigger_nspluginwrapper_fix_flash(self):
         # check if nspluginwrapper is installed
         if os.access("/usr/bin/nspluginwrapper",os.X_OK):
+            mytxt = "%s: nspluginwrapper flash plugin" % (_("Regenerating"),)
             self.Entropy.updateProgress(
-                                    brown(" Regenerating nspluginwrapper flash plugin"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(mytxt),
+                importance = 0,
+                header = red("   ##")
+            )
             quietstring = ''
             if etpUi['quiet']: quietstring = " &>/dev/null"
             cmds = [
@@ -7285,17 +7424,24 @@ class TriggerInterface:
                     os.system('echo "'+cmd+'" | chroot '+etpConst['systemroot']+quietstring)
 
     def trigger_purgecache(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Purging Entropy cache...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Purging Entropy cache..."
+        )
+
+        mytxt = "%s: %s." % (_("Please remember"),_("It is always better to leave Entropy updates isolated"),)
         self.Entropy.updateProgress(
-                                brown(" Remember: It is always better to leave Entropy updates isolated."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
+        mytxt = "%s ..." % (_("Purging Entropy cache"),)
         self.Entropy.updateProgress(
-                                brown(" Purging Entropy cache..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.Entropy.purge_cache(False)
 
     def trigger_fontconfig(self):
@@ -7309,37 +7455,54 @@ class TriggerInterface:
                         origdir = origdir.split("/")[1]
                         if os.path.isdir(xdir[:16]+"/"+origdir):
                             fontdirs.add(xdir[:16]+"/"+origdir)
-        if (fontdirs):
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring fonts directory...")
+        if fontdirs:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Configuring fonts directory..."
+            )
+            mytxt = "%s ..." % (_("Configuring fonts directories"),)
             self.Entropy.updateProgress(
-                                    brown(" Configuring fonts directory..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(mytxt),
+                importance = 0,
+                header = red("   ## ")
+            )
         for fontdir in fontdirs:
             self.trigger_setup_font_dir(fontdir)
             self.trigger_setup_font_cache(fontdir)
         del fontdirs
 
     def trigger_gccswitch(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GCC Profile...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Configuring GCC Profile..."
+        )
+        mytxt = "%s ..." % (_("Configuring GCC Profile"),)
         self.Entropy.updateProgress(
-                                brown(" Configuring GCC Profile..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         # get gcc profile
-        pkgsplit = self.Entropy.entropyTools.catpkgsplit(self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version'])
+        pkgsplit = self.Entropy.entropyTools.catpkgsplit(
+            self.pkgdata['category'] + "/" + self.pkgdata['name'] + "-" + self.pkgdata['version']
+        )
         profile = self.pkgdata['chost']+"-"+pkgsplit[2]
         self.trigger_set_gcc_profile(profile)
 
     def trigger_iconscache(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating icons cache...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Updating icons cache..."
+        )
+        mytxt = "%s ..." % (_("Updating icons cache"),)
         self.Entropy.updateProgress(
-                                brown(" Updating icons cache..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         for item in self.pkgdata['content']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/usr/share/icons") and item.endswith("index.theme"):
@@ -7347,68 +7510,101 @@ class TriggerInterface:
                 self.trigger_generate_icons_cache(cachedir)
 
     def trigger_mimeupdate(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating shared mime info database...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Updating shared mime info database..."
+        )
+        mytxt = "%s ..." % (_("Updating shared mime info database"),)
         self.Entropy.updateProgress(
-                                brown(" Updating shared mime info database..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.trigger_update_mime_db()
 
     def trigger_mimedesktopupdate(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating desktop mime database...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Updating desktop mime database..."
+        )
+        mytxt = "%s ..." % (_("Updating desktop mime database"),)
         self.Entropy.updateProgress(
-                                brown(" Updating desktop mime database..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.trigger_update_mime_desktop_db()
 
     def trigger_scrollkeeper(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating scrollkeeper database...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Updating scrollkeeper database..."
+        )
+        mytxt = "%s ..." % (_("Updating scrollkeeper database"),)
         self.Entropy.updateProgress(
-                                brown(" Updating scrollkeeper database..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.trigger_update_scrollkeeper_db()
 
     def trigger_gconfreload(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reloading GConf2 database...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Reloading GConf2 database..."
+        )
+        mytxt = "%s ..." % (_("Reloading gconf2 database"),)
         self.Entropy.updateProgress(
-                                brown(" Reloading GConf2 database..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.trigger_reload_gconf_db()
 
     def trigger_binutilsswitch(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Binutils Profile...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Configuring Binutils Profile..."
+        )
+        mytxt = "%s ..." % (_("Configuring Binutils Profile"),)
         self.Entropy.updateProgress(
-                                brown(" Configuring Binutils Profile..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         # get binutils profile
-        pkgsplit = self.Entropy.entropyTools.catpkgsplit(self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version'])
+        pkgsplit = self.Entropy.entropyTools.catpkgsplit(
+            self.pkgdata['category'] + "/" + self.pkgdata['name'] + "-" + self.pkgdata['version']
+        )
         profile = self.pkgdata['chost']+"-"+pkgsplit[2]
         self.trigger_set_binutils_profile(profile)
 
     def trigger_kernelmod(self):
         if self.pkgdata['category'] != "sys-kernel":
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Updating moduledb...")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Updating moduledb..."
+            )
+            mytxt = "%s ..." % (_("Updating moduledb"),)
             self.Entropy.updateProgress(
-                                    brown(" Updating moduledb..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(mytxt),
+                importance = 0,
+                header = red("   ## ")
+            )
             item = 'a:1:'+self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
             self.trigger_update_moduledb(item)
+        mytxt = "%s ..." % (_("Running depmod"),)
         self.Entropy.updateProgress(
-                                brown(" Running depmod..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         # get kernel modules dir name
         name = ''
         for item in self.pkgdata['content']:
@@ -7421,21 +7617,31 @@ class TriggerInterface:
             self.trigger_run_depmod(name)
 
     def trigger_pythoninst(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring Python...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Configuring Python..."
+        )
+        mytxt = "%s ..." % (_("Configuring Python"),)
         self.Entropy.updateProgress(
-                                brown(" Configuring Python..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.trigger_python_update_symlink()
 
     def trigger_sqliteinst(self):
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring SQLite...")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Configuring SQLite..."
+        )
+        mytxt = "%s ..." % (_("Configuring SQLite"),)
         self.Entropy.updateProgress(
-                                brown(" Configuring SQLite..."),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         self.trigger_sqlite_update_symlink()
 
     def trigger_initdisable(self):
@@ -7455,23 +7661,33 @@ class TriggerInterface:
         for item in self.pkgdata['content']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] A new service will be installed: "+item)
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[PRE] A new service will be installed: %s" % (item,)
+                )
+                mytxt = "%s: %s" % (brown(_("A new service will be installed")),item,)
                 self.Entropy.updateProgress(
-                                        brown(" A new service will be installed: ")+item,
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
 
     def trigger_removeinit(self):
         for item in self.pkgdata['removecontent']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Removing boot service: "+os.path.basename(item))
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[POST] Removing boot service: %s" % (os.path.basename(item),)
+                )
+                mytxt = "%s: %s" % (brown(_("Removing boot service")),os.path.basename(item),)
                 self.Entropy.updateProgress(
-                                        brown(" Removing boot service: ")+os.path.basename(item),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
                 if not etpConst['systemroot']:
                     myroot = "/"
                 else:
@@ -7490,12 +7706,17 @@ class TriggerInterface:
         # is there eselect ?
         eselect = os.system("eselect opengl &> /dev/null")
         if eselect == 0:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to "+opengl+" ...")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Reconfiguring OpenGL to %s ..." % (opengl,)
+            )
+            mytxt = "%s ..." % (brown(_("Reconfiguring OpenGL")),)
             self.Entropy.updateProgress(
-                                    brown(" Reconfiguring OpenGL..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
             quietstring = ''
             if etpUi['quiet']: quietstring = " &>/dev/null"
             if etpConst['systemroot']:
@@ -7503,22 +7724,32 @@ class TriggerInterface:
             else:
                 os.system('eselect opengl set --use-old '+opengl+quietstring)
         else:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Eselect NOT found, cannot run OpenGL trigger"
+            )
+            mytxt = "%s !" % (brown(_("Eselect NOT found, cannot run OpenGL trigger")),)
             self.Entropy.updateProgress(
-                                    brown(" Eselect NOT found, cannot run OpenGL trigger"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ##")
+            )
 
     def trigger_openglsetup_xorg(self):
         eselect = os.system("eselect opengl &> /dev/null")
         if eselect == 0:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Reconfiguring OpenGL to fallback xorg-x11 ...")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Reconfiguring OpenGL to fallback xorg-x11 ..."
+            )
+            mytxt = "%s ..." % (brown(_("Reconfiguring OpenGL")),)
             self.Entropy.updateProgress(
-                                    brown(" Reconfiguring OpenGL..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
             quietstring = ''
             if etpUi['quiet']: quietstring = " &>/dev/null"
             if etpConst['systemroot']:
@@ -7526,12 +7757,17 @@ class TriggerInterface:
             else:
                 os.system('eselect opengl set xorg-x11'+quietstring)
         else:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Eselect NOT found, cannot run OpenGL trigger")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Eselect NOT found, cannot run OpenGL trigger"
+            )
+            mytxt = "%s !" % (brown(_("Eselect NOT found, cannot run OpenGL trigger")),)
             self.Entropy.updateProgress(
-                                    brown(" Eselect NOT found, cannot run OpenGL trigger"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ##")
+            )
 
     # FIXME: this only supports grub (no lilo support)
     def trigger_addbootablekernel(self):
@@ -7550,14 +7786,21 @@ class TriggerInterface:
                 initramfs = initramfs[len("/boot"):]
 
             # configure GRUB
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Adding the new kernel...")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Configuring GRUB bootloader. Adding the new kernel..."
+            )
+            mytxt = "%s. %s ..." % (
+                _("Configuring GRUB bootloader"),
+                _("Adding the new kernel"),
+            )
             self.Entropy.updateProgress(
-                                    brown(" Configuring GRUB bootloader. Adding the new kernel..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(mytxt),
+                importance = 0,
+                header = red("   ## ")
+            )
             self.trigger_configure_boot_grub(kernel,initramfs)
-	
 
     # FIXME: this only supports grub (no lilo support)
     def trigger_removebootablekernel(self):
@@ -7567,12 +7810,20 @@ class TriggerInterface:
             if initramfs not in self.pkgdata['content']:
                 initramfs = ''
             # configure GRUB
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring GRUB bootloader. Removing the selected kernel...")
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] Configuring GRUB bootloader. Removing the selected kernel..."
+            )
+            mytxt = "%s. %s ..." % (
+                _("Configuring GRUB bootloader"),
+                _("Removing the selected kernel"),
+            )
             self.Entropy.updateProgress(
-                                    brown(" Configuring GRUB bootloader. Removing the selected kernel..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
             self.trigger_remove_boot_grub(kernel,initramfs)
 
     def trigger_mountboot(self):
@@ -7592,19 +7843,27 @@ class TriggerInterface:
                             # trigger mount /boot
                             rc = os.system("mount /boot &> /dev/null")
                             if rc == 0:
-                                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Mounted /boot successfully")
+                                self.Entropy.clientLog.log(
+                                    ETP_LOGPRI_INFO,
+                                    ETP_LOGLEVEL_NORMAL,
+                                    "[PRE] Mounted /boot successfully"
+                                )
                                 self.Entropy.updateProgress(
-                                                        brown(" Mounted /boot successfully"),
-                                                        importance = 0,
-                                                        header = red("   ##")
-                                                    )
+                                    brown(_("Mounted /boot successfully")),
+                                    importance = 0,
+                                    header = red("   ## ")
+                                )
                             elif rc != 8192: # already mounted
-                                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] Cannot mount /boot automatically !!")
+                                self.Entropy.clientLog.log(
+                                    ETP_LOGPRI_INFO,
+                                    ETP_LOGLEVEL_NORMAL,
+                                    "[PRE] Cannot mount /boot automatically !!"
+                                )
                                 self.Entropy.updateProgress(
-                                                        brown(" Cannot mount /boot automatically !!"),
-                                                        importance = 0,
-                                                        header = red("   ##")
-                                                    )
+                                    brown(_("Cannot mount /boot automatically !!")),
+                                    importance = 0,
+                                    header = red("   ## ")
+                                )
                             break
 
     def trigger_kbuildsycoca(self):
@@ -7623,12 +7882,16 @@ class TriggerInterface:
                         os.makedirs("/usr/share/services")
                     os.chown("/usr/share/services",0,0)
                     os.chmod("/usr/share/services",0755)
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca to build global KDE database")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] Running kbuildsycoca to build global KDE database"
+                    )
                     self.Entropy.updateProgress(
-                                            brown(" Running kbuildsycoca to build global KDE database"),
-                                            importance = 0,
-                                            header = red("   ##")
-                                        )
+                        brown(_("Running kbuildsycoca to build global KDE database")),
+                        importance = 0,
+                        header = red("   ## ")
+                    )
                     os.system(builddir+"/bin/kbuildsycoca --global --noincremental &> /dev/null")
 
     def trigger_kbuildsycoca4(self):
@@ -7647,12 +7910,16 @@ class TriggerInterface:
                         os.makedirs("/usr/share/services")
                     os.chown("/usr/share/services",0,0)
                     os.chmod("/usr/share/services",0755)
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running kbuildsycoca4 to build global KDE4 database")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] Running kbuildsycoca4 to build global KDE4 database"
+                    )
                     self.Entropy.updateProgress(
-                                            brown(" Running kbuildsycoca to build global KDE database"),
-                                            importance = 0,
-                                            header = red("   ##")
-                                        )
+                        brown(_("Running kbuildsycoca to build global KDE database")),
+                        importance = 0,
+                        header = red("   ## ")
+                    )
                     # do it
                     kbuild4cmd = """
 
@@ -7674,11 +7941,12 @@ class TriggerInterface:
         gtest = os.system("which gconftool-2 &> /dev/null")
         if gtest == 0 or etpConst['systemroot']:
             schemas = [x for x in self.pkgdata['content'] if x.startswith("/etc/gconf/schemas") and x.endswith(".schemas")]
+            mytxt = "%s ..." % (brown(_("Installing gconf2 schemas")),)
             self.Entropy.updateProgress(
-                                    brown(" Installing GConf2 schemas..."),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(mytxt),
+                importance = 0,
+                header = red("   ## ")
+            )
             for schema in schemas:
                 if not etpConst['systemroot']:
                     os.system("""
@@ -7748,14 +8016,25 @@ class TriggerInterface:
                     continue
                 if os.path.isdir(etpConst['systemroot']+"/usr/src/"+todir):
                     # link to /usr/src/linux
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir)
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir
+                    )
+                    mytxt = "%s %s %s %s" % (
+                        _("Creating kernel symlink"),
+                        etpConst['systemroot']+"/usr/src/linux",
+                        _("for"),
+                        "/usr/src/"+todir,
+                    )
                     self.Entropy.updateProgress(
-                                            brown(" Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir),
-                                            importance = 0,
-                                            header = red("   ##")
-                                        )
-                    if os.path.isfile(etpConst['systemroot']+"/usr/src/linux") or os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
-                        os.remove(etpConst['systemroot']+"/usr/src/linux")
+                        brown(mytxt),
+                        importance = 0,
+                        header = red("   ## ")
+                    )
+                    if os.path.isfile(etpConst['systemroot']+"/usr/src/linux") or \
+                        os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
+                            os.remove(etpConst['systemroot']+"/usr/src/linux")
                     if os.path.isdir(etpConst['systemroot']+"/usr/src/linux"):
                         mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.getRandomNumber())
                         while os.path.isdir(mydir):
@@ -7772,24 +8051,34 @@ class TriggerInterface:
             myroot = "/"
         else:
             myroot = etpConst['systemroot']+"/"
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running ldconfig")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Running ldconfig"
+        )
+        mytxt = "%s %s" % (_("Regenerating"),"/etc/ld.so.cache",)
         self.Entropy.updateProgress(
-                                brown(" Regenerating /etc/ld.so.cache"),
-                                importance = 0,
-                                header = red("   ##")
-                            )
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
         os.system("ldconfig -r "+myroot+" &> /dev/null")
 
     def trigger_env_update(self):
         # clear linker paths cache
         linkerPaths.clear()
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Running env-update")
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Running env-update"
+        )
         if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
+            mytxt = "%s ..." % (_("Updating environment"),)
             self.Entropy.updateProgress(
-                                    brown(" Updating environment using env-update"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(mytxt),
+                importance = 0,
+                header = red("   ## ")
+            )
             if etpConst['systemroot']:
                 os.system("echo 'env-update --no-ldconfig' | chroot "+etpConst['systemroot']+" &> /dev/null")
             else:
@@ -7808,24 +8097,43 @@ class TriggerInterface:
             myvm = vms[0].split("/")[-1]
             if myvm:
                 if os.access(etpConst['systemroot']+"/usr/bin/java-config",os.X_OK):
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] Configuring JAVA using java-config with VM: "+myvm)
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] Configuring JAVA using java-config with VM: "+myvm
+                    )
                     # set
+                    mytxt = "%s %s %s" % (
+                        brown(_("Setting system VM to")),
+                        bold(str(myvm)),
+                        brown("..."),
+                    )
                     self.Entropy.updateProgress(
-                                            brown(" Setting system VM to ")+bold(myvm)+brown("..."),
-                                            importance = 0,
-                                            header = red("   ##")
-                                        )
+                        mytxt,
+                        importance = 0,
+                        header = red("   ## ")
+                    )
                     if not etpConst['systemroot']:
                         os.system("java-config -S "+myvm)
                     else:
                         os.system("echo 'java-config -S "+myvm+"' | chroot "+etpConst['systemroot']+" &> /dev/null")
                 else:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm)
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] ATTENTION /usr/bin/java-config does not exist. I was about to set JAVA VM: "+myvm
+                    )
+                    mytxt = "%s: %s %s. %s." % (
+                        bold(_("Attention")),
+                        brown("/usr/bin/java-config"),
+                        brown(_("does not exist")),
+                        brown("Cannot set JAVA VM"),
+                    )
                     self.Entropy.updateProgress(
-                                            bold(" Attention: ")+brown("/usr/bin/java-config does not exist. Cannot set JAVA VM."),
-                                            importance = 0,
-                                            header = red("   ##")
-                                        )
+                        mytxt,
+                        importance = 0,
+                        header = red("   ## ")
+                    )
         del vms
 
     def trigger_ebuild_postinstall(self):
@@ -7839,48 +8147,67 @@ class TriggerInterface:
             myebuild = myebuild[0]
             portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
             self.Entropy.updateProgress(
-                                    brown(" Ebuild: pkg_postinst()"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown("Ebuild: pkg_postinst()"),
+                importance = 0,
+                header = red("   ##")
+            )
             try:
 
                 if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"):
                     # if environment is not yet created, we need to run pkg_setup()
                     sys.stdout = stdfile
-                    rc = self.Spm.spm_doebuild( myebuild,
-                                                mydo = "setup",
-                                                tree = "bintree",
-                                                cpv = portage_atom,
-                                                portage_tmpdir = self.pkgdata['unpackdir'],
-                                                licenses = self.pkgdata['accept_license']
-                                              )
+                    rc = self.Spm.spm_doebuild(
+                        myebuild,
+                        mydo = "setup",
+                        tree = "bintree",
+                        cpv = portage_atom,
+                        portage_tmpdir = self.pkgdata['unpackdir'],
+                        licenses = self.pkgdata['accept_license']
+                    )
                     if rc == 1:
-                        self.Entropy.clientLog.log( ETP_LOGPRI_INFO,
-                                                    ETP_LOGLEVEL_NORMAL,
-                                                    "[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup())"
-                                                    " trigger for "+str(portage_atom)+". Something bad happened."
-                                                  )
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup())"
+                            " trigger for "+str(portage_atom)+". Something bad happened."
+                        )
                     sys.stdout = oldstdout
 
-                rc = self.Spm.spm_doebuild( myebuild,
-                                            mydo = "postinst",
-                                            tree = "bintree",
-                                            cpv = portage_atom,
-                                            portage_tmpdir = self.pkgdata['unpackdir'],
-                                            licenses = self.pkgdata['accept_license']
-                                           )
+                rc = self.Spm.spm_doebuild(
+                    myebuild,
+                    mydo = "postinst",
+                    tree = "bintree",
+                    cpv = portage_atom,
+                    portage_tmpdir = self.pkgdata['unpackdir'],
+                    licenses = self.pkgdata['accept_license']
+                )
                 if rc == 1:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for " + \
+                        str(portage_atom) + ". Something bad happened."
+                        )
 
             except Exception, e:
                 sys.stdout = oldstdout
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[POST] ATTENTION Cannot run Gentoo postinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.entropyTools.printTraceback()
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[POST] ATTENTION Cannot run Portage trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
+                )
+                mytxt = "%s: %s %s. %s." % (
+                    bold(_("QA")),
+                    brown(_("Cannot run Portage trigger for")),
+                    bold(str(portage_atom)),
+                    brown(_("Please report it")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ")+brown("Cannot run Gentoo postint trigger for ")+bold(portage_atom)+brown(". Please report."),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
         sys.stderr = oldstderr
         sys.stdout = oldstdout
         stdfile.close()
@@ -7897,27 +8224,62 @@ class TriggerInterface:
             myebuild = myebuild[0]
             portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
             self.Entropy.updateProgress(
-                                    brown(" Ebuild: pkg_preinst()"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                brown(" Ebuild: pkg_preinst()"),
+                importance = 0,
+                header = red("   ##")
+            )
             try:
                 sys.stdout = stdfile
-                rc = self.Spm.spm_doebuild(myebuild, mydo = "setup", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license']) # create mysettings["T"]+"/environment"
+                rc = self.Spm.spm_doebuild(
+                    myebuild,
+                    mydo = "setup",
+                    tree = "bintree",
+                    cpv = portage_atom,
+                    portage_tmpdir = self.pkgdata['unpackdir'],
+                    licenses = self.pkgdata['accept_license']
+                ) # create mysettings["T"]+"/environment"
                 if rc == 1:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_setup()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[PRE] ATTENTION Cannot properly run Portage preinstall (pkg_setup()) trigger for " + \
+                        str(portage_atom) + ". Something bad happened."
+                    )
                 sys.stdout = oldstdout
-                rc = self.Spm.spm_doebuild(myebuild, mydo = "preinst", tree = "bintree", cpv = portage_atom, portage_tmpdir = self.pkgdata['unpackdir'], licenses = self.pkgdata['accept_license'])
+                rc = self.Spm.spm_doebuild(
+                    myebuild,
+                    mydo = "preinst",
+                    tree = "bintree",
+                    cpv = portage_atom,
+                    portage_tmpdir = self.pkgdata['unpackdir'],
+                    licenses = self.pkgdata['accept_license']
+                )
                 if rc == 1:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for " + \
+                        str(portage_atom)+". Something bad happened."
+                    )
             except Exception, e:
                 sys.stdout = oldstdout
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                self.entropyTools.printTraceback()
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
+                )
+                mytxt = "%s: %s %s. %s." % (
+                    bold(_("QA")),
+                    brown(_("Cannot run Portage trigger for")),
+                    bold(str(portage_atom)),
+                    brown(_("Please report it")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ")+brown("Cannot run Gentoo preinst trigger for ")+bold(portage_atom)+brown(". Please report."),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
         sys.stderr = oldstderr
         sys.stdout = oldstdout
         stdfile.close()
@@ -7939,12 +8301,14 @@ class TriggerInterface:
             try:
                 myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
             except EOFError, e:
+                sys.stderr = oldstderr
+                stdfile.close()
                 # stuff on system is broken, ignore it
                 self.Entropy.updateProgress(
-                    darkred(" !!! Ebuild: pkg_prerm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
+                    darkred("!!! Ebuild: pkg_prerm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
                     importance = 1,
                     type = "warning",
-                    header = red("   ##")
+                    header = red("   ## ")
                 )
                 return 0
 
@@ -7956,22 +8320,45 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
-                rc = self.Spm.spm_doebuild(myebuild, mydo = "prerm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
+                rc = self.Spm.spm_doebuild(
+                    myebuild,
+                    mydo = "prerm",
+                    tree = "bintree",
+                    cpv = portage_atom,
+                    portage_tmpdir = etpConst['entropyunpackdir'] + "/" + portage_atom
+                )
                 if rc == 1:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo preremove trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[PRE] ATTENTION Cannot properly run Portage trigger for " + \
+                        str(portage_atom)+". Something bad happened."
+                    )
             except Exception, e:
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                sys.stderr = oldstderr
+                stdfile.close()
+                self.entropyTools.printTraceback()
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[PRE] ATTENTION Cannot run Portage preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
+                )
+                mytxt = "%s: %s %s. %s." % (
+                    bold(_("QA")),
+                    brown(_("Cannot run Portage trigger for")),
+                    bold(str(portage_atom)),
+                    brown(_("Please report it")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ")+brown("Cannot run Gentoo preremove trigger for ")+bold(portage_atom)+brown(". Please report."),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                return 0
 
         sys.stderr = oldstderr
         stdfile.close()
-
         self._remove_overlayed_ebuild()
-
         return 0
 
     def trigger_ebuild_postremove(self):
@@ -7996,21 +8383,46 @@ class TriggerInterface:
                                     header = red("   ##")
                                 )
             try:
-                rc = self.Spm.spm_doebuild(myebuild, mydo = "postrm", tree = "bintree", cpv = portage_atom, portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom)
+                rc = self.Spm.spm_doebuild(
+                    myebuild,
+                    mydo = "postrm",
+                    tree = "bintree",
+                    cpv = portage_atom,
+                    portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom
+                )
                 if rc == 1:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for "+str(portage_atom)+". Something bad happened.")
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for " + \
+                        str(portage_atom)+". Something bad happened."
+                    )
             except Exception, e:
-                self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"[PRE] ATTENTION Cannot run Gentoo postremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e))
+                sys.stderr = oldstderr
+                stdfile.close()
+                self.entropyTools.printTraceback()
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[PRE] ATTENTION Cannot run Gentoo postremove trigger for " + \
+                    portage_atom+"!! "+str(Exception)+": "+str(e)
+                )
+                mytxt = "%s: %s %s. %s." % (
+                    bold(_("QA")),
+                    brown(_("Cannot run Portage trigger for")),
+                    bold(str(portage_atom)),
+                    brown(_("Please report it")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ")+brown("Cannot run Gentoo postremove trigger for ")+bold(portage_atom)+brown(". Please report."),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                return 0
+
         sys.stderr = oldstderr
         stdfile.close()
-
         self._remove_overlayed_ebuild()
-
         return 0
 
     def _setup_remove_ebuild_environment(self, myebuild, portage_atom):
@@ -8392,19 +8804,31 @@ timeout=10
         import re
         df_avail = os.system("which df &> /dev/null")
         if df_avail != 0:
+            mytxt = "%s: %s! %s. %s (hd0,0)." % (
+                bold(_("QA")),
+                brown(_("Cannot find df")),
+                brown(_("Cannot properly configure the kernel")),
+                brown(_("Defaulting to")),
+            )
             self.Entropy.updateProgress(
-                                    bold(" QA Warning: ")+brown("cannot find df!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
             return "(hd0,0)"
         grub_avail = os.system("which grub &> /dev/null")
         if grub_avail != 0:
+            mytxt = "%s: %s! %s. %s (hd0,0)." % (
+                bold(_("QA")),
+                brown(_("Cannot find grub")),
+                brown(_("Cannot properly configure the kernel")),
+                brown(_("Defaulting to")),
+            )
             self.Entropy.updateProgress(
-                                    bold(" QA Warning: ")+brown("cannot find grub!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
             return "(hd0,0)"
 
         gboot = commands.getoutput("df /boot").split("\n")[-1].split()[0]
@@ -8435,21 +8859,37 @@ timeout=10
             match = re.subn("[0-9]","",gboot)
             gdisk = match[0]
             if gdisk == '':
+
+                mytxt = "%s: %s %s %s. %s! %s (hd0,0)." % (
+                    bold(_("QA")),
+                    brown(_("cannot match device")),
+                    brown(str(gboot)),
+                    brown(_("with a grub one")), # 'cannot match device /dev/foo with a grub one'
+                    brown(_("Cannot properly configure the kernel")),
+                    brown(_("Defaulting to")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ") + brown("cannot match %s device with a GRUB one!! Cannot properly configure kernel! Defaulting to (hd0,0)") % (gboot,),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
                 return "(hd0,0)"
             match = re.subn("[a-z/]","",gboot)
             try:
                 gpartnum = str(int(match[0])-1)
             except ValueError:
+                mytxt = "%s: %s: %s. %s. %s (hd0,0)." % (
+                    bold(_("QA")),
+                    brown(_("grub translation not supported for")),
+                    brown(str(gboot)),
+                    brown(_("Cannot properly configure grub.conf")),
+                    brown(_("Defaulting to")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ") + brown("Grub translation of %s not supported. Cannot properly configure grub.conf. Defaulting to (hd0,0)") % (gboot,),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
                 return "(hd0,0)"
             # now match with grub
             device_map = etpConst['packagestmpdir']+"/grub.map"
@@ -8467,25 +8907,43 @@ timeout=10
                     grub_dev = grub_disk[:-1]+","+gpartnum+")"
                     return grub_dev
                 else:
+                    mytxt = "%s: %s. %s! %s (hd0,0)." % (
+                        bold(_("QA")),
+                        brown(_("cannot match grub device with a Linux one")),
+                        brown(_("Cannot properly configure the kernel")),
+                        brown(_("Defaulting to")),
+                    )
                     self.Entropy.updateProgress(
-                                            bold(" QA Warning: ")+brown("cannot match grub device with linux one!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
-                                            importance = 0,
-                                            header = red("   ##")
-                                        )
+                        mytxt,
+                        importance = 0,
+                        header = red("   ## ")
+                    )
                     return "(hd0,0)"
             else:
+                mytxt = "%s: %s. %s! %s (hd0,0)." % (
+                    bold(_("QA")),
+                    brown(_("cannot find generated device.map")),
+                    brown(_("Cannot properly configure the kernel")),
+                    brown(_("Defaulting to")),
+                )
                 self.Entropy.updateProgress(
-                                        bold(" QA Warning: ")+brown("cannot find generated device.map!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
-                                        importance = 0,
-                                        header = red("   ##")
-                                    )
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
                 return "(hd0,0)"
         else:
+            mytxt = "%s: %s. %s! %s (hd0,0)." % (
+                bold(_("QA")),
+                brown(_("cannot run df /boot")),
+                brown(_("Cannot properly configure the kernel")),
+                brown(_("Defaulting to")),
+            )
             self.Entropy.updateProgress(
-                                    bold(" QA Warning: ")+brown("cannot run df /boot!! Cannot properly configure kernel! Defaulting to (hd0,0)"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
             return "(hd0,0)"
 
 class PackageMaskingParser:
@@ -8493,7 +8951,8 @@ class PackageMaskingParser:
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
+            mytxt = _("A valid Equo instance or subclass is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
 
     def parse(self):
@@ -8870,7 +9329,8 @@ class ErrorReportInterface:
                 return True
             return False
         else:
-            raise exceptionTools.PermissionDenied("PermissionDenied: not yet prepared")
+            mytxt = _("Not prepared yet")
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
 
 '''
@@ -8894,7 +9354,8 @@ class SecurityInterface:
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,EquoInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid Equo instance or subclass is needed")
+            mytxt = _("A valid EquoInterface instance or subclass is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
         self.lastfetch = None
         self.previous_checksum = "0"
@@ -9091,13 +9552,20 @@ class SecurityInterface:
             if xml_metadata == None:
                 more_info = ""
                 if exc_string:
-                    more_info = " Error: %s: %s" % (exc_string,exc_err,)
+                    mytxt = _("Error")
+                    more_info = " %s: %s: %s" % (mytxt,exc_string,exc_err,)
+                mytxt = "%s: %s: %s! %s" % (
+                    blue(_("Warning")),
+                    bold(xml),
+                    blue(_("advisory broken")),
+                    more_info,
+                )
                 self.Entropy.updateProgress(
-                                        blue("Warning: ")+bold(xml)+blue(" advisory is broken !") + more_info,
-                                        importance = 1,
-                                        type = "warning",
-                                        header = red(" !!! ")
-                                    )
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red(" !!! ")
+                )
                 continue
             elif not xml_metadata:
                 continue
@@ -9359,26 +9827,28 @@ class SecurityInterface:
 
     def fetch_advisories(self):
 
+        mytxt = "%s: %s" % (bold(_("Security Advisories")),blue(_("testing service connection")),)
         self.Entropy.updateProgress(
-                                blue("Testing ")+bold("Security Advisories")+blue(" service connection"),
-                                importance = 2,
-                                type = "info",
-                                header = red("@@ "),
-                                footer = red(" ...")
-                            )
+            mytxt,
+            importance = 2,
+            type = "info",
+            header = red(" @@ "),
+            footer = red(" ...")
+        )
 
         # Test network connectivity
         conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
         if not conntest:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Cannot connect to %s" % (etpConst['conntestlink'],))
+            mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
+        mytxt = "%s: %s %s" % (bold(_("Security Advisories")),blue(_("getting latest GLSAs")),red("..."),)
         self.Entropy.updateProgress(
-                                blue("Getting the latest ")+bold("Security Advisories")+darkgreen(" (GLSAs)"),
-                                importance = 2,
-                                type = "info",
-                                header = red("@@ "),
-                                footer = red(" ...")
-                            )
+            mytxt,
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
 
         gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
         if gave_up:
@@ -9401,16 +9871,16 @@ class SecurityInterface:
         self.Entropy._resources_run_remove_lock()
 
         if self.advisories_changed:
-            advtext = darkgreen("Security Advisories: updated successfully")
+            advtext = "%s: %s" % (bold(_("Security Advisories")),darkgreen(_("updated successfully")),)
         else:
-            advtext = darkred("Security Advisories: already up to date")
+            advtext = "%s: %s" % (bold(_("Security Advisories")),darkgreen(_("already up to date")),)
 
         self.Entropy.updateProgress(
-                                advtext,
-                                importance = 2,
-                                type = "info",
-                                header = red("@@ ")
-                            )
+            advtext,
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
 
         return 0
 
@@ -9422,33 +9892,35 @@ class SecurityInterface:
         status = self.__download_glsa_package()
         self.lastfetch = status
         if not status:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkred(_("unable to download the package, sorry")),)
             self.Entropy.updateProgress(
-                                    blue("Security Advisories: unable to download package, sorry."),
-                                    importance = 2,
-                                    type = "error",
-                                    header = red("   ## ")
-                                )
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
             self.Entropy._resources_run_remove_lock()
             return 1
 
+        mytxt = "%s: %s %s" % (bold(_("Security Advisories")),blue(_("Verifying checksum")),red("..."),)
         self.Entropy.updateProgress(
-                                blue("Verifying checksum"),
-                                importance = 1,
-                                type = "info",
-                                header = red("   # "),
-                                footer = red(" ..."),
-                                back = True
-                            )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   # "),
+            back = True
+        )
 
         # download digest
         status = self.__download_glsa_package_checksum()
         if not status:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkred(_("cannot download the checksum, sorry")),)
             self.Entropy.updateProgress(
-                                    blue("Security Advisories: cannot download checksum, sorry."),
-                                    importance = 2,
-                                    type = "error",
-                                    header = red("   ## ")
-                                )
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
             self.Entropy._resources_run_remove_lock()
             return 2
 
@@ -9456,41 +9928,46 @@ class SecurityInterface:
         status = self.__verify_checksum()
 
         if status == 1:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkred(_("cannot open packages, sorry")),)
             self.Entropy.updateProgress(
-                                    blue("Security Advisories: cannot open packages, sorry."),
-                                    importance = 2,
-                                    type = "error",
-                                    header = red("   ## ")
-                                )
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
             self.Entropy._resources_run_remove_lock()
             return 3
         elif status == 2:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkred(_("cannot read the checksum, sorry")),)
             self.Entropy.updateProgress(
-                                    blue("Security Advisories: cannot read checksum, sorry."),
-                                    importance = 2,
-                                    type = "error",
-                                    header = red("   ## ")
-                                )
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
             self.Entropy._resources_run_remove_lock()
             return 4
         elif status == 3:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkred(_("digest verification failed, sorry")),)
             self.Entropy.updateProgress(
-                                    blue("Security Advisories: digest verification failed, sorry."),
-                                    importance = 2,
-                                    type = "error",
-                                    header = red("   ## ")
-                                )
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
             self.Entropy._resources_run_remove_lock()
             return 5
         elif status == 0:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkgreen(_("verification Successful")),)
             self.Entropy.updateProgress(
-                                    darkgreen("Verification Successful"),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red("   # ")
-                                )
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   # ")
+            )
         else:
-            raise exceptionTools.InvalidData("InvalidData: return status not valid.")
+            mytxt = _("Return status not valid")
+            raise exceptionTools.InvalidData("InvalidData: %s." % (mytxt,))
 
         # save downloaded md5
         if os.path.isfile(self.download_package_checksum) and os.path.isdir(etpConst['dumpstoragedir']):
@@ -9502,22 +9979,23 @@ class SecurityInterface:
         # now unpack in place
         status = self.__unpack_advisories()
         if status != 0:
+            mytxt = "%s: %s." % (bold(_("Security Advisories")),darkred(_("digest verification failed, try again later")),)
             self.Entropy.updateProgress(
-                                    blue("Security Advisories: digest verification failed, try again later."),
-                                    importance = 2,
-                                    type = "error",
-                                    header = red("   ## ")
-                                )
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
             self.Entropy._resources_run_remove_lock()
             return 6
 
+        mytxt = "%s: %s %s" % (bold(_("Security Advisories")),blue(_("installing")),red("..."),)
         self.Entropy.updateProgress(
-                                darkgreen("Installing Security Advisories"),
-                                importance = 1,
-                                type = "info",
-                                header = red("   # "),
-                                footer = red(" ...")
-                            )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   # ")
+        )
 
         # clear previous
         self.__clear_previous_advisories()
@@ -9534,14 +10012,16 @@ class SpmInterface:
                 if OutputInterface == None:
                     OutputInterface = TextInterface()
                 else:
+                    mytxt = _("A valid TextInterface based instance is needed")
                     raise exceptionTools.IncorrectParameter(
-                            "IncorrectParameter: a valid TextInterface based instance is needed"
+                            "IncorrectParameter: %s" % (mytxt,)
                     )
 
         self.spm_backend = etpConst['spm']['backend']
         self.valid_backends = etpConst['spm']['available_backends']
         if self.spm_backend not in self.valid_backends:
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: invalid backend %s" % (self.spm_backend,))
+            mytxt = "%s: %s" % (_("Invalid backend"),self.spm_backend,)
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         if self.spm_backend == "portage":
             self.intf = PortageInterface(OutputInterface)
@@ -9594,7 +10074,8 @@ class PortageInterface:
 
     def __init__(self, OutputInterface):
         if not isinstance(OutputInterface, (EquoInterface, TextInterface, ServerInterface)):
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid TextInterface based instance is needed")
+            mytxt = _("A valid TextInterface based instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         # interface only needed OutputInterface functions
         self.updateProgress = OutputInterface.updateProgress
@@ -9856,7 +10337,12 @@ class PortageInterface:
         if os.path.isfile(dirpath):
             return dirpath
         else:
-            raise exceptionTools.FileNotFound("FileNotFound: Spm:quickpkg error: %s not found" % (dirpath,))
+            raise exceptionTools.FileNotFound("FileNotFound: Spm:quickpkg %s: %s %s" % (
+                    _("error"),
+                    dirpath,
+                    _("not found"),
+                )
+            )
 
     def get_useflags(self):
         return self.portage.settings['USE']
@@ -9923,12 +10409,18 @@ class PortageInterface:
                     deps = self.paren_choose(deps)
                 deps = ' '.join(deps)
             except Exception, e:
+                self.entropyTools.printTraceback()
                 self.updateProgress(
-                                        darkred("Error calculating Portage dependencies: %s: %s :: %s") % (str(Exception), k, str(e)) ,
-                                        importance = 1,
-                                        type = "error",
-                                        header = red(" !!! ")
-                                    )
+                    darkred("%s: %s: %s :: %s") % (
+                        _("Error calculating dependencies"),
+                        str(Exception),
+                        k,
+                        e,
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = red(" !!! ")
+                )
                 deps = ''
                 continue
             metadata[k] = deps
@@ -9972,7 +10464,7 @@ class PortageInterface:
                 return [mylist,mystr[1:]]
             elif has_left_paren and not has_right_paren:
                 raise exceptionTools.InvalidDependString(
-                        "missing right parenthesis: '%s'" % mystr)
+                        "InvalidDependString: %s: '%s'" % (_("missing right parenthesis"),mystr,))
             elif has_left_paren and left_paren < right_paren:
                 freesec,subsec = mystr.split("(",1)
                 subsec,tail = self.paren_reduce(subsec,tokenize)
@@ -10038,9 +10530,11 @@ class PortageInterface:
         for x in range(len(deparray)):
             if deparray[x] in ["||","&&"]:
                 if len(deparray) - 1 == x or not isinstance(deparray[x+1], list):
-                    raise exceptionTools.InvalidDependString(deparray[x]+" missing atom list in \""+str(deparray)+"\"")
+                    mytxt = _("missing atom list in")
+                    raise exceptionTools.InvalidDependString(deparray[x]+" "+mytxt+" \""+str(deparray)+"\"")
         if deparray and deparray[-1] and deparray[-1][-1] == "?":
-            raise exceptionTools.InvalidDependString("Conditional without target in \""+str(deparray)+"\"")
+            mytxt = _("Conditional without target in")
+            raise exceptionTools.InvalidDependString("InvalidDependString: "+mytxt+" \""+str(deparray)+"\"")
 
         # This is just for use by emerge so that it can enable a backward compatibility
         # mode in order to gracefully deal with installed packages that have invalid
@@ -10069,33 +10563,35 @@ class PortageInterface:
                         if mydeparray:
                             newdeparray.append(mydeparray.pop(0))
                         else:
-                            raise ValueError, "Conditional with no target."
+                            raise ValueError, _("Conditional with no target")
 
                     # Deprecation checks
                     warned = 0
                     if len(newdeparray[-1]) == 0:
+                        mytxt = "%s. (%s)" % (_("Empty target in string"),_("Deprecated"),)
                         self.updateProgress(
-                                                darkred("PortageInterface.use_reduce(): Empty target in string. (Deprecated)"),
-                                                importance = 0,
-                                                type = "error",
-                                                header = bold(" !!! ")
-                                            )
+                            darkred("PortageInterface.use_reduce(): %s" % (mytxt,)),
+                            importance = 0,
+                            type = "error",
+                            header = bold(" !!! ")
+                        )
                         warned = 1
                     if len(newdeparray) != 2:
+                        mytxt = "%s. (%s)" % (_("Nested use flags without parenthesis"),_("Deprecated"),)
                         self.updateProgress(
-                                                darkred("PortageInterface.use_reduce(): Note: Nested use flags without parenthesis (Deprecated)"),
-                                                importance = 0,
-                                                type = "error",
-                                                header = bold(" !!! ")
-                                            )
+                            darkred("PortageInterface.use_reduce(): %s" % (mytxt,)),
+                            importance = 0,
+                            type = "error",
+                            header = bold(" !!! ")
+                        )
                         warned = 1
                     if warned:
                         self.updateProgress(
-                                                darkred("PortageInterface.use_reduce(): "+" ".join(map(str,[head]+newdeparray))),
-                                                importance = 0,
-                                                type = "error",
-                                                header = bold(" !!! ")
-                                            )
+                            darkred("PortageInterface.use_reduce(): "+" ".join(map(str,[head]+newdeparray))),
+                            importance = 0,
+                            type = "error",
+                            header = bold(" !!! ")
+                        )
 
                     # Check that each flag matches
                     ismatch = True
@@ -10121,8 +10617,9 @@ class PortageInterface:
                         else:
                             ismatch = False
                     if missing_flag:
+                        mytxt = _("Conditional without flag")
                         raise exceptionTools.InvalidDependString(
-                                "Conditional without flag: \"" + \
+                                "InvalidDependString: "+mytxt+": \"" + \
                                 str([head+"?", newdeparray[-1]])+"\"")
 
                     # If they all match, process the target
@@ -10136,8 +10633,9 @@ class PortageInterface:
                             # The old deprecated behavior.
                             rlist.append(target)
                         else:
+                            mytxt = _("Conditional without parenthesis")
                             raise exceptionTools.InvalidDependString(
-                                    "Conditional without parenthesis: '%s?'" % head)
+                                    "InvalidDependString: "+mytxt+": '%s?'" % head)
 
                 else:
                     rlist += [head]
@@ -10381,14 +10879,15 @@ class PortageInterface:
 
     def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
 
-        rc = self.entropyTools.spawnFunction(    self._portage_doebuild,
-                                            myebuild,
-                                            mydo,
-                                            tree,
-                                            cpv,
-                                            portage_tmpdir,
-                                            licenses
-                                        )
+        rc = self.entropyTools.spawnFunction(
+            self._portage_doebuild,
+            myebuild,
+            mydo,
+            tree,
+            cpv,
+            portage_tmpdir,
+            licenses
+        )
         return rc
 
     def _portage_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
@@ -10780,12 +11279,23 @@ class SocketHostInterface:
                         try:
                             data = self.request.recv(8192)
                         except self.socket.timeout, e:
-                            self.server.processor.HostInterface.updateProgress('interrupted: %s, reason: %s - from client: %s' % (self.server.server_address,e,self.client_address,))
+                            self.server.processor.HostInterface.updateProgress(
+                                'interrupted: %s, reason: %s - from client: %s' % (
+                                    self.server.server_address,
+                                    e,
+                                    self.client_address,
+                                )
+                            )
                             break
                         except ssl_exceptions['WantReadError']:
                             continue
                         except ssl_exceptions['Error'], e:
-                            self.server.processor.HostInterface.updateProgress('interrupted: SSL Error, reason: %s - from client: %s' % (e,self.client_address,))
+                            self.server.processor.HostInterface.updateProgress(
+                                'interrupted: SSL Error, reason: %s - from client: %s' % (
+                                    e,
+                                    self.client_address,
+                                )
+                            )
                             break
 
                         if not data:
@@ -10800,12 +11310,14 @@ class SocketHostInterface:
         def setup(self):
 
             self.valid_connection = True
-            allowed = self.max_connections_check(   self.server.processor.HostInterface.connections,
-                                                    self.server.processor.HostInterface.max_connections
-                                                )
+            allowed = self.max_connections_check(
+                self.server.processor.HostInterface.connections,
+                self.server.processor.HostInterface.max_connections
+            )
             if allowed:
                 self.server.processor.HostInterface.connections += 1
-                self.server.processor.HostInterface.updateProgress('[from: %s] connection established (%s of %s max connections)' % (
+                self.server.processor.HostInterface.updateProgress(
+                    '[from: %s] connection established (%s of %s max connections)' % (
                                         self.client_address,
                                         self.server.processor.HostInterface.connections,
                                         self.server.processor.HostInterface.max_connections,
@@ -10813,11 +11325,17 @@ class SocketHostInterface:
                 )
                 return True
 
-            self.server.processor.HostInterface.updateProgress('[from: %s] connection refused (max connections reached: %s)' % (self.client_address, self.server.processor.HostInterface.max_connections,))
+            self.server.processor.HostInterface.updateProgress(
+                '[from: %s] connection refused (max connections reached: %s)' % (
+                    self.client_address,
+                    self.server.processor.HostInterface.max_connections,
+                )
+            )
             return False
 
         def finish(self):
-            self.server.processor.HostInterface.updateProgress('[from: %s] connection closed (%s of %s max connections)' % (
+            self.server.processor.HostInterface.updateProgress(
+                '[from: %s] connection closed (%s of %s max connections)' % (
                     self.client_address,
                     self.server.processor.HostInterface.connections,
                     self.server.processor.HostInterface.max_connections,
@@ -10949,7 +11467,16 @@ class SocketHostInterface:
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = self.Authenticator.hide_login_data(p_args)
-            self.HostInterface.updateProgress('[from: %s] command validation :: called %s: args: %s, session: %s, valid: %s, reason: %s' % (self.client_address, cmd, p_args, session, valid_cmd, reason,))
+            self.HostInterface.updateProgress(
+                '[from: %s] command validation :: called %s: args: %s, session: %s, valid: %s, reason: %s' % (
+                    self.client_address,
+                    cmd,
+                    p_args,
+                    session,
+                    valid_cmd,
+                    reason,
+                )
+            )
 
             whoops = False
             if valid_cmd:
@@ -10958,7 +11485,13 @@ class SocketHostInterface:
                     self.run_task(cmd, args, session, Entropy)
                 except Exception, e:
                     # store error
-                    self.HostInterface.updateProgress('[from: %s] command error: %s, type: %s' % (self.client_address,e,type(e),))
+                    self.HostInterface.updateProgress(
+                        '[from: %s] command error: %s, type: %s' % (
+                            self.client_address,
+                            e,
+                            type(e),
+                        )
+                    )
                     if session != None:
                         self.HostInterface.store_rc(str(e),session)
                     whoops = True
@@ -10977,20 +11510,37 @@ class SocketHostInterface:
             data = self.duplicate_termination_cmd(data)
             self.channel.sendall(data)
 
-        def remoteUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
-            if text != self.lastoutput:
-                text = chr(27)+"[2K\r"+text
-                if not back:
-                    text += "\n"
-                self.transmit(text)
-            self.lastoutput = text
+        def remoteUpdateProgress(
+                self,
+                text,
+                header = "",
+                footer = "",
+                back = False,
+                importance = 0,
+                type = "info",
+                count = [],
+                percent = False
+            ):
+                if text != self.lastoutput:
+                    text = chr(27)+"[2K\r"+text
+                    if not back:
+                        text += "\n"
+                    self.transmit(text)
+                self.lastoutput = text
 
         def run_task(self, cmd, args, session, Entropy):
 
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = self.Authenticator.hide_login_data(p_args)
-            self.HostInterface.updateProgress('[from: %s] run_task :: called %s: args: %s, session: %s' % (self.client_address,cmd,p_args,session,))
+            self.HostInterface.updateProgress(
+                '[from: %s] run_task :: called %s: args: %s, session: %s' % (
+                    self.client_address,
+                    cmd,
+                    p_args,
+                    session,
+                )
+            )
 
             myargs, mykwargs = self._get_args_kwargs(args)
 
@@ -11020,7 +11570,14 @@ class SocketHostInterface:
             p_args = myargs
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = self.Authenticator.hide_login_data(p_args)
-            self.HostInterface.updateProgress('[from: %s] called %s: args: %s, kwargs: %s' % (self.client_address,cmd,p_args,mykwargs,))
+            self.HostInterface.updateProgress(
+                '[from: %s] called %s: args: %s, kwargs: %s' % (
+                    self.client_address,
+                    cmd,
+                    p_args,
+                    mykwargs,
+                )
+            )
             return self.do_spawn(cmd, myargs, mykwargs, session, Entropy)
 
         def do_spawn(self, cmd, myargs, mykwargs, session, Entropy):
@@ -11099,7 +11656,8 @@ class SocketHostInterface:
                                 'args': ["Entropy"],
                                 'as_user': True,
                                 'desc': "update repositories",
-                                'syntax': "<SESSION_ID> reposync (optionals: reponames=['repoid1'] forceUpdate=Bool noEquoCheck=Bool fetchSecurity=Bool",
+                                'syntax': "<SESSION_ID> reposync (optionals: reponames=['repoid1'] forceUpdate=Bool "
+                                          "noEquoCheck=Bool fetchSecurity=Bool",
                                 'from': str(self),
                             },
                 'rc':       {
@@ -11181,8 +11739,15 @@ class SocketHostInterface:
             self.login_pass_commands = ["login"]
             self.no_session_commands = ["begin","hello","alive","help"]
 
-        def register(self, valid_commands, no_acked_commands, termination_commands, initialization_commands, login_pass_commads, no_session_commands):
-
+        def register(
+                self,
+                valid_commands,
+                no_acked_commands,
+                termination_commands,
+                initialization_commands,
+                login_pass_commads,
+                no_session_commands
+            ):
             valid_commands.update(self.valid_commands)
             no_acked_commands.extend(self.no_acked_commands)
             termination_commands.extend(self.termination_commands)
@@ -11199,32 +11764,73 @@ class SocketHostInterface:
 
             status, user, uid, reason = self.Authenticator.docmd_login(myargs)
             if status:
-                self.HostInterface.updateProgress('[from: %s] user %s logged in successfully, session: %s' % (client_address,user,session,))
+                self.HostInterface.updateProgress(
+                    '[from: %s] user %s logged in successfully, session: %s' % (
+                        client_address,
+                        user,
+                        session,
+                    )
+                )
                 self.HostInterface.sessions[session]['auth_uid'] = uid
                 transmitter(self.HostInterface.answers['ok'])
                 return True,reason
             elif user == None:
-                self.HostInterface.updateProgress('[from: %s] user -not specified- login failed, session: %s, reason: %s' % (client_address,session,reason,))
+                self.HostInterface.updateProgress(
+                    '[from: %s] user -not specified- login failed, session: %s, reason: %s' % (
+                        client_address,
+                        session,
+                        reason,
+                    )
+                )
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
             else:
-                self.HostInterface.updateProgress('[from: %s] user %s login failed, session: %s, reason: %s' % (client_address,user,session,reason,))
+                self.HostInterface.updateProgress(
+                    '[from: %s] user %s login failed, session: %s, reason: %s' % (
+                        client_address,
+                        user,
+                        session,
+                        reason,
+                    )
+                )
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
         def docmd_logout(self, transmitter, session, myargs):
             status, user, reason = self.Authenticator.docmd_logout(myargs)
             if status:
-                self.HostInterface.updateProgress('[from: %s] user %s logged out successfully, session: %s, args: %s ' % (self.client_address,user,session,myargs,))
+                self.HostInterface.updateProgress(
+                    '[from: %s] user %s logged out successfully, session: %s, args: %s ' % (
+                        self.client_address,
+                        user,
+                        session,
+                        myargs,
+                    )
+                )
                 self.HostInterface.sessions[session]['auth_uid'] = None
                 transmitter(self.HostInterface.answers['ok'])
                 return True,reason
             elif user == None:
-                self.HostInterface.updateProgress('[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (self.client_address,session,myargs,reason,))
+                self.HostInterface.updateProgress(
+                    '[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (
+                        self.client_address,
+                        session,
+                        myargs,
+                        reason,
+                    )
+                )
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
             else:
-                self.HostInterface.updateProgress('[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (self.client_address,user,session,myargs,reason,))
+                self.HostInterface.updateProgress(
+                    '[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (
+                        self.client_address,
+                        user,
+                        session,
+                        myargs,
+                        reason,
+                    )
+                )
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
@@ -11270,7 +11876,14 @@ class SocketHostInterface:
                     myfrom = self.HostInterface.valid_commands[cmd]['from']
                 else:
                     myfrom = 'N/A'
-                text += "[%s] %s\n   %s: %s\n   %s: %s\n\n" % ( myfrom, blue(cmd), red("description"), desc, darkgreen("syntax"), syntax, )
+                text += "[%s] %s\n   %s: %s\n   %s: %s\n\n" % (
+                    myfrom,
+                    blue(cmd),
+                    red("description"),
+                    desc,
+                    darkgreen("syntax"),
+                    syntax,
+                )
             transmitter(text)
 
         def docmd_end(self, transmitter, session):
@@ -11573,7 +12186,8 @@ class SocketUrlFetcher(urlFetcher):
                                         str(round(self.remotesize,1)),
                                         str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
                                     )
-        self.progress( "Fetching "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
+        mytxt = _("Fetch")
+        self.progress( mytxt+": "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
 
 
 class ServerInterface(TextInterface):
@@ -11581,9 +12195,14 @@ class ServerInterface(TextInterface):
     def __init__(self, default_repository = None, save_repository = False):
 
         if etpConst['uid'] != 0:
-            raise exceptionTools.PermissionDenied("PermissionDenied: Entropy ServerInterface must be run as root")
+            mytxt = _("Entropy ServerInterface must be run as root")
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
-        self.serverLog = LogFile(level = etpConst['entropyloglevel'],filename = etpConst['entropylogfile'], header = "[server]")
+        self.serverLog = LogFile(
+            level = etpConst['entropyloglevel'],
+            filename = etpConst['entropylogfile'],
+            header = "[server]"
+        )
 
 
         # settings
@@ -11601,8 +12220,9 @@ class ServerInterface(TextInterface):
             self.default_repository = etpConst['officialrepositoryid']
 
         if self.default_repository not in etpConst['server_repositories']:
-            raise exceptionTools.PermissionDenied("PermissionDenied: %s repository not configured" % (
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (
                         self.default_repository,
+                        _("repository not configured"),
                     )
             )
 
@@ -11656,8 +12276,9 @@ class ServerInterface(TextInterface):
         if save == None:
             save = self.do_save_repository
         if repoid not in etpConst['server_repositories']:
-            raise exceptionTools.PermissionDenied("PermissionDenied: %s repository not configured" % (
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (
                         repoid,
+                        _("repository not configured"),
                     )
             )
         self.close_server_databases()
@@ -11671,18 +12292,17 @@ class ServerInterface(TextInterface):
 
 
     def show_interface_status(self):
+        mytxt = _("Entropy Server Interface Instance on repository") # ..on repository: <repository_name>
         self.updateProgress(
-                blue("Entropy Server Interface Instance on repository: %s" % (
-                        red(self.default_repository),
-                    )
-                ),
-                importance = 2,
-                type = "info",
-                header = red(" @@ ")
+            blue("%s: %s" % (mytxt,red(self.default_repository),)),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
         )
         repos = etpConst['server_repositories'].keys()
+        mytxt = blue("%s:") % (_("Currently configured repositories"),) # ...: <list>
         self.updateProgress(
-                blue("Currently configured repositories:"),
+                mytxt,
                 importance = 1,
                 type = "info",
                 header = red(" @@ ")
@@ -11807,9 +12427,11 @@ class ServerInterface(TextInterface):
             if valid:
                 conn.serverUpdatePackagesData()
             else:
+                mytxt = _( "Entropy database is probably empty. If you don't agree with what I'm saying, " + \
+                           "then it's probably corrupted! I won't stop you here btw..."
+                )
                 self.updateProgress(
-                    darkred("Entropy database is probably empty. If you don't agree with what I'm saying, " + \
-                    "then it's probably corrupted! I won't stop you here btw..."),
+                    darkred(mytxt),
                     importance = 1,
                     type = "warning",
                     header = bold(" !!! ")
@@ -11818,8 +12440,8 @@ class ServerInterface(TextInterface):
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
                             blue(repo),
-                            red("database"),
-                            blue("indexing database"),
+                            red(_("database")),
+                            blue(_("indexing database")),
                     ),
                 importance = 1,
                 type = "info",
@@ -11852,6 +12474,7 @@ class ServerInterface(TextInterface):
         deps_not_satisfied = set()
         length = str((len(installed_packages)))
         count = 0
+        mytxt = _("Checking")
         for pkgdata in installed_packages:
             count += 1
             idpackage = pkgdata[0]
@@ -11859,13 +12482,13 @@ class ServerInterface(TextInterface):
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
-                                    darkgreen(" Checking ")+bold(atom),
-                                    importance = 0,
-                                    type = "info",
-                                    back = True,
-                                    count = (count,length),
-                                    header = darkred(" @@ ")
-                                )
+                darkgreen(mytxt)+" "+bold(atom),
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (count,length),
+                header = darkred(" @@  ")
+            )
 
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
@@ -11877,12 +12500,13 @@ class ServerInterface(TextInterface):
 
     def dependencies_test(self):
 
+        mytxt = "%s %s" % (blue(_("Running dependencies test")),red("..."))
         self.updateProgress(
-                                blue("Running dependencies test..."),
-                                importance = 2,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+            mytxt,
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
 
         server_repos = etpConst['server_repositories'].keys()
         deps_not_matched = self.deps_tester()
@@ -11904,33 +12528,35 @@ class ServerInterface(TextInterface):
                                 crying_atoms[atom] = set()
                             crying_atoms[atom].add(iatom)
 
+            mytxt = blue("%s:") % (_("These are the dependencies not found"),)
             self.updateProgress(
-                                    blue("These are the dependencies not found:"),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red(" @@ ")
-                                )
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
+            mytxt = "%s:" % (_("Needed by"),)
             for atom in deps_not_matched:
                 self.updateProgress(
-                                        red(atom),
-                                        importance = 1,
-                                        type = "info",
-                                        header = blue("   # ")
-                                    )
+                    red(atom),
+                    importance = 1,
+                    type = "info",
+                    header = blue("   # ")
+                )
                 if crying_atoms.has_key(atom):
                     self.updateProgress(
-                                            red("Needed by:"),
-                                            importance = 0,
-                                            type = "info",
-                                            header = blue("      # ")
-                                        )
+                        red(mytxt),
+                        importance = 0,
+                        type = "info",
+                        header = blue("      # ")
+                    )
                     for x in crying_atoms[atom]:
                         self.updateProgress(
-                                                darkgreen(x),
-                                                importance = 0,
-                                                type = "info",
-                                                header = blue("      # ")
-                                            )
+                            darkgreen(x),
+                            importance = 0,
+                            type = "info",
+                            header = blue("      # ")
+                        )
 
         return deps_not_matched
 
@@ -11946,53 +12572,57 @@ class ServerInterface(TextInterface):
             return 0,brokenexecs
 
         if (not brokenexecs) and (not packagesMatched):
+            mytxt = "%s." % (_("System is healthy"),)
             self.updateProgress(
-                                    blue("System is healthy."),
-                                    importance = 2,
-                                    type = "info",
-                                    header = red(" @@ ")
-                                )
+                blue(mytxt),
+                importance = 2,
+                type = "info",
+                header = red(" @@ ")
+            )
             return 0,None
 
+        mytxt = "%s:" % (_("Matching libraries with Spm"),)
         self.updateProgress(
-                                blue("Matching libraries with Spm:"),
-                                importance = 1,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+            blue(mytxt),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
+        )
 
         packages = set()
+        mytxt = red("%s: ") % (_("Scanning"),)
         for brokenexec in brokenexecs:
             self.updateProgress(
-                                    red("Scanning: ")+darkgreen(brokenexec),
-                                    importance = 0,
-                                    type = "info",
-                                    header = red(" @@ "),
-                                    back = True
-                                )
+                mytxt+darkgreen(brokenexec),
+                importance = 0,
+                type = "info",
+                header = red(" @@ "),
+                back = True
+            )
             packages |= self.SpmService.query_belongs(brokenexec)
 
         if packages:
+            mytxt = "%s:" % (_("These are the matched packages"),)
             self.updateProgress(
-                                    red("These are the matched packages:"),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red(" @@ ")
-                                )
+                red(mytxt),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
             for package in packages:
                 self.updateProgress(
-                                        blue(package),
-                                        importance = 0,
-                                        type = "info",
-                                        header = red("     # ")
-                                    )
+                    blue(package),
+                    importance = 0,
+                    type = "info",
+                    header = red("     # ")
+                )
         else:
             self.updateProgress(
-                                    red("No matched packages"),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red(" @@ ")
-                                )
+                red(_("No matched packages")),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
 
         return 0,packages
 
@@ -12010,23 +12640,25 @@ class ServerInterface(TextInterface):
         if not os.path.isdir(dbdir):
             os.makedirs(dbdir)
 
+        mytxt = red("%s ...") % (_("Initializing an empty database file with Entropy structure"),)
         self.updateProgress(
-                                red("Initializing an empty database file with Entropy structure ..."),
-                                importance = 1,
-                                type = "info",
-                                header = darkgreen(" * "),
-                                back = True
-                            )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * "),
+            back = True
+        )
         dbconn = self.ClientService.openGenericDatabase(dbpath)
         dbconn.initializeDatabase()
         dbconn.commitChanges()
         dbconn.closeDB()
+        mytxt = "%s %s %s." % (red(_("Entropy database file")),bold(dbpath),red(_("successfully initialized")),)
         self.updateProgress(
-                                red("Entropy database file ")+bold(dbpath)+red(" successfully initialized."),
-                                importance = 1,
-                                type = "info",
-                                header = darkgreen(" * ")
-                            )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
+        )
 
     def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True):
 
@@ -12040,43 +12672,43 @@ class ServerInterface(TextInterface):
             )
 
         self.updateProgress(
-                "%s %s:" % (
-                        blue("Preparing to move selected packages to"),
-                        red(to_repo),
-                ),
-                importance = 2,
-                type = "info",
-                header = red(" @@ ")
+            "%s %s:" % (
+                    blue(_("Preparing to move selected packages to")),
+                    red(to_repo),
+            ),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
         )
         self.updateProgress(
-                "%s: %s" % (
-                        bold("Note"),
-                        red("all the old packages with conflicting scope will"
-                        " be removed from the destination repo unless injected"),
-                ),
-                importance = 1,
-                type = "info",
-                header = red(" @@ ")
+            "%s: %s" % (
+                    bold(_("Note")),
+                    red(_("all the old packages with conflicting scope will" + \
+                    " be removed from the destination repo unless injected")),
+            ),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
         )
 
         for match in matches:
             repo = match[1]
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
             self.updateProgress(
-                    "[%s=>%s|%s] %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue(dbconn.retrieveAtom(match[0])),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = brown("    # ")
+                "[%s=>%s|%s] %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(dbconn.retrieveAtom(match[0])),
+                ),
+                importance = 0,
+                type = "info",
+                header = brown("    # ")
             )
 
 
         if ask:
-            rc = self.askQuestion("Would you like to continue ?")
+            rc = self.askQuestion(_("Would you like to continue ?"))
             if rc == "No":
                 return switched
 
@@ -12088,17 +12720,17 @@ class ServerInterface(TextInterface):
             match_atom = dbconn.retrieveAtom(idpackage)
             package_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
             self.updateProgress(
-                    "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue("switching"),
-                            darkgreen(match_atom),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = red(" @@ "),
-                    back = True
+                "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("switching")),
+                        darkgreen(match_atom),
+                ),
+                importance = 0,
+                type = "info",
+                header = red(" @@ "),
+                back = True
             )
             # move binary file
             from_file = os.path.join(self.get_local_packages_directory(repo),match_branch,package_filename)
@@ -12106,17 +12738,17 @@ class ServerInterface(TextInterface):
                 from_file = os.path.join(self.get_local_upload_directory(repo),match_branch,package_filename)
             if not os.path.isfile(from_file):
                 self.updateProgress(
-                        "[%s=>%s|%s] %s: %s -> %s" % (
-                                darkgreen(repo),
-                                darkred(to_repo),
-                                brown(branch),
-                                bold("cannot switch package not found, skipping"),
-                                darkgreen(),
-                                red(from_file),
-                        ),
-                        importance = 1,
-                        type = "warning",
-                        header = darkred(" !!! ")
+                    "[%s=>%s|%s] %s: %s -> %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            bold(_("cannot switch, package not found, skipping")),
+                            darkgreen(),
+                            red(from_file),
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" !!! ")
                 )
                 continue
 
@@ -12136,7 +12768,7 @@ class ServerInterface(TextInterface):
                                 darkgreen(repo),
                                 darkred(to_repo),
                                 brown(branch),
-                                blue("moving file"),
+                                blue(_("moving file")),
                                 darkgreen(os.path.basename(from_item)),
                         ),
                         importance = 0,
@@ -12148,51 +12780,51 @@ class ServerInterface(TextInterface):
                     shutil.copy2(from_item,to_item)
 
             self.updateProgress(
-                    "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue("loading data from source database"),
-                            darkgreen(repo),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = red(" @@ "),
-                    back = True
+                "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("loading data from source database")),
+                        darkgreen(repo),
+                ),
+                importance = 0,
+                type = "info",
+                header = red(" @@ "),
+                back = True
             )
             # install package into destination db
             data = dbconn.getPackageData(idpackage)
             todbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = to_repo)
 
             self.updateProgress(
-                    "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue("injecting data to destination database"),
-                            darkgreen(to_repo),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = red(" @@ "),
-                    back = True
+                "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("injecting data to destination database")),
+                        darkgreen(to_repo),
+                ),
+                importance = 0,
+                type = "info",
+                header = red(" @@ "),
+                back = True
             )
             new_idpackage, new_revision, new_data = todbconn.handlePackage(data)
             del data
             todbconn.commitChanges()
 
             self.updateProgress(
-                    "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue("removing entry from source database"),
-                            darkgreen(repo),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = red(" @@ "),
-                    back = True
+                "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("removing entry from source database")),
+                        darkgreen(repo),
+                ),
+                importance = 0,
+                type = "info",
+                header = red(" @@ "),
+                back = True
             )
 
             # remove package from old db
@@ -12200,16 +12832,16 @@ class ServerInterface(TextInterface):
             dbconn.commitChanges()
 
             self.updateProgress(
-                    "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue("successfully moved atom"),
-                            darkgreen(match_atom),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = blue(" @@ ")
+                "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("successfully moved atom")),
+                        darkgreen(match_atom),
+                ),
+                importance = 0,
+                type = "info",
+                header = blue(" @@ ")
             )
             switched.add(match)
 
@@ -12227,16 +12859,17 @@ class ServerInterface(TextInterface):
 
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         self.updateProgress(
-                                red("[repo: %s] adding package: %s" % (
-                                            darkgreen(repo),
-                                            bold(os.path.basename(package_file)),
-                                        )
-                                ),
-                                importance = 1,
-                                type = "info",
-                                header = brown(" * "),
-                                back = True
-                            )
+            red("[repo: %s] %s: %s" % (
+                        darkgreen(repo),
+                        _("adding package"),
+                        bold(os.path.basename(package_file)),
+                    )
+            ),
+            importance = 1,
+            type = "info",
+            header = brown(" * "),
+            back = True
+        )
         mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject)
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
@@ -12264,17 +12897,17 @@ class ServerInterface(TextInterface):
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
-                                "[repo:%s] %s: %s %s: %s" % (
-                                            darkgreen(repo),
-                                            blue("added package"),
-                                            darkgreen(atom),
-                                            blue("rev"),
-                                            bold(str(revision)),
-                                    ),
-                                importance = 1,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+            "[repo:%s] %s: %s %s: %s" % (
+                        darkgreen(repo),
+                        blue(_("added package")),
+                        darkgreen(atom),
+                        blue(_("rev")), # as in revision
+                        bold(str(revision)),
+                ),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
+        )
 
         download_url = self._setup_repository_package_filename(idpackage, repo = repo)
         downloadfile = os.path.basename(download_url)
@@ -12318,15 +12951,15 @@ class ServerInterface(TextInterface):
             requested_branch = packagedata[1]
             inject = packagedata[2]
             self.updateProgress(
-                            "[repo:%s] %s: %s" % (
-                                        darkgreen(repo),
-                                        blue("adding package"),
-                                        darkgreen(os.path.basename(package_filepath)),
-                                    ),
-                            importance = 1,
-                            type = "info",
-                            header = blue(" @@ "),
-                            count = (mycount,maxcount,)
+                "[repo:%s] %s: %s" % (
+                            darkgreen(repo),
+                            blue(_("adding package")),
+                            darkgreen(os.path.basename(package_filepath)),
+                        ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                count = (mycount,maxcount,)
             )
 
             try:
@@ -12340,15 +12973,15 @@ class ServerInterface(TextInterface):
                 to_be_injected.add((idpackage,destination_path))
             except Exception, e:
                 self.updateProgress(
-                                "[repo:%s] %s: %s" % (
-                                            darkgreen(repo),
-                                            darkred("Exception caught, running injection and RDEPEND check before raising"),
-                                            darkgreen(str(e)),
-                                        ),
-                                importance = 1,
-                                type = "error",
-                                header = bold(" !!! "),
-                                count = (mycount,maxcount,)
+                    "[repo:%s] %s: %s" % (
+                                darkgreen(repo),
+                                darkred(_("Exception caught, running injection and RDEPEND check before raising")),
+                                darkgreen(str(e)),
+                            ),
+                    importance = 1,
+                    type = "error",
+                    header = bold(" !!! "),
+                    count = (mycount,maxcount,)
                 )
                 if idpackages_added:
                     dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
@@ -12377,13 +13010,13 @@ class ServerInterface(TextInterface):
 
         # now inject metadata into tbz2 packages
         self.updateProgress(
-                    "[repo:%s] %s:" % (
-                                darkgreen(repo),
-                                blue("Injecting entropy metadata into built packages"),
-                            ),
-                    importance = 1,
-                    type = "info",
-                    header = red(" @@ ")
+            "[repo:%s] %s:" % (
+                        darkgreen(repo),
+                        blue(_("Injecting entropy metadata into built packages")),
+                    ),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
         )
 
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
@@ -12391,17 +13024,17 @@ class ServerInterface(TextInterface):
             idpackage = pkgdata[0]
             package_path = pkgdata[1]
             self.updateProgress(
-                                    "[repo:%s|%s] %s: %s" % (
-                                                darkgreen(repo),
-                                                brown(str(idpackage)),
-                                                blue("injecting entropy metadata"),
-                                                darkgreen(os.path.basename(package_path)),
-                                            ),
-                                    importance = 1,
-                                    type = "info",
-                                    header = blue(" @@ "),
-                                    back = True
-                                )
+                "[repo:%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            brown(str(idpackage)),
+                            blue(_("injecting entropy metadata")),
+                            darkgreen(os.path.basename(package_path)),
+                        ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
             data = dbconn.getPackageData(idpackage)
             dbpath = self.ClientService.inject_entropy_database_into_package(package_path, data)
             digest = self.entropyTools.md5sum(package_path)
@@ -12411,15 +13044,15 @@ class ServerInterface(TextInterface):
             # remove garbage
             os.remove(dbpath)
             self.updateProgress(
-                        "[repo:%s|%s] %s: %s" % (
-                                    darkgreen(repo),
-                                    brown(str(idpackage)),
-                                    blue("injection completed"),
-                                    darkgreen(os.path.basename(package_path)),
-                                ),
-                        importance = 1,
-                        type = "info",
-                        header = red(" @@ ")
+                "[repo:%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            brown(str(idpackage)),
+                            blue(_("injection complete")),
+                            darkgreen(os.path.basename(package_path)),
+                        ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
             )
             dbconn.commitChanges()
 
@@ -12436,26 +13069,26 @@ class ServerInterface(TextInterface):
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
-                    "[repo:%s] %s: %s" % (
-                            darkgreen(repo),
-                            blue("removing package"),
-                            darkgreen(atom),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = brown(" @@ ")
-                )
-            dbconn.removePackage(idpackage)
-        self.close_server_database(dbconn)
-        self.updateProgress(
-                "[repo:%s] %s" % (
-                            darkgreen(repo),
-                            blue("removal complete"),
-                    ),
+                "[repo:%s] %s: %s" % (
+                        darkgreen(repo),
+                        blue(_("removing package")),
+                        darkgreen(atom),
+                ),
                 importance = 1,
                 type = "info",
                 header = brown(" @@ ")
             )
+            dbconn.removePackage(idpackage)
+        self.close_server_database(dbconn)
+        self.updateProgress(
+            "[repo:%s] %s" % (
+                        darkgreen(repo),
+                        blue(_("removal complete")),
+                ),
+            importance = 1,
+            type = "info",
+            header = brown(" @@ ")
+        )
 
 
     def bump_database(self, repo = None):
@@ -12554,9 +13187,9 @@ class ServerInterface(TextInterface):
                 self.updateProgress(
                     "[repo:%s] %s: %s - %s" % (
                             darkgreen(repo),
-                            blue("invalid database revision"),
+                            blue(_("invalid database revision")),
                             bold(rev),
-                            blue("defaulting to 0"),
+                            blue(_("defaulting to 0")),
                         ),
                     importance = 2,
                     type = "error",
@@ -12694,13 +13327,14 @@ class ServerInterface(TextInterface):
         idpackages = set()
         idpackages_added = set()
 
+        mytxt = red("%s ...") % (_("Initializing Entropy database"),)
         self.updateProgress(
-                red("Initializing Entropy database..."),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * "),
-                back = True
-            )
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * "),
+            back = True
+        )
 
         if os.path.isfile(self.get_local_database_file(repo)):
 
@@ -12725,16 +13359,19 @@ class ServerInterface(TextInterface):
 
             self.close_server_database(dbconn)
 
+            mytxt = "%s: %s: %s" % (
+                bold(_("WARNING")),
+                red(_("database already exists")),
+                self.get_local_database_file(repo),
+            )
             self.updateProgress(
-                bold("WARNING")+red(": database %s already exists.") % (
-                    self.get_local_database_file(repo),
-                ),
+                mytxt,
                 importance = 1,
                 type = "warning",
-                header = red(" * ")
+                header = darkred(" !!! ")
             )
 
-            rc = self.askQuestion("Do you want to continue ?")
+            rc = self.askQuestion(_("Do you want to continue ?"))
             if rc == "No":
                 return
             os.remove(self.get_local_database_file(repo))
@@ -12750,7 +13387,7 @@ class ServerInterface(TextInterface):
             if revisions_match:
                 self.updateProgress(
                     "%s: %s" % (
-                        red("Dumping current revisions to file"),
+                        red(_("Dumping current revisions to file")),
                         darkgreen(revisions_file),
                     ),
                     importance = 1,
@@ -12767,7 +13404,7 @@ class ServerInterface(TextInterface):
             if treeupdates_actions:
                 self.updateProgress(
                     "%s: %s" % (
-                        red("Dumping current tree updates actions to file"),
+                        red(_("Dumping current 'treeupdates' actions to file")), # do not translate treeupdates
                         bold(treeupdates_file),
                     ),
                     importance = 1,
@@ -12779,7 +13416,7 @@ class ServerInterface(TextInterface):
                 f.flush()
                 f.close()
 
-            rc = self.askQuestion("Would you like to sync packages first (important if you don't have them synced) ?")
+            rc = self.askQuestion(_("Would you like to sync packages first (important if you don't have them synced) ?"))
             if rc == "Yes":
                 self.MirrorsService.sync_packages(repo = repo)
 
@@ -12801,15 +13438,16 @@ class ServerInterface(TextInterface):
                     continue
 
                 self.updateProgress(
-                        "%s '%s' %s" % (
-                            red("Reinitializing Entropy database for branch"),
-                            bold(mybranch),
-                            red("using Packages in the repository..."),
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = darkgreen(" * ")
-                    )
+                    "%s '%s' %s %s" % (
+                        red(_("Reinitializing Entropy database for branch")),
+                        bold(mybranch),
+                        red(_("using Packages in the repository")),
+                        red("..."),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
 
                 counter = 0
                 maxcount = len(pkglist)
@@ -12820,7 +13458,7 @@ class ServerInterface(TextInterface):
                         "[repo:%s|%s] %s: %s" % (
                                 darkgreen(repo),
                                 brown(mybranch),
-                                blue("analyzing"),
+                                blue(_("analyzing")),
                                 bold(pkg),
                             ),
                         importance = 1,
@@ -12853,9 +13491,9 @@ class ServerInterface(TextInterface):
                                     brown(mybranch),
                                     darkgreen(counter),
                                     blue(maxcount),
-                                    red("added package"),
+                                    red(_("added package")),
                                     darkgreen(pkg),
-                                    red("revision"),
+                                    red(_("revision")),
                                     brown(mydata_upd['revision']),
                             ),
                         importance = 1,
@@ -12887,8 +13525,9 @@ class ServerInterface(TextInterface):
                 if matches[1] == 0:
                     idpackages |= matches[0]
                 else:
+                    mytxt = "%s: %s: %s" % (red(_("Attention")),blue(_("cannot match")),bold(package),)
                     self.updateProgress(
-                        red("Attention: cannot match: %s" % (bold(package),) ),
+                        mytxt,
                         importance = 1,
                         type = "warning",
                         header = darkred(" !!! ")
@@ -12928,13 +13567,13 @@ class ServerInterface(TextInterface):
             repo = self.default_repository
 
         self.updateProgress(
-                "[%s] %s:" % (
-                    red("remote"),
-                    blue("Integrity verification of the selected packages"),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
+            "[%s] %s:" % (
+                red("remote"),
+                blue(_("Integrity verification of the selected packages")),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
         )
 
         idpackages, world = self.match_packages(packages)
@@ -12942,31 +13581,32 @@ class ServerInterface(TextInterface):
 
         if world:
             self.updateProgress(
-                    blue("All the packages in the Entropy Packages repository will be checked."),
-                    importance = 1,
-                    type = "info",
-                    header = "    "
+                blue(_("All the packages in the Entropy Packages repository will be checked.")),
+                importance = 1,
+                type = "info",
+                header = "    "
             )
         else:
+            mytxt = red("%s:") % (_("This is the list of the packages that would be checked"),)
             self.updateProgress(
-                    red("This is the list of the packages that would be checked:"),
-                    importance = 1,
-                    type = "info",
-                    header = "    "
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = "    "
             )
             for idpackage in idpackages:
                 pkgatom = dbconn.retrieveAtom(idpackage)
                 pkgbranch = dbconn.retrieveBranch(idpackage)
                 pkgfile = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
                 self.updateProgress(
-                        red(pkgatom)+" -> "+bold(os.path.join(pkgbranch,pkgfile)),
-                        importance = 1,
-                        type = "info",
-                        header = darkgreen("   - ")
+                    red(pkgatom)+" -> "+bold(os.path.join(pkgbranch,pkgfile)),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen("   - ")
                 )
 
         if ask:
-            rc = self.askQuestion("Would you like to continue ?")
+            rc = self.askQuestion(_("Would you like to continue ?"))
             if rc == "No":
                 return set(),set(),{}
 
@@ -12980,7 +13620,7 @@ class ServerInterface(TextInterface):
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
                         darkgreen(repo),
-                        blue("Working on mirror"),
+                        blue(_("Working on mirror")),
                         brown(crippled_uri),
                     ),
                 importance = 1,
@@ -13001,7 +13641,7 @@ class ServerInterface(TextInterface):
                 self.updateProgress(
                     "[%s] %s: %s" % (
                             brown(crippled_uri),
-                            blue("checking hash"),
+                            blue(_("checking hash")),
                             darkgreen(os.path.join(pkgbranch,pkgfilename)),
                     ),
                     importance = 1,
@@ -13016,10 +13656,10 @@ class ServerInterface(TextInterface):
                 if ck == None:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
-                                        brown(crippled_uri),
-                                        blue("digest verification of"),
-                                        bold(pkgfilename),
-                                        blue("not supported"),
+                            brown(crippled_uri),
+                            blue(_("digest verification of")),
+                            bold(pkgfilename),
+                            blue(_("not supported")),
                         ),
                         importance = 1,
                         type = "info",
@@ -13031,10 +13671,10 @@ class ServerInterface(TextInterface):
                 else:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
-                                        brown(crippled_uri),
-                                        blue("digest verification of"),
-                                        bold(pkgfilename),
-                                        blue("failed for unknown reasons"),
+                            brown(crippled_uri),
+                            blue(_("digest verification of")),
+                            bold(pkgfilename),
+                            blue(_("failed for unknown reasons")),
                         ),
                         importance = 1,
                         type = "info",
@@ -13048,10 +13688,10 @@ class ServerInterface(TextInterface):
                     not_match.add(idpackage)
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
-                                        brown(crippled_uri),
-                                        blue("package"),
-                                        bold(pkgfilename),
-                                        red("NOT healthy"),
+                            brown(crippled_uri),
+                            blue(_("package")),
+                            bold(pkgfilename),
+                            red(_("NOT healthy")),
                         ),
                         importance = 1,
                         type = "warning",
@@ -13063,15 +13703,17 @@ class ServerInterface(TextInterface):
                     broken_packages[crippled_uri].append(os.path.join(pkgbranch,pkgfilename))
 
             if broken_packages:
+                mytxt = blue("%s:") % (_("This is the list of broken packages"),)
                 self.updateProgress(
-                    blue("This is the list of broken packages:"),
+                    mytxt,
                     importance = 1,
                     type = "info",
                     header = red(" * ")
                 )
                 for mirror in broken_packages.keys():
+                    mytxt = "%s: %s" % (brown(_("Mirror")),bold(mirror),)
                     self.updateProgress(
-                        brown("Mirror: %s") % (bold(mirror),),
+                        mytxt,
                         importance = 1,
                         type = "info",
                         header = red("   <> ")
@@ -13086,7 +13728,7 @@ class ServerInterface(TextInterface):
 
             self.updateProgress(
                 "%s:" % (
-                        blue("Statistics"),
+                    blue(_("Statistics")),
                 ),
                 importance = 1,
                 type = "info",
@@ -13094,9 +13736,9 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[%s] %s:\t%s" % (
-                        red(crippled_uri),
-                        brown("Number of checked packages"),
-                        brown(str(len(match)+len(not_match))),
+                    red(crippled_uri),
+                    brown(_("Number of checked packages")),
+                    brown(str(len(match)+len(not_match))),
                 ),
                 importance = 1,
                 type = "info",
@@ -13104,9 +13746,9 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[%s] %s:\t%s" % (
-                        red(crippled_uri),
-                        darkgreen("Number of healthy packages"),
-                        darkgreen(str(len(match))),
+                    red(crippled_uri),
+                    darkgreen(_("Number of healthy packages")),
+                    darkgreen(str(len(match))),
                 ),
                 importance = 1,
                 type = "info",
@@ -13114,9 +13756,9 @@ class ServerInterface(TextInterface):
             )
             self.updateProgress(
                 "[%s] %s:\t%s" % (
-                        red(crippled_uri),
-                        darkred("Number of broken packages"),
-                        darkred(str(len(not_match))),
+                    red(crippled_uri),
+                    darkred(_("Number of broken packages")),
+                    darkred(str(len(not_match))),
                 ),
                 importance = 1,
                 type = "info",
@@ -13132,13 +13774,13 @@ class ServerInterface(TextInterface):
             repo = self.default_repository
 
         self.updateProgress(
-                "[%s] %s:" % (
-                    red("local"),
-                    blue("Integrity verification of the selected packages"),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * ")
+            "[%s] %s:" % (
+                red(_("local")),
+                blue(_("Integrity verification of the selected packages")),
+            ),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" * ")
         )
 
         idpackages, world = self.match_packages(packages)
@@ -13146,10 +13788,10 @@ class ServerInterface(TextInterface):
 
         if world:
             self.updateProgress(
-                    blue("All the packages in the Entropy Packages repository will be checked."),
-                    importance = 1,
-                    type = "info",
-                    header = "    "
+                blue(_("All the packages in the Entropy Packages repository will be checked.")),
+                importance = 1,
+                type = "info",
+                header = "    "
             )
 
         to_download = set()
@@ -13167,43 +13809,43 @@ class ServerInterface(TextInterface):
             if os.path.isfile(bindir_path):
                 if not world:
                     self.updateProgress(
-                            "[%s] %s :: %s" % (
-                                    darkgreen("available"),
-                                    blue(pkgatom),
-                                    darkgreen(pkgfile),
-                            ),
-                            importance = 0,
-                            type = "info",
-                            header = darkgreen("   # ")
-                    )
-                available.add(idpackage)
-            elif os.path.isfile(uploaddir_path):
-                if not world:
-                    self.updateProgress(
-                            "[%s] %s :: %s" % (
-                                    darkred("upload/ignored"),
-                                    blue(pkgatom),
-                                    darkgreen(pkgfile),
-                            ),
-                            importance = 0,
-                            type = "info",
-                            header = darkgreen("   # ")
-                    )
-            else:
-                self.updateProgress(
                         "[%s] %s :: %s" % (
-                                brown("download"),
+                                darkgreen(_("available")),
                                 blue(pkgatom),
                                 darkgreen(pkgfile),
                         ),
                         importance = 0,
                         type = "info",
                         header = darkgreen("   # ")
+                    )
+                available.add(idpackage)
+            elif os.path.isfile(uploaddir_path):
+                if not world:
+                    self.updateProgress(
+                        "[%s] %s :: %s" % (
+                                darkred(_("upload/ignored")),
+                                blue(pkgatom),
+                                darkgreen(pkgfile),
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen("   # ")
+                    )
+            else:
+                self.updateProgress(
+                    "[%s] %s :: %s" % (
+                            brown(_("download")),
+                            blue(pkgatom),
+                            darkgreen(pkgfile),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen("   # ")
                 )
                 to_download.add((idpackage,pkgfile,pkgbranch))
 
         if ask:
-            rc = self.askQuestion("Would you like to continue ?")
+            rc = self.askQuestion(_("Would you like to continue ?"))
             if rc == "No":
                 return set(),set(),set(),set()
 
@@ -13216,20 +13858,22 @@ class ServerInterface(TextInterface):
         if to_download:
 
             not_downloaded = set()
+            mytxt = blue("%s ...") % (_("Starting to download missing files"),)
             self.updateProgress(
-                    blue("Starting to download missing files..."),
-                    importance = 1,
-                    type = "info",
-                    header = "   "
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = "   "
             )
             for uri in self.get_remote_mirrors(repo):
 
                 if not_downloaded:
+                    mytxt = blue("%s ...") % (_("Trying to search missing or broken files on another mirror"),)
                     self.updateProgress(
-                            blue("Trying to search missing or broken files on another mirror ..."),
-                            importance = 1,
-                            type = "info",
-                            header = "   "
+                        mytxt,
+                        importance = 1,
+                        type = "info",
+                        header = "   "
                     )
                     to_download = not_downloaded.copy()
                     not_downloaded = set()
@@ -13246,19 +13890,20 @@ class ServerInterface(TextInterface):
 
                 if not not_downloaded:
                     self.updateProgress(
-                            red("All the binary packages have been downloaded successfully."),
-                            importance = 1,
-                            type = "info",
-                            header = "   "
+                        red(_("All the binary packages have been downloaded successfully.")),
+                        importance = 1,
+                        type = "info",
+                        header = "   "
                     )
                     break
 
             if not_downloaded:
+                mytxt = blue("%s:") % (_("These are the packages that cannot be found online"),)
                 self.updateProgress(
-                        blue("These are the packages that cannot be found online:"),
-                        importance = 1,
-                        type = "info",
-                        header = "   "
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = "   "
                 )
                 for i in not_downloaded:
                     downloaded_errors.add(i[0])
@@ -13269,11 +13914,12 @@ class ServerInterface(TextInterface):
                             header = red("    * ")
                     )
                     downloaded_errors.add(i[0])
+                mytxt = "%s." % (_("They won't be checked"),)
                 self.updateProgress(
-                        red("They won't be checked."),
-                        importance = 1,
-                        type = "warning",
-                        header = "   "
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "   "
                 )
 
         totalcounter = str(len(available))
@@ -13285,16 +13931,16 @@ class ServerInterface(TextInterface):
             pkgfile = os.path.basename(pkgfile)
 
             self.updateProgress(
-                    "[branch:%s] %s %s" % (
-                            brown(pkgbranch),
-                            blue("checking hash of"),
-                            darkgreen(pkgfile),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = "   ",
-                    back = True,
-                    count = (currentcounter,totalcounter,)
+                "[branch:%s] %s %s" % (
+                        brown(pkgbranch),
+                        blue(_("checking hash of")),
+                        darkgreen(pkgfile),
+                ),
+                importance = 1,
+                type = "info",
+                header = "   ",
+                back = True,
+                count = (currentcounter,totalcounter,)
             )
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
@@ -13305,22 +13951,23 @@ class ServerInterface(TextInterface):
             else:
                 failed.add(idpackage)
                 self.updateProgress(
-                        "[branch:%s] %s %s %s: %s" % (
-                                brown(pkgbranch),
-                                blue("package"),
-                                darkgreen(pkgfile),
-                                blue("is corrupted, stored checksum"),
-                                brown(storedmd5),
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = "   ",
-                        count = (currentcounter,totalcounter,)
+                    "[branch:%s] %s %s %s: %s" % (
+                            brown(pkgbranch),
+                            blue(_("package")),
+                            darkgreen(pkgfile),
+                            blue(_("is corrupted, stored checksum")), # package -blah- is corrupted...
+                            brown(storedmd5),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = "   ",
+                    count = (currentcounter,totalcounter,)
                 )
 
         if failed:
+            mytxt = blue("%s:") % (_("This is the list of broken packages"),)
             self.updateProgress(
-                    blue("This is the list of the BROKEN packages:"),
+                    mytxt,
                     importance = 1,
                     type = "warning",
                     header =  darkred("  # ")
@@ -13343,31 +13990,51 @@ class ServerInterface(TextInterface):
             header = blue(" * ")
         )
         self.updateProgress(
-            brown("Number of checked packages:\t\t%s" % (len(fine)+len(failed),) ),
+            brown("%s:\t\t%s" % (
+                    _("Number of checked packages"),
+                    len(fine)+len(failed),
+                )
+            ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            darkgreen("Number of healthy packages:\t\t%s" % (len(fine),) ),
+            darkgreen("%s:\t\t%s" % (
+                    _("Number of healthy packages"),
+                    len(fine),
+                )
+            ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            darkred("Number of broken packages:\t\t%s" % (len(failed),) ),
+            darkred("%s:\t\t%s" % (
+                    _("Number of broken packages"),
+                    len(failed),
+                )
+            ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            blue("Number of downloaded packages:\t\t%s" % (len(downloaded_fine),) ),
+            blue("%s:\t\t%s" % (
+                    _("Number of downloaded packages"),
+                    len(downloaded_fine),
+                )
+            ),
             importance = 0,
             type = "info",
             header = brown("   # ")
         )
         self.updateProgress(
-            bold("Number of failed downloads:\t\t%s" % (len(downloaded_errors),) ),
+            bold("%s:\t\t%s" % (
+                    _("Number of failed downloads"),
+                    len(downloaded_errors),
+                )
+            ),
             importance = 0,
             type = "info",
             header = brown("   # ")
@@ -13393,11 +14060,12 @@ class ServerInterface(TextInterface):
         if repo == None:
             repo = self.default_repository
 
+        mytxt = red("%s ...") % (_("Switching selected packages"),)
         self.updateProgress(
-            red("Switching selected packages..."),
+            mytxt,
             importance = 1,
             type = "info",
-            header = darkgreen(" * ")
+            header = darkgreen(" @@ ")
         )
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
 
@@ -13414,10 +14082,16 @@ class ServerInterface(TextInterface):
             if cur_branch == to_branch:
                 already_switched.add(idpackage)
                 self.updateProgress(
-                    red("Ignoring %s, already in branch %s" % (bold(atom),cur_branch,)),
+                    red("%s %s, %s %s" % (
+                            _("Ignoring"),
+                            bold(atom),
+                            _("already in branch"),
+                            cur_branch,
+                        )
+                    ),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * ")
+                    header = darkgreen(" @@ ")
                 )
                 ignored.add(idpackage)
                 continue
@@ -13427,10 +14101,10 @@ class ServerInterface(TextInterface):
             if not os.path.isfile(frompath):
                 self.updateProgress(
                     "[%s=>%s] %s, %s" % (
-                            brown(cur_branch),
-                            bold(to_branch),
-                            darkgreen(atom),
-                            blue("cannot switch, package not found!"),
+                        brown(cur_branch),
+                        bold(to_branch),
+                        darkgreen(atom),
+                        blue(_("cannot switch, package not found!")),
                     ),
                     importance = 0,
                     type = "warning",
@@ -13439,32 +14113,34 @@ class ServerInterface(TextInterface):
                 not_found.add(idpackage)
                 continue
 
+            mytxt = blue("%s ...") % (_("configuring package information"),)
             self.updateProgress(
                 "[%s=>%s] %s, %s" % (
-                        brown(cur_branch),
-                        bold(to_branch),
-                        darkgreen(atom),
-                        blue("configuring package information..."),
+                    brown(cur_branch),
+                    bold(to_branch),
+                    darkgreen(atom),
+                    mytxt,
                 ),
                 importance = 0,
                 type = "info",
-                header = darkgreen(" * "),
+                header = darkgreen(" @@ "),
                 back = True
             )
             dbconn.switchBranch(idpackage,to_branch)
             dbconn.commitChanges()
 
+            mytxt = blue("%s ...") % (_("moving file locally"),)
             # LOCAL
             self.updateProgress(
                 "[%s=>%s] %s, %s" % (
                         brown(cur_branch),
                         bold(to_branch),
                         darkgreen(atom),
-                        blue("moving file locally..."),
+                        mytxt,
                 ),
                 importance = 0,
                 type = "info",
-                header = darkgreen(" * "),
+                header = darkgreen(" @@ "),
                 back = True
             )
             new_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
@@ -13482,7 +14158,7 @@ class ServerInterface(TextInterface):
                             brown(cur_branch),
                             bold(to_branch),
                             darkgreen(atom),
-                            blue("cannot find checksum to migrate!"),
+                            blue(_("cannot find checksum to migrate!")),
                     ),
                     importance = 0,
                     type = "warning",
@@ -13490,17 +14166,18 @@ class ServerInterface(TextInterface):
                 )
                 no_checksum.add(idpackage)
 
+            mytxt = blue("%s ...") % (_("moving file remotely"),)
             # REMOTE
             self.updateProgress(
                 "[%s=>%s] %s, %s" % (
                         brown(cur_branch),
                         bold(to_branch),
                         darkgreen(atom),
-                        blue("moving file remotely..."),
+                        mytxt,
                 ),
                 importance = 0,
                 type = "info",
-                header = darkgreen(" * "),
+                header = darkgreen(" @@ "),
                 back = True
             )
 
@@ -13512,12 +14189,12 @@ class ServerInterface(TextInterface):
                             brown(cur_branch),
                             bold(to_branch),
                             darkgreen(atom),
-                            blue("moving file remotely on"),
+                            blue(_("moving file remotely on")), # on... servername
                             darkgreen(crippled_uri),
                     ),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" * "),
+                    header = darkgreen(" @@ "),
                     back = True
                 )
 
@@ -13537,11 +14214,12 @@ class ServerInterface(TextInterface):
 
         dbconn.commitChanges()
         self.close_server_database(dbconn)
+        mytxt = blue("%s.") % (_("migration loop completed"),)
         self.updateProgress(
             "[%s=>%s] %s" % (
                     brown(cur_branch),
                     bold(to_branch),
-                    blue("migration loop completed."),
+                    mytxt,
             ),
             importance = 1,
             type = "info",
@@ -13557,22 +14235,25 @@ class ServerMirrorsInterface:
     def __init__(self,  ServerInstance, repo = None):
 
         if not isinstance(ServerInstance,ServerInterface):
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: a valid ServerInterface based instance is needed")
+            mytxt = _("A valid ServerInterface based instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = ServerInstance
         self.FtpInterface = self.Entropy.FtpInterface
         self.rssFeed = self.Entropy.rssFeed
 
+        mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
         self.Entropy.updateProgress(
-            blue("Entropy Server Mirrors Interface loaded:"),
+            mytxt,
             importance = 2,
             type = "info",
             header = red(" @@ ")
         )
+        mytxt = _("mirror")
         for mirror in self.Entropy.get_remote_mirrors(repo):
             mirror = self.entropyTools.hideFTPpassword(mirror)
             self.Entropy.updateProgress(
-                blue("mirror: %s") % (darkgreen(mirror),),
+                blue("%s: %s") % (mytxt,darkgreen(mirror),),
                 importance = 0,
                 type = "info",
                 header = brown("   # ")
@@ -13592,14 +14273,14 @@ class ServerMirrorsInterface:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
-            lock_text = "unlocking"
-            if lock: lock_text = "locking"
+            lock_text = _("unlocking")
+            if lock: lock_text = _("locking")
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        bold(lock_text),
-                        blue("mirror..."),
+                    brown(repo),
+                    darkgreen(crippled_uri),
+                    bold(lock_text),
+                    blue("%s...") % (_("mirror"),),
                 ),
                 importance = 1,
                 type = "info",
@@ -13615,7 +14296,7 @@ class ServerMirrorsInterface:
                     "[repo:%s|%s] %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
-                            blue("mirror already locked"),
+                            blue(_("mirror already locked")),
                     ),
                     importance = 1,
                     type = "info",
@@ -13628,7 +14309,7 @@ class ServerMirrorsInterface:
                     "[repo:%s|%s] %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
-                            blue("mirror already unlocked"),
+                            blue(_("mirror already unlocked")),
                     ),
                     importance = 1,
                     type = "info",
@@ -13667,14 +14348,14 @@ class ServerMirrorsInterface:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
-            lock_text = "unlocking"
-            if lock: lock_text = "locking"
+            lock_text = _("unlocking")
+            if lock: lock_text = _("locking")
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s..." % (
                             blue(repo),
                             red(crippled_uri),
                             bold(lock_text),
-                            blue("mirror for download"),
+                            blue(_("mirror for download")),
                     ),
                 importance = 1,
                 type = "info",
@@ -13690,7 +14371,7 @@ class ServerMirrorsInterface:
                     "[repo:%s|%s] %s" % (
                             blue(repo),
                             red(crippled_uri),
-                            blue("mirror already locked for download"),
+                            blue(_("mirror already locked for download")),
                         ),
                     importance = 1,
                     type = "info",
@@ -13703,7 +14384,7 @@ class ServerMirrorsInterface:
                     "[repo:%s|%s] %s" % (
                             blue(repo),
                             red(crippled_uri),
-                            blue("mirror already unlocked for download"),
+                            blue(_("mirror already unlocked for download")),
                         ),
                     importance = 1,
                     type = "info",
@@ -13741,7 +14422,7 @@ class ServerMirrorsInterface:
             self.create_local_database_lockfile(repo)
             lock_file = self.get_database_lockfile(repo)
         else:
-            lock_string = 'for download'
+            lock_string = _('for download') # locking/unlocking mirror1 for download
             self.create_local_database_download_lockfile(repo)
             lock_file = self.get_database_download_lockfile(repo)
 
@@ -13751,7 +14432,7 @@ class ServerMirrorsInterface:
                 "[repo:%s|%s] %s %s" % (
                             blue(repo),
                             red(crippled_uri),
-                            blue("mirror successfully locked"),
+                            blue(_("mirror successfully locked")),
                             blue(lock_string),
                     ),
                 importance = 1,
@@ -13765,7 +14446,7 @@ class ServerMirrorsInterface:
                             red(crippled_uri),
                             blue("lock error"),
                             rc,
-                            blue("mirror not locked"),
+                            blue(_("mirror not locked")),
                             blue(lock_string),
                     ),
                 importance = 1,
@@ -13803,7 +14484,7 @@ class ServerMirrorsInterface:
                 "[repo:%s|%s] %s" % (
                             blue(repo),
                             red(crippled_uri),
-                            blue("mirror successfully unlocked"),
+                            blue(_("mirror successfully unlocked")),
                     ),
                 importance = 1,
                 type = "info",
@@ -13818,9 +14499,9 @@ class ServerMirrorsInterface:
                 "[repo:%s|%s] %s: %s - %s" % (
                             blue(repo),
                             red(crippled_uri),
-                            blue("unlock error"),
+                            blue(_("unlock error")),
                             rc,
-                            blue("mirror not unlocked"),
+                            blue(_("mirror not unlocked")),
                     ),
                 importance = 1,
                 type = "error",
@@ -13884,11 +14565,11 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        brown(tries),
-                        blue("connecting to download package"),
-                        darkgreen(pkgfile),
+                    brown(repo),
+                    darkgreen(crippled_uri),
+                    brown(tries),
+                    blue(_("connecting to download package")), # connecting to download package xyz
+                    darkgreen(pkgfile),
                 ),
                 importance = 1,
                 type = "info",
@@ -13902,11 +14583,11 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        brown(tries),
-                        blue("downloading package"),
-                        darkgreen(pkgfile),
+                    brown(repo),
+                    darkgreen(crippled_uri),
+                    brown(tries),
+                    blue(_("downloading package")),
+                    darkgreen(pkgfile),
                 ),
                 importance = 1,
                 type = "info",
@@ -13918,12 +14599,12 @@ class ServerMirrorsInterface:
             if not rc:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            brown(tries),
-                            blue("package"),
-                            darkgreen(pkgfile),
-                            blue("does not exist"),
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        brown(tries),
+                        blue(_("package")),
+                        darkgreen(pkgfile),
+                        blue(_("does not exist")),
                     ),
                     importance = 1,
                     type = "error",
@@ -13937,12 +14618,12 @@ class ServerMirrorsInterface:
             if idpackage == -1:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            brown(tries),
-                            blue("package"),
-                            darkgreen(pkgfile),
-                            blue("is not listed in the current repository database!!"),
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        brown(tries),
+                        blue(_("package")),
+                        darkgreen(pkgfile),
+                        blue(_("is not listed in the current repository database!!")),
                     ),
                     importance = 1,
                     type = "error",
@@ -13954,11 +14635,11 @@ class ServerMirrorsInterface:
             storedmd5 = dbconn.retrieveDigest(idpackage)
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        brown(tries),
-                        blue("verifying checksum of package"),
-                        darkgreen(pkgfile),
+                    brown(repo),
+                    darkgreen(crippled_uri),
+                    brown(tries),
+                    blue(_("verifying checksum of package")),
+                    darkgreen(pkgfile),
                 ),
                 importance = 1,
                 type = "info",
@@ -13971,12 +14652,12 @@ class ServerMirrorsInterface:
             if md5check:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            brown(tries),
-                            blue("package"),
-                            darkgreen(pkgfile),
-                            blue("downloaded successfully"),
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        brown(tries),
+                        blue(_("package")),
+                        darkgreen(pkgfile),
+                        blue(_("downloaded successfully")),
                     ),
                     importance = 1,
                     type = "info",
@@ -13986,12 +14667,12 @@ class ServerMirrorsInterface:
             else:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            brown(tries),
-                            blue("package"),
-                            darkgreen(pkgfile),
-                            blue("checksum does not match. re-downloading..."),
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        brown(tries),
+                        blue(_("package")),
+                        darkgreen(pkgfile),
+                        blue(_("checksum does not match. re-downloading...")),
                     ),
                     importance = 1,
                     type = "warning",
@@ -14005,12 +14686,12 @@ class ServerMirrorsInterface:
         # if we get here it means the files hasn't been downloaded properly
         self.Entropy.updateProgress(
             "[repo:%s|%s|#%s] %s: %s %s" % (
-                    brown(repo),
-                    darkgreen(crippled_uri),
-                    brown(tries),
-                    blue("package"),
-                    darkgreen(pkgfile),
-                    blue("seems broken. Consider to re-package it. Giving up!"),
+                brown(repo),
+                darkgreen(crippled_uri),
+                brown(tries),
+                blue(_("package")),
+                darkgreen(pkgfile),
+                blue(_("seems broken. Consider to re-package it. Giving up!")),
             ),
             importance = 1,
             type = "error",
@@ -14031,7 +14712,10 @@ class ServerMirrorsInterface:
             ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
             cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
             if cmethod == None:
-                raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+                raise exceptionTools.InvalidDataType("InvalidDataType: %s." % (
+                        _("Wrong database compression method passed"),
+                    )
+                )
             compressedfile = etpConst[cmethod[2]]
 
             revision = 0
@@ -14050,7 +14734,7 @@ class ServerMirrorsInterface:
                         "[repo:%s|%s] %s: %s" % (
                                 brown(repo),
                                 darkgreen(crippled_uri),
-                                blue("mirror doesn't have a valid database revision file"),
+                                blue(_("mirror doesn't have a valid database revision file")),
                                 bold(revision),
                         ),
                         importance = 1,
@@ -14246,9 +14930,12 @@ class ServerMirrorsInterface:
             self.FtpInterface = ftp_interface
             self.Entropy = entropy_interface
             if not isinstance(uris,list):
-                raise exceptionTools.InvalidDataType("InvalidDataType: uris must be a list instance")
+                raise exceptionTools.InvalidDataType("InvalidDataType: %s" % (_("uris must be a list instance"),))
             if not isinstance(files_to_upload,(list,dict)):
-                raise exceptionTools.InvalidDataType("InvalidDataType: files_to_upload must be a list or dict instance")
+                raise exceptionTools.InvalidDataType("InvalidDataType: %s" % (
+                        _("files_to_upload must be a list or dict instance"),
+                    )
+                )
             self.uris = uris
             if isinstance(files_to_upload,list):
                 self.myfiles = files_to_upload[:]
@@ -14283,12 +14970,12 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[%s|#%s|(%s/%s)] %s: %s" % (
-                            blue(crippled_uri),
-                            darkgreen(str(tries)),
-                            blue(str(counter)),
-                            bold(str(maxcount)),
-                            darkgreen("verifying upload (if supported)"),
-                            blue(os.path.basename(local_filepath)),
+                    blue(crippled_uri),
+                    darkgreen(str(tries)),
+                    blue(str(counter)),
+                    bold(str(maxcount)),
+                    darkgreen(_("verifying upload (if supported)")),
+                    blue(os.path.basename(local_filepath)),
                 ),
                 importance = 0,
                 type = "info",
@@ -14297,21 +14984,21 @@ class ServerMirrorsInterface:
             )
 
             checksum = self.Entropy.get_remote_package_checksum(
-                        self.repo,
-                        os.path.basename(local_filepath),
-                        self.handlers_data['branch']
+                self.repo,
+                os.path.basename(local_filepath),
+                self.handlers_data['branch']
             )
             if checksum == None:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                blue(crippled_uri),
-                                darkgreen(str(tries)),
-                                blue(str(counter)),
-                                bold(str(maxcount)),
-                                blue("digest verification"),
-                                os.path.basename(local_filepath),
-                                darkred("not supported"),
-                        ),
+                        blue(crippled_uri),
+                        darkgreen(str(tries)),
+                        blue(str(counter)),
+                        bold(str(maxcount)),
+                        blue(_("digest verification")),
+                        os.path.basename(local_filepath),
+                        darkred(_("not supported")),
+                    ),
                     importance = 0,
                     type = "info",
                     header = red(" @@ ")
@@ -14320,14 +15007,14 @@ class ServerMirrorsInterface:
             elif checksum == False:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                blue(crippled_uri),
-                                darkgreen(str(tries)),
-                                blue(str(counter)),
-                                bold(str(maxcount)),
-                                blue("digest verification"),
-                                os.path.basename(local_filepath),
-                                bold("file not found"),
-                        ),
+                        blue(crippled_uri),
+                        darkgreen(str(tries)),
+                        blue(str(counter)),
+                        bold(str(maxcount)),
+                        blue(_("digest verification")),
+                        os.path.basename(local_filepath),
+                        bold(_("file not found")),
+                    ),
                     importance = 0,
                     type = "warning",
                     header = brown(" @@ ")
@@ -14339,14 +15026,14 @@ class ServerMirrorsInterface:
                 if ckres:
                     self.Entropy.updateProgress(
                         "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                    blue(crippled_uri),
-                                    darkgreen(str(tries)),
-                                    blue(str(counter)),
-                                    bold(str(maxcount)),
-                                    blue("digest verification"),
-                                    os.path.basename(local_filepath),
-                                    darkgreen("so far, so good!"),
-                            ),
+                            blue(crippled_uri),
+                            darkgreen(str(tries)),
+                            blue(str(counter)),
+                            bold(str(maxcount)),
+                            blue(_("digest verification")),
+                            os.path.basename(local_filepath),
+                            darkgreen(_("so far, so good!")),
+                        ),
                         importance = 0,
                         type = "info",
                         header = red(" @@ ")
@@ -14355,14 +15042,14 @@ class ServerMirrorsInterface:
                 else:
                     self.Entropy.updateProgress(
                         "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                    blue(crippled_uri),
-                                    darkgreen(str(tries)),
-                                    blue(str(counter)),
-                                    bold(str(maxcount)),
-                                    blue("digest verification"),
-                                    os.path.basename(local_filepath),
-                                    darkred("invalid checksum"),
-                            ),
+                            blue(crippled_uri),
+                            darkgreen(str(tries)),
+                            blue(str(counter)),
+                            bold(str(maxcount)),
+                            blue(_("digest verification")),
+                            os.path.basename(local_filepath),
+                            darkred(_("invalid checksum")),
+                        ),
                         importance = 0,
                         type = "warning",
                         header = brown(" @@ ")
@@ -14371,14 +15058,14 @@ class ServerMirrorsInterface:
             else:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                                blue(crippled_uri),
-                                darkgreen(str(tries)),
-                                blue(str(counter)),
-                                bold(str(maxcount)),
-                                blue("digest verification"),
-                                os.path.basename(local_filepath),
-                                darkred("unknown data returned"),
-                        ),
+                        blue(crippled_uri),
+                        darkgreen(str(tries)),
+                        blue(str(counter)),
+                        bold(str(maxcount)),
+                        blue(_("digest verification")),
+                        os.path.basename(local_filepath),
+                        darkred(_("unknown data returned")),
+                    ),
                     importance = 0,
                     type = "warning",
                     header = brown(" @@ ")
@@ -14401,10 +15088,10 @@ class ServerMirrorsInterface:
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.Entropy.updateProgress(
                     "[%s|%s] %s..." % (
-                            blue(crippled_uri),
-                            brown(action),
-                            blue("connecting to mirror"),
-                        ),
+                        blue(crippled_uri),
+                        brown(action),
+                        blue(_("connecting to mirror")),
+                    ),
                     importance = 0,
                     type = "info",
                     header = blue(" @@ ")
@@ -14412,10 +15099,10 @@ class ServerMirrorsInterface:
                 ftp = self.FtpInterface(uri, self.Entropy)
                 self.Entropy.updateProgress(
                     "[%s|%s] %s %s..." % (
-                                blue(crippled_uri),
-                                brown(action),
-                                blue("changing directory to"),
-                                darkgreen(self.Entropy.get_remote_database_relative_path(self.repo)),
+                        blue(crippled_uri),
+                        brown(action),
+                        blue(_("changing directory to")),
+                        darkgreen(self.Entropy.get_remote_database_relative_path(self.repo)),
                     ),
                     importance = 0,
                     type = "info",
@@ -14443,12 +15130,12 @@ class ServerMirrorsInterface:
                         tries += 1
                         self.Entropy.updateProgress(
                             "[%s|#%s|(%s/%s)] %s: %s" % (
-                                        blue(crippled_uri),
-                                        darkgreen(str(tries)),
-                                        blue(str(counter)),
-                                        bold(str(maxcount)),
-                                        blue(action+"ing"),
-                                        red(os.path.basename(mypath)),
+                                blue(crippled_uri),
+                                darkgreen(str(tries)),
+                                blue(str(counter)),
+                                bold(str(maxcount)),
+                                blue(action+"ing"),
+                                red(os.path.basename(mypath)),
                             ),
                             importance = 0,
                             type = "info",
@@ -14459,12 +15146,13 @@ class ServerMirrorsInterface:
                             rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action, tries)
                         if rc:
                             self.Entropy.updateProgress(
-                                "[%s|#%s|(%s/%s)] %s successful: %s" % (
+                                "[%s|#%s|(%s/%s)] %s %s: %s" % (
                                             blue(crippled_uri),
                                             darkgreen(str(tries)),
                                             blue(str(counter)),
                                             bold(str(maxcount)),
                                             blue(action),
+                                            _("successful"),
                                             red(os.path.basename(mypath)),
                                 ),
                                 importance = 0,
@@ -14481,7 +15169,7 @@ class ServerMirrorsInterface:
                                             blue(str(counter)),
                                             bold(str(maxcount)),
                                             blue(action),
-                                            brown("failed, retrying"),
+                                            brown(_("failed, retrying")),
                                             red(os.path.basename(mypath)),
                                     ),
                                 importance = 0,
@@ -14494,13 +15182,14 @@ class ServerMirrorsInterface:
                     if not done:
 
                         self.Entropy.updateProgress(
-                            "[%s|(%s/%s)] %s %s: %s - error: %s" % (
+                            "[%s|(%s/%s)] %s %s: %s - %s: %s" % (
                                     blue(crippled_uri),
                                     blue(str(counter)),
                                     bold(str(maxcount)),
                                     blue(action),
                                     darkred("failed, giving up"),
                                     red(os.path.basename(mypath)),
+                                    _("error"),
                                     lastrc,
                             ),
                             importance = 1,
@@ -14511,12 +15200,12 @@ class ServerMirrorsInterface:
                         if mypath not in self.critical_files:
                             self.Entropy.updateProgress(
                                 "[%s|(%s/%s)] %s: %s, %s..." % (
-                                            blue(crippled_uri),
-                                            blue(str(counter)),
-                                            bold(str(maxcount)),
-                                            blue("not critical"),
-                                            os.path.basename(mypath),
-                                            blue("continuing"),
+                                    blue(crippled_uri),
+                                    blue(str(counter)),
+                                    bold(str(maxcount)),
+                                    blue(_("not critical")),
+                                    os.path.basename(mypath),
+                                    blue(_("continuing")),
                                 ),
                                 importance = 1,
                                 type = "warning",
@@ -14543,36 +15232,36 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s:%s] %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        red("EAPI"),
-                        bold("2"),
-                        blue("creating compressed database dump + checksum"),
+                brown(repo),
+                darkgreen(crippled_uri),
+                red("EAPI"),
+                bold("2"),
+                blue(_("creating compressed database dump + checksum")),
             ),
             importance = 0,
             type = "info",
             header = darkgreen(" * ")
         )
         self.Entropy.updateProgress(
-            "database path: %s" % (blue(database_path),),
+            "%s: %s" % (_("database path"),blue(database_path),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            "dump: %s" % (blue(upload_data['dump_path']),),
+            "%s: %s" % (_("dump"),blue(upload_data['dump_path']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            "dump checksum: %s" % (blue(upload_data['dump_path_digest']),),
+            "%s: %s" % (_("dump checksum"),blue(upload_data['dump_path_digest']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            "opener: %s" % (blue(cmethod[0]),),
+            "%s: %s" % (_("opener"),blue(cmethod[0]),),
             importance = 0,
             type = "info",
             header = brown("    # ")
@@ -14586,7 +15275,7 @@ class ServerMirrorsInterface:
                         darkgreen(crippled_uri),
                         red("EAPI"),
                         bold("1"),
-                        blue("compressing database + checksum"),
+                        blue(_("compressing database + checksum")),
             ),
             importance = 0,
             type = "info",
@@ -14594,25 +15283,25 @@ class ServerMirrorsInterface:
             back = True
         )
         self.Entropy.updateProgress(
-            "database path: %s" % (blue(database_path),),
+            "%s: %s" % (_("database path"),blue(database_path),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            "compressed database path: %s" % (blue(upload_data['compressed_database_path']),),
+            "%s: %s" % (_("compressed database path"),blue(upload_data['compressed_database_path']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            "compressed checksum: %s" % (blue(upload_data['compressed_database_path_digest']),),
+            "%s: %s" % (_("compressed checksum"),blue(upload_data['compressed_database_path_digest']),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
         self.Entropy.updateProgress(
-            "opener: %s" % (blue(cmethod[0]),),
+            "%s: %s" % (_("opener"),blue(cmethod[0]),),
             importance = 0,
             type = "info",
             header = brown("    # ")
@@ -14628,7 +15317,13 @@ class ServerMirrorsInterface:
                 except Exception, e:
                     error = str(e)
                     if (error.find("550") == -1) and (error.find("File exist") == -1):
-                        raise exceptionTools.OnlineMirrorError("OnlineMirrorError: cannot create mirror directory %s, error: %s" % (bdir,e,))
+                        mytxt = "%s %s, %s: %s" % (
+                            _("cannot create mirror directory"),
+                            bdir,
+                            _("error"),
+                            e,
+                        )
+                        raise exceptionTools.OnlineMirrorError("OnlineMirrorError:  %s" % (mytxt,))
 
     def mirror_lock_check(self, uri, repo = None):
 
@@ -14648,10 +15343,13 @@ class ServerMirrorsInterface:
         lock_file = self.get_database_lockfile(repo)
         if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
             self.Entropy.updateProgress(
-                red("[repo:%s|%s|locking] mirror already locked, waiting up to 2 mins before giving up" % (
-                                repo,
-                                crippled_uri,
-                        )
+                red("[repo:%s|%s|%s] %s, %s" % (
+                    repo,
+                    crippled_uri,
+                    _("locking"),
+                    _("mirror already locked"),
+                    _("waiting up to 2 minutes before giving up"),
+                )
                 ),
                 importance = 1,
                 type = "warning",
@@ -14665,9 +15363,11 @@ class ServerMirrorsInterface:
                 time.sleep(1)
                 if not ftp.isFileAvailable(os.path.basename(lock_file)):
                     self.Entropy.updateProgress(
-                        red("[repo:%s|%s|locking] mirror unlocked !" % (
+                        red("[repo:%s|%s|%s] %s !" % (
                                 repo,
                                 crippled_uri,
+                                _("locking"),
+                                _("mirror unlocked"),
                             )
                         ),
                         importance = 1,
@@ -14710,7 +15410,18 @@ class ServerMirrorsInterface:
             dbconn.removeTreeUpdatesActions(repo)
             dbconn.insertTreeUpdatesActions(all_actions,repo)
         except Exception, e:
-            print "!!!!!!!!! TROUBLES WITH treeupdates:",e,"bumping old data back"
+            self.entropyTools.printTraceback()
+            mytxt = "%s, %s: %s. %s" % (
+                _("Troubles with treeupdates"),
+                _("error"),
+                e,
+                _("Bumping old data back"),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning"
+            )
             # restore previous data
             dbconn.bumpTreeUpdatesActions(backed_up_entries)
 
@@ -14722,8 +15433,13 @@ class ServerMirrorsInterface:
         if repo == None:
             repo = self.Entropy.default_repository
 
+        # doing some tests
         import gzip
+        myt = type(gzip)
+        del myt
         import bz2
+        myt = type(bz2)
+        del myt
 
         if etpConst['rss-feed']:
             self.update_rss_feed(repo = repo)
@@ -14736,7 +15452,10 @@ class ServerMirrorsInterface:
 
             cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
             if cmethod == None:
-                raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+                raise exceptionTools.InvalidDataType("InvalidDataType: %s." % (
+                        _("wrong database compression method passed"),
+                    )
+                )
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
@@ -14752,10 +15471,12 @@ class ServerMirrorsInterface:
             self.lock_mirrors_for_download(True,[uri], repo = repo)
 
             self.Entropy.updateProgress(
-                "[repo:%s|%s|upload] preparing to upload database to mirror" % (
-                            repo,
-                            crippled_uri,
-                    ),
+                "[repo:%s|%s|%s] %s" % (
+                    repo,
+                    crippled_uri,
+                    _("upload"),
+                    _("preparing to upload database to mirror"),
+                ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -14793,7 +15514,14 @@ class ServerMirrorsInterface:
 
             if not pretend:
                 # upload
-                uploader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [upload_data[x] for x in upload_data], critical_files = critical, repo = repo)
+                uploader = self.FileTransceiver(
+                    self.FtpInterface,
+                    self.Entropy,
+                    [uri],
+                    [upload_data[x] for x in upload_data],
+                    critical_files = critical,
+                    repo = repo
+                )
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
                     my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
@@ -14801,9 +15529,11 @@ class ServerMirrorsInterface:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
-                        "[repo:%s|%s|errors] failed to upload to mirror, not unlocking and continuing" % (
-                                repo,
-                                crippled_uri,
+                        "[repo:%s|%s|%s] %s" % (
+                            repo,
+                            crippled_uri,
+                            _("errors"),
+                            _("failed to upload to mirror, not unlocking and continuing"),
                         ),
                         importance = 0,
                         type = "error",
@@ -14812,7 +15542,7 @@ class ServerMirrorsInterface:
                     # get reason
                     reason = my_broken_uris[0][1]
                     self.Entropy.updateProgress(
-                        blue("reason: %s" % (reason,)),
+                        blue("%s: %s" % (_("reason"),reason,)),
                         importance = 0,
                         type = "error",
                         header = blue("    # ")
@@ -14844,8 +15574,13 @@ class ServerMirrorsInterface:
         if repo == None:
             repo = self.Entropy.default_repository
 
+        # doing some tests
         import gzip
+        myt = type(gzip)
+        del myt
         import bz2
+        myt = type(bz2)
+        del myt
 
         download_errors = False
         broken_uris = set()
@@ -14855,7 +15590,10 @@ class ServerMirrorsInterface:
 
             cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
             if cmethod == None:
-                raise exceptionTools.InvalidDataType("InvalidDataType: wrong database compression method passed.")
+                raise exceptionTools.InvalidDataType("InvalidDataType: %s." % (
+                        _("wrong database compression method passed"),
+                    )
+                )
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
@@ -14866,10 +15604,10 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        red("download"),
-                        blue("preparing to download database from mirror"),
+                    brown(repo),
+                    darkgreen(crippled_uri),
+                    red(_("download")),
+                    blue(_("preparing to download database from mirror")),
                 ),
                 importance = 1,
                 type = "info",
@@ -14879,7 +15617,7 @@ class ServerMirrorsInterface:
             files_to_sync.sort()
             for myfile in files_to_sync:
                 self.Entropy.updateProgress(
-                    blue("download path: %s" % (myfile,)),
+                    blue("%s: %s" % (_("download path"),myfile,)),
                     importance = 0,
                     type = "info",
                     header = brown("    # ")
@@ -14906,10 +15644,10 @@ class ServerMirrorsInterface:
                     my_broken_uris.sort()
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
-                                brown(repo),
-                                darkgreen(crippled_uri),
-                                red("errors"),
-                                blue("failed to download from mirror"),
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            red(_("errors")),
+                            blue(_("failed to download from mirror")),
                         ),
                         importance = 0,
                         type = "error",
@@ -14918,7 +15656,7 @@ class ServerMirrorsInterface:
                     # get reason
                     reason = my_broken_uris[0][1]
                     self.Entropy.updateProgress(
-                        blue("reason: %s" % (reason,)),
+                        blue("%s: %s" % (_("reason"),reason,)),
                         importance = 0,
                         type = "error",
                         header = blue("    # ")
@@ -14997,19 +15735,30 @@ class ServerMirrorsInterface:
         mirrors_locked = [x for x in lock_data if x[1]]
 
         if not mirrors_locked and db_locked:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: Mirrors are not locked remotely but the local database is. It is a non-sense. Please remove the lock file %s" % (self.get_database_lockfile(repo),) )
+            mytxt = "%s. %s. %s %s" % (
+                _("Mirrors are not locked remotely but the local database is"),
+                _("It is a nonsense"),
+                _("Please remove the lock file"),
+                self.get_database_lockfile(repo),
+            )
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         if mirrors_locked and not db_locked:
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: At the moment, mirrors are locked, someone is working on their databases, try again later...")
+            mytxt = "%s, %s %s" % (
+                _("At the moment, mirrors are locked, someone is working on their databases"),
+                _("try again later"),
+                "...",
+            )
+            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         download_latest, upload_queue = self.calculate_database_sync_queues(repo)
 
         if not download_latest and not upload_queue:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s" % (
-                        brown(repo),
-                        red("sync"),
-                        blue("database already in sync"),
+                    brown(repo),
+                    red(_("sync")), # something short please
+                    blue(_("database already in sync")),
                 ),
                 importance = 1,
                 type = "info",
@@ -15023,10 +15772,10 @@ class ServerMirrorsInterface:
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            brown(repo),
-                            red("sync"),
-                            blue("database sync failed"),
-                            red("download issues"),
+                        brown(repo),
+                        red(_("sync")),
+                        blue(_("database sync failed")),
+                        red(_("download issues")),
                     ),
                     importance = 1,
                     type = "error",
@@ -15042,10 +15791,10 @@ class ServerMirrorsInterface:
             if errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            brown(repo),
-                            red("sync"),
-                            blue("database sync failed"),
-                            red("upload issues"),
+                        brown(repo),
+                        red(_("sync")),
+                        blue(_("database sync failed")),
+                        red(_("upload issues")),
                     ),
                     importance = 1,
                     type = "error",
@@ -15056,9 +15805,9 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s] %s" % (
-                    brown(repo),
-                    red("sync"),
-                    blue("database sync completed successfully"),
+                brown(repo),
+                red(_("sync")),
+                blue(_("database sync completed successfully")),
             ),
             importance = 1,
             type = "info",
@@ -15102,16 +15851,16 @@ class ServerMirrorsInterface:
 
     def _show_local_sync_stats(self, upload_files, local_files):
         self.Entropy.updateProgress(
-            "%s:" % ( blue("Local statistics"),),
+            "%s:" % ( blue(_("Local statistics")),),
             importance = 1,
             type = "info",
             header = red(" @@ ")
         )
         self.Entropy.updateProgress(
             red("%s:\t\t%s %s" % (
-                    blue("upload directory"),
+                    blue(_("upload directory")),
                     bold(str(upload_files)),
-                    red("files ready"),
+                    red(_("files ready")),
                 )
             ),
             importance = 0,
@@ -15120,9 +15869,9 @@ class ServerMirrorsInterface:
         )
         self.Entropy.updateProgress(
             red("%s:\t\t%s %s" % (
-                    blue("packages directory"),
+                    blue(_("packages directory")),
                     bold(str(local_files)),
-                    red("files ready"),
+                    red(_("files ready")),
                 )
             ),
             importance = 0,
@@ -15138,11 +15887,11 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                        brown(branch),
-                        blue("upload"),
-                        darkgreen(package),
-                        size,
-                    ),
+                    brown(branch),
+                    blue(_("upload")),
+                    darkgreen(package),
+                    size,
+                ),
                 importance = 0,
                 type = "info",
                 header = red("    # ")
@@ -15152,11 +15901,11 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                        brown(branch),
-                        darkred("download"),
-                        blue(package),
-                        size,
-                    ),
+                    brown(branch),
+                    darkred(_("download")),
+                    blue(package),
+                    size,
+                ),
                 importance = 0,
                 type = "info",
                 header = red("    # ")
@@ -15166,11 +15915,11 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                        brown(branch),
-                        darkgreen("copy"),
-                        brown(package),
-                        size,
-                    ),
+                    brown(branch),
+                    darkgreen(_("copy")),
+                    brown(package),
+                    size,
+                ),
                 importance = 0,
                 type = "info",
                 header = red("    # ")
@@ -15180,11 +15929,11 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                        brown(branch),
-                        red("remove"),
-                        red(package),
-                        size,
-                    ),
+                    brown(branch),
+                    red(_("remove")),
+                    red(package),
+                    size,
+                ),
                 importance = 0,
                 type = "info",
                 header = red("    # ")
@@ -15192,8 +15941,8 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        blue("Packages to be removed"),
-                        darkred(str(len(removal))),
+                blue(_("Packages to be removed")),
+                darkred(str(len(removal))),
             ),
             importance = 0,
             type = "info",
@@ -15201,8 +15950,8 @@ class ServerMirrorsInterface:
         )
         self.Entropy.updateProgress(
             "%s:\t\t%s" % (
-                        darkgreen("Packages to be moved locally"),
-                        darkgreen(str(len(copy))),
+                darkgreen(_("Packages to be moved locally")),
+                darkgreen(str(len(copy))),
             ),
             importance = 0,
             type = "info",
@@ -15210,18 +15959,8 @@ class ServerMirrorsInterface:
         )
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        bold("Packages to be uploaded"),
-                        bold(str(len(upload))),
-            ),
-            importance = 0,
-            type = "info",
-            header = blue(" @@ ")
-        )
-
-        self.Entropy.updateProgress(
-            "%s:\t\t\t%s" % (
-                        darkred("Total removal size"),
-                        darkred(self.entropyTools.bytesIntoHuman(metainfo['removal'])),
+                bold(_("Packages to be uploaded")),
+                bold(str(len(upload))),
             ),
             importance = 0,
             type = "info",
@@ -15230,8 +15969,18 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        blue("Total upload size"),
-                        blue(self.entropyTools.bytesIntoHuman(metainfo['upload'])),
+                darkred(_("Total removal size")),
+                darkred(self.entropyTools.bytesIntoHuman(metainfo['removal'])),
+            ),
+            importance = 0,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+        self.Entropy.updateProgress(
+            "%s:\t\t\t%s" % (
+                blue(_("Total upload size")),
+                blue(self.entropyTools.bytesIntoHuman(metainfo['upload'])),
             ),
             importance = 0,
             type = "info",
@@ -15239,8 +15988,8 @@ class ServerMirrorsInterface:
         )
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
-                        brown("Total download size"),
-                        brown(self.entropyTools.bytesIntoHuman(metainfo['download'])),
+                brown(_("Total download size")),
+                brown(self.entropyTools.bytesIntoHuman(metainfo['download'])),
             ),
             importance = 0,
             type = "info",
@@ -15294,25 +16043,30 @@ class ServerMirrorsInterface:
         self._show_local_sync_stats(upload_files, local_files)
 
         self.Entropy.updateProgress(
-            "%s: %s" % (blue("Remote statistics for"),red(crippled_uri),),
+            "%s: %s" % (blue(_("Remote statistics for")),red(crippled_uri),),
             importance = 1,
             type = "info",
             header = red(" @@ ")
         )
-        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(uri, branch, repo = repo)
+        remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(
+            uri,
+            branch,
+            repo = repo
+        )
         self.Entropy.updateProgress(
             "%s:\t\t\t%s %s" % (
-                    blue("remote packages"),
-                    bold(str(remote_files)),
-                    red("files stored"),
+                blue(_("remote packages")),
+                bold(str(remote_files)),
+                red(_("files stored")),
             ),
             importance = 0,
             type = "info",
             header = red(" @@ ")
         )
 
+        mytxt = blue("%s ...") % (_("Calculating queues"),)
         self.Entropy.updateProgress(
-            blue("Calculating queues..."),
+            mytxt,
             importance = 1,
             type = "info",
             header = red(" @@ ")
@@ -15328,7 +16082,15 @@ class ServerMirrorsInterface:
         )
         return uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data
 
-    def calculate_sync_queues(self, upload_packages, local_packages, remote_packages, remote_packages_data, branch, repo = None):
+    def calculate_sync_queues(
+            self,
+            upload_packages,
+            local_packages,
+            remote_packages,
+            remote_packages_data,
+            branch,
+            repo = None
+        ):
 
         uploadQueue = set()
         downloadQueue = set()
@@ -15484,7 +16246,7 @@ class ServerMirrorsInterface:
                         brown(repo),
                         red("sync"),
                         brown(branch),
-                        blue("removing package+hash"),
+                        blue(_("removing package+hash")),
                         darkgreen(remove_filename),
                         blue(self.entropyTools.bytesIntoHuman(itemdata[1])),
                 ),
@@ -15501,9 +16263,9 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s] %s" % (
                     brown(repo),
-                    red("sync"),
+                    red(_("sync")),
                     brown(branch),
-                    blue("removal complete"),
+                    blue(_("removal complete")),
             ),
             importance = 0,
             type = "info",
@@ -15528,7 +16290,7 @@ class ServerMirrorsInterface:
                         brown(repo),
                         red("sync"),
                         brown(branch),
-                        blue("copying file+hash to repository"),
+                        blue(_("copying file+hash to repository")),
                         darkgreen(from_file),
                 ),
                 importance = 0,
@@ -15582,9 +16344,9 @@ class ServerMirrorsInterface:
             self.Entropy.updateProgress(
                 "[branch:%s] %s: %s, %s: %s" % (
                             brown(branch),
-                            blue("upload errors"),
+                            blue(_("upload errors")),
                             red(crippled_uri),
-                            blue("reason"),
+                            blue(_("reason")),
                             darkgreen(str(reason)),
                 ),
                 importance = 1,
@@ -15596,7 +16358,7 @@ class ServerMirrorsInterface:
         self.Entropy.updateProgress(
             "[branch:%s] %s: %s" % (
                         brown(branch),
-                        blue("upload completed successfully"),
+                        blue(_("upload completed successfully")),
                         red(crippled_uri),
             ),
             importance = 1,
@@ -15622,31 +16384,31 @@ class ServerMirrorsInterface:
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
         downloader = self.FileTransceiver(
-                                            self.FtpInterface,
-                                            self.Entropy,
-                                            [uri],
-                                            myqueue,
-                                            critical_files = myqueue,
-                                            use_handlers = True,
-                                            ftp_basedir = ftp_basedir,
-                                            local_basedir = local_basedir,
-                                            handlers_data = {'branch': branch },
-                                            download = True,
-                                            repo = repo
-                                        )
+            self.FtpInterface,
+            self.Entropy,
+            [uri],
+            myqueue,
+            critical_files = myqueue,
+            use_handlers = True,
+            ftp_basedir = ftp_basedir,
+            local_basedir = local_basedir,
+            handlers_data = {'branch': branch },
+            download = True,
+            repo = repo
+        )
         errors, m_fine_uris, m_broken_uris = downloader.go()
         if errors:
             my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
-                        brown(repo),
-                        red("sync"),
-                        brown(branch),
-                        blue("download errors"),
-                        darkgreen(crippled_uri),
-                        blue("reason"),
-                        reason,
+                    brown(repo),
+                    red(_("sync")),
+                    brown(branch),
+                    blue(_("download errors")),
+                    darkgreen(crippled_uri),
+                    blue(_("reason")),
+                    reason,
                 ),
                 importance = 1,
                 type = "error",
@@ -15656,11 +16418,11 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s] %s: %s" % (
-                    brown(repo),
-                    red("sync"),
-                    brown(branch),
-                    blue("download completed successfully"),
-                    darkgreen(crippled_uri),
+                brown(repo),
+                red(_("sync")),
+                brown(branch),
+                blue(_("download completed successfully")),
+                darkgreen(crippled_uri),
             ),
             importance = 1,
             type = "info",
@@ -15676,10 +16438,10 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[repo:%s|%s] %s" % (
-                        repo,
-                        red("sync"),
-                        darkgreen("starting packages sync"),
-                    ),
+                repo,
+                red(_("sync")),
+                darkgreen(_("starting packages sync")),
+            ),
             importance = 1,
             type = "info",
             header = red(" @@ "),
@@ -15704,9 +16466,9 @@ class ServerMirrorsInterface:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|branch:%s] %s: %s" % (
                         repo,
-                        red("sync"),
+                        red(_("sync")),
                         brown(mybranch),
-                        blue("packages sync"),
+                        blue(_("packages sync")),
                         bold(crippled_uri),
                     ),
                     importance = 1,
@@ -15714,16 +16476,20 @@ class ServerMirrorsInterface:
                     header = red(" @@ ")
                 )
 
-                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, mybranch, repo)
+                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(
+                    uri,
+                    mybranch,
+                    repo
+                )
                 del fineQueue
 
                 if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s: %s" % (
                             repo,
-                            red("sync"),
+                            red(_("sync")),
                             mybranch,
-                            darkgreen("nothing to do on"),
+                            darkgreen(_("nothing to do on")),
                             crippled_uri,
                         ),
                         importance = 1,
@@ -15735,7 +16501,7 @@ class ServerMirrorsInterface:
                     continue
 
                 self.Entropy.updateProgress(
-                    "%s:" % (blue("Calculating queue metadata"),),
+                    "%s:" % (blue(_("Expanding queues")),),
                     importance = 1,
                     type = "info",
                     header = red(" ** ")
@@ -15757,9 +16523,9 @@ class ServerMirrorsInterface:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s %s" % (
                             self.Entropy.default_repository,
-                            red("sync"),
+                            red(_("sync")),
                             mybranch,
-                            blue("nothing to sync for"),
+                            blue(_("nothing to sync for")),
                             crippled_uri,
                         ),
                         importance = 1,
@@ -15777,7 +16543,7 @@ class ServerMirrorsInterface:
                     continue
 
                 if ask:
-                    rc = self.Entropy.askQuestion("Would you like to run the steps above ?")
+                    rc = self.Entropy.askQuestion(_("Would you like to run the steps above ?"))
                     if rc == "No":
                         continue
 
@@ -15804,9 +16570,9 @@ class ServerMirrorsInterface:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s" % (
                             repo,
-                            red("sync"),
+                            red(_("sync")),
                             mybranch,
-                            darkgreen("keyboard interrupt !"),
+                            darkgreen(_("keyboard interrupt !")),
                         ),
                         importance = 1,
                         type = "info",
@@ -15815,15 +16581,17 @@ class ServerMirrorsInterface:
                     return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
 
                 except Exception, e:
+                    self.entropyTools.printTraceback()
                     mirrors_errors = True
                     broken_mirrors.add(uri)
                     self.Entropy.updateProgress(
-                        "[repo:%s|%s|branch:%s] %s: %s, error: %s" % (
+                        "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
                             repo,
-                            red("sync"),
+                            red(_("sync")),
                             mybranch,
-                            darkred("exception caught"),
+                            darkred(_("exception caught")),
                             Exception,
+                            _("error"),
                             e,
                         ),
                         importance = 1,
@@ -15844,9 +16612,9 @@ class ServerMirrorsInterface:
                         self.Entropy.updateProgress(
                             "[repo:%s|%s|branch:%s] %s" % (
                                 repo,
-                                red("sync"),
+                                red(_("sync")),
                                 mybranch,
-                                darkred("at least one mirror has been sync'd properly, hooray!"),
+                                darkred(_("at least one mirror has been sync'd properly, hooray!")),
                             ),
                             importance = 1,
                             type = "error",
@@ -15921,10 +16689,10 @@ class ServerMirrorsInterface:
         pkgbranches = etpConst['branches']
         self.Entropy.updateProgress(
             "[repo:%s|%s|branches:%s] %s" % (
-                        brown(repo),
-                        red("tidy"),
-                        blue(str(','.join(pkgbranches))),
-                        blue("collecting expired packages"),
+                brown(repo),
+                red(_("tidy")),
+                blue(str(','.join(pkgbranches))),
+                blue(_("collecting expired packages")),
             ),
             importance = 1,
             type = "info",
@@ -15941,9 +16709,9 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[branch:%s] %s" % (
-                            brown(mybranch),
-                            blue("collecting expired packages in the selected branches"),
-                    ),
+                    brown(mybranch),
+                    blue(_("collecting expired packages in the selected branches")),
+                ),
                 importance = 1,
                 type = "info",
                 header = blue(" @@ ")
@@ -15966,9 +16734,9 @@ class ServerMirrorsInterface:
             if not removal:
                 self.Entropy.updateProgress(
                     "[branch:%s] %s" % (
-                                brown(mybranch),
-                                blue("nothing to remove on this branch"),
-                        ),
+                            brown(mybranch),
+                            blue(_("nothing to remove on this branch")),
+                    ),
                     importance = 1,
                     type = "info",
                     header = blue(" @@ ")
@@ -15977,9 +16745,9 @@ class ServerMirrorsInterface:
             else:
                 self.Entropy.updateProgress(
                     "[branch:%s] %s:" % (
-                                brown(mybranch),
-                                blue("these are the expired packages"),
-                        ),
+                        brown(mybranch),
+                        blue(_("these are the expired packages")),
+                    ),
                     importance = 1,
                     type = "info",
                     header = blue(" @@ ")
@@ -15988,7 +16756,7 @@ class ServerMirrorsInterface:
                     self.Entropy.updateProgress(
                         "[branch:%s] %s: %s" % (
                                     brown(mybranch),
-                                    blue("remove"),
+                                    blue(_("remove")),
                                     darkgreen(package),
                             ),
                         importance = 1,
@@ -16000,7 +16768,7 @@ class ServerMirrorsInterface:
                 continue
 
             if ask:
-                rc = self.Entropy.askQuestion("Would you like to continue ?")
+                rc = self.Entropy.askQuestion(_("Would you like to continue ?"))
                 if rc == "No":
                     continue
 
@@ -16013,9 +16781,9 @@ class ServerMirrorsInterface:
 
                 self.Entropy.updateProgress(
                     "[branch:%s] %s..." % (
-                                brown(mybranch),
-                                blue("removing packages remotely"),
-                        ),
+                        brown(mybranch),
+                        blue(_("removing packages remotely")),
+                    ),
                     importance = 1,
                     type = "info",
                     header = blue(" @@ ")
@@ -16023,27 +16791,27 @@ class ServerMirrorsInterface:
 
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 destroyer = self.FileTransceiver(
-                                                    self.FtpInterface,
-                                                    self.Entropy,
-                                                    [uri],
-                                                    myqueue,
-                                                    critical_files = [],
-                                                    ftp_basedir = ftp_basedir,
-                                                    remove = True,
-                                                    repo = repo
-                                                )
+                    self.FtpInterface,
+                    self.Entropy,
+                    [uri],
+                    myqueue,
+                    critical_files = [],
+                    ftp_basedir = ftp_basedir,
+                    remove = True,
+                    repo = repo
+                )
                 errors, m_fine_uris, m_broken_uris = destroyer.go()
                 if errors:
                     my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
                     reason = my_broken_uris[0][1]
                     self.Entropy.updateProgress(
                         "[branch:%s] %s: %s, %s: %s" % (
-                                    brown(mybranch),
-                                    blue("remove errors"),
-                                    red(crippled_uri),
-                                    blue("reason"),
-                                    reason,
-                            ),
+                            brown(mybranch),
+                            blue(_("remove errors")),
+                            red(crippled_uri),
+                            blue(_("reason")),
+                            reason,
+                        ),
                         importance = 1,
                         type = "warning",
                         header = brown(" !!! ")
@@ -16054,7 +16822,7 @@ class ServerMirrorsInterface:
                 self.Entropy.updateProgress(
                     "[branch:%s] %s..." % (
                             brown(mybranch),
-                            blue("removing packages locally"),
+                            blue(_("removing packages locally")),
                         ),
                     importance = 1,
                     type = "info",
@@ -16071,7 +16839,7 @@ class ServerMirrorsInterface:
                             self.Entropy.updateProgress(
                                 "[branch:%s] %s: %s" % (
                                             brown(mybranch),
-                                            blue("removing"),
+                                            blue(_("removing")),
                                             darkgreen(myfile),
                                     ),
                                 importance = 1,
