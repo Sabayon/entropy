@@ -16,7 +16,6 @@
 ../spritz/src/entropyapi.py
 ../spritz/src/filters.py
 ../spritz/src/gui.py
-../spritz/src/i18n.py
 ../spritz/src/misc.py
 ../spritz/src/packages.py
 ../spritz/src/spritz.py

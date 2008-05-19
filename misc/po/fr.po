@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LAN_FR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-19 20:56+0200\n"
+"POT-Creation-Date: 2008-05-19 21:29+0200\n"
 "PO-Revision-Date: 2008-02-09 10:14+0100\n"
 "Last-Translator: SUFFYS <nsuffys@gmail.com>\n"
 "Language-Team: french <nsuffys@gmail.com>\n"
@@ -478,7 +478,7 @@ msgstr ""
 
 #: ../../client/text_query.py:444 ../../client/text_query.py:1050
 #: ../../spritz/src/dialogs.py:419 ../../spritz/src/dialogs.py:425
-#: ../../spritz/src/spritz.py:921 ../../spritz/src/views.py:434
+#: ../../spritz/src/spritz.py:920 ../../spritz/src/views.py:432
 msgid "Package"
 msgstr "Paquet"
 
@@ -607,7 +607,7 @@ msgstr "Description"
 
 #. client info
 #: ../../client/text_query.py:1034 ../../client/text_ui.py:381
-#: ../../client/text_ui.py:410 ../../spritz/src/applet/etp_applet.py:870
+#: ../../client/text_ui.py:410 ../../spritz/src/applet/etp_applet.py:868
 #, fuzzy
 msgid "Not installed"
 msgstr "Sera installé"
@@ -675,8 +675,8 @@ msgstr ""
 
 #. print description
 #: ../../client/text_query.py:1075 ../../client/text_security.py:89
-#: ../../spritz/src/views.py:666 ../../spritz/src/views.py:822
-#: ../../spritz/src/views.py:1030
+#: ../../spritz/src/views.py:664 ../../spritz/src/views.py:820
+#: ../../spritz/src/views.py:1028
 msgid "Description"
 msgstr "Description"
 
@@ -773,7 +773,7 @@ msgstr "Active"
 msgid "never synced"
 msgstr ""
 
-#: ../../client/text_repositories.py:92 ../../spritz/src/views.py:799
+#: ../../client/text_repositories.py:92 ../../spritz/src/views.py:797
 msgid "Status"
 msgstr ""
 
@@ -797,18 +797,18 @@ msgstr "Dépots mis à jour avec succès"
 msgid "Repository revision"
 msgstr "Selection du dépot"
 
-#: ../../client/text_repositories.py:118 ../../spritz/src/spritz.py:1067
-#: ../../spritz/src/applet/etp_applet.py:616
+#: ../../client/text_repositories.py:118 ../../spritz/src/spritz.py:1066
+#: ../../spritz/src/applet/etp_applet.py:614
 #, fuzzy
 msgid "No repositories specified in"
 msgstr "Pas d'identificateur de dépôt"
 
-#: ../../client/text_repositories.py:121 ../../spritz/src/spritz.py:1071
+#: ../../client/text_repositories.py:121 ../../spritz/src/spritz.py:1070
 msgid "You are not connected to the Internet. You should."
 msgstr "Vous n'êtes pas connecté à internet. Vous le devez."
 
-#: ../../client/text_repositories.py:124 ../../spritz/src/spritz.py:1074
-#: ../../spritz/src/applet/etp_applet.py:624
+#: ../../client/text_repositories.py:124 ../../spritz/src/spritz.py:1073
+#: ../../spritz/src/applet/etp_applet.py:622
 msgid "Unhandled exception"
 msgstr ""
 
@@ -1278,7 +1278,7 @@ msgstr "Aucun paquets sélectionné"
 msgid "This is the list of the packages that would be quickpkg'd"
 msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
-#: ../../client/text_smart.py:106 ../../spritz/src/applet/etp_applet.py:893
+#: ../../client/text_smart.py:106 ../../spritz/src/applet/etp_applet.py:891
 #, fuzzy
 msgid "installed"
 msgstr "Installé"
@@ -1924,7 +1924,7 @@ msgstr "Sera enlevé"
 
 #: ../../spritz/src/dialogs.py:490 ../../spritz/src/dialogs.py:501
 #: ../../spritz/src/dialogs.py:512 ../../spritz/src/dialogs.py:523
-#: ../../spritz/src/views.py:470
+#: ../../spritz/src/views.py:468
 msgid "No description"
 msgstr "Pas de description"
 
@@ -1959,7 +1959,7 @@ msgid "Show Installed Packages"
 msgstr "Montrer les paquets installés"
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/gui.py:300 ../../spritz/src/views.py:661
+#: ../../spritz/src/gui.py:300 ../../spritz/src/views.py:659
 msgid "Packages"
 msgstr "Paquets"
 
@@ -1971,7 +1971,7 @@ msgstr "Categories de paquet"
 msgid "Package Queue"
 msgstr "Paquet en file d'attente"
 
-#: ../../spritz/src/gui.py:303 ../../spritz/src/packages.py:190
+#: ../../spritz/src/gui.py:303 ../../spritz/src/packages.py:185
 msgid "Repository Selection"
 msgstr "Selection du dépot"
 
@@ -2035,303 +2035,303 @@ msgid "These are the packages that would be removed"
 msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #. load a pixmap inside the treeview
-#: ../../spritz/src/packages.py:190
+#: ../../spritz/src/packages.py:185
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../spritz/src/packages.py:190 ../../spritz/src/spritz.py:418
-#: ../../spritz/src/spritz.py:463
+#: ../../spritz/src/packages.py:185 ../../spritz/src/spritz.py:417
+#: ../../spritz/src/spritz.py:462
 msgid "Update Repositories"
 msgstr "Mettre à jour les dépots"
 
-#: ../../spritz/src/packages.py:193
+#: ../../spritz/src/packages.py:188
 msgid "No updates available"
 msgstr ""
 
-#: ../../spritz/src/packages.py:194
+#: ../../spritz/src/packages.py:189
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:84
+#: ../../spritz/src/spritz.py:83
 msgid "Quiting, please wait !!!!!!"
 msgstr "Extinction, merci de patienter !!!!!!"
 
-#: ../../spritz/src/spritz.py:143
+#: ../../spritz/src/spritz.py:142
 #, fuzzy
 msgid "The chosen package is not vulnerable"
 msgstr "La branche choisi n'existe pas maintenant."
 
-#: ../../spritz/src/spritz.py:151
+#: ../../spritz/src/spritz.py:150
 msgid "Packages in Advisory have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:166
+#: ../../spritz/src/spritz.py:165
 msgid "Packages in all Advisories have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:178
+#: ../../spritz/src/spritz.py:177
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:264
+#: ../../spritz/src/spritz.py:263
 msgid "Branch switching"
 msgstr "Diverger la commutation"
 
-#: ../../spritz/src/spritz.py:264
+#: ../../spritz/src/spritz.py:263
 msgid "Enter a valid branch you want to switch to"
 msgstr "Type une branche valid à qui vous voudrais changer"
 
-#: ../../spritz/src/spritz.py:267
+#: ../../spritz/src/spritz.py:266
 msgid "The selected branch is not available."
 msgstr "La branche choisi n'existe pas maintenant."
 
-#: ../../spritz/src/spritz.py:270
+#: ../../spritz/src/spritz.py:269
 msgid "New branch is"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:270
+#: ../../spritz/src/spritz.py:269
 #, fuzzy
 msgid "It is suggested to synchronize repositories"
 msgstr ""
 "La nouvelle branche est %s.  On croit que vous devez synchroniser vos dépôts"
 
-#: ../../spritz/src/spritz.py:314 ../../spritz/src/spritz.py:336
+#: ../../spritz/src/spritz.py:313 ../../spritz/src/spritz.py:335
 msgid "Insert URL"
 msgstr "Insérer une URL"
 
-#: ../../spritz/src/spritz.py:314 ../../spritz/src/spritz.py:336
+#: ../../spritz/src/spritz.py:313 ../../spritz/src/spritz.py:335
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Entrer un mirroir de téléchargement, HTTP ou FTP"
 
-#: ../../spritz/src/spritz.py:319
+#: ../../spritz/src/spritz.py:318
 msgid "You must enter either a HTTP or a FTP url."
 msgstr "Vous devez entrer soit un lien HTTP ou lien FTP"
 
-#: ../../spritz/src/spritz.py:371 ../../spritz/src/spritz.py:421
+#: ../../spritz/src/spritz.py:370 ../../spritz/src/spritz.py:420
 #, fuzzy
 msgid "Wrong entries, errors"
 msgstr "mauvaises entrées, erreurs"
 
-#: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:418
-#: ../../spritz/src/views.py:988
+#: ../../spritz/src/spritz.py:382 ../../spritz/src/spritz.py:417
+#: ../../spritz/src/views.py:986
 #, fuzzy
 msgid "You should press the button"
 msgstr "Vous devez appuyer sur le bouton %s maintenant"
 
-#: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:463
-#: ../../spritz/src/views.py:988
+#: ../../spritz/src/spritz.py:382 ../../spritz/src/spritz.py:462
+#: ../../spritz/src/views.py:986
 msgid "Regenerate Cache"
 msgstr "Regénérer le cache"
 
-#: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:418
-#: ../../spritz/src/spritz.py:463 ../../spritz/src/views.py:988
+#: ../../spritz/src/spritz.py:382 ../../spritz/src/spritz.py:417
+#: ../../spritz/src/spritz.py:462 ../../spritz/src/views.py:986
 msgid "now"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:389
+#: ../../spritz/src/spritz.py:388
 msgid "No Repository Identifier"
 msgstr "Pas d'identificateur de dépôt"
 
-#: ../../spritz/src/spritz.py:392
+#: ../../spritz/src/spritz.py:391
 msgid "Duplicated Repository Identifier"
 msgstr "Identificateur polycopié de Dépôt"
 
-#: ../../spritz/src/spritz.py:396
+#: ../../spritz/src/spritz.py:395
 msgid "No download mirrors"
 msgstr "Pas de mirroir de téléchargement"
 
-#: ../../spritz/src/spritz.py:398
+#: ../../spritz/src/spritz.py:397
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:431
+#: ../../spritz/src/spritz.py:430
 msgid "Insert Repository"
 msgstr "Insérer un dépot"
 
-#: ../../spritz/src/spritz.py:431
+#: ../../spritz/src/spritz.py:430
 msgid "Insert Repository identification string"
 msgstr "Insérer une ficelle d'identification pour le dépot"
 
-#: ../../spritz/src/spritz.py:449
+#: ../../spritz/src/spritz.py:448
 msgid "This Repository identification string is malformed"
 msgstr "Cette ficelle d'identification pour le dépôt ont une mauvaise forme."
 
-#: ../../spritz/src/spritz.py:459
+#: ../../spritz/src/spritz.py:458
 msgid "You! Why do you want to remove the main repository ?"
 msgstr "Vous! Pourquoi voulez vous supprimer le dépot principal ?"
 
-#: ../../spritz/src/spritz.py:463
+#: ../../spritz/src/spritz.py:462
 #, fuzzy
 msgid "You must now either press the"
 msgstr "Vous devez appuyer le %s ou le %s maintenant."
 
-#: ../../spritz/src/spritz.py:463
+#: ../../spritz/src/spritz.py:462
 msgid "or the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:519
+#: ../../spritz/src/spritz.py:518
 msgid "Please select at least one repository"
 msgstr "Merci de selectionner au moin un dépot"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:555
+#: ../../spritz/src/spritz.py:554
 msgid "No packages in queue"
 msgstr "Pas de paquets dans la file d'attente"
 
-#: ../../spritz/src/spritz.py:621
+#: ../../spritz/src/spritz.py:620
 msgid "Queue is too old. Cannot load."
 msgstr "La file d'attente est ancienne. Impossible de charger."
 
-#: ../../spritz/src/spritz.py:688
+#: ../../spritz/src/spritz.py:687
 msgid "impact"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:690
+#: ../../spritz/src/spritz.py:689
 msgid "access"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:704
+#: ../../spritz/src/spritz.py:703
 msgid "Vulnerables"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:708
+#: ../../spritz/src/spritz.py:707
 msgid "Unaffected"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:873
+#: ../../spritz/src/spritz.py:872
 msgid "Entropy resources are locked and not accessible. "
 msgstr ""
 
-#: ../../spritz/src/spritz.py:888
+#: ../../spritz/src/spritz.py:887
 msgid "Entropy Config Setup"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:900
+#: ../../spritz/src/spritz.py:899
 msgid "GUI Setup Completed"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:929
+#: ../../spritz/src/spritz.py:928
 msgid "Bug"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:937
+#: ../../spritz/src/spritz.py:936
 msgid "Reference"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:994
+#: ../../spritz/src/spritz.py:993
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:998 ../../spritz/src/spritz.py:1139
-#: ../../spritz/src/spritz.py:1146
+#: ../../spritz/src/spritz.py:997 ../../spritz/src/spritz.py:1138
+#: ../../spritz/src/spritz.py:1145
 msgid "Ready"
 msgstr "Prêt"
 
-#: ../../spritz/src/spritz.py:1026
+#: ../../spritz/src/spritz.py:1025
 #, fuzzy
 msgid "Error loading advisories"
 msgstr "Erreurs de mise à jour des dépots"
 
-#: ../../spritz/src/spritz.py:1058
+#: ../../spritz/src/spritz.py:1057
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1064
+#: ../../spritz/src/spritz.py:1063
 msgid "You must run this application as root"
 msgstr "Vous deveez executer cette application en mode root"
 
-#: ../../spritz/src/spritz.py:1079
+#: ../../spritz/src/spritz.py:1078
 msgid "Errors updating repositories."
 msgstr "Erreurs de mise à jour des dépots"
 
-#: ../../spritz/src/spritz.py:1080
+#: ../../spritz/src/spritz.py:1079
 msgid "Please check logs below for more info"
 msgstr ""
 "Merci de vérifier les actions effectué ci-dessous pour plus d'informations"
 
-#: ../../spritz/src/spritz.py:1083
+#: ../../spritz/src/spritz.py:1082
 msgid "Repositories updated successfully"
 msgstr "Dépots mis à jour avec succès"
 
-#: ../../spritz/src/spritz.py:1086
+#: ../../spritz/src/spritz.py:1085
 msgid "All the repositories were already up to date."
 msgstr "Tout les dépots sont déjà à jour"
 
-#: ../../spritz/src/spritz.py:1088
+#: ../../spritz/src/spritz.py:1087
 #, fuzzy
 msgid "repositories were already up to date. Others have been updated."
 msgstr "%s dépots sont déjà à jour. D'autres ont étés mis à jour"
 
-#: ../../spritz/src/spritz.py:1091
+#: ../../spritz/src/spritz.py:1090
 #, fuzzy
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "app-admin/equo à besoin d'être mis à jour dès que possible"
 
-#: ../../spritz/src/spritz.py:1096
+#: ../../spritz/src/spritz.py:1095
 msgid "Nothing to do. I am idle."
 msgstr "Rien a faire. Je suis inactif"
 
-#: ../../spritz/src/spritz.py:1097
+#: ../../spritz/src/spritz.py:1096
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1098
+#: ../../spritz/src/spritz.py:1097
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1132
+#: ../../spritz/src/spritz.py:1131
 msgid "Generating Metadata, please wait."
 msgstr "Génére les métadonnées, merci de patienter."
 
-#: ../../spritz/src/spritz.py:1133
+#: ../../spritz/src/spritz.py:1132
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1134
+#: ../../spritz/src/spritz.py:1133
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1136 ../../spritz/src/spritz.py:1143
+#: ../../spritz/src/spritz.py:1135 ../../spritz/src/spritz.py:1142
 msgid "Calculating"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1172
+#: ../../spritz/src/spritz.py:1171
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1177
+#: ../../spritz/src/spritz.py:1176
 msgid "Running tasks"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1183
+#: ../../spritz/src/spritz.py:1182
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1194
+#: ../../spritz/src/spritz.py:1193
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1219
+#: ../../spritz/src/spritz.py:1218
 msgid "No packages selected"
 msgstr "Aucun paquets sélectionné"
 
-#: ../../spritz/src/spritz.py:1278
+#: ../../spritz/src/spritz.py:1277
 msgid "Exception caught"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1279
+#: ../../spritz/src/spritz.py:1278
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1288
+#: ../../spritz/src/spritz.py:1287
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1290
+#: ../../spritz/src/spritz.py:1289
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -2351,87 +2351,87 @@ msgstr "Traduction:"
 msgid "Dedicated to:"
 msgstr "Dédié à:"
 
-#: ../../spritz/src/views.py:44
+#: ../../spritz/src/views.py:42
 msgid "Categories"
 msgstr "Categories"
 
-#: ../../spritz/src/views.py:65
+#: ../../spritz/src/views.py:63
 #, fuzzy
 msgid "Selection"
 msgstr "Selection du dépot"
 
-#: ../../spritz/src/views.py:435 ../../spritz/src/views.py:968
+#: ../../spritz/src/views.py:433 ../../spritz/src/views.py:966
 msgid "Repository"
 msgstr "Dépot"
 
-#: ../../spritz/src/views.py:702
+#: ../../spritz/src/views.py:700
 #, fuzzy
 msgid "Packages To Reinstall"
 msgstr "<b>Paquets a réinstaller</b>"
 
-#: ../../spritz/src/views.py:706
+#: ../../spritz/src/views.py:704
 #, fuzzy
 msgid "Packages To Update"
 msgstr "<b>Paquets a mettre à jour</b>"
 
-#: ../../spritz/src/views.py:710
+#: ../../spritz/src/views.py:708
 #, fuzzy
 msgid "Packages To Install"
 msgstr "<b>Paquets a installer</b>"
 
-#: ../../spritz/src/views.py:714
+#: ../../spritz/src/views.py:712
 #, fuzzy
 msgid "Packages To Remove"
 msgstr "<b>Paquets a enlever</b>"
 
-#: ../../spritz/src/views.py:743
+#: ../../spritz/src/views.py:741
 msgid "Proposed"
 msgstr "Proposé"
 
-#: ../../spritz/src/views.py:750
+#: ../../spritz/src/views.py:748
 msgid "Destination"
 msgstr "Destination"
 
-#: ../../spritz/src/views.py:757
+#: ../../spritz/src/views.py:755
 msgid "Rev."
 msgstr "Rev."
 
-#: ../../spritz/src/views.py:806
+#: ../../spritz/src/views.py:804
 msgid "GLSA id."
 msgstr ""
 
-#: ../../spritz/src/views.py:814
+#: ../../spritz/src/views.py:812
 #, fuzzy
 msgid "Package key"
 msgstr "Paquet"
 
-#: ../../spritz/src/views.py:907
+#: ../../spritz/src/views.py:905
 msgid "No advisories"
 msgstr ""
 
-#: ../../spritz/src/views.py:908
+#: ../../spritz/src/views.py:906
 msgid "There are no items to show"
 msgstr ""
 
-#: ../../spritz/src/views.py:968
+#: ../../spritz/src/views.py:966
 msgid "Filename"
 msgstr "Nom du fichier"
 
-#: ../../spritz/src/views.py:1008
+#: ../../spritz/src/views.py:1006
 msgid "Active"
 msgstr "Active"
 
-#: ../../spritz/src/views.py:1018
+#: ../../spritz/src/views.py:1016
 msgid "Update"
 msgstr "Mise à jour"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1026
+#: ../../spritz/src/views.py:1024
 msgid "Revision"
 msgstr "Révision"
 
 #. Setup reponame & repofile column's
-#: ../../spritz/src/views.py:1029
+#: ../../spritz/src/views.py:1027
 msgid "Repository Identifier"
 msgstr "Identificateur de dépôt"
 
@@ -2460,201 +2460,201 @@ msgid ""
 "sabayon@sabayonlinux.org.  Thank you."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:64
+#: ../../spritz/src/applet/etp_applet.py:62
 #, fuzzy
 msgid "Updates Notification"
 msgstr "Annuler l'action de mise à jour"
 
-#: ../../spritz/src/applet/etp_applet.py:205
+#: ../../spritz/src/applet/etp_applet.py:203
 msgid "_Disable Notification Applet"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:205
+#: ../../spritz/src/applet/etp_applet.py:203
 msgid "Disable Notification Applet"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:206
+#: ../../spritz/src/applet/etp_applet.py:204
 msgid "_Enable Notification Applet"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:206
+#: ../../spritz/src/applet/etp_applet.py:204
 msgid "Enable Notification Applet"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:207
+#: ../../spritz/src/applet/etp_applet.py:205
 msgid "_Check for updates"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:207
+#: ../../spritz/src/applet/etp_applet.py:205
 msgid "Check for updates"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:208
+#: ../../spritz/src/applet/etp_applet.py:206
 #, fuzzy
 msgid "_Launch Package Manager"
 msgstr "Gestionnaire de paquet Spritz"
 
-#: ../../spritz/src/applet/etp_applet.py:208
+#: ../../spritz/src/applet/etp_applet.py:206
 #, fuzzy
 msgid "Launch Package Manager"
 msgstr "Gestionnaire de paquet Spritz"
 
-#: ../../spritz/src/applet/etp_applet.py:209
+#: ../../spritz/src/applet/etp_applet.py:207
 #, fuzzy
 msgid "_Packages Website"
 msgstr "Paquet en file d'attente"
 
-#: ../../spritz/src/applet/etp_applet.py:209
+#: ../../spritz/src/applet/etp_applet.py:207
 msgid "Use Packages web interface"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:210
+#: ../../spritz/src/applet/etp_applet.py:208
 msgid "_Sabayon Linux Website"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:210
+#: ../../spritz/src/applet/etp_applet.py:208
 msgid "Launch Sabayon Linux Website"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:212
+#: ../../spritz/src/applet/etp_applet.py:210
 #, fuzzy
 msgid "_About"
 msgstr "A propos de %s"
 
-#: ../../spritz/src/applet/etp_applet.py:212
+#: ../../spritz/src/applet/etp_applet.py:210
 #, fuzzy
 msgid "About..."
 msgstr "A propos de %s"
 
-#: ../../spritz/src/applet/etp_applet.py:213
+#: ../../spritz/src/applet/etp_applet.py:211
 msgid "_Exit"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:213
+#: ../../spritz/src/applet/etp_applet.py:211
 msgid "Exit"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:278
+#: ../../spritz/src/applet/etp_applet.py:276
 msgid "You must add yourself to this group"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:281
+#: ../../spritz/src/applet/etp_applet.py:279
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:507
+#: ../../spritz/src/applet/etp_applet.py:505
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:518
+#: ../../spritz/src/applet/etp_applet.py:516
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:533
+#: ../../spritz/src/applet/etp_applet.py:531
 msgid "Cannot load Spritz"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:598
+#: ../../spritz/src/applet/etp_applet.py:596
 msgid "Checking for updates..."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:619
+#: ../../spritz/src/applet/etp_applet.py:617
 #, fuzzy
 msgid "Repository Network Error"
 msgstr "Selection du dépot"
 
-#: ../../spritz/src/applet/etp_applet.py:633
+#: ../../spritz/src/applet/etp_applet.py:631
 msgid "No repositories specified. Cannot check for package updates."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:634
+#: ../../spritz/src/applet/etp_applet.py:632
 #, fuzzy
 msgid "Updates: attention"
 msgstr "Annuler l'action de mise à jour"
 
-#: ../../spritz/src/applet/etp_applet.py:638
+#: ../../spritz/src/applet/etp_applet.py:636
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:639
-#: ../../spritz/src/applet/etp_applet.py:664
+#: ../../spritz/src/applet/etp_applet.py:637
+#: ../../spritz/src/applet/etp_applet.py:662
 msgid "Updates: connection issues"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:643
+#: ../../spritz/src/applet/etp_applet.py:641
 msgid "Not all the repositories have been fetched for checking"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:644
-#: ../../spritz/src/applet/etp_applet.py:649
+#: ../../spritz/src/applet/etp_applet.py:642
+#: ../../spritz/src/applet/etp_applet.py:647
 #, fuzzy
 msgid "Updates: repository issues"
 msgstr "Mettre à jour les dépots"
 
-#: ../../spritz/src/applet/etp_applet.py:648
+#: ../../spritz/src/applet/etp_applet.py:646
 #, fuzzy
 msgid "No repositories found online"
 msgstr "_Forcer la mise à jour des dépots"
 
-#: ../../spritz/src/applet/etp_applet.py:653
+#: ../../spritz/src/applet/etp_applet.py:651
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:654
+#: ../../spritz/src/applet/etp_applet.py:652
 msgid "Updates: sync issues"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:658
+#: ../../spritz/src/applet/etp_applet.py:656
 msgid "Updates: unhandled error"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:675
+#: ../../spritz/src/applet/etp_applet.py:673
 #, fuzzy
 msgid "Updates: error"
 msgstr "Mises à jour"
 
-#: ../../spritz/src/applet/etp_applet.py:683
+#: ../../spritz/src/applet/etp_applet.py:681
 #, fuzzy
 msgid "Updates issue:"
 msgstr "Mises à jour"
 
-#: ../../spritz/src/applet/etp_applet.py:701
+#: ../../spritz/src/applet/etp_applet.py:699
 msgid "There are"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:701
+#: ../../spritz/src/applet/etp_applet.py:699
 msgid "updates available."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:703
+#: ../../spritz/src/applet/etp_applet.py:701
 #, fuzzy
 msgid "Updates available"
 msgstr "Disponible"
 
+#: ../../spritz/src/applet/etp_applet.py:710
 #: ../../spritz/src/applet/etp_applet.py:712
-#: ../../spritz/src/applet/etp_applet.py:714
 msgid "So far, so good. w00t!"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:713
+#: ../../spritz/src/applet/etp_applet.py:711
 msgid "Everything up-to-date"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:809
+#: ../../spritz/src/applet/etp_applet.py:807
 msgid "Waiting before checkin..."
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:891
+#: ../../spritz/src/applet/etp_applet.py:889
 msgid "Your system currently has"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:894
+#: ../../spritz/src/applet/etp_applet.py:892
 msgid "but the latest available version is"
 msgstr ""
 
-#: ../../spritz/src/applet/etp_applet.py:896
+#: ../../spritz/src/applet/etp_applet.py:894
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
