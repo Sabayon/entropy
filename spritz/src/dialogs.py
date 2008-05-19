@@ -26,7 +26,7 @@ try:
 except ImportError:
     from ConfigParser import ConfigParser,SafeConfigParser
 from spritz_setup import const, cleanMarkupSting, SpritzConf, unicode2htmlentities
-from i18n import _
+from entropy_i18n import _
 
 class PkgInfoMenu:
 
@@ -35,7 +35,7 @@ class PkgInfoMenu:
         self.pkg = pkg
         self.window = window
         self.Entropy = Entropy
-        self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'spritz' )
+        self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
         self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
         self.setupPkgPropertiesView()
@@ -359,7 +359,7 @@ class PkgInfoMenu:
 class ConfirmationDialog:
     def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False, simpleDict = False ):
 
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="spritz" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="entropy" )
         self.dialog = self.xml.get_widget( "confirmation" )
         self.dialog.set_transient_for( parent )
         self.action = self.xml.get_widget( "confAction" )
@@ -533,7 +533,7 @@ class ConfimationDialog(ConfirmationDialog):
 
 class ErrorDialog:
     def __init__( self, parent, title, text, longtext, modal ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="spritz" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="entropy" )
         self.dialog = self.xml.get_widget( "errDialog" )
         self.parent = parent
         if parent:
@@ -592,7 +592,7 @@ class ErrorDialog:
 
 class infoDialog:
     def __init__( self, parent, title, text ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "msg",domain="spritz" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "msg",domain="entropy" )
         self.dialog = self.xml.get_widget( "msg" )
         self.parent = parent
         self.dialog.set_transient_for( parent )
@@ -615,7 +615,7 @@ class infoDialog:
 
 class EntryDialog:
     def __init__( self, parent, title, text ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "EntryDialog",domain="spritz" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "EntryDialog",domain="entropy" )
         self.dialog = self.xml.get_widget( "EntryDialog" )
         self.parent = parent
         #self.dialog.set_transient_for( parent )
@@ -777,8 +777,8 @@ class LicenseDialog:
     def __init__( self, parent, licenses, entropy ):
 
         self.Entropy = entropy
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="spritz" )
-        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="spritz" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="entropy" )
+        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="entropy" )
         self.dialog = self.xml.get_widget( "licenseWindow" )
         self.dialog.set_transient_for( parent )
         self.read_dialog = self.xml_licread.get_widget( "licenseReadWindow" )

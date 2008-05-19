@@ -1,4 +1,4 @@
-SUBDIRS = src po src/etpgui src/applet 
+SUBDIRS = src src/etpgui src/applet 
 PYFILES = $(wildcard *.py)
 PKGNAME = spritz
 VERSION=$(shell awk '/Version:/ { print $$2 }' ${PKGNAME}.spec)
@@ -6,7 +6,7 @@ PYTHON=python
 SRCDIR=src
 MISCDIR=misc
 PIXDIR=gfx
-ALLDIRS=src po src/etpgui gfx misc tools src/applet
+ALLDIRS=src src/etpgui gfx misc tools src/applet
 
 all: subdirs
 	

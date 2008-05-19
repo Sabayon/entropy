@@ -8,12 +8,12 @@
 # $Id: rhn_applet_dialogs.py,v 1.30 2003/10/14 17:41:34 veillard Exp $
 
 from entropyConstants import *
-from i18n import _
+from entropy_i18n import _
 import gnome
 import gnome.ui
 import gobject
 import gtk.glade
-gtk.glade.bindtextdomain('spritz', "/usr/share/locale")
+gtk.glade.bindtextdomain('entropy', "/usr/share/locale")
 import gtk
 import gtkhtml2
 
@@ -22,7 +22,7 @@ class rhnGladeWindow:
         self.filename = filename
         if not os.path.isfile(filename):
             self.filename = "/usr/lib/entropy/spritz/applet/%s" % (filename,)
-        self.xml = gtk.glade.XML(self.filename, window_name, domain="spritz")
+        self.xml = gtk.glade.XML(self.filename, window_name, domain="entropy")
         self.window = self.xml.get_widget(window_name)
 
     def get_widget(self, widget):

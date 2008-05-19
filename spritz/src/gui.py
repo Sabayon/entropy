@@ -22,7 +22,7 @@ from spritz_setup import SpritzConf, const, cleanMarkupSting
 from misc import SpritzQueue
 from views import *
 from etpgui.widgets import SpritzConsole
-from i18n import _
+from entropy_i18n import _
 
 class ProgressTotal:
     def __init__( self, widget ):
@@ -220,7 +220,7 @@ class SpritzGUI:
         self.tooltip =  gtk.Tooltips()
 
         # setup add repository window
-        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="spritz" )
+        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="entropy" )
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 

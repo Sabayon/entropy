@@ -282,7 +282,6 @@ def print_menu(data):
                     writechar("\t")
                 writechar(myfunc_desc(desc))
             writechar("\n")
-    pass
 
 def reset_cursor():
     sys.stdout.write(stuff['ESC'] + '[2K')

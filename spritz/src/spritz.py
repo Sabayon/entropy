@@ -34,6 +34,7 @@ import exceptionTools
 from packages import EntropyPackages
 from entropyapi import EquoConnection, QueueExecutor
 from entropy import ErrorReportInterface
+from entropy_i18n import _
 
 # GTK Imports
 import gtk, gobject
@@ -43,12 +44,10 @@ from etpgui.widgets import UI, Controller
 from etpgui import *
 from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupSting
 
-
 # spritz imports
 import filters
 from gui import SpritzGUI
 from dialogs import *
-from i18n import _
 
 
 class SpritzController(Controller):
@@ -58,11 +57,11 @@ class SpritzController(Controller):
     def __init__( self ):
         self.etpbase = EntropyPackages(EquoConnection)
         # Create and ui object contains the widgets.
-        ui = UI( const.GLADE_FILE , 'main', 'spritz' )
-        addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'spritz' )
+        ui = UI( const.GLADE_FILE , 'main', 'entropy' )
+        addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
 
-        advinfo_ui = UI( const.GLADE_FILE , 'advInfo', 'spritz' )
-        wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'spritz' )
+        advinfo_ui = UI( const.GLADE_FILE , 'advInfo', 'entropy' )
+        wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui, addrepo_ui, wait_ui, advinfo_ui )
 
@@ -786,7 +785,7 @@ class SpritzController(Controller):
                 # prepare textview
                 mybuffer = gtk.TextBuffer()
                 mybuffer.set_text(license_text)
-                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="spritz" )
+                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="entropy" )
                 read_dialog = xml_licread.get_widget( "licenseReadWindow" )
                 okReadButton = xml_licread.get_widget( "okReadButton" )
                 okReadButton.connect( 'clicked', self.destroy_read_license_dialog )

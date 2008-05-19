@@ -18,8 +18,8 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import os, sys
-from i18n import _
 from entropyConstants import *
+from entropy_i18n import _
 
 class const:
     ''' This Class contains all the Constants in Yumex'''

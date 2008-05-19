@@ -46,9 +46,7 @@ from etpgui import busyCursor,normalCursor,ProcessGtkEventsThread
 from entropyConstants import *
 import exceptionTools, entropyTools
 from entropy import EquoInterface, RepoInterface, urlFetcher
-
-# i18n
-from i18n import _
+from entropy_i18n import _
 
 class Entropy(EquoInterface):
 

@@ -18,13 +18,13 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from spritz_setup import const,cleanMarkupSting
-from i18n import _
 from dialogs import questionDialog,LicenseDialog
 
 # Entropy Imports
 from entropyConstants import *
 import exceptionTools
 from entropy import EquoInterface, urlFetcher
+from entropy_i18n import _
 
 '''
 

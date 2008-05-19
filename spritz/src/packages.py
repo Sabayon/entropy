@@ -20,12 +20,7 @@
 from etpgui.packages import EntropyPackage, DummyEntropyPackage
 import logging
 from spritz_setup import SpritzConf
-
-#import yum.misc as misc
-#import yum.Errors as Errors
-#from yum.packages import parsePackages
-
-from i18n import _
+from entropy_i18n import _
 
 class EntropyPackages:
 

@@ -17,10 +17,10 @@
 License: GPL
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 """
-
+_LOCALE = None
 try:
     import gettext
-    import sys
+    import sys,os
     if sys.version_info[0] == 2:
         t = gettext.translation('entropy')
         _ = t.gettext
@@ -28,6 +28,18 @@ try:
         gettext.bindtextdomain('entropy', '/usr/share/locale')
         gettext.textdomain('entropy')
         _ = gettext.gettext
+
+    _LOCALE_FULL = os.getenv('LC_ALL')
+    if _LOCALE_FULL == None:
+        _LOCALE_FULL = os.getenv('LANG')
+    if _LOCALE_FULL == None:
+        _LOCALE_FULL = os.getenv('LANGUANGE')
+
+    if _LOCALE_FULL:
+        _LOCALE = _LOCALE_FULL.split('.')[0]
+        _LOCALE = _LOCALE.split('_')[0]
+        _LOCALE = _LOCALE.lower()
+
 except:
     def _(s):
         return s
