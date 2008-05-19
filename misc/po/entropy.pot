@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-19 15:11+0200\n"
+"POT-Creation-Date: 2008-05-19 20:09+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3520,4 +3520,369 @@ msgstr ""
 
 #: ../../client/text_security.py:245
 msgid "All the available updates have been already installed"
+msgstr ""
+
+#: ../../client/equo.py:38
+msgid "Basic Options"
+msgstr ""
+
+#: ../../client/equo.py:40
+msgid "this output"
+msgstr ""
+
+#: ../../client/equo.py:41 ../../client/equo.py:46
+msgid "print version"
+msgstr ""
+
+#: ../../client/equo.py:42
+msgid "disable colorized output"
+msgstr ""
+
+#: ../../client/equo.py:44
+msgid "Application Options"
+msgstr ""
+
+#: ../../client/equo.py:47
+msgid "force sync regardless repositories status"
+msgstr ""
+
+#: ../../client/equo.py:48
+msgid "show enabled repositories"
+msgstr ""
+
+#: ../../client/equo.py:49
+msgid "show respositories status"
+msgstr ""
+
+#: ../../client/equo.py:51
+msgid "search packages in repositories"
+msgstr ""
+
+#: ../../client/equo.py:52
+msgid "match a package in repositories"
+msgstr ""
+
+#: ../../client/equo.py:53
+msgid "return all the possible matches"
+msgstr ""
+
+#: ../../client/equo.py:54
+msgid "return matches from every repository"
+msgstr ""
+
+#: ../../client/equo.py:55
+msgid "print repository information (w/--quiet)"
+msgstr ""
+
+#: ../../client/equo.py:56
+msgid "print description too (w/--quiet)"
+msgstr ""
+
+#: ../../client/equo.py:58 ../../client/equo.py:66
+msgid "update system with the latest available packages"
+msgstr ""
+
+#: ../../client/equo.py:59 ../../client/equo.py:77 ../../client/equo.py:83
+#: ../../client/equo.py:104 ../../client/equo.py:110 ../../client/equo.py:160
+msgid "ask before making any changes"
+msgstr ""
+
+#: ../../client/equo.py:60 ../../client/equo.py:78
+msgid "just download packages"
+msgstr ""
+
+#: ../../client/equo.py:61
+msgid "only show what would be done"
+msgstr ""
+
+#: ../../client/equo.py:62 ../../client/equo.py:92
+msgid "show more details about what is going on"
+msgstr ""
+
+#: ../../client/equo.py:63
+msgid "reinstall all the packages and their dependencies"
+msgstr ""
+
+#: ../../client/equo.py:64
+msgid "same as --replay"
+msgstr ""
+
+#: ../../client/equo.py:65 ../../client/equo.py:87 ../../client/equo.py:99
+msgid "resume previously interrupted operations"
+msgstr ""
+
+#: ../../client/equo.py:67
+msgid "upgrade your distribution to the specified release"
+msgstr ""
+
+#: ../../client/equo.py:68 ../../client/equo.py:94
+msgid "disable package integrity check"
+msgstr ""
+
+#: ../../client/equo.py:70
+msgid "security infrastructure functions"
+msgstr ""
+
+#: ../../client/equo.py:71
+msgid "download the latest Security Advisories"
+msgstr ""
+
+#: ../../client/equo.py:72
+msgid "list all the available Security Advisories"
+msgstr ""
+
+#: ../../client/equo.py:73
+msgid "list only affected"
+msgstr ""
+
+#: ../../client/equo.py:74
+msgid "list only unaffected"
+msgstr ""
+
+#: ../../client/equo.py:75
+msgid "show information about provided advisories identifiers"
+msgstr ""
+
+#: ../../client/equo.py:76
+msgid "automaticly install all the available security updates"
+msgstr ""
+
+#: ../../client/equo.py:79 ../../client/equo.py:84 ../../client/equo.py:105
+#: ../../client/equo.py:111 ../../client/equo.py:161
+msgid "just show what would be done"
+msgstr ""
+
+#: ../../client/equo.py:80 ../../client/equo.py:103 ../../client/equo.py:109
+msgid "show less details (useful for scripting)"
+msgstr ""
+
+#: ../../client/equo.py:82 ../../client/equo.py:100
+msgid "install atoms or .tbz2 packages"
+msgstr ""
+
+#: ../../client/equo.py:85
+msgid "just download packages without doing the install"
+msgstr ""
+
+#: ../../client/equo.py:86
+msgid "do not pull in any dependency"
+msgstr ""
+
+#: ../../client/equo.py:88
+msgid "used with --resume, makes the first package in queue to be skipped"
+msgstr ""
+
+#: ../../client/equo.py:89
+msgid "remove downloaded packages after being used"
+msgstr ""
+
+#: ../../client/equo.py:90 ../../client/equo.py:139
+msgid "pull all the dependencies in, regardless their state"
+msgstr ""
+
+#: ../../client/equo.py:91
+msgid "makes dependency rules stricter"
+msgstr ""
+
+#: ../../client/equo.py:93
+msgid "makes old configuration files to be removed"
+msgstr ""
+
+#: ../../client/equo.py:96
+msgid "remove one or more packages"
+msgstr ""
+
+#: ../../client/equo.py:97
+msgid "also pull unused dependencies where depends list is empty"
+msgstr ""
+
+#: ../../client/equo.py:98
+msgid "makes configuration files to be removed"
+msgstr ""
+
+#: ../../client/equo.py:102
+msgid "look for unsatisfied dependencies"
+msgstr ""
+
+#: ../../client/equo.py:107
+msgid "look for missing libraries"
+msgstr ""
+
+#: ../../client/equo.py:108
+msgid "print broken files to stdout"
+msgstr ""
+
+#: ../../client/equo.py:113
+msgid "configuration files update tool"
+msgstr ""
+
+#: ../../client/equo.py:114
+msgid "show configuration files to be updated"
+msgstr ""
+
+#: ../../client/equo.py:115
+msgid "run the configuration files update function"
+msgstr ""
+
+#: ../../client/equo.py:117
+msgid "do misc queries on repository and local databases"
+msgstr ""
+
+#: ../../client/equo.py:118
+msgid "search a package into the local database"
+msgstr ""
+
+#: ../../client/equo.py:119
+msgid "search from what package a file belongs"
+msgstr ""
+
+#: ../../client/equo.py:120
+msgid "search what packages depend on the provided atoms"
+msgstr ""
+
+#: ../../client/equo.py:121
+msgid "show runtime libraries needed by the provided atoms"
+msgstr ""
+
+#: ../../client/equo.py:122
+msgid "show atoms needing the provided libraries"
+msgstr ""
+
+#: ../../client/equo.py:123
+msgid "show files owned by the provided atoms"
+msgstr ""
+
+#: ../../client/equo.py:124
+msgid "show the removal tree for the specified atoms"
+msgstr ""
+
+#: ../../client/equo.py:125
+msgid "show packages owning the provided tags"
+msgstr ""
+
+#: ../../client/equo.py:126
+msgid "show packages owning the provided slot"
+msgstr ""
+
+#: ../../client/equo.py:127
+msgid "show packages owning the provided licenses"
+msgstr ""
+
+#: ../../client/equo.py:128
+msgid "list packages based on the chosen parameter below"
+msgstr ""
+
+#: ../../client/equo.py:129
+msgid "list installed packages"
+msgstr ""
+
+#: ../../client/equo.py:130
+msgid "search files that do not belong to any package"
+msgstr ""
+
+#: ../../client/equo.py:131
+msgid "search packages by description"
+msgstr ""
+
+#: ../../client/equo.py:132 ../../client/equo.py:166
+msgid "show more details"
+msgstr ""
+
+#: ../../client/equo.py:133 ../../client/equo.py:167
+msgid "print results in a scriptable way"
+msgstr ""
+
+#: ../../client/equo.py:135
+msgid "Extended Options"
+msgstr ""
+
+#: ../../client/equo.py:137
+msgid "handles extended functionalities"
+msgstr ""
+
+#: ../../client/equo.py:138
+msgid "make a smart application for the provided atoms (experimental)"
+msgstr ""
+
+#: ../../client/equo.py:140
+msgid ""
+"make a smart package for the provided atoms (multiple packages into one file)"
+msgstr ""
+
+#: ../../client/equo.py:141
+msgid "recreate an Entropy package from your System"
+msgstr ""
+
+#: ../../client/equo.py:142 ../../client/equo.py:144 ../../client/equo.py:146
+msgid "save new packages into the specified directory"
+msgstr ""
+
+#: ../../client/equo.py:143
+msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
+msgstr ""
+
+#: ../../client/equo.py:145
+msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
+msgstr ""
+
+#: ../../client/equo.py:147
+msgid "extract Entropy metadata from provided .tbz2 packages"
+msgstr ""
+
+#: ../../client/equo.py:148
+msgid "save new metadata into the specified directory"
+msgstr ""
+
+#: ../../client/equo.py:150
+msgid "handles installed packages database"
+msgstr ""
+
+#: ../../client/equo.py:151
+msgid "check System Database for errors"
+msgstr ""
+
+#. (2,'generate',2,'generate installed packages database using Portage database (Portage needed)'),
+#: ../../client/equo.py:153
+msgid ""
+"generate installed packages database using files on the system [last hope]"
+msgstr ""
+
+#: ../../client/equo.py:154
+msgid "regenerate depends caching table"
+msgstr ""
+
+#: ../../client/equo.py:155
+msgid "update/generate counters table (Portage <-> Entropy packages table)"
+msgstr ""
+
+#: ../../client/equo.py:156
+msgid "makes Entropy aware of your Portage-updated packages"
+msgstr ""
+
+#: ../../client/equo.py:158
+msgid "handles packages helper applications"
+msgstr ""
+
+#: ../../client/equo.py:159
+msgid "migrate all Python modules to the latest installed version"
+msgstr ""
+
+#: ../../client/equo.py:163
+msgid "handles Entropy cache"
+msgstr ""
+
+#: ../../client/equo.py:164
+msgid "clean Entropy cache"
+msgstr ""
+
+#: ../../client/equo.py:165
+msgid "regenerate Entropy cache"
+msgstr ""
+
+#: ../../client/equo.py:169
+msgid "remove downloaded packages and clean temp. directories)"
+msgstr ""
+
+#: ../../client/equo.py:171
+msgid "show system information"
 msgstr ""

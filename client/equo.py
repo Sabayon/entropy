@@ -58,7 +58,7 @@ myopts = [
     (1,'world',2,_('update system with the latest available packages')),
     (2,'--ask',2,_('ask before making any changes')),
     (2,'--fetch',2,_('just download packages')),
-    (2,'--pretend',1,_('just show what would be done')),
+    (2,'--pretend',1,_('only show what would be done')),
     (2,'--verbose',1,_('show more details about what is going on')),
     (2,'--replay',1,_('reinstall all the packages and their dependencies')),
     (2,'--empty',2,_('same as --replay')),

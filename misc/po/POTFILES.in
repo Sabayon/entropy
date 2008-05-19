@@ -18,7 +18,7 @@
 ../server/server_query.py
 ../server/server_reagent.py
 ../server/server_activator.py
-../client/equo
+../client/equo.py
 ../server/activator
 ../server/reagent
 
