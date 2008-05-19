@@ -23,6 +23,7 @@
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
+from entropy_i18n import _
 
 ########################################################
 ####
@@ -107,7 +108,7 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None, EquoConne
             Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(brown(" @@ ")+darkgreen("Searching..."))
+        print_info(brown(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
 
     if not dbconn:
         clientDbconn = Equo.clientDbconn
@@ -131,8 +132,8 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None, EquoConne
                     printPackageInfo(idpackage, clientDbconn, clientSearch = True)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+package))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
+                print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(result)))+red(" %s" % (_("entries"),)))
 
     if (idreturn):
         return dataInfo
@@ -151,7 +152,7 @@ def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None)
             Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Belong Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Belong Search"),)))
 
     if not dbconn:
         clientDbconn = Equo.clientDbconn
@@ -186,8 +187,8 @@ def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None)
                 else:
                     printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = EquoConnection)
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+xfile))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(result)))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+xfile))
+                print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(result)))+red(" entries"))
 
     if (idreturn):
         return dataInfo
@@ -207,7 +208,7 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
             Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Depends Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Depends Search"),) ))
 
     # XXX hack to get Equo.atomMatch to not raise AttributeError
     match_repo = True
@@ -253,17 +254,18 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
                         printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, EquoConnection = EquoConnection)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+atom))
-                print_info(blue(" Matched: ")+bold("\t"+found_atom))
+                print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+atom))
+                print_info(blue(" %s: " % (_("Matched"),) )+bold("\t"+found_atom))
                 masking_reason = ''
                 if repoMasked:
                     masking_reason = ", "+etpConst['packagemaskingreasons'].get(idmasking_reason)
-                print_info(blue(" Masked: ")+bold("\t"+str(repoMasked))+masking_reason)
+                print_info(blue(" %s: " % (_("Masked"),) )+bold("\t"+str(repoMasked))+masking_reason)
                 if (matchInRepo):
-                    where = " from repository "+str(result[1])
+                    where = " %s %s" % (_("from repository"),result[1],)
                 else:
-                    where = " from installed packages database"
-                print_info(blue(" Found:   ")+bold("\t"+str(len(searchResults)))+red(" entries")+where)
+                    where = " %s" % (_("from installed packages database"),)
+                print_info( blue(" %s:   " % (_("Found"),) ) + bold("\t"+str(len(searchResults))) + \
+                    red(" %s" % (_("entries"),))+where)
         else:
             continue
         if (matchInRepo):
@@ -287,7 +289,7 @@ def searchNeeded(atoms, idreturn = False, dbconn = None, EquoConnection = None):
 
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Needed Search"),) ))
 
     dataInfo = set()
     if not dbconn:
@@ -309,8 +311,8 @@ def searchNeeded(atoms, idreturn = False, dbconn = None, EquoConnection = None):
                 else:
                     print_info(blue("       # ")+red(str(needed)))
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue("     Atom: ")+bold("\t"+myatom))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(myneeded)))+red(" libraries"))
+                print_info(blue("     %s: " % (_("Atom"),))+bold("\t"+myatom))
+                print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(myneeded)))+red(" %s" % (_("libraries"),)))
 
     if (idreturn):
         return dataInfo
@@ -329,7 +331,7 @@ def searchRequired(libraries, idreturn = False, dbconn = None, EquoConnection = 
 
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Needed Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Needed Search"),)))
 
     dataInfo = set()
     if not dbconn:
@@ -349,8 +351,8 @@ def searchRequired(libraries, idreturn = False, dbconn = None, EquoConnection = 
                 printPackageInfo(result, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
 
         if (not idreturn) and (not etpUi['quiet']):
-            print_info(blue(" Library: ")+bold("\t"+library))
-            print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" packages"))
+            print_info(blue(" %s: " % (_("Library"),))+bold("\t"+library))
+            print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("packages"),) ))
 
     if (idreturn):
         return dataInfo
@@ -369,7 +371,7 @@ def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = Non
 
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Eclass Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Eclass Search"),)))
 
     if not dbconn:
         clientDbconn = Equo.clientDbconn
@@ -394,7 +396,7 @@ def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = Non
                 else:
                     printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = EquoConnection)
         if (not etpUi['quiet']):
-            print_info(blue(" Found:   ")+bold("\t"+str(len(matches)))+red(" packages"))
+            print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(matches)))+red(" %s" % (_("packages"),) ))
 
     if (idreturn):
         return dataInfo
@@ -439,8 +441,8 @@ def searchFiles(atoms, idreturn = False, dbconn = None, EquoConnection = None):
                     for xfile in files:
                         print_info(blue(" ### ")+red(xfile))
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Package: ")+bold("\t"+atom))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(files)))+red(" files"))
+                print_info(blue(" %s: " % (_("Package"),))+bold("\t"+atom))
+                print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(files)))+red(" %s" % (_("files"),)))
 
     if (idreturn):
         return dataInfo
@@ -460,7 +462,7 @@ def searchOrphans(EquoConnection = None):
             Equo = EquoInterface()
 
     if (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Orphans Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Orphans Search"),)))
 
     clientDbconn = Equo.clientDbconn
 
@@ -485,21 +487,21 @@ def searchOrphans(EquoConnection = None):
                 mask = [x for x in etpConst['filesystemdirsmask'] if filename.startswith(x)]
                 if not mask:
                     if not etpUi['quiet']:
-                        print_info(red(" @@ ")+blue("Looking: ")+bold(filename[:50]+"..."), back = True)
+                        print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),))+bold(filename[:50]+"..."), back = True)
                     foundFiles[filename] = "obj"
             if foundFiles:
                 tdbconn.insertContent(1,foundFiles)
 
     tdbconn.commitChanges()
-    tdbconn.createContentIndex()
+    # FIXME bad bad bad
     tdbconn.cursor.execute('select count(file) from content')
     totalfiles = tdbconn.cursor.fetchone()[0]
 
     if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue("Analyzed directories: ")+' '.join(etpConst['filesystemdirs']))
-        print_info(red(" @@ ")+blue("Masked directories: ")+' '.join(etpConst['filesystemdirsmask']))
-        print_info(red(" @@ ")+blue("Number of files collected on the filesystem: ")+bold(str(totalfiles)))
-        print_info(red(" @@ ")+blue("Now looking into Installed Packages database..."))
+        print_info(red(" @@ ")+blue("%s: " % (_("Analyzed directories"),) )+' '.join(etpConst['filesystemdirs']))
+        print_info(red(" @@ ")+blue("%s: " % (_("Masked directories"),) )+' '.join(etpConst['filesystemdirsmask']))
+        print_info(red(" @@ ")+blue("%s: " % (_("Number of files collected on the filesystem"),) )+bold(str(totalfiles)))
+        print_info(red(" @@ ")+blue("%s..." % (_("Now looking into Installed Packages database"),) ))
 
     # list all idpackages
     idpackages = clientDbconn.listAllIdpackages()
@@ -511,7 +513,7 @@ def searchOrphans(EquoConnection = None):
             count += 1
             atom = clientDbconn.retrieveAtom(idpackage)
             txt = "["+str(count)+"/"+length+"] "
-            print_info(red(" @@ ")+blue("Intersecting content of package: ")+txt+bold(atom), back = True)
+            print_info(red(" @@ ")+blue("%s: " % (_("Intersecting with content of the package"),) )+txt+bold(atom), back = True)
         content = set()
         for x in clientDbconn.retrieveContent(idpackage):
             if x.startswith("/usr/lib64"):
@@ -521,20 +523,21 @@ def searchOrphans(EquoConnection = None):
         for item in content:
             tdbconn.cursor.execute('delete from content where file = (?)', (item,))
 
+    # FIXME BAD BAD BAD
     tdbconn.commitChanges()
     tdbconn.cursor.execute('select count(file) from content')
     orpanedfiles = tdbconn.cursor.fetchone()[0]
 
     if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Intersection completed. Showing statistics: "))
-        print_info(red(" @@ ")+blue("Number of total files: ")+bold(str(totalfiles)))
-        print_info(red(" @@ ")+blue("Number of matching files: ")+bold(str(totalfiles - orpanedfiles)))
-        print_info(red(" @@ ")+blue("Number of orphaned files: ")+bold(str(orpanedfiles)))
+        print_info(red(" @@ ")+blue("%s: " % (_("Intersection completed. Showing statistics"),) ))
+        print_info(red(" @@ ")+blue("%s: " % (_("Number of total files"),) )+bold(str(totalfiles)))
+        print_info(red(" @@ ")+blue("%s: " % (_("Number of matching files"),) )+bold(str(totalfiles - orpanedfiles)))
+        print_info(red(" @@ ")+blue("%s: " % (_("Number of orphaned files"),) )+bold(str(orpanedfiles)))
 
     tdbconn.cursor.execute('select file from content order by file desc')
     if not etpUi['quiet']:
         f = open("/tmp/equo-orphans.txt","w")
-        print_info(red(" @@ ")+blue("Writing file to disk: ")+bold("/tmp/equo-orphans.txt"))
+        print_info(red(" @@ ")+blue("%s: " % (_("Writing file to disk"),))+bold("/tmp/equo-orphans.txt"))
 
     tdbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
     myfile = tdbconn.cursor.fetchone()
@@ -554,7 +557,7 @@ def searchOrphans(EquoConnection = None):
 
     humansize = Equo.entropyTools.bytesIntoHuman(sizecount)
     if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue("Total wasted space: ")+bold(humansize))
+        print_info(red(" @@ ")+blue("%s: " % (_("Total wasted space"),) )+bold(humansize))
         f.flush()
         f.close()
     else:
@@ -583,7 +586,7 @@ def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
     clientDbconn = Equo.clientDbconn
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Removal Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Removal Search"),) ))
 
     foundAtoms = []
     for atom in atoms:
@@ -593,12 +596,12 @@ def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
 
     # are packages in foundAtoms?
     if (len(foundAtoms) == 0):
-        print_error(red("No packages found."))
+        print_error(red("%s." % (_("No packages found"),) ))
         return 127,-1
 
     choosenRemovalQueue = []
     if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Calculating removal dependencies, please wait..."), back = True)
+        print_info(red(" @@ ")+blue("%s..." % (_("Calculating removal dependencies, please wait"),) ), back = True)
     treeview = Equo.generate_depends_tree(foundAtoms, deep = deep)
     treelength = len(treeview[0])
     if treelength > 1:
@@ -609,7 +612,7 @@ def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
 
     if (choosenRemovalQueue):
         if (not etpUi['quiet']):
-            print_info(red(" @@ ")+blue("These are the packages that would added to the removal queue:"))
+            print_info(red(" @@ ")+blue("%s:" % (_("These are the packages that would added to the removal queue"),)))
         totalatoms = str(len(choosenRemovalQueue))
         atomscounter = 0
 
@@ -618,7 +621,7 @@ def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
             rematom = clientDbconn.retrieveAtom(idpackage)
             if (not etpUi['quiet']):
                 installedfrom = clientDbconn.retrievePackageFromInstalledTable(idpackage)
-                repositoryInfo = bold("[")+red("from: ")+brown(installedfrom)+bold("]")
+                repositoryInfo = bold("[")+red("%s: " % (_("from"),))+brown(installedfrom)+bold("]")
                 stratomscounter = str(atomscounter)
                 while len(stratomscounter) < len(totalatoms):
                     stratomscounter = " "+stratomscounter
@@ -644,7 +647,7 @@ def searchInstalled(idreturn = False, EquoConnection = None, dbconn = None):
             Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Installed Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Installed Search"),)))
 
     if dbconn:
         clientDbconn = dbconn
@@ -655,7 +658,7 @@ def searchInstalled(idreturn = False, EquoConnection = None, dbconn = None):
     installedPackages.sort()
     if not idreturn:
         if (not etpUi['quiet']):
-            print_info(red(" @@ ")+blue("These are the installed packages:"))
+            print_info(red(" @@ ")+blue("%s:" % (_("These are the installed packages"),) ))
         for package in installedPackages:
             if (not etpUi['verbose']):
                 atom = Equo.entropyTools.dep_getkey(package[0])
@@ -691,7 +694,7 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
     dataInfo = set() # when idreturn is True
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Searching..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:
@@ -722,8 +725,8 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
                     else:
                         printPackageInfo(idpackage,dbconn)
                 if (not idreturn) and (not etpUi['quiet']):
-                    print_info(blue(" Keyword: ")+bold("\t"+package))
-                    print_info(blue(" Found:   ")+bold("\t"+str(len(foundPackages[repo][package])))+red(" entries"))
+                    print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
+                    print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(foundPackages[repo][package])))+red(" %s" % (_("entries"),) ))
 
 
     if (idreturn):
@@ -744,7 +747,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
     dataInfo = set() # when idreturn is True
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Matching..."), back = True)
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Matching"),) ), back = True)
     found = False
 
     for package in packages:
@@ -769,11 +772,11 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
                     printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc)
                     found = True
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+package))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(matches)))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
+                print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(matches)))+red(" %s" % (_("entries"),) ))
 
     if (not idreturn) and (not etpUi['quiet']) and (not found):
-        print_info(darkred(" @@ ")+darkgreen("No match."))
+        print_info(darkred(" @@ ")+darkgreen("%s." % (_("No matches"),) ))
 
     if (idreturn):
         return dataInfo
@@ -796,7 +799,7 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
         dbclose = False
 
     if (not datareturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Slot Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Slot Search"),) ))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:
@@ -816,8 +819,8 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
                 if (not datareturn):
                     printPackageInfo(result[1],dbconn)
             if (not datareturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+slot))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+slot))
+                print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
 
     if (datareturn):
         return foundPackages
@@ -840,7 +843,7 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
         dbclose = False
 
     if (not datareturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Tag Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),)))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:
@@ -859,8 +862,8 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
                 if (not datareturn):
                     printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
             if (not datareturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+tag))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+tag))
+                print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),)))
 
     if (datareturn):
         return foundPackages
@@ -883,7 +886,7 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
         dbclose = False
 
     if (not datareturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("License Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("License Search"),)))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:
@@ -905,8 +908,8 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
                 if (not datareturn):
                     printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
             if (not datareturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+mylicense))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+mylicense))
+                print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
 
     if (datareturn):
         return foundPackages
@@ -926,7 +929,7 @@ def searchDescription(descriptions, idreturn = False, EquoConnection = None):
     foundPackages = {}
 
     if (not idreturn) and (not etpUi['quiet']):
-        print_info(darkred(" @@ ")+darkgreen("Description Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Description Search"),) ))
     # search inside each available database
     repoNumber = 0
     for repo in etpRepositories:
@@ -965,8 +968,8 @@ def searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = 
                     printPackageInfo(idpackage,dbconn, EquoConnection = EquoConnection)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
-                print_info(blue(" Keyword: ")+bold("\t"+desc))
-                print_info(blue(" Found:   ")+bold("\t"+str(len(mydescdata[desc])))+red(" entries"))
+                print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+desc))
+                print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(mydescdata[desc])))+red(" %s" % (_("entries"),) ))
     return dataInfo,mydescdata
 
 def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None, showRepoOnQuiet = False, showDescOnQuiet = False):
@@ -1028,9 +1031,9 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     if (not clientSearch):
 
         # client info
-        installedVer = "Not installed"
-        installedTag = "N/A"
-        installedRev = "N/A"
+        installedVer = _("Not installed")
+        installedTag = _("N/A")
+        installedRev = _("N/A")
         try:
             pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):
@@ -1044,54 +1047,54 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         except:
             clientSearch = True
 
-    print_info(red("     @@ Package: ")+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
+    print_info(red("     @@ %s: " % (_("Package"),) )+bold(pkgatom)+"\t\t"+blue("branch: ")+bold(pkgbranch))
     if (not strictOutput):
-        print_info(darkgreen("       Category:\t\t")+blue(pkgcat))
-        print_info(darkgreen("       Name:\t\t\t")+blue(pkgname))
-    print_info(darkgreen("       Masked:\t\t")+blue(str(pkgmasked))+masking_reason)
-    print_info(darkgreen("       Available:\t\t")+blue("version: ")+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ revision: ")+bold(str(pkgrev)))
+        print_info(darkgreen("       %s:\t\t" % (_("Category"),) )+blue(pkgcat))
+        print_info(darkgreen("       %s:\t\t\t" % (_("Name"),) )+blue(pkgname))
+    print_info(darkgreen("       %s:\t\t" % (_("Masked"),) )+blue(str(pkgmasked))+masking_reason)
+    print_info(darkgreen("       %s:\t\t" % (_("Available"),) )+blue("%s: " % (_("version"),) )+bold(pkgver)+blue(" ~ tag: ")+bold(pkgtag)+blue(" ~ %s: " % (_("revision"),) )+bold(str(pkgrev)))
     if (not clientSearch):
-        print_info(darkgreen("       Installed:\t\t")+blue("version: ")+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ revision: ")+bold(str(installedRev)))
+        print_info(darkgreen("       %s:\t\t" % (_("Installed"),) )+blue("%s: " % (_("version"),) )+bold(installedVer)+blue(" ~ tag: ")+bold(installedTag)+blue(" ~ %s: " % (_("revision"),) )+bold(str(installedRev)))
     if (not strictOutput):
-        print_info(darkgreen("       Slot:\t\t\t")+blue(str(pkgslot)))
-        print_info(darkgreen("       Size:\t\t\t")+blue(str(pkgsize)))
-        print_info(darkgreen("       Download:\t\t")+brown(str(pkgbin)))
-        print_info(darkgreen("       Checksum:\t\t")+brown(str(pkgdigest)))
+        print_info(darkgreen("       %s:\t\t\t" % (_("Slot"),) )+blue(str(pkgslot)))
+        print_info(darkgreen("       %s:\t\t\t" % (_("Size"),) )+blue(str(pkgsize)))
+        print_info(darkgreen("       %s:\t\t" % (_("Download"),) )+brown(str(pkgbin)))
+        print_info(darkgreen("       %s:\t\t" % (_("Checksum"),) )+brown(str(pkgdigest)))
         if (pkgdeps):
-            print_info(darkred("       ##")+darkgreen(" Dependencies:"))
+            print_info(darkred("       ##")+darkgreen(" %s:" % (_("Dependencies"),) ))
             for pdep in pkgdeps:
                 print_info(darkred("       ## \t\t\t")+brown(pdep))
         if (pkgconflicts):
-            print_info(darkred("       ##")+darkgreen(" Conflicts:"))
+            print_info(darkred("       ##")+darkgreen(" %s:" % (_("Conflicts"),) ))
             for conflict in pkgconflicts:
                 print_info(darkred("       ## \t\t\t")+brown(conflict))
-    print_info(darkgreen("       Homepage:\t\t")+red(pkghome))
+    print_info(darkgreen("       %s:\t\t" % (_("Homepage"),) )+red(pkghome))
 
     if (not strictOutput):
         # print description
-        _my_formatted_print(pkgdesc,darkgreen("       Description:\t\t"),"\t\t\t\t")
+        _my_formatted_print(pkgdesc,darkgreen("       %s:\t\t" % (_("Description"),) ),"\t\t\t\t")
         # print use flags
-        _my_formatted_print(pkguseflags,darkgreen("       USE flags:\t\t"),"\t\t\t\t", color = red)
+        _my_formatted_print(pkguseflags,darkgreen("       %s:\t\t" % (_("USE flags"),) ),"\t\t\t\t", color = red)
 
     if (not strictOutput):
         if (extended):
-            print_info(darkgreen("       CHOST:\t\t")+blue(pkgflags[0]))
-            print_info(darkgreen("       CFLAGS:\t\t")+red(pkgflags[1]))
-            print_info(darkgreen("       CXXFLAGS:\t\t")+blue(pkgflags[2]))
+            print_info(darkgreen("       %s:\t\t" % (_("CHOST"),) )+blue(pkgflags[0]))
+            print_info(darkgreen("       %s:\t\t" % (_("CFLAGS"),) )+red(pkgflags[1]))
+            print_info(darkgreen("       %s:\t\t" % (_("CXXFLAGS"),) )+blue(pkgflags[2]))
             sources = dbconn.retrieveSources(idpackage)
             eclasses = dbconn.retrieveEclasses(idpackage)
             etpapi = dbconn.retrieveApi(idpackage)
-            print_info(darkgreen("       Gentoo eclasses:\t")+red(' '.join(eclasses)))
+            print_info(darkgreen("       %s:\t" % (_("Gentoo eclasses"),) )+red(' '.join(eclasses)))
             if (sources):
-                print_info(darkgreen("       Sources:"))
+                print_info(darkgreen("       %s:" % (_("Sources"),) ))
                 for source in sources:
-                    print_info(darkred("         # Source: ")+blue(source))
-            print_info(darkgreen("       Entry API:\t\t")+red(str(etpapi)))
+                    print_info(darkred("         # %s: " % (_("Source"),) )+blue(source))
+            print_info(darkgreen("       %s:\t\t" % (_("Entry API"),) )+red(str(etpapi)))
         else:
-            print_info(darkgreen("       Compiled with:\t")+blue(pkgflags[1]))
-        print_info(darkgreen("       Keywords:\t\t")+red(' '.join(pkgkeywords)))
-        print_info(darkgreen("       Created:\t\t")+pkgcreatedate)
-        print_info(darkgreen("       License:\t\t")+red(pkglic))
+            print_info(darkgreen("       %s:\t" % (_("Compiled with"),) )+blue(pkgflags[1]))
+        print_info(darkgreen("       %s:\t\t" % (_("Keywords"),) )+red(' '.join(pkgkeywords)))
+        print_info(darkgreen("       %s:\t\t" % (_("Created"),) )+pkgcreatedate)
+        print_info(darkgreen("       %s:\t\t" % (_("License"),) )+red(pkglic))
 
 def _my_formatted_print(data,header,reset_columns, min_chars = 25, color = None):
     if type(data) is set:

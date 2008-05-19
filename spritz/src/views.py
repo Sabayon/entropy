@@ -125,7 +125,7 @@ class EntropyPackageView:
         self.clearUpdates()
 
         # installed packages right click menu
-        self.installed_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstalled",domain="spritz" )
+        self.installed_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstalled", domain="spritz" )
         self.installed_menu = self.installed_menu_xml.get_widget( "packageInstalled" )
         self.installed_menu_xml.signal_autoconnect(self)
 
@@ -537,7 +537,7 @@ class EntropyPackageView:
             try:
                 mydata = getattr( obj, property )
                 cell.set_property('markup',mydata)
-            except self.Equo.databaseTools.dbapi2.ProgrammingError:
+            except self.Equo.dbapi2.ProgrammingError:
                 pass
             if obj.color:
                 self.set_line_status(obj, cell)

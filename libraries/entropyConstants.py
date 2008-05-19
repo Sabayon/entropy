@@ -26,6 +26,7 @@ import sys
 import os
 import stat
 import exceptionTools
+from entropy_i18n import _
 
 
 # Specifications of the content of packages metadata
@@ -401,14 +402,14 @@ etpCache = {
 
 # ahahaha
 etpExitMessages = {
-    0: "You should run equo --help",
-    1: "You didn't run equo --help, did you?",
-    2: "Did you even read equo --help??",
-    3: "I give up. Run that equo --help !!!!!!!",
-    4: "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp",
-    5: "Illiteracy is a huge problem in this world",
-    6: "Ok i give up, you are hopeless",
-    7: "Go to hell."
+    0: _("You should run equo --help"),
+    1: _("You didn't run equo --help, did you?"),
+    2: _("Did you even read equo --help??"),
+    3: _("I give up. Run that equo --help !!!!!!!"),
+    4: _("OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"),
+    5: _("Illiteracy is a huge problem in this world"),
+    6: _("Ok i give up, you are hopeless"),
+    7: _("Go to hell."),
 }
 
 # information about what has been done on the database,
@@ -569,8 +570,8 @@ def const_defaultSettings(rootdir):
         'etpdatabasefileformat': "bz2", # Entropy default compressed database format
         'etpdatabasesupportedcformats': ["bz2","gz"], # Entropy compressed databases format support
         'etpdatabasecompressclasses': {
-                                            "bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2","etpdatabasedumpbzip2","etpdatabasedumphashfilebz2"),
-                                            "gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip","etpdatabasedumpgzip","etpdatabasedumphashfilegzip")
+            "bz2": ("bz2.BZ2File","unpackBzip2","etpdatabasefilebzip2","etpdatabasedumpbzip2","etpdatabasedumphashfilebz2"),
+            "gz": ("gzip.GzipFile","unpackGzip","etpdatabasefilegzip","etpdatabasedumpgzip","etpdatabasedumphashfilegzip")
         },
         'rss-feed': True, # enable/disable packages RSS feed feature
         'rss-name': "packages.rss", # default name of the RSS feed
@@ -600,7 +601,7 @@ def const_defaultSettings(rootdir):
 
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
-        'dbnamerepoprefix': "repo_", # prefix of the name of self.dbname in etpDatabase class for the repositories
+        'dbnamerepoprefix': "repo_", # prefix of the name of self.dbname in EntropyDatabaseInterface class for the repositories
 
         'etpapi': etpSys['api'], # Entropy database API revision
         'currentarch': etpSys['arch'], # contains the current running architecture
@@ -702,17 +703,17 @@ def const_defaultSettings(rootdir):
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser
         'packagemaskingreasons': {
-            0: 'reason not available',
-            1: 'user package.mask',
-            2: 'system keywords',
-            3: 'user package.unmask',
-            4: 'user repo package.keywords (all packages)',
-            5: 'user repo package.keywords',
-            6: 'user package.keywords',
-            7: 'completely masked',
-            8: 'repository general packages.db.mask',
-            9: 'repository in branch packages.db.mask',
-            10: 'user license.mask'
+            0: _('reason not available'),
+            1: _('user package.mask'),
+            2: _('system keywords'),
+            3: _('user package.unmask'),
+            4: _('user repo package.keywords (all packages)'),
+            5: _('user repo package.keywords'),
+            6: _('user package.keywords'),
+            7: _('completely masked'),
+            8: _('repository general packages.db.mask'),
+            9: _('repository in branch packages.db.mask'),
+            10: _('user license.mask'),
         },
 
         'misc_counters': {

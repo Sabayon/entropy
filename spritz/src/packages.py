@@ -96,7 +96,7 @@ class EntropyPackages:
     def populateCategories(self):
         try:
             self.categories = self.Entropy.list_repo_categories()
-        except self.Entropy.databaseTools.dbapi2.OperationalError:
+        except self.Entropy.dbapi2.OperationalError:
             self.categories.clear()
 
     def getPackages(self,flt):

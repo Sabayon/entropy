@@ -30,21 +30,25 @@ from outputTools import *
 from entropy import EquoInterface
 import exceptionTools
 Equo = EquoInterface(noclientdb = True)
+from entropy_i18n import _
 
 def test_spm():
     # test if portage is available
     try:
         Spm = Equo.Spm()
         return Spm
-    except:
-        print_error(darkred(" * ")+bold("Source Package Manager backend")+red(" is not available."))
+    except Exception, e:
+        Equo.entropyTools.printTraceback()
+        mytxt = _("Source Package Manager backend not available")
+        print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
         return None
 
 def test_clientdb():
     try:
         Equo.clientDbconn.validateDatabase()
     except exceptionTools.SystemDatabaseError:
-        print_error(darkred(" * ")+bold("Installed packages database")+red(" is not available."))
+        mytxt = _("Installed packages database not available")
+        print_error(darkred(" * ")+red("%s !" % (mytxt,)))
         return 1
 
 def database(options):
@@ -54,7 +58,8 @@ def database(options):
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
-        print_error(red("You are not ")+bold("root")+red("."))
+        mytxt = _("You are not root")
+        print_error(red(mytxt+"."))
         return 1
 
     if (options[0] == "generate"):
@@ -63,15 +68,19 @@ def database(options):
         if Spm == None:
             return 1
 
-        print_warning(bold("ATTENTION: ")+red("The installed package database will be generated again using Gentoo one."))
-        print_warning(red("If you dont know what you're doing just, don't do this. Really. I'm not joking."))
-        rc = Equo.askQuestion("  Understood?")
+        mytxt = "%s: %s."  % (
+            bold(_("ATTENTION")),
+            red(_("The installed package database will be generated again using Gentoo one")),
+        )
+        print_warning(mytxt)
+        print_warning(red(_("If you dont know what you're doing just, don't do this. Really. I'm not joking.")))
+        rc = Equo.askQuestion("  %s" % (_("Understood ?"),))
         if rc == "No":
             return 0
-        rc = Equo.askQuestion("  Really?")
+        rc = Equo.askQuestion("  %s" % (_("Really ?"),) )
         if rc == "No":
             return 0
-        rc = Equo.askQuestion("  This is your last chance. Ok?")
+        rc = Equo.askQuestion("  %s. %s" % (_("This is your last chance"),_("Ok?"),) )
         if rc == "No":
             return 0
 
@@ -92,19 +101,21 @@ def database(options):
 
         # ok, he/she knows it... hopefully
         # if exist, copy old database
-        print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
+        print_info(red(" @@ ")+blue(_("Creating backup of the previous database, if exists."))+red(" @@"))
         newfile = Equo.entropyTools.backupClientDatabase()
         if (newfile):
-            print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
+            print_info(red(" @@ ")+blue(_("Previous database copied to file"))+" "+newfile+red(" @@"))
 
         # Now reinitialize it
-        print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
+        mytxt = darkred("  %s %s") % (_("Initializing the new database at"),bold(etpConst['etpdatabaseclientfilepath']),)
+        print_info(mytxt, back = True)
         Equo.reopenClientDbconn()
         Equo.clientDbconn.initializeDatabase()
-        print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
+        mytxt = darkred("  %s %s") % (_("Database reinitialized correctly at"),bold(etpConst['etpdatabaseclientfilepath']),)
+        print_info(mytxt)
 
         # now collect packages in the system
-        print_info(red("  Transductingactioningintactering databases..."))
+        print_info(red("  %s..." % (_("Transductingactioningintactering databases"),) ))
 
         portagePackages = Spm.get_installed_packages()
         portagePackages = portagePackages[0]
@@ -130,9 +141,14 @@ def database(options):
             try:
                 mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
             except Exception, e:
-                Equo.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database generation: Exception caught: %s: %s" % (str(Exception),str(e),))
-                print_warning(red("!!! An error occured while analyzing: ")+blue(portagePackage))
-                print_warning("Exception: %s: %s" % (str(Exception),str(e),))
+                Equo.entropyTools.printTraceback()
+                Equo.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "Database generation: Exception caught: %s: %s" % (str(Exception),str(e),)
+                )
+                print_warning( red("!!! %s: %s") % (_("An error occured while analyzing"),blue(portagePackage),) )
+                print_warning("%s: %s: %s" % (_("Exception"),str(Exception),e,))
                 continue
 
             # Try to see if it's possible to use the revision of a possible old db
@@ -154,8 +170,8 @@ def database(options):
             Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
             os.remove(temptbz2)
 
-        print_info(red("  All the Gentoo packages have been injected into Entropy database."))
-        print_info(red("  Now checking dependency atoms validity..."))
+        print_info(red("  %s." % (_("All the Gentoo packages have been injected into Entropy database"),) ))
+        print_info(red("  %s..." % (_("Now checking dependency atoms validity"),) ))
         mydeps = Equo.clientDbconn.listAllDependencies()
         maxcount = str(len(mydeps))
         count = 0
@@ -163,50 +179,67 @@ def database(options):
             count += 1
             atom = depdata[1]
             iddependency = depdata[0]
-            print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(atom), back = True)
+            print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" %s: " % (_("atom"),) )+brown(atom), back = True)
             try:
                 Equo.clientDbconn.atomMatch(atom)
             except Exception, e:
-                Equo.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database dependency atoms check: Exception caught: %s: %s" % (str(Exception),str(e),))
-                print_warning(red("!!! An error occured while analyzing: ")+blue(atom)+" - "+red("can be invalid!"))
-                print_warning("Exception: %s: %s" % (str(Exception),str(e),))
+                Equo.entropyTools.printTraceback()
+                Equo.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "Database dependency atoms check: Exception caught: %s: %s" % (
+                        str(Exception),
+                        str(e),
+                    )
+                )
+                print_warning(red("!!! %s: " % (_("An error occured while analyzing"),) )+blue(atom)+" - "+red(_("entry can be invalid!")))
+                print_warning("%s: %s: %s" % (_("Exception"),str(Exception),str(e),))
                 found_idpackages = Equo.clientDbconn.searchIdpackageFromIddependency(iddependency)
                 if found_idpackages:
-                    print_warning(red("These are the invalid entries:"))
+                    print_warning(red("%s:" % (_("These are the invalid entries"),) ))
                     for myidpackage in found_idpackages:
                         myatom = Equo.clientDbconn.retrieveAtom(myidpackage)
                         print_warning(darkred("   # ")+blue(myatom))
-                    print_warning(red("Removing database information..."))
+                    print_warning(red("%s..." % (_("Removing database information"),) ))
                     for myidpackage in found_idpackages:
                         Equo.clientDbconn.removePackage(myidpackage)
 
-        print_info(red("  Now generating depends caching table..."))
+        print_info(red("  %s..." % (_("Now generating depends caching table"),) ))
         Equo.clientDbconn.regenerateDependsTable()
-        print_info(red("  Now indexing tables..."))
+        print_info(red("  %s...") % (_("Now indexing tables"),) )
         Equo.clientDbconn.indexing = True
         Equo.clientDbconn.createAllIndexes()
-        print_info(red("  Database reinitialized successfully."))
+        print_info(red("  %s." % (_("Database reinitialized successfully"),) ))
         return 0
 
     elif (options[0] == "check"):
         if Equo.clientDbconn.doesTableExist("baseinfo"):
             Equo.clientDatabaseSanityCheck()
         else:
-            print_warning(bold("# ATTENTION: ")+red("database does not exist or is badly broken"))
+            mytxt = "# %s: %s" % (bold(_("ATTENTION")),red(_("database does not exist or is badly broken")),)
+            print_warning(mytxt)
             return 1
         return 0
 
     elif (options[0] == "resurrect"):
 
-        print_warning(bold("####### ATTENTION -> ")+red("The installed package database will be resurrected, this will take a LOT of time."))
-        print_warning(bold("####### ATTENTION -> ")+red("Please use this function ONLY if you are using an Entropy-enabled Sabayon distribution."))
-        rc = Equo.askQuestion("     Can I continue ?")
+        mytxt = "####### %s: %s" % (
+            bold(_("ATTENTION")),
+            red(_("The installed package database will be resurrected, this will take a LOT of time.")),
+        )
+        print_warning(mytxt)
+        mytxt = "####### %s: %s" % (
+            bold(_("ATTENTION")),
+            red(_("Please use this function ONLY if you are using an Entropy-aware distribution.")),
+        )
+        print_warning(mytxt)
+        rc = Equo.askQuestion("     %s" % (_("Can I continue ?"),) )
         if rc == "No":
             return 0
-        rc = Equo.askQuestion("     Are you REALLY sure ?")
+        rc = Equo.askQuestion("     %s" % (_("Are you REALLY sure ?"),) )
         if rc == "No":
             return 0
-        rc = Equo.askQuestion("     Do you even know what you're doing ?")
+        rc = Equo.askQuestion("     %s" % (_("Do you even know what you're doing ?"),) )
         if rc == "No":
             return 0
 
@@ -215,29 +248,50 @@ def database(options):
 
         # ok, he/she knows it... hopefully
         # if exist, copy old database
-        print_info(red(" @@ ")+blue("Creating backup of the previous database, if exists.")+red(" @@"))
+        print_info(red(" @@ ")+blue(_("Creating backup of the previous database, if exists.")))
         newfile = Equo.entropyTools.backupClientDatabase()
         if (newfile):
-            print_info(red(" @@ ")+blue("Previous database copied to file ")+newfile+red(" @@"))
+            print_info(red(" @@ ")+blue(_("Previous database copied to file"))+" "+newfile)
 
         # Now reinitialize it
-        print_info(darkred("  Initializing the new database at "+bold(etpConst['etpdatabaseclientfilepath'])), back = True)
+        mytxt = "  %s %s" % (
+            darkred(_("Initializing the new database at")),
+            bold(etpConst['etpdatabaseclientfilepath']),
+        )
+        print_info(mytxt, back = True)
         Equo.clientDbconn.initializeDatabase()
-        print_info(darkgreen("  Database reinitialized correctly at "+bold(etpConst['etpdatabaseclientfilepath'])))
+        mytxt = "  %s %s" % (
+            darkgreen(_("Database reinitialized correctly at")),
+            bold(etpConst['etpdatabaseclientfilepath']),
+        )
+        print_info(mytxt)
 
-        print_info(red("  Collecting installed files. Writing: "+etpConst['packagestmpfile']+" Please wait..."), back = True)
+        mytxt = red("  %s. %s. %s ...") % (
+            _("Collecting installed files"),
+            _("Writing to temporary file"),
+            _("Please wait"),
+        )
+        print_info(mytxt, back = True)
 
         # since we use find, see if it's installed
         find = os.system("which find &> /dev/null")
         if find != 0:
-            print_error(darkred("Attention: ")+red("You must have 'find' installed!"))
+            mytxt = "%s: %s!" % (
+                darkred(_("Attention")),
+                red(_("You must have 'find' installed")),
+            )
+            print_error(mytxt)
             return
         # spawn process
         if os.path.isfile(etpConst['packagestmpfile']):
             os.remove(etpConst['packagestmpfile'])
         os.system("find "+etpConst['systemroot']+"/ -mount 1> "+etpConst['packagestmpfile'])
         if not os.path.isfile(etpConst['packagestmpfile']):
-            print_error(darkred("Attention: ")+red("find couldn't generate an output file."))
+            mytxt = "%s: %s!" % (
+                darkred(_("Attention")),
+                red(_("'find' couldn't generate an output file")),
+            )
+            print_error(mytxt)
             return
 
         f = open(etpConst['packagestmpfile'],"r")
@@ -250,12 +304,14 @@ def database(options):
         f.close()
         entries = len(filelist)
 
-        print_info(red("  Found "+str(entries)+" files on the system. Assigning packages..."))
+        mytxt = red("  %s...") % (_("Found %s files on the system. Assigning packages" % (entries,) ),)
+        print_info(mytxt)
         atoms = {}
         pkgsfound = set()
 
         for repo in etpRepositories:
-            print_info(red("  Matching in repository: ")+etpRepositories[repo]['description'])
+            mytxt = red("  %s: %s") % (_("Matching in repository"),etpRepositories[repo]['description'],)
+            print_info(mytxt)
             # get all idpackages
             dbconn = Equo.openRepositoryDatabase(repo)
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
@@ -264,7 +320,12 @@ def database(options):
             for idpackage in idpackages:
                 cnt += 1
                 idpackageatom = dbconn.retrieveAtom(idpackage)
-                print_info("  ("+str(cnt)+"/"+count+")"+red(" Matching files from packages..."), back = True)
+                mytxt = "  (%s/%s) %s ..." % (
+                    cnt,
+                    count,
+                    red(_("Matching files from packages")),
+                )
+                print_info(mytxt, back = True)
                 # content
                 content = dbconn.retrieveContent(idpackage)
                 for item in content:
@@ -274,30 +335,35 @@ def database(options):
                         filelist.difference_update(set([etpConst['systemroot']+x for x in content]))
                         break
 
-        print_info(red("  Found "+str(len(pkgsfound))+" packages. Filling database..."))
+        mytxt = red("  %s. %s...") % (
+            _("Found %s packages") % (bold(len(pkgsfound)),),
+            _("Filling database"),
+        )
+        print_info(mytxt)
         count = str(len(pkgsfound))
         cnt = 0
         os.remove(etpConst['packagestmpfile'])
 
         for pkgfound in pkgsfound:
             cnt += 1
-            print_info("  ("+str(cnt)+"/"+count+") "+red("Adding: ")+atoms[pkgfound], back = True)
+            print_info("  ("+str(cnt)+"/"+count+") "+red("%s: " % (_("Adding"),))+atoms[pkgfound], back = True)
             Package = Equo.Package()
             Package.prepare(tuple(pkgfound),"install", {})
             Package._install_package_into_database()
             Package.kill()
             del Package
 
-	print_info(red("  Database resurrected successfully."))
 
-        print_info(red("  Now generating depends caching table..."))
+        print_info(red("  %s." % (_("Database resurrected successfully"),)))
+
+        print_info(red("  %s..." % (_("Now generating depends caching table"),)))
         Equo.clientDbconn.regenerateDependsTable()
-        print_info(red("  Now indexing tables..."))
+        print_info(red("  %s..." % (_("Now indexing tables"),)))
         Equo.clientDbconn.indexing = True
         Equo.clientDbconn.createAllIndexes()
-        print_info(red("  Database reinitialized successfully."))
+        print_info(red("  %s." % (_("Database reinitialized successfully"),)))
 
-	print_warning(red("  Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."))
+	print_warning(red("  %s" % (_("Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."),) ))
         return 0
 
     elif (options[0] == "depends"):
@@ -306,9 +372,9 @@ def database(options):
         if rc != None:
             return rc
 
-        print_info(red("  Regenerating depends caching table..."))
+        print_info(red("  %s..." % (_("Regenerating depends caching table"),) ))
         Equo.clientDbconn.regenerateDependsTable()
-        print_info(red("  Depends caching table regenerated successfully."))
+        print_info(red("  %s." % (_("Depends caching table regenerated successfully"),) ))
         return 0
 
     elif (options[0] == "counters"):
@@ -321,9 +387,9 @@ def database(options):
         if rc != None:
             return rc
 
-        print_info(red("  Regenerating counters table. Please wait..."))
+        print_info(red("  %s..." % (_("Regenerating counters table"),) ))
         Equo.clientDbconn.regenerateCountersTable(Spm.get_vdb_path(), output = True)
-        print_info(red("  Counters table regenerated. Check above for errors."))
+        print_info(red("  %s" % (_("Counters table regenerated. Look above for errors."),) ))
         return 0
 
     elif (options[0] == "gentoosync"):
@@ -336,7 +402,7 @@ def database(options):
         if rc != None:
             return rc
 
-        print_info(red(" Scanning Portage and Entropy databases for differences..."))
+        print_info(red(" %s..." % (_("Scanning Portage and Entropy databases for differences"),)))
 
         # make it crash
         Equo.noclientdb = False
@@ -346,18 +412,24 @@ def database(options):
         try:
             Equo.clientDbconn.isCounterAvailable(1)
         except:
-            print_error(darkred(" * ")+bold("Entropy database")+red(" has never been in sync with Portage one. So, you can't run this unless you run '")+bold("equo database generate")+red("' first. Sorry."))
+            mytxt = "%s %s: %s %s." % (
+                bold(_("Entropy database")),
+                red(_("has never been in sync with Portage. So, you can't run this unless you run first")),
+                bold(_("equo database generate")),
+                red(_("Sorry")),
+            )
+            print_error(darkred(" * ")+mytxt)
             return 1
 
         import shutil
-        print_info(red(" Collecting Portage counters..."), back = True)
+        print_info(red(" %s..." % (_("Collecting Portage counters"),) ), back = True)
         installed_packages = Spm.get_installed_packages_counter()
-        print_info(red(" Collecting Entropy packages..."), back = True)
+        print_info(red(" %s..." % (_("Collecting Entropy packages"),) ), back = True)
         installedCounters = set()
         toBeAdded = set()
         toBeRemoved = set()
 
-        print_info(red(" Differential Scan..."), back = True)
+        print_info(red(" %s..." % (_("Differential Scan"),)), back = True)
         # packages to be added/updated (handle add/update later)
         for x in installed_packages:
             installedCounters.add(x[1])
@@ -392,42 +464,58 @@ def database(options):
                     toBeRemoved.add(x[1])
 
         if (not toBeRemoved) and (not toBeAdded):
-            print_info(red(" Databases already synced."))
+            print_info(red(" %s." % (_("Databases already synced"),)))
             # then exit gracefully
             return 0
 
         # check lock file
         gave_up = Equo.lock_check(Equo._resources_run_check_lock)
         if gave_up:
-            print_info(red(" Entropy locked, giving up."))
+            print_info(red(" %s." % (_("Entropy locked, giving up"),)))
             return 2
 
         Equo._resources_run_create_lock()
 
         if toBeRemoved:
-            print_info(brown(" @@ ")+blue("Someone removed these packages. Would be removed from the Entropy database:"))
+            mytxt = blue("%s. %s:") % (
+                _("Someone removed these packages"),
+                _("They would be removed from the system database"),
+            )
+            print_info(brown(" @@ ")+mytxt)
 
             for x in toBeRemoved:
                 atom = Equo.clientDbconn.retrieveAtom(x)
                 print_info(brown("    # ")+red(atom))
             rc = "Yes"
-            if etpUi['ask']: rc = Equo.askQuestion(">>   Continue with removal?")
+            if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with removal ?"),))
             if rc == "Yes":
                 queue = 0
                 totalqueue = str(len(toBeRemoved))
                 for x in toBeRemoved:
                     queue += 1
                     atom = Equo.clientDbconn.retrieveAtom(x)
-                    print_info(red(" ++ ")+bold("(")+blue(str(queue))+"/"+red(totalqueue)+bold(") ")+">>> Removing "+darkgreen(atom))
+                    mytxt = " %s (%s/%s) %s %s %s" % (
+                        red("--"),
+                        blue(str(queue)),
+                        red(totalqueue),
+                        brown(">>>"),
+                        _("Removing"),
+                        darkgreen(atom),
+                    )
+                    print_info(mytxt)
                     Equo.clientDbconn.removePackage(x)
-                print_info(brown(" @@ ")+blue("Database removal complete."))
+                print_info(brown(" @@ ")+blue("%s." % (_("Database removal complete"),) ))
 
         if toBeAdded:
-            print_info(brown(" @@ ")+blue("Someone added these packages. Would be added/updated into the Entropy database:"))
+            mytxt = blue("%s. %s:") % (
+                _("Someone added these packages"),
+                _("They would be added to the system database"),
+            )
+            print_info(brown(" @@ ")+mytxt)
             for x in toBeAdded:
                 print_info(darkgreen("   # ")+red(x[0]))
             rc = "Yes"
-            if etpUi['ask']: rc = Equo.askQuestion(">>   Continue with adding?")
+            if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with adding ?"),) )
             if rc == "No":
                 Equo._resources_run_remove_lock()
                 return 0
@@ -437,7 +525,15 @@ def database(options):
             queue = 0
             for atom,counter in toBeAdded:
                 queue += 1
-                print_info(red(" ++ ")+bold("(")+blue(str(queue))+"/"+red(totalqueue)+bold(") ")+">>> Adding "+darkgreen(atom))
+                mytxt = " %s (%s/%s) %s %s %s" % (
+                    red("++"),
+                    blue(str(queue)),
+                    red(totalqueue),
+                    brown(">>>"),
+                    _("Adding"),
+                    darkgreen(atom),
+                )
+                print_info(mytxt)
                 if not os.path.isdir(etpConst['entropyunpackdir']):
                     os.makedirs(etpConst['entropyunpackdir'])
                 temptbz2 = etpConst['entropyunpackdir']+"/"+atom.split("/")[1]+".tbz2"
@@ -453,9 +549,16 @@ def database(options):
                 try:
                     mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
                 except Exception, e:
-                    Equo.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Database gentoosync: Exception caught: %s: %s" % (str(Exception),str(e),))
-                    print_warning(red("!!! An error occured while analyzing: ")+blue(atom))
-                    print_warning("Exception: %s: %s" % (str(Exception),str(e),))
+                    Equo.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "Database gentoosync: Exception caught: %s: %s" % (
+                            str(Exception),
+                            str(e),
+                        )
+                    )
+                    print_warning(red("!!! %s: " % (_("An error occured while analyzing")) )+blue(atom))
+                    print_warning("%s: %s: %s" % (_("Exception"),str(Exception),str(e),))
                     continue
 
                 # create atom string
@@ -475,7 +578,7 @@ def database(options):
                 Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
                 os.remove(temptbz2)
 
-            print_info(brown(" @@ ")+blue("Database update completed."))
+            print_info(brown(" @@ ")+blue("%s." % (_("Database update completed"),)))
 
         Equo._resources_run_remove_lock()
         return 0
@@ -493,7 +596,8 @@ def updater(options):
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
-        print_error(red("You are not ")+bold("root")+red("."))
+        mytxt = _("You are not") # you are not root
+        print_error(red(mytxt)+bold("root")+red("."))
         return 1
 
     rc = 0
@@ -508,13 +612,13 @@ def pythonUpdater():
     import text_query
     import text_ui
     pattern = re.compile(r'^(python)[0-9](.)[0-9]$')
-    print_info(brown(" @@ ")+blue("Looking for old Python directories..."), back = True)
+    print_info(brown(" @@ ")+blue(_("Looking for old Python directories...")), back = True)
     mydirs = [x for x in os.listdir("/usr/lib") if x.startswith("python") and pattern.match(x)]
     if len(mydirs) <= 1:
-        print_info(brown(" @@ ")+blue("Your Python installation seems fine."))
+        print_info(brown(" @@ ")+blue(_("Your Python installation seems fine.")))
         return 0
     mydirs.sort()
-    print_info(brown(" @@ ")+blue("Multiple Python directories found:"))
+    print_info(brown(" @@ ")+blue(_("Multiple Python directories found:")))
     for pdir in mydirs:
         print_info(red("    # ")+blue("/usr/lib/%s" % (pdir,) ))
 
@@ -527,9 +631,18 @@ def pythonUpdater():
         idpackages |= text_query.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
 
     if not idpackages:
-        print_info(brown(" @@ ")+blue("There are no files in (%s) belonging to your old Python installation." % (', '.join(old_pdirs),)))
+        mytxt = blue("%s: %s") % (
+            _("There are no files belonging to your old Python installation in"),
+            ', '.join(old_pdirs),
+        )
+        print_info(brown(" @@ ")+mytxt)
         return 0
-    print_info(brown(" @@ ")+blue("These are the installed packages with files in (%s):" % (red(', '.join(old_pdirs)),)))
+
+    mytxt = blue("%s: %s") % (
+        _("These are the installed packages with files in:"),
+        ', '.join(old_pdirs),
+    )
+    print_info(brown(" @@ ")+mytxt)
 
     keyslots = set()
     for idpackage in idpackages:
@@ -537,10 +650,10 @@ def pythonUpdater():
         keyslots.add((key,slot))
         print_info(red("    # ")+key+":"+slot)
 
-    print_info(brown(" @@ ")+blue("Searching inside available repositories..."))
+    print_info(brown(" @@ ")+blue("%s..." % (_("Searching inside available repositories"),) ))
     matchedAtoms = set()
     for atomkey,slot in keyslots:
-        print_info(brown("   @@ ")+red("Matching ")+bold(atomkey)+red(":")+darkgreen(slot), back = True)
+        print_info(brown("   @@ ")+red("%s " % (_("Matching"),) )+bold(atomkey)+red(":")+darkgreen(slot), back = True)
         match = Equo.atomMatch(atomkey, matchSlot = slot)
         if match[0] != -1:
             matchedAtoms.add((atomkey+":"+slot,match))
@@ -548,7 +661,11 @@ def pythonUpdater():
 
     # now show, then ask or exit (if pretend)
     if not matchedAtoms:
-        print_info(brown(" @@ ")+blue("There are no files in (%s) belonging to your old Python installation stored in the repositories." % (', '.join(old_pdirs),)))
+        mytxt = blue("%s: %s") % (
+            _("There are no files belonging to your old Python installation stored in the repositories for"),
+            ', '.join(old_pdirs),
+        )
+        print_info(brown(" @@ ")+mytxt)
         return 0
 
     rc = text_ui.installPackages(atomsdata = matchedAtoms)

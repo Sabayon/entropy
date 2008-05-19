@@ -1,7 +1,6 @@
 ../libraries/outputTools.py
 ../libraries/entropy.py
 ../libraries/entropyTools.py
-../libraries/databaseTools.py
 ../libraries/exceptionTools.py
 ../libraries/entropyConstants.py
 ../libraries/entropy_i18n.py

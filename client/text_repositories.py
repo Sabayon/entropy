@@ -30,6 +30,7 @@ from outputTools import *
 import exceptionTools
 from entropy import EquoInterface
 Equo = EquoInterface(noclientdb = True)
+from entropy_i18n import _
 
 def repositories(options):
 
@@ -47,7 +48,8 @@ def repositories(options):
     if (options[0] == "update"):
         # check if I am root
         if not Equo.entropyTools.is_user_in_entropy_group():
-            print_error(red("You must be either ")+bold("root")+red(" or in the ")+bold(etpConst['sysgroup'])+red(" group."))
+            mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
+            print_error(mytxt)
             return 1
         rc = do_sync(reponames = repo_names, forceUpdate = equoRequestForceUpdate)
     elif (options[0] == "status"):
@@ -61,7 +63,7 @@ def repositories(options):
 
 # this function shows a list of enabled repositories
 def showRepositories():
-    print_info(darkred(" * ")+darkgreen("Active Repositories:"))
+    print_info(darkred(" * ")+darkgreen("%s:" % (_("Active Repositories"),) ))
     repoNumber = 0
     for repo in etpRepositories:
         repoNumber += 1
@@ -69,13 +71,14 @@ def showRepositories():
         sourcecount = 0
         for pkgrepo in etpRepositories[repo]['packages']:
             sourcecount += 1
-            print_info(red("\t\tPackages Mirror #"+str(sourcecount)+" : ")+darkgreen(pkgrepo))
-        print_info(red("\t\tDatabase URL: ")+darkgreen(etpRepositories[repo]['database']))
-        print_info(red("\t\tRepository identifier: ")+bold(repo))
-        print_info(red("\t\tRepository database path: ")+blue(etpRepositories[repo]['dbpath']))
+            print_info( red("\t\t%s #%s : %s") % (_("Packages Mirror"),sourcecount,darkgreen(pkgrepo),) )
+        print_info( red("\t\t%s: %s") % (_("Database URL"),darkgreen(etpRepositories[repo]['database']),))
+        print_info( red("\t\t%s: %s") % (_("Repository identifier"),bold(repo),) )
+        print_info( red("\t\t%s: %s") % (_("Repository database path"),blue(etpRepositories[repo]['dbpath']),) )
     return 0
 
 def showRepositoryInfo(reponame):
+
     repoNumber = 0
     for repo in etpRepositories:
         repoNumber += 1
@@ -83,22 +86,22 @@ def showRepositoryInfo(reponame):
             break
     print_info(blue("#"+str(repoNumber))+bold(" "+etpRepositories[reponame]['description']))
     if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']):
-        status = "active"
+        status = _("active")
     else:
-        status = "never synced"
-    print_info(darkgreen("\tStatus: ")+darkred(status))
+        status = _("never synced")
+    print_info( darkgreen("\t%s: %s") % (_("Status"),darkred(status),) )
     urlcount = 0
     for repourl in etpRepositories[reponame]['packages'][::-1]:
         urlcount += 1
-        print_info(red("\tPackages URL #"+str(urlcount)+": ")+darkgreen(repourl))
-    print_info(red("\tDatabase URL: ")+darkgreen(etpRepositories[reponame]['database']))
-    print_info(red("\tRepository name: ")+bold(reponame))
-    print_info(red("\tRepository database path: ")+blue(etpRepositories[reponame]['dbpath']))
+        print_info( red("\t%s #%s: %s") % (_("Packages URL"),urlcount,darkgreen(repourl),) )
+    print_info( red("\t%s: %s") % (_("Database URL"),darkgreen(etpRepositories[reponame]['database']),) )
+    print_info( red("\t%s: %s") % (_("Repository name"),bold(reponame),) )
+    print_info( red("\t%s: %s") % (_("Repository database path"),blue(etpRepositories[reponame]['dbpath']),) )
     revision = Equo.get_repository_revision(reponame)
     mhash = Equo.get_repository_db_file_checksum(reponame)
+    print_info( red("\t%s: %s") % (_("Repository database checksum"),mhash,) )
+    print_info( red("\t%s: %s") % (_("Repository revision"),darkgreen(str(revision)),) )
 
-    print_info(red("\tRepository database checksum: ")+mhash)
-    print_info(red("\tRepository revision: ")+darkgreen(str(revision)))
     return 0
 
 
@@ -108,16 +111,17 @@ def do_sync(reponames = [], forceUpdate = False):
     try:
         repoConn = Equo.Repositories(reponames, forceUpdate)
     except exceptionTools.PermissionDenied:
-        print_error(red("\t You must run this application as root."))
+        mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
+        print_error("\t"+mytxt)
         return 1
     except exceptionTools.MissingParameter:
-        print_error(darkred(" * ")+red("No repositories specified in ")+etpConst['repositoriesconf'])
+        print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
         return 127
     except exceptionTools.OnlineMirrorError:
-        print_error(darkred(" @@ ")+red("You are not connected to the Internet. You should."))
+        print_error(darkred(" @@ ")+red(_("You are not connected to the Internet. You should.")))
         return 126
     except Exception, e:
-        print_error(darkred(" @@ ")+red("Unhandled exception: %s" % (str(e),)))
+        print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
         return 2
 
     rc = repoConn.sync()

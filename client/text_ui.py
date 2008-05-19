@@ -26,6 +26,7 @@ from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
 Equo = EquoInterface()
+from entropy_i18n import _
 
 def package(options):
 
@@ -98,7 +99,7 @@ def package(options):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
             status, rc = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum)
         else:
-            print_error(red(" Nothing to do."))
+            print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
 
     elif (options[0] == "world"):
@@ -108,7 +109,7 @@ def package(options):
         if myopts or equoRequestResume:
             status, rc = removePackages(myopts, deps = equoRequestDeps, deep = equoRequestDeep, configFiles = equoRequestConfigFiles, resume = equoRequestResume)
         else:
-            print_error(red(" Nothing to do."))
+            print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
     else:
         rc = -10
@@ -120,7 +121,8 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
-        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
+        print_warning(mytxt)
         etpUi['pretend'] = True
 
     if not resume:
@@ -130,19 +132,21 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
             # set the new branch
             result = Equo.move_to_branch(upgradeTo, pretend = etpUi['pretend'])
             if result == 1:
-                print_error(red("Selected release: ")+bold(str(upgradeTo))+red(" is not available."))
+                print_error(red("%s: " % (_("Selected release"),) ) + bold(str(upgradeTo)) + \
+                    red(" %s." % (_("is not available"),) )
+                )
                 return 1,-2
             branch = upgradeTo
         else:
             branch = etpConst['branch']
 
-        print_info(red(" @@ ")+blue("Calculating world packages..."))
+        print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
         update, remove, fine = Equo.calculate_world_updates(empty_deps = replay, branch = branch)
 
         if (etpUi['verbose'] or etpUi['pretend']):
-            print_info(red(" @@ ")+darkgreen("Packages matching update:\t\t")+bold(str(len(update))))
-            print_info(red(" @@ ")+darkred("Packages matching not available:\t\t")+bold(str(len(remove))))
-            print_info(red(" @@ ")+blue("Packages matching already up to date:\t")+bold(str(len(fine))))
+            print_info(red(" @@ ")+darkgreen("%s:\t\t" % (_("Packages matching update"),) )+bold(str(len(update))))
+            print_info(red(" @@ ")+darkred("%s:\t\t" % (_("Packages matching not available"),) )+bold(str(len(remove))))
+            print_info(red(" @@ ")+blue("%s:\t" % (_("Packages matching already up to date"),) )+bold(str(len(fine))))
 
         del fine
 
@@ -168,7 +172,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
         # check if there's something to resume
         resume_cache = Equo.dumpTools.loadobj(etpCache['world'])
         if (not resume_cache) or (etpConst['uid'] != 0): # None or {}
-            print_error(red("Nothing to resume."))
+            print_error(red("%s." % (_("Nothing to resume"),) ))
             return 128,-1
         else:
             try:
@@ -179,7 +183,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 onlyfetch = resume_cache['onlyfetch']
                 Equo.dumpTools.dumpobj(etpCache['remove'],list(remove))
             except (OSError,IOError,KeyError):
-                print_error(red("Resume cache corrupted."))
+                print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
                     Equo.dumpTools.dumpobj(etpCache['world'],{})
                     Equo.dumpTools.dumpobj(etpCache['install'],{})
@@ -197,7 +201,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
         if rc[1] != 0:
             return 1,rc[0]
     else:
-        print_info(red(" @@ ")+blue("Nothing to update."))
+        print_info(red(" @@ ")+blue("%s." % (_("Nothing to update"),) ))
 
     etpConst['collisionprotect'] = oldcollprotect
 
@@ -207,22 +211,34 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     if (remove):
         remove = list(remove)
         remove.sort()
-        print_info(red(" @@ ")+blue("On the system there are packages that are not available anymore in the online repositories."))
-        print_info(red(" @@ ")+blue("Even if they are usually harmless, it is suggested to remove them."))
+        print_info(red(" @@ ") + \
+            blue("%s." % (
+                    _("On the system there are packages that are not available anymore in the online repositories"),
+                )
+            )
+        )
+        print_info(red(" @@ ")+blue(_("Even if they are usually harmless, it is suggested to remove them.")))
 
         if (not etpUi['pretend']):
             if human:
-                rc = Equo.askQuestion("     Would you like to query them ?")
+                rc = Equo.askQuestion("     %s" % (_("Would you like to scan them ?"),) )
                 if rc == "No":
                     return 0,0
 
             # run removePackages with --nodeps
-            removePackages(atomsdata = remove, deps = False, systemPackagesCheck = False, configFiles = True, resume = resume, human = human)
+            removePackages(
+                atomsdata = remove,
+                deps = False,
+                systemPackagesCheck = False,
+                configFiles = True,
+                resume = resume,
+                human = human
+            )
         else:
-            print_info(red(" @@ ")+blue("Calculation complete."))
+            print_info(red(" @@ ")+blue("%s." % (_("Calculation complete"),) ))
 
     else:
-        print_info(red(" @@ ")+blue("Nothing to remove."))
+        print_info(red(" @@ ")+blue("%s." % (_("Nothing to remove"),) ))
 
     return 0,0
 
@@ -230,7 +246,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
-        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
+        print_warning(mytxt)
         etpUi['pretend'] = True
 
     etpSys['dirstoclean'].clear()
@@ -256,7 +273,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     reasons = maskingReasonsStorage.get(package)
                     if reasons != None:
                         keyreasons = reasons.keys()
-                        print_warning(bold("!!!")+red(" Every package matching ")+bold(package)+red(" is masked."))
+                        mytxt = "%s %s %s %s." % (
+                            bold("!!!"),
+                            red(_("Every package matching")), # every package matching app-foo is masked
+                            bold(package),
+                            red(_("is masked")),
+                        )
+                        print_warning(mytxt)
                         for key in keyreasons:
                             reason = etpConst['packagemaskingreasons'][key]
                             print_warning(bold("    # ")+red("Reason: ")+blue(reason))
@@ -266,10 +289,21 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                                 try:
                                     m_atom = dbconn.retrieveAtom(m_match[0])
                                 except TypeError:
-                                    m_atom = "idpackage: %s matching %s is broken" % (m_match[0],package,)
-                                print_warning(blue("      <> ")+red("atom: ")+brown(m_atom))
+                                    m_atom = "idpackage: %s %s %s %s" % (
+                                        m_match[0],
+                                        _("matching"),
+                                        package,
+                                        _("is broken"),
+                                    )
+                                print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
                     else:
-                        print_warning(bold("!!!")+red(" No match for ")+bold(package)+red(" in database."))
+                        mytxt = "%s %s %s %s." % (
+                            bold("!!!"),
+                            red(_("No match for")),
+                            bold(package),
+                            red(_("in repositories")),
+                        )
+                        print_warning(mytxt)
                         # search similar packages
                         # you meant...?
                         if len(package) < 4:
@@ -277,7 +311,14 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         items = Equo.get_meant_packages(package)
                         if items:
                             items_cache = set()
-                            print_info(bold("  ?")+red(" When you wrote ")+bold(package)+darkgreen(" You Meant(tm) ")+red("one of these below?"))
+                            mytxt = "%s %s %s %s %s." % (
+                                bold("   ?"),
+                                red(_("When you wrote")),
+                                bold(package),
+                                darkgreen(_("You Meant(tm)")),
+                                red(_("one of these below?")),
+                            )
+                            print_info(mytxt)
                             for match in items:
                                 dbc = Equo.openRepositoryDatabase(match[1])
                                 key, slot = dbc.retrieveKeySlot(match[0])
@@ -293,27 +334,30 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     if status == 0:
                         foundAtoms += atomsfound[:]
                         del atomsfound
-                    elif status == -1:
-                        print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not a valid Entropy package. Skipping..."))
-                        continue
-                    elif status == -2:
-                        print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not a valid Entropy package. Skipping..."))
-                        continue
-                    elif status == -3:
-                        print_warning(red("## ATTENTION:")+bold(" "+os.path.basename(pkg)+" ")+red(" is not compiled with the same architecture of the system. Skipping..."))
+                    elif status in (-1,-2,-3,):
+                        errtxt = _("is not a valid Entropy package")
+                        if status == -3:
+                            errtxt = _("is not compiled with the same architecture of the system")
+                        mytxt = "## %s: %s %s. %s ..." % (
+                            red(_("ATTENTION")),
+                            bold(os.path.basename(pkg)),
+                            red(errtxt),
+                            red(_("Skipped")),
+                        )
+                        print_warning(mytxt)
                         continue
                     else:
                         raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
 
         # are there packages in foundAtoms?
         if (not foundAtoms):
-            print_error(red("No packages found"))
+            print_error( red("%s." % (_("No packages found"),) ))
             dirscleanup()
             return 127,-1
 
         if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
             # now print the selected packages
-            print_info(red(" @@ ")+blue("These are the chosen packages:"))
+            print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
             totalatoms = len(foundAtoms)
             atomscounter = 0
             for idpackage,reponame in foundAtoms:
@@ -334,10 +378,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 pkgslot = dbconn.retrieveSlot(idpackage)
 
                 # client info
-                installedVer = "Not installed"
+                installedVer = _("Not installed")
                 installedTag = "NoTag"
                 installedRev = "NoRev"
-                installedRepo = "Not available"
+                installedRepo = _("Not available")
                 pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found
@@ -350,38 +394,49 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     installedRev = Equo.clientDbconn.retrieveRevision(idx)
 
                 print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
-                print_info("\t"+red("Versioning:\t")+" "+blue(installedVer)+" / "+blue(installedTag)+" / "+blue(str(installedRev))+bold(" ===> ")+darkgreen(pkgver)+" / "+darkgreen(pkgtag)+" / "+darkgreen(str(pkgrev)))
+                mytxt = "\t%s:\t %s / %s / %s %s %s / %s / %s" % (
+                    red(_("Versions")),
+                    blue(installedVer),
+                    blue(installedTag),
+                    blue(str(installedRev)),
+                    bold("===>"),
+                    darkgreen(pkgver),
+                    darkgreen(pkgtag),
+                    darkgreen(str(pkgrev)),
+                )
+                print_info(mytxt)
                 # tell wether we should update it
                 is_installed = True
-                if installedVer == "Not installed":
+                if installedVer == _("Not installed"):
                     is_installed = False
                     installedVer = "0"
                 if installedRev == "NoRev":
                     installedRev = 0
                 pkgcmp = Equo.entropyTools.entropyCompareVersions(
-                    (pkgver,pkgtag,pkgrev),
-                    (installedVer,installedTag,installedRev)
+                    (pkgver,pkgtag,pkgrev,),
+                    (installedVer,installedTag,installedRev,)
                 )
                 if (pkgcmp == 0):
                     if installedRepo != reponame:
-                        action = darkgreen("Reinstall")+" | Switch repo: "+blue(installedRepo)+" ===> "+darkgreen(reponame)
+                        mytxt = " | %s: " % (_("Switch repo"),)
+                        action = darkgreen(_("Reinstall"))+mytxt+blue(installedRepo)+" ===> "+darkgreen(reponame)
                     else:
-                        action = darkgreen("Reinstall")
+                        action = darkgreen(_("Reinstall"))
                 elif (pkgcmp > 0) or (not is_installed):
                     if (installedVer == "0"):
-                        action = darkgreen("Install")
+                        action = darkgreen(_("Install"))
                     else:
-                        action = blue("Upgrade")
+                        action = blue(_("Upgrade"))
                 else:
-                    action = red("Downgrade")
-                print_info("\t"+red("Action:\t\t")+" "+action)
+                    action = red(_("Downgrade"))
+                print_info("\t"+red("%s:\t\t" % (_("Action"),) )+" "+action)
 
             if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
-                print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
+                print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
 
             if deps:
                 if (etpUi['ask']):
-                    rc = Equo.askQuestion("     Would you like to continue with dependencies calculation ?")
+                    rc = Equo.askQuestion("     %s" % (_("Would you like to continue with dependencies calculation ?"),) )
                     if rc == "No":
                         dirscleanup()
                         return 0,0
@@ -390,30 +445,30 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         removalQueue = [] # aka, conflicts
 
         if deps:
-            print_info(red(" @@ ")+blue("Calculating dependencies..."))
+            print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
             runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
             if status == -2:
 
-                print_error(red(" @@ ")+blue("Cannot find needed dependencies: "))
+                print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
                 for x in runQueue:
                     reasons = maskingReasonsStorage.get(x)
                     if reasons != None:
                         keyreasons = reasons.keys()
                         for key in keyreasons:
                             reason = etpConst['packagemaskingreasons'][key]
-                            print_warning(bold("    # ")+red("Reason: ")+blue(reason))
+                            print_warning(bold("    # ")+red("%s: " % (_("Reason"),) )+blue(reason))
                             masked_packages = reasons[key]
                             for m_match in masked_packages:
                                 dbconn = Equo.openRepositoryDatabase(m_match[1])
                                 m_atom = dbconn.retrieveAtom(m_match[0])
-                                print_warning(blue("      <> ")+red("atom: ")+brown(m_atom))
+                                print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
                     else:
-                        print_error(red("    # ")+blue("Not found: ")+brown(x))
+                        print_error(red("    # ")+blue("%s: " % (_("Not found"),) )+brown(x))
                         crying_atoms = Equo.find_belonging_dependency([x])
                         if crying_atoms:
-                            print_error(red("      # ")+blue("Probably needed by:"))
+                            print_error(red("      # ")+blue("%s:" % (_("Probably needed by"),) ))
                             for crying_atomdata in crying_atoms:
-                                print_error(red("        # ")+" ["+blue("from")+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
+                                print_error(red("        # ")+" ["+blue(_("from"))+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
 
                 dirscleanup()
                 return 127, -1
@@ -422,7 +477,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 runQueue.append(atomInfo)
 
         if ((not runQueue) and (not removalQueue)):
-            print_error(red("Nothing to do."))
+            print_error(red("%s." % (_("Nothing to do"),) ))
             dirscleanup()
             return 126,-1
 
@@ -438,7 +493,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
         if (runQueue):
             if (etpUi['ask'] or etpUi['pretend']):
-                print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("merged:"))
+                mytxt = "%s %s:" % (blue(_("These are the packages that would be")),bold(_("merged")),)
+                print_info(red(" @@ ")+mytxt)
 
             count = 0
             for idpackage,reponame in runQueue:
@@ -475,7 +531,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 installedVer = '-1'
                 installedTag = ''
                 installedRev = 0
-                installedRepo = 'Not available'
+                installedRepo = _('Not available')
                 pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found an installed package
@@ -540,7 +596,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if removalQueue:
 
             if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']) and removalQueue:
-                print_info(red(" @@ ")+blue("These are the packages that would be ")+bold("removed")+blue(" (conflicting/substituted):"))
+                mytxt = "%s %s (%s):" % (
+                    blue(_("These are the packages that would be")),
+                    bold(_("removed")),
+                    blue(_("conflicting/substituted")),
+                )
+                print_info(red(" @@ ")+mytxt)
 
                 for idpackage in removalQueue:
                     pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
@@ -548,40 +609,80 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         continue
                     onDiskFreedSize += Equo.clientDbconn.retrieveOnDiskSize(idpackage)
                     installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
-                    repoinfo = red("[")+brown("from: ")+bold(installedfrom)+red("] ")
+                    repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
                     print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
 
         if (runQueue) or (removalQueue) and not etpUi['quiet']:
             # show download info
-            print_info(red(" @@ ")+blue("Packages needing install:\t")+red(str(len(runQueue))))
-            print_info(red(" @@ ")+blue("Packages needing removal:\t")+red(str(pkgsToRemove)))
+            mytxt = "%s: %s" % (blue(_("Packages needing to be installed/updated/downgraded")),red(str(len(runQueue))),)
+            print_info(red(" @@ ")+mytxt)
+            mytxt = "%s: %s" % (blue(_("Packages needing to be removed")),red(str(pkgsToRemove)),)
+            print_info(red(" @@ ")+mytxt)
             if (etpUi['ask'] or etpUi['verbose'] or etpUi['pretend']):
-                print_info(red(" @@ ")+darkgreen("Packages needing install:\t")+darkgreen(str(pkgsToInstall)))
-                print_info(red(" @@ ")+darkgreen("Packages needing reinstall:\t")+darkgreen(str(pkgsToReinstall)))
-                print_info(red(" @@ ")+blue("Packages needing update:\t\t")+blue(str(pkgsToUpdate)))
-                print_info(red(" @@ ")+red("Packages needing downgrade:\t")+red(str(pkgsToDowngrade)))
-            if downloadSize > 0:
-                print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(downloadSize))))
-            else:
-                print_info(red(" @@ ")+blue("Download size:\t\t\t")+bold("0b"))
-            if deltaSize > 0:
-                print_info(red(" @@ ")+blue("Used disk space:\t\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(deltaSize))))
-            else:
-                print_info(red(" @@ ")+blue("Freed disk space:\t\t")+bold(str(Equo.entropyTools.bytesIntoHuman(abs(deltaSize)))))
+                mytxt = "%s: %s" % (
+                    darkgreen(_("Packages needing to be installed")),
+                    darkgreen(str(pkgsToInstall)),
+                )
+                print_info(red(" @@ ")+mytxt)
+                mytxt = "%s: %s" % (
+                    brown(_("Packages needing to be reinstalled")),
+                    brown(str(pkgsToReinstall)),
+                )
+                print_info(red(" @@ ")+mytxt)
+                mytxt = "%s: %s" % (
+                    blue(_("Packages needing to be updated")),
+                    blue(str(pkgsToUpdate)),
+                )
+                print_info(red(" @@ ")+mytxt)
+                mytxt = "%s: %s" % (
+                    red(_("Packages needing to be downgraded")),
+                    red(str(pkgsToUpdate)),
+                )
+                print_info(red(" @@ ")+mytxt)
 
-            print_info(red(" @@ ")+bold("You need at least:\t\t")+blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))+" of free space"))
+            if downloadSize > 0:
+                mysize = str(Equo.entropyTools.bytesIntoHuman(downloadSize))
+            else:
+                mysize = "0b"
+            mytxt = "%s: %s" % (
+                blue(_("Download size")),
+                bold(mysize),
+            )
+            print_info(red(" @@ ")+mytxt)
+
+            if deltaSize > 0:
+                mysizetxt = _("Used disk space")
+            else:
+                mysizetxt = _("Freed disk space")
+                deltaSize = deltaSize*-1
+            mytxt = "%s: %s" % (
+                blue(mysizetxt),
+                bold(str(Equo.entropyTools.bytesIntoHuman(deltaSize))),
+            )
+            print_info(red(" @@ ")+mytxt)
+
+            mytxt = "%s: %s %s" % (
+                blue(_("You need at least")),
+                blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))),
+                _("of free space"),
+            )
+            print_info(red(" @@ ")+mytxt)
             # check for disk space and print a warning
             ## unpackSize
             size_match = Equo.entropyTools.check_required_space(etpConst['entropyunpackdir'],neededSize)
             if not size_match:
-                print_info(darkred(" !!! ")+bold("Attention"))
-                print_info(darkred(" !!! ")+bold("Attention"))
-                print_info(darkred(" !!! ")+blue("You don't have enough space in %s for the installation. You will run into troubles!" % (etpConst['entropyunpackdir'],) ) )
-                print_info(darkred(" !!! ")+bold("Attention"))
-                print_info(darkred(" !!! ")+bold("Attention"))
+                mytxt = "%s: %s" % (
+                    _("You don't have enough space for the installation. Free some space into"),
+                    etpConst['entropyunpackdir'],
+                )
+                print_info(darkred(" !!! ")+bold(_("Attention")))
+                print_info(darkred(" !!! ")+bold(_("Attention")))
+                print_info(darkred(" !!! ")+blue(mytxt))
+                print_info(darkred(" !!! ")+bold(_("Attention")))
+                print_info(darkred(" !!! ")+bold(_("Attention")))
 
         if (etpUi['ask']):
-            rc = Equo.askQuestion("     Would you like to run the queue ?")
+            rc = Equo.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
             if rc == "No":
                 dirscleanup()
                 return 0,0
@@ -610,7 +711,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         resume_cache = Equo.dumpTools.loadobj(etpCache['install'])
         if not resume_cache: # None or {}
 
-            print_error(red("Nothing to resume."))
+            print_error(red("%s." % (_("Nothing to resume"),) ))
             return 128,-1
 
         else:
@@ -621,9 +722,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 onlyfetch = resume_cache['onlyfetch']
                 emptydeps = resume_cache['emptydeps']
                 deepdeps = resume_cache['deepdeps']
-                print_warning(red("Resuming previous operations..."))
+                print_warning(red("%s..." % (_("Resuming previous operations"),) ))
             except:
-                print_error(red("Resume cache corrupted."))
+                print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
                     Equo.dumpTools.dumpobj(etpCache['install'],{})
                 except (IOError,OSError):
@@ -645,13 +746,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     currentqueue = 0
 
     def read_lic_selection():
-        print_info(darkred("    Please choose an action"))
-        print_info("      ("+blue("1")+")"+darkgreen(" Read the license"))
-        print_info("      ("+blue("2")+")"+brown(" Accept the license (I've read it)"))
-        print_info("      ("+blue("3")+")"+darkred(" Accept the license and don't ask anymore (I've read it)"))
-        print_info("      ("+blue("0")+")"+bold(" Quit"))
+        print_info(darkred("    %s" % (_("Please select an option"),) ))
+        print_info("      ("+blue("1")+")"+darkgreen(" %s" % (_("Read the license"),) ))
+        print_info("      ("+blue("2")+")"+brown(" %s" % (_("Accept the license (I've read it)"),) ))
+        print_info("      ("+blue("3")+")"+darkred(" %s" % (_("Accept the license and don't ask anymore (I've read it)"),) ))
+        print_info("      ("+blue("0")+")"+bold(" %s" % (_("Quit"),) ))
         # wait user interaction
-        action = readtext("       Your choice (type a number and press enter): ")
+        action = readtext("       %s: " % (_("Your choice (type a number and press enter)"),) )
         return action
 
     ### Before even starting the fetch, make sure that the user accepts their licenses
@@ -664,15 +765,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             if mylic in licenses:
                 licenses.pop(mylic)
     if licenses:
-        print_info(red(" @@ ")+blue("You need to accept the licenses below:"))
+        print_info(red(" @@ ")+blue("%s:" % (_("You need to accept the licenses below"),) ))
         keys = licenses.keys()
         keys.sort()
         for key in keys:
-            print_info(red("    :: License: ")+bold(key)+red(", needed by:"))
+            print_info(red("    :: %s: " % (_("License"),) )+bold(key)+red(", %s:" % (_("needed by"),) ))
             for match in licenses[key]:
                 dbconn = Equo.openRepositoryDatabase(match[1])
                 atom = dbconn.retrieveAtom(match[0])
-                print_info(blue("       ## ")+"["+brown("from")+":"+red(match[1])+"] "+bold(atom))
+                print_info(blue("       ## ")+"["+brown(_("from"))+":"+red(match[1])+"] "+bold(atom))
             while 1:
                 choice = read_lic_selection()
                 try:
@@ -688,7 +789,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     filename = Equo.get_text_license(key, match[1])
                     viewer = Equo.get_file_viewer()
                     if viewer == None:
-                        print_info(red("    No file viewer ! License saved into %s " % (filename,) ))
+                        print_info(red("    %s ! %s %s " % (_("No file viewer"),_("License saved into"),filename,) ))
                         continue
                     os.system(viewer+" "+filename)
                     os.remove(filename)
@@ -710,7 +811,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             Package = Equo.Package()
             Package.prepare(packageInfo,"fetch", metaopts)
 
-            xterm_header = "Equo (fetch) :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
             print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
 
             rc = Package.run(xterm_header = xterm_header)
@@ -723,7 +824,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             del Package
 
     if onlyfetch:
-        print_info(red(" @@ ")+blue("Fetch Complete."))
+        print_info(red(" @@ ")+blue("%s." % (_("Download completed"),) ))
         return 0,0
 
     for packageInfo in runQueue:
@@ -734,7 +835,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         Package = Equo.Package()
         Package.prepare(packageInfo,"install", metaopts)
 
-        xterm_header = "Equo (install) :: "+str(currentqueue)+" of "+totalqueue+" ::"
+        xterm_header = "Equo ("+_("install")+") :: "+str(currentqueue)+" of "+totalqueue+" ::"
         print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
 
         rc = Package.run(xterm_header = xterm_header)
@@ -762,7 +863,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         del Package
 
 
-    print_info(red(" @@ ")+blue("Install Complete."))
+    print_info(red(" @@ ")+blue("%s." % (_("Installation completed"),) ))
     try:
         # clear resume information
         Equo.dumpTools.dumpobj(etpCache['install'],{})
@@ -776,7 +877,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
-        print_warning(red("Running with ")+bold("--pretend")+red("..."))
+        mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
+        print_warning(mytxt)
         etpUi['pretend'] = True
 
     doSelectiveRemoval = False
@@ -793,19 +895,24 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             for package in packages:
                 idpackage, result = Equo.clientDbconn.atomMatch(package)
                 if idpackage == -1:
-                    print_warning(red("## ATTENTION -> package")+bold(" "+package+" ")+red("is not installed."))
+                    mytxt = "## %s: %s %s." % (
+                        red(_("ATTENTION")),
+                        bold(package),
+                        red(_("is not installed")),
+                    )
+                    print_warning(mytxt)
                     continue
                 foundAtoms.append(idpackage)
 
         if not foundAtoms:
-            print_error(red("No packages found"))
+            print_error(red("%s." % (_("No packages found"),) ))
             return 125,-1
 
         plainRemovalQueue = []
 
         lookForOrphanedPackages = True
         # now print the selected packages
-        print_info(red(" @@ ")+blue("These are the chosen packages:"))
+        print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
         totalatoms = len(foundAtoms)
         atomscounter = 0
         for idpackage in foundAtoms:
@@ -819,7 +926,15 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             if systemPackagesCheck:
                 valid = Equo.validatePackageRemoval(idpackage)
                 if not valid:
-                    print_warning(darkred("   # !!! ")+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+red(" is a vital package. Removal forbidden."))
+                    mytxt = "   %s (%s/%s) %s: %s. %s." % (
+                        bold("!!!"),
+                        brown(str(atomscounter)),
+                        blue(str(totalatoms)),
+                        enlightenatom(pkgatom), # every package matching app-foo is masked
+                        red(_("vital package")),
+                        red(_("Removal forbidden")),
+                    )
+                    print_warning(mytxt)
                     continue
 
             plainRemovalQueue.append(idpackage)
@@ -827,20 +942,23 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
             disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
             disksize = Equo.entropyTools.bytesIntoHuman(disksize)
-            disksizeinfo = " | %s: %s" % (blue("Disk size"),bold(str(disksize)),)
-            print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+" | Installed from: "+red(installedfrom)+disksizeinfo)
+            disksizeinfo = " | %s: %s" % (blue(_("Disk size")),bold(str(disksize)),)
+            mytxt = " | %s: " % (_("Installed from"),)
+            print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+mytxt+red(installedfrom)+disksizeinfo)
 
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
-            print_info(red(" @@ ")+blue("Number of packages: ")+str(totalatoms))
+            print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
 
         if (not plainRemovalQueue):
-            print_error(red("Nothing to do."))
+            print_error(red("%s." % (_("Nothing to do"),) ))
             return 126,-1
 
         if (deps):
-            question = "     Would you like to look for packages that can be removed along with the selected above?"
+            question = "     %s" % (
+                _("Would you like to look for packages that can be removed along with the selected above ?"),
+            )
         else:
-            question = "     Would you like to remove them now?"
+            question = "     %s" % (_("Would you like to remove them now ?"),)
             lookForOrphanedPackages = False
 
         if (etpUi['ask']):
@@ -856,7 +974,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             choosenRemovalQueue = []
             choosenRemovalQueue = Equo.retrieveRemovalQueue(plainRemovalQueue, deep = deep)
             if choosenRemovalQueue:
-                print_info(red(" @@ ")+blue("This is the new removal queue:"))
+                print_info(red(" @@ ")+blue("%s:" % (_("This is the new removal queue"),) ))
                 totalatoms = str(len(choosenRemovalQueue))
                 atomscounter = 0
 
@@ -868,7 +986,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
                     disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
                     disksize = Equo.entropyTools.bytesIntoHuman(disksize)
-                    repositoryInfo = bold("[")+darkgreen("from:")+brown(installedfrom)+bold("]")
+                    repositoryInfo = bold("[")+darkgreen("%s:" % (_("from"),) )+brown(installedfrom)+bold("]")
                     stratomscounter = str(atomscounter)
                     while len(stratomscounter) < len(totalatoms):
                         stratomscounter = " "+stratomscounter
@@ -881,20 +999,23 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 writechar("\n")
 
         if (etpUi['ask']) or human:
-            question = "     Would you like to proceed?"
+            question = "     %s" % (_("Would you like to proceed ?"),)
             if human:
-                question = "     Would you like to proceed with a selective removal ?"
+                question = "     %s" % (_("Would you like to proceed with a selective removal ?"),)
             rc = Equo.askQuestion(question)
             if rc == "No" and not human:
                 return 0,0
             elif rc == "Yes" and human:
                 doSelectiveRemoval = True
             elif rc == "No" and human:
-                rc = Equo.askQuestion("     Would you like to skip this step then ?")
+                rc = Equo.askQuestion("     %s") % (_("Would you like to skip this step then ?"),)
                 if rc == "Yes":
                     return 0,0
         elif deps:
-            Equo.entropyTools.countdown(what = red(" @@ ")+blue("Starting removal in "),back = True)
+            Equo.entropyTools.countdown(
+                what = red(" @@ ")+blue("%s " % (_("Starting removal in"),)),
+                back = True
+            )
 
         for idpackage in plainRemovalQueue: # append at the end requested packages if not in queue
             if idpackage not in removalQueue:
@@ -916,15 +1037,15 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         # check if there's something to resume
         resume_cache = Equo.dumpTools.loadobj(etpCache['remove'])
         if not resume_cache: # None or {}
-            print_error(red("Nothing to resume."))
+            print_error(red("%s." % (_("Nothing to resume"),) ))
             return 128,-1
         else:
             try:
                 removalQueue = resume_cache['removalQueue'][:]
                 doSelectiveRemoval = resume_cache['doSelectiveRemoval']
-                print_warning(red("Resuming previous operations..."))
+                print_warning(red("%s..." % (_("Resuming previous operations"),) ))
             except:
-                print_error(red("Resume cache corrupted."))
+                print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
                     Equo.dumpTools.dumpobj(etpCache['remove'],{})
                 except (OSError, IOError):
@@ -953,7 +1074,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 continue
             print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(atom))
             if doSelectiveRemoval:
-                rc = Equo.askQuestion("     Remove this one ?")
+                rc = Equo.askQuestion("     %s" % (_("Remove this one ?"),) )
                 if rc == "No":
                     # update resume cache
                     ignored.append(idpackage)
@@ -989,13 +1110,13 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         del metaopts
         del Package
 
-    print_info(red(" @@ ")+blue("All done."))
+    print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
     return 0,0
 
 
 def dependenciesTest():
 
-    print_info(red(" @@ ")+blue("Running dependency test..."))
+    print_info(red(" @@ ")+blue("%s ..." % (_("Running dependency test"),) ))
     depsNotMatched = Equo.dependencies_test()
 
     if depsNotMatched:
@@ -1011,20 +1132,25 @@ def dependenciesTest():
                         crying_atoms[atom] = set()
                     crying_atoms[atom].add(iatom)
 
-        print_info(red(" @@ ")+blue("These are the dependencies not found:"))
+        print_info(red(" @@ ")+blue("%s:" % (_("These are the dependencies not found"),) ))
         for atom in depsNotMatched:
             print_info("   # "+red(atom))
             if crying_atoms.has_key(atom):
-                print_info(blue("      # ")+red("Needed by:"))
+                print_info(blue("      # ")+red("%s:" % (_("Needed by"),) ))
                 for x in crying_atoms[atom]:
                     print_info(blue("      # ")+darkgreen(x))
 
         if (etpUi['ask']):
-            rc = Equo.askQuestion("     Would you like to install the available packages?")
+            rc = Equo.askQuestion("     %s"  % (_("Would you like to install the available packages ?"),) )
             if rc == "No":
                 return 0,0
         else:
-            print_info(red(" @@ ")+blue("Installing available packages in ")+red("10 seconds")+blue("..."))
+            mytxt = "%s %s %s" % (
+                blue(_("Installing available packages in")),
+                red(_("10 seconds")),
+                blue("..."),
+            )
+            print_info(red(" @@ ")+mytxt)
             import time
             time.sleep(10)
 
@@ -1056,18 +1182,18 @@ def librariesTest(listfiles = False):
         return 0,0
 
     if (not brokenlibs) and (not packagesMatched):
-        if not etpUi['quiet']: print_info(red(" @@ ")+blue("System is healthy."))
+        if not etpUi['quiet']: print_info(red(" @@ ")+blue("%s." % (_("System is healthy"),) ))
         restore_qstats()
         return 0,0
 
     atomsdata = set()
     if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("Libraries statistics:"))
+        print_info(red(" @@ ")+blue("%s:" % (_("Libraries statistics"),) ))
         if brokenlibs:
-            print_info(brown(" ## ")+red("Not matched:"))
+            print_info(brown(" ## ")+red("%s:" % (_("Not matched"),) ))
             for lib in brokenlibs:
                 print_info(darkred("    => ")+red(lib))
-        print_info(darkgreen(" ## ")+red("Matched:"))
+        print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
         for packagedata in packagesMatched:
             dbconn = Equo.openRepositoryDatabase(packagedata[1])
             myatom = dbconn.retrieveAtom(packagedata[0])
@@ -1088,12 +1214,17 @@ def librariesTest(listfiles = False):
 
     if (atomsdata):
         if (etpUi['ask']):
-            rc = Equo.askQuestion("     Would you like to install them?")
+            rc = Equo.askQuestion("     %s" % (_("Would you like to install them ?"),) )
             if rc == "No":
                 restore_qstats()
                 return 0,atomsdata
         else:
-            print_info(red(" @@ ")+blue("Installing found packages in ")+red("10 seconds")+blue("..."))
+            mytxt = "%s %s %s" % (
+                blue(_("Installing available packages in")),
+                red(_("10 seconds")),
+                blue("..."),
+            )
+            print_info(red(" @@ ")+mytxt)
             import time
             time.sleep(10)
 

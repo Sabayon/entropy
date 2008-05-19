@@ -23,6 +23,7 @@ from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
 Equo = EquoInterface()
+from entropy_i18n import _
 
 def security(options):
 
@@ -43,7 +44,8 @@ def security(options):
 
     if options[0] == "update":
         if not Equo.entropyTools.is_user_in_entropy_group():
-            print_error(red("You must be either ")+bold("root")+red(" or in the ")+bold(etpConst['sysgroup'])+red(" group."))
+            mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
+            print_error(mytxt)
             return 1
         securityConn = Equo.Security()
         rc = securityConn.fetch_advisories()
@@ -60,14 +62,15 @@ def security(options):
 
 def show_advisories_info(advisories):
     if not advisories:
-        print_error(brown(" :: ")+darkgreen("No advisories provided."))
+        print_error(brown(" :: ")+darkgreen("%s." % (_("No advisories provided"),)))
         return 1
 
     securityConn = Equo.Security()
     adv_metadata = securityConn.get_advisories_metadata()
     for advisory in advisories:
         if advisory not in adv_metadata:
-            print_warning(brown(" :: ")+darkred("Advisory ")+blue(advisory)+darkred(" does not exist."))
+            print_warning(brown(" :: ") + darkred("%s " % (_("Advisory"),)) + blue(advisory) + \
+                darkred(" %s." % (_("does not exist"),)))
             continue
         print_advisory_information(adv_metadata[advisory], key = advisory)
 
@@ -76,14 +79,14 @@ def show_advisories_info(advisories):
 def print_advisory_information(advisory_data, key):
 
     # print advisory code
-    print_info(blue(" @@ ")+red("GLSA Identifier ")+bold(key)+red(" | ")+blue(advisory_data['url']))
+    print_info(blue(" @@ ")+red("%s " % (_("GLSA Identifier"),))+bold(key)+red(" | ")+blue(advisory_data['url']))
 
     # title
-    print_info("\t"+darkgreen("Title:\t\t")+darkred(advisory_data['title']))
+    print_info("\t"+darkgreen("%s:\t\t" % (_("Title"),))+darkred(advisory_data['title']))
 
     # description
     description = advisory_data['description'].split("\n")
-    desc_text = "\t"+darkgreen("Description:\t")
+    desc_text = "\t"+darkgreen("%s:\t" % (_("Description"),) )
     for x in description:
         print_info(desc_text+x.strip())
         desc_text = "\t\t\t"
@@ -106,75 +109,75 @@ def print_advisory_information(advisory_data, key):
     # background
     if advisory_data['background']:
         background = advisory_data['background'].split("\n")
-        bg_text = "\t"+darkgreen("Background:\t")
+        bg_text = "\t"+darkgreen("%s:\t" % (_("Background"),))
         for x in background:
             print_info(bg_text+purple(x.strip()))
             bg_text = "\t\t\t"
 
     # access
     if advisory_data['access']:
-        print_info("\t"+darkgreen("Exploitable:\t")+bold(advisory_data['access']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Exploitable"),))+bold(advisory_data['access']))
 
     # impact
     if advisory_data['impact']:
         impact = advisory_data['impact'].split("\n")
-        imp_text = "\t"+darkgreen("Impact:\t\t")
+        imp_text = "\t"+darkgreen("%s:\t\t" % (_("Impact"),))
         for x in impact:
             print_info(imp_text+brown(x.strip()))
             imp_text = "\t\t\t"
 
     # impact type
     if advisory_data['impacttype']:
-        print_info("\t"+darkgreen("Impact type:\t")+bold(advisory_data['impacttype']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Impact type"),))+bold(advisory_data['impacttype']))
 
     # revised
     if advisory_data['revised']:
-        print_info("\t"+darkgreen("Revised:\t")+brown(advisory_data['revised']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Revised"),))+brown(advisory_data['revised']))
 
     # announced
     if advisory_data['announced']:
-        print_info("\t"+darkgreen("Announced:\t")+brown(advisory_data['announced']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Announced"),))+brown(advisory_data['announced']))
 
     # synopsis
     synopsis = advisory_data['synopsis'].split("\n")
-    syn_text = "\t"+darkgreen("Synopsis:\t")
+    syn_text = "\t"+darkgreen("%s:\t" % (_("Synopsis"),))
     for x in synopsis:
         print_info(syn_text+x.strip())
         syn_text = "\t\t\t"
 
     # references
     if advisory_data['references']:
-        print_info("\t"+darkgreen("References:"))
+        print_info("\t"+darkgreen("%s:" % (_("References"),)))
         for reference in advisory_data['references']:
             print_info("\t\t\t"+darkblue(reference))
 
     # gentoo bugs
     if advisory_data['bugs']:
-        print_info("\t"+darkgreen("Gentoo bugs:"))
+        print_info("\t"+darkgreen("%s:" % (_("Upstream bugs"),)))
         for bug in advisory_data['bugs']:
             print_info("\t\t\t"+darkblue(bug))
 
     # affected
     if advisory_data['affected']:
-        print_info("\t"+darkgreen("Affected:"))
+        print_info("\t"+darkgreen("%s:" % (_("Affected"),)))
         for key in advisory_data['affected']:
             print_info("\t\t\t"+darkred(key))
             affected_data = advisory_data['affected'][key][0]
             vul_vers = affected_data['vul_vers']
             unaff_vers = affected_data['unaff_vers']
             if vul_vers:
-                print_info("\t\t\t  "+brown("vulnerable versions: ")+", ".join(vul_vers))
+                print_info("\t\t\t  "+brown("%s: " % (_("vulnerable versions"),))+", ".join(vul_vers))
             if unaff_vers:
-                print_info("\t\t\t  "+brown("unaffected versions: ")+", ".join(unaff_vers))
+                print_info("\t\t\t  "+brown("%s: " % (_("unaffected versions"),))+", ".join(unaff_vers))
             #print affected_data
 
     # workaround
     if advisory_data['workaround']:
-        print_info("\t"+darkgreen("Workaround:\t")+darkred(advisory_data['workaround']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Workaround"),))+darkred(advisory_data['workaround']))
 
     # resolution
     if advisory_data['resolution']:
-        res_text = "\t"+darkgreen("Resolution:\t")
+        res_text = "\t"+darkgreen("%s:\t" % (_("Resolution"),))
         resolutions = advisory_data['resolution']
         for resolution in resolutions:
             for x in resolution.split("\n"):
@@ -190,7 +193,7 @@ def list_advisories(only_affected = False, only_unaffected = False):
     else:
         adv_metadata = securityConn.get_fixed_vulnerabilities()
     if not adv_metadata:
-        print_info(brown(" :: ")+darkgreen("No advisories available or applicable."))
+        print_info(brown(" :: ")+darkgreen("%s." % (_("No advisories available or applicable"),)))
         return 0
     adv_keys = adv_metadata.keys()
     adv_keys.sort()
@@ -223,7 +226,7 @@ def install_packages(fetch = False):
 
     import text_ui
     securityConn = Equo.Security()
-    print_info(red(" @@ ")+blue("Calculating security updates..."))
+    print_info(red(" @@ ")+blue("%s..." % (_("Calculating security updates"),)))
     affected_atoms = securityConn.get_affected_atoms()
     # match in client database
     valid_matches = set()
@@ -239,7 +242,7 @@ def install_packages(fetch = False):
             valid_matches.add(match)
 
     if not valid_matches:
-        print_info(red(" @@ ")+blue("All the available updates have been already installed."))
+        print_info(red(" @@ ")+blue("%s." % (_("All the available updates have been already installed"),)))
         return 0
 
     rc, stat = text_ui.installPackages(atomsdata = valid_matches, onlyfetch = fetch)
