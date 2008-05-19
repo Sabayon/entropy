@@ -235,6 +235,55 @@ def enlightenatom(atom):
     out = atom.split("/")
     return blue(out[0])+"/"+red(out[1])
 
+def print_menu(data):
+
+    def orig_myfunc(x):
+        return x
+    def orig_myfunc_desc(x):
+        return x
+
+    for item in data:
+
+        myfunc = orig_myfunc
+        myfunc_desc = orig_myfunc_desc
+
+        if not item:
+            writechar("\n")
+        else:
+            n_ident = item[0]
+            name = item[1]
+            n_d_ident = item[2]
+            desc = item[3]
+
+            # setup identation
+            while n_ident > 0:
+                n_ident -= 1
+                writechar("\t")
+            n_ident = item[0]
+
+            # write name
+            if n_ident == 0:
+                myfunc = darkgreen
+            elif n_ident == 1:
+                myfunc = blue
+                myfunc_desc = darkgreen
+            elif n_ident == 2:
+                myfunc = red
+                myfunc_desc = brown
+            elif n_ident == 3:
+                #myfunc = blue
+                myfunc_desc = purple
+            writechar(myfunc(name))
+
+            # write desc
+            if desc:
+                while n_d_ident > 0:
+                    n_d_ident -= 1
+                    writechar("\t")
+                writechar(myfunc_desc(desc))
+            writechar("\n")
+    pass
+
 def reset_cursor():
     sys.stdout.write(stuff['ESC'] + '[2K')
 

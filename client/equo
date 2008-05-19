@@ -26,140 +26,155 @@ sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../client')
 from entropyConstants import *
 from outputTools import *
+import entropyTools
+try:
+    from entropy_i18n import _
+except ImportError:
+    def _(x): return x
 
-def print_help():
-    print_info("Sabayon Linux "+darkred("Equo Package Manager")+" (C - 2007)")
-    print_info("General Options:")
-    print_info("  --help\t\tthis output")
-    print_info("  --version\t\tprint version")
-    print_info("  --nocolor\t\tdisable colorized output")
-    print_info(red("Tools available: "))
-    print_info(" \t"+blue("update")+brown("\t\t update all or provided (through id) repositories"))
-    print_info(" \t\t"+red("--force")+"\t\t\t force sync regardless repositories status")
-    print_info(" \t"+blue("repoinfo")+brown("\t show enabled repositories"))
-    print_info(" \t"+blue("status")+brown("\t\t show respositories status"))
-
-    print_info(" \t"+blue("search")+brown("\t\t search a package in repositories"))
-    print_info(" \t"+blue("match")+brown("\t\t match a package in repositories"))
-    print_info(" \t\t"+red("--multimatch")+"\t\t return all the possible matches")
-    print_info(" \t\t"+red("--multirepo")+"\t\t return matches from every repository")
-    print_info(" \t\t"+red("--showrepo")+"\t\t print repository information (w/--quiet)")
-    print_info(" \t\t"+red("--showdesc")+"\t\t print description too (w/--quiet)")
-
-    print_info(" \t"+blue("world")+brown("\t\t update system with the latest available packages"))
-    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages")
-    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
-    print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
-    print_info(" \t\t"+red("--replay")+"\t\t reinstall all the packages and their dependencies")
-    print_info(" \t\t"+red("--empty")+"\t\t\t same as --replay")
-    print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
-    print_info(" \t\t"+red("--skipfirst")+"\t\t used with --resume, first package in queue will be skipped")
-    print_info(" \t\t"+red("--upgrade")+"\t\t upgrade "+etpConst['systemname']+" to the specified release (3.5,3.6...)")
-    print_info(" \t\t"+red("--nochecksum")+"\t\t disable package integrity check")
-
-    print_info(" \t"+blue("security")+brown("\t\t security infrastructure tools"))
-    print_info(" \t\t"+darkgreen("update")+red("\t\t\t download the latest Security Advisories"))
-    print_info(" \t\t"+darkgreen("list")+red("\t\t\t list all the available Security Advisories"))
-    print_info(" \t\t\t"+red("--affected")+"\t list only affected")
-    print_info(" \t\t\t"+red("--unaffected")+"\t list only unaffected")
-    print_info(" \t\t"+darkgreen("info")+red("\t\t\t show information about provided advisories identifiers"))
-    print_info(" \t\t"+darkgreen("install")+red("\t\t\t automaticly install all the available security updates"))
-    print_info(" \t\t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t\t"+red("--fetch")+"\t\t\t just download packages")
-    print_info(" \t\t\t"+red("--pretend")+"\t\t just show what would be done")
-    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
-
-    print_info(" \t"+blue("install")+brown("\t\t install one or more packages or .tbz2"))
-    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
-    print_info(" \t\t"+red("--fetch")+"\t\t\t just download packages without doing the install")
-    print_info(" \t\t"+red("--nodeps")+"\t\t do not manage any dependency")
-    print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
-    print_info(" \t\t"+red("--skipfirst")+"\t\t used with --resume, first package in queue will be skipped")
-    print_info(" \t\t"+red("--clean")+"\t\t\t remove downloaded packages after being used")
-    print_info(" \t\t"+red("--empty")+"\t\t\t set all dependencies as unsatisfied")
-    print_info(" \t\t"+red("--deep")+"\t\t\t analyze dependencies deeply")
-    print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
-    print_info(" \t\t"+red("--configfiles")+"\t\t also remove old configuration files [use with care]")
-    print_info(" \t\t"+red("--nochecksum")+"\t\t disable package integrity check")
-
-    print_info(" \t"+blue("remove")+brown("\t\t remove one or more packages"))
-    print_info(" \t\t"+red("--deep")+"\t\t\t also pull unused dependencies where depends list is empty")
-    print_info(" \t\t"+red("--configfiles")+"\t\t also remove configuration files")
-    print_info(" \t\t"+red("--resume")+"\t\t resume previously interrupted operations")
-    print_info(" \t"+blue("deptest")+brown("\t\t look for unsatisfied dependencies"))
-    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
-    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
-    print_info(" \t"+blue("libtest")+brown("\t\t look for missing libraries"))
-    print_info(" \t\t"+red("--listfiles")+"\t\t print broken files to stdout")
-    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
-    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
-
-    print_info(" \t"+blue("conf")+brown("\t\t configuration files update tool"))
-    print_info(" \t\t"+darkgreen("info")+red("\t\t\t show info about configuration files that should be updated"))
-    print_info(" \t\t"+darkgreen("update")+red("\t\t\t run the configuration files update tool"))
-
-    print_info(" \t"+blue(bold("query"))+brown("\t\t do misc queries on repository and local databases"))
-    print_info(" \t\t"+darkgreen("installed")+red("\t\t search a package into the local database"))
-    print_info(" \t\t"+darkgreen("belongs")+red("\t\t\t search from what package a file belongs [*filename* allowed]"))
-    print_info(" \t\t"+darkgreen("depends")+red("\t\t\t search which packages depend on the provided atoms"))
-    print_info(" \t\t"+darkgreen("needed")+red("\t\t\t print runtime libraries needed for the provided atoms"))
-    print_info(" \t\t"+darkgreen("required")+red("\t\t print atoms needing the provided libraries"))
-    print_info(" \t\t"+darkgreen("files")+red("\t\t\t list files owned by the provided atoms"))
-    print_info(" \t\t"+darkgreen("removal")+red("\t\t\t print the removal tree for specified atoms"))
-    print_info(" \t\t"+darkgreen("tags")+red("\t\t\t search packages that have the specified tags"))
-    print_info(" \t\t"+darkgreen("slot")+red("\t\t\t search packages that have the specified slot"))
-    print_info(" \t\t"+darkgreen("license")+red("\t\t\t list packages distributed with the provided licenses"))
-    print_info(" \t\t"+darkgreen("list")+red("\t\t\t list packages based on the chosen parameter below"))
-    print_info(" \t\t\t"+green("installed")+red("\t list installed packages"))
-    print_info(" \t\t"+darkgreen("orphans")+red("\t\t\t search files that don't belong to any package")+bold(" [USE WITH CARE]"))
-    print_info(" \t\t"+darkgreen("description")+red("\t\t search packages by description"))
-    print_info(" \t\t"+red("--verbose")+"\t\t show more details")
-    print_info(" \t\t"+red("--quiet")+"\t\t\t print results in a scriptable way")
-
-    print_info(" \t"+blue("smart")+brown("\t\t handle extended functionalities"))
-    print_info(" \t\tUnpack and run applications")
-    print_info(" \t\t"+darkgreen("application")+red("\t\t generate a smart application for the provided atoms (experimental)"))
-    print_info(" \t\t\t"+red("--empty")+"\t\t set all dependencies as unsatisfied")
-    print_info(" \t\tA .tbz2 package that can contain multiple packages  (Gentoo compatible)")
-    print_info(" \t\t"+darkgreen("package")+red("\t\t\t generate a smart package for the provided atoms"))
-    print_info(" \t\t"+darkgreen("quickpkg")+red("\t\t repackage installed files belonging to the provided atoms"))
-    print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
-    print_info(" \t\t"+darkgreen("inflate")+red("\t\t\t convert provided Gentoo .tbz2 into Entropy ones (Portage needed)"))
-    print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
-    print_info(" \t\t"+darkgreen("deflate")+red("\t\t\t convert provided Entropy .tbz2 into Gentoo ones (Portage needed)"))
-    print_info(" \t\t\t"+red("--savedir")+"\t save new packages to the specified directory")
-    print_info(" \t\t"+darkgreen("extract")+red("\t\t\t extract Entropy metadata from provided .tbz2 packages"))
-    print_info(" \t\t\t"+red("--savedir")+"\t save new metadata to the specified directory")
-
-    print_info(" \t"+blue("database")+brown("\t handle installed packages database"))
-    print_info(" \t\t"+darkgreen("check")+red("\t\t\t Check System Database for errors"))
-    #print_info(" \t\t"+darkgreen("generate")+red("\t\t generate installed packages database using Portage database (Portage needed)"))
-    print_info(" \t\t"+darkgreen("resurrect")+red("\t\t generate installed packages database using system content [last hope]"))
-    print_info(" \t\t"+darkgreen("depends")+red("\t\t\t regenerate/generate depends caching table"))
-    print_info(" \t\t"+darkgreen("counters")+red("\t\t update/generate counters table (Portage <-> Entropy packages table)"))
-    print_info(" \t\t"+darkgreen("gentoosync")+red("\t\t Have you used Portage and Equo together? Run this to let Equo know the changes"))
-
-    print_info(" \t"+blue("packages")+brown("\t handle packages helper applications"))
-    print_info(" \t\t"+darkgreen("python-updater")+red("\t\t migrate all Python modules to the latest installed version"))
-    print_info(" \t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t"+red("--pretend")+"\t\t just show what would be done")
-
-    print_info(" \t"+blue("cache")+brown("\t\t handle Equo On-Disk cache"))
-    print_info(" \t\t"+darkgreen("clean")+red("\t\t\t clean on-disk cache"))
-    print_info(" \t\t"+darkgreen("generate")+red("\t\t generate on-disk cache (to speed up Equo)"))
-    print_info(" \t\t"+red("--quiet")+"\t\t\t show less details (useful for scripting)")
-    print_info(" \t\t"+red("--verbose")+"\t\t show more details about what's going on")
-    print_info(" \t"+blue("cleanup")+brown("\t\t remove downloaded packages and clean temporary directories (not cache)"))
-    print_info(" \t"+blue("--info")+brown("\t\t show system information"))
+myopts = [
+    (0," ~ "+etpConst['systemname']+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.getYear(),) ),
+    None,
+    (0,_('Basic Options'),0,None),
+    None,
+    (1,'--help',2,_('this output')),
+    (1,'--version',1,_('print version')),
+    (1,'--nocolor',1,_('disable colorized output')),
+    None,
+    (0,_('Application Options'),0,None),
+    None,
+    (1,'update',2,_('print version')),
+    (2,'--force',2,_('force sync regardless repositories status')),
+    (1,'repoinfo',1,_('show enabled repositories')),
+    (1,'status',2,_('show respositories status')),
+    None,
+    (1,'search',2,_('search packages in repositories')),
+    (1,'match',2,_('match a package in repositories')),
+    (2,'--multimatch',1,_('return all the possible matches')),
+    (2,'--multirepo',1,_('return matches from every repository')),
+    (2,'--showrepo',1,_('print repository information (w/--quiet)')),
+    (2,'--showdesc',1,_('print description too (w/--quiet)')),
+    None,
+    (1,'world',2,_('update system with the latest available packages')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--fetch',2,_('just download packages')),
+    (2,'--pretend',1,_('just show what would be done')),
+    (2,'--verbose',1,_('show more details about what is going on')),
+    (2,'--replay',1,_('reinstall all the packages and their dependencies')),
+    (2,'--empty',2,_('same as --replay')),
+    (2,'--resume',1,_('resume previously interrupted operations')),
+    (2,'--skipfirst',1,_('update system with the latest available packages')),
+    (2,'--upgrade',1,_('upgrade your distribution to the specified release')),
+    (2,'--nochecksum',1,_('disable package integrity check')),
+    None,
+    (1,'security',1,_('security infrastructure functions')),
+    (2,'update',2,_('download the latest Security Advisories')),
+    (2,'list',2,_('list all the available Security Advisories')),
+    (3,'--affected',1,_('list only affected')),
+    (3,'--unaffected',1,_('list only unaffected')),
+    (2,'info',2,_('show information about provided advisories identifiers')),
+    (2,'install',2,_('automaticly install all the available security updates')),
+    (3,'--ask',2,_('ask before making any changes')),
+    (3,'--fetch',2,_('just download packages')),
+    (3,'--pretend',1,_('just show what would be done')),
+    (3,'--quiet',2,_('show less details (useful for scripting)')),
+    None,
+    (1,'install',2,_('install atoms or .tbz2 packages')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
+    (2,'--fetch',2,_('just download packages without doing the install')),
+    (2,'--nodeps',1,_('do not pull in any dependency')),
+    (2,'--resume',1,_('resume previously interrupted operations')),
+    (2,'--skipfirst',1,_('used with --resume, makes the first package in queue to be skipped')),
+    (2,'--clean',2,_('remove downloaded packages after being used')),
+    (2,'--empty',2,_('pull all the dependencies in, regardless their state')),
+    (2,'--deep',2,_('makes dependency rules stricter')),
+    (2,'--verbose',1,_('show more details about what is going on')),
+    (2,'--configfiles',1,_('makes old configuration files to be removed')),
+    (2,'--nochecksum',1,_('disable package integrity check')),
+    None,
+    (1,'remove',2,_('remove one or more packages')),
+    (2,'--deep',2,_('also pull unused dependencies where depends list is empty')),
+    (2,'--configfiles',1,_('makes configuration files to be removed')),
+    (2,'--resume',1,_('resume previously interrupted operations')),
+    (2,'--deep',2,_('install atoms or .tbz2 packages')),
+    None,
+    (1,'deptest',2,_('look for unsatisfied dependencies')),
+    (2,'--quiet',2,_('show less details (useful for scripting)')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
+    None,
+    (1,'libtest',2,_('look for missing libraries')),
+    (2,'--listfiles',1,_('print broken files to stdout')),
+    (2,'--quiet',2,_('show less details (useful for scripting)')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
+    None,
+    (1,'conf',2,_('configuration files update tool')),
+    (2,'info',2,_('show configuration files to be updated')),
+    (2,'update',2,_('run the configuration files update function')),
+    None,
+    (1,'query',2,_('do misc queries on repository and local databases')),
+    (2,'installed',1,_('search a package into the local database')),
+    (2,'belongs',2,_('search from what package a file belongs')),
+    (2,'depends',2,_('search what packages depend on the provided atoms')),
+    (2,'needed',2,_('show runtime libraries needed by the provided atoms')),
+    (2,'required',1,_('show atoms needing the provided libraries')),
+    (2,'files',2,_('show files owned by the provided atoms')),
+    (2,'removal',2,_('show the removal tree for the specified atoms')),
+    (2,'tags',2,_('show packages owning the provided tags')),
+    (2,'slot',2,_('show packages owning the provided slot')),
+    (2,'license',2,_('show packages owning the provided licenses')),
+    (2,'list',2,_('list packages based on the chosen parameter below')),
+    (3,'installed',1,_('list installed packages')),
+    (2,'orphans',2,_('search files that do not belong to any package')),
+    (2,'description',1,_('search packages by description')),
+    (2,'--verbose',1,_('show more details')),
+    (2,'--quiet',2,_('print results in a scriptable way')),
+    None,
+    (0,_('Extended Options'),0,None),
+    None,
+    (1,'smart',2,_('handles extended functionalities')),
+    (2,'application',1,_('make a smart application for the provided atoms (experimental)')),
+    (3,'--empty',2,_('pull all the dependencies in, regardless their state')),
+    (2,'package',2,_('make a smart package for the provided atoms (multiple packages into one file)')),
+    (2,'quickpkg',1,_('recreate an Entropy package from your System')),
+    (3,'--savedir',1,_('save new packages into the specified directory')),
+    (2,'inflate',2,_('convert provided Gentoo .tbz2s into Entropy packages (Portage needed)')),
+    (3,'--savedir',1,_('save new packages into the specified directory')),
+    (2,'deflate',2,_('convert provided Entropy packages into Gentoo ones (Portage needed)')),
+    (3,'--savedir',1,_('save new packages into the specified directory')),
+    (2,'extract',2,_('extract Entropy metadata from provided .tbz2 packages')),
+    (3,'--savedir',1,_('save new metadata into the specified directory')),
+    None,
+    (1,'database',1,_('handles installed packages database')),
+    (2,'check',2,_('check System Database for errors')),
+    #(2,'generate',2,'generate installed packages database using Portage database (Portage needed)'),
+    (2,'resurrect',1,_('generate installed packages database using files on the system [last hope]')),
+    (2,'depends',2,_('regenerate depends caching table')),
+    (2,'counters',1,_('update/generate counters table (Portage <-> Entropy packages table)')),
+    (2,'gentoosync',1,_('makes Entropy aware of your Portage-updated packages')),
+    None,
+    (1,'packages',1,_('handles packages helper applications')),
+    (2,'python-updater',1,_('migrate all Python modules to the latest installed version')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
+    None,
+    (1,'cache',2,_('handles Entropy cache')),
+    (2,'clean',2,_('clean Entropy cache')),
+    (2,'generate',1,_('regenerate Entropy cache')),
+    (2,'--verbose',1,_('show more details')),
+    (2,'--quiet',2,_('print results in a scriptable way')),
+    None,
+    (1,'cleanup',2,_('remove downloaded packages and clean temp. directories)')),
+    None,
+    (1,'--info',2,_('show system information')),
+    None,
+]
 
 
 options = sys.argv[1:]
 
-import entropyTools
 import exceptionTools
 
 # preliminary options parsing
@@ -188,7 +203,7 @@ options = _options
 
 # print help
 if (not options) or ("--help" in options):
-    print_help()
+    print_menu(myopts)
     if not options:
         print_error("not enough parameters")
     sys.exit()
