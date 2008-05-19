@@ -12,7 +12,7 @@ NLSPACKAGE = entropy
 CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
 
-PYFILES  = $(wildcard ../../entropy/*.py) $(wildcard ../../client/*.py) $(wildcard ../../server/*.py) $(wildcard ../../client/equo) $(wildcard ../../server/reagent) $(wildcard ../../server/activator)
+PYFILES  = $(wildcard ../../entropy/*.py) $(wildcard ../../client/*.py) $(wildcard ../../server/*.py) $(wildcard ../../client/equo) $(wildcard ../../server/reagent) $(wildcard ../../server/activator) $(wildcard ../../spritz/src/*.py) $(wildcard ../../spritz/src/spritz/*.py) $(wildcard ../../spritz/src/etpgui/*.py) $(wildcard ../../spritz/src/applet/*.py)
 POTFILES  = $(PYFILES)
 
 all: $(NLSPACKAGE).pot $(FMTCATALOGS)

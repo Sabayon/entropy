@@ -1,22 +1,18 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# yumex Korean Translation
+# This file is distributed under the same license as the yumex package.
+# Soohyung Cho <xfree@paran.com>, 2006.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Spritz 0.14\n"
+"Project-Id-Version: yumex 0.99.13\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-05-19 20:56+0200\n"
-"PO-Revision-Date: 2008-04-30 10:12+0100\n"
-"Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
-"Language-Team: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
+"PO-Revision-Date: 2006-03-31 23:14+0900\n"
+"Last-Translator: Soohyung Cho <xfree@paran.com>\n"
+"Language-Team: Korean <translation-team-ko@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Italian\n"
-"X-Poedit-Country: ITALY\n"
-"X-Poedit-SourceCharset: iso-8859-1\n"
 
 #: ../../client/equo.py:38
 msgid "Basic Options"
@@ -27,9 +23,8 @@ msgid "this output"
 msgstr ""
 
 #: ../../client/equo.py:41 ../../client/equo.py:46
-#, fuzzy
 msgid "print version"
-msgstr "Domanda Spritz"
+msgstr ""
 
 #: ../../client/equo.py:42
 msgid "disable colorized output"
@@ -46,22 +41,22 @@ msgstr ""
 #: ../../client/equo.py:48
 #, fuzzy
 msgid "show enabled repositories"
-msgstr "Aggiorna Repository"
+msgstr ""
+"저장소가 활성화되었습니다:\n"
+"%s"
 
 #: ../../client/equo.py:49
 #, fuzzy
 msgid "show respositories status"
-msgstr "_Forza aggiornamento repository"
+msgstr "저장소 데이타를 읽어옵니다"
 
 #: ../../client/equo.py:51
-#, fuzzy
 msgid "search packages in repositories"
-msgstr "Errori aggiornando le repository."
+msgstr ""
 
 #: ../../client/equo.py:52
-#, fuzzy
 msgid "match a package in repositories"
-msgstr "Aggiorna Repository"
+msgstr ""
 
 #: ../../client/equo.py:53
 msgid "return all the possible matches"
@@ -72,18 +67,16 @@ msgid "return matches from every repository"
 msgstr ""
 
 #: ../../client/equo.py:55
-#, fuzzy
 msgid "print repository information (w/--quiet)"
-msgstr "Informazioni Repository"
+msgstr ""
 
 #: ../../client/equo.py:56
 msgid "print description too (w/--quiet)"
 msgstr ""
 
 #: ../../client/equo.py:58 ../../client/equo.py:66
-#, fuzzy
 msgid "update system with the latest available packages"
-msgstr "ma l'ultima versione disponibile è"
+msgstr ""
 
 #: ../../client/equo.py:59 ../../client/equo.py:77 ../../client/equo.py:83
 #: ../../client/equo.py:104 ../../client/equo.py:110 ../../client/equo.py:160
@@ -91,8 +84,9 @@ msgid "ask before making any changes"
 msgstr ""
 
 #: ../../client/equo.py:60 ../../client/equo.py:78
+#, fuzzy
 msgid "just download packages"
-msgstr ""
+msgstr "다운받은 패키지들을 삭제합니다"
 
 #: ../../client/equo.py:61
 msgid "only show what would be done"
@@ -127,24 +121,20 @@ msgid "security infrastructure functions"
 msgstr ""
 
 #: ../../client/equo.py:71
-#, fuzzy
 msgid "download the latest Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr ""
 
 #: ../../client/equo.py:72
-#, fuzzy
 msgid "list all the available Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr ""
 
 #: ../../client/equo.py:73
-#, fuzzy
 msgid "list only affected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../client/equo.py:74
-#, fuzzy
 msgid "list only unaffected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../client/equo.py:75
 msgid "show information about provided advisories identifiers"
@@ -164,25 +154,27 @@ msgid "show less details (useful for scripting)"
 msgstr ""
 
 #: ../../client/equo.py:82 ../../client/equo.py:100
-#, fuzzy
 msgid "install atoms or .tbz2 packages"
-msgstr "Reinstalla il pacchetto selezionato"
+msgstr ""
 
 #: ../../client/equo.py:85
+#, fuzzy
 msgid "just download packages without doing the install"
-msgstr ""
+msgstr "설치/업데이트 후 다운받은 패키지들을 삭제합니다(_D)"
 
 #: ../../client/equo.py:86
+#, fuzzy
 msgid "do not pull in any dependency"
-msgstr ""
+msgstr "의존성을 위해 설치하고 있습니다"
 
 #: ../../client/equo.py:88
 msgid "used with --resume, makes the first package in queue to be skipped"
 msgstr ""
 
 #: ../../client/equo.py:89
+#, fuzzy
 msgid "remove downloaded packages after being used"
-msgstr ""
+msgstr "설치/업데이트 후 다운받은 패키지들을 삭제합니다(_D)"
 
 #: ../../client/equo.py:90 ../../client/equo.py:139
 msgid "pull all the dependencies in, regardless their state"
@@ -197,9 +189,8 @@ msgid "makes old configuration files to be removed"
 msgstr ""
 
 #: ../../client/equo.py:96
-#, fuzzy
 msgid "remove one or more packages"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr ""
 
 #: ../../client/equo.py:97
 msgid "also pull unused dependencies where depends list is empty"
@@ -210,8 +201,9 @@ msgid "makes configuration files to be removed"
 msgstr ""
 
 #: ../../client/equo.py:102
+#, fuzzy
 msgid "look for unsatisfied dependencies"
-msgstr ""
+msgstr "의존성을 위해 삭제하고 있습니다"
 
 #: ../../client/equo.py:107
 msgid "look for missing libraries"
@@ -222,9 +214,8 @@ msgid "print broken files to stdout"
 msgstr ""
 
 #: ../../client/equo.py:113
-#, fuzzy
 msgid "configuration files update tool"
-msgstr "File di configurazione"
+msgstr ""
 
 #: ../../client/equo.py:114
 msgid "show configuration files to be updated"
@@ -285,15 +276,16 @@ msgstr ""
 #: ../../client/equo.py:129
 #, fuzzy
 msgid "list installed packages"
-msgstr "Visualizza pacchetti installati"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/equo.py:130
 msgid "search files that do not belong to any package"
 msgstr ""
 
 #: ../../client/equo.py:131
+#, fuzzy
 msgid "search packages by description"
-msgstr ""
+msgstr "설명"
 
 #: ../../client/equo.py:132 ../../client/equo.py:166
 msgid "show more details"
@@ -325,9 +317,8 @@ msgid "recreate an Entropy package from your System"
 msgstr ""
 
 #: ../../client/equo.py:142 ../../client/equo.py:144 ../../client/equo.py:146
-#, fuzzy
 msgid "save new packages into the specified directory"
-msgstr "Accoda pacchetti nell'avviso selezionato"
+msgstr ""
 
 #: ../../client/equo.py:143
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
@@ -348,7 +339,7 @@ msgstr ""
 #: ../../client/equo.py:150
 #, fuzzy
 msgid "handles installed packages database"
-msgstr "Visualizza pacchetti installati"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/equo.py:151
 msgid "check System Database for errors"
@@ -389,31 +380,30 @@ msgid "clean Entropy cache"
 msgstr ""
 
 #: ../../client/equo.py:165
-#, fuzzy
 msgid "regenerate Entropy cache"
-msgstr "Rigenera Cache"
+msgstr ""
 
 #: ../../client/equo.py:169
+#, fuzzy
 msgid "remove downloaded packages and clean temp. directories)"
-msgstr ""
+msgstr "설치/업데이트 후 다운받은 패키지들을 삭제합니다(_D)"
 
 #: ../../client/equo.py:171
-#, fuzzy
 msgid "show system information"
-msgstr "Informazioni Avviso"
+msgstr ""
 
 #: ../../client/text_query.py:111 ../../client/text_query.py:697
+#, fuzzy
 msgid "Searching"
-msgstr ""
+msgstr "찾기(_S)"
 
 #: ../../client/text_query.py:135 ../../client/text_query.py:190
 #: ../../client/text_query.py:257 ../../client/text_query.py:728
 #: ../../client/text_query.py:775 ../../client/text_query.py:822
 #: ../../client/text_query.py:865 ../../client/text_query.py:911
 #: ../../client/text_query.py:971
-#, fuzzy
 msgid "Keyword"
-msgstr "Keyword"
+msgstr ""
 
 #: ../../client/text_query.py:136 ../../client/text_query.py:191
 #: ../../client/text_query.py:267 ../../client/text_query.py:315
@@ -429,50 +419,50 @@ msgstr ""
 #: ../../client/text_query.py:729 ../../client/text_query.py:776
 #: ../../client/text_query.py:823 ../../client/text_query.py:866
 #: ../../client/text_query.py:912 ../../client/text_query.py:972
+#, fuzzy
 msgid "entries"
-msgstr ""
+msgstr "저장소"
 
 #: ../../client/text_query.py:155
+#, fuzzy
 msgid "Belong Search"
-msgstr ""
+msgstr "찾기(_S)"
 
 #: ../../client/text_query.py:211
-#, fuzzy
 msgid "Depends Search"
-msgstr "Sono dipendenza di"
+msgstr ""
 
 #: ../../client/text_query.py:258 ../../client/text_ui.py:1196
-#, fuzzy
 msgid "Matched"
-msgstr "Mascherato"
+msgstr ""
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#, fuzzy
 msgid "Masked"
-msgstr "Mascherato"
+msgstr "삭제된"
 
 #: ../../client/text_query.py:264
 #, fuzzy
 msgid "from repository"
-msgstr "Repository"
+msgstr "저장소"
 
 #: ../../client/text_query.py:266
 #, fuzzy
 msgid "from installed packages database"
-msgstr "Visualizza pacchetti installati"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_query.py:292 ../../client/text_query.py:334
 #, fuzzy
 msgid "Needed Search"
-msgstr "Spazio richiesto"
+msgstr "찾기(_S)"
 
 #: ../../client/text_query.py:314
 msgid "Atom"
 msgstr ""
 
 #: ../../client/text_query.py:315
-#, fuzzy
 msgid "libraries"
-msgstr "Librerie richieste"
+msgstr ""
 
 #: ../../client/text_query.py:354
 msgid "Library"
@@ -481,31 +471,32 @@ msgstr ""
 #: ../../client/text_query.py:355 ../../client/text_query.py:399
 #, fuzzy
 msgid "packages"
-msgstr "Pacchetti"
+msgstr "패키지들"
 
 #: ../../client/text_query.py:374
 #, fuzzy
 msgid "Eclass Search"
-msgstr "Eclass"
+msgstr "찾기(_S)"
 
 #: ../../client/text_query.py:444 ../../client/text_query.py:1050
 #: ../../spritz/src/dialogs.py:419 ../../spritz/src/dialogs.py:425
 #: ../../spritz/src/spritz.py:921 ../../spritz/src/views.py:434
 msgid "Package"
-msgstr "Pacchetto"
+msgstr "패키지"
 
 #: ../../client/text_query.py:445
 #, fuzzy
 msgid "files"
-msgstr "File"
+msgstr "파일(_i)"
 
 #: ../../client/text_query.py:465
 msgid "Orphans Search"
 msgstr ""
 
 #: ../../client/text_query.py:490
+#, fuzzy
 msgid "Analyzing"
-msgstr ""
+msgstr "설치"
 
 #: ../../client/text_query.py:501
 msgid "Analyzed directories"
@@ -522,7 +513,7 @@ msgstr ""
 #: ../../client/text_query.py:504
 #, fuzzy
 msgid "Now looking into Installed Packages database"
-msgstr "Visualizza pacchetti installati"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_query.py:516
 msgid "Intersecting with content of the package"
@@ -533,20 +524,24 @@ msgid "Intersection completed. Showing statistics"
 msgstr ""
 
 #: ../../client/text_query.py:533
+#, fuzzy
 msgid "Number of total files"
-msgstr ""
+msgstr "새 프로파일 만들기"
 
 #: ../../client/text_query.py:534
+#, fuzzy
 msgid "Number of matching files"
-msgstr ""
+msgstr "새 프로파일 만들기"
 
 #: ../../client/text_query.py:535
+#, fuzzy
 msgid "Number of orphaned files"
-msgstr ""
+msgstr "새 프로파일 만들기"
 
 #: ../../client/text_query.py:540
+#, fuzzy
 msgid "Writing file to disk"
-msgstr ""
+msgstr "밀러캐쉬를 디스크에 기록합니다"
 
 #: ../../client/text_query.py:560
 msgid "Total wasted space"
@@ -555,22 +550,21 @@ msgstr ""
 #: ../../client/text_query.py:589
 #, fuzzy
 msgid "Removal Search"
-msgstr "Rimuovi"
+msgstr "삭제"
 
 #: ../../client/text_query.py:599 ../../client/text_ui.py:354
 #: ../../client/text_ui.py:908
 #, fuzzy
 msgid "No packages found"
-msgstr "Nessun pacchetto in coda"
+msgstr "큐에 있는 패키지를 처리합니다"
 
 #: ../../client/text_query.py:604
 msgid "Calculating removal dependencies, please wait"
 msgstr ""
 
 #: ../../client/text_query.py:615
-#, fuzzy
 msgid "These are the packages that would added to the removal queue"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr ""
 
 #: ../../client/text_query.py:624 ../../client/text_smart.py:106
 #: ../../client/text_smart.py:254 ../../client/text_smart.py:387
@@ -582,45 +576,47 @@ msgstr ""
 #: ../../client/text_query.py:650
 #, fuzzy
 msgid "Installed Search"
-msgstr "Installato"
+msgstr "설치된"
 
 #: ../../client/text_query.py:661
 #, fuzzy
 msgid "These are the installed packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_query.py:750 ../../client/text_rescue.py:656
+#, fuzzy
 msgid "Matching"
-msgstr ""
+msgstr "업데이트"
 
 #: ../../client/text_query.py:779
-#, fuzzy
 msgid "No matches"
-msgstr "o"
+msgstr ""
 
 #: ../../client/text_query.py:802
+#, fuzzy
 msgid "Slot Search"
-msgstr ""
+msgstr "찾기(_S)"
 
 #: ../../client/text_query.py:846
+#, fuzzy
 msgid "Tag Search"
-msgstr ""
+msgstr "찾기(_S)"
 
 #: ../../client/text_query.py:889
-#, fuzzy
 msgid "License Search"
-msgstr "Nome licenza"
+msgstr ""
 
 #: ../../client/text_query.py:932
 #, fuzzy
 msgid "Description Search"
-msgstr "Descrizione"
+msgstr "설명"
 
 #. client info
 #: ../../client/text_query.py:1034 ../../client/text_ui.py:381
 #: ../../client/text_ui.py:410 ../../spritz/src/applet/etp_applet.py:870
+#, fuzzy
 msgid "Not installed"
-msgstr "Non installato"
+msgstr "설치된"
 
 #: ../../client/text_query.py:1035 ../../client/text_query.py:1036
 msgid "N/A"
@@ -629,51 +625,49 @@ msgstr ""
 #: ../../client/text_query.py:1052
 #, fuzzy
 msgid "Category"
-msgstr "Categorie"
+msgstr "필수(_M)"
 
 #: ../../client/text_query.py:1053
 msgid "Name"
-msgstr ""
+msgstr "이름"
 
 #: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
 msgid "Available"
-msgstr "Disponibile"
+msgstr ""
 
 #: ../../client/text_query.py:1055 ../../client/text_query.py:1057
-#, fuzzy
 msgid "version"
-msgstr "Versione"
+msgstr ""
 
 #: ../../client/text_query.py:1055 ../../client/text_query.py:1057
-#, fuzzy
 msgid "revision"
-msgstr "Revisione"
+msgstr ""
 
 #: ../../client/text_query.py:1057
 msgid "Installed"
-msgstr "Installato"
+msgstr "설치된"
 
 #: ../../client/text_query.py:1059
 msgid "Slot"
-msgstr "Slot"
+msgstr ""
 
 #: ../../client/text_query.py:1060
 msgid "Size"
-msgstr ""
+msgstr "크기"
 
 #: ../../client/text_query.py:1061
-#, fuzzy
 msgid "Download"
-msgstr "Percorso di scaricamento"
+msgstr ""
 
 #: ../../client/text_query.py:1062
 msgid "Checksum"
 msgstr ""
 
 #: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:134
+#, fuzzy
 msgid "Dependencies"
-msgstr "Dipendenze"
+msgstr "기본 설정"
 
 #: ../../client/text_query.py:1068
 msgid "Conflicts"
@@ -688,44 +682,40 @@ msgstr ""
 #: ../../spritz/src/views.py:666 ../../spritz/src/views.py:822
 #: ../../spritz/src/views.py:1030
 msgid "Description"
-msgstr "Descrizione"
+msgstr "설명"
 
 #. print use flags
 #: ../../client/text_query.py:1077 ../../spritz/src/dialogs.py:118
-#, fuzzy
 msgid "USE flags"
-msgstr "USE Flags"
+msgstr ""
 
 #: ../../client/text_query.py:1081
 msgid "CHOST"
-msgstr "CHOST"
+msgstr ""
 
 #: ../../client/text_query.py:1082
 msgid "CFLAGS"
-msgstr "CFLAGS"
+msgstr ""
 
 #: ../../client/text_query.py:1083
 msgid "CXXFLAGS"
-msgstr "CXXFLAGS"
+msgstr ""
 
 #: ../../client/text_query.py:1087
-#, fuzzy
 msgid "Gentoo eclasses"
-msgstr "Eclass"
+msgstr ""
 
 #: ../../client/text_query.py:1089 ../../spritz/src/dialogs.py:94
 msgid "Sources"
-msgstr "Sorgenti"
+msgstr ""
 
 #: ../../client/text_query.py:1091
-#, fuzzy
 msgid "Source"
-msgstr "Sorgenti"
+msgstr ""
 
 #: ../../client/text_query.py:1092
-#, fuzzy
 msgid "Entry API"
-msgstr "Entropy API"
+msgstr ""
 
 #: ../../client/text_query.py:1094
 msgid "Compiled with"
@@ -733,52 +723,51 @@ msgstr ""
 
 #: ../../client/text_query.py:1095 ../../spritz/src/dialogs.py:110
 msgid "Keywords"
-msgstr "Keyword"
+msgstr ""
 
 #: ../../client/text_query.py:1096
 #, fuzzy
 msgid "Created"
-msgstr "Data di creazione"
+msgstr "삭제된"
 
 #: ../../client/text_query.py:1097 ../../client/text_ui.py:772
 #: ../../spritz/src/dialogs.py:824
 msgid "License"
-msgstr "Licenza"
+msgstr ""
 
 #: ../../client/text_repositories.py:51 ../../client/text_repositories.py:114
 #: ../../client/text_security.py:47
-#, fuzzy, python-format
+#, python-format
 msgid "You must be either root or in the %s group."
-msgstr "Devi aggiungerti a questo gruppo"
+msgstr ""
 
 #: ../../client/text_repositories.py:66
 #, fuzzy
 msgid "Active Repositories"
-msgstr "Aggiorna Repository"
+msgstr "저장소"
 
 #: ../../client/text_repositories.py:74
 #, fuzzy
 msgid "Packages Mirror"
-msgstr "Pacchetti"
+msgstr "패키지들"
 
 #: ../../client/text_repositories.py:75 ../../client/text_repositories.py:97
 msgid "Database URL"
-msgstr "Indirizzo database"
+msgstr ""
 
 #: ../../client/text_repositories.py:76
 #, fuzzy
 msgid "Repository identifier"
-msgstr "Identificatore Repository"
+msgstr "저장소를 생성하지 못했습니다"
 
 #: ../../client/text_repositories.py:77 ../../client/text_repositories.py:99
-#, fuzzy
 msgid "Repository database path"
-msgstr "Identificatore Repository"
+msgstr ""
 
 #: ../../client/text_repositories.py:89
 #, fuzzy
 msgid "active"
-msgstr "Attivo"
+msgstr "저장(_S)"
 
 #: ../../client/text_repositories.py:91
 msgid "never synced"
@@ -786,41 +775,41 @@ msgstr ""
 
 #: ../../client/text_repositories.py:92 ../../spritz/src/views.py:799
 msgid "Status"
-msgstr "Stato"
+msgstr ""
 
 #: ../../client/text_repositories.py:96
 #, fuzzy
 msgid "Packages URL"
-msgstr "Pacchetti"
+msgstr "패키지들"
 
 #: ../../client/text_repositories.py:98
 #, fuzzy
 msgid "Repository name"
-msgstr "Repository"
+msgstr "저장소"
 
 #: ../../client/text_repositories.py:102
-#, fuzzy
 msgid "Repository database checksum"
-msgstr "Repository aggiornate correttamente"
+msgstr ""
 
 #: ../../client/text_repositories.py:103
 #, fuzzy
 msgid "Repository revision"
-msgstr "Selezione Repository"
+msgstr "저장소"
 
 #: ../../client/text_repositories.py:118 ../../spritz/src/spritz.py:1067
 #: ../../spritz/src/applet/etp_applet.py:616
+#, fuzzy
 msgid "No repositories specified in"
-msgstr "Nessuna repository specificata in"
+msgstr "--> 저장소 저장: %s"
 
 #: ../../client/text_repositories.py:121 ../../spritz/src/spritz.py:1071
 msgid "You are not connected to the Internet. You should."
-msgstr "Non sei connesso ad Internet. Dovresti."
+msgstr ""
 
 #: ../../client/text_repositories.py:124 ../../spritz/src/spritz.py:1074
 #: ../../spritz/src/applet/etp_applet.py:624
 msgid "Unhandled exception"
-msgstr "Eccezione non gestita"
+msgstr ""
 
 #: ../../client/text_rescue.py:42 ../../client/text_smart.py:138
 msgid "Source Package Manager backend not available"
@@ -855,9 +844,8 @@ msgid "Understood ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:80
-#, fuzzy
 msgid "Really ?"
-msgstr "Pronto"
+msgstr ""
 
 #: ../../client/text_rescue.py:83
 msgid "This is your last chance"
@@ -900,7 +888,7 @@ msgstr ""
 #: ../../client/text_rescue.py:561
 #, fuzzy
 msgid "Exception"
-msgstr "Eccezione catturata"
+msgstr "설명"
 
 #: ../../client/text_rescue.py:173
 msgid "All the Gentoo packages have been injected into Entropy database"
@@ -920,14 +908,12 @@ msgid "entry can be invalid!"
 msgstr ""
 
 #: ../../client/text_rescue.py:199
-#, fuzzy
 msgid "These are the invalid entries"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../client/text_rescue.py:203
-#, fuzzy
 msgid "Removing database information"
-msgstr "Informazioni Repository"
+msgstr ""
 
 #: ../../client/text_rescue.py:207 ../../client/text_rescue.py:359
 msgid "Now generating depends caching table"
@@ -938,8 +924,9 @@ msgid "Now indexing tables"
 msgstr ""
 
 #: ../../client/text_rescue.py:212 ../../client/text_rescue.py:364
+#, fuzzy
 msgid "Database reinitialized successfully"
-msgstr ""
+msgstr "키를 성공적으로 가져왔습니다"
 
 #: ../../client/text_rescue.py:219
 msgid "database does not exist or is badly broken"
@@ -957,8 +944,9 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_rescue.py:236
+#, fuzzy
 msgid "Can I continue ?"
-msgstr ""
+msgstr "변경된 값들을 저장하겠습니까?"
 
 #: ../../client/text_rescue.py:239
 msgid "Are you REALLY sure ?"
@@ -969,18 +957,16 @@ msgid "Do you even know what you're doing ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:270
-#, fuzzy
 msgid "Collecting installed files"
-msgstr "Non installato"
+msgstr ""
 
 #: ../../client/text_rescue.py:271
 msgid "Writing to temporary file"
 msgstr ""
 
 #: ../../client/text_rescue.py:272
-#, fuzzy
 msgid "Please wait"
-msgstr "attendere prego"
+msgstr ""
 
 #: ../../client/text_rescue.py:280 ../../client/text_rescue.py:291
 #: ../../client/text_ui.py:678 ../../client/text_ui.py:679
@@ -988,7 +974,7 @@ msgstr "attendere prego"
 #: ../../spritz/src/dialogs.py:770 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:259
 msgid "Attention"
-msgstr "Attenzione"
+msgstr ""
 
 #: ../../client/text_rescue.py:281
 msgid "You must have 'find' installed"
@@ -1012,9 +998,9 @@ msgid "Matching files from packages"
 msgstr ""
 
 #: ../../client/text_rescue.py:339
-#, python-format
+#, fuzzy, python-format
 msgid "Found %s packages"
-msgstr ""
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_rescue.py:340
 msgid "Filling database"
@@ -1027,7 +1013,7 @@ msgstr ""
 #: ../../client/text_rescue.py:357
 #, fuzzy
 msgid "Database resurrected successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr "키를 성공적으로 가져왔습니다"
 
 #: ../../client/text_rescue.py:366
 msgid ""
@@ -1036,19 +1022,16 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_rescue.py:375
-#, fuzzy
 msgid "Regenerating depends caching table"
-msgstr "Rigenera Cache"
+msgstr ""
 
 #: ../../client/text_rescue.py:377
-#, fuzzy
 msgid "Depends caching table regenerated successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr ""
 
 #: ../../client/text_rescue.py:390
-#, fuzzy
 msgid "Regenerating counters table"
-msgstr "Rigenera Cache"
+msgstr ""
 
 #: ../../client/text_rescue.py:392
 msgid "Counters table regenerated. Look above for errors."
@@ -1081,8 +1064,9 @@ msgid "Collecting Portage counters"
 msgstr ""
 
 #: ../../client/text_rescue.py:427
+#, fuzzy
 msgid "Collecting Entropy packages"
-msgstr ""
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_rescue.py:432
 msgid "Differential Scan"
@@ -1093,14 +1077,12 @@ msgid "Databases already synced"
 msgstr ""
 
 #: ../../client/text_rescue.py:474
-#, fuzzy
 msgid "Entropy locked, giving up"
-msgstr "Setup configurazione di Entropy"
+msgstr ""
 
 #: ../../client/text_rescue.py:481
-#, fuzzy
 msgid "Someone removed these packages"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr ""
 
 #: ../../client/text_rescue.py:482
 msgid "They would be removed from the system database"
@@ -1111,19 +1093,16 @@ msgid "Continue with removal ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:502
-#, fuzzy
 msgid "Removing"
-msgstr "Rimuovi"
+msgstr "삭제"
 
 #: ../../client/text_rescue.py:507
-#, fuzzy
 msgid "Database removal complete"
-msgstr "Compressione database"
+msgstr ""
 
 #: ../../client/text_rescue.py:511
-#, fuzzy
 msgid "Someone added these packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../client/text_rescue.py:512
 msgid "They would be added to the system database"
@@ -1134,9 +1113,8 @@ msgid "Continue with adding ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:581
-#, fuzzy
 msgid "Database update completed"
-msgstr "Compressione database"
+msgstr ""
 
 #: ../../client/text_rescue.py:599 ../../client/text_smart.py:32
 msgid "You are not"
@@ -1159,9 +1137,8 @@ msgid "There are no files belonging to your old Python installation in"
 msgstr ""
 
 #: ../../client/text_rescue.py:642
-#, fuzzy
 msgid "These are the installed packages with files in:"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../client/text_rescue.py:653
 msgid "Searching inside available repositories"
@@ -1174,9 +1151,8 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_security.py:65
-#, fuzzy
 msgid "No advisories provided"
-msgstr "Nessun avviso"
+msgstr ""
 
 #: ../../client/text_security.py:72
 msgid "Advisory"
@@ -1188,19 +1164,18 @@ msgstr ""
 
 #. print advisory code
 #: ../../client/text_security.py:82
-#, fuzzy
 msgid "GLSA Identifier"
-msgstr "Identificatore"
+msgstr ""
 
 #. title
 #: ../../client/text_security.py:85
 #, fuzzy
 msgid "Title"
-msgstr "File"
+msgstr "파일(_F)"
 
 #: ../../client/text_security.py:112
 msgid "Background"
-msgstr "Background"
+msgstr ""
 
 #: ../../client/text_security.py:119
 msgid "Exploitable"
@@ -1208,55 +1183,59 @@ msgstr ""
 
 #: ../../client/text_security.py:124
 msgid "Impact"
-msgstr "Impatto"
+msgstr ""
 
 #: ../../client/text_security.py:131
-#, fuzzy
 msgid "Impact type"
-msgstr "Impatto"
+msgstr ""
 
 #: ../../client/text_security.py:135
+#, fuzzy
 msgid "Revised"
-msgstr "Revisionato"
+msgstr "삭제"
 
 #: ../../client/text_security.py:139
 msgid "Announced"
-msgstr "Annunciato"
+msgstr ""
 
 #: ../../client/text_security.py:143
 msgid "Synopsis"
-msgstr "Sinossi"
+msgstr ""
 
 #: ../../client/text_security.py:150
+#, fuzzy
 msgid "References"
-msgstr "Riferimenti"
+msgstr "기본 설정"
 
 #: ../../client/text_security.py:156
 msgid "Upstream bugs"
 msgstr ""
 
 #: ../../client/text_security.py:162
-#, fuzzy
 msgid "Affected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../client/text_security.py:169
 #, fuzzy
 msgid "vulnerable versions"
-msgstr "Vulnerabili"
+msgstr ""
+"설치된 버전: %s (%s) \n"
+"\n"
 
 #: ../../client/text_security.py:171
 #, fuzzy
 msgid "unaffected versions"
-msgstr "Non affetti"
+msgstr ""
+"설치된 버전: %s (%s) \n"
+"\n"
 
 #: ../../client/text_security.py:176
 msgid "Workaround"
-msgstr "Pezza veloce"
+msgstr ""
 
 #: ../../client/text_security.py:180
 msgid "Resolution"
-msgstr "Risoluzione"
+msgstr ""
 
 #: ../../client/text_security.py:196
 msgid "No advisories available or applicable"
@@ -1274,7 +1253,7 @@ msgstr ""
 #: ../../client/text_smart.py:232 ../../client/text_smart.py:360
 #, fuzzy
 msgid "No packages specified"
-msgstr "Nessun pacchetto selezionato"
+msgstr "어떠한 페키지도 선택되지 않았습니다"
 
 #: ../../client/text_smart.py:91 ../../client/text_smart.py:241
 #: ../../client/text_smart.py:374
@@ -1285,80 +1264,84 @@ msgstr ""
 #: ../../client/text_smart.py:377
 #, fuzzy
 msgid "No valid packages specified"
-msgstr "Nessun pacchetto selezionato"
+msgstr "어떠한 페키지도 선택되지 않았습니다"
 
 #. print the list
 #: ../../client/text_smart.py:98
-#, fuzzy
 msgid "This is the list of the packages that would be quickpkg'd"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr ""
 
 #: ../../client/text_smart.py:106 ../../spritz/src/applet/etp_applet.py:893
+#, fuzzy
 msgid "installed"
-msgstr "installato"
+msgstr "설치된"
 
 #: ../../client/text_smart.py:109
-#, fuzzy
 msgid "Would you like to recompose the selected packages ?"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr ""
 
 #: ../../client/text_smart.py:114
 msgid "Compressing"
 msgstr ""
 
 #: ../../client/text_smart.py:119
+#, fuzzy
 msgid "Error while creating package for"
-msgstr ""
+msgstr "패키지 삭제를 준비하는데 문제가 발생하였습니다"
 
 #: ../../client/text_smart.py:120 ../../client/text_smart.py:263
 #: ../../client/text_smart.py:397
+#, fuzzy
 msgid "Cannot continue"
-msgstr ""
+msgstr "변경된 값들을 저장하겠습니까?"
 
 #: ../../client/text_smart.py:123
+#, fuzzy
 msgid "Saved in"
-msgstr ""
+msgstr "저장(_S)"
 
 #: ../../client/text_smart.py:144
+#, fuzzy
 msgid "directory does not exist"
-msgstr ""
+msgstr "경고: 그룹 %s(은)는 존재하지 않습니다."
 
 #: ../../client/text_smart.py:153 ../../client/text_ui.py:338
 msgid "is not a valid Entropy package"
 msgstr ""
 
 #: ../../client/text_smart.py:169
+#, fuzzy
 msgid "Using branch"
-msgstr ""
+msgstr "yum 캐쉬를 사용합니다"
 
 #: ../../client/text_smart.py:198
 #, fuzzy
 msgid "Inflated package"
-msgstr "Pacchetti interessati"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_smart.py:206
 #, fuzzy
 msgid "Deflating"
-msgstr "Destinazione"
+msgstr "기본(_D)"
 
 #: ../../client/text_smart.py:211
-#, fuzzy
 msgid "Deflated package"
-msgstr "Pacchetti interessati"
+msgstr ""
 
 #: ../../client/text_smart.py:219
+#, fuzzy
 msgid "Extracting Entropy metadata from"
-msgstr ""
+msgstr "%s의 메타데이타를 처리하고 있습니다"
 
 #: ../../client/text_smart.py:225
+#, fuzzy
 msgid "Extracted Entropy metadata from"
-msgstr ""
+msgstr "%s의 메타데이타를 처리하고 있습니다"
 
 #. print the list
 #: ../../client/text_smart.py:248
-#, fuzzy
 msgid "This is the list of the packages that would be merged into a single one"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr ""
 
 #: ../../client/text_smart.py:256 ../../client/text_smart.py:389
 msgid "Would you like to create the packages above ?"
@@ -1369,16 +1352,18 @@ msgid "Creating merged Smart Package"
 msgstr ""
 
 #: ../../client/text_smart.py:304
+#, fuzzy
 msgid "collecting Entropy metadata"
-msgstr ""
+msgstr "%s의 메타데이타를 처리하고 있습니다"
 
 #: ../../client/text_smart.py:332
 msgid "Unpack failed due to unknown reasons"
 msgstr ""
 
 #: ../../client/text_smart.py:337
+#, fuzzy
 msgid "Compressing smart package"
-msgstr ""
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_smart.py:344
 msgid "Compression failed due to unknown reasons"
@@ -1394,9 +1379,8 @@ msgstr ""
 
 #. print the list
 #: ../../client/text_smart.py:381
-#, fuzzy
 msgid "This is the list of the packages that would be worked out"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr ""
 
 #: ../../client/text_smart.py:394
 msgid "Creating Smart Application from"
@@ -1405,21 +1389,20 @@ msgstr ""
 #: ../../client/text_smart.py:421
 #, fuzzy
 msgid "Missing dependencies"
-msgstr "Dipendenze"
+msgstr "의존성을 위해 설치하고 있습니다"
 
 #: ../../client/text_smart.py:428
-#, fuzzy
 msgid "This is the list of the dependencies that would be included"
-msgstr "Questi sono i pacchetti che vorrebbero essere installati/aggiornati"
+msgstr ""
 
 #: ../../client/text_smart.py:449
-#, fuzzy
 msgid "Unpacking the main package"
-msgstr "Aggiorna il pacchetto selezionato"
+msgstr ""
 
 #: ../../client/text_smart.py:470
+#, fuzzy
 msgid "Unpacking dependency package"
-msgstr ""
+msgstr "의존성을 위해 업데이트하고 있습니다"
 
 #: ../../client/text_smart.py:568
 msgid "Compressing smart application"
@@ -1427,24 +1410,22 @@ msgstr ""
 
 #: ../../client/text_ui.py:102 ../../client/text_ui.py:112
 #: ../../client/text_ui.py:480 ../../client/text_ui.py:953
-#, fuzzy
 msgid "Nothing to do"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr ""
 
 #: ../../client/text_ui.py:124 ../../client/text_ui.py:249
 #: ../../client/text_ui.py:880
-#, fuzzy
 msgid "Running with"
-msgstr "Esecuzione task"
-
-#: ../../client/text_ui.py:135
-msgid "Selected release"
 msgstr ""
 
-#: ../../client/text_ui.py:136
+#: ../../client/text_ui.py:135
 #, fuzzy
+msgid "Selected release"
+msgstr "선택된 %s 프로파일"
+
+#: ../../client/text_ui.py:136
 msgid "is not available"
-msgstr "Nessun aggiornamento disponibile"
+msgstr ""
 
 #: ../../client/text_ui.py:143
 msgid "Calculating System Updates"
@@ -1453,12 +1434,11 @@ msgstr ""
 #: ../../client/text_ui.py:147
 #, fuzzy
 msgid "Packages matching update"
-msgstr "Pacchetti da aggiornare"
+msgstr "<b>업데이트할 패키지들</b>"
 
 #: ../../client/text_ui.py:148
-#, fuzzy
 msgid "Packages matching not available"
-msgstr "La branch selezionata non è disponibile"
+msgstr ""
 
 #: ../../client/text_ui.py:149
 msgid "Packages matching already up to date"
@@ -1467,9 +1447,8 @@ msgstr ""
 #. None or {}
 #: ../../client/text_ui.py:175 ../../client/text_ui.py:714
 #: ../../client/text_ui.py:1040
-#, fuzzy
 msgid "Nothing to resume"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr ""
 
 #: ../../client/text_ui.py:186 ../../client/text_ui.py:727
 #: ../../client/text_ui.py:1048
@@ -1477,9 +1456,8 @@ msgid "Resume cache corrupted"
 msgstr ""
 
 #: ../../client/text_ui.py:204
-#, fuzzy
 msgid "Nothing to update"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr ""
 
 #: ../../client/text_ui.py:216
 msgid ""
@@ -1498,25 +1476,24 @@ msgstr ""
 #: ../../client/text_ui.py:238
 #, fuzzy
 msgid "Calculation complete"
-msgstr "Nome Pacchetto"
+msgstr "패키지 처리를 마쳤습니다"
 
 #: ../../client/text_ui.py:241
-#, fuzzy
 msgid "Nothing to remove"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr ""
 
 #: ../../client/text_ui.py:278
 msgid "Every package matching"
 msgstr ""
 
 #: ../../client/text_ui.py:280
-#, fuzzy
 msgid "is masked"
-msgstr "Mascherato"
+msgstr ""
 
 #: ../../client/text_ui.py:294
+#, fuzzy
 msgid "matching"
-msgstr ""
+msgstr "업데이트"
 
 #: ../../client/text_ui.py:296
 msgid "is broken"
@@ -1529,12 +1506,11 @@ msgstr ""
 #: ../../client/text_ui.py:304
 #, fuzzy
 msgid "in repositories"
-msgstr "Aggiorna Repository"
+msgstr "저장소"
 
 #: ../../client/text_ui.py:316
-#, fuzzy
 msgid "When you wrote"
-msgstr "Cosa stavi facendo"
+msgstr ""
 
 #: ../../client/text_ui.py:318
 msgid "You Meant(tm)"
@@ -1549,57 +1525,52 @@ msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
 #: ../../client/text_ui.py:345
-#, fuzzy
 msgid "Skipped"
-msgstr "_Salta"
+msgstr ""
 
 #. now print the selected packages
 #: ../../client/text_ui.py:360 ../../client/text_ui.py:915
-#, fuzzy
 msgid "These are the chosen packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../client/text_ui.py:384 ../../client/text_ui.py:534
 #, fuzzy
 msgid "Not available"
-msgstr "Nessun aggiornamento disponibile"
+msgstr "패키지들"
 
 #: ../../client/text_ui.py:398
-#, fuzzy
 msgid "Versions"
-msgstr "Versione"
+msgstr ""
 
 #: ../../client/text_ui.py:421
 msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:422 ../../client/text_ui.py:424
+#, fuzzy
 msgid "Reinstall"
-msgstr "Reinstalla"
+msgstr "설치"
 
 #: ../../client/text_ui.py:427
 msgid "Install"
-msgstr "Installa"
+msgstr "설치"
 
 #: ../../client/text_ui.py:429
-#, fuzzy
 msgid "Upgrade"
-msgstr "Aggiorna"
+msgstr ""
 
 #: ../../client/text_ui.py:431
-#, fuzzy
 msgid "Downgrade"
-msgstr "Da retrocedere"
+msgstr ""
 
 #: ../../client/text_ui.py:432
-#, fuzzy
 msgid "Action"
-msgstr "Luogo"
+msgstr ""
 
 #: ../../client/text_ui.py:435 ../../client/text_ui.py:950
 #, fuzzy
 msgid "Packages involved"
-msgstr "Dimensione pacchetto"
+msgstr "패키지"
 
 #: ../../client/text_ui.py:439
 msgid "Would you like to continue with dependencies calculation ?"
@@ -1608,16 +1579,17 @@ msgstr ""
 #: ../../client/text_ui.py:448
 #, fuzzy
 msgid "Calculating dependencies"
-msgstr "Nome Pacchetto"
+msgstr "의존성을 위해 설치하고 있습니다"
 
 #: ../../client/text_ui.py:452
+#, fuzzy
 msgid "Cannot find needed dependencies"
-msgstr ""
+msgstr "의존성을 위해 업데이트하고 있습니다"
 
 #: ../../client/text_ui.py:459
 #, fuzzy
 msgid "Reason"
-msgstr "Revisione"
+msgstr "저장소"
 
 #: ../../client/text_ui.py:466
 msgid "Not found"
@@ -1628,19 +1600,17 @@ msgid "Probably needed by"
 msgstr ""
 
 #: ../../client/text_ui.py:496 ../../client/text_ui.py:600
-#, fuzzy
 msgid "These are the packages that would be"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr ""
 
 #: ../../client/text_ui.py:496
-#, fuzzy
 msgid "merged"
-msgstr "M_ergi"
+msgstr ""
 
 #: ../../client/text_ui.py:601
 #, fuzzy
 msgid "removed"
-msgstr "Rimuovi"
+msgstr "삭제"
 
 #: ../../client/text_ui.py:602
 msgid "conflicting/substituted"
@@ -1654,50 +1624,47 @@ msgstr ""
 #: ../../client/text_ui.py:619
 #, fuzzy
 msgid "Packages needing to be removed"
-msgstr "Pacchetti da rimuovere"
+msgstr "삭제할 %d 패키지(들)"
 
 #: ../../client/text_ui.py:623
 #, fuzzy
 msgid "Packages needing to be installed"
-msgstr "Pacchetti da reinstallare"
+msgstr "%i 패키지를 설치하기위해 큐에 추가하였습니다"
 
 #: ../../client/text_ui.py:628
 #, fuzzy
 msgid "Packages needing to be reinstalled"
-msgstr "Pacchetti da reinstallare"
+msgstr "%i 패키지를 설치하기위해 큐에 추가하였습니다"
 
 #: ../../client/text_ui.py:633
 #, fuzzy
 msgid "Packages needing to be updated"
-msgstr "Pacchetti da aggiornare"
+msgstr "패키지 처리를 마쳤습니다"
 
 #: ../../client/text_ui.py:638
-#, fuzzy
 msgid "Packages needing to be downgraded"
-msgstr "Da retrocedere"
+msgstr ""
 
 #: ../../client/text_ui.py:648
 #, fuzzy
 msgid "Download size"
-msgstr "Percorso di scaricamento"
+msgstr "<b>총 다운받은 크기</b>"
 
 #: ../../client/text_ui.py:654
-#, fuzzy
 msgid "Used disk space"
-msgstr "Spazio su disco liberato"
+msgstr ""
 
 #: ../../client/text_ui.py:656 ../../spritz/src/misc.py:323
 msgid "Freed disk space"
-msgstr "Spazio su disco liberato"
+msgstr ""
 
 #: ../../client/text_ui.py:665
 msgid "You need at least"
 msgstr ""
 
 #: ../../client/text_ui.py:667
-#, fuzzy
 msgid "of free space"
-msgstr "Spazio liberato"
+msgstr ""
 
 #: ../../client/text_ui.py:675
 msgid "You don't have enough space for the installation. Free some space into"
@@ -1708,19 +1675,16 @@ msgid "Would you like to execute the queue ?"
 msgstr ""
 
 #: ../../client/text_ui.py:725 ../../client/text_ui.py:1046
-#, fuzzy
 msgid "Resuming previous operations"
-msgstr "Opzioni repository"
+msgstr ""
 
 #: ../../client/text_ui.py:749
-#, fuzzy
 msgid "Please select an option"
-msgstr "Seleziona almeno una Repository, suvvia..."
+msgstr ""
 
 #: ../../client/text_ui.py:750
-#, fuzzy
 msgid "Read the license"
-msgstr "_Leggi licenza"
+msgstr ""
 
 #: ../../client/text_ui.py:751
 msgid "Accept the license (I've read it)"
@@ -1731,8 +1695,9 @@ msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 
 #: ../../client/text_ui.py:753
+#, fuzzy
 msgid "Quit"
-msgstr ""
+msgstr "편집(_E)"
 
 #. wait user interaction
 #: ../../client/text_ui.py:755
@@ -1748,46 +1713,47 @@ msgid "needed by"
 msgstr ""
 
 #: ../../client/text_ui.py:792
+#, fuzzy
 msgid "No file viewer"
-msgstr ""
+msgstr "프로파일이 선택되지 않았습니다"
 
 #: ../../client/text_ui.py:792
-#, fuzzy
 msgid "License saved into"
-msgstr "Nome licenza"
+msgstr ""
 
 #: ../../client/text_ui.py:814
 msgid "fetch"
 msgstr ""
 
 #: ../../client/text_ui.py:827
-#, fuzzy
 msgid "Download completed"
-msgstr "Percorso di scaricamento"
+msgstr ""
 
 #: ../../client/text_ui.py:838
 #, fuzzy
 msgid "install"
-msgstr "installato"
+msgstr "설치"
 
 #: ../../client/text_ui.py:866
+#, fuzzy
 msgid "Installation completed"
-msgstr ""
+msgstr "그룹들을 설치하고 있습니다"
 
 #: ../../client/text_ui.py:901
 #, fuzzy
 msgid "is not installed"
-msgstr "Non installato"
+msgstr "설치된"
 
 #. every package matching app-foo is masked
 #: ../../client/text_ui.py:934
 #, fuzzy
 msgid "vital package"
-msgstr "Visualizza pacchetti disponibili"
+msgstr "다운받은 패키지들:"
 
 #: ../../client/text_ui.py:935
+#, fuzzy
 msgid "Removal forbidden"
-msgstr ""
+msgstr "의존성을 위해 삭제하고 있습니다"
 
 #: ../../client/text_ui.py:945
 msgid "Disk size"
@@ -1796,7 +1762,7 @@ msgstr ""
 #: ../../client/text_ui.py:946
 #, fuzzy
 msgid "Installed from"
-msgstr "Installato"
+msgstr "설치된"
 
 #: ../../client/text_ui.py:958
 msgid ""
@@ -1805,9 +1771,8 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_ui.py:961
-#, fuzzy
 msgid "Would you like to remove them now ?"
-msgstr "Miserabile! Cosa stai cercando di rimuovere ? :-)"
+msgstr ""
 
 #: ../../client/text_ui.py:977
 msgid "This is the new removal queue"
@@ -1830,27 +1795,25 @@ msgid "Starting removal in"
 msgstr ""
 
 #: ../../client/text_ui.py:1077
-#, fuzzy
 msgid "Remove this one ?"
-msgstr "Annulla azione Rimuovi"
+msgstr ""
 
 #: ../../client/text_ui.py:1113
 msgid "All done"
 msgstr ""
 
 #: ../../client/text_ui.py:1119
+#, fuzzy
 msgid "Running dependency test"
-msgstr ""
+msgstr "의존성을 위해 삭제하고 있습니다"
 
 #: ../../client/text_ui.py:1135
-#, fuzzy
 msgid "These are the dependencies not found"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../client/text_ui.py:1139
-#, fuzzy
 msgid "Needed by"
-msgstr "Spazio richiesto"
+msgstr ""
 
 #: ../../client/text_ui.py:1144
 msgid "Would you like to install the available packages ?"
@@ -1859,7 +1822,7 @@ msgstr ""
 #: ../../client/text_ui.py:1149 ../../client/text_ui.py:1223
 #, fuzzy
 msgid "Installing available packages in"
-msgstr "Visualizza pacchetti disponibili"
+msgstr "패키지들"
 
 #: ../../client/text_ui.py:1150 ../../client/text_ui.py:1224
 msgid "10 seconds"
@@ -1882,335 +1845,353 @@ msgid "Would you like to install them ?"
 msgstr ""
 
 #: ../../spritz/src/dialogs.py:86
+#, fuzzy
 msgid "License name"
-msgstr "Nome licenza"
+msgstr "파일"
 
 #: ../../spritz/src/dialogs.py:102
+#, fuzzy
 msgid "Mirrors"
-msgstr "Mirror"
+msgstr "밀러(_M) 목록"
 
 #: ../../spritz/src/dialogs.py:126
+#, fuzzy
 msgid "Eclasses"
-msgstr "Eclass"
+msgstr "배재된"
 
 #: ../../spritz/src/dialogs.py:142
 msgid "Depends"
-msgstr "Sono dipendenza di"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:150
 msgid "Needed libraries"
-msgstr "Librerie richieste"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:158
 msgid "Protected item"
-msgstr "Oggetto protetto"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:161 ../../spritz/src/dialogs.py:173
 msgid "Type"
-msgstr "Tipo"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:169
+#, fuzzy
 msgid "File"
-msgstr "File"
+msgstr "파일(_F)"
 
 #: ../../spritz/src/dialogs.py:232
 msgid "From your Operating System"
-msgstr "Dal tuo bel Sistema Operativo"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:381
 msgid "Please confirm the actions above"
-msgstr "Per favore conferma le azioni di cui sopra"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:442 ../../spritz/src/dialogs.py:484
+#, fuzzy
 msgid "To be reinstalled"
-msgstr "Da reinstallare"
+msgstr "설치된"
 
 #: ../../spritz/src/dialogs.py:448 ../../spritz/src/dialogs.py:495
+#, fuzzy
 msgid "To be installed"
-msgstr "Da installare"
+msgstr "설치된"
 
 #: ../../spritz/src/dialogs.py:454 ../../spritz/src/dialogs.py:506
+#, fuzzy
 msgid "To be updated"
-msgstr "Da aggiornare"
+msgstr "업데이트"
 
 #: ../../spritz/src/dialogs.py:460
 msgid "To be downgraded"
-msgstr "Da retrocedere"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:466 ../../spritz/src/dialogs.py:517
 msgid "To be removed"
-msgstr "Da rimuovere"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:490 ../../spritz/src/dialogs.py:501
 #: ../../spritz/src/dialogs.py:512 ../../spritz/src/dialogs.py:523
 #: ../../spritz/src/views.py:470
+#, fuzzy
 msgid "No description"
-msgstr "Nessuna descrizione"
+msgstr "설명"
 
 #: ../../spritz/src/dialogs.py:656
+#, fuzzy
 msgid "About"
-msgstr "Informazioni su"
+msgstr "정보(_A)"
 
 #: ../../spritz/src/dialogs.py:751
 msgid "Hey!"
-msgstr "Hey!"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:755
 msgid "Spritz Question"
-msgstr "Domanda Spritz"
+msgstr ""
 
 #. new
 #: ../../spritz/src/dialogs.py:827
 msgid "Accepted"
-msgstr "Accettato"
+msgstr ""
 
 #: ../../spritz/src/gui.py:273
+#, fuzzy
 msgid "Show Package Updates"
-msgstr "Visualizza aggiornamenti"
+msgstr "설치할 %d 패키지(들)"
 
 #: ../../spritz/src/gui.py:274
+#, fuzzy
 msgid "Show available Packages"
-msgstr "Visualizza pacchetti disponibili"
+msgstr "패키지들"
 
 #: ../../spritz/src/gui.py:275
+#, fuzzy
 msgid "Show Installed Packages"
-msgstr "Visualizza pacchetti installati"
+msgstr "다운받은 패키지들:"
 
 #. Setup Vertical Toolbar
 #: ../../spritz/src/gui.py:300 ../../spritz/src/views.py:661
 msgid "Packages"
-msgstr "Pacchetti"
+msgstr "패키지들"
 
 #: ../../spritz/src/gui.py:301
+#, fuzzy
 msgid "Package Categories"
-msgstr "Categorie Pacchetti"
+msgstr "필수(_M)"
 
 #: ../../spritz/src/gui.py:302
+#, fuzzy
 msgid "Package Queue"
-msgstr "Coda Pacchetti"
+msgstr "패키지"
 
 #: ../../spritz/src/gui.py:303 ../../spritz/src/packages.py:190
+#, fuzzy
 msgid "Repository Selection"
-msgstr "Selezione Repository"
+msgstr "저장소를 생성하지 못했습니다"
 
 #: ../../spritz/src/gui.py:304
+#, fuzzy
 msgid "Configuration Files"
-msgstr "File di configurazione"
+msgstr "선택(_O)"
 
 #: ../../spritz/src/gui.py:305
 msgid "Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr ""
 
 #: ../../spritz/src/gui.py:306
+#, fuzzy
 msgid "Output"
-msgstr "Output"
+msgstr "출력"
 
 #: ../../spritz/src/misc.py:92
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
 msgstr ""
-"Ci sono pacchetti che non possono essere installati allo stesso tempo e che "
-"stanno bloccando la tua richiesta:"
 
 #: ../../spritz/src/misc.py:134
 msgid "These are the needed packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../spritz/src/misc.py:135
 msgid ""
 "These packages must be removed from the removal queue because they depend on "
 "your last selection. Do you agree?"
 msgstr ""
-"Questi pacchetti devono essere rimossi dalla coda di rimozione in quanto "
-"dipendenti dalla tua ultima selezione. Sei d'accordo?"
 
 #: ../../spritz/src/misc.py:260
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr ""
-"Dipendenze non trovate. Questo può accadere se un pacchetto è mascherato "
-"oppure semplicemente perché il pacchetto non è stato trovato."
 
 #: ../../spritz/src/misc.py:320
 msgid "Needed disk space"
-msgstr "Spazio su disco richiesto"
+msgstr ""
 
 #: ../../spritz/src/misc.py:327
+#, fuzzy
 msgid "These are the packages that would be installed/updated"
-msgstr "Questi sono i pacchetti che vorrebbero essere installati/aggiornati"
+msgstr "설치/업데이트 후 다운받은 패키지들을 삭제합니다(_D)"
 
 #: ../../spritz/src/misc.py:382
 msgid "Freed space"
-msgstr "Spazio liberato"
+msgstr ""
 
 #: ../../spritz/src/misc.py:385
 msgid "Needed space"
-msgstr "Spazio richiesto"
+msgstr ""
 
 #: ../../spritz/src/misc.py:390
 msgid "These are the packages that would be removed"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr ""
 
 #. load a pixmap inside the treeview
 #: ../../spritz/src/packages.py:190
 #, python-format
 msgid "Try clicking the %s button in the %s page"
-msgstr "Prova a cliccare il bottone %s nella pagina %s"
+msgstr ""
 
 #: ../../spritz/src/packages.py:190 ../../spritz/src/spritz.py:418
 #: ../../spritz/src/spritz.py:463
+#, fuzzy
 msgid "Update Repositories"
-msgstr "Aggiorna Repository"
+msgstr "저장소"
 
 #: ../../spritz/src/packages.py:193
 msgid "No updates available"
-msgstr "Nessun aggiornamento disponibile"
+msgstr ""
 
 #: ../../spritz/src/packages.py:194
 msgid "It seems that your system is already up-to-date. Good!"
-msgstr "Sembra che il sistema sia già aggiornato. Bene!"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:84
 msgid "Quiting, please wait !!!!!!"
-msgstr "Sto uscendo, cribbio !!!!!!"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:143
 msgid "The chosen package is not vulnerable"
-msgstr "Il pacchetto scelto non è vulnerabile"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:151
 msgid "Packages in Advisory have been queued."
-msgstr "I pacchetti nell'avviso sono stati accodati"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:166
 msgid "Packages in all Advisories have been queued."
-msgstr "I pacchetti negli avvisi sono stati accodati"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:178
 msgid "Packages not found in repositories, try again later."
-msgstr "Pacchetti non trovati nelle repository, prova più tardi"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:264
 msgid "Branch switching"
-msgstr "Migrazione della Branch"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:264
 msgid "Enter a valid branch you want to switch to"
-msgstr "Inserisci una Branch valida a cui vuoi migrare"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:267
 msgid "The selected branch is not available."
-msgstr "La branch selezionata non è disponibile"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:270
 msgid "New branch is"
-msgstr "La nuova branch è"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:270
 msgid "It is suggested to synchronize repositories"
-msgstr "E' consigliato sincronizzare le repository"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:314 ../../spritz/src/spritz.py:336
 msgid "Insert URL"
-msgstr "Inserisci URL"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:314 ../../spritz/src/spritz.py:336
 msgid "Enter a download mirror, HTTP or FTP"
-msgstr "Inserisci un mirror di scaricamento, HTTP o FTP"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:319
 msgid "You must enter either a HTTP or a FTP url."
-msgstr "Devi immettere un indirizzo HTTP o FTP."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:371 ../../spritz/src/spritz.py:421
 msgid "Wrong entries, errors"
-msgstr "Parametri errati, errori"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:418
 #: ../../spritz/src/views.py:988
 msgid "You should press the button"
-msgstr "Dovresti premere il bottone"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:463
 #: ../../spritz/src/views.py:988
 msgid "Regenerate Cache"
-msgstr "Rigenera Cache"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:418
 #: ../../spritz/src/spritz.py:463 ../../spritz/src/views.py:988
 msgid "now"
-msgstr "ora"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:389
+#, fuzzy
 msgid "No Repository Identifier"
-msgstr "Nessun Identificatore di Repository"
+msgstr "저장소를 생성하지 못했습니다"
 
 #: ../../spritz/src/spritz.py:392
+#, fuzzy
 msgid "Duplicated Repository Identifier"
-msgstr "Identificatore di Repository duplicato"
+msgstr "저장소 지우기"
 
 #: ../../spritz/src/spritz.py:396
 msgid "No download mirrors"
-msgstr "Nessun mirror di scaricamento"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:398
 msgid "Database URL must start either with http:// or ftp:// or file://"
-msgstr "URL del database deve iniziare con http://, ftp:// o file://"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:431
+#, fuzzy
 msgid "Insert Repository"
-msgstr "Inserisci Repository"
+msgstr "저장소 설치"
 
 #: ../../spritz/src/spritz.py:431
 msgid "Insert Repository identification string"
-msgstr "Inserisci stringa di identificazione Repository"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:449
 msgid "This Repository identification string is malformed"
-msgstr "La stringa di identificazione Repository è malformata"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:459
+#, fuzzy
 msgid "You! Why do you want to remove the main repository ?"
-msgstr "Miserabile! Cosa stai cercando di rimuovere ? :-)"
+msgstr "<b>%s</b> 저장소를 삭제하겠습니까?"
 
 #: ../../spritz/src/spritz.py:463
 msgid "You must now either press the"
-msgstr "Ora dovresti premere"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:463
 msgid "or the"
-msgstr "o"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:519
 msgid "Please select at least one repository"
-msgstr "Seleziona almeno una Repository, suvvia..."
+msgstr ""
 
 #. Check there are any packages in the queue
 #: ../../spritz/src/spritz.py:555
+#, fuzzy
 msgid "No packages in queue"
-msgstr "Nessun pacchetto in coda"
+msgstr "큐에 있는 패키지를 처리합니다"
 
 #: ../../spritz/src/spritz.py:621
 msgid "Queue is too old. Cannot load."
-msgstr "La coda è troppo vecchia, impossibile caricare"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:688
 msgid "impact"
-msgstr "impatto"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:690
 msgid "access"
-msgstr "accesso"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:704
 msgid "Vulnerables"
-msgstr "Vulnerabili"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:708
 msgid "Unaffected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:873
 msgid "Entropy resources are locked and not accessible. "
@@ -2218,240 +2199,261 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:888
 msgid "Entropy Config Setup"
-msgstr "Setup configurazione di Entropy"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:900
 msgid "GUI Setup Completed"
-msgstr "Configurazione GUI completata"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:929
 msgid "Bug"
-msgstr "Bug"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:937
+#, fuzzy
 msgid "Reference"
-msgstr "Riferimento"
+msgstr "기본 설정"
 
 #: ../../spritz/src/spritz.py:994
 msgid "Generating metadata. Please wait."
-msgstr "Generazione metadati. Attendere."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:998 ../../spritz/src/spritz.py:1139
 #: ../../spritz/src/spritz.py:1146
 msgid "Ready"
-msgstr "Pronto"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1026
+#, fuzzy
 msgid "Error loading advisories"
-msgstr "Errore caricando gli avvisi"
+msgstr "문제가 발생한 다운받은 패키지들:\n"
 
 #: ../../spritz/src/spritz.py:1058
+#, fuzzy
 msgid "Initializing Repository module..."
-msgstr "Inizializzazione modulo Repository..."
+msgstr "저장소 초기화"
 
 #: ../../spritz/src/spritz.py:1064
 msgid "You must run this application as root"
-msgstr "Devi essere root per poter utilizzare questa applicazione"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1079
+#, fuzzy
 msgid "Errors updating repositories."
-msgstr "Errori aggiornando le repository."
+msgstr "저장소 데이타 로딩에 문제가 있습니다"
 
 #: ../../spritz/src/spritz.py:1080
 msgid "Please check logs below for more info"
-msgstr "Guarda il testo visualizzato sotto per capire di più"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1083
+#, fuzzy
 msgid "Repositories updated successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr "키를 성공적으로 가져왔습니다"
 
 #: ../../spritz/src/spritz.py:1086
 msgid "All the repositories were already up to date."
-msgstr "Tutte le repository erano già aggiornate."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1088
 msgid "repositories were already up to date. Others have been updated."
-msgstr "repository erano già aggiornate. Le rimanenti sono state aggiornate."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1091
 msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr "sys-apps/entropy richiede di essere aggiornato il prima possibile."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1096
 msgid "Nothing to do. I am idle."
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1097
 msgid "Really, don't waste your time here. This is just a placeholder"
-msgstr "Davvero, non perdere tempo qui. E' solo un modo per occupare spazio."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1098
 msgid "I am still alive and kickin'"
-msgstr "Ahah, ci sono ancora, cosa credevi!"
+msgstr ""
 
 #. -> Get lists
 #: ../../spritz/src/spritz.py:1132
 msgid "Generating Metadata, please wait."
-msgstr "Generazione metadati, attendere prego."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1133
 msgid "Entropy is indexing the repositories. It will take a few seconds"
-msgstr "Entropy sta indicizzando le repository. Ci metterà qualche secondo."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1134
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
-"Mentre stai aspettando, fai un break e guarda fuori. Lo vedi l'inceneritore?"
 
 #: ../../spritz/src/spritz.py:1136 ../../spritz/src/spritz.py:1143
 msgid "Calculating"
-msgstr "Nome Pacchetto"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1172
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
 #: ../../spritz/src/spritz.py:1177
+#, fuzzy
 msgid "Running tasks"
-msgstr "Esecuzione task"
+msgstr "트렌젝션 수행중입니다"
 
 #: ../../spritz/src/spritz.py:1183
 msgid "Processing Packages in queue"
-msgstr "Processamento dei pacchetti in coda"
+msgstr "큐에 있는 패키지를 처리합니다"
 
 #: ../../spritz/src/spritz.py:1194
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
-"Attenzione, c'è stato un errore nel processamento della coda.\n"
-" Dai un'occhiata nel terminale di processamento."
 
 #: ../../spritz/src/spritz.py:1219
 msgid "No packages selected"
-msgstr "Nessun pacchetto selezionato"
+msgstr "어떠한 페키지도 선택되지 않았습니다"
 
 #: ../../spritz/src/spritz.py:1278
 msgid "Exception caught"
-msgstr "Eccezione catturata"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1279
 msgid "Spritz crashed! An unexpected error occured."
-msgstr "Spritz è andato in crash! Errore inatteso."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1288
 msgid "Your report has been submitted successfully! Thanks a lot."
-msgstr "Il rapporto è stato inviato correttamente. Grazie mille!"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1290
 msgid "Cannot submit your report. Not connected to Internet?"
-msgstr "Impossibile inviare il rapporto, sei connesso ad Internet?"
+msgstr ""
 
 #: ../../spritz/src/spritz_setup.py:84
 msgid "Programming:"
 msgstr ""
 
 #: ../../spritz/src/spritz_setup.py:87
+#, fuzzy
 msgid "Yum Extender Programmers:"
-msgstr ""
+msgstr "Yum Extender 기본 설정"
 
 #: ../../spritz/src/spritz_setup.py:90
+#, fuzzy
 msgid "Translation:"
-msgstr ""
+msgstr "설치"
 
 #: ../../spritz/src/spritz_setup.py:111
 msgid "Dedicated to:"
 msgstr ""
 
 #: ../../spritz/src/views.py:44
+#, fuzzy
 msgid "Categories"
-msgstr "Categorie"
+msgstr "필수(_M)"
 
 #: ../../spritz/src/views.py:65
+#, fuzzy
 msgid "Selection"
-msgstr "Selezione"
+msgstr "모두 선택(_A)"
 
 #: ../../spritz/src/views.py:435 ../../spritz/src/views.py:968
 msgid "Repository"
-msgstr "Repository"
+msgstr "저장소"
 
 #: ../../spritz/src/views.py:702
+#, fuzzy
 msgid "Packages To Reinstall"
-msgstr "Pacchetti da reinstallare"
+msgstr "<b>설치할 패키지들</b>"
 
 #: ../../spritz/src/views.py:706
+#, fuzzy
 msgid "Packages To Update"
-msgstr "Pacchetti da aggiornare"
+msgstr "<b>업데이트할 패키지들</b>"
 
 #: ../../spritz/src/views.py:710
+#, fuzzy
 msgid "Packages To Install"
-msgstr "Pacchetti da installare"
+msgstr "<b>설치할 패키지들</b>"
 
 #: ../../spritz/src/views.py:714
+#, fuzzy
 msgid "Packages To Remove"
-msgstr "Pacchetti da rimuovere"
+msgstr "<b>제거할 패키지들</b>"
 
 #: ../../spritz/src/views.py:743
 msgid "Proposed"
-msgstr "Proposto"
+msgstr ""
 
 #: ../../spritz/src/views.py:750
+#, fuzzy
 msgid "Destination"
-msgstr "Destinazione"
+msgstr "설명"
 
 #: ../../spritz/src/views.py:757
+#, fuzzy
 msgid "Rev."
-msgstr "Rev."
+msgstr "저장소"
 
 #: ../../spritz/src/views.py:806
 msgid "GLSA id."
-msgstr "GLSA id."
+msgstr ""
 
 #: ../../spritz/src/views.py:814
+#, fuzzy
 msgid "Package key"
-msgstr "Chiave pacchetto"
+msgstr "패키지"
 
 #: ../../spritz/src/views.py:907
 msgid "No advisories"
-msgstr "Nessun avviso"
+msgstr ""
 
 #: ../../spritz/src/views.py:908
 msgid "There are no items to show"
-msgstr "Nessun elemento da visualizzare"
+msgstr ""
 
 #: ../../spritz/src/views.py:968
+#, fuzzy
 msgid "Filename"
-msgstr "Nome file"
+msgstr "파일"
 
 #: ../../spritz/src/views.py:1008
 msgid "Active"
-msgstr "Attivo"
+msgstr ""
 
 #: ../../spritz/src/views.py:1018
+#, fuzzy
 msgid "Update"
-msgstr "Aggiorna"
+msgstr "업데이트"
 
 #. Setup revision column
 #: ../../spritz/src/views.py:1026
+#, fuzzy
 msgid "Revision"
-msgstr "Revisione"
+msgstr "삭제"
 
 #. Setup reponame & repofile column's
 #: ../../spritz/src/views.py:1029
+#, fuzzy
 msgid "Repository Identifier"
-msgstr "Identificatore Repository"
+msgstr "저장소를 생성하지 못했습니다"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:39
+#, fuzzy
 msgid "Package Name"
-msgstr "Nome Pacchetto"
+msgstr "패키지"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:40
+#, fuzzy
 msgid "Version Installed"
-msgstr "Versione Installata"
+msgstr "설치된"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:86
+#, fuzzy
 msgid "Critical Information"
-msgstr "Informazione Critica"
+msgstr "정보(_I)"
 
 #. #         file = pixmap_file('gnome-warning.png')
 #. #         if file:
@@ -2462,410 +2464,911 @@ msgid ""
 "the full text of this exception into an email and send it to "
 "sabayon@sabayonlinux.org.  Thank you."
 msgstr ""
-"E' avvenuta un'eccezione non gestita. Probabilmente è un bug. Copia il "
-"testo completo dell'errore in una e-mail ed invialo a sabayon@sabayonlinux."
-"org. Grazie."
 
 #: ../../spritz/src/applet/etp_applet.py:64
 msgid "Updates Notification"
-msgstr "Notifica Aggiornamenti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:205
 msgid "_Disable Notification Applet"
-msgstr "_Disabilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:205
 msgid "Disable Notification Applet"
-msgstr "Disabilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:206
 msgid "_Enable Notification Applet"
-msgstr "_Abilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:206
 msgid "Enable Notification Applet"
-msgstr "Abilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:207
 msgid "_Check for updates"
-msgstr "_Controlla aggiornamenti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:207
 msgid "Check for updates"
-msgstr "Controlla aggiornamenti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:208
 msgid "_Launch Package Manager"
-msgstr "_Lancia il Gestore dei pacchetti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:208
 msgid "Launch Package Manager"
-msgstr "Lancia il Gestore dei pacchetti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:209
+#, fuzzy
 msgid "_Packages Website"
-msgstr "_Sito web applicazioni"
+msgstr "패키지들"
 
 #: ../../spritz/src/applet/etp_applet.py:209
 msgid "Use Packages web interface"
-msgstr "Usa interfaccia web pacchetti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:210
 msgid "_Sabayon Linux Website"
-msgstr "_Sito web Sabayon Linux"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:210
 msgid "Launch Sabayon Linux Website"
-msgstr "Carica il sito web di Sabayon Linux"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:212
 msgid "_About"
-msgstr "_Informazioni"
+msgstr "정보(_A)"
 
 #: ../../spritz/src/applet/etp_applet.py:212
+#, fuzzy
 msgid "About..."
-msgstr "Informazioni..."
+msgstr "정보(_A)"
 
 #: ../../spritz/src/applet/etp_applet.py:213
+#, fuzzy
 msgid "_Exit"
-msgstr "_Esci"
+msgstr "편집(_E)"
 
 #: ../../spritz/src/applet/etp_applet.py:213
+#, fuzzy
 msgid "Exit"
-msgstr "Esci"
+msgstr "여분의"
 
 #: ../../spritz/src/applet/etp_applet.py:278
 msgid "You must add yourself to this group"
-msgstr "Devi aggiungerti a questo gruppo"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:281
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr ""
-"Per favore avvia Equo/Spritz come utente root per aggiornare i permessi di "
-"Entropy"
 
 #: ../../spritz/src/applet/etp_applet.py:507
 msgid "Updates Notification Applet Disabled"
-msgstr "Applet di notifica aggiornamenti disabilitata"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:518
 msgid "Updates Notification Applet Enabled"
-msgstr "Applet di notifica aggiornamenti abilitata"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:533
 msgid "Cannot load Spritz"
-msgstr "Impossibile caricare Spritz"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:598
 msgid "Checking for updates..."
-msgstr "Controllando aggiornamenti..."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:619
+#, fuzzy
 msgid "Repository Network Error"
-msgstr "Errore di rete sulla repository"
+msgstr "저장소를 생성하지 못했습니다"
 
 #: ../../spritz/src/applet/etp_applet.py:633
 msgid "No repositories specified. Cannot check for package updates."
-msgstr "Nessuna repository specificata. Impossibile controllare aggiornamenti."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:634
 msgid "Updates: attention"
-msgstr "Aggiornamenti: attenzione"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:638
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
-"Impossibile connettersi al servizio aggiornamenti. Probabilmente non sei "
-"connesso col mondo."
 
 #: ../../spritz/src/applet/etp_applet.py:639
 #: ../../spritz/src/applet/etp_applet.py:664
 msgid "Updates: connection issues"
-msgstr "Aggiornamenti: problemi di connessione"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:643
 msgid "Not all the repositories have been fetched for checking"
-msgstr "Non tutte le repository sono stato scaricate per il controllo."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:644
 #: ../../spritz/src/applet/etp_applet.py:649
 msgid "Updates: repository issues"
-msgstr "Aggiornamenti: problemi sulla repository"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:648
 msgid "No repositories found online"
-msgstr "Nessuna repository trovata online"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:653
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
-"Errori di sincronizzazione. Impossibile aggiornare le repository. "
-"Controllare i log."
 
 #: ../../spritz/src/applet/etp_applet.py:654
 msgid "Updates: sync issues"
-msgstr "Aggiornamenti: problemi di aggiornamento"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:658
 msgid "Updates: unhandled error"
-msgstr "Aggiornamenti: errore non gestito"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:675
+#, fuzzy
 msgid "Updates: error"
-msgstr "Aggiornamenti: errori"
+msgstr "업데이트"
 
 #: ../../spritz/src/applet/etp_applet.py:683
+#, fuzzy
 msgid "Updates issue:"
-msgstr "Errori aggiornamento:"
+msgstr "업데이트"
 
 #: ../../spritz/src/applet/etp_applet.py:701
 msgid "There are"
-msgstr "Ci sono"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:701
 msgid "updates available."
-msgstr "aggiornamenti disponibili."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:703
 msgid "Updates available"
-msgstr "Aggiornamenti disponibili"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:712
 #: ../../spritz/src/applet/etp_applet.py:714
 msgid "So far, so good. w00t!"
-msgstr "Uhuuu. Miticooo!"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:713
 msgid "Everything up-to-date"
-msgstr "Tutto aggiornato."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:809
 msgid "Waiting before checkin..."
-msgstr "In attesa prima del checkin..."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:891
 msgid "Your system currently has"
-msgstr "Sul sistema è installato"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:894
 msgid "but the latest available version is"
-msgstr "ma l'ultima versione disponibile è"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:896
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
 msgstr ""
-"Si raccomanda di aggiornare all'ultima versione prima di qualsiasi altro "
-"pacchetto."
 
-#~ msgid "Available Updates"
-#~ msgstr "Aggiornamenti disponibili"
+#, fuzzy
+#~ msgid "Getting : %s"
+#~ msgstr "밀러검색 : %s"
 
-#~ msgid "Package Manager Notification Window"
-#~ msgstr "Finestra di notifica del Gestore di pacchetti"
+#~ msgid "Cleanup"
+#~ msgstr "삭제"
 
-#~ msgid "_Load Package Manager"
-#~ msgstr "_Carica il Gestore dei Pacchetti"
+#, fuzzy
+#~ msgid "Erased: %s"
+#~ msgstr "삭제된"
 
-#~ msgid "7"
-#~ msgstr "7"
+#~ msgid "---> Package %s.%s %s:%s-%s set to be %s"
+#~ msgstr "---> 패키지 %s.%s %s:%s-%s(은)는 %s로 설정됩니다"
+
+#~ msgid "--> Running transaction check"
+#~ msgstr "--> 트렌젝션을 수행하고 있습니다"
+
+#~ msgid "--> Restarting Dependency Resolution with new changes."
+#~ msgstr "--> 새로 변경된 값들로 의존성 테스트를 재시작합니다."
+
+#~ msgid "--> Finished Dependency Resolution"
+#~ msgstr "--> 의존성 테스트를 마쳤습니다"
+
+#~ msgid "--> Processing Dependency: %s for package: %s"
+#~ msgstr "--> 의존성을 처리하고 있습니다: %s 패키지를 위한 %s"
+
+#~ msgid "--> Unresolved Dependency: %s"
+#~ msgstr "--> 해결되지 않은 의존성: %s"
+
+#~ msgid "--> Processing Conflict: %s conflicts %s"
+#~ msgstr "--> 충돌관계를 처리하고 있습니다: %s는 %s과 충돌 합니다"
+
+#~ msgid "--> Populating transaction set with selected packages. Please wait."
+#~ msgstr ""
+#~ "--> 선택한 패키지들의 트렉젝션을 처리하고 있습니다. 잠시만 기다려주세요."
+
+#~ msgid "---> Downloading header for %s to pack into transaction set."
+#~ msgstr "---> 트렌젝션에 포함하기 위해 %s의 헤더를 다운받고 있습니다."
+
+#, fuzzy
+#~ msgid "Packages to Process"
+#~ msgstr "패키지 처리"
+
+#~ msgid "Arch"
+#~ msgstr "아키텍쳐"
+
+#~ msgid "Ver"
+#~ msgstr "버전"
+
+#, fuzzy
+#~ msgid "About %s"
+#~ msgstr "정보"
+
+#, fuzzy
+#~ msgid ""
+#~ "Updating : %s\n"
+#~ "\n"
+#~ msgstr "업데이트"
+
+#, fuzzy
+#~ msgid ""
+#~ "Obsoleting : %s\n"
+#~ "\n"
+#~ msgstr "밀러검색 : %s"
 
 #~ msgid ""
-#~ "<b><big>Please wait</big></b>\n"
-#~ "<small>...take a little break !</small>"
+#~ "Requires:\n"
+#~ "\n"
 #~ msgstr ""
-#~ "<b><big>Attendere prego</big></b>\n"
-#~ "<small>...fai un piccolo break!</small>"
+#~ "요구:\n"
+#~ "\n"
 
-#~ msgid "Add/Edit Repository"
-#~ msgstr "Repository Toevoegen/Bewerken"
+#~ msgid "Can not read the %s attribute"
+#~ msgstr "%s 속성을 읽을 수 없습니다"
 
-#~ msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+#, fuzzy
+#~ msgid "Show All Packages"
+#~ msgstr "패키지들"
+
+#, fuzzy
+#~ msgid "Package Queue View"
+#~ msgstr "패키지"
+
+#, fuzzy
+#~ msgid "RPM Groups"
+#~ msgstr "그룹"
+
+#~ msgid "Architecture"
+#~ msgstr "아키텍쳐"
+
+#, fuzzy
+#~ msgid "Sizes"
+#~ msgstr "크기"
+
+#, fuzzy
+#~ msgid "Mandatory"
+#~ msgstr "필수(_M)"
+
+#, fuzzy
+#~ msgid "Optional"
+#~ msgstr "선택(_O)"
+
+#, fuzzy
+#~ msgid " Packages to %s"
+#~ msgstr "설치할 %d 패키지(들)"
+
+#, fuzzy
+#~ msgid " Groups to %s"
+#~ msgstr "그룹"
+
+#, fuzzy
+#~ msgid "Wrong file version (%s)"
 #~ msgstr ""
-#~ "Aggiungere una <b>nuova repository</b> ti permette di accedere a "
-#~ "<b>software aggiuntivo</b>"
+#~ "설치된 버전: %s (%s) \n"
+#~ "\n"
 
-#~ msgid "Branch"
-#~ msgstr "Branch"
+#~ msgid "Current Settings :"
+#~ msgstr "현재 설정 :"
 
-#~ msgid "Bugs"
-#~ msgstr "Bug"
+#~ msgid "Summary"
+#~ msgstr "요약"
 
-#~ msgid "CONFIG_PROTECT"
-#~ msgstr "CONFIG_PROTECT"
+#, fuzzy
+#~ msgid "Arch."
+#~ msgstr "아키텍쳐"
 
-#~ msgid "C_hanges"
-#~ msgstr "Ca_mbiamenti"
+#, fuzzy
+#~ msgid "Ver."
+#~ msgstr "버전"
 
-#~ msgid "D_ependencies"
-#~ msgstr "Dip_endenze"
+#, fuzzy
+#~ msgid "Size."
+#~ msgstr "크기"
 
-#~ msgid "Dele_te all"
-#~ msgstr "Elimina _tutto"
+#~ msgid "Plugin"
+#~ msgstr "플러그인"
 
-#~ msgid "Download mirrors"
-#~ msgstr "Mirror di scaricamento"
+#~ msgid "Setup Yum : Transaction Set"
+#~ msgstr "Yum 설정 : 트렌젝션"
+
+#~ msgid "Setup Yum : RPM Db."
+#~ msgstr "Yum 설정 : RPM Db."
+
+#, fuzzy
+#~ msgid "Setup Yum : Repositories."
+#~ msgstr "Yum 설정 : 구성"
+
+#, fuzzy
+#~ msgid "Setup Yum : Package Sacks"
+#~ msgstr "Yum 설정 : 플러그인"
+
+#, fuzzy
+#~ msgid "Setup Yum : Updates"
+#~ msgstr "Yum 설정 : 플러그인"
+
+#, fuzzy
+#~ msgid "Setup Yum : Groups"
+#~ msgstr "Yum 설정 : 플러그인"
+
+#~ msgid "Setup Yum : Base setup completed"
+#~ msgstr "Yum 설정 : 기본 설정을 마쳤습니다"
+
+#, fuzzy
+#~ msgid "Loaded update Metadata from %s "
+#~ msgstr "%s의 메타데이타를 처리하고 있습니다"
+
+#~ msgid "Preparing for install/remove/update"
+#~ msgstr "설치/삭제/업데이트를 위해 준비중입니다"
+
+#~ msgid "--> Preparing for install"
+#~ msgstr "--> 설치를 위해 준비중입니다"
+
+#~ msgid "--> Preparing for remove"
+#~ msgstr "--> 삭제를 위해 준비중입니다"
+
+#~ msgid "--> Preparing for a full update"
+#~ msgstr "--> 업데이트를 위해 준비중입니다"
+
+#~ msgid "--> Preparing for a partial update"
+#~ msgstr "--> 업데이트를 위해 준비중입니다"
+
+#~ msgid "--> Adding all obsoletion to transaction"
+#~ msgstr "--> 모든 오래된 패키지들를 트렌젝션에 추가합니다"
+
+#, fuzzy
+#~ msgid "Failure getting %s: "
+#~ msgstr "현재 설정 :"
+
+#~ msgid "Downloading Packages:"
+#~ msgstr "다운받은 패키지들:"
+
+#~ msgid "Checking GPG Signatures:"
+#~ msgstr "GPG 서명을 확인하고 있습니다:"
+
+#, fuzzy
+#~ msgid "Error checking package signatures:\n"
+#~ msgstr "GPG 서명을 확인하고 있습니다:"
+
+#, fuzzy
+#~ msgid "Traceback in checking package signatures:\n"
+#~ msgstr "GPG 서명을 확인하고 있습니다:"
+
+#~ msgid "Running Transaction Test"
+#~ msgstr "트렌젝션 테스트를 수행하고 있습니다"
+
+#~ msgid "Finished Transaction Test"
+#~ msgstr "트렌젝션 테스트를 마쳤습니다"
+
+#~ msgid "Transaction Check Error: "
+#~ msgstr "트렌젝션 확인에 문제가 발생하였습니다: "
+
+#~ msgid "Transaction Test Succeeded"
+#~ msgstr "트렌젝션 테스트를 성공적으로 마쳤습니다"
+
+#, fuzzy
+#~ msgid "Cant Quit while running RPM Transactions"
+#~ msgstr "트렌젝션 수행중입니다"
+
+#~ msgid "Profile : %s saved ok"
+#~ msgstr "프로파일 : %s이(가) 저장되었습니다"
+
+#~ msgid "Profile : %s save failed"
+#~ msgstr "프로파일 : %s을(를) 저장하지 못했습니다"
+
+#~ msgid "Create New Profile"
+#~ msgstr "새 프로파일 만들기"
+
+#, fuzzy
+#~ msgid "Profile : %s created ok"
+#~ msgstr "프로파일 : %s이(가) 생성되었습니다"
+
+#~ msgid "Profile : %s creation failed"
+#~ msgstr "프로파일 : %s을(를) 생성하지 못했습니다"
 
 #~ msgid "Error"
-#~ msgstr "Errore"
+#~ msgstr "문제"
 
-#~ msgid "External Trigger"
-#~ msgstr "Trigger Esterno"
+#, fuzzy
+#~ msgid "Error in Yum Setup"
+#~ msgstr "yum 설정에 문제가 있습니다"
 
-#~ msgid "Install Size"
-#~ msgstr "Dimensione installazione"
+#, fuzzy
+#~ msgid "Building Package Lists"
+#~ msgstr "패키지 목록 만들기를 마쳤습니다"
 
-#~ msgid "Install the selected package"
-#~ msgstr "Installa il pacchetto selezionato"
+#, fuzzy
+#~ msgid "Building Package Lists Completed"
+#~ msgstr "패키지 목록 만들기를 마쳤습니다"
 
-#~ msgid "Kernel Tag"
-#~ msgstr "Kernel Tag"
+#, fuzzy
+#~ msgid "Building Group Lists Completed"
+#~ msgstr "패키지 목록 만들기를 마쳤습니다"
 
-#~ msgid "Load content"
-#~ msgstr "Carica il contenuto"
+#, fuzzy
+#~ msgid "Getting packages : %s"
+#~ msgstr "밀러검색 : %s"
 
-#~ msgid "MD5 Signature"
-#~ msgstr "Firma MD5"
+#, fuzzy
+#~ msgid "Package View Population"
+#~ msgstr "설명"
 
-#~ msgid "Merge all"
-#~ msgstr "Mergi tutto"
+#~ msgid "Error in Dependency Resolution"
+#~ msgstr "의존성 테스트에 문제가 발생하였습니다"
 
-#~ msgid "Messages"
-#~ msgstr "Messaggi"
+#, fuzzy
+#~ msgid "No packages in transaction"
+#~ msgstr "큐에 있는 패키지를 처리합니다"
 
-#~ msgid "O_ther"
-#~ msgstr "Al_tro"
-
-#~ msgid "Package Info."
-#~ msgstr "Info Pacchetto"
-
-#~ msgid "Package Information"
-#~ msgstr "Informazioni Pacchetto"
-
-#~ msgid "Please Confirm"
-#~ msgstr "Conferma per favore"
-
-#~ msgid ""
-#~ "Please submit this error to us providing as much information as possible."
-#~ msgstr "Per favore inviaci l'errore fornendo più informazioni possibili."
-
-#~ msgid "Purge"
-#~ msgstr "Spazza via"
-
-#~ msgid "R_egenerate Cache"
-#~ msgstr "R_igenera Cache"
-
-#~ msgid "Remove the selected package and its configuration"
-#~ msgstr "Rimuovi il pacchetto selezionato e la sua configurazione"
-
-#~ msgid "S_end Error Report"
-#~ msgstr "_Invia il rapporto"
-
-#~ msgid "Show all"
-#~ msgstr "Mostra tutto"
-
-#~ msgid "Show applied"
-#~ msgstr "Mostra applicati"
-
-#~ msgid "Show unapplied"
-#~ msgstr "Mostra non applicati"
-
-#~ msgid "Soon!"
-#~ msgstr "Presto!"
-
-#~ msgid "Spritz Package Manager"
-#~ msgstr "Gestore di pacchetti Spritz"
-
-#~ msgid "Undo Install"
-#~ msgstr "Annulla Installa"
-
-#~ msgid "Undo Install action"
-#~ msgstr "Annulla azione Installa"
-
-#~ msgid "Undo Purge"
-#~ msgstr "Annulla Spazza via"
-
-#~ msgid "Undo Purge action"
-#~ msgstr "Annulla azione Spazza via"
-
-#~ msgid "Undo Reinstall"
-#~ msgstr "Annulla Reinstalla"
-
-#~ msgid "Undo Reinstall action"
-#~ msgstr "Annulla azione Reinstalla"
-
-#~ msgid "Undo Remove"
-#~ msgstr "Annulla Rimuovi"
-
-#~ msgid "Undo Update"
-#~ msgstr "Annulla Aggiorna"
-
-#~ msgid "Undo Update action"
-#~ msgstr "Annulla azione Aggiorna"
-
-#~ msgid "Updates"
-#~ msgstr "Aggiornamenti"
-
-#~ msgid "Website"
-#~ msgstr "Sito web"
-
-#~ msgid ""
-#~ "You <b>need to accept</b> the licenses below.\n"
-#~ "Please read them carefully and <b>make your choice</b>."
+#, fuzzy
+#~ msgid "Processing packages (See output for details)"
 #~ msgstr ""
-#~ "Devi <b>accettare</b> le licenze sotto.\n"
-#~ "Leggile attentamente e fai <b>la tua scelta</b>."
+#~ "패키지들을 처리하고 있습니다 (자세한 사항은 출력된 결과로 확인하세요)"
 
-#~ msgid "Your E-mail"
-#~ msgstr "La tua E-mail"
+#~ msgid "Packages Processing"
+#~ msgstr "패키지 처리"
 
-#~ msgid "Your Full Name"
-#~ msgstr "Il tuo nome completo"
+#~ msgid "Error in Transaction"
+#~ msgstr "트렌젝션 수행에 문제가 발생하였습니다"
 
-#~ msgid "_Accept License"
-#~ msgstr "_Accetta licenza"
+#, fuzzy
+#~ msgid "Parsing packages to %s "
+#~ msgstr "설치할 %d 패키지(들)"
 
-#~ msgid "_Add All"
-#~ msgstr "_Aggiungi tutto"
+#, fuzzy
+#~ msgid "Error in Yumex"
+#~ msgstr "yum 설정에 문제가 있습니다"
 
-#~ msgid "_Branch ..."
-#~ msgstr "_Branch ..."
+#~ msgid "Erasing"
+#~ msgstr "삭제"
 
-#~ msgid "_Details"
-#~ msgstr "_Dettagli"
+#~ msgid "Obsoleted"
+#~ msgstr "오래된"
 
-#~ msgid "_File"
-#~ msgstr "_File"
+#~ msgid "No header - huh?"
+#~ msgstr "헤더가 없습니다 - 그렇죠?"
+
+#~ msgid "<b>Behavior</b>"
+#~ msgstr "<b>행동</b>"
+
+#, fuzzy
+#~ msgid "<b>Category</b>"
+#~ msgstr "<b>플레그</b>"
+
+#, fuzzy
+#~ msgid "<b>Fonts </b>"
+#~ msgstr "<b>플레그</b>"
+
+#, fuzzy
+#~ msgid "<b>Packages</b>"
+#~ msgstr "<b>업데이트할 패키지들</b>"
+
+#, fuzzy
+#~ msgid "<b>Quick add to queue</b>"
+#~ msgstr "%i 패키지가 큐에 추가되었습니다"
+
+#~ msgid "<b>SUBACTION</b>\n"
+#~ msgstr "<b>세부 수행</b>\n"
+
+#~ msgid "<span size=\"large\"><b>Action</b></span>\n"
+#~ msgstr "<span size=\"large\"><b>수행</b></span>\n"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Group View</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">그룹 창</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Output View</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">출력 창</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">패키지 큐</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Select Repositories</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">저장소 선택</span>"
+
+#, fuzzy
+#~ msgid "C_hangelog"
+#~ msgstr "변경된 로그(_l)"
+
+#~ msgid "Debug _mode"
+#~ msgstr "디버그 모드(_m)"
+
+#~ msgid "Plugins"
+#~ msgstr "플러그인"
+
+#~ msgid "Process Queue Confirmation"
+#~ msgstr "프로세스 큐 확인"
+
+#, fuzzy
+#~ msgid "Repos"
+#~ msgstr "저장소"
+
+#~ msgid "Use _proxy"
+#~ msgstr "프록시 사용(_p)"
+
+#, fuzzy
+#~ msgid "Yum Extender"
+#~ msgstr "정보: Yum Extender"
+
+#~ msgid "_Auto refresh on start"
+#~ msgstr "시작할 때 자동 고침(_A)"
+
+#~ msgid "_Description"
+#~ msgstr "설명(_D)"
+
+#~ msgid "_Deselect All"
+#~ msgstr "모두 선택하지 않음(_D)"
 
 #~ msgid "_Help"
-#~ msgstr "_Aiuto"
+#~ msgstr "도움말(_H)"
 
-#~ msgid "_Insert String"
-#~ msgstr "_Inserisci Stringa"
-
-#~ msgid "_More"
-#~ msgstr "_Ulteriori informazioni"
-
-#~ msgid "_Overview"
-#~ msgstr "_Riepilogo"
+#~ msgid "_Other"
+#~ msgstr "다른(_O)"
 
 #~ msgid "_Process Queue"
-#~ msgstr "_Processa coda"
+#~ msgstr "프로세스 큐(_P)"
 
-#~ msgid "_Queue all vulnerable packages"
-#~ msgstr "Accoda tutti i pacchetti vulnerabili"
+#~ msgid "_Profiles"
+#~ msgstr "프로파일(_P)"
 
-#~ msgid "_References"
-#~ msgstr "_Riferimenti"
-
+#, fuzzy
 #~ msgid "_Remove All"
-#~ msgstr "_Rimuovi tutto"
+#~ msgstr "삭제"
 
-#~ msgid "_Update Repositories"
-#~ msgstr "A_ggiorna Repository"
+#~ msgid "_Tools"
+#~ msgstr "도구(_T)"
 
-#~ msgid "_Your Ego!"
-#~ msgstr "_Il tuo Ego!"
+#~ msgid "_Yum excludes:"
+#~ msgstr "_Yum 배재 목록:"
+
+#~ msgid "_Yum plugins:"
+#~ msgstr "_Yum 플러그인:"
+
+#~ msgid "About Yum Extender"
+#~ msgstr "정보: Yum Extender"
+
+#, fuzzy
+#~ msgid "Groups"
+#~ msgstr "그룹"
+
+#~ msgid "<b>Flags</b>"
+#~ msgstr "<b>플레그</b>"
+
+#~ msgid "<b>GPG Key</b>"
+#~ msgstr "<b>GPG 키</b>"
+
+#~ msgid "<b>URL Type</b>"
+#~ msgstr "<b>URL 종류</b>"
+
+#~ msgid "<b>URLs</b>"
+#~ msgstr "<b>URL의</b>"
+
+#~ msgid "Credits"
+#~ msgstr "신뢰"
+
+#, fuzzy
+#~ msgid "Debug mode"
+#~ msgstr "디버그 모드(_m)"
+
+#, fuzzy
+#~ msgid "Disable Plugins"
+#~ msgstr "플러그인"
+
+#~ msgid "Edit Repository"
+#~ msgstr "저장소 편집"
+
+#, fuzzy
+#~ msgid "Update Only"
+#~ msgstr "업데이트"
+
+#, fuzzy
+#~ msgid "Yum Extender Launcher"
+#~ msgstr "Yum Extender 기본 설정"
+
+#~ msgid "_Base url "
+#~ msgstr "기본(_B) url"
+
+#~ msgid "_Enabled"
+#~ msgstr "활성화됨(_E)"
+
+#~ msgid "_GPG check"
+#~ msgstr "_GPG 체크"
+
+#~ msgid "_Name:"
+#~ msgstr " 이름(_N):"
+
+#~ msgid "_Tag:"
+#~ msgstr "테그(_T):"
+
+#~ msgid "_Delete from Queue"
+#~ msgstr "큐에서 지웁니다(_D)"
+
+#~ msgid "_New"
+#~ msgstr "새로 만들기(_N)"
+
+#~ msgid "_Save"
+#~ msgstr "저장(_S)"
+
+#, fuzzy
+#~ msgid "Quiting"
+#~ msgstr "업데이트"
+
+#~ msgid "Process (_SafeMode)"
+#~ msgstr "처리 (안전모드(_S))"
+
+#~ msgid "_Reset Repository Cache"
+#~ msgstr "저장소 케쉬 초기화(_R)"
+
+#, fuzzy
+#~ msgid "(yumex) Erased: %s"
+#~ msgstr "삭제되었습니다: %s"
+
+#~ msgid "<b>Mirror Detection</b>"
+#~ msgstr "<b>밀러 검색</b>"
+
+#~ msgid "_Best"
+#~ msgstr "최고(_B)"
+
+#~ msgid "_Default"
+#~ msgstr "기본(_D)"
+
+#~ msgid "_Enable 'Process Queue (SafeMode)'"
+#~ msgstr "'프로세스 큐 (안전 모드)' 활성화(_E)"
+
+#~ msgid "_Fastest"
+#~ msgstr "아주 빠른(_F)"
+
+#~ msgid "_Show file lists & changelog (longer metadata load time)"
+#~ msgstr ""
+#~ "파일목록 & (메타데이타 로드 시간이 더 오래걸린) 변경된 로그 보기(_S)"
+
+#, fuzzy
+#~ msgid "_Queue"
+#~ msgstr "큐"
+
+#~ msgid "Filte_r:"
+#~ msgstr "필터(_r):"
+
+#~ msgid "_Delete"
+#~ msgstr "지우기(_D)"
+
+#~ msgid "_Add to Queue"
+#~ msgstr "큐에 추가(_A)"
+
+#~ msgid "added remove of %s to Queue"
+#~ msgstr "지운 %s(을)를 큐에 추가하였습니다"
+
+#~ msgid "added install of %s to Queue"
+#~ msgstr "설치된 %s(을)를 큐에 추가하였습니다"
+
+#~ msgid "%i packages added to queue for removal"
+#~ msgstr "%i 패키지를 삭제하기위해 큐에 추가하였습니다"
+
+#~ msgid "package %s was not found"
+#~ msgstr "패키지 %s이(가) 발견되지 않았습니다"
+
+#~ msgid "Profile %s not found"
+#~ msgstr "프로파일 %s이(가) 발견되지 않았습니다"
+
+#~ msgid "_Profile name:"
+#~ msgstr "프로파일(_P) 이름:"
+
+#, fuzzy
+#~ msgid "_Update"
+#~ msgstr "업데이트"
+
+#, fuzzy
+#~ msgid "_Install"
+#~ msgstr "설치"
+
+#~ msgid "Updating %s view, populate view with data "
+#~ msgstr "데이타를 처리할 %s 창을 업데이트합니다 "
+
+#~ msgid "Using http_proxy=%s"
+#~ msgstr "http 프록시(_p)=%s 사용"
+
+#~ msgid "Repository initialization completed in %.2f seconds"
+#~ msgstr "저장소 초기화가 %.2f 초 이내에 끝났습니다"
+
+#~ msgid "Mirrordetection : %s"
+#~ msgstr "밀러검색 : %s"
+
+#~ msgid "Yum Version : %s (%s)"
+#~ msgstr "Yum 버전 : %s (%s)"
+
+#~ msgid "Setup Yum : Plugins are disabled"
+#~ msgstr "Yum 설정 : 플러그인이 비활성화 되었습니다"
+
+#~ msgid "Loading Repositories Data : Init. %s repository"
+#~ msgstr "저장소 데이타를 읽어옵니다 : %s 저장소를 초기화합니다"
+
+#~ msgid "Determining %s mirrors for %s"
+#~ msgstr "%s(을)를 위해 %s 밀러를 사용합니다"
+
+#~ msgid "--> Mirrors Detected (Top 3)"
+#~ msgstr "--> 밀러가 검색되었습니다(Top 3)"
+
+#~ msgid "Using default mirror detection"
+#~ msgstr "초기 밀러 검색을 사용합니다"
+
+#~ msgid "Loading Repository Group Data"
+#~ msgstr "저장소 그룹 데이타를 읽어옵니다"
+
+#~ msgid "Loading Repositories Data completed"
+#~ msgstr "저장소 데이타 읽어오기를 마쳤습니다"
+
+#~ msgid "Enable/Disable Repositories"
+#~ msgstr "저장소 활성화/비활성화"
+
+#~ msgid "Building Package Lists : Updates"
+#~ msgstr "패키지 목록을 만들고 있습니다 : 업데이트"
+
+#~ msgid "Building Package Lists : %i Updates found"
+#~ msgstr "패키지 목록을 만들고 있습니다 : %i 업데이트 발견"
+
+#~ msgid "Building Package Lists : Installed"
+#~ msgstr "패키지 목록을 만들고 있습니다 : 설치됨"
+
+#~ msgid "Building Package Lists : %i Installed packages found"
+#~ msgstr "패키지 목록을 만들고 있습니다 : %i 설치된 패키지 발견"
+
+#~ msgid "Building Package Lists : Available"
+#~ msgstr "패키지 목록을 만들고 있습니다 : 설치 가능"
+
+#~ msgid "Building Package Lists : %i Available packages found"
+#~ msgstr "패키지 목록을 만들고 있습니다 : %i 설치 가능한 패키지 발견"
+
+#~ msgid "Retrieving GPG key from %s"
+#~ msgstr "GPG 키를 %s로부터 가져옵니다"
+
+#~ msgid "GPG key retrieval failed: "
+#~ msgstr "GPG 키를 가져오지 못했습니다: "
+
+#~ msgid "GPG key parsing failed: "
+#~ msgstr "GPG 키를 해석하지 못했습니다: "
+
+#~ msgid "GPG key at %s (0x%s) is already installed"
+#~ msgstr "%s (0x%s)에 있는 GPG 키는 이미 설치되었습니다"
+
+#~ msgid "Importing GPG key 0x%s \"%s\""
+#~ msgstr "GPG 키를 가져옵니다 0x%s \"%s\""
+
+#~ msgid "Key import failed (code %d)"
+#~ msgstr "키를 가져오지 못했습니다 (코드 %d)"
+
+#~ msgid ""
+#~ "The GPG keys listed for the \"%s\" repository are already installed but "
+#~ "they are not correct for this package.\n"
+#~ "Check that the correct key URLs are configured for this repository."
+#~ msgstr ""
+#~ "\"%s\" 저장소에 열거된 GPG 키는 이미 설치되었습니다. 그러나 그 GPG 키들은 "
+#~ "이 패키지에 적합하지 않습니다.\n"
+#~ "이 저장소를 위해 구성된 올바른 키 URL을 확인해 주세요."
+
+#~ msgid "Import of key(s) didn't help, wrong key(s)?"
+#~ msgstr "가져온 키에 문제가 있습니다, 잘못된 키입니까?"
+
+#~ msgid "No packages in any requested group available to install or update"
+#~ msgstr "요청된 그룹은 패키지를 설치하거나 삭제하실 수 없습니다"
+
+#~ msgid "No group named %s exists"
+#~ msgstr "그룹 %s는 존재하지 않습니다"
+
+#~ msgid "No packages to remove from groups"
+#~ msgstr "그룹에서 삭제할 패키지가 없습니다"
+
+#~ msgid "%s was not deleted"
+#~ msgstr "%s은(는) 지워지지 않았습니다"
+
+#~ msgid "Preparing for install Groups"
+#~ msgstr "그룹들을 설치하기 위해 준비중입니다"
+
+#~ msgid "Error in preparation for package installing"
+#~ msgstr "패키지 설치를 준비하는데 문제가 발생하였습니다"
+
+#~ msgid "Preparing for Removing Groups"
+#~ msgstr "그룹들을 삭제하기 위해 준비중입니다"
+
+#~ msgid "Removeing Groups"
+#~ msgstr "그룹들을 삭제하고 있습니다"
+
+#~ msgid "default"
+#~ msgstr "기본"
+
+#~ msgid "fastest"
+#~ msgstr "가장 빠른"
+
+#~ msgid "best"
+#~ msgstr "최고"
+
+#~ msgid "removal"
+#~ msgstr "삭제"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Install Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">패키지 설치</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Remove Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">패키지 삭제</span>"
+
+#, fuzzy
+#~ msgid "<span size=\"xx-large\" color=\"black\">Packages by category</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">패키지 큐</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Update Packages</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">패키지 업데이트</span>"
+
+#~ msgid "New Repository"
+#~ msgstr "새 저장소"
+
+#~ msgid "_New repository tag name:"
+#~ msgstr "새 저장소 테그명(_N)"
+
+#~ msgid "Save Changes"
+#~ msgstr "변경 저장"
+
+#~ msgid "<span size='x-large'> Packages to Process</span>"
+#~ msgstr "<span size='x-large'> 처리할 패키지들</span>"
+
+#~ msgid "Categories / Groups"
+#~ msgstr "범주 / 그룹"
+
+#~ msgid "All Groups"
+#~ msgstr "모든 그룹"
+
+#, fuzzy
+#~ msgid "A_dd to Queue"
+#~ msgstr "큐에 추가(_A)"
+
+#, fuzzy
+#~ msgid "Test"
+#~ msgstr "최고"
+
+#~ msgid "Cannot open/read repomd.xml file for repository: %s"
+#~ msgstr "저장소를 위한 repomd.xml 파일을 열거나 읽을 수 없습니다: %s"
+
+#~ msgid "Loading Repositories Data : Populate Package Sack for %s"
+#~ msgstr "저장소 데이타를 읽어옵니다 : %s(을)를 위한 패키지 공간을 처리합니다"
+
+#~ msgid "Cannot make directory for logfile %s"
+#~ msgstr "로그파일 %s(을)를 위한 디렉토리를 만들 수 없습니다"
+
+#~ msgid "Cannot open logfile %s"
+#~ msgstr "로그파일 %s(을)를 열 수 없습니다"
+
+#~ msgid "Add to _Queue"
+#~ msgstr "큐(_Q)에 추가"
+
+#~ msgid "Forcing i386 architecture for $basearch variable"
+#~ msgstr "$basearch 변수로 i386 아키텍쳐가 사용됩니다"
+
+#~ msgid "Using system's $basearch variable"
+#~ msgstr "시스템의 $basearch 변수를 사용합니다"
+
+#~ msgid "F_orce i386 architecture"
+#~ msgstr "i386 아키텍쳐 모드(_o)"

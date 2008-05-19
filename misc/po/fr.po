@@ -1,22 +1,17 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
 msgid ""
 msgstr ""
-"Project-Id-Version: Spritz 0.14\n"
+"Project-Id-Version: LAN_FR\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-05-19 20:56+0200\n"
-"PO-Revision-Date: 2008-04-30 10:12+0100\n"
-"Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
-"Language-Team: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
+"PO-Revision-Date: 2008-02-09 10:14+0100\n"
+"Last-Translator: SUFFYS <nsuffys@gmail.com>\n"
+"Language-Team: french <nsuffys@gmail.com>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Italian\n"
-"X-Poedit-Country: ITALY\n"
-"X-Poedit-SourceCharset: iso-8859-1\n"
+"X-Poedit-Language: français\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
 
 #: ../../client/equo.py:38
 msgid "Basic Options"
@@ -29,7 +24,7 @@ msgstr ""
 #: ../../client/equo.py:41 ../../client/equo.py:46
 #, fuzzy
 msgid "print version"
-msgstr "Domanda Spritz"
+msgstr "Question du Spritz"
 
 #: ../../client/equo.py:42
 msgid "disable colorized output"
@@ -46,22 +41,22 @@ msgstr ""
 #: ../../client/equo.py:48
 #, fuzzy
 msgid "show enabled repositories"
-msgstr "Aggiorna Repository"
+msgstr "Mettre à jour les dépots"
 
 #: ../../client/equo.py:49
 #, fuzzy
 msgid "show respositories status"
-msgstr "_Forza aggiornamento repository"
+msgstr "_Forcer la mise à jour des dépots"
 
 #: ../../client/equo.py:51
 #, fuzzy
 msgid "search packages in repositories"
-msgstr "Errori aggiornando le repository."
+msgstr "Erreurs de mise à jour des dépots"
 
 #: ../../client/equo.py:52
 #, fuzzy
 msgid "match a package in repositories"
-msgstr "Aggiorna Repository"
+msgstr "Mettre à jour les dépots"
 
 #: ../../client/equo.py:53
 msgid "return all the possible matches"
@@ -74,16 +69,15 @@ msgstr ""
 #: ../../client/equo.py:55
 #, fuzzy
 msgid "print repository information (w/--quiet)"
-msgstr "Informazioni Repository"
+msgstr "Information du dépot"
 
 #: ../../client/equo.py:56
 msgid "print description too (w/--quiet)"
 msgstr ""
 
 #: ../../client/equo.py:58 ../../client/equo.py:66
-#, fuzzy
 msgid "update system with the latest available packages"
-msgstr "ma l'ultima versione disponibile è"
+msgstr ""
 
 #: ../../client/equo.py:59 ../../client/equo.py:77 ../../client/equo.py:83
 #: ../../client/equo.py:104 ../../client/equo.py:110 ../../client/equo.py:160
@@ -127,24 +121,20 @@ msgid "security infrastructure functions"
 msgstr ""
 
 #: ../../client/equo.py:71
-#, fuzzy
 msgid "download the latest Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr ""
 
 #: ../../client/equo.py:72
-#, fuzzy
 msgid "list all the available Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr ""
 
 #: ../../client/equo.py:73
-#, fuzzy
 msgid "list only affected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../client/equo.py:74
-#, fuzzy
 msgid "list only unaffected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../client/equo.py:75
 msgid "show information about provided advisories identifiers"
@@ -166,7 +156,7 @@ msgstr ""
 #: ../../client/equo.py:82 ../../client/equo.py:100
 #, fuzzy
 msgid "install atoms or .tbz2 packages"
-msgstr "Reinstalla il pacchetto selezionato"
+msgstr "Réinstalle les paquets sélectionnés"
 
 #: ../../client/equo.py:85
 msgid "just download packages without doing the install"
@@ -199,7 +189,7 @@ msgstr ""
 #: ../../client/equo.py:96
 #, fuzzy
 msgid "remove one or more packages"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr "Supprimer les paquets sélectionnés"
 
 #: ../../client/equo.py:97
 msgid "also pull unused dependencies where depends list is empty"
@@ -224,7 +214,7 @@ msgstr ""
 #: ../../client/equo.py:113
 #, fuzzy
 msgid "configuration files update tool"
-msgstr "File di configurazione"
+msgstr "Fichiers de configuration"
 
 #: ../../client/equo.py:114
 msgid "show configuration files to be updated"
@@ -285,7 +275,7 @@ msgstr ""
 #: ../../client/equo.py:129
 #, fuzzy
 msgid "list installed packages"
-msgstr "Visualizza pacchetti installati"
+msgstr "Montrer les paquets installés"
 
 #: ../../client/equo.py:130
 msgid "search files that do not belong to any package"
@@ -325,9 +315,8 @@ msgid "recreate an Entropy package from your System"
 msgstr ""
 
 #: ../../client/equo.py:142 ../../client/equo.py:144 ../../client/equo.py:146
-#, fuzzy
 msgid "save new packages into the specified directory"
-msgstr "Accoda pacchetti nell'avviso selezionato"
+msgstr ""
 
 #: ../../client/equo.py:143
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
@@ -348,7 +337,7 @@ msgstr ""
 #: ../../client/equo.py:150
 #, fuzzy
 msgid "handles installed packages database"
-msgstr "Visualizza pacchetti installati"
+msgstr "Montrer les paquets installés"
 
 #: ../../client/equo.py:151
 msgid "check System Database for errors"
@@ -391,7 +380,7 @@ msgstr ""
 #: ../../client/equo.py:165
 #, fuzzy
 msgid "regenerate Entropy cache"
-msgstr "Rigenera Cache"
+msgstr "Regénérer le cache"
 
 #: ../../client/equo.py:169
 msgid "remove downloaded packages and clean temp. directories)"
@@ -400,7 +389,7 @@ msgstr ""
 #: ../../client/equo.py:171
 #, fuzzy
 msgid "show system information"
-msgstr "Informazioni Avviso"
+msgstr "Information du dépot"
 
 #: ../../client/text_query.py:111 ../../client/text_query.py:697
 msgid "Searching"
@@ -413,7 +402,7 @@ msgstr ""
 #: ../../client/text_query.py:971
 #, fuzzy
 msgid "Keyword"
-msgstr "Keyword"
+msgstr "Mots clés"
 
 #: ../../client/text_query.py:136 ../../client/text_query.py:191
 #: ../../client/text_query.py:267 ../../client/text_query.py:315
@@ -439,31 +428,31 @@ msgstr ""
 #: ../../client/text_query.py:211
 #, fuzzy
 msgid "Depends Search"
-msgstr "Sono dipendenza di"
+msgstr "Dépend de"
 
 #: ../../client/text_query.py:258 ../../client/text_ui.py:1196
-#, fuzzy
 msgid "Matched"
-msgstr "Mascherato"
+msgstr ""
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#, fuzzy
 msgid "Masked"
-msgstr "Mascherato"
+msgstr "Supprimé"
 
 #: ../../client/text_query.py:264
 #, fuzzy
 msgid "from repository"
-msgstr "Repository"
+msgstr "Dépot"
 
 #: ../../client/text_query.py:266
 #, fuzzy
 msgid "from installed packages database"
-msgstr "Visualizza pacchetti installati"
+msgstr "Montrer les paquets installés"
 
 #: ../../client/text_query.py:292 ../../client/text_query.py:334
 #, fuzzy
 msgid "Needed Search"
-msgstr "Spazio richiesto"
+msgstr "Espace requis"
 
 #: ../../client/text_query.py:314
 msgid "Atom"
@@ -472,7 +461,7 @@ msgstr ""
 #: ../../client/text_query.py:315
 #, fuzzy
 msgid "libraries"
-msgstr "Librerie richieste"
+msgstr "Librairies nécessaires"
 
 #: ../../client/text_query.py:354
 msgid "Library"
@@ -481,31 +470,31 @@ msgstr ""
 #: ../../client/text_query.py:355 ../../client/text_query.py:399
 #, fuzzy
 msgid "packages"
-msgstr "Pacchetti"
+msgstr "Paquets"
 
 #: ../../client/text_query.py:374
-#, fuzzy
 msgid "Eclass Search"
-msgstr "Eclass"
+msgstr ""
 
 #: ../../client/text_query.py:444 ../../client/text_query.py:1050
 #: ../../spritz/src/dialogs.py:419 ../../spritz/src/dialogs.py:425
 #: ../../spritz/src/spritz.py:921 ../../spritz/src/views.py:434
 msgid "Package"
-msgstr "Pacchetto"
+msgstr "Paquet"
 
 #: ../../client/text_query.py:445
 #, fuzzy
 msgid "files"
-msgstr "File"
+msgstr "Fichier"
 
 #: ../../client/text_query.py:465
 msgid "Orphans Search"
 msgstr ""
 
 #: ../../client/text_query.py:490
+#, fuzzy
 msgid "Analyzing"
-msgstr ""
+msgstr "Installation"
 
 #: ../../client/text_query.py:501
 msgid "Analyzed directories"
@@ -522,7 +511,7 @@ msgstr ""
 #: ../../client/text_query.py:504
 #, fuzzy
 msgid "Now looking into Installed Packages database"
-msgstr "Visualizza pacchetti installati"
+msgstr "Montrer les paquets installés"
 
 #: ../../client/text_query.py:516
 msgid "Intersecting with content of the package"
@@ -555,13 +544,13 @@ msgstr ""
 #: ../../client/text_query.py:589
 #, fuzzy
 msgid "Removal Search"
-msgstr "Rimuovi"
+msgstr "Supprimer"
 
 #: ../../client/text_query.py:599 ../../client/text_ui.py:354
 #: ../../client/text_ui.py:908
 #, fuzzy
 msgid "No packages found"
-msgstr "Nessun pacchetto in coda"
+msgstr "Pas de paquets dans la file d'attente"
 
 #: ../../client/text_query.py:604
 msgid "Calculating removal dependencies, please wait"
@@ -570,7 +559,7 @@ msgstr ""
 #: ../../client/text_query.py:615
 #, fuzzy
 msgid "These are the packages that would added to the removal queue"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_query.py:624 ../../client/text_smart.py:106
 #: ../../client/text_smart.py:254 ../../client/text_smart.py:387
@@ -582,21 +571,21 @@ msgstr ""
 #: ../../client/text_query.py:650
 #, fuzzy
 msgid "Installed Search"
-msgstr "Installato"
+msgstr "Installé"
 
 #: ../../client/text_query.py:661
 #, fuzzy
 msgid "These are the installed packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "Montrer les paquets installés"
 
 #: ../../client/text_query.py:750 ../../client/text_rescue.py:656
+#, fuzzy
 msgid "Matching"
-msgstr ""
+msgstr "Mis à jour"
 
 #: ../../client/text_query.py:779
-#, fuzzy
 msgid "No matches"
-msgstr "o"
+msgstr ""
 
 #: ../../client/text_query.py:802
 msgid "Slot Search"
@@ -609,18 +598,19 @@ msgstr ""
 #: ../../client/text_query.py:889
 #, fuzzy
 msgid "License Search"
-msgstr "Nome licenza"
+msgstr "Nom de la license"
 
 #: ../../client/text_query.py:932
 #, fuzzy
 msgid "Description Search"
-msgstr "Descrizione"
+msgstr "Description"
 
 #. client info
 #: ../../client/text_query.py:1034 ../../client/text_ui.py:381
 #: ../../client/text_ui.py:410 ../../spritz/src/applet/etp_applet.py:870
+#, fuzzy
 msgid "Not installed"
-msgstr "Non installato"
+msgstr "Sera installé"
 
 #: ../../client/text_query.py:1035 ../../client/text_query.py:1036
 msgid "N/A"
@@ -629,7 +619,7 @@ msgstr ""
 #: ../../client/text_query.py:1052
 #, fuzzy
 msgid "Category"
-msgstr "Categorie"
+msgstr "Categories"
 
 #: ../../client/text_query.py:1053
 msgid "Name"
@@ -638,25 +628,25 @@ msgstr ""
 #: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
 msgid "Available"
-msgstr "Disponibile"
+msgstr "Disponible"
 
 #: ../../client/text_query.py:1055 ../../client/text_query.py:1057
 #, fuzzy
 msgid "version"
-msgstr "Versione"
+msgstr "Révision"
 
 #: ../../client/text_query.py:1055 ../../client/text_query.py:1057
 #, fuzzy
 msgid "revision"
-msgstr "Revisione"
+msgstr "Révision"
 
 #: ../../client/text_query.py:1057
 msgid "Installed"
-msgstr "Installato"
+msgstr "Installé"
 
 #: ../../client/text_query.py:1059
 msgid "Slot"
-msgstr "Slot"
+msgstr "entaille"
 
 #: ../../client/text_query.py:1060
 msgid "Size"
@@ -665,7 +655,7 @@ msgstr ""
 #: ../../client/text_query.py:1061
 #, fuzzy
 msgid "Download"
-msgstr "Percorso di scaricamento"
+msgstr "Mirroirs de téléchargement"
 
 #: ../../client/text_query.py:1062
 msgid "Checksum"
@@ -673,7 +663,7 @@ msgstr ""
 
 #: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:134
 msgid "Dependencies"
-msgstr "Dipendenze"
+msgstr "Dépendances"
 
 #: ../../client/text_query.py:1068
 msgid "Conflicts"
@@ -688,44 +678,43 @@ msgstr ""
 #: ../../spritz/src/views.py:666 ../../spritz/src/views.py:822
 #: ../../spritz/src/views.py:1030
 msgid "Description"
-msgstr "Descrizione"
+msgstr "Description"
 
 #. print use flags
 #: ../../client/text_query.py:1077 ../../spritz/src/dialogs.py:118
-#, fuzzy
 msgid "USE flags"
-msgstr "USE Flags"
+msgstr ""
 
 #: ../../client/text_query.py:1081
 msgid "CHOST"
-msgstr "CHOST"
+msgstr ""
 
 #: ../../client/text_query.py:1082
+#, fuzzy
 msgid "CFLAGS"
-msgstr "CFLAGS"
+msgstr "<b>CFLAGS</b>"
 
 #: ../../client/text_query.py:1083
+#, fuzzy
 msgid "CXXFLAGS"
-msgstr "CXXFLAGS"
+msgstr "<b>CXXFLAGS</b>"
 
 #: ../../client/text_query.py:1087
-#, fuzzy
 msgid "Gentoo eclasses"
-msgstr "Eclass"
+msgstr ""
 
 #: ../../client/text_query.py:1089 ../../spritz/src/dialogs.py:94
 msgid "Sources"
-msgstr "Sorgenti"
+msgstr "Sources"
 
 #: ../../client/text_query.py:1091
 #, fuzzy
 msgid "Source"
-msgstr "Sorgenti"
+msgstr "Sources"
 
 #: ../../client/text_query.py:1092
-#, fuzzy
 msgid "Entry API"
-msgstr "Entropy API"
+msgstr ""
 
 #: ../../client/text_query.py:1094
 msgid "Compiled with"
@@ -733,52 +722,52 @@ msgstr ""
 
 #: ../../client/text_query.py:1095 ../../spritz/src/dialogs.py:110
 msgid "Keywords"
-msgstr "Keyword"
+msgstr "Mots clés"
 
 #: ../../client/text_query.py:1096
 #, fuzzy
 msgid "Created"
-msgstr "Data di creazione"
+msgstr "Supprimé"
 
 #: ../../client/text_query.py:1097 ../../client/text_ui.py:772
 #: ../../spritz/src/dialogs.py:824
 msgid "License"
-msgstr "Licenza"
+msgstr "License"
 
 #: ../../client/text_repositories.py:51 ../../client/text_repositories.py:114
 #: ../../client/text_security.py:47
 #, fuzzy, python-format
 msgid "You must be either root or in the %s group."
-msgstr "Devi aggiungerti a questo gruppo"
+msgstr "Vous devez appuyer le %s ou le %s maintenant."
 
 #: ../../client/text_repositories.py:66
 #, fuzzy
 msgid "Active Repositories"
-msgstr "Aggiorna Repository"
+msgstr "Mettre à jour les dépots"
 
 #: ../../client/text_repositories.py:74
 #, fuzzy
 msgid "Packages Mirror"
-msgstr "Pacchetti"
+msgstr "Paquets"
 
 #: ../../client/text_repositories.py:75 ../../client/text_repositories.py:97
 msgid "Database URL"
-msgstr "Indirizzo database"
+msgstr ""
 
 #: ../../client/text_repositories.py:76
 #, fuzzy
 msgid "Repository identifier"
-msgstr "Identificatore Repository"
+msgstr "Identificateur de dépôt"
 
 #: ../../client/text_repositories.py:77 ../../client/text_repositories.py:99
 #, fuzzy
 msgid "Repository database path"
-msgstr "Identificatore Repository"
+msgstr "Identificateur de dépôt"
 
 #: ../../client/text_repositories.py:89
 #, fuzzy
 msgid "active"
-msgstr "Attivo"
+msgstr "Active"
 
 #: ../../client/text_repositories.py:91
 msgid "never synced"
@@ -786,41 +775,42 @@ msgstr ""
 
 #: ../../client/text_repositories.py:92 ../../spritz/src/views.py:799
 msgid "Status"
-msgstr "Stato"
+msgstr ""
 
 #: ../../client/text_repositories.py:96
 #, fuzzy
 msgid "Packages URL"
-msgstr "Pacchetti"
+msgstr "Paquets"
 
 #: ../../client/text_repositories.py:98
 #, fuzzy
 msgid "Repository name"
-msgstr "Repository"
+msgstr "Dépot"
 
 #: ../../client/text_repositories.py:102
 #, fuzzy
 msgid "Repository database checksum"
-msgstr "Repository aggiornate correttamente"
+msgstr "Dépots mis à jour avec succès"
 
 #: ../../client/text_repositories.py:103
 #, fuzzy
 msgid "Repository revision"
-msgstr "Selezione Repository"
+msgstr "Selection du dépot"
 
 #: ../../client/text_repositories.py:118 ../../spritz/src/spritz.py:1067
 #: ../../spritz/src/applet/etp_applet.py:616
+#, fuzzy
 msgid "No repositories specified in"
-msgstr "Nessuna repository specificata in"
+msgstr "Pas d'identificateur de dépôt"
 
 #: ../../client/text_repositories.py:121 ../../spritz/src/spritz.py:1071
 msgid "You are not connected to the Internet. You should."
-msgstr "Non sei connesso ad Internet. Dovresti."
+msgstr "Vous n'êtes pas connecté à internet. Vous le devez."
 
 #: ../../client/text_repositories.py:124 ../../spritz/src/spritz.py:1074
 #: ../../spritz/src/applet/etp_applet.py:624
 msgid "Unhandled exception"
-msgstr "Eccezione non gestita"
+msgstr ""
 
 #: ../../client/text_rescue.py:42 ../../client/text_smart.py:138
 msgid "Source Package Manager backend not available"
@@ -857,7 +847,7 @@ msgstr ""
 #: ../../client/text_rescue.py:80
 #, fuzzy
 msgid "Really ?"
-msgstr "Pronto"
+msgstr "Prêt"
 
 #: ../../client/text_rescue.py:83
 msgid "This is your last chance"
@@ -900,7 +890,7 @@ msgstr ""
 #: ../../client/text_rescue.py:561
 #, fuzzy
 msgid "Exception"
-msgstr "Eccezione catturata"
+msgstr "Description"
 
 #: ../../client/text_rescue.py:173
 msgid "All the Gentoo packages have been injected into Entropy database"
@@ -920,14 +910,13 @@ msgid "entry can be invalid!"
 msgstr ""
 
 #: ../../client/text_rescue.py:199
-#, fuzzy
 msgid "These are the invalid entries"
-msgstr "Questi sono i pacchetti necessari"
+msgstr ""
 
 #: ../../client/text_rescue.py:203
 #, fuzzy
 msgid "Removing database information"
-msgstr "Informazioni Repository"
+msgstr "Information du dépot"
 
 #: ../../client/text_rescue.py:207 ../../client/text_rescue.py:359
 msgid "Now generating depends caching table"
@@ -969,9 +958,8 @@ msgid "Do you even know what you're doing ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:270
-#, fuzzy
 msgid "Collecting installed files"
-msgstr "Non installato"
+msgstr ""
 
 #: ../../client/text_rescue.py:271
 msgid "Writing to temporary file"
@@ -980,7 +968,7 @@ msgstr ""
 #: ../../client/text_rescue.py:272
 #, fuzzy
 msgid "Please wait"
-msgstr "attendere prego"
+msgstr "merci de patienter"
 
 #: ../../client/text_rescue.py:280 ../../client/text_rescue.py:291
 #: ../../client/text_ui.py:678 ../../client/text_ui.py:679
@@ -988,7 +976,7 @@ msgstr "attendere prego"
 #: ../../spritz/src/dialogs.py:770 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:259
 msgid "Attention"
-msgstr "Attenzione"
+msgstr "Attention"
 
 #: ../../client/text_rescue.py:281
 msgid "You must have 'find' installed"
@@ -1027,7 +1015,7 @@ msgstr ""
 #: ../../client/text_rescue.py:357
 #, fuzzy
 msgid "Database resurrected successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr "Dépots mis à jour avec succès"
 
 #: ../../client/text_rescue.py:366
 msgid ""
@@ -1038,17 +1026,17 @@ msgstr ""
 #: ../../client/text_rescue.py:375
 #, fuzzy
 msgid "Regenerating depends caching table"
-msgstr "Rigenera Cache"
+msgstr "Regénérer le cache"
 
 #: ../../client/text_rescue.py:377
 #, fuzzy
 msgid "Depends caching table regenerated successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr "Dépots mis à jour avec succès"
 
 #: ../../client/text_rescue.py:390
 #, fuzzy
 msgid "Regenerating counters table"
-msgstr "Rigenera Cache"
+msgstr "Regénérer le cache"
 
 #: ../../client/text_rescue.py:392
 msgid "Counters table regenerated. Look above for errors."
@@ -1093,14 +1081,13 @@ msgid "Databases already synced"
 msgstr ""
 
 #: ../../client/text_rescue.py:474
-#, fuzzy
 msgid "Entropy locked, giving up"
-msgstr "Setup configurazione di Entropy"
+msgstr ""
 
 #: ../../client/text_rescue.py:481
 #, fuzzy
 msgid "Someone removed these packages"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr "Supprimer les paquets sélectionnés"
 
 #: ../../client/text_rescue.py:482
 msgid "They would be removed from the system database"
@@ -1111,19 +1098,18 @@ msgid "Continue with removal ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:502
-#, fuzzy
 msgid "Removing"
-msgstr "Rimuovi"
+msgstr "Enlever"
 
 #: ../../client/text_rescue.py:507
 #, fuzzy
 msgid "Database removal complete"
-msgstr "Compressione database"
+msgstr "Compression de la base de donnée"
 
 #: ../../client/text_rescue.py:511
 #, fuzzy
 msgid "Someone added these packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "Supprimer les paquets sélectionnés"
 
 #: ../../client/text_rescue.py:512
 msgid "They would be added to the system database"
@@ -1136,7 +1122,7 @@ msgstr ""
 #: ../../client/text_rescue.py:581
 #, fuzzy
 msgid "Database update completed"
-msgstr "Compressione database"
+msgstr "Compression de la base de donnée"
 
 #: ../../client/text_rescue.py:599 ../../client/text_smart.py:32
 msgid "You are not"
@@ -1161,7 +1147,7 @@ msgstr ""
 #: ../../client/text_rescue.py:642
 #, fuzzy
 msgid "These are the installed packages with files in:"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_rescue.py:653
 msgid "Searching inside available repositories"
@@ -1174,9 +1160,8 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_security.py:65
-#, fuzzy
 msgid "No advisories provided"
-msgstr "Nessun avviso"
+msgstr ""
 
 #: ../../client/text_security.py:72
 msgid "Advisory"
@@ -1190,17 +1175,17 @@ msgstr ""
 #: ../../client/text_security.py:82
 #, fuzzy
 msgid "GLSA Identifier"
-msgstr "Identificatore"
+msgstr "Identificateur de dépôt"
 
 #. title
 #: ../../client/text_security.py:85
 #, fuzzy
 msgid "Title"
-msgstr "File"
+msgstr "Fichier"
 
 #: ../../client/text_security.py:112
 msgid "Background"
-msgstr "Background"
+msgstr ""
 
 #: ../../client/text_security.py:119
 msgid "Exploitable"
@@ -1208,28 +1193,29 @@ msgstr ""
 
 #: ../../client/text_security.py:124
 msgid "Impact"
-msgstr "Impatto"
+msgstr ""
 
 #: ../../client/text_security.py:131
-#, fuzzy
 msgid "Impact type"
-msgstr "Impatto"
+msgstr ""
 
 #: ../../client/text_security.py:135
+#, fuzzy
 msgid "Revised"
-msgstr "Revisionato"
+msgstr "Révision"
 
 #: ../../client/text_security.py:139
 msgid "Announced"
-msgstr "Annunciato"
+msgstr ""
 
 #: ../../client/text_security.py:143
 msgid "Synopsis"
-msgstr "Sinossi"
+msgstr ""
 
 #: ../../client/text_security.py:150
+#, fuzzy
 msgid "References"
-msgstr "Riferimenti"
+msgstr "Dépendances"
 
 #: ../../client/text_security.py:156
 msgid "Upstream bugs"
@@ -1238,25 +1224,24 @@ msgstr ""
 #: ../../client/text_security.py:162
 #, fuzzy
 msgid "Affected"
-msgstr "Non affetti"
+msgstr "Accepté"
 
 #: ../../client/text_security.py:169
-#, fuzzy
 msgid "vulnerable versions"
-msgstr "Vulnerabili"
+msgstr ""
 
 #: ../../client/text_security.py:171
-#, fuzzy
 msgid "unaffected versions"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../client/text_security.py:176
 msgid "Workaround"
-msgstr "Pezza veloce"
+msgstr ""
 
 #: ../../client/text_security.py:180
+#, fuzzy
 msgid "Resolution"
-msgstr "Risoluzione"
+msgstr "Révision"
 
 #: ../../client/text_security.py:196
 msgid "No advisories available or applicable"
@@ -1274,7 +1259,7 @@ msgstr ""
 #: ../../client/text_smart.py:232 ../../client/text_smart.py:360
 #, fuzzy
 msgid "No packages specified"
-msgstr "Nessun pacchetto selezionato"
+msgstr "Aucun paquets sélectionné"
 
 #: ../../client/text_smart.py:91 ../../client/text_smart.py:241
 #: ../../client/text_smart.py:374
@@ -1285,22 +1270,23 @@ msgstr ""
 #: ../../client/text_smart.py:377
 #, fuzzy
 msgid "No valid packages specified"
-msgstr "Nessun pacchetto selezionato"
+msgstr "Aucun paquets sélectionné"
 
 #. print the list
 #: ../../client/text_smart.py:98
 #, fuzzy
 msgid "This is the list of the packages that would be quickpkg'd"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_smart.py:106 ../../spritz/src/applet/etp_applet.py:893
+#, fuzzy
 msgid "installed"
-msgstr "installato"
+msgstr "Installé"
 
 #: ../../client/text_smart.py:109
 #, fuzzy
 msgid "Would you like to recompose the selected packages ?"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr "Supprimer les paquets sélectionnés"
 
 #: ../../client/text_smart.py:114
 msgid "Compressing"
@@ -1334,31 +1320,33 @@ msgstr ""
 #: ../../client/text_smart.py:198
 #, fuzzy
 msgid "Inflated package"
-msgstr "Pacchetti interessati"
+msgstr "Installer le paquet sélectionné"
 
 #: ../../client/text_smart.py:206
 #, fuzzy
 msgid "Deflating"
-msgstr "Destinazione"
+msgstr "Destination"
 
 #: ../../client/text_smart.py:211
 #, fuzzy
 msgid "Deflated package"
-msgstr "Pacchetti interessati"
+msgstr "Supprimer les paquets sélectionnés"
 
 #: ../../client/text_smart.py:219
+#, fuzzy
 msgid "Extracting Entropy metadata from"
-msgstr ""
+msgstr "Traitement des métadonnées de : %s"
 
 #: ../../client/text_smart.py:225
+#, fuzzy
 msgid "Extracted Entropy metadata from"
-msgstr ""
+msgstr "Traitement des métadonnées de : %s"
 
 #. print the list
 #: ../../client/text_smart.py:248
 #, fuzzy
 msgid "This is the list of the packages that would be merged into a single one"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_smart.py:256 ../../client/text_smart.py:389
 msgid "Would you like to create the packages above ?"
@@ -1369,8 +1357,9 @@ msgid "Creating merged Smart Package"
 msgstr ""
 
 #: ../../client/text_smart.py:304
+#, fuzzy
 msgid "collecting Entropy metadata"
-msgstr ""
+msgstr "Nettoyage de toute les métadonnées de yum"
 
 #: ../../client/text_smart.py:332
 msgid "Unpack failed due to unknown reasons"
@@ -1396,7 +1385,7 @@ msgstr ""
 #: ../../client/text_smart.py:381
 #, fuzzy
 msgid "This is the list of the packages that would be worked out"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_smart.py:394
 msgid "Creating Smart Application from"
@@ -1405,21 +1394,22 @@ msgstr ""
 #: ../../client/text_smart.py:421
 #, fuzzy
 msgid "Missing dependencies"
-msgstr "Dipendenze"
+msgstr "Dépendances"
 
 #: ../../client/text_smart.py:428
 #, fuzzy
 msgid "This is the list of the dependencies that would be included"
-msgstr "Questi sono i pacchetti che vorrebbero essere installati/aggiornati"
+msgstr "Ceci sont les paquets qui devront être installé/mis à jour"
 
 #: ../../client/text_smart.py:449
 #, fuzzy
 msgid "Unpacking the main package"
-msgstr "Aggiorna il pacchetto selezionato"
+msgstr "Mettre à jour les paquets sélectionné"
 
 #: ../../client/text_smart.py:470
+#, fuzzy
 msgid "Unpacking dependency package"
-msgstr ""
+msgstr "La dépendance %s pour le packet %s traite"
 
 #: ../../client/text_smart.py:568
 msgid "Compressing smart application"
@@ -1429,13 +1419,12 @@ msgstr ""
 #: ../../client/text_ui.py:480 ../../client/text_ui.py:953
 #, fuzzy
 msgid "Nothing to do"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr "Rien a faire. Je suis inactif"
 
 #: ../../client/text_ui.py:124 ../../client/text_ui.py:249
 #: ../../client/text_ui.py:880
-#, fuzzy
 msgid "Running with"
-msgstr "Esecuzione task"
+msgstr ""
 
 #: ../../client/text_ui.py:135
 msgid "Selected release"
@@ -1444,7 +1433,7 @@ msgstr ""
 #: ../../client/text_ui.py:136
 #, fuzzy
 msgid "is not available"
-msgstr "Nessun aggiornamento disponibile"
+msgstr "Disponible"
 
 #: ../../client/text_ui.py:143
 msgid "Calculating System Updates"
@@ -1453,12 +1442,12 @@ msgstr ""
 #: ../../client/text_ui.py:147
 #, fuzzy
 msgid "Packages matching update"
-msgstr "Pacchetti da aggiornare"
+msgstr "<b>Paquets a mettre à jour</b>"
 
 #: ../../client/text_ui.py:148
 #, fuzzy
 msgid "Packages matching not available"
-msgstr "La branch selezionata non è disponibile"
+msgstr "La branche choisi n'existe pas maintenant."
 
 #: ../../client/text_ui.py:149
 msgid "Packages matching already up to date"
@@ -1469,7 +1458,7 @@ msgstr ""
 #: ../../client/text_ui.py:1040
 #, fuzzy
 msgid "Nothing to resume"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr "Rien a faire. Je suis inactif"
 
 #: ../../client/text_ui.py:186 ../../client/text_ui.py:727
 #: ../../client/text_ui.py:1048
@@ -1479,7 +1468,7 @@ msgstr ""
 #: ../../client/text_ui.py:204
 #, fuzzy
 msgid "Nothing to update"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr "Rien a faire. Je suis inactif"
 
 #: ../../client/text_ui.py:216
 msgid ""
@@ -1496,27 +1485,26 @@ msgid "Would you like to scan them ?"
 msgstr ""
 
 #: ../../client/text_ui.py:238
-#, fuzzy
 msgid "Calculation complete"
-msgstr "Nome Pacchetto"
+msgstr ""
 
 #: ../../client/text_ui.py:241
 #, fuzzy
 msgid "Nothing to remove"
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr "Rien a faire. Je suis inactif"
 
 #: ../../client/text_ui.py:278
 msgid "Every package matching"
 msgstr ""
 
 #: ../../client/text_ui.py:280
-#, fuzzy
 msgid "is masked"
-msgstr "Mascherato"
+msgstr ""
 
 #: ../../client/text_ui.py:294
+#, fuzzy
 msgid "matching"
-msgstr ""
+msgstr "Mis à jour"
 
 #: ../../client/text_ui.py:296
 msgid "is broken"
@@ -1529,12 +1517,11 @@ msgstr ""
 #: ../../client/text_ui.py:304
 #, fuzzy
 msgid "in repositories"
-msgstr "Aggiorna Repository"
+msgstr "Mettre à jour les dépots"
 
 #: ../../client/text_ui.py:316
-#, fuzzy
 msgid "When you wrote"
-msgstr "Cosa stavi facendo"
+msgstr ""
 
 #: ../../client/text_ui.py:318
 msgid "You Meant(tm)"
@@ -1551,23 +1538,23 @@ msgstr ""
 #: ../../client/text_ui.py:345
 #, fuzzy
 msgid "Skipped"
-msgstr "_Salta"
+msgstr "_Passer"
 
 #. now print the selected packages
 #: ../../client/text_ui.py:360 ../../client/text_ui.py:915
 #, fuzzy
 msgid "These are the chosen packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "Réinstalle les paquets sélectionnés"
 
 #: ../../client/text_ui.py:384 ../../client/text_ui.py:534
 #, fuzzy
 msgid "Not available"
-msgstr "Nessun aggiornamento disponibile"
+msgstr "Disponible"
 
 #: ../../client/text_ui.py:398
 #, fuzzy
 msgid "Versions"
-msgstr "Versione"
+msgstr "<b>Version</b>"
 
 #: ../../client/text_ui.py:421
 msgid "Switch repo"
@@ -1575,31 +1562,30 @@ msgstr ""
 
 #: ../../client/text_ui.py:422 ../../client/text_ui.py:424
 msgid "Reinstall"
-msgstr "Reinstalla"
+msgstr "Réinstalle"
 
 #: ../../client/text_ui.py:427
 msgid "Install"
-msgstr "Installa"
+msgstr "Installer"
 
 #: ../../client/text_ui.py:429
 #, fuzzy
 msgid "Upgrade"
-msgstr "Aggiorna"
+msgstr "Mise à jour"
 
 #: ../../client/text_ui.py:431
-#, fuzzy
 msgid "Downgrade"
-msgstr "Da retrocedere"
+msgstr ""
 
 #: ../../client/text_ui.py:432
 #, fuzzy
 msgid "Action"
-msgstr "Luogo"
+msgstr "Attention"
 
 #: ../../client/text_ui.py:435 ../../client/text_ui.py:950
 #, fuzzy
 msgid "Packages involved"
-msgstr "Dimensione pacchetto"
+msgstr "Paquets"
 
 #: ../../client/text_ui.py:439
 msgid "Would you like to continue with dependencies calculation ?"
@@ -1608,7 +1594,7 @@ msgstr ""
 #: ../../client/text_ui.py:448
 #, fuzzy
 msgid "Calculating dependencies"
-msgstr "Nome Pacchetto"
+msgstr "Dépendances"
 
 #: ../../client/text_ui.py:452
 msgid "Cannot find needed dependencies"
@@ -1617,7 +1603,7 @@ msgstr ""
 #: ../../client/text_ui.py:459
 #, fuzzy
 msgid "Reason"
-msgstr "Revisione"
+msgstr "Révision"
 
 #: ../../client/text_ui.py:466
 msgid "Not found"
@@ -1630,17 +1616,16 @@ msgstr ""
 #: ../../client/text_ui.py:496 ../../client/text_ui.py:600
 #, fuzzy
 msgid "These are the packages that would be"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_ui.py:496
-#, fuzzy
 msgid "merged"
-msgstr "M_ergi"
+msgstr ""
 
 #: ../../client/text_ui.py:601
 #, fuzzy
 msgid "removed"
-msgstr "Rimuovi"
+msgstr "Supprimer"
 
 #: ../../client/text_ui.py:602
 msgid "conflicting/substituted"
@@ -1652,43 +1637,40 @@ msgid "Packages needing to be installed/updated/downgraded"
 msgstr ""
 
 #: ../../client/text_ui.py:619
-#, fuzzy
 msgid "Packages needing to be removed"
-msgstr "Pacchetti da rimuovere"
+msgstr ""
 
 #: ../../client/text_ui.py:623
 #, fuzzy
 msgid "Packages needing to be installed"
-msgstr "Pacchetti da reinstallare"
+msgstr "<b>Paquets a réinstaller</b>"
 
 #: ../../client/text_ui.py:628
 #, fuzzy
 msgid "Packages needing to be reinstalled"
-msgstr "Pacchetti da reinstallare"
+msgstr "Sera réinstallé"
 
 #: ../../client/text_ui.py:633
-#, fuzzy
 msgid "Packages needing to be updated"
-msgstr "Pacchetti da aggiornare"
+msgstr ""
 
 #: ../../client/text_ui.py:638
-#, fuzzy
 msgid "Packages needing to be downgraded"
-msgstr "Da retrocedere"
+msgstr ""
 
 #: ../../client/text_ui.py:648
 #, fuzzy
 msgid "Download size"
-msgstr "Percorso di scaricamento"
+msgstr "Mirroirs de téléchargement"
 
 #: ../../client/text_ui.py:654
 #, fuzzy
 msgid "Used disk space"
-msgstr "Spazio su disco liberato"
+msgstr "Espace disque libéré"
 
 #: ../../client/text_ui.py:656 ../../spritz/src/misc.py:323
 msgid "Freed disk space"
-msgstr "Spazio su disco liberato"
+msgstr "Espace disque libéré"
 
 #: ../../client/text_ui.py:665
 msgid "You need at least"
@@ -1697,7 +1679,7 @@ msgstr ""
 #: ../../client/text_ui.py:667
 #, fuzzy
 msgid "of free space"
-msgstr "Spazio liberato"
+msgstr "Espace libéré"
 
 #: ../../client/text_ui.py:675
 msgid "You don't have enough space for the installation. Free some space into"
@@ -1708,19 +1690,18 @@ msgid "Would you like to execute the queue ?"
 msgstr ""
 
 #: ../../client/text_ui.py:725 ../../client/text_ui.py:1046
-#, fuzzy
 msgid "Resuming previous operations"
-msgstr "Opzioni repository"
+msgstr ""
 
 #: ../../client/text_ui.py:749
 #, fuzzy
 msgid "Please select an option"
-msgstr "Seleziona almeno una Repository, suvvia..."
+msgstr "Merci de selectionner au moin un dépot"
 
 #: ../../client/text_ui.py:750
 #, fuzzy
 msgid "Read the license"
-msgstr "_Leggi licenza"
+msgstr "_Lire la license"
 
 #: ../../client/text_ui.py:751
 msgid "Accept the license (I've read it)"
@@ -1754,21 +1735,20 @@ msgstr ""
 #: ../../client/text_ui.py:792
 #, fuzzy
 msgid "License saved into"
-msgstr "Nome licenza"
+msgstr "Nom de la license"
 
 #: ../../client/text_ui.py:814
 msgid "fetch"
 msgstr ""
 
 #: ../../client/text_ui.py:827
-#, fuzzy
 msgid "Download completed"
-msgstr "Percorso di scaricamento"
+msgstr ""
 
 #: ../../client/text_ui.py:838
 #, fuzzy
 msgid "install"
-msgstr "installato"
+msgstr "Réinstalle"
 
 #: ../../client/text_ui.py:866
 msgid "Installation completed"
@@ -1777,13 +1757,13 @@ msgstr ""
 #: ../../client/text_ui.py:901
 #, fuzzy
 msgid "is not installed"
-msgstr "Non installato"
+msgstr "Sera installé"
 
 #. every package matching app-foo is masked
 #: ../../client/text_ui.py:934
 #, fuzzy
 msgid "vital package"
-msgstr "Visualizza pacchetti disponibili"
+msgstr "Montrer les paquets disponibles"
 
 #: ../../client/text_ui.py:935
 msgid "Removal forbidden"
@@ -1796,7 +1776,7 @@ msgstr ""
 #: ../../client/text_ui.py:946
 #, fuzzy
 msgid "Installed from"
-msgstr "Installato"
+msgstr "Installé"
 
 #: ../../client/text_ui.py:958
 msgid ""
@@ -1807,7 +1787,7 @@ msgstr ""
 #: ../../client/text_ui.py:961
 #, fuzzy
 msgid "Would you like to remove them now ?"
-msgstr "Miserabile! Cosa stai cercando di rimuovere ? :-)"
+msgstr "Vous! Pourquoi voulez vous supprimer le dépot principal ?"
 
 #: ../../client/text_ui.py:977
 msgid "This is the new removal queue"
@@ -1832,7 +1812,7 @@ msgstr ""
 #: ../../client/text_ui.py:1077
 #, fuzzy
 msgid "Remove this one ?"
-msgstr "Annulla azione Rimuovi"
+msgstr "Annuler l'action de suppression"
 
 #: ../../client/text_ui.py:1113
 msgid "All done"
@@ -1845,12 +1825,12 @@ msgstr ""
 #: ../../client/text_ui.py:1135
 #, fuzzy
 msgid "These are the dependencies not found"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #: ../../client/text_ui.py:1139
 #, fuzzy
 msgid "Needed by"
-msgstr "Spazio richiesto"
+msgstr "Espace requis"
 
 #: ../../client/text_ui.py:1144
 msgid "Would you like to install the available packages ?"
@@ -1859,7 +1839,7 @@ msgstr ""
 #: ../../client/text_ui.py:1149 ../../client/text_ui.py:1223
 #, fuzzy
 msgid "Installing available packages in"
-msgstr "Visualizza pacchetti disponibili"
+msgstr "Montrer les paquets disponibles"
 
 #: ../../client/text_ui.py:1150 ../../client/text_ui.py:1224
 msgid "10 seconds"
@@ -1883,334 +1863,341 @@ msgstr ""
 
 #: ../../spritz/src/dialogs.py:86
 msgid "License name"
-msgstr "Nome licenza"
+msgstr "Nom de la license"
 
 #: ../../spritz/src/dialogs.py:102
 msgid "Mirrors"
-msgstr "Mirror"
+msgstr "Mirroirs"
 
 #: ../../spritz/src/dialogs.py:126
 msgid "Eclasses"
-msgstr "Eclass"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:142
 msgid "Depends"
-msgstr "Sono dipendenza di"
+msgstr "Dépend de"
 
 #: ../../spritz/src/dialogs.py:150
 msgid "Needed libraries"
-msgstr "Librerie richieste"
+msgstr "Librairies nécessaires"
 
 #: ../../spritz/src/dialogs.py:158
 msgid "Protected item"
-msgstr "Oggetto protetto"
+msgstr ""
 
 #: ../../spritz/src/dialogs.py:161 ../../spritz/src/dialogs.py:173
 msgid "Type"
-msgstr "Tipo"
+msgstr "Type"
 
 #: ../../spritz/src/dialogs.py:169
 msgid "File"
-msgstr "File"
+msgstr "Fichier"
 
 #: ../../spritz/src/dialogs.py:232
 msgid "From your Operating System"
-msgstr "Dal tuo bel Sistema Operativo"
+msgstr "De vos System d'operation."
 
 #: ../../spritz/src/dialogs.py:381
 msgid "Please confirm the actions above"
-msgstr "Per favore conferma le azioni di cui sopra"
+msgstr "Merci de confimer les actions ci-dessous"
 
 #: ../../spritz/src/dialogs.py:442 ../../spritz/src/dialogs.py:484
 msgid "To be reinstalled"
-msgstr "Da reinstallare"
+msgstr "Sera réinstallé"
 
 #: ../../spritz/src/dialogs.py:448 ../../spritz/src/dialogs.py:495
 msgid "To be installed"
-msgstr "Da installare"
+msgstr "Sera installé"
 
 #: ../../spritz/src/dialogs.py:454 ../../spritz/src/dialogs.py:506
 msgid "To be updated"
-msgstr "Da aggiornare"
+msgstr "Sera mis à jour"
 
 #: ../../spritz/src/dialogs.py:460
+#, fuzzy
 msgid "To be downgraded"
-msgstr "Da retrocedere"
+msgstr "Sera mis à jour"
 
 #: ../../spritz/src/dialogs.py:466 ../../spritz/src/dialogs.py:517
 msgid "To be removed"
-msgstr "Da rimuovere"
+msgstr "Sera enlevé"
 
 #: ../../spritz/src/dialogs.py:490 ../../spritz/src/dialogs.py:501
 #: ../../spritz/src/dialogs.py:512 ../../spritz/src/dialogs.py:523
 #: ../../spritz/src/views.py:470
 msgid "No description"
-msgstr "Nessuna descrizione"
+msgstr "Pas de description"
 
 #: ../../spritz/src/dialogs.py:656
+#, fuzzy
 msgid "About"
-msgstr "Informazioni su"
+msgstr "A propos de %s"
 
 #: ../../spritz/src/dialogs.py:751
 msgid "Hey!"
-msgstr "Hey!"
+msgstr "Héo!"
 
 #: ../../spritz/src/dialogs.py:755
 msgid "Spritz Question"
-msgstr "Domanda Spritz"
+msgstr "Question du Spritz"
 
 #. new
 #: ../../spritz/src/dialogs.py:827
 msgid "Accepted"
-msgstr "Accettato"
+msgstr "Accepté"
 
 #: ../../spritz/src/gui.py:273
 msgid "Show Package Updates"
-msgstr "Visualizza aggiornamenti"
+msgstr "Montrer les mises à jours des paquets"
 
 #: ../../spritz/src/gui.py:274
 msgid "Show available Packages"
-msgstr "Visualizza pacchetti disponibili"
+msgstr "Montrer les paquets disponibles"
 
 #: ../../spritz/src/gui.py:275
 msgid "Show Installed Packages"
-msgstr "Visualizza pacchetti installati"
+msgstr "Montrer les paquets installés"
 
 #. Setup Vertical Toolbar
 #: ../../spritz/src/gui.py:300 ../../spritz/src/views.py:661
 msgid "Packages"
-msgstr "Pacchetti"
+msgstr "Paquets"
 
 #: ../../spritz/src/gui.py:301
 msgid "Package Categories"
-msgstr "Categorie Pacchetti"
+msgstr "Categories de paquet"
 
 #: ../../spritz/src/gui.py:302
 msgid "Package Queue"
-msgstr "Coda Pacchetti"
+msgstr "Paquet en file d'attente"
 
 #: ../../spritz/src/gui.py:303 ../../spritz/src/packages.py:190
 msgid "Repository Selection"
-msgstr "Selezione Repository"
+msgstr "Selection du dépot"
 
 #: ../../spritz/src/gui.py:304
 msgid "Configuration Files"
-msgstr "File di configurazione"
+msgstr "Fichiers de configuration"
 
 #: ../../spritz/src/gui.py:305
 msgid "Security Advisories"
-msgstr "Avvisi di sicurezza"
+msgstr ""
 
 #: ../../spritz/src/gui.py:306
 msgid "Output"
-msgstr "Output"
+msgstr "Sortie"
 
 #: ../../spritz/src/misc.py:92
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
 msgstr ""
-"Ci sono pacchetti che non possono essere installati allo stesso tempo e che "
-"stanno bloccando la tua richiesta:"
+"Ils y a des paquets qui ne peuvent pas être installé en même temps, ceux là "
+"bloque votre demande:"
 
 #: ../../spritz/src/misc.py:134
+#, fuzzy
 msgid "These are the needed packages"
-msgstr "Questi sono i pacchetti necessari"
+msgstr "Supprimer les paquets sélectionnés"
 
 #: ../../spritz/src/misc.py:135
 msgid ""
 "These packages must be removed from the removal queue because they depend on "
 "your last selection. Do you agree?"
 msgstr ""
-"Questi pacchetti devono essere rimossi dalla coda di rimozione in quanto "
-"dipendenti dalla tua ultima selezione. Sei d'accordo?"
 
 #: ../../spritz/src/misc.py:260
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr ""
-"Dipendenze non trovate. Questo può accadere se un pacchetto è mascherato "
-"oppure semplicemente perché il pacchetto non è stato trovato."
+"Quelque dependences ne peut pas chercher.  Ca, Il est car ils sont masqué, "
+"ou car ils n'ont rien dans des dépôts actifs"
 
 #: ../../spritz/src/misc.py:320
 msgid "Needed disk space"
-msgstr "Spazio su disco richiesto"
+msgstr "Espace disque nécessaire"
 
 #: ../../spritz/src/misc.py:327
 msgid "These are the packages that would be installed/updated"
-msgstr "Questi sono i pacchetti che vorrebbero essere installati/aggiornati"
+msgstr "Ceci sont les paquets qui devront être installé/mis à jour"
 
 #: ../../spritz/src/misc.py:382
 msgid "Freed space"
-msgstr "Spazio liberato"
+msgstr "Espace libéré"
 
 #: ../../spritz/src/misc.py:385
 msgid "Needed space"
-msgstr "Spazio richiesto"
+msgstr "Espace requis"
 
 #: ../../spritz/src/misc.py:390
 msgid "These are the packages that would be removed"
-msgstr "Questi sono i pacchetti che vorrebbero essere rimossi"
+msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
 #. load a pixmap inside the treeview
 #: ../../spritz/src/packages.py:190
 #, python-format
 msgid "Try clicking the %s button in the %s page"
-msgstr "Prova a cliccare il bottone %s nella pagina %s"
+msgstr ""
 
 #: ../../spritz/src/packages.py:190 ../../spritz/src/spritz.py:418
 #: ../../spritz/src/spritz.py:463
 msgid "Update Repositories"
-msgstr "Aggiorna Repository"
+msgstr "Mettre à jour les dépots"
 
 #: ../../spritz/src/packages.py:193
 msgid "No updates available"
-msgstr "Nessun aggiornamento disponibile"
+msgstr ""
 
 #: ../../spritz/src/packages.py:194
 msgid "It seems that your system is already up-to-date. Good!"
-msgstr "Sembra che il sistema sia già aggiornato. Bene!"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:84
 msgid "Quiting, please wait !!!!!!"
-msgstr "Sto uscendo, cribbio !!!!!!"
+msgstr "Extinction, merci de patienter !!!!!!"
 
 #: ../../spritz/src/spritz.py:143
+#, fuzzy
 msgid "The chosen package is not vulnerable"
-msgstr "Il pacchetto scelto non è vulnerabile"
+msgstr "La branche choisi n'existe pas maintenant."
 
 #: ../../spritz/src/spritz.py:151
 msgid "Packages in Advisory have been queued."
-msgstr "I pacchetti nell'avviso sono stati accodati"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:166
 msgid "Packages in all Advisories have been queued."
-msgstr "I pacchetti negli avvisi sono stati accodati"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:178
 msgid "Packages not found in repositories, try again later."
-msgstr "Pacchetti non trovati nelle repository, prova più tardi"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:264
 msgid "Branch switching"
-msgstr "Migrazione della Branch"
+msgstr "Diverger la commutation"
 
 #: ../../spritz/src/spritz.py:264
 msgid "Enter a valid branch you want to switch to"
-msgstr "Inserisci una Branch valida a cui vuoi migrare"
+msgstr "Type une branche valid à qui vous voudrais changer"
 
 #: ../../spritz/src/spritz.py:267
 msgid "The selected branch is not available."
-msgstr "La branch selezionata non è disponibile"
+msgstr "La branche choisi n'existe pas maintenant."
 
 #: ../../spritz/src/spritz.py:270
 msgid "New branch is"
-msgstr "La nuova branch è"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:270
+#, fuzzy
 msgid "It is suggested to synchronize repositories"
-msgstr "E' consigliato sincronizzare le repository"
+msgstr ""
+"La nouvelle branche est %s.  On croit que vous devez synchroniser vos dépôts"
 
 #: ../../spritz/src/spritz.py:314 ../../spritz/src/spritz.py:336
 msgid "Insert URL"
-msgstr "Inserisci URL"
+msgstr "Insérer une URL"
 
 #: ../../spritz/src/spritz.py:314 ../../spritz/src/spritz.py:336
 msgid "Enter a download mirror, HTTP or FTP"
-msgstr "Inserisci un mirror di scaricamento, HTTP o FTP"
+msgstr "Entrer un mirroir de téléchargement, HTTP ou FTP"
 
 #: ../../spritz/src/spritz.py:319
 msgid "You must enter either a HTTP or a FTP url."
-msgstr "Devi immettere un indirizzo HTTP o FTP."
+msgstr "Vous devez entrer soit un lien HTTP ou lien FTP"
 
 #: ../../spritz/src/spritz.py:371 ../../spritz/src/spritz.py:421
+#, fuzzy
 msgid "Wrong entries, errors"
-msgstr "Parametri errati, errori"
+msgstr "mauvaises entrées, erreurs"
 
 #: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:418
 #: ../../spritz/src/views.py:988
+#, fuzzy
 msgid "You should press the button"
-msgstr "Dovresti premere il bottone"
+msgstr "Vous devez appuyer sur le bouton %s maintenant"
 
 #: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:463
 #: ../../spritz/src/views.py:988
 msgid "Regenerate Cache"
-msgstr "Rigenera Cache"
+msgstr "Regénérer le cache"
 
 #: ../../spritz/src/spritz.py:383 ../../spritz/src/spritz.py:418
 #: ../../spritz/src/spritz.py:463 ../../spritz/src/views.py:988
 msgid "now"
-msgstr "ora"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:389
 msgid "No Repository Identifier"
-msgstr "Nessun Identificatore di Repository"
+msgstr "Pas d'identificateur de dépôt"
 
 #: ../../spritz/src/spritz.py:392
 msgid "Duplicated Repository Identifier"
-msgstr "Identificatore di Repository duplicato"
+msgstr "Identificateur polycopié de Dépôt"
 
 #: ../../spritz/src/spritz.py:396
 msgid "No download mirrors"
-msgstr "Nessun mirror di scaricamento"
+msgstr "Pas de mirroir de téléchargement"
 
 #: ../../spritz/src/spritz.py:398
 msgid "Database URL must start either with http:// or ftp:// or file://"
-msgstr "URL del database deve iniziare con http://, ftp:// o file://"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:431
 msgid "Insert Repository"
-msgstr "Inserisci Repository"
+msgstr "Insérer un dépot"
 
 #: ../../spritz/src/spritz.py:431
 msgid "Insert Repository identification string"
-msgstr "Inserisci stringa di identificazione Repository"
+msgstr "Insérer une ficelle d'identification pour le dépot"
 
 #: ../../spritz/src/spritz.py:449
 msgid "This Repository identification string is malformed"
-msgstr "La stringa di identificazione Repository è malformata"
+msgstr "Cette ficelle d'identification pour le dépôt ont une mauvaise forme."
 
 #: ../../spritz/src/spritz.py:459
 msgid "You! Why do you want to remove the main repository ?"
-msgstr "Miserabile! Cosa stai cercando di rimuovere ? :-)"
+msgstr "Vous! Pourquoi voulez vous supprimer le dépot principal ?"
 
 #: ../../spritz/src/spritz.py:463
+#, fuzzy
 msgid "You must now either press the"
-msgstr "Ora dovresti premere"
+msgstr "Vous devez appuyer le %s ou le %s maintenant."
 
 #: ../../spritz/src/spritz.py:463
 msgid "or the"
-msgstr "o"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:519
 msgid "Please select at least one repository"
-msgstr "Seleziona almeno una Repository, suvvia..."
+msgstr "Merci de selectionner au moin un dépot"
 
 #. Check there are any packages in the queue
 #: ../../spritz/src/spritz.py:555
 msgid "No packages in queue"
-msgstr "Nessun pacchetto in coda"
+msgstr "Pas de paquets dans la file d'attente"
 
 #: ../../spritz/src/spritz.py:621
 msgid "Queue is too old. Cannot load."
-msgstr "La coda è troppo vecchia, impossibile caricare"
+msgstr "La file d'attente est ancienne. Impossible de charger."
 
 #: ../../spritz/src/spritz.py:688
 msgid "impact"
-msgstr "impatto"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:690
 msgid "access"
-msgstr "accesso"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:704
 msgid "Vulnerables"
-msgstr "Vulnerabili"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:708
 msgid "Unaffected"
-msgstr "Non affetti"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:873
 msgid "Entropy resources are locked and not accessible. "
@@ -2218,94 +2205,97 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:888
 msgid "Entropy Config Setup"
-msgstr "Setup configurazione di Entropy"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:900
 msgid "GUI Setup Completed"
-msgstr "Configurazione GUI completata"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:929
 msgid "Bug"
-msgstr "Bug"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:937
 msgid "Reference"
-msgstr "Riferimento"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:994
 msgid "Generating metadata. Please wait."
-msgstr "Generazione metadati. Attendere."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:998 ../../spritz/src/spritz.py:1139
 #: ../../spritz/src/spritz.py:1146
 msgid "Ready"
-msgstr "Pronto"
+msgstr "Prêt"
 
 #: ../../spritz/src/spritz.py:1026
+#, fuzzy
 msgid "Error loading advisories"
-msgstr "Errore caricando gli avvisi"
+msgstr "Erreurs de mise à jour des dépots"
 
 #: ../../spritz/src/spritz.py:1058
 msgid "Initializing Repository module..."
-msgstr "Inizializzazione modulo Repository..."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1064
 msgid "You must run this application as root"
-msgstr "Devi essere root per poter utilizzare questa applicazione"
+msgstr "Vous deveez executer cette application en mode root"
 
 #: ../../spritz/src/spritz.py:1079
 msgid "Errors updating repositories."
-msgstr "Errori aggiornando le repository."
+msgstr "Erreurs de mise à jour des dépots"
 
 #: ../../spritz/src/spritz.py:1080
 msgid "Please check logs below for more info"
-msgstr "Guarda il testo visualizzato sotto per capire di più"
+msgstr ""
+"Merci de vérifier les actions effectué ci-dessous pour plus d'informations"
 
 #: ../../spritz/src/spritz.py:1083
 msgid "Repositories updated successfully"
-msgstr "Repository aggiornate correttamente"
+msgstr "Dépots mis à jour avec succès"
 
 #: ../../spritz/src/spritz.py:1086
 msgid "All the repositories were already up to date."
-msgstr "Tutte le repository erano già aggiornate."
+msgstr "Tout les dépots sont déjà à jour"
 
 #: ../../spritz/src/spritz.py:1088
+#, fuzzy
 msgid "repositories were already up to date. Others have been updated."
-msgstr "repository erano già aggiornate. Le rimanenti sono state aggiornate."
+msgstr "%s dépots sont déjà à jour. D'autres ont étés mis à jour"
 
 #: ../../spritz/src/spritz.py:1091
+#, fuzzy
 msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr "sys-apps/entropy richiede di essere aggiornato il prima possibile."
+msgstr "app-admin/equo à besoin d'être mis à jour dès que possible"
 
 #: ../../spritz/src/spritz.py:1096
 msgid "Nothing to do. I am idle."
-msgstr "Niente da fare. Sono in attesa di ordini."
+msgstr "Rien a faire. Je suis inactif"
 
 #: ../../spritz/src/spritz.py:1097
 msgid "Really, don't waste your time here. This is just a placeholder"
-msgstr "Davvero, non perdere tempo qui. E' solo un modo per occupare spazio."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1098
 msgid "I am still alive and kickin'"
-msgstr "Ahah, ci sono ancora, cosa credevi!"
+msgstr ""
 
 #. -> Get lists
 #: ../../spritz/src/spritz.py:1132
 msgid "Generating Metadata, please wait."
-msgstr "Generazione metadati, attendere prego."
+msgstr "Génére les métadonnées, merci de patienter."
 
 #: ../../spritz/src/spritz.py:1133
 msgid "Entropy is indexing the repositories. It will take a few seconds"
-msgstr "Entropy sta indicizzando le repository. Ci metterà qualche secondo."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1134
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
-"Mentre stai aspettando, fai un break e guarda fuori. Lo vedi l'inceneritore?"
 
 #: ../../spritz/src/spritz.py:1136 ../../spritz/src/spritz.py:1143
 msgid "Calculating"
-msgstr "Nome Pacchetto"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1172
 msgid "Another Entropy instance is running. Cannot process queue."
@@ -2313,43 +2303,41 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:1177
 msgid "Running tasks"
-msgstr "Esecuzione task"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1183
 msgid "Processing Packages in queue"
-msgstr "Processamento dei pacchetti in coda"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1194
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
-"Attenzione, c'è stato un errore nel processamento della coda.\n"
-" Dai un'occhiata nel terminale di processamento."
 
 #: ../../spritz/src/spritz.py:1219
 msgid "No packages selected"
-msgstr "Nessun pacchetto selezionato"
+msgstr "Aucun paquets sélectionné"
 
 #: ../../spritz/src/spritz.py:1278
 msgid "Exception caught"
-msgstr "Eccezione catturata"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1279
 msgid "Spritz crashed! An unexpected error occured."
-msgstr "Spritz è andato in crash! Errore inatteso."
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1288
 msgid "Your report has been submitted successfully! Thanks a lot."
-msgstr "Il rapporto è stato inviato correttamente. Grazie mille!"
+msgstr ""
 
 #: ../../spritz/src/spritz.py:1290
 msgid "Cannot submit your report. Not connected to Internet?"
-msgstr "Impossibile inviare il rapporto, sei connesso ad Internet?"
+msgstr ""
 
 #: ../../spritz/src/spritz_setup.py:84
 msgid "Programming:"
-msgstr ""
+msgstr "Programmation:"
 
 #: ../../spritz/src/spritz_setup.py:87
 msgid "Yum Extender Programmers:"
@@ -2357,47 +2345,52 @@ msgstr ""
 
 #: ../../spritz/src/spritz_setup.py:90
 msgid "Translation:"
-msgstr ""
+msgstr "Traduction:"
 
 #: ../../spritz/src/spritz_setup.py:111
 msgid "Dedicated to:"
-msgstr ""
+msgstr "Dédié à:"
 
 #: ../../spritz/src/views.py:44
 msgid "Categories"
-msgstr "Categorie"
+msgstr "Categories"
 
 #: ../../spritz/src/views.py:65
+#, fuzzy
 msgid "Selection"
-msgstr "Selezione"
+msgstr "Selection du dépot"
 
 #: ../../spritz/src/views.py:435 ../../spritz/src/views.py:968
 msgid "Repository"
-msgstr "Repository"
+msgstr "Dépot"
 
 #: ../../spritz/src/views.py:702
+#, fuzzy
 msgid "Packages To Reinstall"
-msgstr "Pacchetti da reinstallare"
+msgstr "<b>Paquets a réinstaller</b>"
 
 #: ../../spritz/src/views.py:706
+#, fuzzy
 msgid "Packages To Update"
-msgstr "Pacchetti da aggiornare"
+msgstr "<b>Paquets a mettre à jour</b>"
 
 #: ../../spritz/src/views.py:710
+#, fuzzy
 msgid "Packages To Install"
-msgstr "Pacchetti da installare"
+msgstr "<b>Paquets a installer</b>"
 
 #: ../../spritz/src/views.py:714
+#, fuzzy
 msgid "Packages To Remove"
-msgstr "Pacchetti da rimuovere"
+msgstr "<b>Paquets a enlever</b>"
 
 #: ../../spritz/src/views.py:743
 msgid "Proposed"
-msgstr "Proposto"
+msgstr "Proposé"
 
 #: ../../spritz/src/views.py:750
 msgid "Destination"
-msgstr "Destinazione"
+msgstr "Destination"
 
 #: ../../spritz/src/views.py:757
 msgid "Rev."
@@ -2405,53 +2398,57 @@ msgstr "Rev."
 
 #: ../../spritz/src/views.py:806
 msgid "GLSA id."
-msgstr "GLSA id."
+msgstr ""
 
 #: ../../spritz/src/views.py:814
+#, fuzzy
 msgid "Package key"
-msgstr "Chiave pacchetto"
+msgstr "Paquet"
 
 #: ../../spritz/src/views.py:907
 msgid "No advisories"
-msgstr "Nessun avviso"
+msgstr ""
 
 #: ../../spritz/src/views.py:908
 msgid "There are no items to show"
-msgstr "Nessun elemento da visualizzare"
+msgstr ""
 
 #: ../../spritz/src/views.py:968
 msgid "Filename"
-msgstr "Nome file"
+msgstr "Nom du fichier"
 
 #: ../../spritz/src/views.py:1008
 msgid "Active"
-msgstr "Attivo"
+msgstr "Active"
 
 #: ../../spritz/src/views.py:1018
 msgid "Update"
-msgstr "Aggiorna"
+msgstr "Mise à jour"
 
 #. Setup revision column
 #: ../../spritz/src/views.py:1026
 msgid "Revision"
-msgstr "Revisione"
+msgstr "Révision"
 
 #. Setup reponame & repofile column's
 #: ../../spritz/src/views.py:1029
 msgid "Repository Identifier"
-msgstr "Identificatore Repository"
+msgstr "Identificateur de dépôt"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:39
+#, fuzzy
 msgid "Package Name"
-msgstr "Nome Pacchetto"
+msgstr "Paquet"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:40
+#, fuzzy
 msgid "Version Installed"
-msgstr "Versione Installata"
+msgstr "Installé"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:86
+#, fuzzy
 msgid "Critical Information"
-msgstr "Informazione Critica"
+msgstr "Information sur le paquet"
 
 #. #         file = pixmap_file('gnome-warning.png')
 #. #         if file:
@@ -2462,410 +2459,457 @@ msgid ""
 "the full text of this exception into an email and send it to "
 "sabayon@sabayonlinux.org.  Thank you."
 msgstr ""
-"E' avvenuta un'eccezione non gestita. Probabilmente è un bug. Copia il "
-"testo completo dell'errore in una e-mail ed invialo a sabayon@sabayonlinux."
-"org. Grazie."
 
 #: ../../spritz/src/applet/etp_applet.py:64
+#, fuzzy
 msgid "Updates Notification"
-msgstr "Notifica Aggiornamenti"
+msgstr "Annuler l'action de mise à jour"
 
 #: ../../spritz/src/applet/etp_applet.py:205
 msgid "_Disable Notification Applet"
-msgstr "_Disabilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:205
 msgid "Disable Notification Applet"
-msgstr "Disabilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:206
 msgid "_Enable Notification Applet"
-msgstr "_Abilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:206
 msgid "Enable Notification Applet"
-msgstr "Abilita applet di notifica"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:207
 msgid "_Check for updates"
-msgstr "_Controlla aggiornamenti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:207
 msgid "Check for updates"
-msgstr "Controlla aggiornamenti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:208
+#, fuzzy
 msgid "_Launch Package Manager"
-msgstr "_Lancia il Gestore dei pacchetti"
+msgstr "Gestionnaire de paquet Spritz"
 
 #: ../../spritz/src/applet/etp_applet.py:208
+#, fuzzy
 msgid "Launch Package Manager"
-msgstr "Lancia il Gestore dei pacchetti"
+msgstr "Gestionnaire de paquet Spritz"
 
 #: ../../spritz/src/applet/etp_applet.py:209
+#, fuzzy
 msgid "_Packages Website"
-msgstr "_Sito web applicazioni"
+msgstr "Paquet en file d'attente"
 
 #: ../../spritz/src/applet/etp_applet.py:209
 msgid "Use Packages web interface"
-msgstr "Usa interfaccia web pacchetti"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:210
 msgid "_Sabayon Linux Website"
-msgstr "_Sito web Sabayon Linux"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:210
 msgid "Launch Sabayon Linux Website"
-msgstr "Carica il sito web di Sabayon Linux"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:212
+#, fuzzy
 msgid "_About"
-msgstr "_Informazioni"
+msgstr "A propos de %s"
 
 #: ../../spritz/src/applet/etp_applet.py:212
+#, fuzzy
 msgid "About..."
-msgstr "Informazioni..."
+msgstr "A propos de %s"
 
 #: ../../spritz/src/applet/etp_applet.py:213
 msgid "_Exit"
-msgstr "_Esci"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:213
 msgid "Exit"
-msgstr "Esci"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:278
 msgid "You must add yourself to this group"
-msgstr "Devi aggiungerti a questo gruppo"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:281
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr ""
-"Per favore avvia Equo/Spritz come utente root per aggiornare i permessi di "
-"Entropy"
 
 #: ../../spritz/src/applet/etp_applet.py:507
 msgid "Updates Notification Applet Disabled"
-msgstr "Applet di notifica aggiornamenti disabilitata"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:518
 msgid "Updates Notification Applet Enabled"
-msgstr "Applet di notifica aggiornamenti abilitata"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:533
 msgid "Cannot load Spritz"
-msgstr "Impossibile caricare Spritz"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:598
 msgid "Checking for updates..."
-msgstr "Controllando aggiornamenti..."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:619
+#, fuzzy
 msgid "Repository Network Error"
-msgstr "Errore di rete sulla repository"
+msgstr "Selection du dépot"
 
 #: ../../spritz/src/applet/etp_applet.py:633
 msgid "No repositories specified. Cannot check for package updates."
-msgstr "Nessuna repository specificata. Impossibile controllare aggiornamenti."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:634
+#, fuzzy
 msgid "Updates: attention"
-msgstr "Aggiornamenti: attenzione"
+msgstr "Annuler l'action de mise à jour"
 
 #: ../../spritz/src/applet/etp_applet.py:638
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
-"Impossibile connettersi al servizio aggiornamenti. Probabilmente non sei "
-"connesso col mondo."
 
 #: ../../spritz/src/applet/etp_applet.py:639
 #: ../../spritz/src/applet/etp_applet.py:664
 msgid "Updates: connection issues"
-msgstr "Aggiornamenti: problemi di connessione"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:643
 msgid "Not all the repositories have been fetched for checking"
-msgstr "Non tutte le repository sono stato scaricate per il controllo."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:644
 #: ../../spritz/src/applet/etp_applet.py:649
+#, fuzzy
 msgid "Updates: repository issues"
-msgstr "Aggiornamenti: problemi sulla repository"
+msgstr "Mettre à jour les dépots"
 
 #: ../../spritz/src/applet/etp_applet.py:648
+#, fuzzy
 msgid "No repositories found online"
-msgstr "Nessuna repository trovata online"
+msgstr "_Forcer la mise à jour des dépots"
 
 #: ../../spritz/src/applet/etp_applet.py:653
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
-"Errori di sincronizzazione. Impossibile aggiornare le repository. "
-"Controllare i log."
 
 #: ../../spritz/src/applet/etp_applet.py:654
 msgid "Updates: sync issues"
-msgstr "Aggiornamenti: problemi di aggiornamento"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:658
 msgid "Updates: unhandled error"
-msgstr "Aggiornamenti: errore non gestito"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:675
+#, fuzzy
 msgid "Updates: error"
-msgstr "Aggiornamenti: errori"
+msgstr "Mises à jour"
 
 #: ../../spritz/src/applet/etp_applet.py:683
+#, fuzzy
 msgid "Updates issue:"
-msgstr "Errori aggiornamento:"
+msgstr "Mises à jour"
 
 #: ../../spritz/src/applet/etp_applet.py:701
 msgid "There are"
-msgstr "Ci sono"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:701
 msgid "updates available."
-msgstr "aggiornamenti disponibili."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:703
+#, fuzzy
 msgid "Updates available"
-msgstr "Aggiornamenti disponibili"
+msgstr "Disponible"
 
 #: ../../spritz/src/applet/etp_applet.py:712
 #: ../../spritz/src/applet/etp_applet.py:714
 msgid "So far, so good. w00t!"
-msgstr "Uhuuu. Miticooo!"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:713
 msgid "Everything up-to-date"
-msgstr "Tutto aggiornato."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:809
 msgid "Waiting before checkin..."
-msgstr "In attesa prima del checkin..."
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:891
 msgid "Your system currently has"
-msgstr "Sul sistema è installato"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:894
 msgid "but the latest available version is"
-msgstr "ma l'ultima versione disponibile è"
+msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:896
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
 msgstr ""
-"Si raccomanda di aggiornare all'ultima versione prima di qualsiasi altro "
-"pacchetto."
 
-#~ msgid "Available Updates"
-#~ msgstr "Aggiornamenti disponibili"
+#~ msgid "Getting : %s"
+#~ msgstr "Obtenir: %s"
 
-#~ msgid "Package Manager Notification Window"
-#~ msgstr "Finestra di notifica del Gestore di pacchetti"
+#~ msgid "Cleanup"
+#~ msgstr "Nettoyer"
 
-#~ msgid "_Load Package Manager"
-#~ msgstr "_Carica il Gestore dei Pacchetti"
+#~ msgid "Erased: %s"
+#~ msgstr "Supprimé: %s"
 
-#~ msgid "7"
-#~ msgstr "7"
+#~ msgid "Processing metadata"
+#~ msgstr "Traitement des métadonnées"
+
+#~ msgid "---> Package %s.%s %s:%s-%s set to be %s"
+#~ msgstr "Packet %s.%s %s:%s-%s devenir (est)"
+
+#~ msgid "--> Running transaction check"
+#~ msgstr "--> Vérification de la transaction"
+
+#~ msgid "--> Restarting Dependency Resolution with new changes."
+#~ msgstr ""
+#~ "remettre en marche le résolution dependence avec les nouvelles changements"
+
+#~ msgid "--> Finished Dependency Resolution"
+#~ msgstr "Les résolution des Dependences ont fini."
+
+#~ msgid "--> Unresolved Dependency: %s"
+#~ msgstr "--> Dépendance suspendu: %s"
+
+#~ msgid "--> Processing Conflict: %s conflicts %s"
+#~ msgstr "Les conlits sont Traite: %s conflits %s "
+
+#~ msgid "--> Populating transaction set with selected packages. Please wait."
+#~ msgstr "ajouter les packets choisi à la série de transactions"
+
+#~ msgid "---> Downloading header for %s to pack into transaction set."
+#~ msgstr ""
+#~ "Rélécharger en-tête pour %s emballer entre la série de transactions."
+
+#~ msgid "Database URL must be HTTP or FTP"
+#~ msgstr "L'URL de la base de données doit être HTTP ou FTP."
+
+#~ msgid "You should now press the %s button now"
+#~ msgstr "Vous devez mainenant appuyer sur le bouton %s"
+
+#~ msgid "Error"
+#~ msgstr "Erreur"
+
+#~ msgid "Error in Yumex"
+#~ msgstr "Erreur dans Yumex"
+
+#~ msgid "Erasing"
+#~ msgstr "Suppression"
+
+#~ msgid "Obsoleted"
+#~ msgstr "Obselete"
+
+#~ msgid "Updated"
+#~ msgstr "Mis à jour"
+
+#~ msgid "No header - huh?"
+#~ msgstr "Pas d'entête - heu?"
+
+#~ msgid " "
+#~ msgstr " "
+
+#~ msgid "    "
+#~ msgstr "    "
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "2"
+#~ msgstr "2"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "5"
+#~ msgstr "5"
 
 #~ msgid ""
 #~ "<b><big>Please wait</big></b>\n"
 #~ "<small>...take a little break !</small>"
 #~ msgstr ""
-#~ "<b><big>Attendere prego</big></b>\n"
-#~ "<small>...fai un piccolo break!</small>"
+#~ "<b><big>Merci de patienter</big></b>\n"
+#~ "<small>...prenez une petite pose !</small>"
+
+#~ msgid "<b>CHOST</b>"
+#~ msgstr "<b>CHOST</b>"
+
+#~ msgid "<b>Creation date</b>"
+#~ msgstr "<b>Date de création</b>"
+
+#~ msgid "<b>MD5 Signature</b>"
+#~ msgstr "<b>Signature MD5</b>"
+
+#~ msgid "<b>Masked</b>"
+#~ msgstr "<b>Masqué</b>"
+
+#~ msgid "<b>Messages</b>"
+#~ msgstr "<b>Messages</b>"
+
+#~ msgid "<b>Package Size</b>"
+#~ msgstr "<b>Taille du paquet</b>"
+
+#~ msgid "<b>Repositories options</b>"
+#~ msgstr "<b>Options des dépots</b>"
+
+#~ msgid "<b>Website</b>"
+#~ msgstr "<b>Site internet</b>"
+
+#~ msgid "<big><b>media-libs/foo-1.2.3</b></big>"
+#~ msgstr "<big><b>media-libs/foo-1.2.3</b></big>"
+
+#~ msgid "<small>0</small>"
+#~ msgstr "<small>0</small>"
+
+#~ msgid "<small>1.0MB</small>"
+#~ msgstr "<small>1.0MB</small>"
+
+#~ msgid "<small>1.2.3</small>"
+#~ msgstr "<small>1.2.3</small>"
+
+#~ msgid "<small>123123123123123123123</small>"
+#~ msgstr "<small>123123123123123123123</small>"
+
+#~ msgid "<small>2</small>"
+#~ msgstr "<small>2</small>"
+
+#~ msgid "<small>3.5</small>"
+#~ msgstr "<small>3.5</small>"
+
+#~ msgid "<small>3.5MB</small>"
+#~ msgstr "<small>3.5MB</small>"
+
+#~ msgid "<small>None</small>"
+#~ msgstr "<small>None</small>"
+
+#~ msgid "<small>Official Sabayon Linux Repository</small>"
+#~ msgstr "<small>Dépot officiel Sabayon Linux</small>"
+
+#~ msgid "<small>Today, yesterday, who knows</small>"
+#~ msgstr "<small>Aujourd'hui, Demain, qui sait</small>"
+
+#~ msgid "<small>http://www.sabayonlinux.org</small>"
+#~ msgstr "<small>http://www.sabayonlinux.org</small>"
+
+#~ msgid "<small>path/to/download/blah.tbz2</small>"
+#~ msgstr "<small>chemin/pour/télécharger/blah.tbz2</small>"
+
+#~ msgid "<small>why?</small>"
+#~ msgstr "<small>pourquoi?</small>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
+#~ msgstr ""
+#~ "<span size=\"xx-large\" color=\"black\">Mise à jour des fichiers</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Dépots</span>"
 
 #~ msgid "Add/Edit Repository"
-#~ msgstr "Repository Toevoegen/Bewerken"
-
-#~ msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-#~ msgstr ""
-#~ "Aggiungere una <b>nuova repository</b> ti permette di accedere a "
-#~ "<b>software aggiuntivo</b>"
-
-#~ msgid "Branch"
-#~ msgstr "Branch"
-
-#~ msgid "Bugs"
-#~ msgstr "Bug"
-
-#~ msgid "CONFIG_PROTECT"
-#~ msgstr "CONFIG_PROTECT"
-
-#~ msgid "C_hanges"
-#~ msgstr "Ca_mbiamenti"
-
-#~ msgid "D_ependencies"
-#~ msgstr "Dip_endenze"
+#~ msgstr "Ajouter/Editer le dépot"
 
 #~ msgid "Dele_te all"
-#~ msgstr "Elimina _tutto"
-
-#~ msgid "Download mirrors"
-#~ msgstr "Mirror di scaricamento"
-
-#~ msgid "Error"
-#~ msgstr "Errore"
-
-#~ msgid "External Trigger"
-#~ msgstr "Trigger Esterno"
-
-#~ msgid "Install Size"
-#~ msgstr "Dimensione installazione"
-
-#~ msgid "Install the selected package"
-#~ msgstr "Installa il pacchetto selezionato"
-
-#~ msgid "Kernel Tag"
-#~ msgstr "Kernel Tag"
+#~ msgstr "Supprime_r tout"
 
 #~ msgid "Load content"
-#~ msgstr "Carica il contenuto"
-
-#~ msgid "MD5 Signature"
-#~ msgstr "Firma MD5"
-
-#~ msgid "Merge all"
-#~ msgstr "Mergi tutto"
-
-#~ msgid "Messages"
-#~ msgstr "Messaggi"
-
-#~ msgid "O_ther"
-#~ msgstr "Al_tro"
-
-#~ msgid "Package Info."
-#~ msgstr "Info Pacchetto"
-
-#~ msgid "Package Information"
-#~ msgstr "Informazioni Pacchetto"
+#~ msgstr "Chargement du contenu"
 
 #~ msgid "Please Confirm"
-#~ msgstr "Conferma per favore"
-
-#~ msgid ""
-#~ "Please submit this error to us providing as much information as possible."
-#~ msgstr "Per favore inviaci l'errore fornendo più informazioni possibili."
+#~ msgstr "Merci de confimer"
 
 #~ msgid "Purge"
-#~ msgstr "Spazza via"
+#~ msgstr "Purger"
 
 #~ msgid "R_egenerate Cache"
-#~ msgstr "R_igenera Cache"
+#~ msgstr "R_egénérer le Cache"
 
 #~ msgid "Remove the selected package and its configuration"
-#~ msgstr "Rimuovi il pacchetto selezionato e la sua configurazione"
-
-#~ msgid "S_end Error Report"
-#~ msgstr "_Invia il rapporto"
-
-#~ msgid "Show all"
-#~ msgstr "Mostra tutto"
-
-#~ msgid "Show applied"
-#~ msgstr "Mostra applicati"
-
-#~ msgid "Show unapplied"
-#~ msgstr "Mostra non applicati"
+#~ msgstr "Supprimer les paquets sélectionnés et leur configuration"
 
 #~ msgid "Soon!"
-#~ msgstr "Presto!"
-
-#~ msgid "Spritz Package Manager"
-#~ msgstr "Gestore di pacchetti Spritz"
+#~ msgstr "Bientôt!"
 
 #~ msgid "Undo Install"
-#~ msgstr "Annulla Installa"
+#~ msgstr "Annuler l'installation"
 
 #~ msgid "Undo Install action"
-#~ msgstr "Annulla azione Installa"
+#~ msgstr "Annuler l'action d'installation"
 
 #~ msgid "Undo Purge"
-#~ msgstr "Annulla Spazza via"
+#~ msgstr "Annuler le purgement"
 
 #~ msgid "Undo Purge action"
-#~ msgstr "Annulla azione Spazza via"
+#~ msgstr "Annuler l'action de purgement"
 
 #~ msgid "Undo Reinstall"
-#~ msgstr "Annulla Reinstalla"
+#~ msgstr "Annuler la réinstallation"
 
 #~ msgid "Undo Reinstall action"
-#~ msgstr "Annulla azione Reinstalla"
+#~ msgstr "Annuler l'action de réinstallation"
 
 #~ msgid "Undo Remove"
-#~ msgstr "Annulla Rimuovi"
+#~ msgstr "Annuler la supression"
 
 #~ msgid "Undo Update"
-#~ msgstr "Annulla Aggiorna"
-
-#~ msgid "Undo Update action"
-#~ msgstr "Annulla azione Aggiorna"
-
-#~ msgid "Updates"
-#~ msgstr "Aggiornamenti"
-
-#~ msgid "Website"
-#~ msgstr "Sito web"
+#~ msgstr "Annuler la mise à jour"
 
 #~ msgid ""
 #~ "You <b>need to accept</b> the licenses below.\n"
 #~ "Please read them carefully and <b>make your choice</b>."
 #~ msgstr ""
-#~ "Devi <b>accettare</b> le licenze sotto.\n"
-#~ "Leggile attentamente e fai <b>la tua scelta</b>."
-
-#~ msgid "Your E-mail"
-#~ msgstr "La tua E-mail"
-
-#~ msgid "Your Full Name"
-#~ msgstr "Il tuo nome completo"
+#~ "Vous <b>avez besoin d'accepter </b> la license ci-dessous.\n"
+#~ "Merci de la lire attentivement et <b>faites votre chois</b>"
 
 #~ msgid "_Accept License"
-#~ msgstr "_Accetta licenza"
+#~ msgstr "_Accpeter la license"
 
 #~ msgid "_Add All"
-#~ msgstr "_Aggiungi tutto"
-
-#~ msgid "_Branch ..."
-#~ msgstr "_Branch ..."
+#~ msgstr "_Tout ajouter"
 
 #~ msgid "_Details"
-#~ msgstr "_Dettagli"
+#~ msgstr "_Details"
 
 #~ msgid "_File"
-#~ msgstr "_File"
+#~ msgstr "_Fichier"
 
 #~ msgid "_Help"
-#~ msgstr "_Aiuto"
+#~ msgstr "_Aide"
 
-#~ msgid "_Insert String"
-#~ msgstr "_Inserisci Stringa"
-
-#~ msgid "_More"
-#~ msgstr "_Ulteriori informazioni"
+#~ msgid "_Other"
+#~ msgstr "_Autre"
 
 #~ msgid "_Overview"
-#~ msgstr "_Riepilogo"
+#~ msgstr "_Aperçu"
 
 #~ msgid "_Process Queue"
-#~ msgstr "_Processa coda"
-
-#~ msgid "_Queue all vulnerable packages"
-#~ msgstr "Accoda tutti i pacchetti vulnerabili"
-
-#~ msgid "_References"
-#~ msgstr "_Riferimenti"
+#~ msgstr "_File d'attente"
 
 #~ msgid "_Remove All"
-#~ msgstr "_Rimuovi tutto"
+#~ msgstr "_Tout enlever"
 
 #~ msgid "_Update Repositories"
-#~ msgstr "A_ggiorna Repository"
-
-#~ msgid "_Your Ego!"
-#~ msgstr "_Il tuo Ego!"
+#~ msgstr "_Mettre à jour les dépots"
