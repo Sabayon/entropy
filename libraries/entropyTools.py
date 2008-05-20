@@ -1761,7 +1761,10 @@ def is_elf_file(elf_file):
     f = open(elf_file,"rb")
     data = f.read(4)
     f.close()
-    data = struct.unpack('BBBB',data)
+    try:
+        data = struct.unpack('BBBB',data)
+    except struct.error:
+        return False
     if data == (127, 69, 76, 70):
         return True
     return False
