@@ -6192,7 +6192,7 @@ class QAInterface:
                 back = True,
                 count = (count,maxcount,)
             )
-            missing = self.get_missing_rdepends(dbconn, idpackage)
+            missing_extended, missing = self.get_missing_rdepends(dbconn, idpackage)
             if not missing:
                 continue
             self.Entropy.updateProgress(
@@ -6207,13 +6207,20 @@ class QAInterface:
                 header = red(" @@ "),
                 count = (count,maxcount,)
             )
-            for dependency in missing:
+            for missing_data in missing_extended:
                 self.Entropy.updateProgress(
-                        "%s" % (darkred(dependency),),
+                        "%s:" % (brown(str(missing_data)),),
                         importance = 0,
                         type = "info",
-                        header = blue("    # ")
+                        header = purple("   ## ")
                 )
+                for dependency in missing_extended[missing_data]:
+                    self.Entropy.updateProgress(
+                            "%s" % (darkred(dependency),),
+                            importance = 0,
+                            type = "info",
+                            header = blue("     # ")
+                    )
             if ask:
                 rc = self.Entropy.askQuestion(_("Do you want to add them?"))
                 if rc == "No":
@@ -6302,7 +6309,8 @@ class QAInterface:
 
     def get_missing_rdepends(self, dbconn, idpackage):
 
-        rdepends = set()
+        rdepends = {}
+        rdepends_plain = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
         ldpaths = set(self.entropyTools.collectLinkerPaths())
         deps_content = set()
@@ -6329,9 +6337,7 @@ class QAInterface:
         dependencies_cache.add((key,slot))
 
         idpackages_cache = set()
-        for needed_data in neededs:
-            needed = needed_data[0]
-            elfclass = needed_data[1]
+        for needed, elfclass in neededs:
             data_solved = dbconn.resolveNeeded(needed,elfclass)
             data_size = len(data_solved)
             data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
@@ -6347,9 +6353,12 @@ class QAInterface:
                     key, slot = dbconn.retrieveKeySlot(data[0])
                     if (key,slot) not in dependencies_cache:
                         if not dbconn.isSystemPackage(data[0]):
-                            rdepends.add(key+":"+slot)
+                            if not rdepends.has_key((needed,elfclass)):
+                                rdepends[(needed,elfclass)] = set()
+                            rdepends[(needed,elfclass)].add(key+":"+slot)
+                            rdepends_plain.add(key+":"+slot)
                         idpackages_cache.add(data[0])
-        return rdepends
+        return rdepends, rdepends_plain
 
     def _get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
 
@@ -13155,14 +13164,21 @@ class ServerInterface(TextInterface):
                     header = bold(" !!! "),
                     count = (mycount,maxcount,)
                 )
+                # reinit depends table
+                self.depends_table_initialize(repo)
                 if idpackages_added:
                     dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
                     myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
                     myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
                 if to_be_injected:
                     self.inject_database_into_packages(to_be_injected, repo = repo)
+                # reinit depends table
+                self.depends_table_initialize(repo)
                 self.close_server_databases()
                 raise
+
+        # reinit depends table
+        self.depends_table_initialize(repo)
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
@@ -13171,6 +13187,7 @@ class ServerInterface(TextInterface):
 
         # reinit depends table
         self.depends_table_initialize(repo)
+
         # inject database into packages
         self.inject_database_into_packages(to_be_injected, repo = repo)
 
