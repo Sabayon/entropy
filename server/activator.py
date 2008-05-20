@@ -20,8 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-# Never do "import portage" here, please use entropyTools binding
-
 import os, sys
 sys.path.insert(0,'../libraries')
 sys.path.insert(1,'../client')
@@ -31,52 +29,59 @@ sys.path.insert(4,'/usr/lib/entropy/libraries')
 sys.path.insert(5,'/usr/lib/entropy/server')
 from outputTools import *
 from entropyConstants import *
+import entropyTools
+from entropy_i18n import _
 
-# CONSTANTS
-APPNAME = sys.argv[0]
-APPVERSION = "1.0"
-def print_help():
-    print_info("Sabayon Linux "+APPNAME+" (C - 2007)")
-    print_info("General Options:")
-    print_info("  --help\t\tthis output")
-    print_info("  --version\t\tprint version")
-    print_info("  --verbose\t\tbe more verbose")
-    print_info("  --nocolor\t\tdisable colorized output")
-    print_info(blue("Tools available: "))
-    print_info(" \t"+green(bold("sync"))+brown("\t\t to sync packages, database and also do some tidy"))
-    print_info(" \t\t"+red("--noask")+"\t\t\t do not make any question")
-    print_info(" \t\t"+red("--syncall")+"\t\t sync all the configured repositories")
-    print_info(" \t"+green(bold("tidy"))+brown("\t\t to just remove binary packages that are not in database and are expired"))
-    print_info(" \t"+green(bold("packages"))+brown("\t to manage binary packages"))
-    print_info(" \t\t"+green("sync")+red("\t\t\t to sync the binary packages across primary mirrors"))
-    print_info(" \t\t\t"+red("--ask")+"\t\t\t ask before making any changes")
-    print_info(" \t\t\t"+red("--pretend")+"\t\t just show what would be done")
-    print_info(" \t\t\t"+red("--syncall")+"\t\t sync all the configured repositories")
-    print_info(" \t\t\t"+red("--do-packages-check")+"\t after the syncronization, also check packages checksum")
-    print_info(" \t"+green(bold("database"))+brown("\t to manage database status and settings [")+bold("database content won't be touched")+brown("]"))
-    print_info(" \t\t"+green("sync")+red("\t\t\t to sync the database across primary mirrors"))
-    print_info(" \t\t"+green("lock")+red("\t\t\t to lock the database(s) status ["+brown("DANGEROUS")+red("]")))
-    print_info(" \t\t"+green("unlock")+red("\t\t\t to unlock the database(s) status ["+brown("DANGEROUS")+red("]")))
-    print_info(" \t\t"+green("download-lock")+red("\t\t to lock the download mirror status"))
-    print_info(" \t\t"+green("download-unlock")+red("\t\t to unlock the download mirror status"))
-    print_info(" \t\t"+green("lock-status")+red("\t\t to show the current locks status of the mirrors"))
-    print_info(" \t\t\t"+red("--syncall")+"\t\t sync all the configured repositories")
+myopts = [
+    None,
+    (0," ~ "+etpConst['systemname']+" ~ "+sys.argv[0]+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.getYear(),) ),
+    None,
+    (0,_('Basic Options'),0,None),
+    None,
+    (1,'--help',2,_('this output')),
+    (1,'--version',1,_('print version')),
+    (1,'--nocolor',1,_('disable colorized output')),
+    None,
+    (0,_('Application Options'),0,None),
+    None,
+    (1,'sync',2,_('sync packages, database and also do some tidy')),
+    (2,'--branch=<branch>',1,_('choose on what branch operating')),
+    (2,'--noask',3,_('do not ask anything except critical things')),
+    (2,'--syncall',2,_('sync all the configured repositories')),
+    None,
+    (1,'tidy',2,_('remove binary packages not in repositories and expired')),
+    None,
+    (1,'packages',1,_('package repositories handling functions')),
+    (2,'sync',3,_('sync package repositories across primary mirrors')),
+    (3,'--ask',3,_('ask before making any changes')),
+    (3,'--pretend',2,_('only show what would be done')),
+    (3,'--syncall',2,_('sync all the configured repositories')),
+    (3,'--do-packages-check',1,_('also verify packages integrity')),
+    None,
+    (1,'database',1,_('database handling functions')),
+    (2,'sync',3,_('sync the current repository database across primary mirrors')),
+    (2,'lock',3,_('lock the current repository database (server-side)')),
+    (2,'unlock',3,_('unlock the current repository database (server-side)')),
+    (2,'download-lock',2,_('lock the current repository database (client-side)')),
+    (2,'download-unlock',2,_('unlock the current repository database (client-side)')),
+    (2,'lock-status',2,_('show current lock status')),
+    (2,'--syncall',2,_('sync all the configured repositories')),
+    None,
+]
 
 options = sys.argv[1:]
 
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
-    print_generic(APPNAME+": "+APPVERSION)
+    print_generic("activator: "+etpConst['entropyversion'])
     sys.exit(0)
 
 # print help
 if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
-    print_help()
+    print_menu(myopts)
     if len(options) < 1:
 	print_error("not enough parameters")
     sys.exit(1)
-
-import entropyTools
 
 # preliminary options parsing
 _options = []
@@ -97,7 +102,7 @@ for opt in options:
 options = _options
 
 if not entropyTools.isRoot():
-    print_error("you must be root in order to run "+APPNAME)
+    print_error("you must be root in order to run activator")
     sys.exit(2)
 
 elif (options[0] == "sync"):

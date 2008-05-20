@@ -7,11 +7,11 @@
 ../client/text_security.py
 ../client/text_smart.py
 ../client/text_ui.py
+../server/activator.py
+../server/reagent.py
 ../server/server_activator.py
 ../server/server_query.py
 ../server/server_reagent.py
-../server/reagent
-../server/activator
 ../spritz/src/dialogs.py
 ../spritz/src/entropyapi.py
 ../spritz/src/filters.py

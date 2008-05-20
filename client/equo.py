@@ -33,6 +33,7 @@ except ImportError:
     def _(x): return x
 
 myopts = [
+    None,
     (0," ~ "+etpConst['systemname']+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.getYear(),) ),
     None,
     (0,_('Basic Options'),0,None),

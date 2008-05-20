@@ -255,6 +255,8 @@ def print_menu(data):
             n_d_ident = item[2]
             desc = item[3]
 
+            if n_ident == 0:
+                writechar("  ")
             # setup identation
             while n_ident > 0:
                 n_ident -= 1
@@ -268,10 +270,11 @@ def print_menu(data):
                 myfunc = blue
                 myfunc_desc = darkgreen
             elif n_ident == 2:
-                myfunc = red
+                if not name.startswith("--"):
+                    myfunc = red
                 myfunc_desc = brown
             elif n_ident == 3:
-                #myfunc = blue
+                myfunc = darkblue
                 myfunc_desc = purple
             writechar(myfunc(name))
 
