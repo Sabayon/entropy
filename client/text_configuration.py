@@ -28,11 +28,12 @@ from outputTools import *
 import exceptionTools
 from entropy import EquoInterface
 Equo = EquoInterface() # client db must be available, it is for a reason!
+from entropy_i18n import _
 
 # test if diff is installed
 difftest = Equo.entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
 if (difftest):
-    raise exceptionTools.FileNotFound("FileNotFound: can't find diff")
+    raise exceptionTools.FileNotFound("FileNotFound: %s" % (_("can't find diff"),) )
 
 ########################################################
 ####
@@ -47,7 +48,8 @@ def configurator(options):
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
-        print_error(red("You are not ")+bold("root")+red("."))
+        mytxt = _("You are not root")
+        print_error(red(mytxt+"."))
         return 1
 
     if options[0] == "info":
@@ -70,15 +72,15 @@ def update(cmd = None):
     if cmd != None:
         docmd = True
     while 1:
-        print_info(brown(" @@ ")+darkgreen("Scanning filesystem..."))
+        print_info(brown(" @@ ")+darkgreen("%s ..." % (_("Scanning filesystem"),)))
         scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
         if cache_status:
             for x in scandata:
-                print_info("("+blue(str(x))+") "+red(" file: ")+etpConst['systemroot']+scandata[x]['destination'])
+                print_info("("+blue(str(x))+") "+red(" %s: " % (_("file"),) )+etpConst['systemroot']+scandata[x]['destination'])
         cache_status = True
 
         if (not scandata):
-            print_info(darkred("All fine baby. Nothing to do!"))
+            print_info(darkred(_("All fine baby. Nothing to do!")))
             break
 
         keys = scandata.keys()
@@ -89,7 +91,7 @@ def update(cmd = None):
         try:
             cmd = int(cmd)
         except:
-            print_error("Type a number.")
+            print_error(_("Type a number."))
             continue
 
         # actions
@@ -103,12 +105,12 @@ def update(cmd = None):
                     Equo.FileUpdates.remove_from_cache(key)
                     scandata = Equo.FileUpdates.scandata
                     continue
-                print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
+                print_info(darkred("%s: " % (_("Configuration file"),) )+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
-                    rc = Equo.askQuestion(">>   Overwrite ?")
+                    rc = Equo.askQuestion(">>   %s" % (_("Overwrite ?"),) )
                     if rc == "No":
                         continue
-                print_info(darkred("Moving ")+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" to ")+brown(etpConst['systemroot']+scandata[key]['destination']))
+                print_info(darkred("%s " % (_("Moving"),) )+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" %s " % (_("to"),) )+brown(etpConst['systemroot']+scandata[key]['destination']))
 
                 Equo.FileUpdates.merge_file(key)
                 scandata = Equo.FileUpdates.scandata
@@ -124,12 +126,12 @@ def update(cmd = None):
                     scandata = Equo.FileUpdates.scandata
 
                     continue
-                print_info(darkred("Configuration file: ")+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
+                print_info(darkred("%s: " % (_("Configuration file"),) )+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
-                    rc = Equo.askQuestion(">>   Discard ?")
+                    rc = Equo.askQuestion(">>   %s" % (_("Discard ?"),) )
                     if rc == "No":
                         continue
-                print_info(darkred("Discarding ")+darkgreen(etpConst['systemroot']+scandata[key]['source']))
+                print_info(darkred("%s " % (_("Discarding"),) )+darkgreen(etpConst['systemroot']+scandata[key]['source']))
 
                 Equo.FileUpdates.remove_file(key)
                 scandata = Equo.FileUpdates.scandata
@@ -147,7 +149,7 @@ def update(cmd = None):
 
                     continue
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
-                    print_info(darkred("Automerging file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                    print_info(darkred("%s: " % (_("Automerging file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
                     Equo.FileUpdates.merge_file(cmd)
                     scandata = Equo.FileUpdates.scandata
@@ -157,13 +159,13 @@ def update(cmd = None):
 
                 diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
                 if (not diff):
-                    print_info(darkred("Automerging file ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                    print_info(darkred("%s " % (_("Automerging file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
                     Equo.FileUpdates.merge_file(cmd)
                     scandata = Equo.FileUpdates.scandata
 
                     continue
-                print_info(darkred("Selected file: ")+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                print_info(darkred("%s: " % (_("Selected file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
                 comeback = False
                 while 1:
@@ -171,7 +173,7 @@ def update(cmd = None):
                     try:
                         action = int(action)
                     except:
-                        print_error("You don't have typed a number.")
+                        print_error(_("You don't have typed a number."))
                         continue
 
                     # actions handling
@@ -179,8 +181,8 @@ def update(cmd = None):
                         comeback = True
                         break
                     elif action == 1:
-                        print_info(darkred("Replacing ") + darkgreen(etpConst['systemroot'] + \
-                            scandata[cmd]['destination']) + darkred(" with ") + \
+                        print_info(darkred("%s " % (_("Replacing"),) ) + darkgreen(etpConst['systemroot'] + \
+                            scandata[cmd]['destination']) + darkred(" %s " % (_("with"),) ) + \
                             darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
 
                         Equo.FileUpdates.merge_file(cmd)
@@ -190,7 +192,9 @@ def update(cmd = None):
                         break
 
                     elif action == 2:
-                        print_info(darkred("Deleting file ") + darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
+                        print_info(darkred("%s " % (_("Deleting file"),) ) + darkgreen(etpConst['systemroot'] + \
+                            scandata[cmd]['source'])
+                        )
 
                         Equo.FileUpdates.remove_file(cmd)
                         scandata = Equo.FileUpdates.scandata
@@ -199,20 +203,25 @@ def update(cmd = None):
                         break
 
                     elif action == 3:
-                        print_info(darkred("Editing file ") + darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                        print_info(darkred("%s " % (_("Editing file"),) ) + \
+                            darkgreen(etpConst['systemroot']+scandata[cmd]['source'])
+                        )
 
                         editor = Equo.get_file_editor()
                         if editor == None:
-                            print_error(" Cannot find a suitable editor. Can't edit file directly.")
+                            print_error(" %s" % (_("Cannot find a suitable editor. Can't edit file directly."),) )
                             comeback = True
                             break
                         else:
                             os.system(editor+" "+etpConst['systemroot']+scandata[cmd]['source'])
 
-                        print_info(darkred("Edited file ") + darkgreen(etpConst['systemroot'] + scandata[cmd]['source']) + darkred(" - showing differencies:"))
-                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],etpConst['systemroot'] + scandata[cmd]['source'])
+                        print_info(darkred("%s " % (_("Edited file"),) ) + darkgreen(etpConst['systemroot'] + \
+                            scandata[cmd]['source']) + darkred(" - %s:" % (_("showing differencies"),) )
+                        )
+                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],etpConst['systemroot'] + \
+                            scandata[cmd]['source'])
                         if not diff:
-                            print_info(darkred("Automerging file ") + darkgreen(scandata[cmd]['source']))
+                            print_info(darkred("%s " % (_("Automerging file"),) ) + darkgreen(scandata[cmd]['source']))
 
                             Equo.FileUpdates.merge_file(cmd)
                             scandata = Equo.FileUpdates.scandata
@@ -237,15 +246,15 @@ def update(cmd = None):
    @output: action number
 '''
 def selfile():
-    print_info(darkred("Please choose a file to update by typing its identification number."))
-    print_info(darkred("Other options are:"))
-    print_info("  ("+blue("-1")+")"+darkgreen(" Exit"))
-    print_info("  ("+blue("-3")+")"+brown(" Automerge all the files asking you one by one"))
-    print_info("  ("+blue("-5")+")"+darkred(" Automerge all the files without questioning"))
-    print_info("  ("+blue("-7")+")"+brown(" Discard all the files asking you one by one"))
-    print_info("  ("+blue("-9")+")"+darkred(" Discard all the files without questioning"))
+    print_info(darkred(_("Please choose a file to update by typing its identification number.")))
+    print_info(darkred(_("Other options are:")))
+    print_info("  ("+blue("-1")+") "+darkgreen(_("Exit")))
+    print_info("  ("+blue("-3")+") "+brown(_("Automerge all the files asking you one by one")))
+    print_info("  ("+blue("-5")+") "+darkred(_("Automerge all the files without questioning")))
+    print_info("  ("+blue("-7")+") "+brown(_("Discard all the files asking you one by one")))
+    print_info("  ("+blue("-9")+") "+darkred(_("Discard all the files without questioning")))
     # wait user interaction
-    action = readtext("Your choice (type a number and press enter): ")
+    action = readtext(_("Your choice (type a number and press enter):")+" ")
     return action
 
 '''
@@ -253,14 +262,14 @@ def selfile():
    @output: action number
 '''
 def selaction():
-    print_info(darkred("Please choose an action to take for the selected file."))
-    print_info("  ("+blue("-1")+")"+darkgreen(" Come back to the files list"))
-    print_info("  ("+blue("1")+")"+brown(" Replace original with update"))
-    print_info("  ("+blue("2")+")"+darkred(" Delete update, keeping original as is"))
-    print_info("  ("+blue("3")+")"+brown(" Edit proposed file and show diffs again"))
-    print_info("  ("+blue("4")+")"+darkred(" Show differences again"))
+    print_info(darkred(_("Please choose an action to take for the selected file.")))
+    print_info("  ("+blue("-1")+") "+darkgreen(_("Come back to the files list")))
+    print_info("  ("+blue("1")+") "+brown(_("Replace original with update")))
+    print_info("  ("+blue("2")+") "+darkred(_("Delete update, keeping original as is")))
+    print_info("  ("+blue("3")+") "+brown(_("Edit proposed file and show diffs again")))
+    print_info("  ("+blue("4")+") "+darkred(_("Show differences again")))
     # wait user interaction
-    action = readtext("Your choice (type a number and press enter): ")
+    action = readtext(_("Your choice (type a number and press enter):")+" ")
     return action
 
 def showdiff(fromfile,tofile):
@@ -298,16 +307,16 @@ def showdiff(fromfile,tofile):
    @description: prints information about config files that should be updated
 '''
 def confinfo():
-    print_info(brown(" @@ ")+darkgreen("These are the files that would be updated:"))
+    print_info(brown(" @@ ")+darkgreen(_("These are the files that would be updated:")))
     data = Equo.FileUpdates.scanfs(dcache = False)
     counter = 0
     for item in data:
 	counter += 1
-	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" file: ")+str(item))
-    print_info(red(" @@ ")+brown("Unique files that would be update:\t\t")+red(str(len(data))))
+	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" %s: " % (_("file"),) )+str(item))
+    print_info(red(" @@ ")+brown("%s:\t\t" % (_("Unique files that would be update"),) )+red(str(len(data))))
     automerge = 0
     for x in data:
 	if data[x]['automerge']:
 	    automerge += 1
-    print_info(red(" @@ ")+brown("Unique files that would be automerged:\t\t")+green(str(automerge)))
+    print_info(red(" @@ ")+brown("%s:\t\t" % (_("Unique files that would be automerged"),) )+green(str(automerge)))
     return 0

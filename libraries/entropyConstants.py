@@ -629,7 +629,7 @@ def const_defaultSettings(rootdir):
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
         'conntestlink': "http://www.google.com", 
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
-        'pidfile': "/var/run/equo.pid",
+        'pidfile': ETP_DIR+"/entropy.pid",
         'applicationlock': False,
         'filesbackup': True, # option to keep a backup of config files after being overwritten by equo conf update
         'collisionprotect': 1, # collision protection option, read equo.conf for more info
@@ -1035,7 +1035,8 @@ def const_setupEntropyPid():
                 etpConst['applicationlock'] = True
             else:
                 # if root, write new pid
-                if etpConst['uid'] == 0:
+                #if etpConst['uid'] == 0:
+                if os.access(etpConst['pidfile'],os.W_OK):
                     try:
                         f = open(etpConst['pidfile'],"w")
                         f.write(str(pid))
@@ -1048,7 +1049,8 @@ def const_setupEntropyPid():
                             raise
 
     else:
-        if etpConst['uid'] == 0:
+        #if etpConst['uid'] == 0:
+        if os.access(os.path.dirname(etpConst['pidfile']),os.W_OK):
 
             if os.path.exists(etpConst['pidfile']):
                 if os.path.islink(etpConst['pidfile']):

@@ -110,6 +110,11 @@ def database(options):
         mytxt = darkred("  %s %s") % (_("Initializing the new database at"),bold(etpConst['etpdatabaseclientfilepath']),)
         print_info(mytxt, back = True)
         Equo.reopenClientDbconn()
+        dbfile = Equo.clientDbconn.dbFile
+        Equo.clientDbconn.closeDB()
+        if os.path.isfile(dbfile):
+            os.remove(dbfile)
+        Equo.openClientDatabase()
         Equo.clientDbconn.initializeDatabase()
         mytxt = darkred("  %s %s") % (_("Database reinitialized correctly at"),bold(etpConst['etpdatabaseclientfilepath']),)
         print_info(mytxt)

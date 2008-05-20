@@ -197,7 +197,13 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     etpConst['collisionprotect'] = 1
 
     if (update) or (resume):
-        rc = installPackages(atomsdata = update, onlyfetch = onlyfetch, resume = resume, skipfirst = skipfirst, dochecksum = dochecksum)
+        rc = installPackages(
+            atomsdata = update,
+            onlyfetch = onlyfetch,
+            resume = resume,
+            skipfirst = skipfirst,
+            dochecksum = dochecksum
+        )
         if rc[1] != 0:
             return 1,rc[0]
     else:

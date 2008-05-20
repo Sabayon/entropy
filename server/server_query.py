@@ -24,6 +24,7 @@ from outputTools import *
 from entropyConstants import *
 import text_query
 from entropy import ServerInterface
+from entropy_i18n import _
 
 def query(myopts):
 
@@ -54,7 +55,7 @@ def query(myopts):
                                             )
 
         if not count:
-            print_warning(red(" * ")+red("Nothing found."))
+            print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
         rc = 0
 
     elif cmd == "tags":
@@ -81,7 +82,7 @@ def query(myopts):
 def searchTaggedPackages(tags, dbconn, entropy):
 
     if not etpUi['quiet']:
-        print_info(darkred(" @@ ")+darkgreen("Tag Search..."))
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),) ))
         print_info(blue("  # ")+bold(entropy.default_repository))
 
     for tag in tags:
@@ -92,7 +93,7 @@ def searchTaggedPackages(tags, dbconn, entropy):
             else:
                 text_query.printPackageInfo(result[1], dbconn, EquoConnection = entropy)
         if not etpUi['quiet']:
-            print_info(blue(" Keyword: ")+bold("\t"+tag))
-            print_info(blue(" Found:   ")+bold("\t"+str(len(results)))+red(" entries"))
+            print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+tag))
+            print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
 
     return 0

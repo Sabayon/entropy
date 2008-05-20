@@ -9318,13 +9318,32 @@ class ErrorReportInterface:
         self.params['arguments'] = ' '.join(sys.argv)
         self.params['uid'] = etpConst['uid']
         self.params['system_version'] = "N/A"
+        self.params['processes'] = ''
+        self.params['lspci'] = ''
+        self.params['dmesg'] = ''
         if os.access(etpConst['systemreleasefile'],os.R_OK):
             f = open(etpConst['systemreleasefile'],"r")
             self.params['system_version'] = f.readlines()
             f.close()
+
+        myprocesses = []
         try:
-            self.params['processes'] = commands.getoutput('ps auxf')
-            self.params['lspci'] = commands.getoutput('lspci')
+            myprocesses = commands.getoutput('ps auxf').split("\n")
+        except:
+            pass
+        for line in myprocesses:
+            mycount = 0
+            for mychar in line:
+                mycount += 1
+                self.params['processes'] += mychar
+                if mycount == 80:
+                    self.params['processes'] += "\n"
+                    mycount = 0
+            if mycount != 0:
+                self.params['processes'] += "\n"
+
+        try:
+            self.params['lspci'] = commands.getoutput('/usr/sbin/lspci')
             self.params['dmesg'] = commands.getoutput('dmesg')
         except:
             pass
