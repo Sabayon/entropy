@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-19 21:29+0200\n"
+"POT-Creation-Date: 2008-05-20 08:31+0200\n"
 "PO-Revision-Date: 2008-05-01 11:03-0000\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Català\n"
@@ -400,6 +400,180 @@ msgstr ""
 msgid "show system information"
 msgstr "Informació d'advertències"
 
+#: ../../client/text_configuration.py:36
+msgid "can't find diff"
+msgstr ""
+
+#: ../../client/text_configuration.py:51 ../../client/text_rescue.py:61
+msgid "You are not root"
+msgstr ""
+
+#: ../../client/text_configuration.py:75
+msgid "Scanning filesystem"
+msgstr ""
+
+#: ../../client/text_configuration.py:79
+#: ../../client/text_configuration.py:315
+#, fuzzy
+msgid "file"
+msgstr "Fitxer"
+
+#: ../../client/text_configuration.py:83
+#, fuzzy
+msgid "All fine baby. Nothing to do!"
+msgstr "No s'està processant cap paquet. Aquí es mostra idle."
+
+#: ../../client/text_configuration.py:94
+msgid "Type a number."
+msgstr ""
+
+#: ../../client/text_configuration.py:108
+#: ../../client/text_configuration.py:129 ../../server/server_reagent.py:91
+#: ../../server/server_reagent.py:103
+#, fuzzy
+msgid "Configuration file"
+msgstr "Fitxers de configuració"
+
+#: ../../client/text_configuration.py:110
+#, fuzzy
+msgid "Overwrite ?"
+msgstr "Resu_m"
+
+#: ../../client/text_configuration.py:113
+#, fuzzy
+msgid "Moving"
+msgstr "Elimina"
+
+#: ../../client/text_configuration.py:113
+msgid "to"
+msgstr ""
+
+#: ../../client/text_configuration.py:131
+msgid "Discard ?"
+msgstr ""
+
+#: ../../client/text_configuration.py:134
+msgid "Discarding"
+msgstr ""
+
+#: ../../client/text_configuration.py:152
+#: ../../client/text_configuration.py:162
+#: ../../client/text_configuration.py:224
+msgid "Automerging file"
+msgstr ""
+
+#: ../../client/text_configuration.py:168
+#, fuzzy
+msgid "Selected file"
+msgstr "Selecció"
+
+#: ../../client/text_configuration.py:176
+msgid "You don't have typed a number."
+msgstr ""
+
+#: ../../client/text_configuration.py:184
+#, fuzzy
+msgid "Replacing"
+msgstr "Destí"
+
+#: ../../client/text_configuration.py:185
+msgid "with"
+msgstr ""
+
+#: ../../client/text_configuration.py:195
+#, fuzzy
+msgid "Deleting file"
+msgstr "Destí"
+
+#: ../../client/text_configuration.py:206
+msgid "Editing file"
+msgstr ""
+
+#: ../../client/text_configuration.py:212
+msgid "Cannot find a suitable editor. Can't edit file directly."
+msgstr ""
+
+#: ../../client/text_configuration.py:218
+msgid "Edited file"
+msgstr ""
+
+#: ../../client/text_configuration.py:219
+#, fuzzy
+msgid "showing differencies"
+msgstr "Dependències"
+
+#: ../../client/text_configuration.py:249
+msgid "Please choose a file to update by typing its identification number."
+msgstr ""
+
+#: ../../client/text_configuration.py:250
+msgid "Other options are:"
+msgstr ""
+
+#: ../../client/text_configuration.py:251
+#: ../../spritz/src/applet/etp_applet.py:211
+msgid "Exit"
+msgstr "Sortir"
+
+#: ../../client/text_configuration.py:252
+msgid "Automerge all the files asking you one by one"
+msgstr ""
+
+#: ../../client/text_configuration.py:253
+msgid "Automerge all the files without questioning"
+msgstr ""
+
+#: ../../client/text_configuration.py:254
+msgid "Discard all the files asking you one by one"
+msgstr ""
+
+#: ../../client/text_configuration.py:255
+msgid "Discard all the files without questioning"
+msgstr ""
+
+#. wait user interaction
+#: ../../client/text_configuration.py:257
+#: ../../client/text_configuration.py:272
+msgid "Your choice (type a number and press enter):"
+msgstr ""
+
+#: ../../client/text_configuration.py:265
+msgid "Please choose an action to take for the selected file."
+msgstr ""
+
+#: ../../client/text_configuration.py:266
+msgid "Come back to the files list"
+msgstr ""
+
+#: ../../client/text_configuration.py:267
+msgid "Replace original with update"
+msgstr ""
+
+#: ../../client/text_configuration.py:268
+msgid "Delete update, keeping original as is"
+msgstr ""
+
+#: ../../client/text_configuration.py:269
+msgid "Edit proposed file and show diffs again"
+msgstr ""
+
+#: ../../client/text_configuration.py:270
+msgid "Show differences again"
+msgstr ""
+
+#: ../../client/text_configuration.py:310
+#, fuzzy
+msgid "These are the files that would be updated:"
+msgstr "Aquests són els paquets que s'instal·laran/s'actualitzaran "
+
+#: ../../client/text_configuration.py:316
+msgid "Unique files that would be update"
+msgstr ""
+
+#: ../../client/text_configuration.py:321
+msgid "Unique files that would be automerged"
+msgstr ""
+
 #: ../../client/text_query.py:111 ../../client/text_query.py:697
 msgid "Searching"
 msgstr ""
@@ -408,7 +582,7 @@ msgstr ""
 #: ../../client/text_query.py:257 ../../client/text_query.py:728
 #: ../../client/text_query.py:775 ../../client/text_query.py:822
 #: ../../client/text_query.py:865 ../../client/text_query.py:911
-#: ../../client/text_query.py:971
+#: ../../client/text_query.py:971 ../../server/server_query.py:96
 #, fuzzy
 msgid "Keyword"
 msgstr "Paraules clau"
@@ -419,7 +593,7 @@ msgstr "Paraules clau"
 #: ../../client/text_query.py:445 ../../client/text_query.py:729
 #: ../../client/text_query.py:776 ../../client/text_query.py:823
 #: ../../client/text_query.py:866 ../../client/text_query.py:912
-#: ../../client/text_query.py:972
+#: ../../client/text_query.py:972 ../../server/server_query.py:97
 msgid "Found"
 msgstr ""
 
@@ -427,6 +601,7 @@ msgstr ""
 #: ../../client/text_query.py:729 ../../client/text_query.py:776
 #: ../../client/text_query.py:823 ../../client/text_query.py:866
 #: ../../client/text_query.py:912 ../../client/text_query.py:972
+#: ../../server/server_query.py:97
 msgid "entries"
 msgstr ""
 
@@ -439,7 +614,7 @@ msgstr ""
 msgid "Depends Search"
 msgstr "Depèn de"
 
-#: ../../client/text_query.py:258 ../../client/text_ui.py:1196
+#: ../../client/text_query.py:258 ../../client/text_ui.py:1202
 #, fuzzy
 msgid "Matched"
 msgstr "Emmascarat"
@@ -555,8 +730,9 @@ msgstr ""
 msgid "Removal Search"
 msgstr "Elimina"
 
-#: ../../client/text_query.py:599 ../../client/text_ui.py:354
-#: ../../client/text_ui.py:908
+#: ../../client/text_query.py:599 ../../client/text_ui.py:360
+#: ../../client/text_ui.py:914 ../../server/server_reagent.py:346
+#: ../../server/server_reagent.py:391 ../../server/server_reagent.py:440
 #, fuzzy
 msgid "No packages found"
 msgstr "No hi ha paquets a la cua"
@@ -572,8 +748,8 @@ msgstr "Aquests paquets es suprimiran"
 
 #: ../../client/text_query.py:624 ../../client/text_smart.py:106
 #: ../../client/text_smart.py:254 ../../client/text_smart.py:387
-#: ../../client/text_ui.py:471 ../../client/text_ui.py:612
-#: ../../client/text_ui.py:776 ../../client/text_ui.py:989
+#: ../../client/text_ui.py:477 ../../client/text_ui.py:618
+#: ../../client/text_ui.py:782 ../../client/text_ui.py:995
 msgid "from"
 msgstr ""
 
@@ -587,7 +763,7 @@ msgstr "Instal·lat"
 msgid "These are the installed packages"
 msgstr "Aquests són els paquets necessaris"
 
-#: ../../client/text_query.py:750 ../../client/text_rescue.py:656
+#: ../../client/text_query.py:750 ../../client/text_rescue.py:661
 msgid "Matching"
 msgstr ""
 
@@ -600,7 +776,7 @@ msgstr "o el"
 msgid "Slot Search"
 msgstr ""
 
-#: ../../client/text_query.py:846
+#: ../../client/text_query.py:846 ../../server/server_query.py:85
 msgid "Tag Search"
 msgstr ""
 
@@ -615,8 +791,8 @@ msgid "Description Search"
 msgstr "Descripció"
 
 #. client info
-#: ../../client/text_query.py:1034 ../../client/text_ui.py:381
-#: ../../client/text_ui.py:410 ../../spritz/src/applet/etp_applet.py:868
+#: ../../client/text_query.py:1034 ../../client/text_ui.py:387
+#: ../../client/text_ui.py:416 ../../spritz/src/applet/etp_applet.py:868
 msgid "Not installed"
 msgstr "No instal·lat"
 
@@ -738,7 +914,7 @@ msgstr "Paraules clau"
 msgid "Created"
 msgstr "Data de creació"
 
-#: ../../client/text_query.py:1097 ../../client/text_ui.py:772
+#: ../../client/text_query.py:1097 ../../client/text_ui.py:778
 #: ../../spritz/src/dialogs.py:824
 msgid "License"
 msgstr "Llicència"
@@ -828,13 +1004,9 @@ msgstr ""
 msgid "Installed packages database not available"
 msgstr ""
 
-#: ../../client/text_rescue.py:61
-msgid "You are not root"
-msgstr ""
-
-#: ../../client/text_rescue.py:72 ../../client/text_rescue.py:219
-#: ../../client/text_rescue.py:227 ../../client/text_rescue.py:232
-#: ../../client/text_ui.py:342 ../../client/text_ui.py:899
+#: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
+#: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
+#: ../../client/text_ui.py:348 ../../client/text_ui.py:905
 msgid "ATTENTION"
 msgstr ""
 
@@ -867,305 +1039,305 @@ msgstr ""
 
 #. ok, he/she knows it... hopefully
 #. if exist, copy old database
-#: ../../client/text_rescue.py:104 ../../client/text_rescue.py:251
+#: ../../client/text_rescue.py:104 ../../client/text_rescue.py:256
 msgid "Creating backup of the previous database, if exists."
 msgstr ""
 
-#: ../../client/text_rescue.py:107 ../../client/text_rescue.py:254
+#: ../../client/text_rescue.py:107 ../../client/text_rescue.py:259
 msgid "Previous database copied to file"
 msgstr ""
 
 #. Now reinitialize it
-#: ../../client/text_rescue.py:110 ../../client/text_rescue.py:258
+#: ../../client/text_rescue.py:110 ../../client/text_rescue.py:263
 msgid "Initializing the new database at"
 msgstr ""
 
-#: ../../client/text_rescue.py:114 ../../client/text_rescue.py:264
+#: ../../client/text_rescue.py:119 ../../client/text_rescue.py:269
 msgid "Database reinitialized correctly at"
 msgstr ""
 
 #. now collect packages in the system
-#: ../../client/text_rescue.py:118
+#: ../../client/text_rescue.py:123
 msgid "Transductingactioningintactering databases"
 msgstr ""
 
-#: ../../client/text_rescue.py:150 ../../client/text_rescue.py:195
-#: ../../client/text_rescue.py:560
+#: ../../client/text_rescue.py:155 ../../client/text_rescue.py:200
+#: ../../client/text_rescue.py:565
 msgid "An error occured while analyzing"
 msgstr ""
 
-#: ../../client/text_rescue.py:151 ../../client/text_rescue.py:196
-#: ../../client/text_rescue.py:561
+#: ../../client/text_rescue.py:156 ../../client/text_rescue.py:201
+#: ../../client/text_rescue.py:566
 #, fuzzy
 msgid "Exception"
 msgstr "S'ha produït una excepció"
 
-#: ../../client/text_rescue.py:173
+#: ../../client/text_rescue.py:178
 msgid "All the Gentoo packages have been injected into Entropy database"
 msgstr ""
 
-#: ../../client/text_rescue.py:174
+#: ../../client/text_rescue.py:179
 msgid "Now checking dependency atoms validity"
 msgstr ""
 
-#: ../../client/text_rescue.py:182 ../../client/text_ui.py:298
-#: ../../client/text_ui.py:464
+#: ../../client/text_rescue.py:187 ../../client/text_ui.py:304
+#: ../../client/text_ui.py:470
 msgid "atom"
 msgstr ""
 
-#: ../../client/text_rescue.py:195
+#: ../../client/text_rescue.py:200
 msgid "entry can be invalid!"
 msgstr ""
 
-#: ../../client/text_rescue.py:199
+#: ../../client/text_rescue.py:204
 #, fuzzy
 msgid "These are the invalid entries"
 msgstr "Aquests són els paquets necessaris"
 
-#: ../../client/text_rescue.py:203
+#: ../../client/text_rescue.py:208
 #, fuzzy
 msgid "Removing database information"
 msgstr "Informació del repositori"
 
-#: ../../client/text_rescue.py:207 ../../client/text_rescue.py:359
+#: ../../client/text_rescue.py:212 ../../client/text_rescue.py:364
 msgid "Now generating depends caching table"
 msgstr ""
 
-#: ../../client/text_rescue.py:209 ../../client/text_rescue.py:361
+#: ../../client/text_rescue.py:214 ../../client/text_rescue.py:366
 msgid "Now indexing tables"
 msgstr ""
 
-#: ../../client/text_rescue.py:212 ../../client/text_rescue.py:364
+#: ../../client/text_rescue.py:217 ../../client/text_rescue.py:369
 msgid "Database reinitialized successfully"
 msgstr ""
 
-#: ../../client/text_rescue.py:219
+#: ../../client/text_rescue.py:224
 msgid "database does not exist or is badly broken"
 msgstr ""
 
-#: ../../client/text_rescue.py:228
+#: ../../client/text_rescue.py:233
 msgid ""
 "The installed package database will be resurrected, this will take a LOT of "
 "time."
 msgstr ""
 
-#: ../../client/text_rescue.py:233
+#: ../../client/text_rescue.py:238
 msgid ""
 "Please use this function ONLY if you are using an Entropy-aware distribution."
 msgstr ""
 
-#: ../../client/text_rescue.py:236
+#: ../../client/text_rescue.py:241
 msgid "Can I continue ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:239
+#: ../../client/text_rescue.py:244
 msgid "Are you REALLY sure ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:242
+#: ../../client/text_rescue.py:247
 msgid "Do you even know what you're doing ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:270
+#: ../../client/text_rescue.py:275
 #, fuzzy
 msgid "Collecting installed files"
 msgstr "No instal·lat"
 
-#: ../../client/text_rescue.py:271
+#: ../../client/text_rescue.py:276
 msgid "Writing to temporary file"
 msgstr ""
 
-#: ../../client/text_rescue.py:272
+#: ../../client/text_rescue.py:277
 #, fuzzy
 msgid "Please wait"
 msgstr "espereu si us plau"
 
-#: ../../client/text_rescue.py:280 ../../client/text_rescue.py:291
-#: ../../client/text_ui.py:678 ../../client/text_ui.py:679
-#: ../../client/text_ui.py:681 ../../client/text_ui.py:682
+#: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
+#: ../../client/text_ui.py:684 ../../client/text_ui.py:685
+#: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../spritz/src/dialogs.py:770 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:259
 msgid "Attention"
 msgstr "Atenció"
 
-#: ../../client/text_rescue.py:281
+#: ../../client/text_rescue.py:286
 msgid "You must have 'find' installed"
 msgstr ""
 
-#: ../../client/text_rescue.py:292
+#: ../../client/text_rescue.py:297
 msgid "'find' couldn't generate an output file"
 msgstr ""
 
-#: ../../client/text_rescue.py:307
+#: ../../client/text_rescue.py:312
 #, python-format
 msgid "Found %s files on the system. Assigning packages"
 msgstr ""
 
-#: ../../client/text_rescue.py:313
+#: ../../client/text_rescue.py:318
 msgid "Matching in repository"
 msgstr ""
 
-#: ../../client/text_rescue.py:326
+#: ../../client/text_rescue.py:331
 msgid "Matching files from packages"
 msgstr ""
 
-#: ../../client/text_rescue.py:339
+#: ../../client/text_rescue.py:344
 #, python-format
 msgid "Found %s packages"
 msgstr ""
 
-#: ../../client/text_rescue.py:340
+#: ../../client/text_rescue.py:345
 msgid "Filling database"
 msgstr ""
 
-#: ../../client/text_rescue.py:349 ../../client/text_rescue.py:533
+#: ../../client/text_rescue.py:354 ../../client/text_rescue.py:538
 msgid "Adding"
 msgstr ""
 
-#: ../../client/text_rescue.py:357
+#: ../../client/text_rescue.py:362
 #, fuzzy
 msgid "Database resurrected successfully"
 msgstr "Els reporitoris s'han actualitzat correctament"
 
-#: ../../client/text_rescue.py:366
+#: ../../client/text_rescue.py:371
 msgid ""
 "Keep in mind that virtual/meta packages couldn't be matched. They don't own "
 "any files."
 msgstr ""
 
-#: ../../client/text_rescue.py:375
+#: ../../client/text_rescue.py:380
 #, fuzzy
 msgid "Regenerating depends caching table"
 msgstr "Regenera la memòria de cau"
 
-#: ../../client/text_rescue.py:377
+#: ../../client/text_rescue.py:382
 #, fuzzy
 msgid "Depends caching table regenerated successfully"
 msgstr "Els reporitoris s'han actualitzat correctament"
 
-#: ../../client/text_rescue.py:390
+#: ../../client/text_rescue.py:395
 #, fuzzy
 msgid "Regenerating counters table"
 msgstr "Regenera la memòria de cau"
 
-#: ../../client/text_rescue.py:392
+#: ../../client/text_rescue.py:397
 msgid "Counters table regenerated. Look above for errors."
 msgstr ""
 
-#: ../../client/text_rescue.py:405
+#: ../../client/text_rescue.py:410
 msgid "Scanning Portage and Entropy databases for differences"
 msgstr ""
 
-#: ../../client/text_rescue.py:416
+#: ../../client/text_rescue.py:421
 msgid "Entropy database"
 msgstr ""
 
-#: ../../client/text_rescue.py:417
+#: ../../client/text_rescue.py:422
 msgid ""
 "has never been in sync with Portage. So, you can't run this unless you run "
 "first"
 msgstr ""
 
-#: ../../client/text_rescue.py:418
+#: ../../client/text_rescue.py:423
 msgid "equo database generate"
 msgstr ""
 
-#: ../../client/text_rescue.py:419
+#: ../../client/text_rescue.py:424
 msgid "Sorry"
 msgstr ""
 
-#: ../../client/text_rescue.py:425
+#: ../../client/text_rescue.py:430
 msgid "Collecting Portage counters"
 msgstr ""
 
-#: ../../client/text_rescue.py:427
+#: ../../client/text_rescue.py:432
 msgid "Collecting Entropy packages"
 msgstr ""
 
-#: ../../client/text_rescue.py:432
+#: ../../client/text_rescue.py:437
 msgid "Differential Scan"
 msgstr ""
 
-#: ../../client/text_rescue.py:467
+#: ../../client/text_rescue.py:472
 msgid "Databases already synced"
 msgstr ""
 
-#: ../../client/text_rescue.py:474
+#: ../../client/text_rescue.py:479
 #, fuzzy
 msgid "Entropy locked, giving up"
 msgstr "Configura Entropy"
 
-#: ../../client/text_rescue.py:481
+#: ../../client/text_rescue.py:486
 #, fuzzy
 msgid "Someone removed these packages"
 msgstr "Elimina els paquets seleccionats"
 
-#: ../../client/text_rescue.py:482
+#: ../../client/text_rescue.py:487
 msgid "They would be removed from the system database"
 msgstr ""
 
-#: ../../client/text_rescue.py:490
+#: ../../client/text_rescue.py:495
 msgid "Continue with removal ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:502
+#: ../../client/text_rescue.py:507
 #, fuzzy
 msgid "Removing"
 msgstr "Elimina"
 
-#: ../../client/text_rescue.py:507
+#: ../../client/text_rescue.py:512
 #, fuzzy
 msgid "Database removal complete"
 msgstr "Compressió de dades"
 
-#: ../../client/text_rescue.py:511
+#: ../../client/text_rescue.py:516
 #, fuzzy
 msgid "Someone added these packages"
 msgstr "Aquests són els paquets necessaris"
 
-#: ../../client/text_rescue.py:512
+#: ../../client/text_rescue.py:517
 msgid "They would be added to the system database"
 msgstr ""
 
-#: ../../client/text_rescue.py:518
+#: ../../client/text_rescue.py:523
 msgid "Continue with adding ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:581
+#: ../../client/text_rescue.py:586
 #, fuzzy
 msgid "Database update completed"
 msgstr "Compressió de dades"
 
-#: ../../client/text_rescue.py:599 ../../client/text_smart.py:32
+#: ../../client/text_rescue.py:604 ../../client/text_smart.py:32
 msgid "You are not"
 msgstr ""
 
-#: ../../client/text_rescue.py:615
+#: ../../client/text_rescue.py:620
 msgid "Looking for old Python directories..."
 msgstr ""
 
-#: ../../client/text_rescue.py:618
+#: ../../client/text_rescue.py:623
 msgid "Your Python installation seems fine."
 msgstr ""
 
-#: ../../client/text_rescue.py:621
+#: ../../client/text_rescue.py:626
 msgid "Multiple Python directories found:"
 msgstr ""
 
-#: ../../client/text_rescue.py:635
+#: ../../client/text_rescue.py:640
 msgid "There are no files belonging to your old Python installation in"
 msgstr ""
 
-#: ../../client/text_rescue.py:642
+#: ../../client/text_rescue.py:647
 #, fuzzy
 msgid "These are the installed packages with files in:"
 msgstr "Aquests són els paquets necessaris"
 
-#: ../../client/text_rescue.py:653
+#: ../../client/text_rescue.py:658
 msgid "Searching inside available repositories"
 msgstr ""
 
-#: ../../client/text_rescue.py:665
+#: ../../client/text_rescue.py:670
 msgid ""
 "There are no files belonging to your old Python installation stored in the "
 "repositories for"
@@ -1321,7 +1493,7 @@ msgstr ""
 msgid "directory does not exist"
 msgstr ""
 
-#: ../../client/text_smart.py:153 ../../client/text_ui.py:338
+#: ../../client/text_smart.py:153 ../../client/text_ui.py:344
 msgid "is not a valid Entropy package"
 msgstr ""
 
@@ -1424,13 +1596,13 @@ msgid "Compressing smart application"
 msgstr ""
 
 #: ../../client/text_ui.py:102 ../../client/text_ui.py:112
-#: ../../client/text_ui.py:480 ../../client/text_ui.py:953
+#: ../../client/text_ui.py:486 ../../client/text_ui.py:959
 #, fuzzy
 msgid "Nothing to do"
 msgstr "No s'està processant cap paquet. Aquí es mostra idle."
 
-#: ../../client/text_ui.py:124 ../../client/text_ui.py:249
-#: ../../client/text_ui.py:880
+#: ../../client/text_ui.py:124 ../../client/text_ui.py:255
+#: ../../client/text_ui.py:886
 #, fuzzy
 msgid "Running with"
 msgstr "S'estan executant tasques"
@@ -1463,421 +1635,733 @@ msgid "Packages matching already up to date"
 msgstr ""
 
 #. None or {}
-#: ../../client/text_ui.py:175 ../../client/text_ui.py:714
-#: ../../client/text_ui.py:1040
+#: ../../client/text_ui.py:175 ../../client/text_ui.py:720
+#: ../../client/text_ui.py:1046
 #, fuzzy
 msgid "Nothing to resume"
 msgstr "No s'està processant cap paquet. Aquí es mostra idle."
 
-#: ../../client/text_ui.py:186 ../../client/text_ui.py:727
-#: ../../client/text_ui.py:1048
+#: ../../client/text_ui.py:186 ../../client/text_ui.py:733
+#: ../../client/text_ui.py:1054
 msgid "Resume cache corrupted"
 msgstr ""
 
-#: ../../client/text_ui.py:204
+#: ../../client/text_ui.py:210
 #, fuzzy
 msgid "Nothing to update"
 msgstr "No s'està processant cap paquet. Aquí es mostra idle."
 
-#: ../../client/text_ui.py:216
+#: ../../client/text_ui.py:222
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr ""
 
-#: ../../client/text_ui.py:220
+#: ../../client/text_ui.py:226
 msgid "Even if they are usually harmless, it is suggested to remove them."
 msgstr ""
 
-#: ../../client/text_ui.py:224
+#: ../../client/text_ui.py:230
 msgid "Would you like to scan them ?"
 msgstr ""
 
-#: ../../client/text_ui.py:238
+#: ../../client/text_ui.py:244
 #, fuzzy
 msgid "Calculation complete"
 msgstr "S'està calculant"
 
-#: ../../client/text_ui.py:241
+#: ../../client/text_ui.py:247
 #, fuzzy
 msgid "Nothing to remove"
 msgstr "No s'està processant cap paquet. Aquí es mostra idle."
 
-#: ../../client/text_ui.py:278
+#: ../../client/text_ui.py:284
 msgid "Every package matching"
 msgstr ""
 
-#: ../../client/text_ui.py:280
+#: ../../client/text_ui.py:286
 #, fuzzy
 msgid "is masked"
 msgstr "Emmascarat"
 
-#: ../../client/text_ui.py:294
+#: ../../client/text_ui.py:300
 msgid "matching"
 msgstr ""
 
-#: ../../client/text_ui.py:296
+#: ../../client/text_ui.py:302
 msgid "is broken"
 msgstr ""
 
-#: ../../client/text_ui.py:302
+#: ../../client/text_ui.py:308
 msgid "No match for"
 msgstr ""
 
-#: ../../client/text_ui.py:304
+#: ../../client/text_ui.py:310
 #, fuzzy
 msgid "in repositories"
 msgstr "A_ctualitza els repositoris"
 
-#: ../../client/text_ui.py:316
+#: ../../client/text_ui.py:322
 #, fuzzy
 msgid "When you wrote"
 msgstr "El que estàveu fent"
 
-#: ../../client/text_ui.py:318
+#: ../../client/text_ui.py:324
 msgid "You Meant(tm)"
 msgstr ""
 
-#: ../../client/text_ui.py:319
+#: ../../client/text_ui.py:325
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:340
+#: ../../client/text_ui.py:346
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
-#: ../../client/text_ui.py:345
+#: ../../client/text_ui.py:351
 #, fuzzy
 msgid "Skipped"
 msgstr "_Omet"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:360 ../../client/text_ui.py:915
+#: ../../client/text_ui.py:366 ../../client/text_ui.py:921
 #, fuzzy
 msgid "These are the chosen packages"
 msgstr "Aquests són els paquets necessaris"
 
-#: ../../client/text_ui.py:384 ../../client/text_ui.py:534
+#: ../../client/text_ui.py:390 ../../client/text_ui.py:540
 #, fuzzy
 msgid "Not available"
 msgstr "No hi ha actualitzacions disponibles"
 
-#: ../../client/text_ui.py:398
+#: ../../client/text_ui.py:404
 #, fuzzy
 msgid "Versions"
 msgstr "Versió"
 
-#: ../../client/text_ui.py:421
+#: ../../client/text_ui.py:427
 msgid "Switch repo"
 msgstr ""
 
-#: ../../client/text_ui.py:422 ../../client/text_ui.py:424
+#: ../../client/text_ui.py:428 ../../client/text_ui.py:430
 msgid "Reinstall"
 msgstr "Instal·la de nou"
 
-#: ../../client/text_ui.py:427
+#: ../../client/text_ui.py:433
 msgid "Install"
 msgstr "Instal·la"
 
-#: ../../client/text_ui.py:429
+#: ../../client/text_ui.py:435
 #, fuzzy
 msgid "Upgrade"
 msgstr "Actualitza"
 
-#: ../../client/text_ui.py:431
+#: ../../client/text_ui.py:437
 #, fuzzy
 msgid "Downgrade"
 msgstr "Es degradaran"
 
-#: ../../client/text_ui.py:432
+#: ../../client/text_ui.py:438
 #, fuzzy
 msgid "Action"
 msgstr "Ubicació"
 
-#: ../../client/text_ui.py:435 ../../client/text_ui.py:950
+#: ../../client/text_ui.py:441 ../../client/text_ui.py:956
 #, fuzzy
 msgid "Packages involved"
 msgstr "Tamany del paquet"
 
-#: ../../client/text_ui.py:439
+#: ../../client/text_ui.py:445
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr ""
 
-#: ../../client/text_ui.py:448
+#: ../../client/text_ui.py:454
 #, fuzzy
 msgid "Calculating dependencies"
 msgstr "S'està calculant"
 
-#: ../../client/text_ui.py:452
+#: ../../client/text_ui.py:458
 msgid "Cannot find needed dependencies"
 msgstr ""
 
-#: ../../client/text_ui.py:459
+#: ../../client/text_ui.py:465
 #, fuzzy
 msgid "Reason"
 msgstr "Revisió"
 
-#: ../../client/text_ui.py:466
+#: ../../client/text_ui.py:472
 msgid "Not found"
 msgstr ""
 
-#: ../../client/text_ui.py:469
+#: ../../client/text_ui.py:475
 msgid "Probably needed by"
 msgstr ""
 
-#: ../../client/text_ui.py:496 ../../client/text_ui.py:600
+#: ../../client/text_ui.py:502 ../../client/text_ui.py:606
 #, fuzzy
 msgid "These are the packages that would be"
 msgstr "Aquests paquets es suprimiran"
 
-#: ../../client/text_ui.py:496
+#: ../../client/text_ui.py:502
 #, fuzzy
 msgid "merged"
 msgstr "C_ombina"
 
-#: ../../client/text_ui.py:601
+#: ../../client/text_ui.py:607
 #, fuzzy
 msgid "removed"
 msgstr "Elimina"
 
-#: ../../client/text_ui.py:602
+#: ../../client/text_ui.py:608
 msgid "conflicting/substituted"
 msgstr ""
 
 #. show download info
-#: ../../client/text_ui.py:617
+#: ../../client/text_ui.py:623
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr ""
 
-#: ../../client/text_ui.py:619
+#: ../../client/text_ui.py:625
 #, fuzzy
 msgid "Packages needing to be removed"
 msgstr "Paquets a eliminar"
 
-#: ../../client/text_ui.py:623
+#: ../../client/text_ui.py:629
 #, fuzzy
 msgid "Packages needing to be installed"
 msgstr "Paquets a instal·lar de nou"
 
-#: ../../client/text_ui.py:628
+#: ../../client/text_ui.py:634
 #, fuzzy
 msgid "Packages needing to be reinstalled"
 msgstr "Paquets a instal·lar de nou"
 
-#: ../../client/text_ui.py:633
+#: ../../client/text_ui.py:639
 #, fuzzy
 msgid "Packages needing to be updated"
 msgstr "Paquets a actualitzar"
 
-#: ../../client/text_ui.py:638
+#: ../../client/text_ui.py:644
 #, fuzzy
 msgid "Packages needing to be downgraded"
 msgstr "Es degradaran"
 
-#: ../../client/text_ui.py:648
+#: ../../client/text_ui.py:654
 #, fuzzy
 msgid "Download size"
 msgstr "Camí de baixada"
 
-#: ../../client/text_ui.py:654
+#: ../../client/text_ui.py:660
 #, fuzzy
 msgid "Used disk space"
 msgstr "Espai de disc alliberat "
 
-#: ../../client/text_ui.py:656 ../../spritz/src/misc.py:323
+#: ../../client/text_ui.py:662 ../../spritz/src/misc.py:323
 msgid "Freed disk space"
 msgstr "Espai de disc alliberat "
 
-#: ../../client/text_ui.py:665
+#: ../../client/text_ui.py:671
 msgid "You need at least"
 msgstr ""
 
-#: ../../client/text_ui.py:667
+#: ../../client/text_ui.py:673
 #, fuzzy
 msgid "of free space"
 msgstr "Espai alliberat"
 
-#: ../../client/text_ui.py:675
+#: ../../client/text_ui.py:681
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 
-#: ../../client/text_ui.py:685
+#: ../../client/text_ui.py:691
 msgid "Would you like to execute the queue ?"
 msgstr ""
 
-#: ../../client/text_ui.py:725 ../../client/text_ui.py:1046
+#: ../../client/text_ui.py:731 ../../client/text_ui.py:1052
 #, fuzzy
 msgid "Resuming previous operations"
 msgstr "Opcions de repositori"
 
-#: ../../client/text_ui.py:749
+#: ../../client/text_ui.py:755
 #, fuzzy
 msgid "Please select an option"
 msgstr "Si us plau, seleccioneu com a mínim un repositori"
 
-#: ../../client/text_ui.py:750
+#: ../../client/text_ui.py:756
 #, fuzzy
 msgid "Read the license"
 msgstr "Llegi_r la llicència"
 
-#: ../../client/text_ui.py:751
+#: ../../client/text_ui.py:757
 msgid "Accept the license (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:752
+#: ../../client/text_ui.py:758
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:753
+#: ../../client/text_ui.py:759
 msgid "Quit"
 msgstr ""
 
 #. wait user interaction
-#: ../../client/text_ui.py:755
+#: ../../client/text_ui.py:761
 msgid "Your choice (type a number and press enter)"
 msgstr ""
 
-#: ../../client/text_ui.py:768
+#: ../../client/text_ui.py:774
 msgid "You need to accept the licenses below"
 msgstr ""
 
-#: ../../client/text_ui.py:772
+#: ../../client/text_ui.py:778
 msgid "needed by"
 msgstr ""
 
-#: ../../client/text_ui.py:792
+#: ../../client/text_ui.py:798
 msgid "No file viewer"
 msgstr ""
 
-#: ../../client/text_ui.py:792
+#: ../../client/text_ui.py:798
 #, fuzzy
 msgid "License saved into"
 msgstr "Nom de la llicència"
 
-#: ../../client/text_ui.py:814
+#: ../../client/text_ui.py:820
 msgid "fetch"
 msgstr ""
 
-#: ../../client/text_ui.py:827
+#: ../../client/text_ui.py:833
 #, fuzzy
 msgid "Download completed"
 msgstr "Camí de baixada"
 
-#: ../../client/text_ui.py:838
+#: ../../client/text_ui.py:844
 #, fuzzy
 msgid "install"
 msgstr "instal·lat"
 
-#: ../../client/text_ui.py:866
+#: ../../client/text_ui.py:872
 msgid "Installation completed"
 msgstr ""
 
-#: ../../client/text_ui.py:901
+#: ../../client/text_ui.py:907
 #, fuzzy
 msgid "is not installed"
 msgstr "No instal·lat"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:934
+#: ../../client/text_ui.py:940
 #, fuzzy
 msgid "vital package"
 msgstr "Mostra els paquets disponibles"
 
-#: ../../client/text_ui.py:935
+#: ../../client/text_ui.py:941
 msgid "Removal forbidden"
 msgstr ""
 
-#: ../../client/text_ui.py:945
+#: ../../client/text_ui.py:951
 msgid "Disk size"
 msgstr ""
 
-#: ../../client/text_ui.py:946
+#: ../../client/text_ui.py:952
 #, fuzzy
 msgid "Installed from"
 msgstr "Instal·lat"
 
-#: ../../client/text_ui.py:958
+#: ../../client/text_ui.py:964
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:961
+#: ../../client/text_ui.py:967 ../../server/server_reagent.py:222
 #, fuzzy
 msgid "Would you like to remove them now ?"
 msgstr "Voleu esborrar el repositori principal? No és possible!"
 
-#: ../../client/text_ui.py:977
+#: ../../client/text_ui.py:983
 msgid "This is the new removal queue"
 msgstr ""
 
-#: ../../client/text_ui.py:1002
+#: ../../client/text_ui.py:1008
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1004
+#: ../../client/text_ui.py:1010
 msgid "Would you like to proceed with a selective removal ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1011
+#: ../../client/text_ui.py:1017
 msgid "Would you like to skip this step then ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1016
+#: ../../client/text_ui.py:1022
 msgid "Starting removal in"
 msgstr ""
 
-#: ../../client/text_ui.py:1077
+#: ../../client/text_ui.py:1083
 #, fuzzy
 msgid "Remove this one ?"
 msgstr "Desfés l'acció d'eliminar"
 
-#: ../../client/text_ui.py:1113
+#: ../../client/text_ui.py:1119
 msgid "All done"
 msgstr ""
 
-#: ../../client/text_ui.py:1119
+#: ../../client/text_ui.py:1125
 msgid "Running dependency test"
 msgstr ""
 
-#: ../../client/text_ui.py:1135
+#: ../../client/text_ui.py:1141
 #, fuzzy
 msgid "These are the dependencies not found"
 msgstr "Aquests són els paquets necessaris"
 
-#: ../../client/text_ui.py:1139
+#: ../../client/text_ui.py:1145
 #, fuzzy
 msgid "Needed by"
 msgstr "Espai necessari"
 
-#: ../../client/text_ui.py:1144
+#: ../../client/text_ui.py:1150
 msgid "Would you like to install the available packages ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1149 ../../client/text_ui.py:1223
+#: ../../client/text_ui.py:1155 ../../client/text_ui.py:1229
 #, fuzzy
 msgid "Installing available packages in"
 msgstr "Mostra els paquets disponibles"
 
-#: ../../client/text_ui.py:1150 ../../client/text_ui.py:1224
+#: ../../client/text_ui.py:1156 ../../client/text_ui.py:1230
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/text_ui.py:1185
+#: ../../client/text_ui.py:1191
 msgid "System is healthy"
 msgstr ""
 
-#: ../../client/text_ui.py:1191
+#: ../../client/text_ui.py:1197
 msgid "Libraries statistics"
 msgstr ""
 
-#: ../../client/text_ui.py:1193
+#: ../../client/text_ui.py:1199
 msgid "Not matched"
 msgstr ""
 
-#: ../../client/text_ui.py:1217
+#: ../../client/text_ui.py:1223
 msgid "Would you like to install them ?"
 msgstr ""
+
+#: ../../server/server_activator.py:43
+msgid "Starting to sync data across mirrors (packages/database)"
+msgstr ""
+
+#: ../../server/server_activator.py:62
+msgid "Please insert a commit message"
+msgstr ""
+
+#: ../../server/server_activator.py:69
+msgid "Should I continue with the tidy procedure ?"
+msgstr ""
+
+#: ../../server/server_activator.py:73
+msgid "Aborting !"
+msgstr ""
+
+#: ../../server/server_activator.py:129
+msgid "Starting to lock mirrors databases"
+msgstr ""
+
+#: ../../server/server_activator.py:132 ../../server/server_activator.py:142
+#: ../../server/server_activator.py:152 ../../server/server_activator.py:162
+msgid "A problem occured on at least one mirror"
+msgstr ""
+
+#: ../../server/server_activator.py:134
+#, fuzzy
+msgid "Databases lock complete"
+msgstr "Compressió de dades"
+
+#: ../../server/server_activator.py:139
+msgid "Starting to unlock mirrors databases"
+msgstr ""
+
+#: ../../server/server_activator.py:144
+#, fuzzy
+msgid "Databases unlock complete"
+msgstr "Compressió de dades"
+
+#: ../../server/server_activator.py:149
+msgid "Starting to lock download mirrors databases"
+msgstr ""
+
+#: ../../server/server_activator.py:154
+#, fuzzy
+msgid "Download mirrors lock complete"
+msgstr "Camí de baixada"
+
+#: ../../server/server_activator.py:159
+msgid "Starting to unlock download mirrors databases"
+msgstr ""
+
+#: ../../server/server_activator.py:164
+#, fuzzy
+msgid "Download mirrors unlock complete"
+msgstr "Camí de baixada"
+
+#: ../../server/server_activator.py:169
+msgid "Mirrors status table"
+msgstr ""
+
+#: ../../server/server_activator.py:173 ../../server/server_activator.py:177
+msgid "Locked"
+msgstr ""
+
+#: ../../server/server_activator.py:175 ../../server/server_activator.py:179
+msgid "Unlocked"
+msgstr ""
+
+#: ../../server/server_activator.py:180
+msgid "DATABASE"
+msgstr ""
+
+#: ../../server/server_activator.py:180
+msgid "DOWNLOAD"
+msgstr ""
+
+#: ../../server/server_activator.py:197
+#, fuzzy
+msgid "Syncing databases"
+msgstr "S'estan executant tasques"
+
+#: ../../server/server_activator.py:200
+msgid "Database sync errors, cannot continue."
+msgstr ""
+
+#: ../../server/server_activator.py:212 ../../server/server_activator.py:226
+msgid "Remote Entropy Database Repository Status"
+msgstr ""
+
+#: ../../server/server_activator.py:214 ../../server/server_activator.py:228
+msgid "Host"
+msgstr ""
+
+#: ../../server/server_activator.py:215 ../../server/server_activator.py:229
+#, fuzzy
+msgid "Database revision"
+msgstr "Revisió"
+
+#: ../../server/server_activator.py:218
+msgid "Database local revision currently at"
+msgstr ""
+
+#: ../../server/server_query.py:58
+#, fuzzy
+msgid "Nothing found"
+msgstr "No s'està processant cap paquet. Aquí es mostra idle."
+
+#: ../../server/server_reagent.py:43
+#, fuzzy
+msgid "no package specified."
+msgstr "No hi ha paquets seleccionats"
+
+#: ../../server/server_reagent.py:78
+#, fuzzy
+msgid "No valid repositories specified."
+msgstr "No hi ha repositoris especificats a"
+
+#: ../../server/server_reagent.py:82
+msgid "Enabling"
+msgstr ""
+
+#: ../../server/server_reagent.py:82 ../../server/server_reagent.py:85
+#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:97
+#: ../../server/server_reagent.py:123
+#, fuzzy
+msgid "repository"
+msgstr "Repositori"
+
+#: ../../server/server_reagent.py:85
+#, fuzzy
+msgid "Enabled"
+msgstr "Instal·lat"
+
+#: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
+#: ../../spritz/src/views.py:433 ../../spritz/src/views.py:966
+msgid "Repository"
+msgstr "Repositori"
+
+#: ../../server/server_reagent.py:88
+msgid "already enabled"
+msgstr ""
+
+#: ../../server/server_reagent.py:91 ../../server/server_reagent.py:103
+msgid "not found"
+msgstr ""
+
+#: ../../server/server_reagent.py:94
+msgid "Disabling"
+msgstr ""
+
+#: ../../server/server_reagent.py:97
+#, fuzzy
+msgid "Disabled"
+msgstr "instal·lat"
+
+#: ../../server/server_reagent.py:100
+msgid "already disabled"
+msgstr ""
+
+#: ../../server/server_reagent.py:122 ../../server/server_reagent.py:174
+#: ../../server/server_reagent.py:341
+#, fuzzy
+msgid "Cannot match"
+msgstr "o el"
+
+#: ../../server/server_reagent.py:123
+msgid "in"
+msgstr ""
+
+#: ../../server/server_reagent.py:185
+#, fuzzy
+msgid "No valid packages to repackage."
+msgstr "No hi ha paquets seleccionats"
+
+#. normal scanning
+#: ../../server/server_reagent.py:189
+msgid "Scanning database for differences"
+msgstr ""
+
+#: ../../server/server_reagent.py:194
+#, fuzzy
+msgid "Zarro thinggz totoo"
+msgstr "No s'està processant cap paquet. Aquí es mostra idle."
+
+#: ../../server/server_reagent.py:198
+#, fuzzy
+msgid "These are the packages that would be changed to injected status"
+msgstr "Aquests paquets es suprimiran"
+
+#: ../../server/server_reagent.py:204
+#, fuzzy
+msgid "Would you like to transform them now ?"
+msgstr "Voleu esborrar el repositori principal? No és possible!"
+
+#: ../../server/server_reagent.py:211
+msgid "Transforming from database"
+msgstr ""
+
+#: ../../server/server_reagent.py:213
+#, fuzzy
+msgid "Database transform complete"
+msgstr "Compressió de dades"
+
+#: ../../server/server_reagent.py:216 ../../server/server_reagent.py:394
+#, fuzzy
+msgid "These are the packages that would be removed from the database"
+msgstr "Aquests paquets es suprimiran"
+
+#: ../../server/server_reagent.py:235
+#, fuzzy
+msgid "These are the packages that would be added/updated to the add list"
+msgstr "Aquests són els paquets que s'instal·laran/s'actualitzaran "
+
+#: ../../server/server_reagent.py:240
+#, fuzzy
+msgid "Would you like to package them now ?"
+msgstr "Voleu esborrar el repositori principal? No és possible!"
+
+#: ../../server/server_reagent.py:241
+#, fuzzy
+msgid "inside"
+msgstr "Llicència"
+
+#. package them
+#: ../../server/server_reagent.py:249
+#, fuzzy
+msgid "Compressing packages"
+msgstr "S'estan processant els paquets de la cua"
+
+#: ../../server/server_reagent.py:263
+#, fuzzy
+msgid "Nothing to do, check later."
+msgstr "No s'està processant cap paquet. Aquí es mostra idle."
+
+#: ../../server/server_reagent.py:274
+#, fuzzy
+msgid "Statistics"
+msgstr "Estat"
+
+#: ../../server/server_reagent.py:274
+msgid "Entries handled"
+msgstr ""
+
+#: ../../server/server_reagent.py:300 ../../server/server_reagent.py:325
+#: ../../server/server_reagent.py:376
+msgid "Not enough parameters"
+msgstr ""
+
+#: ../../server/server_reagent.py:307
+msgid "Entropy database has been reinitialized using binary packages available"
+msgstr ""
+
+#: ../../server/server_reagent.py:315
+#, fuzzy
+msgid "Creating empty database to"
+msgstr "S'estan generant metadades. Espereu si us plau."
+
+#: ../../server/server_reagent.py:317
+msgid "Cannot overwrite already existing file"
+msgstr ""
+
+#: ../../server/server_reagent.py:329
+msgid "Switching branch, be sure to have your packages in sync."
+msgstr ""
+
+#: ../../server/server_reagent.py:330
+#, fuzzy
+msgid "Collecting packages that would be marked"
+msgstr "Aquests paquets es suprimiran"
+
+#: ../../server/server_reagent.py:349
+#, fuzzy
+msgid "These are the packages that would be marked"
+msgstr "Aquests paquets es suprimiran"
+
+#. ask to continue
+#: ../../server/server_reagent.py:354 ../../server/server_reagent.py:401
+#: ../../server/server_reagent.py:451
+#, fuzzy
+msgid "Would you like to continue ?"
+msgstr "Voleu esborrar el repositori principal? No és possible!"
+
+#: ../../server/server_reagent.py:366
+#, fuzzy
+msgid "Matching packages to remove"
+msgstr "No s'està processant cap paquet. Aquí es mostra idle."
+
+#: ../../server/server_reagent.py:405 ../../server/server_reagent.py:455
+#, fuzzy
+msgid "Removing selected packages"
+msgstr "Instal·la el paquet seleccionat"
+
+#: ../../server/server_reagent.py:407 ../../server/server_reagent.py:459
+msgid "Packages removed. To remove binary packages, run activator."
+msgstr ""
+
+#: ../../server/server_reagent.py:413
+#, fuzzy
+msgid "Searching injected packages to remove"
+msgstr "Aquests paquets es suprimiran"
+
+#: ../../server/server_reagent.py:443
+#, fuzzy
+msgid "These are the injected packages pulled in for removal"
+msgstr "Aquests paquets es suprimiran"
+
+#: ../../server/server_reagent.py:477
+#, fuzzy
+msgid "Bumping Repository database"
+msgstr "Identificador del repositori"
 
 #: ../../spritz/src/dialogs.py:86
 msgid "License name"
@@ -2370,10 +2854,6 @@ msgstr "Categories"
 msgid "Selection"
 msgstr "Selecció"
 
-#: ../../spritz/src/views.py:433 ../../spritz/src/views.py:966
-msgid "Repository"
-msgstr "Repositori"
-
 #: ../../spritz/src/views.py:700
 msgid "Packages To Reinstall"
 msgstr "Paquets a instal·lar de nou"
@@ -2528,10 +3008,6 @@ msgstr "Quant a..."
 #: ../../spritz/src/applet/etp_applet.py:211
 msgid "_Exit"
 msgstr "_Sortir"
-
-#: ../../spritz/src/applet/etp_applet.py:211
-msgid "Exit"
-msgstr "Sortir"
 
 #: ../../spritz/src/applet/etp_applet.py:276
 msgid "You must add yourself to this group"
@@ -2719,9 +3195,6 @@ msgstr ""
 #~ msgid "Install Size"
 #~ msgstr "Tamany d'instal·lació"
 
-#~ msgid "Install the selected package"
-#~ msgstr "Instal·la el paquet seleccionat"
-
 #~ msgid "Kernel Tag"
 #~ msgstr "Etiqueta del nucli"
 
@@ -2851,9 +3324,6 @@ msgstr ""
 
 #~ msgid "_More"
 #~ msgstr "Mé_s"
-
-#~ msgid "_Overview"
-#~ msgstr "Resu_m"
 
 #~ msgid "_Process Queue"
 #~ msgstr "_Processa la cua"

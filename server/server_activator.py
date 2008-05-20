@@ -24,6 +24,7 @@ from entropyConstants import *
 from outputTools import *
 from entropy import ServerInterface
 Entropy = ServerInterface()
+from entropy_i18n import _
 
 def sync(options, justTidy = False):
 
@@ -39,7 +40,7 @@ def sync(options, justTidy = False):
             myopts.append(opt)
     options = myopts
 
-    print_info(green(" * ")+red("Starting to sync data across mirrors (packages/database) ..."))
+    print_info(green(" * ")+red("%s ..." % (_("Starting to sync data across mirrors (packages/database)"),) ))
 
     repos = [Entropy.default_repository]
     if sync_all:
@@ -58,18 +59,18 @@ def sync(options, justTidy = False):
             if not mirrors_errors:
                 if mirrors_tainted:
                     if (not do_noask) and etpConst['rss-feed']:
-                        etpRSSMessages['commitmessage'] = readtext(">> Please insert a commit message: ")
+                        etpRSSMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )
                     elif etpConst['rss-feed']:
                         etpRSSMessages['commitmessage'] = "Autodriven Update"
                 errors, fine, broken = sync_remote_databases()
                 if not errors:
                     Entropy.MirrorsService.lock_mirrors(lock = False)
                 if not errors and not do_noask:
-                    rc = Entropy.askQuestion("Should I continue with the tidy procedure ?")
+                    rc = Entropy.askQuestion(_("Should I continue with the tidy procedure ?"))
                     if rc == "No":
                         continue
                 elif errors:
-                    print_error(darkred(" !!! ")+red("Aborting !"))
+                    print_error(darkred(" !!! ")+red(_("Aborting !")))
                     continue
 
         if not errors:
@@ -125,58 +126,58 @@ def database(options):
 
     if cmd == "lock":
 
-        print_info(green(" * ")+green("Starting to lock mirrors' databases..."))
+        print_info(green(" * ")+green("%s ..." % (_("Starting to lock mirrors databases"),) ))
         rc = Entropy.MirrorsService.lock_mirrors(lock = True)
         if rc:
-            print_info(green(" * ")+red("A problem occured on at least one mirror !"))
+            print_info(green(" * ")+red("%s !" % (_("A problem occured on at least one mirror"),) ))
         else:
-            print_info(green(" * ")+green("Databases lock complete"))
+            print_info(green(" * ")+green(_("Databases lock complete")))
         return rc
 
     elif cmd == "unlock":
 
-        print_info(green(" * ")+green("Starting to unlock mirrors' databases..."))
+        print_info(green(" * ")+green("%s ..." % (_("Starting to unlock mirrors databases"),)))
         rc = Entropy.MirrorsService.lock_mirrors(lock = False)
         if rc:
-            print_info(green(" * ")+green("A problem occured on at least one mirror !"))
+            print_info(green(" * ")+green("%s !" % (_("A problem occured on at least one mirror"),) ))
         else:
-            print_info(green(" * ")+green("Databases unlock complete"))
+            print_info(green(" * ")+green(_("Databases unlock complete")))
         return rc
 
     elif cmd == "download-lock":
 
-        print_info(green(" * ")+green("Starting to lock download mirrors' databases..."))
+        print_info(green(" * ")+green("%s ..." % (_("Starting to lock download mirrors databases"),) ))
         rc = Entropy.MirrorsService.lock_mirrors_for_download(lock = True)
         if rc:
-            print_info(green(" * ")+green("A problem occured on at least one mirror !"))
+            print_info(green(" * ")+green("%s !" % (_("A problem occured on at least one mirror"),) ))
         else:
-            print_info(green(" * ")+green("Download mirrors lock complete"))
+            print_info(green(" * ")+green(_("Download mirrors lock complete")))
         return rc
 
     elif cmd == "download-unlock":
 
-        print_info(green(" * ")+green("Starting to unlock download mirrors' databases..."))
+        print_info(green(" * ")+green("%s ..." % (_("Starting to unlock download mirrors databases"),) ))
         rc = Entropy.MirrorsService.lock_mirrors_for_download(lock = False)
         if rc:
-            print_info(green(" * ")+green("A problem occured on at least one mirror..."))
+            print_info(green(" * ")+green("%s ..." % (_("A problem occured on at least one mirror"),) ))
         else:
-            print_info(green(" * ")+green("Download mirrors unlock complete"))
+            print_info(green(" * ")+green(_("Download mirrors unlock complete")))
         return rc
 
     elif cmd == "lock-status":
 
-        print_info(brown(" * ")+green("Mirrors status table:"))
+        print_info(brown(" * ")+green("%s:" % (_("Mirrors status table"),) ))
         dbstatus = Entropy.MirrorsService.get_mirrors_lock()
         for db in dbstatus:
             if (db[1]):
-                db[1] = red("Locked")
+                db[1] = red(_("Locked"))
             else:
-                db[1] = green("Unlocked")
+                db[1] = green(_("Unlocked"))
             if (db[2]):
-                db[2] = red("Locked")
+                db[2] = red(_("Locked"))
             else:
-                db[2] = green("Unlocked")
-            print_info(bold("\t"+Entropy.entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+brown("DATABASE: ")+db[1]+red("] [")+brown("DOWNLOAD: ")+db[2]+red("]"))
+                db[2] = green(_("Unlocked"))
+            print_info(bold("\t"+Entropy.entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+brown("%s: " % (_("DATABASE"),) )+db[1]+red("] [")+brown("%s: " % (_("DOWNLOAD"),) )+db[2]+red("]"))
         return 0
 
     elif cmd == "sync":
@@ -193,10 +194,10 @@ def database(options):
             if repo != Entropy.default_repository:
                 Entropy.switch_default_repository(repo)
 
-            print_info(green(" * ")+red("Syncing databases ..."))
+            print_info(green(" * ")+red("%s ..." % (_("Syncing databases"),) ))
             errors, fine, broken = sync_remote_databases()
             if errors:
-                print_error(darkred(" !!! ")+green("Database sync errors, cannot continue."))
+                print_error(darkred(" !!! ")+green(_("Database sync errors, cannot continue.")))
                 problems = 1
 
         if old_default != Entropy.default_repository:
@@ -208,13 +209,13 @@ def database(options):
 def sync_remote_databases(noUpload = False, justStats = False):
 
     remoteDbsStatus = Entropy.MirrorsService.get_remote_databases_status()
-    print_info(green(" * ")+red("Remote Entropy Database Repository Status:"))
+    print_info(green(" * ")+red("%s:" % (_("Remote Entropy Database Repository Status"),) ))
     for dbstat in remoteDbsStatus:
-        print_info(green("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
-        print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
+        print_info(green("\t %s:\t" % (_("Host"),) )+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
+        print_info(red("\t  * %s: " % (_("Database revision"),) )+blue(str(dbstat[1])))
 
     local_revision = Entropy.get_local_database_revision()
-    print_info(red("\t  * Database local revision currently at: ")+blue(str(local_revision)))
+    print_info(red("\t  * %s: " % (_("Database local revision currently at"),) )+blue(str(local_revision)))
 
     if justStats:
         return 0,set(),set()
@@ -222,9 +223,9 @@ def sync_remote_databases(noUpload = False, justStats = False):
     # do the rest
     errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases(no_upload = noUpload)
     remote_status = Entropy.MirrorsService.get_remote_databases_status()
-    print_info(darkgreen(" * ")+red("Remote Entropy Database Repository Status:"))
+    print_info(darkgreen(" * ")+red("%s:" % (_("Remote Entropy Database Repository Status"),) ))
     for dbstat in remote_status:
-        print_info(darkgreen("\t Host:\t")+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
-        print_info(red("\t  * Database revision: ")+blue(str(dbstat[1])))
+        print_info(darkgreen("\t %s:\t" % (_("Host"),) )+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
+        print_info(red("\t  * %s: " % (_("Database revision"),) )+blue(str(dbstat[1])))
 
     return errors, fine_uris, broken_uris

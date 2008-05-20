@@ -24,6 +24,7 @@ from entropyConstants import *
 from outputTools import *
 from entropy import ServerInterface
 Entropy = ServerInterface()
+from entropy_i18n import _
 
 def inject(options):
 
@@ -33,13 +34,13 @@ def inject(options):
         if opt.startswith("--branch=") and len(opt.split("=")) == 2:
             branch = opt.split("=")[1]
         else:
-            if not os.path.isfile(opt) or not opt.endswith(".tbz2"):
+            if not os.path.isfile(opt) or not opt.endswith(etpConst['packagesext']):
                 print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
                 return 1
             mytbz2s.append(opt)
 
     if not mytbz2s:
-        print_error(red("no .tbz2 specified."))
+        print_error(red(_("no package specified.")))
         return 2
 
     mytbz2s = [(x,branch,True) for x in mytbz2s]
@@ -74,32 +75,32 @@ def repositories(options):
             myopts.append(opt)
 
     if cmd in ["enable","disable","move","default"] and not repoid:
-        print_error(darkred(" !!! ")+red("No valid repositories specified."))
+        print_error(darkred(" !!! ")+red(_("No valid repositories specified.")))
         return 2
 
     if cmd == "enable":
-        print_info(brown(" @@ ")+red("Enabling ")+bold(str(repoid))+red(" repository..."), back = True)
+        print_info(brown(" @@ ")+red(_("Enabling"))+" "+bold(str(repoid))+red(" %s..." % (_("repository"),) ), back = True)
         rc = Entropy.toggle_repository(repoid, enable = True)
         if rc:
-            print_info(brown(" @@ ")+red("Enabled ")+bold(str(repoid))+red(" repository."))
+            print_info(brown(" @@ ")+red(_("Enabled"))+" "+bold(str(repoid))+red(" %s." % (_("repository"),) ))
             return 0
         elif rc == False:
-            print_info(brown(" @@ ")+red("Repository ")+bold(str(repoid))+red(" already enabled."))
+            print_info(brown(" @@ ")+red(_("Repository"))+" "+bold(str(repoid))+red(" %s." % (_("already enabled"),) ))
             return 1
         else:
-            print_info(brown(" @@ ")+red("Configuration file ")+bold(etpConst['serverconf'])+red(" not found."))
+            print_info(brown(" @@ ")+red(_("Configuration file"))+" "+bold(etpConst['serverconf'])+red(" %s." % (_("not found"),) ))
             return 127
     elif cmd == "disable":
-        print_info(brown(" @@ ")+red("Disabling ")+bold(str(repoid))+red(" repository..."), back = True)
+        print_info(brown(" @@ ")+red(_("Disabling"))+" "+bold(str(repoid))+red(" %s..." % (_("repository"),) ), back = True)
         rc = Entropy.toggle_repository(repoid, enable = False)
         if rc:
-            print_info(brown(" @@ ")+red("Disabled ")+bold(str(repoid))+red(" repository."))
+            print_info(brown(" @@ ")+red(_("Disabled"))+" "+bold(str(repoid))+red(" %s." % (_("repository"),) ))
             return 0
         elif rc == False:
-            print_info(brown(" @@ ")+red("Repository ")+bold(str(repoid))+red(" already disabled."))
+            print_info(brown(" @@ ")+red(_("Repository"))+" "+bold(str(repoid))+red(" %s." % (_("already disabled"),) ))
             return 1
         else:
-            print_info(brown(" @@ ")+red("Configuration file ")+bold(etpConst['serverconf'])+red(" not found."))
+            print_info(brown(" @@ ")+red(_("Configuration file"))+" "+bold(etpConst['serverconf'])+red(" %s." % (_("not found"),) ))
             return 127
     elif cmd == "default":
         Entropy.switch_default_repository(repoid, save = True)
@@ -118,8 +119,8 @@ def repositories(options):
                     matches.append(match)
                 else:
                     print_warning(  brown(" * ") + \
-                                    red("Cannot match: ")+bold(package) + \
-                                    red(" in ")+bold(repoid)+red(" repository")
+                                    red("%s: " % (_("Cannot match"),) )+bold(package) + \
+                                    red(" %s " % (_("in"),) )+bold(repoid)+red(" %s" % (_("repository"),) )
                                  )
             if not matches:
                 return 1
@@ -170,7 +171,7 @@ def update(options):
             for item in repackageItems:
                 match = dbconn.atomMatch(item)
                 if match[0] == -1:
-                    print_warning(darkred("  !!! ")+red("Cannot match ")+bold(item))
+                    print_warning(darkred("  !!! ")+red(_("Cannot match"))+" "+bold(item))
                 else:
                     cat = dbconn.retrieveCategory(match[0])
                     name = dbconn.retrieveName(match[0])
@@ -181,44 +182,44 @@ def update(options):
             if packages:
                 toBeAdded |= set(packages)
             else:
-                print_info(brown(" * ")+red("No valid packages to repackage."))
+                print_info(brown(" * ")+red(_("No valid packages to repackage.")))
 
 
         # normal scanning
-        print_info(brown(" * ")+red("Scanning database for differences..."))
+        print_info(brown(" * ")+red("%s..." % (_("Scanning database for differences"),) ))
         myadded, toBeRemoved, toBeInjected = Entropy.scan_package_changes()
         toBeAdded |= myadded
 
         if not (len(toBeRemoved)+len(toBeAdded)+len(toBeInjected)):
-            print_info(brown(" * ")+red("Zarro thinggz totoo."))
+            print_info(brown(" * ")+red("%s." % (_("Zarro thinggz totoo"),) ))
             return 0
 
         if toBeInjected:
-            print_info(brown(" @@ ")+blue("These are the packages that would be changed to injected status:"))
+            print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be changed to injected status"),) ))
             for idpackage,repoid in toBeInjected:
                 dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if reagentRequestAsk:
-                rc = Entropy.askQuestion(">>   Would you like to transform them now ?")
+                rc = Entropy.askQuestion(">>   %s" % (_("Would you like to transform them now ?"),) )
             else:
                 rc = "Yes"
             if rc == "Yes":
                 for idpackage,repoid in toBeInjected:
                     dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
                     atom = dbconn.retrieveAtom(idpackage)
-                    print_info(brown("   <> ")+blue("Transforming from database: ")+red(atom))
+                    print_info(brown("   <> ")+blue("%s: " % (_("Transforming from database"),) )+red(atom))
                     Entropy.transform_package_into_injected(idpackage, repo = repoid)
-                print_info(brown(" @@ ")+blue("Database transform complete."))
+                print_info(brown(" @@ ")+blue("%s." % (_("Database transform complete"),) ))
 
         if toBeRemoved:
-            print_info(brown(" @@ ")+blue("These are the packages that would be removed from the database:"))
+            print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be removed from the database"),) ))
             for idpackage,repoid in toBeRemoved:
                 dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if reagentRequestAsk:
-                rc = Entropy.askQuestion(">>   Would you like to remove them now ?")
+                rc = Entropy.askQuestion(">>   %s" % (_("Would you like to remove them now ?"),) )
             else:
                 rc = "Yes"
             if rc == "Yes":
@@ -231,16 +232,21 @@ def update(options):
                     Entropy.remove_packages(remdata[repoid], repo = repoid)
 
         if toBeAdded:
-            print_info(brown(" @@ ")+blue("These are the packages that would be added/updated to the add list:"))
+            print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
             for x in toBeAdded:
                 print_info(brown("    # ")+red(x[0]))
             if reagentRequestAsk:
-                rc = Entropy.askQuestion(">>   Would you like to package them now (inside %s) ?" % (Entropy.default_repository,) )
+                rc = Entropy.askQuestion(">>   %s (%s %s)" % (
+                        _("Would you like to package them now ?"),
+                        _("inside"),
+                        Entropy.default_repository,
+                    )
+                )
                 if rc == "No":
                     return 0
 
         # package them
-        print_info(brown(" @@ ")+blue("Compressing packages..."))
+        print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
             Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
@@ -254,7 +260,7 @@ def update(options):
 
     tbz2files = os.listdir(Entropy.get_local_store_directory())
     if not tbz2files:
-        print_info(brown(" * ")+red("Nothing to do, check later."))
+        print_info(brown(" * ")+red(_("Nothing to do, check later.")))
         # then exit gracefully
         return 0
 
@@ -265,7 +271,7 @@ def update(options):
         # checking dependencies and print issues
         Entropy.dependencies_test()
     Entropy.close_server_databases()
-    print_info(green(" * ")+red("Statistics: ")+blue("Entries handled: ")+bold(str(len(idpackages))))
+    print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
     return 0
 
 
@@ -291,14 +297,14 @@ def database(options):
     options = _options
 
     if not options:
-        print_error(brown(" * ")+red("Not enough parameters"))
+        print_error(brown(" * ")+red(_("Not enough parameters")))
         return 1
 
     if (options[0] == "--initialize"):
 
         rc = Entropy.initialize_server_database(empty = databaseRquestEmpty, repo = repo)
         if rc == 0:
-            print_info(darkgreen(" * ")+red("Entropy database has been reinitialized using binary packages available"))
+            print_info(darkgreen(" * ")+red(_("Entropy database has been reinitialized using binary packages available")))
 
     elif (options[0] == "create-empty-database"):
 
@@ -306,9 +312,9 @@ def database(options):
         dbpath = None
         if myopts:
             dbpath = myopts[0]
-        print_info(darkgreen(" * ")+red("Creating empty database to: ")+dbpath)
+        print_info(darkgreen(" * ")+red("%s: " % (_("Creating empty database to"),) )+dbpath)
         if os.path.isfile(dbpath):
-            print_error(darkgreen(" * ")+red("Cannot overwrite already existing file: ")+dbpath)
+            print_error(darkgreen(" * ")+red("%s: " % (_("Cannot overwrite already existing file"),) )+dbpath)
             return 1
         Entropy.create_empty_database(dbpath)
         return 0
@@ -316,12 +322,12 @@ def database(options):
     elif (options[0] == "switchbranch"):
 
         if (len(options) < 3):
-            print_error(brown(" * ")+red("Not enough parameters"))
+            print_error(brown(" * ")+red(_("Not enough parameters")))
             return 1
 
         switchbranch = options[1]
-        print_info(darkgreen(" * ")+red("Switching branch, be sure to have your packages in sync."))
-        print_info(darkgreen(" * ")+red("Collecting packages that would be marked %s..." % (switchbranch,) ), back = True)
+        print_info(darkgreen(" * ")+red(_("Switching branch, be sure to have your packages in sync.")))
+        print_info(darkgreen(" * ")+red("%s %s..." % (_("Collecting packages that would be marked"),switchbranch,) ), back = True)
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
         pkglist = set()
@@ -332,20 +338,20 @@ def database(options):
             for atom in myatoms:
                 match = dbconn.atomMatch(atom)
                 if match == -1:
-                    print_warning(brown(" * ")+red("Cannot match: ")+bold(atom))
+                    print_warning(brown(" * ")+red("%s: " % (_("Cannot match"),) )+bold(atom))
                 else:
                     pkglist.add(match[0])
 
         if not pkglist:
-            print_error(brown(" * ")+red("No packages found."))
+            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
             return 3
 
-        print_info(darkgreen(" * ")+red("These are the packages that would be marked %s:" % (switchbranch,)))
+        print_info(darkgreen(" * ")+red("%s %s:" % (_("These are the packages that would be marked"),switchbranch,)))
         for idpackage in pkglist:
             atom = dbconn.retrieveAtom(idpackage)
             print_info(red("   # ")+bold(atom))
 
-        rc = Entropy.askQuestion("Would you like to continue ?")
+        rc = Entropy.askQuestion(_("Would you like to continue ?"))
         if rc == "No":
             return 4
 
@@ -357,7 +363,7 @@ def database(options):
 
     elif (options[0] == "remove"):
 
-        print_info(darkgreen(" * ")+red("Matching packages to remove..."), back = True)
+        print_info(darkgreen(" * ")+red("%s..." % (_("Matching packages to remove"),) ), back = True)
         myopts = []
         branch = None
         for opt in options[1:]:
@@ -367,7 +373,7 @@ def database(options):
                 myopts.append(opt)
 
         if not myopts:
-            print_error(brown(" * ")+red("Not enough parameters"))
+            print_error(brown(" * ")+red(_("Not enough parameters")))
             return 1
 
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
@@ -382,29 +388,29 @@ def database(options):
                     pkglist.add(idpackage)
 
         if not pkglist:
-            print_error(brown(" * ")+red("No packages found."))
+            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
             return 2
 
-        print_info(darkgreen(" * ")+red("These are the packages that would be removed from the database:"))
+        print_info(darkgreen(" * ")+red("%s:" % (_("These are the packages that would be removed from the database"),) ))
         for idpackage in pkglist:
             pkgatom = dbconn.retrieveAtom(idpackage)
             branch = dbconn.retrieveBranch(idpackage)
             print_info(red("   # ")+blue("[")+red(branch)+blue("] ")+bold(pkgatom))
 
 
-        rc = Entropy.askQuestion("Would you like to continue ?")
+        rc = Entropy.askQuestion(_("Would you like to continue ?"))
         if rc == "No":
             return 0
 
-        print_info(darkgreen(" * ")+red("Removing selected packages..."))
+        print_info(darkgreen(" * ")+red("%s..." % (_("Removing selected packages"),) ))
         Entropy.remove_packages(pkglist)
-        print_info(darkgreen(" * ")+red("Packages removed. To remove binary packages, run activator."))
+        print_info(darkgreen(" * ")+red(_("Packages removed. To remove binary packages, run activator.")))
 
         return 0
 
     elif (options[0] == "multiremove"):
 
-        print_info(darkgreen(" * ")+red("Searching injected packages to remove..."), back = True)
+        print_info(darkgreen(" * ")+red("%s..." % (_("Searching injected packages to remove"),) ), back = True)
 
         branch = etpConst['branch']
         atoms = []
@@ -431,10 +437,10 @@ def database(options):
                             idpackages.add(x)
 
         if not idpackages:
-            print_error(brown(" * ")+red("No packages found."))
+            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
             return 1
 
-        print_info(darkgreen(" * ")+blue("These are the injected packages pulled in for removal:"))
+        print_info(darkgreen(" * ")+blue("%s:" % (_("These are the injected packages pulled in for removal"),) ))
 
         for idpackage in idpackages:
             pkgatom = dbconn.retrieveAtom(idpackage)
@@ -442,15 +448,15 @@ def database(options):
             print_info(darkred("    # ")+blue("[")+red(branch)+blue("] ")+brown(pkgatom))
 
         # ask to continue
-        rc = Entropy.askQuestion("Would you like to continue ?")
+        rc = Entropy.askQuestion(_("Would you like to continue ?"))
         if rc == "No":
             return 0
 
-        print_info(green(" * ")+red("Removing selected packages ..."))
+        print_info(green(" * ")+red("%s ..." % (_("Removing selected packages"),) ))
         Entropy.remove_packages(idpackages)
 
         Entropy.close_server_database(dbconn)
-        print_info(darkgreen(" * ")+red("Packages removed. To remove binary packages, run activator."))
+        print_info(darkgreen(" * ")+red(_("Packages removed. To remove binary packages, run activator.")))
         return 0
 
     # used by reagent
@@ -468,7 +474,7 @@ def database(options):
     # bump tool
     elif (options[0] == "bump"):
 
-        print_info(green(" * ")+red("Bumping the database..."))
+        print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
         Entropy.bump_database()
         if databaseRequestSync:
             Entropy.MirrorsService.sync_databases()
