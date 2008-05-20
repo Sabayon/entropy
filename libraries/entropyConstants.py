@@ -424,7 +424,7 @@ etpRSSMessages = {
 # CACHING dictionaries
 idpackageValidatorCache = {}
 maskingReasonsStorage = {}
-linkerPaths = set()
+linkerPaths = []
 # repository atoms updates digest cache
 repositoryUpdatesDigestCache_disk = {}
 fetch_repository_if_not_available_cache = {}
@@ -433,7 +433,7 @@ repo_error_messages_cache = set()
 ### Application disk cache
 def const_resetCache():
     idpackageValidatorCache.clear()
-    linkerPaths.clear()
+    del linkerPaths[:]
     repositoryUpdatesDigestCache_disk.clear()
     fetch_repository_if_not_available_cache.clear()
     repo_error_messages_cache.clear()

@@ -667,6 +667,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             )
             print_info(red(" @@ ")+mytxt)
 
+            if neededSize < 0:
+                neededSize = neededSize*-1
+
             mytxt = "%s: %s %s" % (
                 blue(_("You need at least")),
                 blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))),
@@ -1194,23 +1197,25 @@ def librariesTest(listfiles = False):
 
     atomsdata = set()
     if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("%s:" % (_("Libraries statistics"),) ))
+        print_info(red(" @@ ")+blue("%s:" % (_("Libraries/Executables statistics"),) ))
         if brokenlibs:
             print_info(brown(" ## ")+red("%s:" % (_("Not matched"),) ))
             for lib in brokenlibs:
                 print_info(darkred("    => ")+red(lib))
         print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
-        for packagedata in packagesMatched:
-            dbconn = Equo.openRepositoryDatabase(packagedata[1])
-            myatom = dbconn.retrieveAtom(packagedata[0])
-            atomsdata.add((packagedata[0],packagedata[1]))
-            print_info("   "+red(packagedata[2])+" => "+brown(myatom)+" ["+red(packagedata[1])+"]")
+        for mylib in packagesMatched:
+            for idpackage, repoid in packagesMatched[mylib]:
+                dbconn = Equo.openRepositoryDatabase(repoid)
+                myatom = dbconn.retrieveAtom(idpackage)
+                atomsdata.add((idpackage,repoid))
+                print_info("   "+red(mylib)+" => "+brown(myatom)+" ["+red(repoid)+"]")
     else:
-        for packagedata in packagesMatched:
-            dbconn = Equo.openRepositoryDatabase(packagedata[1])
-            myatom = dbconn.retrieveAtom(packagedata[0])
-            atomsdata.add((packagedata[0],packagedata[1]))
-            print myatom
+        for mylib in packagesMatched:
+            for idpackage, repoid in packagesMatched[mylib]:
+                dbconn = Equo.openRepositoryDatabase(repoid)
+                myatom = dbconn.retrieveAtom(idpackage)
+                atomsdata.add((idpackage,repoid))
+                print myatom
         restore_qstats()
         return 0,atomsdata
 

@@ -28,7 +28,7 @@ from entropyConstants import *
 from outputTools import TextInterface, \
     print_info, print_warning, print_error, \
     red, brown, blue, green, darkgreen, \
-    darkred, bold, darkblue
+    darkred, bold, darkblue, readtext
 import exceptionTools
 from entropy_i18n import _
 
@@ -75,6 +75,7 @@ class EquoInterface(TextInterface):
         self.FileUpdates = None
         self.repoDbCache = {}
         self.securityCache = {}
+        self.QACache = {}
         self.spmCache = {}
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
@@ -134,6 +135,7 @@ class EquoInterface(TextInterface):
         del self.FileUpdates
         self.closeAllRepositoryDatabases()
         self.closeAllSecurity()
+        self.closeAllQA()
 
 
     def validate_repositories(self):
@@ -335,6 +337,7 @@ class EquoInterface(TextInterface):
         # I don't think it's safe to keep them open
         # isn't it?
         self.closeAllSecurity()
+        self.closeAllQA()
 
     def Security(self):
         chroot = etpConst['systemroot']
@@ -344,6 +347,18 @@ class EquoInterface(TextInterface):
         cached = SecurityInterface(self)
         self.securityCache[chroot] = cached
         return cached
+
+    def QA(self):
+        chroot = etpConst['systemroot']
+        cached = self.QACache.get(chroot)
+        if cached != None:
+            return cached
+        cached = QAInterface(self)
+        self.QACache[chroot] = cached
+        return cached
+
+    def closeAllQA(self):
+        self.QACache.clear()
 
     def closeAllSecurity(self):
         self.securityCache.clear()
@@ -769,11 +784,11 @@ class EquoInterface(TextInterface):
             dbconn = self.clientDbconn
 
         self.updateProgress(
-                                blue(_("Libraries test")),
-                                importance = 2,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+            blue(_("Libraries test")),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
 
         if not etpConst['systemroot']:
             myroot = "/"
@@ -784,14 +799,14 @@ class EquoInterface(TextInterface):
         # open /etc/ld.so.conf
         if not os.path.isfile(etpConst['systemroot']+"/etc/ld.so.conf"):
             self.updateProgress(
-                                    blue(_("Cannot find "))+red(etpConst['systemroot']+"/etc/ld.so.conf"),
-                                    importance = 1,
-                                    type = "error",
-                                    header = red(" @@ ")
-                                )
+                blue(_("Cannot find "))+red(etpConst['systemroot']+"/etc/ld.so.conf"),
+                importance = 1,
+                type = "error",
+                header = red(" @@ ")
+            )
             return set(),set(),-1
 
-        ldpaths = self.entropyTools.collectLinkerPaths()
+        ldpaths = set(self.entropyTools.collectLinkerPaths())
         ldpaths |= self.entropyTools.collectPaths()
         # speed up when /usr/lib is a /usr/lib64 symlink
         if "/usr/lib64" in ldpaths and "/usr/lib" in ldpaths:
@@ -804,44 +819,47 @@ class EquoInterface(TextInterface):
         for ldpath in ldpaths:
             count += 1
             self.updateProgress(
-                                    blue("Tree: ")+red(etpConst['systemroot']+ldpath),
-                                    importance = 0,
-                                    type = "info",
-                                    count = (count,total),
-                                    back = True,
-                                    percent = True,
-                                    header = "  "
-                                )
+                blue("Tree: ")+red(etpConst['systemroot']+ldpath),
+                importance = 0,
+                type = "info",
+                count = (count,total),
+                back = True,
+                percent = True,
+                header = "  "
+            )
             ldpath = ldpath.encode(sys.getfilesystemencoding())
             for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
                 for item in files:
                     filepath = os.path.join(currentdir,item)
                     if filepath in etpConst['libtest_files_blacklist']:
                         continue
-                    if os.access(filepath,os.X_OK):
-                        executables.add(filepath[len(etpConst['systemroot']):])
+                    if not os.access(filepath,os.X_OK):
+                        continue
+                    if not self.entropyTools.is_elf_file(filepath):
+                        continue
+                    executables.add(filepath[len(etpConst['systemroot']):])
 
         self.updateProgress(
-                                blue(_("Collecting broken executables")),
-                                importance = 2,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+            blue(_("Collecting broken executables")),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
         t = red(_("Attention")) + ": " + \
             blue(_("don't worry about libraries that are shown here but not later."))
         self.updateProgress(
-                                t,
-                                importance = 1,
-                                type = "info",
-                                header = red(" @@ ")
-                            )
+            t,
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
+        )
 
-        brokenlibs = set()
-        brokenexecs = {}
+        myQA = self.QA()
+
         plain_brokenexecs = set()
         total = len(executables)
         count = 0
-        scan_txt = blue(_("Scanning libraries..."))
+        scan_txt = blue("%s ..." % (_("Scanning libraries"),))
         for executable in executables:
             count += 1
             if (count%10 == 0) or (count == total) or (count == 1):
@@ -854,83 +872,57 @@ class EquoInterface(TextInterface):
                     percent = True,
                     header = "  "
                 )
-            if not etpConst['systemroot']:
-                stdin, stdouterr = os.popen4("ldd "+executable)
-            else:
-                if not os.access(etpConst['systemroot']+"/bin/sh",os.X_OK):
-                    t = _("not found")
-                    raise exceptionTools.FileNotFound("FileNotFound: /bin/sh %s." % (t,))
-                stdin, stdouterr = os.popen4("echo 'ldd "+executable+"' | chroot "+etpConst['systemroot'])
-            output = stdouterr.readlines()
-            if '\n'.join(output).find("not found") != -1:
-                # investigate
-                mylibs = set()
-                for row in output:
-                    if row.find("not found") != -1:
-                        try:
-                            row = row.strip().split("=>")[0].strip()
-                            mylibs.add(row)
-                        except:
-                            continue
-                if mylibs:
-                    alllibs = blue(' :: ').join(list(mylibs))
-                    self.updateProgress(
-                                            red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
-                                            importance = 1,
-                                            type = "info",
-                                            percent = True,
-                                            count = (count,total),
-                                            header = "  "
-                                        )
-                    if etpSys['serverside']:
-                        plain_brokenexecs.add(etpConst['systemroot']+executable)
-                brokenlibs.update(mylibs)
-                brokenexecs[executable] = mylibs.copy()
-        del executables
+            myelfs = self.entropyTools.read_elf_dynamic_libraries(etpConst['systemroot']+executable)
+            mylibs = set()
+            for mylib in myelfs:
+                found = myQA.resolve_dynamic_library(mylib, executable)
+                if found:
+                    continue
+                mylibs.add(mylib)
+            if not mylibs:
+                continue
 
-        packagesMatched = set()
+            alllibs = blue(' :: ').join(list(mylibs))
+            self.updateProgress(
+                red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
+                importance = 1,
+                type = "info",
+                percent = True,
+                count = (count,total),
+                header = "  "
+            )
+            plain_brokenexecs.add(executable)
+
+        del executables
+        packagesMatched = {}
 
         if not etpSys['serverside']:
 
             self.updateProgress(
-                                    blue(_("Trying to match packages")),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red(" @@ ")
-                                )
+                blue(_("Matching broken libraries/executables")),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
+            matched = set()
+            for brokenlib in plain_brokenexecs:
+                idpackages = self.clientDbconn.searchBelongs(brokenlib)
+                for idpackage in idpackages:
+                    key, slot = self.clientDbconn.retrieveKeySlot(idpackage)
+                    mymatch = self.atomMatch(key, matchSlot = slot)
+                    if mymatch[0] == -1:
+                        matched.add(brokenlib)
+                        continue
+                    cmpstat = self.get_package_action(mymatch)
+                    if cmpstat == 0:
+                        continue
+                    if not packagesMatched.has_key(brokenlib):
+                        packagesMatched[brokenlib] = set()
+                    packagesMatched[brokenlib].add(mymatch)
+                    matched.add(brokenlib)
+            plain_brokenexecs -= matched
 
-            # match libraries
-            for repoid in self.validRepositories:
-                t = blue("%s: %s") % (_("Repository id"),darkgreen(repoid),)
-                self.updateProgress(
-                                        t,
-                                        importance = 1,
-                                        type = "info",
-                                        header = red(" @@ ")
-                                    )
-                if etpSys['serverside']:
-                    rdbconn = dbconn
-                else:
-                    rdbconn = self.openRepositoryDatabase(repoid)
-                libsfound = set()
-                for lib in brokenlibs:
-                    packages = rdbconn.searchBelongs(file = "%"+lib, like = True, branch = etpConst['branch'], branch_operator = "<=")
-                    if packages:
-                        for idpackage in packages:
-                            key, slot = rdbconn.retrieveKeySlot(idpackage)
-                            if key in etpConst['libtest_blacklist']:
-                                continue
-                            # retrieve content and really look if library is in ldpath
-                            mycontent = rdbconn.retrieveContent(idpackage)
-                            matching_libs = [x for x in mycontent if x.endswith(lib) and (os.path.dirname(x) in ldpaths)]
-                            libsfound.add(lib)
-                            if matching_libs:
-                                packagesMatched.add((idpackage,repoid,lib))
-                brokenlibs.difference_update(libsfound)
-
-        if etpSys['serverside']:
-            return packagesMatched,plain_brokenexecs,0
-        return packagesMatched,brokenlibs,0
+        return packagesMatched,plain_brokenexecs,0
 
     def move_to_branch(self, branch, pretend = False):
         availbranches = self.listAllAvailableBranches()
@@ -1879,26 +1871,24 @@ class EquoInterface(TextInterface):
                 if found:
                     break
 
-        myatoms = set()
         for idpackage,repo in found_matches:
+            if not deep_deps:
+                cmpstat = self.get_package_action((idpackage,repo))
+                if cmpstat == 0:
+                    continue
             mydbc = self.openRepositoryDatabase(repo)
-            myatoms.add(mydbc.retrieveAtom(idpackage))
+            repo_atoms.add(mydbc.retrieveAtom(idpackage))
 
-        if myatoms:
-            unsatisfied, xxx = self.filterSatisfiedDependencies(myatoms, deep_deps = deep_deps)
-            repo_atoms |= unsatisfied
-
-        myatoms = set()
         for key, slot in client_keyslots:
             idpackage, repo = self.atomMatch(key, matchSlot = slot)
             if idpackage == -1:
                 continue
+            if not deep_deps:
+                cmpstat = self.get_package_action((idpackage, repo))
+                if cmpstat == 0:
+                    continue
             mydbc = self.openRepositoryDatabase(repo)
-            myatoms.add(mydbc.retrieveAtom(idpackage))
-
-        if myatoms:
-            unsatisfied, xxx = self.filterSatisfiedDependencies(myatoms, deep_deps = deep_deps)
-            client_atoms |= unsatisfied
+            client_atoms.add(mydbc.retrieveAtom(idpackage))
 
         client_atoms |= repo_atoms
 
@@ -2889,7 +2879,7 @@ class EquoInterface(TextInterface):
 
         rdepends = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
-        ldpaths = self.entropyTools.collectLinkerPaths()
+        ldpaths = set(self.entropyTools.collectLinkerPaths())
         deps_content = set()
         dependencies = self.get_deep_dependency_list(dbconn, idpackage, atoms = True)
         dependencies_cache = set()
@@ -6248,6 +6238,66 @@ class RepoInterface:
 
         return 0
 
+class QAInterface:
+
+    import entropyTools
+    def __init__(self, EntropyInterface):
+        if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
+            not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
+                mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
+        self.Entropy = EntropyInterface
+
+
+    def content_test(self, mycontent):
+
+        mylibs = {}
+        for myfile in mycontent:
+            if not os.access(myfile,os.R_OK):
+                continue
+            if not os.path.isfile(myfile):
+                continue
+            if not self.entropyTools.is_elf_file(myfile):
+                continue
+            mylibs[myfile] = self.entropyTools.read_elf_dynamic_libraries(myfile)
+
+        broken_libs = {}
+        for mylib in mylibs:
+            for myneeded in mylibs[mylib]:
+                found = self.resolve_dynamic_library(myneeded, mylib)
+                if found:
+                    continue
+                if not broken_libs.has_key(mylib):
+                    broken_libs[mylib] = set()
+                broken_libs[mylib].add(myneeded)
+
+        return broken_libs
+
+    def resolve_dynamic_library(self, library, requiring_executable):
+
+        def do_resolve(mypaths):
+            found_path = None
+            for mypath in mypaths:
+                mypath = os.path.join(etpConst['systemroot']+mypath,library)
+                if not os.access(mypath,os.R_OK):
+                    continue
+                if os.path.isdir(mypath):
+                    continue
+                if not self.entropyTools.is_elf_file(mypath):
+                    continue
+                found_path = mypath
+                break
+            return found_path
+
+        mypaths = self.entropyTools.collectLinkerPaths()
+        found_path = do_resolve(mypaths)
+
+        if not found_path:
+            mypaths = self.entropyTools.read_elf_linker_paths(requiring_executable)
+            found_path = do_resolve(mypaths)
+
+        return found_path
+
 '''
    Entropy FTP interface
 '''
@@ -8075,7 +8125,7 @@ class TriggerInterface:
 
     def trigger_env_update(self):
         # clear linker paths cache
-        linkerPaths.clear()
+        del linkerPaths[:]
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
@@ -12256,7 +12306,6 @@ class ServerInterface(TextInterface):
 
         self.switch_default_repository(self.default_repository)
 
-
     def __del__(self):
         self.close_server_databases()
 
@@ -12271,6 +12320,7 @@ class ServerInterface(TextInterface):
         self.ClientService.FtpInterface = self.FtpInterface
         self.entropyTools = self.ClientService.entropyTools
         self.dumpTools = self.ClientService.dumpTools
+        self.QA = self.ClientService.QA
         self.backup_entropy_settings()
         self.SpmService = self.ClientService.Spm()
         self.MirrorsService = ServerMirrorsInterface(self)

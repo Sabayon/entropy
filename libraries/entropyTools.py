@@ -1756,10 +1756,55 @@ def read_elf_class(elf_file):
     elf_class = struct.unpack('B',elf_class)[0]
     return elf_class
 
+def is_elf_file(elf_file):
+    import struct
+    f = open(elf_file,"rb")
+    data = f.read(4)
+    f.close()
+    data = struct.unpack('BBBB',data)
+    if data == (127, 69, 76, 70):
+        return True
+    return False
+
+# FIXME: reimplement this
+def read_elf_dynamic_libraries(elf_file):
+    import commands
+    if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
+        raise exceptionTools.FileNotFound('FileNotFound: no readelf')
+    data = commands.getoutput('readelf -d %s' % (elf_file,)).split("\n")
+    mylibs = set()
+    for line in data:
+        if line.find("(NEEDED)") == -1:
+            continue
+        mylib = line.strip().split()[-1]
+        if not (mylib.endswith("]") and mylib.startswith("[")):
+            continue
+        mylibs.add(mylib[1:-1])
+    return mylibs
+
+# FIXME: reimplement this
+def read_elf_linker_paths(elf_file):
+    import commands
+    if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
+        raise exceptionTools.FileNotFound('FileNotFound: no readelf')
+    data = commands.getoutput('readelf -d %s' % (elf_file,)).split("\n")
+    mypaths = []
+    for line in data:
+        if (line.find("(RPATH)") == -1) and (line.find("(RUNPATH)") == -1):
+            continue
+        mylib = line.strip().split()[-1]
+        if not (mylib.endswith("]") and mylib.startswith("[")):
+            continue
+        mypath = mylib[1:-1].split(":")
+        for xpath in mypath:
+            xpath = xpath.replace("$ORIGIN",os.path.dirname(elf_file))
+            mypaths.append(xpath)
+    return mypaths
+
 def collectLinkerPaths():
     if linkerPaths:
         return linkerPaths
-    ldpaths = set()
+    ldpaths = []
     try:
         f = open(etpConst['systemroot']+"/etc/ld.so.conf","r")
         paths = f.readlines()
@@ -1767,18 +1812,20 @@ def collectLinkerPaths():
             path = path.strip()
             if path:
                 if path[0] == "/":
-                    ldpaths.add(os.path.normpath(path))
+                    ldpaths.append(os.path.normpath(path))
         f.close()
     except:
         pass
 
     # can happen that /lib /usr/lib are not in LDPATH
-    ldpaths.add("/lib")
-    ldpaths.add("/usr/lib")
+    if "/lib" not in ldpaths:
+        ldpaths.append("/lib")
+    if "/usr/lib" not in ldpaths:
+        ldpaths.append("/usr/lib")
 
-    linkerPaths.clear()
-    linkerPaths.update(ldpaths)
-    return ldpaths
+    del linkerPaths[:]
+    linkerPaths.extend(ldpaths)
+    return ldpaths[:]
 
 def collectPaths():
     path = set()

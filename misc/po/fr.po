@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LAN_FR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-20 10:09+0200\n"
+"POT-Creation-Date: 2008-05-20 17:09+0200\n"
 "PO-Revision-Date: 2008-02-09 10:14+0100\n"
 "Last-Translator: SUFFYS <nsuffys@gmail.com>\n"
 "Language-Team: french <nsuffys@gmail.com>\n"
@@ -613,7 +613,7 @@ msgstr ""
 msgid "Depends Search"
 msgstr "Dépend de"
 
-#: ../../client/text_query.py:258 ../../client/text_ui.py:1202
+#: ../../client/text_query.py:258 ../../client/text_ui.py:1205
 msgid "Matched"
 msgstr ""
 
@@ -730,7 +730,7 @@ msgid "Removal Search"
 msgstr "Supprimer"
 
 #: ../../client/text_query.py:599 ../../client/text_ui.py:360
-#: ../../client/text_ui.py:914 ../../server/server_reagent.py:346
+#: ../../client/text_ui.py:917 ../../server/server_reagent.py:346
 #: ../../server/server_reagent.py:391 ../../server/server_reagent.py:440
 #, fuzzy
 msgid "No packages found"
@@ -748,7 +748,7 @@ msgstr "Ces, Ils sont les paquets qui sera enlevé"
 #: ../../client/text_query.py:624 ../../client/text_smart.py:106
 #: ../../client/text_smart.py:254 ../../client/text_smart.py:387
 #: ../../client/text_ui.py:477 ../../client/text_ui.py:618
-#: ../../client/text_ui.py:782 ../../client/text_ui.py:995
+#: ../../client/text_ui.py:785 ../../client/text_ui.py:998
 msgid "from"
 msgstr ""
 
@@ -913,7 +913,7 @@ msgstr "Mots clés"
 msgid "Created"
 msgstr "Supprimé"
 
-#: ../../client/text_query.py:1097 ../../client/text_ui.py:778
+#: ../../client/text_query.py:1097 ../../client/text_ui.py:781
 #: ../../spritz/src/dialogs.py:824
 msgid "License"
 msgstr "License"
@@ -1006,7 +1006,7 @@ msgstr ""
 
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
-#: ../../client/text_ui.py:348 ../../client/text_ui.py:905
+#: ../../client/text_ui.py:348 ../../client/text_ui.py:908
 msgid "ATTENTION"
 msgstr ""
 
@@ -1151,8 +1151,8 @@ msgid "Please wait"
 msgstr "merci de patienter"
 
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
-#: ../../client/text_ui.py:684 ../../client/text_ui.py:685
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
+#: ../../client/text_ui.py:690 ../../client/text_ui.py:691
 #: ../../spritz/src/dialogs.py:770 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:259
 msgid "Attention"
@@ -1596,13 +1596,13 @@ msgid "Compressing smart application"
 msgstr ""
 
 #: ../../client/text_ui.py:102 ../../client/text_ui.py:112
-#: ../../client/text_ui.py:486 ../../client/text_ui.py:959
+#: ../../client/text_ui.py:486 ../../client/text_ui.py:962
 #, fuzzy
 msgid "Nothing to do"
 msgstr "Rien a faire. Je suis inactif"
 
 #: ../../client/text_ui.py:124 ../../client/text_ui.py:255
-#: ../../client/text_ui.py:886
+#: ../../client/text_ui.py:889
 msgid "Running with"
 msgstr ""
 
@@ -1634,14 +1634,14 @@ msgid "Packages matching already up to date"
 msgstr ""
 
 #. None or {}
-#: ../../client/text_ui.py:175 ../../client/text_ui.py:720
-#: ../../client/text_ui.py:1046
+#: ../../client/text_ui.py:175 ../../client/text_ui.py:723
+#: ../../client/text_ui.py:1049
 #, fuzzy
 msgid "Nothing to resume"
 msgstr "Rien a faire. Je suis inactif"
 
-#: ../../client/text_ui.py:186 ../../client/text_ui.py:733
-#: ../../client/text_ui.py:1054
+#: ../../client/text_ui.py:186 ../../client/text_ui.py:736
+#: ../../client/text_ui.py:1057
 msgid "Resume cache corrupted"
 msgstr ""
 
@@ -1721,7 +1721,7 @@ msgid "Skipped"
 msgstr "_Passer"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:366 ../../client/text_ui.py:921
+#: ../../client/text_ui.py:366 ../../client/text_ui.py:924
 #, fuzzy
 msgid "These are the chosen packages"
 msgstr "Réinstalle les paquets sélectionnés"
@@ -1762,7 +1762,7 @@ msgstr ""
 msgid "Action"
 msgstr "Attention"
 
-#: ../../client/text_ui.py:441 ../../client/text_ui.py:956
+#: ../../client/text_ui.py:441 ../../client/text_ui.py:959
 #, fuzzy
 msgid "Packages involved"
 msgstr "Paquets"
@@ -1852,192 +1852,192 @@ msgstr "Espace disque libéré"
 msgid "Freed disk space"
 msgstr "Espace disque libéré"
 
-#: ../../client/text_ui.py:671
+#: ../../client/text_ui.py:674
 msgid "You need at least"
 msgstr ""
 
-#: ../../client/text_ui.py:673
+#: ../../client/text_ui.py:676
 #, fuzzy
 msgid "of free space"
 msgstr "Espace libéré"
 
-#: ../../client/text_ui.py:681
+#: ../../client/text_ui.py:684
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 
-#: ../../client/text_ui.py:691
+#: ../../client/text_ui.py:694
 msgid "Would you like to execute the queue ?"
 msgstr ""
 
-#: ../../client/text_ui.py:731 ../../client/text_ui.py:1052
+#: ../../client/text_ui.py:734 ../../client/text_ui.py:1055
 msgid "Resuming previous operations"
 msgstr ""
 
-#: ../../client/text_ui.py:755
+#: ../../client/text_ui.py:758
 #, fuzzy
 msgid "Please select an option"
 msgstr "Merci de selectionner au moin un dépot"
 
-#: ../../client/text_ui.py:756
+#: ../../client/text_ui.py:759
 #, fuzzy
 msgid "Read the license"
 msgstr "_Lire la license"
 
-#: ../../client/text_ui.py:757
+#: ../../client/text_ui.py:760
 msgid "Accept the license (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:758
+#: ../../client/text_ui.py:761
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:759
+#: ../../client/text_ui.py:762
 msgid "Quit"
 msgstr ""
 
 #. wait user interaction
-#: ../../client/text_ui.py:761
+#: ../../client/text_ui.py:764
 msgid "Your choice (type a number and press enter)"
 msgstr ""
 
-#: ../../client/text_ui.py:774
+#: ../../client/text_ui.py:777
 msgid "You need to accept the licenses below"
 msgstr ""
 
-#: ../../client/text_ui.py:778
+#: ../../client/text_ui.py:781
 msgid "needed by"
 msgstr ""
 
-#: ../../client/text_ui.py:798
+#: ../../client/text_ui.py:801
 msgid "No file viewer"
 msgstr ""
 
-#: ../../client/text_ui.py:798
+#: ../../client/text_ui.py:801
 #, fuzzy
 msgid "License saved into"
 msgstr "Nom de la license"
 
-#: ../../client/text_ui.py:820
+#: ../../client/text_ui.py:823
 msgid "fetch"
 msgstr ""
 
-#: ../../client/text_ui.py:833
+#: ../../client/text_ui.py:836
 msgid "Download completed"
 msgstr ""
 
-#: ../../client/text_ui.py:844
+#: ../../client/text_ui.py:847
 #, fuzzy
 msgid "install"
 msgstr "Réinstalle"
 
-#: ../../client/text_ui.py:872
+#: ../../client/text_ui.py:875
 msgid "Installation completed"
 msgstr ""
 
-#: ../../client/text_ui.py:907
+#: ../../client/text_ui.py:910
 #, fuzzy
 msgid "is not installed"
 msgstr "Sera installé"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:940
+#: ../../client/text_ui.py:943
 #, fuzzy
 msgid "vital package"
 msgstr "Montrer les paquets disponibles"
 
-#: ../../client/text_ui.py:941
+#: ../../client/text_ui.py:944
 msgid "Removal forbidden"
 msgstr ""
 
-#: ../../client/text_ui.py:951
+#: ../../client/text_ui.py:954
 msgid "Disk size"
 msgstr ""
 
-#: ../../client/text_ui.py:952
+#: ../../client/text_ui.py:955
 #, fuzzy
 msgid "Installed from"
 msgstr "Installé"
 
-#: ../../client/text_ui.py:964
+#: ../../client/text_ui.py:967
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:967 ../../server/server_reagent.py:222
+#: ../../client/text_ui.py:970 ../../server/server_reagent.py:222
 #, fuzzy
 msgid "Would you like to remove them now ?"
 msgstr "Vous! Pourquoi voulez vous supprimer le dépot principal ?"
 
-#: ../../client/text_ui.py:983
+#: ../../client/text_ui.py:986
 msgid "This is the new removal queue"
 msgstr ""
 
-#: ../../client/text_ui.py:1008
+#: ../../client/text_ui.py:1011
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1010
+#: ../../client/text_ui.py:1013
 msgid "Would you like to proceed with a selective removal ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1017
+#: ../../client/text_ui.py:1020
 msgid "Would you like to skip this step then ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1022
+#: ../../client/text_ui.py:1025
 msgid "Starting removal in"
 msgstr ""
 
-#: ../../client/text_ui.py:1083
+#: ../../client/text_ui.py:1086
 #, fuzzy
 msgid "Remove this one ?"
 msgstr "Annuler l'action de suppression"
 
-#: ../../client/text_ui.py:1119
+#: ../../client/text_ui.py:1122
 msgid "All done"
 msgstr ""
 
-#: ../../client/text_ui.py:1125
+#: ../../client/text_ui.py:1128
 msgid "Running dependency test"
 msgstr ""
 
-#: ../../client/text_ui.py:1141
+#: ../../client/text_ui.py:1144
 #, fuzzy
 msgid "These are the dependencies not found"
 msgstr "Ces, Ils sont les paquets qui sera enlevé"
 
-#: ../../client/text_ui.py:1145
+#: ../../client/text_ui.py:1148
 #, fuzzy
 msgid "Needed by"
 msgstr "Espace requis"
 
-#: ../../client/text_ui.py:1150
+#: ../../client/text_ui.py:1153
 msgid "Would you like to install the available packages ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1155 ../../client/text_ui.py:1229
+#: ../../client/text_ui.py:1158 ../../client/text_ui.py:1234
 #, fuzzy
 msgid "Installing available packages in"
 msgstr "Montrer les paquets disponibles"
 
-#: ../../client/text_ui.py:1156 ../../client/text_ui.py:1230
+#: ../../client/text_ui.py:1159 ../../client/text_ui.py:1235
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/text_ui.py:1191
+#: ../../client/text_ui.py:1194
 msgid "System is healthy"
 msgstr ""
 
-#: ../../client/text_ui.py:1197
-msgid "Libraries statistics"
+#: ../../client/text_ui.py:1200
+msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/text_ui.py:1199
+#: ../../client/text_ui.py:1202
 msgid "Not matched"
 msgstr ""
 
-#: ../../client/text_ui.py:1223
+#: ../../client/text_ui.py:1228
 msgid "Would you like to install them ?"
 msgstr ""
 
