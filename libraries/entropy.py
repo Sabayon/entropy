@@ -15961,6 +15961,21 @@ class ServerMirrorsInterface:
 
         if upload_queue and not no_upload:
 
+            deps_not_found = self.Entropy.dependencies_test()
+            if deps_not_found:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s] %s: %s" % (
+                        brown(repo),
+                        red(_("sync")),
+                        blue(_("database sync forbidden")),
+                        red(_("dependencies_test() reported errors")),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                return 3,set(),set()
+
             uris = [x[0] for x in upload_queue]
             errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)
             if errors:

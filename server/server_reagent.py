@@ -477,7 +477,7 @@ def database(options):
         print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
         Entropy.bump_database()
         if databaseRequestSync:
-            Entropy.MirrorsService.sync_databases()
+            errors, fine, broken = Entropy.MirrorsService.sync_databases()
 
 def spm(options):
 
