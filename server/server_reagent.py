@@ -249,7 +249,11 @@ def update(options):
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
-            Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
+            try:
+                Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
+            except OSError:
+                entropyTools.printTraceback()
+                print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))
 
     requested_branch = etpConst['branch']
     for i in options:
