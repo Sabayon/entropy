@@ -27,7 +27,7 @@ import time
 from entropyConstants import *
 from outputTools import TextInterface, \
     print_info, print_warning, print_error, \
-    red, brown, blue, green, darkgreen, \
+    red, brown, blue, green, purple, darkgreen, \
     darkred, bold, darkblue, readtext
 import exceptionTools
 from entropy_i18n import _
@@ -2838,179 +2838,6 @@ class EquoInterface(TextInterface):
         conn = SpmInterface(self)
         self.spmCache[myroot] = conn.intf
         return conn.intf
-
-    def get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
-
-        mybuffer = self.entropyTools.lifobuffer()
-        matchcache = set()
-        depcache = set()
-        mydeps = dbconn.retrieveDependencies(idpackage)
-        for mydep in mydeps:
-            mybuffer.push(mydep)
-        mydep = mybuffer.pop()
-
-        while mydep != None:
-
-            if mydep in depcache:
-                mydep = mybuffer.pop()
-                continue
-
-            mymatch = dbconn.atomMatch(mydep)
-            if atoms:
-                matchcache.add(mydep)
-            else:
-                matchcache.add(mymatch[0])
-
-            if mymatch[0] != -1:
-                owndeps = dbconn.retrieveDependencies(mymatch[0])
-                for owndep in owndeps:
-                    mybuffer.push(owndep)
-
-            depcache.add(mydep)
-            mydep = mybuffer.pop()
-
-        if atoms and -1 in matchcache:
-            matchcache.remove(-1)
-
-        return matchcache
-
-
-    def get_missing_rdepends(self, dbconn, idpackage):
-
-        rdepends = set()
-        neededs = dbconn.retrieveNeeded(idpackage, extended = True)
-        ldpaths = set(self.entropyTools.collectLinkerPaths())
-        deps_content = set()
-        dependencies = self.get_deep_dependency_list(dbconn, idpackage, atoms = True)
-        dependencies_cache = set()
-
-        def update_depscontent(mycontent, dbconn, ldpaths):
-            return set( \
-                    [   x for x in mycontent if os.path.dirname(x) in ldpaths \
-                        and (dbconn.isNeededAvailable(os.path.basename(x)) > 0) ] \
-                    )
-
-        for dependency in dependencies:
-            match = dbconn.atomMatch(dependency)
-            if match[0] != -1:
-                mycontent = dbconn.retrieveContent(match[0])
-                deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
-                key, slot = dbconn.retrieveKeySlot(match[0])
-                dependencies_cache.add((key,slot))
-
-        key, slot = dbconn.retrieveKeySlot(idpackage)
-        mycontent = dbconn.retrieveContent(idpackage)
-        deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
-        dependencies_cache.add((key,slot))
-
-        idpackages_cache = set()
-        for needed_data in neededs:
-            needed = needed_data[0]
-            elfclass = needed_data[1]
-            data_solved = dbconn.resolveNeeded(needed,elfclass)
-            data_size = len(data_solved)
-            data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
-            if not data_solved or (data_size != len(data_solved)):
-                continue
-            found = False
-            for data in data_solved:
-                if data[1] in deps_content:
-                    found = True
-                    break
-            if not found:
-                for data in data_solved:
-                    key, slot = dbconn.retrieveKeySlot(data[0])
-                    if (key,slot) not in dependencies_cache:
-                        if not dbconn.isSystemPackage(data[0]):
-                            rdepends.add(key+":"+slot)
-                        idpackages_cache.add(data[0])
-        return rdepends
-
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, repo = etpConst['officialrepositoryid']):
-
-        scan_msg = blue(_("Now searching for missing RDEPENDs"))
-        self.updateProgress(
-            "[repo:%s] %s..." % (
-                        darkgreen(repo),
-                        scan_msg,
-                    ),
-            importance = 1,
-            type = "info",
-            header = red(" @@ ")
-        )
-        scan_msg = blue(_("scanning for missing RDEPENDs"))
-        count = 0
-        maxcount = len(idpackages)
-        for idpackage in idpackages:
-            count += 1
-            atom = dbconn.retrieveAtom(idpackage)
-            self.updateProgress(
-                "[repo:%s] %s: %s" % (
-                            darkgreen(repo),
-                            scan_msg,
-                            darkgreen(atom),
-                        ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ "),
-                back = True,
-                count = (count,maxcount,)
-            )
-            missing = self.get_missing_rdepends(dbconn, idpackage)
-            if not missing:
-                continue
-            self.updateProgress(
-                "[repo:%s] %s: %s %s:" % (
-                            darkgreen(repo),
-                            blue("package"),
-                            darkgreen(atom),
-                            blue(_("is missing the following dependencies")),
-                        ),
-                importance = 1,
-                type = "info",
-                header = red(" @@ ")
-            )
-            for dependency in missing:
-                self.updateProgress(
-                        "%s" % (darkred(dependency),),
-                        importance = 0,
-                        type = "info",
-                        header = blue("    # ")
-                )
-            if ask:
-                rc = self.askQuestion(_("Do you want to add them?"))
-                if rc == "No":
-                    continue
-                rc = self.askQuestion(_("Selectively?"))
-                if rc == "Yes":
-                    newmissing = set()
-                    for dependency in missing:
-                        self.updateProgress(
-                            "[repo:%s|%s] %s" % (
-                                    darkgreen(repo),
-                                    brown(atom),
-                                    blue(dependency),
-                            ),
-                            importance = 0,
-                            type = "info",
-                            header = blue(" @@ ")
-                        )
-                        rc = self.askQuestion(_("Want to add?"))
-                        if rc == "Yes":
-                            newmissing.add(dependency)
-                    missing = newmissing
-            dbconn.insertDependencies(idpackage,missing)
-            dbconn.commitChanges()
-            self.updateProgress(
-                "[repo:%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkgreen(atom),
-                            blue(_("missing dependencies added")),
-                        ),
-                importance = 1,
-                type = "info",
-                header = red(" @@ ")
-            )
 
     # This function extracts all the info from a .tbz2 file and returns them
     def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
@@ -6248,6 +6075,181 @@ class QAInterface:
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
         self.Entropy = EntropyInterface
 
+    def test_depends_linking(self, idpackages, dbconn, repo = etpConst['officialrepositoryid']):
+
+        scan_msg = blue(_("Now searching for broken depends"))
+        self.Entropy.updateProgress(
+            "[repo:%s] %s..." % (
+                        darkgreen(repo),
+                        scan_msg,
+                    ),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
+        )
+
+        broken = False
+
+        count = 0
+        maxcount = len(idpackages)
+        for idpackage in idpackages:
+            atom = dbconn.retrieveAtom(idpackage)
+            scan_msg = "%s, %s:" % (blue(_("scanning for broken depends")),darkgreen(atom),)
+            self.Entropy.updateProgress(
+                "[repo:%s] %s" % (
+                    darkgreen(repo),
+                    scan_msg,
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True,
+                count = (count,maxcount,)
+            )
+            mydepends = dbconn.retrieveDepends(idpackage)
+            if not mydepends:
+                continue
+            for mydepend in mydepends:
+                myatom = dbconn.retrieveAtom(mydepend)
+                self.Entropy.updateProgress(
+                    "[repo:%s] %s %s" % (
+                        darkgreen(repo),
+                        scan_msg,
+                        darkred(myatom),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = blue(" @@ "),
+                    back = True,
+                    count = (count,maxcount,)
+                )
+                mycontent = dbconn.retrieveContent(mydepend)
+                mybreakages = self.content_test(mycontent)
+                if not mybreakages:
+                    continue
+                broken = True
+                self.Entropy.updateProgress(
+                    "[repo:%s] %s %s: %s:" % (
+                        darkgreen(repo),
+                        scan_msg,
+                        darkred(myatom),
+                        bold(_("broken libraries detected")),
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = purple(" @@ "),
+                    count = (count,maxcount,)
+                )
+                for mylib in mybreakages:
+                    self.Entropy.updateProgress(
+                        "%s %s:" % (
+                            darkgreen(mylib),
+                            red(_("needs")),
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = brown("   ## ")
+                    )
+                    for needed in mybreakages[mylib]:
+                        self.Entropy.updateProgress(
+                            "%s" % (
+                                red(needed),
+                            ),
+                            importance = 1,
+                            type = "warning",
+                            header = purple("     # ")
+                        )
+        return broken
+
+
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, repo = etpConst['officialrepositoryid']):
+
+        scan_msg = blue(_("Now searching for missing RDEPENDs"))
+        self.Entropy.updateProgress(
+            "[repo:%s] %s..." % (
+                        darkgreen(repo),
+                        scan_msg,
+                    ),
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
+        )
+        scan_msg = blue(_("scanning for missing RDEPENDs"))
+        count = 0
+        maxcount = len(idpackages)
+        for idpackage in idpackages:
+            count += 1
+            atom = dbconn.retrieveAtom(idpackage)
+            self.Entropy.updateProgress(
+                "[repo:%s] %s: %s" % (
+                            darkgreen(repo),
+                            scan_msg,
+                            darkgreen(atom),
+                        ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True,
+                count = (count,maxcount,)
+            )
+            missing = self.get_missing_rdepends(dbconn, idpackage)
+            if not missing:
+                continue
+            self.Entropy.updateProgress(
+                "[repo:%s] %s: %s %s:" % (
+                            darkgreen(repo),
+                            blue("package"),
+                            darkgreen(atom),
+                            blue(_("is missing the following dependencies")),
+                        ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ "),
+                count = (count,maxcount,)
+            )
+            for dependency in missing:
+                self.Entropy.updateProgress(
+                        "%s" % (darkred(dependency),),
+                        importance = 0,
+                        type = "info",
+                        header = blue("    # ")
+                )
+            if ask:
+                rc = self.Entropy.askQuestion(_("Do you want to add them?"))
+                if rc == "No":
+                    continue
+                rc = self.Entropy.askQuestion(_("Selectively?"))
+                if rc == "Yes":
+                    newmissing = set()
+                    for dependency in missing:
+                        self.Entropy.updateProgress(
+                            "[repo:%s|%s] %s" % (
+                                    darkgreen(repo),
+                                    brown(atom),
+                                    blue(dependency),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = blue(" @@ ")
+                        )
+                        rc = self.Entropy.askQuestion(_("Want to add?"))
+                        if rc == "Yes":
+                            newmissing.add(dependency)
+                    missing = newmissing
+            dbconn.insertDependencies(idpackage,missing)
+            dbconn.commitChanges()
+            self.Entropy.updateProgress(
+                "[repo:%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkgreen(atom),
+                            blue(_("missing dependencies added")),
+                        ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ "),
+                count = (count,maxcount,)
+            )
+
 
     def content_test(self, mycontent):
 
@@ -6297,6 +6299,92 @@ class QAInterface:
             found_path = do_resolve(mypaths)
 
         return found_path
+
+    def get_missing_rdepends(self, dbconn, idpackage):
+
+        rdepends = set()
+        neededs = dbconn.retrieveNeeded(idpackage, extended = True)
+        ldpaths = set(self.entropyTools.collectLinkerPaths())
+        deps_content = set()
+        dependencies = self._get_deep_dependency_list(dbconn, idpackage, atoms = True)
+        dependencies_cache = set()
+
+        def update_depscontent(mycontent, dbconn, ldpaths):
+            return set( \
+                    [   x for x in mycontent if os.path.dirname(x) in ldpaths \
+                        and (dbconn.isNeededAvailable(os.path.basename(x)) > 0) ] \
+                    )
+
+        for dependency in dependencies:
+            match = dbconn.atomMatch(dependency)
+            if match[0] != -1:
+                mycontent = dbconn.retrieveContent(match[0])
+                deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
+                key, slot = dbconn.retrieveKeySlot(match[0])
+                dependencies_cache.add((key,slot))
+
+        key, slot = dbconn.retrieveKeySlot(idpackage)
+        mycontent = dbconn.retrieveContent(idpackage)
+        deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
+        dependencies_cache.add((key,slot))
+
+        idpackages_cache = set()
+        for needed_data in neededs:
+            needed = needed_data[0]
+            elfclass = needed_data[1]
+            data_solved = dbconn.resolveNeeded(needed,elfclass)
+            data_size = len(data_solved)
+            data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
+            if not data_solved or (data_size != len(data_solved)):
+                continue
+            found = False
+            for data in data_solved:
+                if data[1] in deps_content:
+                    found = True
+                    break
+            if not found:
+                for data in data_solved:
+                    key, slot = dbconn.retrieveKeySlot(data[0])
+                    if (key,slot) not in dependencies_cache:
+                        if not dbconn.isSystemPackage(data[0]):
+                            rdepends.add(key+":"+slot)
+                        idpackages_cache.add(data[0])
+        return rdepends
+
+    def _get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
+
+        mybuffer = self.entropyTools.lifobuffer()
+        matchcache = set()
+        depcache = set()
+        mydeps = dbconn.retrieveDependencies(idpackage)
+        for mydep in mydeps:
+            mybuffer.push(mydep)
+        mydep = mybuffer.pop()
+
+        while mydep != None:
+
+            if mydep in depcache:
+                mydep = mybuffer.pop()
+                continue
+
+            mymatch = dbconn.atomMatch(mydep)
+            if atoms:
+                matchcache.add(mydep)
+            else:
+                matchcache.add(mymatch[0])
+
+            if mymatch[0] != -1:
+                owndeps = dbconn.retrieveDependencies(mymatch[0])
+                for owndep in owndeps:
+                    mybuffer.push(owndep)
+
+            depcache.add(mydep)
+            mydep = mybuffer.pop()
+
+        if atoms and -1 in matchcache:
+            matchcache.remove(-1)
+
+        return matchcache
 
 '''
    Entropy FTP interface
@@ -13027,6 +13115,7 @@ class ServerInterface(TextInterface):
         maxcount = len(packages_data)
         idpackages_added = set()
         to_be_injected = set()
+        myQA = self.QA()
         for packagedata in packages_data:
 
             mycount += 1
@@ -13068,7 +13157,8 @@ class ServerInterface(TextInterface):
                 )
                 if idpackages_added:
                     dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-                    self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
+                    myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
+                    myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
                 if to_be_injected:
                     self.inject_database_into_packages(to_be_injected, repo = repo)
                 self.close_server_databases()
@@ -13076,7 +13166,8 @@ class ServerInterface(TextInterface):
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
+            myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
+            myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
 
         # reinit depends table
         self.depends_table_initialize(repo)
@@ -13463,6 +13554,7 @@ class ServerInterface(TextInterface):
         # initialize
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.initializeDatabase()
+        myQA = self.QA()
 
         if not empty:
             revisions_file = "/entropy-revisions-dump.txt"
@@ -13589,7 +13681,7 @@ class ServerInterface(TextInterface):
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-            self.ClientService.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = repo)
+            myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = repo)
 
         dbconn.commitChanges()
         self.close_server_databases()
