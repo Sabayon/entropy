@@ -5957,7 +5957,6 @@ class RepoInterface:
                     try: # client db can be absent
                         client_indexes = self.Entropy.clientDbconn.listAllIndexes()
                         if repo_indexes != client_indexes:
-                            self.Entropy.clientDbconn.dropAllIndexes()
                             self.Entropy.clientDbconn.createAllIndexes()
                     except:
                         pass
@@ -6162,8 +6161,9 @@ class QAInterface:
         return broken
 
 
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, repo = etpConst['officialrepositoryid']):
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, self_check = False, repo = etpConst['officialrepositoryid']):
 
+        taint = False
         scan_msg = blue(_("Now searching for missing RDEPENDs"))
         self.Entropy.updateProgress(
             "[repo:%s] %s..." % (
@@ -6192,7 +6192,7 @@ class QAInterface:
                 back = True,
                 count = (count,maxcount,)
             )
-            missing_extended, missing = self.get_missing_rdepends(dbconn, idpackage)
+            missing_extended, missing = self.get_missing_rdepends(dbconn, idpackage, self_check = self_check)
             if not missing:
                 continue
             self.Entropy.updateProgress(
@@ -6243,20 +6243,23 @@ class QAInterface:
                         if rc == "Yes":
                             newmissing.add(dependency)
                     missing = newmissing
-            dbconn.insertDependencies(idpackage,missing)
-            dbconn.commitChanges()
-            self.Entropy.updateProgress(
-                "[repo:%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkgreen(atom),
-                            blue(_("missing dependencies added")),
-                        ),
-                importance = 1,
-                type = "info",
-                header = red(" @@ "),
-                count = (count,maxcount,)
-            )
+            if missing:
+                taint = True
+                dbconn.insertDependencies(idpackage,missing)
+                dbconn.commitChanges()
+                self.Entropy.updateProgress(
+                    "[repo:%s] %s: %s" % (
+                                darkgreen(repo),
+                                darkgreen(atom),
+                                blue(_("missing dependencies added")),
+                            ),
+                    importance = 1,
+                    type = "info",
+                    header = red(" @@ "),
+                    count = (count,maxcount,)
+                )
 
+        return taint
 
     def content_test(self, mycontent):
 
@@ -6307,7 +6310,7 @@ class QAInterface:
 
         return found_path
 
-    def get_missing_rdepends(self, dbconn, idpackage):
+    def get_missing_rdepends(self, dbconn, idpackage, self_check = False):
 
         rdepends = {}
         rdepends_plain = set()
@@ -6322,6 +6325,13 @@ class QAInterface:
                     [   x for x in mycontent if os.path.dirname(x) in ldpaths \
                         and (dbconn.isNeededAvailable(os.path.basename(x)) > 0) ] \
                     )
+
+        def is_in_content(myneeded, content):
+            for item in content:
+                item = os.path.basename(item)
+                if myneeded == item:
+                    return True
+            return False
 
         for dependency in dependencies:
             match = dbconn.atomMatch(dependency)
@@ -6343,6 +6353,11 @@ class QAInterface:
             data_solved = set([x for x in data_solved if x[0] not in idpackages_cache])
             if not data_solved or (data_size != len(data_solved)):
                 continue
+
+            if self_check:
+                if is_in_content(needed,mycontent):
+                    continue
+
             found = False
             for data in data_solved:
                 if data[1] in deps_content:
@@ -12737,6 +12752,15 @@ class ServerInterface(TextInterface):
                             type = "info",
                             header = blue("      # ")
                         )
+        else:
+
+            mytxt = blue(_("Every dependency is satisfied. It's all fine."))
+            self.updateProgress(
+                mytxt,
+                importance = 2,
+                type = "info",
+                header = red(" @@ ")
+            )
 
         return deps_not_matched
 
@@ -13125,6 +13149,7 @@ class ServerInterface(TextInterface):
         idpackages_added = set()
         to_be_injected = set()
         myQA = self.QA()
+        missing_deps_taint = False
         for packagedata in packages_data:
 
             mycount += 1
@@ -13168,12 +13193,19 @@ class ServerInterface(TextInterface):
                 self.depends_table_initialize(repo)
                 if idpackages_added:
                     dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-                    myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
+                    missing_deps_taint = myQA.scan_missing_dependencies(
+                        idpackages_added,
+                        dbconn,
+                        ask = ask,
+                        repo = repo,
+                        self_check = True
+                    )
                     myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
                 if to_be_injected:
                     self.inject_database_into_packages(to_be_injected, repo = repo)
                 # reinit depends table
-                self.depends_table_initialize(repo)
+                if missing_deps_taint:
+                    self.depends_table_initialize(repo)
                 self.close_server_databases()
                 raise
 
@@ -13182,11 +13214,18 @@ class ServerInterface(TextInterface):
 
         if idpackages_added:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-            myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = ask, repo = repo)
+            missing_deps_taint = myQA.scan_missing_dependencies(
+                idpackages_added,
+                dbconn,
+                ask = ask,
+                repo = repo,
+                self_check = True
+            )
             myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
 
         # reinit depends table
-        self.depends_table_initialize(repo)
+        if missing_deps_taint:
+            self.depends_table_initialize(repo)
 
         # inject database into packages
         self.inject_database_into_packages(to_be_injected, repo = repo)
@@ -17117,6 +17156,12 @@ class EntropyDatabaseInterface:
         self.connection = dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
+        try:
+            self.cursor.execute('PRAGMA cache_size = 6000')
+            self.cursor.execute('PRAGMA default_cache_size = 6000')
+        except:
+            pass
+
         if not self.clientDatabase and not self.readOnly:
             # server side is calling
             # lock mirror remotely and ensure to have latest database revision
@@ -18441,7 +18486,7 @@ class EntropyDatabaseInterface:
 
         def myiter():
             for xfile in content:
-                contenttype = content[xfile]
+                contenttype = content.get(xfile)
                 if type(xfile) is unicode:
                     xfile = xfile.encode('raw_unicode_escape')
                 yield (idpackage,xfile,contenttype,)
@@ -18672,7 +18717,8 @@ class EntropyDatabaseInterface:
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
         randomtable = "cdiff"+str(self.entropyTools.getRandomNumber())
-        self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
+        while self.doesTableExist(randomtable):
+            randomtable = "cdiff"+str(self.entropyTools.getRandomNumber())
         self.cursor.execute('CREATE TEMPORARY TABLE '+randomtable+' ( file VARCHAR )')
 
         dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -20283,7 +20329,7 @@ class EntropyDatabaseInterface:
         mycount = 0
         for idpackage in removed_ids:
             mycount += 1
-            mytxt = "%s: %s" % (red(_("Removing package")),blue(str(self.retrieveAtom(idpackage))),)
+            mytxt = "%s: %s" % (red(_("Removing entry")),blue(str(self.retrieveAtom(idpackage))),)
             self.updateProgress(
                 mytxt,
                 importance = 0,
@@ -20298,7 +20344,7 @@ class EntropyDatabaseInterface:
         mycount = 0
         for idpackage in added_ids:
             mycount += 1
-            mytxt = "%s: %s" % (red(_("Adding package")),blue(str(dbconn.retrieveAtom(idpackage))),)
+            mytxt = "%s: %s" % (red(_("Adding entry")),blue(str(dbconn.retrieveAtom(idpackage))),)
             self.updateProgress(
                 mytxt,
                 importance = 0,
@@ -21672,4 +21718,3 @@ class EntropyDatabaseInterface:
                 result = (x,0)
             )
             return x,0
-
