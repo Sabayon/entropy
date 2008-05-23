@@ -1084,7 +1084,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
             sources = dbconn.retrieveSources(idpackage)
             eclasses = dbconn.retrieveEclasses(idpackage)
             etpapi = dbconn.retrieveApi(idpackage)
-            print_info(darkgreen("       %s:\t" % (_("Gentoo eclasses"),) )+red(' '.join(eclasses)))
+            _my_formatted_print(eclasses,darkgreen("       %s:\t" % (_("Gentoo eclasses"),) ),"\t\t\t\t", color = red)
             if (sources):
                 print_info(darkgreen("       %s:" % (_("Sources"),) ))
                 for source in sources:

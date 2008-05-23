@@ -12825,7 +12825,7 @@ class ServerInterface(TextInterface):
                             iatom = dbconn.retrieveAtom(i)
                             if not crying_atoms.has_key(atom):
                                 crying_atoms[atom] = set()
-                            crying_atoms[atom].add(iatom)
+                            crying_atoms[atom].add((iatom,repo))
 
             mytxt = blue("%s:") % (_("These are the dependencies not found"),)
             self.updateProgress(
@@ -12849,9 +12849,9 @@ class ServerInterface(TextInterface):
                         type = "info",
                         header = blue("      # ")
                     )
-                    for x in crying_atoms[atom]:
+                    for x , myrepo in crying_atoms[atom]:
                         self.updateProgress(
-                            darkgreen(x),
+                            "[%s:%s] %s" % (blue(_("by repo")),darkred(myrepo),darkgreen(x),),
                             importance = 0,
                             type = "info",
                             header = blue("      # ")
@@ -16143,21 +16143,20 @@ class ServerMirrorsInterface:
 
         if upload_queue and not no_upload:
 
-            if not self.Entropy.community_repo:
-                deps_not_found = self.Entropy.dependencies_test()
-                if deps_not_found:
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s] %s: %s" % (
-                            brown(repo),
-                            red(_("sync")),
-                            blue(_("database sync forbidden")),
-                            red(_("dependencies_test() reported errors")),
-                        ),
-                        importance = 1,
-                        type = "error",
-                        header = darkred(" !!! ")
-                    )
-                    return 3,set(),set()
+            deps_not_found = self.Entropy.dependencies_test()
+            if deps_not_found and not self.Entropy.community_repo:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s] %s: %s" % (
+                        brown(repo),
+                        red(_("sync")),
+                        blue(_("database sync forbidden")),
+                        red(_("dependencies_test() reported errors")),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                return 3,set(),set()
 
             uris = [x[0] for x in upload_queue]
             errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)

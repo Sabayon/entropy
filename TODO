@@ -1,10 +1,6 @@
 TODO list
   - server/client-side: upload/download make.conf and package.* from portage
-  - server-side: automatic RSS generation through idpackage differential scanning
-  - server-side: improve RDEPEND check output
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
-  - server-side: check rdepend function with pandodl
-  - server-side: move officialrepositoryid settings away from repositories.conf
   - make.profile support (saving profile information into the db)
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
@@ -26,8 +22,6 @@ TODO list
     - Skip Mirror buttons
     - button to stop the queue
     - show the number of packages found in a list
-
-
 
 Notes:
 - when supporting more than one ":" in atoms, remember to fix treeupdates functions accordingly

@@ -164,6 +164,7 @@ myopts = [
     (2,'--pretend',1,_('just show what would be done')),
     None,
     (1,'community',1,_('handles community-side features')),
+
         (2,'repos',2,_('community repositories management functions')),
             (3,'update',3,_('scan the System looking for newly compiled packages')),
                 (4,'--branch=<branch>',1,_('choose on what branch operating')),
@@ -177,6 +178,45 @@ myopts = [
                 (4,'--branch=<branch>',1,_('choose on what branch operating')),
                 (4,'--noask',3,_('do not ask anything except critical things')),
                 (4,'--syncall',2,_('sync all the configured repositories')),
+
+        (2,'database',1,_('community repositories database functions')),
+            (3,'--initialize',2,_('(re)initialize the current repository database')),
+                (4,'--empty',3,_('do not refill database using packages on mirrors')),
+                (4,'--repo=<repo>',2,_('(re)create the database for the specified repository')),
+            (3,'bump',3,_('manually force a revision bump for the current repository database')),
+                (4,'--sync',3,_('synchronize the database')),
+            (3,'remove',3,_('remove the provided atoms from the current repository database')),
+                (4,'--branch=<branch>',1,_('choose on what branch operating')),
+            (3,'multiremove',2,_('remove the provided injected atoms (all if no atom specified)')),
+                (4,'--branch=<branch>',1,_('choose on what branch operating')),
+            (3,'create-empty-database',1,_('create an empty repository database in the provided path')),
+            (3,'switchbranch',2,_('switch to the specified branch the provided atoms (or world)')),
+            (3,'md5check',2,_('verify integrity of the provided atoms (or world)')),
+            (3,'md5remote',2,_('verify remote integrity of the provided atoms (or world)')),
+
+        (2,'repo',2,_('manage a repository')),
+            (3,'enable <repo>',3,_('enable the specified repository')),
+            (3,'disable <repo>',3,_('disable the specified repository')),
+            (3,'status <repo>',3,_('show the current Server Interface status')),
+            (3,'move <from> <to> [atoms]',1,_('move packages from a repository to another')),
+            (3,'default <repo_id>',2,_('set the default repository')),
+
+        (2,'query',2,_('do some searches into community repository databases')),
+            (3,'search',3,_('search packages inside the default repository database')),
+            (3,'needed',3,_('show runtime libraries needed by the provided atoms')),
+            (3,'depends',3,_('show what packages depend on the provided atoms')),
+            (3,'tags',3,_('show packages owning the specified tags')),
+            (3,'files',3,_('show files owned by the provided atoms')),
+            (3,'belongs',3,_('show from what package the provided files belong')),
+            (3,'description',2,_('search packages by description')),
+            (3,'eclass',3,_('search packages using the provided eclasses')),
+            (3,'list',3,_('list all the packages in the default repository')),
+            (3,'--verbose',2,_('show more details')),
+            (3,'--quiet',3,_('print results in a scriptable way')),
+
+        (2,'deptest',2,_('look for unsatisfied dependencies across community repositories')),
+        (2,'depends',2,_('regenerate the depends table')),
+
     None,
     (1,'cache',2,_('handles Entropy cache')),
     (2,'clean',2,_('clean Entropy cache')),
@@ -395,7 +435,56 @@ try:
                     mirrors_opts = myopts[1:]
                     if mirrors_opts:
                         if mirrors_opts[0] == "sync":
-                            server_activator.sync(options[1:])
+                            server_activator.sync(mirrors_opts[1:])
+
+            elif myopts[0] == "database":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    server_reagent.database(myopts[1:])
+                    server_reagent.Entropy.close_server_databases()
+
+            elif myopts[0] == "repo":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    rc = server_reagent.repositories(myopts[1:])
+
+            elif myopts[0] == "query":
+                try:
+                    import server_query
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    rc = server_query.query(myopts[1:])
+
+            elif myopts[0] == "deptest":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    server_reagent.Entropy.dependencies_test()
+                    server_reagent.Entropy.close_server_databases()
+
+            elif myopts[0] == "depends":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    rc = server_reagent.Entropy.depends_table_initialize()
+                    server_reagent.Entropy.close_server_databases()
+
 
     elif (options[0] == "cleanup"):
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
