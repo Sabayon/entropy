@@ -6092,6 +6092,7 @@ class QAInterface:
         count = 0
         maxcount = len(idpackages)
         for idpackage in idpackages:
+            count += 1
             atom = dbconn.retrieveAtom(idpackage)
             scan_msg = "%s, %s:" % (blue(_("scanning for broken depends")),darkgreen(atom),)
             self.Entropy.updateProgress(
@@ -6265,6 +6266,7 @@ class QAInterface:
 
         mylibs = {}
         for myfile in mycontent:
+            myfile = myfile.encode('raw_unicode_escape')
             if not os.access(myfile,os.R_OK):
                 continue
             if not os.path.isfile(myfile):
@@ -6415,6 +6417,9 @@ class QAInterface:
 '''
 class FtpInterface:
 
+    import ftplib
+    import entropyTools
+    import socket
     # this must be run before calling the other functions
     def __init__(self, ftpuri, EntropyInterface, verbose = True):
 
@@ -6424,14 +6429,7 @@ class FtpInterface:
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
 
         self.Entropy = EntropyInterface
-        import entropyTools
-        self.entropyTools = entropyTools
-        import ftplib
-        self.ftplib = ftplib
-        import socket
-        self.socket = socket
         self.verbose = verbose
-
         self.oldprogress = 0.0
 
         # import FTP modules
@@ -6460,7 +6458,7 @@ class FtpInterface:
         self.ftpport = ftpuri.split(":")[-1]
         try:
             self.ftpport = int(self.ftpport)
-        except:
+        except ValueError:
             self.ftpport = 21
 
         self.ftpdir = ftpuri.split("ftp://")[-1]
@@ -6499,8 +6497,7 @@ class FtpInterface:
                 type = "info",
                 header = darkgreen(" * ")
             )
-        self.ftpconn.cwd(self.ftpdir)
-        self.currentdir = self.ftpdir
+        self.setCWD(self.ftpdir, dodir = True)
 
     def setBasedir(self):
         rc = self.setCWD(self.ftpdir)
@@ -6552,7 +6549,7 @@ class FtpInterface:
         pwd = self.ftpconn.pwd()
         return pwd
 
-    def setCWD(self,mydir):
+    def setCWD(self, mydir, dodir = False):
         if self.verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
@@ -6561,7 +6558,14 @@ class FtpInterface:
                 type = "info",
                 header = darkgreen(" * ")
             )
-        self.ftpconn.cwd(mydir)
+        try:
+            self.ftpconn.cwd(mydir)
+        except self.ftplib.error_perm, e:
+            if e[0][:3] == '550' and dodir:
+                self.recursiveMkdir(mydir)
+                self.ftpconn.cwd(mydir)
+            else:
+                raise
         self.currentdir = self.getCWD()
 
     def setPASV(self,bool):
@@ -6618,9 +6622,16 @@ class FtpInterface:
         except:
             return False
 
+    def recursiveMkdir(self, mypath):
+        mydirs = [x for x in mypath.split("/") if x]
+        mycurpath = ""
+        for mydir in mydirs:
+            mycurpath = os.path.join(mycurpath,mydir)
+            if not self.isFileAvailable(mycurpath):
+                self.mkdir(mycurpath)
+
     def mkdir(self,directory):
-        # FIXME: add rc
-        self.ftpconn.mkd(directory)
+        return self.ftpconn.mkd(directory)
 
     # this function also supports callback, because storbinary doesn't
     def advancedStorBinary(self, cmd, fp, callback=None):
@@ -12382,7 +12393,7 @@ class SocketUrlFetcher(urlFetcher):
 
 class ServerInterface(TextInterface):
 
-    def __init__(self, default_repository = None, save_repository = False):
+    def __init__(self, default_repository = None, save_repository = False, community_repo = False):
 
         if etpConst['uid'] != 0:
             mytxt = _("Entropy ServerInterface must be run as root")
@@ -12394,6 +12405,7 @@ class ServerInterface(TextInterface):
             header = "[server]"
         )
 
+        self.community_repo = community_repo
         self.dbapi2 = dbapi2 # export for third parties
         # settings
         etpSys['serverside'] = True
@@ -12407,7 +12419,7 @@ class ServerInterface(TextInterface):
         self.do_save_repository = save_repository
         self.default_repository = default_repository
         if self.default_repository == None:
-            self.default_repository = etpConst['officialrepositoryid']
+            self.default_repository = etpConst['officialserverrepositoryid']
 
         if self.default_repository not in etpConst['server_repositories']:
             raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (
@@ -12441,7 +12453,7 @@ class ServerInterface(TextInterface):
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
-            'officialrepositoryid'
+            'officialserverrepositoryid'
         ]
         for setting in backup_list:
             if setting not in self.settings_to_backup:
@@ -12476,13 +12488,45 @@ class ServerInterface(TextInterface):
                     )
             )
         self.close_server_databases()
-        etpConst['officialrepositoryid'] = repoid
+        etpConst['officialserverrepositoryid'] = repoid
         self.default_repository = repoid
         self.setup_services()
         if save:
             self.save_default_repository(repoid)
 
         self.show_interface_status()
+
+        if not self.is_repository_initialized(self.default_repository):
+            mytxt = blue("%s.") % (_("Your default repository is not initialized"),)
+            self.updateProgress(
+                "[%s:%s] %s" % (
+                        brown("repo"),
+                        purple(self.default_repository),
+                        mytxt,
+                ),
+                importance = 1,
+                type = "warning",
+                header = darkred(" !!! ")
+            )
+            answer = self.askQuestion(_("Do you want to initialize your default repository ?"))
+            if answer == "No":
+                mytxt = red("%s.") % (_("You have taken the risk to continue with an uninitialized repository"),)
+                self.updateProgress(
+                    "[%s:%s] %s" % (
+                            brown("repo"),
+                            purple(self.default_repository),
+                            mytxt,
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" !!! ")
+                )
+            else:
+                # move empty database for security sake
+                dbfile = self.get_local_database_file(self.default_repository)
+                if os.path.isfile(dbfile):
+                    shutil.move(dbfile,dbfile+".backup")
+                self.initialize_server_database(empty = True, repo = self.default_repository, warnings = False)
 
 
     def show_interface_status(self):
@@ -12511,29 +12555,29 @@ class ServerInterface(TextInterface):
 
 
     def save_default_repository(self, repoid):
-        if os.path.isfile(etpConst['repositoriesconf']):
-            f = open(etpConst['repositoriesconf'],"r")
+        if os.path.isfile(etpConst['serverconf']):
+            f = open(etpConst['serverconf'],"r")
             content = f.readlines()
             f.close()
             content = [x.strip() for x in content]
             found = False
             new_content = []
             for line in content:
-                if line.strip().startswith("officialrepositoryid|"):
-                    line = "officialrepositoryid|%s" % (repoid,)
+                if line.strip().startswith("officialserverrepositoryid|"):
+                    line = "officialserverrepositoryid|%s" % (repoid,)
                     found = True
                 new_content.append(line)
             if not found:
-                new_content.append("officialrepositoryid|%s" % (repoid,))
-            f = open(etpConst['repositoriesconf']+".save_default_repo_tmp","w")
+                new_content.append("officialserverrepositoryid|%s" % (repoid,))
+            f = open(etpConst['serverconf']+".save_default_repo_tmp","w")
             for line in new_content:
                 f.write(line+"\n")
             f.flush()
             f.close()
-            shutil.move(etpConst['repositoriesconf']+".save_default_repo_tmp",etpConst['repositoriesconf'])
+            shutil.move(etpConst['serverconf']+".save_default_repo_tmp",etpConst['serverconf'])
         else:
-            f = open(etpConst['repositoriesconf'],"w")
-            f.write("officialrepositoryid|%s\n" % (repoid,))
+            f = open(etpConst['serverconf'],"w")
+            f.write("officialserverrepositoryid|%s\n" % (repoid,))
             f.flush()
             f.close()
 
@@ -12572,7 +12616,17 @@ class ServerInterface(TextInterface):
             self.ClientService.backup_setting(setting)
 
 
-    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False, repo = None, indexing = True):
+    def is_repository_initialized(self, repo):
+        dbc = self.openServerDatabase(just_reading = True, repo = repo)
+        valid = True
+        try:
+            dbc.validateDatabase()
+        except exceptionTools.SystemDatabaseError:
+            valid = False
+        self.close_server_database(dbc)
+        return valid
+
+    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False, repo = None, indexing = True, warnings = True):
 
         if repo == None:
             repo = self.default_repository
@@ -12621,7 +12675,7 @@ class ServerInterface(TextInterface):
             # sometimes, when filling a new server db, we need to avoid tree updates
             if valid:
                 conn.serverUpdatePackagesData()
-            else:
+            elif warnings:
                 mytxt = _( "Entropy database is probably empty. If you don't agree with what I'm saying, " + \
                            "then it's probably corrupted! I won't stop you here btw..."
                 )
@@ -13545,7 +13599,7 @@ class ServerInterface(TextInterface):
         dbconn.setCounter(idpackage,counter)
         dbconn.setInjected(idpackage)
 
-    def initialize_server_database(self, empty = True, repo = None):
+    def initialize_server_database(self, empty = True, repo = None, warnings = True):
 
         if repo == None:
             repo = self.default_repository
@@ -13568,7 +13622,7 @@ class ServerInterface(TextInterface):
 
         if os.path.isfile(self.get_local_database_file(repo)):
 
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo, warnings = warnings)
 
             if dbconn.doesTableExist("baseinfo") and dbconn.doesTableExist("extrainfo"):
                 idpackages = dbconn.listAllIdpackages()
@@ -13610,9 +13664,9 @@ class ServerInterface(TextInterface):
         # initialize
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.initializeDatabase()
-        myQA = self.QA()
 
         if not empty:
+
             revisions_file = "/entropy-revisions-dump.txt"
             # dump revisions - as a backup
             if revisions_match:
@@ -13663,7 +13717,8 @@ class ServerInterface(TextInterface):
                 pkg_branch_dir = os.path.join(self.get_local_packages_directory(repo),mybranch)
                 pkglist = os.listdir(pkg_branch_dir)
                 # filter .md5 and .expired packages
-                pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
+                pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not \
+                    os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
 
                 if not pkglist:
                     continue
@@ -13735,9 +13790,11 @@ class ServerInterface(TextInterface):
 
             self.depends_table_initialize(repo)
 
-        if idpackages_added:
-            dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-            myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = repo)
+            myQA = self.QA()
+
+            if idpackages_added:
+                dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+                myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = repo, self_check = True)
 
         dbconn.commitChanges()
         self.close_server_databases()
@@ -14459,6 +14516,11 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
+class CommunityServerInterface(ServerInterface):
+
+    def __init__(self):
+        ServerInterface.__init__(self, community_repo = True)
+
 
 class ServerMirrorsInterface:
 
@@ -14520,7 +14582,7 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
@@ -14595,7 +14657,7 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
@@ -14640,12 +14702,12 @@ class ServerMirrorsInterface:
 
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
-            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
         else:
             mycwd = ftp_connection.getCWD()
             if mycwd != self.Entropy.get_remote_database_relative_path(repo):
                 ftp_connection.setBasedir()
-                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         lock_string = ''
@@ -14940,7 +15002,22 @@ class ServerMirrorsInterface:
         for uri in self.Entropy.get_remote_mirrors(repo):
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            try:
+                ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            except ftp.ftplib.error_perm:
+                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s] %s !" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            blue(_("mirror doesn't have a valid directory structure")),
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" !!! ")
+                )
+                ftp.closeConnection()
+                continue
             cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
             if cmethod == None:
                 raise exceptionTools.InvalidDataType("InvalidDataType: %s." % (
@@ -14996,7 +15073,11 @@ class ServerMirrorsInterface:
         for uri in self.Entropy.get_remote_mirrors(repo):
             data = [uri,False,False]
             ftp = FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            try:
+                ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            except ftp.ftplib.error_perm:
+                ftp.closeConnection()
+                continue
             if ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 # upload locked
                 data[1] = True
@@ -15339,7 +15420,7 @@ class ServerMirrorsInterface:
                     type = "info",
                     header = blue(" @@ ")
                 )
-                ftp.setCWD(self.ftp_basedir)
+                ftp.setCWD(self.ftp_basedir, dodir = True)
 
                 maxcount = len(self.myfiles)
                 counter = 0
@@ -15564,12 +15645,7 @@ class ServerMirrorsInterface:
         gave_up = False
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         ftp = self.FtpInterface(uri, self.Entropy)
-        try:
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
-        except:
-            self.create_mirror_directories(ftp,self.Entropy.get_remote_database_relative_path(repo))
-            ftp.closeConnection()
-            return gave_up # no errors, mirror is unlocked
+        ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
 
         lock_file = self.get_database_lockfile(repo)
         if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
@@ -16250,11 +16326,7 @@ class ServerMirrorsInterface:
         remote_packages_data = {}
 
         def do_cwd():
-            try:
-                ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo))
-            except:
-                self.create_mirror_directories(ftp_connection,self.Entropy.get_remote_packages_relative_path(repo))
-                ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo))
+            ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo), dodir = True)
             if not ftp_connection.isFileAvailable(branch):
                 ftp_connection.mkdir(branch)
             ftp_connection.setCWD(branch)

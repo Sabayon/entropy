@@ -626,6 +626,7 @@ def const_defaultSettings(rootdir):
             '/usr/lib/openmotif-2.2/libMrm.so.3',
             '/usr/lib/openmotif-2.2/libXm.so.3'
         ],
+        'officialserverrepositoryid': "sabayonlinux.org", # our official repository name
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
         'conntestlink': "http://www.google.com", 
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
@@ -1219,6 +1220,9 @@ def const_readServerSettings():
             if etpConst['branch'] not in etpConst['branches']:
                 etpConst['branches'].append(etpConst['branch'])
 
+        elif (line.find("officialserverrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+            etpConst['officialserverrepositoryid'] = line.split("|")[1].strip()
+
         elif line.startswith("repository|") and (len(line.split("|")) == 5):
 
             repoid = line.split("|")[1].strip()
@@ -1298,7 +1302,7 @@ def const_setupWithEnvironment():
 
     shell_repoid = os.getenv('ETP_REPO')
     if shell_repoid:
-        etpConst['officialrepositoryid'] = shell_repoid
+        etpConst['officialserverrepositoryid'] = shell_repoid
 
     expiration_days = os.getenv('ETP_EXPIRATION_DAYS')
     if expiration_days:
