@@ -6112,9 +6112,9 @@ class QAInterface:
             for mydepend in mydepends:
                 myatom = dbconn.retrieveAtom(mydepend)
                 self.Entropy.updateProgress(
-                    "[repo:%s] %s %s" % (
+                    "[repo:%s] %s => %s" % (
                         darkgreen(repo),
-                        scan_msg,
+                        darkgreen(atom),
                         darkred(myatom),
                     ),
                     importance = 0,
@@ -6129,9 +6129,9 @@ class QAInterface:
                     continue
                 broken = True
                 self.Entropy.updateProgress(
-                    "[repo:%s] %s %s: %s:" % (
+                    "[repo:%s] %s %s => %s" % (
                         darkgreen(repo),
-                        scan_msg,
+                        darkgreen(atom),
                         darkred(myatom),
                         bold(_("broken libraries detected")),
                     ),
@@ -6628,7 +6628,11 @@ class FtpInterface:
         for mydir in mydirs:
             mycurpath = os.path.join(mycurpath,mydir)
             if not self.isFileAvailable(mycurpath):
-                self.mkdir(mycurpath)
+                try:
+                    self.mkdir(mycurpath)
+                except self.ftplib.error_perm, e:
+                    if e[0][:3] != '550':
+                        raise
 
     def mkdir(self,directory):
         return self.ftpconn.mkd(directory)
@@ -12427,11 +12431,27 @@ class ServerInterface(TextInterface):
                         _("repository not configured"),
                     )
             )
+        if etpConst['clientserverrepoid'] in etpConst['server_repositories']:
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (
+                        etpConst['clientserverrepoid'],
+                        _("protected repository id, can't use this, sorry dude..."),
+                    )
+            )
 
+        if self.community_repo:
+            self.add_client_database_to_repositories()
         self.switch_default_repository(self.default_repository)
 
     def __del__(self):
         self.close_server_databases()
+
+    def add_client_database_to_repositories(self):
+        etpConst['server_repositories'][etpConst['clientserverrepoid']] = {}
+        mydata = {}
+        mydata['description'] = "Community Repositories System Database"
+        mydata['mirrors'] = []
+        mydata['community'] = False
+        etpConst['server_repositories'][etpConst['clientserverrepoid']].update(mydata)
 
     def setup_services(self):
         self.setup_entropy_settings()
@@ -12459,8 +12479,9 @@ class ServerInterface(TextInterface):
             if setting not in self.settings_to_backup:
                 self.settings_to_backup.append(setting)
         # setup client database
-        etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file(repo)
-        etpConst['clientdbid'] = etpConst['serverdbid']
+        if not self.community_repo:
+            etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file(repo)
+            etpConst['clientdbid'] = etpConst['serverdbid']
         const_createWorkingDirectories()
 
     def close_server_databases(self):
@@ -12494,14 +12515,23 @@ class ServerInterface(TextInterface):
         if save:
             self.save_default_repository(repoid)
 
+        self.setup_community_repositories_settings()
         self.show_interface_status()
+        self.handle_uninitialized_repository(repoid)
 
-        if not self.is_repository_initialized(self.default_repository):
+    def setup_community_repositories_settings(self):
+        if self.community_repo:
+            for repoid in etpConst['server_repositories']:
+                etpConst['server_repositories'][repoid]['community'] = True
+
+
+    def handle_uninitialized_repository(self, repoid):
+        if not self.is_repository_initialized(repoid):
             mytxt = blue("%s.") % (_("Your default repository is not initialized"),)
             self.updateProgress(
                 "[%s:%s] %s" % (
                         brown("repo"),
-                        purple(self.default_repository),
+                        purple(repoid),
                         mytxt,
                 ),
                 importance = 1,
@@ -12514,7 +12544,7 @@ class ServerInterface(TextInterface):
                 self.updateProgress(
                     "[%s:%s] %s" % (
                             brown("repo"),
-                            purple(self.default_repository),
+                            purple(repoid),
                             mytxt,
                     ),
                     importance = 1,
@@ -12523,16 +12553,25 @@ class ServerInterface(TextInterface):
                 )
             else:
                 # move empty database for security sake
-                dbfile = self.get_local_database_file(self.default_repository)
+                dbfile = self.get_local_database_file(repoid)
                 if os.path.isfile(dbfile):
                     shutil.move(dbfile,dbfile+".backup")
-                self.initialize_server_database(empty = True, repo = self.default_repository, warnings = False)
+                self.initialize_server_database(empty = True, repo = repoid, warnings = False)
 
 
     def show_interface_status(self):
+        type_txt = _("server-side repository")
+        if self.community_repo:
+            type_txt = _("community repository")
         mytxt = _("Entropy Server Interface Instance on repository") # ..on repository: <repository_name>
         self.updateProgress(
-            blue("%s: %s" % (mytxt,red(self.default_repository),)),
+            blue("%s: %s (%s: %s)" % (
+                    mytxt,
+                    red(self.default_repository),
+                    purple(_("type")),
+                    bold(type_txt),
+                )
+            ),
             importance = 2,
             type = "info",
             header = red(" @@ ")
@@ -12626,10 +12665,21 @@ class ServerInterface(TextInterface):
         self.close_server_database(dbc)
         return valid
 
-    def openServerDatabase(self, read_only = True, no_upload = True, just_reading = False, repo = None, indexing = True, warnings = True):
+    def openServerDatabase(
+            self,
+            read_only = True,
+            no_upload = True,
+            just_reading = False,
+            repo = None,
+            indexing = True,
+            warnings = True
+        ):
 
         if repo == None:
             repo = self.default_repository
+
+        if repo == etpConst['clientserverrepoid'] and self.community_repo:
+            return self.ClientService.clientDbconn
 
         if just_reading:
             read_only = True
@@ -16093,20 +16143,21 @@ class ServerMirrorsInterface:
 
         if upload_queue and not no_upload:
 
-            deps_not_found = self.Entropy.dependencies_test()
-            if deps_not_found:
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s: %s" % (
-                        brown(repo),
-                        red(_("sync")),
-                        blue(_("database sync forbidden")),
-                        red(_("dependencies_test() reported errors")),
-                    ),
-                    importance = 1,
-                    type = "error",
-                    header = darkred(" !!! ")
-                )
-                return 3,set(),set()
+            if not self.Entropy.community_repo:
+                deps_not_found = self.Entropy.dependencies_test()
+                if deps_not_found:
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s] %s: %s" % (
+                            brown(repo),
+                            red(_("sync")),
+                            blue(_("database sync forbidden")),
+                            red(_("dependencies_test() reported errors")),
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    return 3,set(),set()
 
             uris = [x[0] for x in upload_queue]
             errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)
@@ -17347,7 +17398,7 @@ class EntropyDatabaseInterface:
             self.ServiceInterface.MirrorsService.lock_mirrors(False, repo = self.server_repo)
         else:
             self.updateProgress(
-                darkgreen(_("Mirrors have not been unlocked. Run activator.")),
+                darkgreen(_("Mirrors have not been unlocked. Remember to sync them.")),
                 importance = 1,
                 type = "info",
                 header = brown(" * ")
@@ -17403,7 +17454,7 @@ class EntropyDatabaseInterface:
     def revisionBump(self):
         revision_file = self.ServiceInterface.get_local_database_revision_file(repo = self.server_repo)
         if not os.path.isfile(revision_file):
-            revision = 0
+            revision = 1
         else:
             f = open(revision_file,"r")
             revision = int(f.readline().strip())

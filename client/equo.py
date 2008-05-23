@@ -21,8 +21,10 @@
 '''
 import sys
 sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/server')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
 from entropyConstants import *
 from outputTools import *
@@ -160,6 +162,21 @@ myopts = [
     (2,'python-updater',1,_('migrate all Python modules to the latest installed version')),
     (2,'--ask',2,_('ask before making any changes')),
     (2,'--pretend',1,_('just show what would be done')),
+    None,
+    (1,'community',1,_('handles community-side features')),
+        (2,'repos',2,_('community repositories management functions')),
+            (3,'update',3,_('scan the System looking for newly compiled packages')),
+                (4,'--branch=<branch>',1,_('choose on what branch operating')),
+                (4,'--seekstore',2,_('analyze the Entropy Store directory directly')),
+                (4,'--repackage <atoms>',1,_('repackage the specified atoms')),
+                (4,'--noask',3,_('do not ask anything except critical things')),
+            (3,'inject <packages>',1,_('add binary packages to repository w/o affecting scopes (multipackages)')),
+                (4,'--branch=<branch>',1,_('choose on what branch operating')),
+        (2,'mirrors',2,_('community repositories mirrors management functions')),
+            (3,'sync',3,_('sync packages, database and also do some tidy')),
+                (4,'--branch=<branch>',1,_('choose on what branch operating')),
+                (4,'--noask',3,_('do not ask anything except critical things')),
+                (4,'--syncall',2,_('sync all the configured repositories')),
     None,
     (1,'cache',2,_('handles Entropy cache')),
     (2,'clean',2,_('clean Entropy cache')),
@@ -348,6 +365,37 @@ try:
     elif (options[0] == "packages"):
         import text_rescue
         rc = text_rescue.updater(options[1:])
+
+    elif (options[0] == "community"):
+        etpConst['community']['mode'] = True
+        myopts = options[1:]
+        if myopts:
+            if myopts[0] == "repos":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    repos_opts = myopts[1:]
+                    if repos_opts:
+                        if repos_opts[0] == "update":
+                            rc = server_reagent.update(repos_opts[1:])
+                            server_reagent.Entropy.close_server_databases()
+                        elif repos_opts[0] == "inject":
+                            rc = server_reagent.inject(repos_opts[1:])
+                            server_reagent.Entropy.close_server_databases()
+            elif myopts[0] == "mirrors":
+                try:
+                    import server_activator
+                except ImportError:
+                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    mirrors_opts = myopts[1:]
+                    if mirrors_opts:
+                        if mirrors_opts[0] == "sync":
+                            server_activator.sync(options[1:])
 
     elif (options[0] == "cleanup"):
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])

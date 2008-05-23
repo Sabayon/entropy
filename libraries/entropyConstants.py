@@ -520,6 +520,9 @@ def const_defaultSettings(rootdir):
     etpConst.clear()
     myConst = {
         'server_repositories': {},
+        'community': {
+            'mode': False,
+        },
         'backed_up': {},
         'sql_destroy': etpSQLInitDestroyAll,
         'sql_init': etpSQLInit,
@@ -730,6 +733,7 @@ def const_defaultSettings(rootdir):
             'x11-drivers/ati-drivers': ['x11-drivers/ati-drivers'],
         },
 
+        'clientserverrepoid': "__system__",
         'clientdbid': "client",
         'serverdbid': "etpdb:",
         'genericdbid': "generic",
@@ -1236,6 +1240,7 @@ def const_readServerSettings():
                     etpConst['server_repositories'][repoid] = {}
                     etpConst['server_repositories'][repoid]['description'] = repodesc
                     etpConst['server_repositories'][repoid]['mirrors'] = []
+                    etpConst['server_repositories'][repoid]['community'] = False
                     if repohandlers:
                         repohandlers = os.path.join(repohandlers,etpConst['product'],repoid,"handlers")
                         etpConst['server_repositories'][repoid]['handler'] = repohandlers
