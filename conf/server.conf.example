@@ -8,10 +8,17 @@
 # Specify here the currently maintained branches
 #
 #   example:
-#   branches|3.5 2008
+#   branches|3.5 3.6
 #
-branches|3.5 2008
+branches|3.5
 
+#
+#  syntax for officialserverrepositoryid:
+#
+#    officialserverrepositoryid: Repository identifier for the official main distribution repository
+#    officialserverrepositoryid|<repository identifier>
+#
+officialserverrepositoryid|sabayonlinux.org
 
 #
 #  syntax for repositories:
