@@ -54,6 +54,7 @@ myopts = [
         (2,'package.unmask [repos]',2,_('show package.unmask for the chosen repositories')),
         (2,'package.keywords [repos]',1,_('show package.keywords for the chosen repositories')),
         (2,'package.use [repos]',2,_('show package.use for the chosen repositories')),
+        (2,'profile.link [repos]',2,_('show make.profile link for the chosen repositories')),
     (1,'status',2,_('show respositories status')),
     None,
     (1,'search',2,_('search packages in repositories')),

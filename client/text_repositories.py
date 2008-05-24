@@ -67,8 +67,14 @@ def repositories(options):
 
 
 def showRepositoryFile(myfile, repos):
+
+    if myfile not in ["make.conf", "profile.link", "package.use", \
+        "package.mask", "package.unmask","package.keywords"]:
+            return - 10
+
     if not repos:
         return -10
+
     myrepos = []
     for repo in repos:
         if repo in etpRepositories:
