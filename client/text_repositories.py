@@ -56,12 +56,50 @@ def repositories(options):
         for repo in etpRepositories:
             showRepositoryInfo(repo)
     elif (options[0] == "repoinfo"):
-        showRepositories()
+        myopts = options[1:]
+        if not myopts:
+            rc = -10
+        else:
+            rc = showRepositoryFile(myopts[0], myopts[1:])
     else:
         rc = -10
     return rc
 
-# this function shows a list of enabled repositories
+
+def showRepositoryFile(myfile, repos):
+    if not repos:
+        return -10
+    myrepos = []
+    for repo in repos:
+        if repo in etpRepositories:
+            myrepos.append(repo)
+    if not myrepos:
+        if not etpUi['quiet']:
+            print_error(darkred(" * ")+darkred("%s." % (_("No valid repositories"),) ))
+        return 1
+
+    for repo in myrepos:
+        mypath = os.path.join(etpRepositories[repo]['dbpath'],myfile)
+        if (not os.path.isfile(mypath)) or (not os.access(mypath,os.R_OK)):
+            if not etpUi['quiet']:
+                mytxt = "%s: %s." % (blue(os.path.basename(mypath)),darkred(_("not available")),)
+                print_error(darkred(" [%s] " % (repo,) )+mytxt)
+            continue
+        f = open(mypath,"r")
+        line = f.readline()
+        if not line:
+            if not etpUi['quiet']:
+                mytxt = "%s: %s." % (blue(os.path.basename(mypath)),darkred(_("is empty")),)
+                print_error(darkred(" [%s] " % (repo,) )+mytxt)
+            continue
+        if not etpUi['quiet']:
+            mytxt = "%s: %s." % (darkred(_("showing")),blue(os.path.basename(mypath)),)
+            print_info(darkred(" [%s] " % (repo,) )+mytxt)
+        while line:
+            sys.stdout.write(line)
+            line = f.readline()
+        f.close()
+
 def showRepositories():
     print_info(darkred(" * ")+darkgreen("%s:" % (_("Active Repositories"),) ))
     repoNumber = 0

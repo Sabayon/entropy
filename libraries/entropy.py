@@ -4241,102 +4241,13 @@ class PackageInterface:
 
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]
-                    # self.infoDict['removeidpackage']
-                    avail = self.Entropy.clientDbconn.isFileAvailable(todbfile, get_id = True)
-                    if (self.infoDict['removeidpackage'] not in avail) and avail:
-                        mytxt = darkred(_("Collision found during install for"))
-                        mytxt += " %s - %s" % (blue(tofile),darkred(_("cannot overwrite")),)
-                        self.Entropy.updateProgress(
-                            red("QA: ")+mytxt,
-                            importance = 1,
-                            type = "warning",
-                            header = darkred("   ## ")
-                        )
-                        self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
-                            "WARNING!!! Collision found during install for %s - cannot overwrite" % (tofile,)
-                        )
+                    myrc = self._handle_install_collision_protect(tofile, todbfile)
+                    if not myrc:
                         continue
 
-                # -- CONFIGURATION FILE PROTECTION --
-                protected = False
-                tofile_before_protect = tofile
-
-                try:
-
-                    for x in protect:
-                        x = x.encode('raw_unicode_escape')
-                        if tofile.startswith(x):
-                            protected = True
-                            break
-
-                    if protected: # check if perhaps, file is masked, so unprotected
-                        newmask = [x.encode('raw_unicode_escape') for x in mask]
-                        if tofile in newmask:
-                            protected = False
-                        elif os.path.dirname(tofile) in newmask:
-                            protected = False
-
-                    if not os.path.lexists(tofile):
-                        protected = False # file doesn't exist
-
-                    # check if it's a text file
-                    if (protected) and os.path.isfile(tofile):
-                        protected = self.Entropy.entropyTools.istextfile(tofile)
-                    else:
-                        protected = False # it's not a file
-
-                    # request new tofile then
-                    if protected:
-                        if tofile not in etpConst['configprotectskip']:
-                            tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
-                            if not prot_status:
-                                protected = False
-                            else:
-                                oldtofile = tofile
-                                if oldtofile.find("._cfg") != -1:
-                                    oldtofile = os.path.dirname(oldtofile)+"/"+os.path.basename(oldtofile)[10:]
-                                self.Entropy.clientLog.log(
-                                    ETP_LOGPRI_INFO,
-                                    ETP_LOGLEVEL_NORMAL,
-                                    "Protecting config file: %s" % (oldtofile,)
-                                )
-                                mytxt = red("%s: %s") % (_("Protecting config file"),oldtofile,)
-                                self.Entropy.updateProgress(
-                                    mytxt,
-                                    importance = 1,
-                                    type = "warning",
-                                    header = darkred("   ## ")
-                                )
-                        else:
-                            self.Entropy.clientLog.log(
-                                ETP_LOGPRI_INFO,
-                                ETP_LOGLEVEL_NORMAL,
-                                "Skipping config file installation, as stated in equo.conf: %s" % (tofile,)
-                            )
-                            mytxt = "%s: %s" % (_("Skipping file installation"),tofile,)
-                            self.Entropy.updateProgress(
-                                mytxt,
-                                importance = 1,
-                                type = "warning",
-                                header = darkred("   ## ")
-                            )
-                            continue
-
-                    # -- CONFIGURATION FILE PROTECTION --
-
-                except Exception, e:
-                    self.Entropy.entropyTools.printTraceback()
-                    protected = False # safely revert to false
-                    tofile = tofile_before_protect
-                    mytxt = darkred("%s: %s") % (_("Cannot check CONFIG PROTECTION. Error"),e,)
-                    self.Entropy.updateProgress(
-                        red("QA: ")+mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred("   ## ")
-                    )
+                protected, tofile, do_continue = self._handle_config_protect(protect, mask, fromfile, tofile)
+                if do_continue:
+                    continue
 
                 try:
 
@@ -4387,7 +4298,7 @@ class PackageInterface:
                         rc = os.system("mv "+fromfile+" "+tofile)
                         if (rc != 0):
                             return 4
-                if (protected):
+                if protected:
                     # add to disk cache
                     oldquiet = etpUi['quiet']
                     etpUi['quiet'] = True
@@ -4395,6 +4306,107 @@ class PackageInterface:
                     etpUi['quiet'] = oldquiet
 
         return 0
+
+    def _handle_config_protect(self, protect, mask, fromfile, tofile):
+
+        protected = False
+        tofile_before_protect = tofile
+        do_continue = False
+
+        try:
+
+            for x in protect:
+                x = x.encode('raw_unicode_escape')
+                if tofile.startswith(x):
+                    protected = True
+                    break
+
+            if protected: # check if perhaps, file is masked, so unprotected
+                newmask = [x.encode('raw_unicode_escape') for x in mask]
+                if tofile in newmask:
+                    protected = False
+                elif os.path.dirname(tofile) in newmask:
+                    protected = False
+
+            if not os.path.lexists(tofile):
+                protected = False # file doesn't exist
+
+            # check if it's a text file
+            if (protected) and os.path.isfile(tofile):
+                protected = self.Entropy.entropyTools.istextfile(tofile)
+            else:
+                protected = False # it's not a file
+
+            # request new tofile then
+            if protected:
+                if tofile not in etpConst['configprotectskip']:
+                    tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
+                    if not prot_status:
+                        protected = False
+                    else:
+                        oldtofile = tofile
+                        if oldtofile.find("._cfg") != -1:
+                            oldtofile = os.path.dirname(oldtofile)+"/"+os.path.basename(oldtofile)[10:]
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "Protecting config file: %s" % (oldtofile,)
+                        )
+                        mytxt = red("%s: %s") % (_("Protecting config file"),oldtofile,)
+                        self.Entropy.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning",
+                            header = darkred("   ## ")
+                        )
+                else:
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "Skipping config file installation, as stated in equo.conf: %s" % (tofile,)
+                    )
+                    mytxt = "%s: %s" % (_("Skipping file installation"),tofile,)
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred("   ## ")
+                    )
+                    do_continue = True
+
+        except Exception, e:
+            self.Entropy.entropyTools.printTraceback()
+            protected = False # safely revert to false
+            tofile = tofile_before_protect
+            mytxt = darkred("%s: %s") % (_("Cannot check CONFIG PROTECTION. Error"),e,)
+            self.Entropy.updateProgress(
+                red("QA: ")+mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred("   ## ")
+            )
+
+        return protected, tofile, do_continue
+
+
+    def _handle_install_collision_protect(self, tofile, todbfile):
+        avail = self.Entropy.clientDbconn.isFileAvailable(todbfile, get_id = True)
+        if (self.infoDict['removeidpackage'] not in avail) and avail:
+            mytxt = darkred(_("Collision found during install for"))
+            mytxt += " %s - %s" % (blue(tofile),darkred(_("cannot overwrite")),)
+            self.Entropy.updateProgress(
+                red("QA: ")+mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred("   ## ")
+            )
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "WARNING!!! Collision found during install for %s - cannot overwrite" % (tofile,)
+            )
+            return False
+        return True
 
 
     def fetch_step(self):
@@ -5404,7 +5416,13 @@ class RepoInterface:
 
     def __construct_paths(self, item, repo, cmethod):
 
-        supported_items = ("db","rev","ck","lock","mask","dbdump","dbdumpck","lic_whitelist")
+        supported_items = (
+            "db","rev","ck",
+            "lock","mask","dbdump",
+            "dbdumpck","lic_whitelist","make.conf",
+            "package.mask","package.unmask","package.keywords",
+            "package.use",
+        )
         if item not in supported_items:
             mytxt = _("Supported items: %s") % (supported_items,)
             raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
@@ -5435,6 +5453,26 @@ class RepoInterface:
         elif item == "mask":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasemaskfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
+        elif item == "make.conf":
+            myfile = os.path.basename(etpConst['spm']['global_make_conf'])
+            url = etpRepositories[repo]['database'] + "/" + myfile
+            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
+        elif item == "package.mask":
+            myfile = os.path.basename(etpConst['spm']['global_package_mask'])
+            url = etpRepositories[repo]['database'] + "/" + myfile
+            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
+        elif item == "package.unmask":
+            myfile = os.path.basename(etpConst['spm']['global_package_unmask'])
+            url = etpRepositories[repo]['database'] + "/" + myfile
+            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
+        elif item == "package.keywords":
+            myfile = os.path.basename(etpConst['spm']['global_package_keywords'])
+            url = etpRepositories[repo]['database'] + "/" + myfile
+            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
+        elif item == "package.use":
+            myfile = os.path.basename(etpConst['spm']['global_package_use'])
+            url = etpRepositories[repo]['database'] + "/" + myfile
+            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "lic_whitelist":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaselicwhitelistfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaselicwhitelistfile']
@@ -5646,65 +5684,50 @@ class RepoInterface:
         return 0
 
 
+    def show_repository_information(self, repo, count_info):
+
+        self.Entropy.updateProgress(
+            bold("%s") % ( etpRepositories[repo]['description'] ),
+            importance = 2,
+            type = "info",
+            count = count_info,
+            header = blue("  # ")
+        )
+        mytxt = "%s: %s" % (red(_("Database URL")),darkgreen(etpRepositories[repo]['database']),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = blue("  # ")
+        )
+        mytxt = "%s: %s" % (red(_("Database local path")),darkgreen(etpRepositories[repo]['dbpath']),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            type = "info",
+            header = blue("  # ")
+        )
+
+
     def run_sync(self):
+
         self.dbupdated = False
         repocount = 0
         repolength = len(self.reponames)
         for repo in self.reponames:
 
-            self.reset_dbformat_eapi()
             repocount += 1
+            self.reset_dbformat_eapi()
+            self.show_repository_information(repo, (repocount,repolength))
 
-            self.Entropy.updateProgress(
-                bold("%s") % ( etpRepositories[repo]['description'] ),
-                importance = 2,
-                type = "info",
-                count = (repocount, repolength),
-                header = blue("  # ")
-            )
-            mytxt = "%s: %s" % (red(_("Database URL")),darkgreen(etpRepositories[repo]['database']),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "info",
-                header = blue("  # ")
-            )
-            mytxt = "%s: %s" % (red(_("Database local path")),darkgreen(etpRepositories[repo]['dbpath']),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = blue("  # ")
-            )
-
-            # check if database is already updated to the latest revision
-            update = self.is_repository_updatable(repo)
-            if not update:
-                mytxt = "%s: %s." % (bold(_("Attention")),red(_("database is already up to date")),)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "info",
-                    header = "\t"
-                )
+            updated = self.handle_repository_update(repo)
+            if updated:
                 self.Entropy.cycleDone()
                 self.alreadyUpdated += 1
                 continue
 
-            # get database lock
-            unlocked = self.is_repository_unlocked(repo)
-            if not unlocked:
-                mytxt = "%s: %s. %s." % (
-                    bold(_("Attention")),
-                    red(_("Repository is being updated")),
-                    red(_("Try again in a few minutes")),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "\t"
-                )
+            locked = self.handle_repository_lock(repo)
+            if locked:
                 self.Entropy.cycleDone()
                 continue
 
@@ -5713,57 +5736,13 @@ class RepoInterface:
             cmethod = self.__validate_compression_method(repo)
             self.__ensure_repository_path(repo)
 
-            # starting to download
-            mytxt = "%s ..." % (red(_("Downloading repository database")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "info",
-                header = "\t"
-            )
-            down_status = False
-            if self.dbformat_eapi == 2:
-                down_status = self.download_item("dbdump", repo, cmethod)
-            if not down_status: # fallback to old db
-                self.dbformat_eapi = 1
-                down_status = self.download_item("db", repo, cmethod)
+            down_status = self.handle_database_download(repo, cmethod)
             if not down_status:
-                mytxt = "%s: %s." % (bold(_("Attention")),red(_("database does not exist online")),)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "\t"
-                )
                 self.Entropy.cycleDone()
                 self.notAvailable += 1
                 continue
 
-            hashfile = etpConst['etpdatabasehashfile']
-            downitem = 'ck'
-            if self.dbformat_eapi == 2: # EAPI = 2
-                hashfile = etpConst[cmethod[4]]
-                downitem = 'dbdumpck'
-
-            mytxt = "%s %s %s" % (red(_("Downloading checksum")),darkgreen(hashfile),red("..."),)
-            # download checksum
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t"
-            )
-
-            db_down_status = self.download_item(downitem, repo, cmethod)
-            if not db_down_status:
-                mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),red(_("Cannot verify database integrity")),)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "\t"
-                )
-
+            db_down_status = self.handle_database_checksum_download(repo, cmethod)
             # dealing with EAPI
             rc = 0
 
@@ -5776,22 +5755,12 @@ class RepoInterface:
                     self.Entropy.cycleDone()
                     continue
 
-            file_to_unpack = etpConst['etpdatabasedump']
-            if self.dbformat_eapi == 1:
-                file_to_unpack = etpConst['etpdatabasefile']
-
-            mytxt = "%s %s %s" % (red(_("Unpacking database to")),darkgreen(file_to_unpack),red("..."),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t"
-            )
-
+            # some variables
             do_db_update_transfer = False
             dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
             dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
             dbfile_old = dbfile+".sync"
+
             if os.path.isfile(dbfile):
                 try:
                     shutil.move(dbfile,dbfile_old)
@@ -5800,15 +5769,8 @@ class RepoInterface:
                     pass
 
             # unpack database
-            myrc = self.__unpack_downloaded_database(repo, cmethod)
-            if myrc != 0:
-                mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),red(_("Skipping repository")),)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "\t"
-                )
+            unpack_status = self.handle_downloaded_database_unpack(repo, cmethod)
+            if not unpack_status:
                 # delete all
                 self.__remove_repository_files(repo, cmethod)
                 self.syncErrors = True
@@ -5834,40 +5796,11 @@ class RepoInterface:
                 do_db_update_transfer = False
 
             if self.dbformat_eapi == 2:
-                # load the dump into database
-                mytxt = "%s %s, %s %s" % (
-                    red(_("Injecting downloaded dump")),
-                    darkgreen(etpConst[cmethod[3]]),
-                    red(_("please wait")),
-                    red("..."),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    type = "info",
-                    header = "\t"
-                )
-                dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
-                rc = dbconn.doDatabaseImport(dumpfile, dbfile)
-                dbconn.closeDB()
+                rc = self.do_eapi2_inject_downloaded_dump(dumpfile, dbfile, cmethod)
 
             if self.dbformat_eapi in (1,2,):
-
-                dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
                 if do_db_update_transfer:
-                    old_dbconn = self.Entropy.openGenericDatabase(dbfile_old, xcache = False, indexing_override = False)
-                    upd_rc = 0
-                    try:
-                        upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
-                    except (dbapi2.OperationalError,dbapi2.IntegrityError,):
-                        pass
-                    old_dbconn.closeDB()
-                    del old_dbconn
-                    if upd_rc > 0:
-                        # -1 means no changes, == force used
-                        # 0 means too much hassle
-                        shutil.move(dbfile_old,dbfile)
-
+                    self.do_eapi1_eapi2_databases_alignment(dbfile, dbfile_old)
                 if self.dbformat_eapi == 2:
                     # remove the dump
                     os.remove(dumpfile)
@@ -5883,114 +5816,11 @@ class RepoInterface:
 
             # database is going to be updated
             self.dbupdated = True
+            self.do_standard_items_download(repo)
 
-            # download packages.db.mask
-            mytxt = "%s %s %s" % (
-                red(_("Downloading package mask")),
-                darkgreen(etpConst['etpdatabasemaskfile']),
-                red("..."),
-            )
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t",
-                back = True
-            )
-            mask_status = self.download_item("mask", repo)
-            if not mask_status:
-                mask_message = "%s: %s." % (blue(etpConst['etpdatabasemaskfile']),red(_("not available, It's ok")))
-            else:
-                mask_message = "%s: %s." % (blue(etpConst['etpdatabasemaskfile']),red(_("downloaded, awesome :-)")))
-            self.Entropy.updateProgress(
-                mask_message,
-                importance = 0,
-                type = "info",
-                header = "\t"
-            )
-
-            mytxt = "%s %s %s" % (
-                red(_("Downloading license whitelist")),
-                darkgreen(etpConst['etpdatabaselicwhitelistfile']),
-                red("..."),
-            )
-            # download packages.db.lic_whitelist
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t",
-                back = True
-            )
-            lic_status = self.download_item("lic_whitelist", repo)
-            if not lic_status:
-                lic_message = "%s: %s." % (blue(etpConst['etpdatabaselicwhitelistfile']),red(_("not available, It's ok")))
-            else:
-                lic_message = "%s: %s." % (blue(etpConst['etpdatabaselicwhitelistfile']),red(_("downloaded, cool :-)")))
-            self.Entropy.updateProgress(
-                lic_message,
-                importance = 0,
-                type = "info",
-                header = "\t"
-            )
-
-            mytxt = "%s %s %s" % (
-                red(_("Downloading revision")),
-                darkgreen(etpConst['etpdatabaserevisionfile']),
-                red("..."),
-            )
-            # download revision
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t"
-            )
-            rev_status = self.download_item("rev", repo)
-            if not rev_status:
-                self.Entropy.updateProgress(
-                    red(_("Cannot download repository revision, don't ask me why !")),
-                    importance = 1,
-                    type = "warning",
-                    header = "\t"
-                )
-            else:
-                mytxt = "%s: %s" % (
-                    red(_("Updated repository revision")),
-                    bold(str(self.Entropy.get_repository_revision(repo))),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "info",
-                    header = "\t"
-                )
-
-                if self.Entropy.indexing:
-                    # renice a bit, to avoid eating resources
-                    old_prio = self.Entropy.set_priority(15)
-                    mytxt = red("%s ...") % (_("Indexing Repository metadata"),)
-                    self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "info",
-                        header = "\t",
-                        back = True
-                    )
-                    dbconn = self.Entropy.openRepositoryDatabase(repo)
-                    dbconn.createAllIndexes()
-                    # get list of indexes
-                    repo_indexes = dbconn.listAllIndexes()
-                    try: # client db can be absent
-                        client_indexes = self.Entropy.clientDbconn.listAllIndexes()
-                        if repo_indexes != client_indexes:
-                            self.Entropy.clientDbconn.createAllIndexes()
-                    except:
-                        pass
-                    self.Entropy.set_priority(old_prio)
-                # update revision in etpRepositories
-                self.Entropy.update_repository_revision(repo)
-
+            self.Entropy.update_repository_revision(repo)
+            if self.Entropy.indexing:
+                self.do_database_indexing(repo)
             self.Entropy.cycleDone()
 
         # keep them closed
@@ -6001,20 +5831,8 @@ class RepoInterface:
         # clean caches
         if self.dbupdated:
             self.Entropy.generate_cache(depcache = self.Entropy.xcache, configcache = False, client_purge = False)
-            # update Security Advisories
             if self.fetchSecurity:
-                try:
-                    securityConn = self.Entropy.Security()
-                    securityConn.fetch_advisories()
-                except Exception, e:
-                    self.Entropy.entropyTools.printTraceback()
-                    mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
-                    self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred(" @@ ")
-                    )
+                self.do_update_security_advisories()
 
         if self.syncErrors:
             self.Entropy.updateProgress(
@@ -6027,13 +5845,18 @@ class RepoInterface:
             self.Entropy._resources_run_remove_lock()
             return 128
 
+        if not self.noEquoCheck:
+            self.check_entropy_updates()
+
+        return 0
+
+    def check_entropy_updates(self):
         rc = False
         if not self.noEquoCheck:
             try:
                 rc = self.Entropy.check_equo_updates()
             except:
                 pass
-
         if rc:
             self.newEquo = True
             mytxt = "%s: %s. %s." % (
@@ -6047,7 +5870,319 @@ class RepoInterface:
                 type = "info",
                 header = bold(" !!! ")
             )
-        return 0
+
+    def handle_downloaded_database_unpack(self, repo, cmethod):
+
+        file_to_unpack = etpConst['etpdatabasedump']
+        if self.dbformat_eapi == 1:
+            file_to_unpack = etpConst['etpdatabasefile']
+        mytxt = "%s %s %s" % (red(_("Unpacking database to")),darkgreen(file_to_unpack),red("..."),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            type = "info",
+            header = "\t"
+        )
+
+        myrc = self.__unpack_downloaded_database(repo, cmethod)
+        if myrc != 0:
+            mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),red(_("Skipping repository")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = "\t"
+            )
+            return False
+        return True
+
+
+    def handle_database_checksum_download(self, repo, cmethod):
+
+        hashfile = etpConst['etpdatabasehashfile']
+        downitem = 'ck'
+        if self.dbformat_eapi == 2: # EAPI = 2
+            hashfile = etpConst[cmethod[4]]
+            downitem = 'dbdumpck'
+
+        mytxt = "%s %s %s" % (red(_("Downloading checksum")),darkgreen(hashfile),red("..."),)
+        # download checksum
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            type = "info",
+            header = "\t"
+        )
+
+        db_down_status = self.download_item(downitem, repo, cmethod)
+        if not db_down_status:
+            mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),red(_("Cannot verify database integrity")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = "\t"
+            )
+        return db_down_status
+
+
+    def handle_database_download(self, repo, cmethod):
+        # starting to download
+        mytxt = "%s ..." % (red(_("Downloading repository database")),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = "\t"
+        )
+        down_status = False
+        if self.dbformat_eapi == 2:
+            down_status = self.download_item("dbdump", repo, cmethod)
+        if not down_status: # fallback to old db
+            self.dbformat_eapi = 1
+            down_status = self.download_item("db", repo, cmethod)
+        if not down_status:
+            mytxt = "%s: %s." % (bold(_("Attention")),red(_("database does not exist online")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = "\t"
+            )
+        return down_status
+
+    def handle_repository_update(self, repo):
+        # check if database is already updated to the latest revision
+        update = self.is_repository_updatable(repo)
+        if not update:
+            mytxt = "%s: %s." % (bold(_("Attention")),red(_("database is already up to date")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = "\t"
+            )
+            return True
+        return False
+
+    def handle_repository_lock(self, repo):
+        # get database lock
+        unlocked = self.is_repository_unlocked(repo)
+        if not unlocked:
+            mytxt = "%s: %s. %s." % (
+                bold(_("Attention")),
+                red(_("Repository is being updated")),
+                red(_("Try again in a few minutes")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = "\t"
+            )
+            return True
+        return False
+
+    def do_eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
+
+        dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
+        old_dbconn = self.Entropy.openGenericDatabase(dbfile_old, xcache = False, indexing_override = False)
+        upd_rc = 0
+        try:
+            upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
+        except (dbapi2.OperationalError,dbapi2.IntegrityError,):
+            pass
+        old_dbconn.closeDB()
+        dbconn.closeDB()
+        if upd_rc > 0:
+            # -1 means no changes, == force used
+            # 0 means too much hassle
+            shutil.move(dbfile_old,dbfile)
+        return upd_rc
+
+    def do_eapi2_inject_downloaded_dump(self, dumpfile, dbfile, cmethod):
+
+        # load the dump into database
+        mytxt = "%s %s, %s %s" % (
+            red(_("Injecting downloaded dump")),
+            darkgreen(etpConst[cmethod[3]]),
+            red(_("please wait")),
+            red("..."),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            type = "info",
+            header = "\t"
+        )
+        dbconn = self.Entropy.openGenericDatabase(dbfile, xcache = False, indexing_override = False)
+        rc = dbconn.doDatabaseImport(dumpfile, dbfile)
+        dbconn.closeDB()
+        return rc
+
+
+    def do_update_security_advisories(self):
+        # update Security Advisories
+        try:
+            securityConn = self.Entropy.Security()
+            securityConn.fetch_advisories()
+        except Exception, e:
+            self.Entropy.entropyTools.printTraceback()
+            mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred(" @@ ")
+            )
+
+    def do_standard_items_download(self, repo):
+
+        download_items = [
+            (
+                "mask",
+                etpConst['etpdatabasemaskfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading package mask")),
+                    darkgreen(etpConst['etpdatabasemaskfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "lic_whitelist",
+                etpConst['etpdatabaselicwhitelistfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading license whitelist")),
+                    darkgreen(etpConst['etpdatabaselicwhitelistfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "rev",
+                etpConst['etpdatabasemaskfile'],
+                False,
+                "%s %s %s" % (
+                    red(_("Downloading revision")),
+                    darkgreen(etpConst['etpdatabaserevisionfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "make.conf",
+                os.path.basename(etpConst['spm']['global_make_conf']),
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SPM global configuration")),
+                    darkgreen(os.path.basename(etpConst['spm']['global_make_conf'])),
+                    red("..."),
+                )
+            ),
+            (
+                "package.mask",
+                os.path.basename(etpConst['spm']['global_package_mask']),
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SPM package masking configuration")),
+                    darkgreen(os.path.basename(etpConst['spm']['global_package_mask'])),
+                    red("..."),
+                )
+            ),
+            (
+                "package.mask",
+                os.path.basename(etpConst['spm']['global_package_unmask']),
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SPM package unmasking configuration")),
+                    darkgreen(os.path.basename(etpConst['spm']['global_package_unmask'])),
+                    red("..."),
+                )
+            ),
+            (
+                "package.keywords",
+                os.path.basename(etpConst['spm']['global_package_keywords']),
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SPM package keywording configuration")),
+                    darkgreen(os.path.basename(etpConst['spm']['global_package_keywords'])),
+                    red("..."),
+                )
+            ),
+            (
+                "package.use",
+                os.path.basename(etpConst['spm']['global_package_use']),
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SPM package USE flags configuration")),
+                    darkgreen(os.path.basename(etpConst['spm']['global_package_use'])),
+                    red("..."),
+                )
+            ),
+        ]
+
+        for item, myfile, ignorable, mytxt in download_items:
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t",
+                back = True
+            )
+            mystatus = self.download_item(item, repo)
+            mytype = 'info'
+            if not mystatus:
+                if ignorable:
+                    message = "%s: %s." % (blue(myfile),red(_("not available, it's ok")))
+                else:
+                    mytype = 'warning'
+                    message = "%s: %s." % (blue(myfile),darkred(_("not available, not much ok!")))
+            else:
+                message = "%s: %s." % (blue(myfile),red(_("not available, it's ok")))
+            self.Entropy.updateProgress(
+                message,
+                importance = 0,
+                type = mytype,
+                header = "\t"
+            )
+
+        mytxt = "%s: %s" % (
+            red(_("Repository revision")),
+            bold(str(self.Entropy.get_repository_revision(repo))),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = "\t"
+        )
+
+
+
+    def do_database_indexing(self, repo):
+
+        # renice a bit, to avoid eating resources
+        old_prio = self.Entropy.set_priority(15)
+        mytxt = red("%s ...") % (_("Indexing Repository metadata"),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = "\t",
+            back = True
+        )
+        dbconn = self.Entropy.openRepositoryDatabase(repo)
+        dbconn.createAllIndexes()
+        # get list of indexes
+        repo_indexes = dbconn.listAllIndexes()
+        try: # client db can be absent
+            client_indexes = self.Entropy.clientDbconn.listAllIndexes()
+            if repo_indexes != client_indexes:
+                self.Entropy.clientDbconn.createAllIndexes()
+        except:
+            pass
+        self.Entropy.set_priority(old_prio)
+
 
     def sync(self):
 
@@ -7609,6 +7744,10 @@ class TriggerInterface:
 
         stage = self.phase
         pkgdata = self.pkgdata
+        # since I am sick of seeing pychecker reporting this
+        # let me do a nasty thing
+        x = type(stage),type(pkgdata)
+        del x
         my_ext_status = 0
         execfile(triggerfile)
         os.remove(triggerfile)
@@ -19427,10 +19566,7 @@ class EntropyDatabaseInterface:
     def retrieveNeeded(self, idpackage, extended = False, format = False):
 
         if extended and not self.doesColumnInTableExist("needed","elfclass"):
-            if format:
-                return {}
-            else:
-                return []
+            return {}
 
         if extended:
             self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
@@ -21314,14 +21450,16 @@ class EntropyDatabaseInterface:
         mykeywords = self.retrieveKeywords(idpackage)
         # XXX WORKAROUND
         if not mykeywords: mykeywords = [''] # ** is fine then
-        # firstly, check if package keywords are in etpConst['keywords'] (universal keywords have been merged from package.mask)
+        # firstly, check if package keywords are in etpConst['keywords']
+        # (universal keywords have been merged from package.mask)
         for key in etpConst['keywords']:
             if key in mykeywords:
                 # found! all fine
                 idpackageValidatorCache[(idpackage,reponame)] = idpackage,2
                 return idpackage,2
 
-        # if we get here, it means we didn't find mykeywords in etpConst['keywords'], we need to seek etpConst['packagemasking']['keywords']
+        # if we get here, it means we didn't find mykeywords in etpConst['keywords']
+        # we need to seek etpConst['packagemasking']['keywords']
         # seek in repository first
         if reponame in etpConst['packagemasking']['keywords']['repositories']:
             for keyword in etpConst['packagemasking']['keywords']['repositories'][reponame]:
