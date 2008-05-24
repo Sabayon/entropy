@@ -178,6 +178,20 @@ myopts = [
                 (4,'--branch=<branch>',1,_('choose on what branch operating')),
                 (4,'--noask',3,_('do not ask anything except critical things')),
                 (4,'--syncall',2,_('sync all the configured repositories')),
+            (3,'packages-sync',2,_('sync packages across primary mirrors')),
+                (4,'--ask',3,_('ask before making any changes')),
+                (4,'--pretend',2,_('only show what would be done')),
+                (4,'--syncall',2,_('sync all the configured repositories')),
+                (4,'--do-packages-check',1,_('also verify packages integrity')),
+            (3,'db-sync',3,_('sync the current repository database across primary mirrors')),
+                (4,'--syncall',2,_('sync all the configured repositories')),
+            (3,'db-lock',3,_('lock the current repository database (server-side)')),
+            (3,'db-unlock',2,_('unlock the current repository database (server-side)')),
+            (3,'db-download-lock',1,_('lock the current repository database (client-side)')),
+            (3,'db-download-unlock',1,_('unlock the current repository database (client-side)')),
+            (3,'db-lock-status',2,_('show current lock status')),
+            (3,'tidy',3,_('remove binary packages not in repositories and expired')),
+
 
         (2,'database',1,_('community repositories database functions')),
             (3,'--initialize',2,_('(re)initialize the current repository database')),
@@ -436,6 +450,13 @@ try:
                     if mirrors_opts:
                         if mirrors_opts[0] == "sync":
                             server_activator.sync(mirrors_opts[1:])
+                        elif mirrors_opts[0] == "packages-sync":
+                            server_activator.sync(mirrors_opts[1:])
+                        elif mirrors_opts[0] == "tidy":
+                            server_activator.sync(mirrors_opts[1:], justTidy = True)
+                        elif mirrors_opts[0].startswith("db-"):
+                            mirrors_opts[0] = mirrors_opts[0][3:]
+                            server_activator.database(mirrors_opts)
 
             elif myopts[0] == "database":
                 try:
