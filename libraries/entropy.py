@@ -15305,11 +15305,21 @@ class ServerMirrorsInterface:
             (etpConst['spm']['global_package_use'],"global_package_use"),
             (etpConst['spm']['global_package_mask'],"global_package_mask"),
             (etpConst['spm']['global_package_unmask'],"global_package_unmask"),
-            (etpConst['spm']['global_make_profile'],"global_make_profile"),
         ]
         for myfile,myname in spm_files:
             if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
                 data[myname] = myfile
+
+        make_profile = etpConst['spm']['global_make_profile']
+        if os.path.islink(make_profile):
+            mylink = os.readlink(make_profile)
+            mytmpdir = os.path.dirname(self.Entropy.entropyTools.getRandomTempFile())
+            mytmpfile = os.path.join(mytmpdir,'profile.link')
+            f = open(mytmpfile,"w")
+            f.write(mylink)
+            f.flush()
+            f.close()
+            data['global_make_profile'] = mytmpfile
 
         return data, critical
 
