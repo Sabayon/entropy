@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: yumex 1.9.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-20 17:09+0200\n"
+"POT-Creation-Date: 2008-05-24 08:48+0200\n"
 "PO-Revision-Date: 2007-06-07 15:14+0800\n"
 "Last-Translator: Wei-Lun Chao <william.chao@ossii.com.tw>\n"
 "Language-Team: Chinese (traditional) <zh-l10n@linux.org.tw>\n"
@@ -16,386 +16,563 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../../client/equo.py:39 ../../server/activator.py:39
+#: ../../client/equo.py:41 ../../server/activator.py:39
 #: ../../server/reagent.py:40
 #, fuzzy
 msgid "Basic Options"
 msgstr "搜尋選項"
 
-#: ../../client/equo.py:41 ../../server/activator.py:41
+#: ../../client/equo.py:43 ../../server/activator.py:41
 #: ../../server/reagent.py:42
 msgid "this output"
 msgstr ""
 
-#: ../../client/equo.py:42 ../../client/equo.py:47
+#: ../../client/equo.py:44 ../../client/equo.py:49
 #: ../../server/activator.py:42 ../../server/reagent.py:43
 msgid "print version"
 msgstr ""
 
-#: ../../client/equo.py:43 ../../server/activator.py:43
+#: ../../client/equo.py:45 ../../server/activator.py:43
 #: ../../server/reagent.py:44
 msgid "disable colorized output"
 msgstr ""
 
-#: ../../client/equo.py:45 ../../server/activator.py:45
+#: ../../client/equo.py:47 ../../server/activator.py:45
 #: ../../server/reagent.py:46
 msgid "Application Options"
 msgstr ""
 
-#: ../../client/equo.py:48
+#: ../../client/equo.py:50
 msgid "force sync regardless repositories status"
 msgstr ""
 
-#: ../../client/equo.py:49
+#: ../../client/equo.py:51
 msgid "show enabled repositories"
 msgstr ""
 
-#: ../../client/equo.py:50
+#: ../../client/equo.py:52
 msgid "show respositories status"
 msgstr ""
 
-#: ../../client/equo.py:52
+#: ../../client/equo.py:54
 msgid "search packages in repositories"
 msgstr ""
 
-#: ../../client/equo.py:53
+#: ../../client/equo.py:55
 msgid "match a package in repositories"
 msgstr ""
 
-#: ../../client/equo.py:54
+#: ../../client/equo.py:56
 msgid "return all the possible matches"
 msgstr ""
 
-#: ../../client/equo.py:55
+#: ../../client/equo.py:57
 msgid "return matches from every repository"
 msgstr ""
 
-#: ../../client/equo.py:56
+#: ../../client/equo.py:58
 msgid "print repository information (w/--quiet)"
 msgstr ""
 
-#: ../../client/equo.py:57
+#: ../../client/equo.py:59
 msgid "print description too (w/--quiet)"
 msgstr ""
 
-#: ../../client/equo.py:59 ../../client/equo.py:67
+#: ../../client/equo.py:61 ../../client/equo.py:69
 msgid "update system with the latest available packages"
 msgstr ""
 
-#: ../../client/equo.py:60 ../../client/equo.py:78 ../../client/equo.py:84
-#: ../../client/equo.py:105 ../../client/equo.py:111 ../../client/equo.py:161
+#: ../../client/equo.py:62 ../../client/equo.py:80 ../../client/equo.py:86
+#: ../../client/equo.py:107 ../../client/equo.py:113 ../../client/equo.py:163
 #: ../../server/activator.py:56
 msgid "ask before making any changes"
 msgstr ""
 
-#: ../../client/equo.py:61 ../../client/equo.py:79
+#: ../../client/equo.py:63 ../../client/equo.py:81
 #, fuzzy
 msgid "just download packages"
 msgstr "下載套件："
 
-#: ../../client/equo.py:62 ../../server/activator.py:57
+#: ../../client/equo.py:64 ../../server/activator.py:57
 msgid "only show what would be done"
 msgstr ""
 
-#: ../../client/equo.py:63 ../../client/equo.py:93
+#: ../../client/equo.py:65 ../../client/equo.py:95
 msgid "show more details about what is going on"
 msgstr ""
 
-#: ../../client/equo.py:64
+#: ../../client/equo.py:66
 msgid "reinstall all the packages and their dependencies"
 msgstr ""
 
-#: ../../client/equo.py:65
+#: ../../client/equo.py:67
 msgid "same as --replay"
 msgstr ""
 
-#: ../../client/equo.py:66 ../../client/equo.py:88 ../../client/equo.py:100
+#: ../../client/equo.py:68 ../../client/equo.py:90 ../../client/equo.py:102
 msgid "resume previously interrupted operations"
 msgstr ""
 
-#: ../../client/equo.py:68
+#: ../../client/equo.py:70
 msgid "upgrade your distribution to the specified release"
 msgstr ""
 
-#: ../../client/equo.py:69 ../../client/equo.py:95
+#: ../../client/equo.py:71 ../../client/equo.py:97
 msgid "disable package integrity check"
 msgstr ""
 
-#: ../../client/equo.py:71
+#: ../../client/equo.py:73
 msgid "security infrastructure functions"
 msgstr ""
 
-#: ../../client/equo.py:72
+#: ../../client/equo.py:74
 msgid "download the latest Security Advisories"
 msgstr ""
 
-#: ../../client/equo.py:73
+#: ../../client/equo.py:75
 msgid "list all the available Security Advisories"
 msgstr ""
 
-#: ../../client/equo.py:74
+#: ../../client/equo.py:76
 msgid "list only affected"
 msgstr ""
 
-#: ../../client/equo.py:75
+#: ../../client/equo.py:77
 msgid "list only unaffected"
 msgstr ""
 
-#: ../../client/equo.py:76
+#: ../../client/equo.py:78
 msgid "show information about provided advisories identifiers"
 msgstr ""
 
-#: ../../client/equo.py:77
+#: ../../client/equo.py:79
 msgid "automaticly install all the available security updates"
 msgstr ""
 
-#: ../../client/equo.py:80 ../../client/equo.py:85 ../../client/equo.py:106
-#: ../../client/equo.py:112 ../../client/equo.py:162
+#: ../../client/equo.py:82 ../../client/equo.py:87 ../../client/equo.py:108
+#: ../../client/equo.py:114 ../../client/equo.py:164
 msgid "just show what would be done"
 msgstr ""
 
-#: ../../client/equo.py:81 ../../client/equo.py:104 ../../client/equo.py:110
+#: ../../client/equo.py:83 ../../client/equo.py:106 ../../client/equo.py:112
 msgid "show less details (useful for scripting)"
 msgstr ""
 
-#: ../../client/equo.py:83 ../../client/equo.py:101
+#: ../../client/equo.py:85 ../../client/equo.py:103
 msgid "install atoms or .tbz2 packages"
 msgstr ""
 
-#: ../../client/equo.py:86
+#: ../../client/equo.py:88
 msgid "just download packages without doing the install"
 msgstr ""
 
-#: ../../client/equo.py:87
+#: ../../client/equo.py:89
 #, fuzzy
 msgid "do not pull in any dependency"
 msgstr "根據相依性進行安裝"
 
-#: ../../client/equo.py:89
+#: ../../client/equo.py:91
 msgid "used with --resume, makes the first package in queue to be skipped"
 msgstr ""
 
-#: ../../client/equo.py:90
+#: ../../client/equo.py:92
 msgid "remove downloaded packages after being used"
 msgstr ""
 
-#: ../../client/equo.py:91 ../../client/equo.py:140
+#: ../../client/equo.py:93 ../../client/equo.py:142
 msgid "pull all the dependencies in, regardless their state"
 msgstr ""
 
-#: ../../client/equo.py:92
+#: ../../client/equo.py:94
 msgid "makes dependency rules stricter"
 msgstr ""
 
-#: ../../client/equo.py:94
+#: ../../client/equo.py:96
 msgid "makes old configuration files to be removed"
 msgstr ""
 
-#: ../../client/equo.py:97
+#: ../../client/equo.py:99
 #, fuzzy
 msgid "remove one or more packages"
 msgstr "您即將移除 %s 套件\n"
 
-#: ../../client/equo.py:98
+#: ../../client/equo.py:100
 msgid "also pull unused dependencies where depends list is empty"
 msgstr ""
 
-#: ../../client/equo.py:99
+#: ../../client/equo.py:101
 msgid "makes configuration files to be removed"
 msgstr ""
 
-#: ../../client/equo.py:103 ../../server/reagent.py:97
+#: ../../client/equo.py:105 ../../server/reagent.py:97
 #, fuzzy
 msgid "look for unsatisfied dependencies"
 msgstr "根據相依性進行移除"
 
-#: ../../client/equo.py:108 ../../server/reagent.py:98
+#: ../../client/equo.py:110 ../../server/reagent.py:98
 msgid "look for missing libraries"
 msgstr ""
 
-#: ../../client/equo.py:109
+#: ../../client/equo.py:111
 msgid "print broken files to stdout"
 msgstr ""
 
-#: ../../client/equo.py:114
+#: ../../client/equo.py:116
 msgid "configuration files update tool"
 msgstr ""
 
-#: ../../client/equo.py:115
+#: ../../client/equo.py:117
 msgid "show configuration files to be updated"
 msgstr ""
 
-#: ../../client/equo.py:116
+#: ../../client/equo.py:118
 msgid "run the configuration files update function"
 msgstr ""
 
-#: ../../client/equo.py:118
+#: ../../client/equo.py:120
 msgid "do misc queries on repository and local databases"
 msgstr ""
 
-#: ../../client/equo.py:119
+#: ../../client/equo.py:121
 msgid "search a package into the local database"
 msgstr ""
 
-#: ../../client/equo.py:120
+#: ../../client/equo.py:122
 msgid "search from what package a file belongs"
 msgstr ""
 
-#: ../../client/equo.py:121
+#: ../../client/equo.py:123
 msgid "search what packages depend on the provided atoms"
 msgstr ""
 
-#: ../../client/equo.py:122 ../../server/reagent.py:59
+#: ../../client/equo.py:124 ../../client/equo.py:206
+#: ../../server/reagent.py:59
 msgid "show runtime libraries needed by the provided atoms"
 msgstr ""
 
-#: ../../client/equo.py:123
+#: ../../client/equo.py:125
 msgid "show atoms needing the provided libraries"
 msgstr ""
 
-#: ../../client/equo.py:124 ../../server/reagent.py:62
+#: ../../client/equo.py:126 ../../client/equo.py:209
+#: ../../server/reagent.py:62
 msgid "show files owned by the provided atoms"
 msgstr ""
 
-#: ../../client/equo.py:125
+#: ../../client/equo.py:127
 msgid "show the removal tree for the specified atoms"
 msgstr ""
 
-#: ../../client/equo.py:126
+#: ../../client/equo.py:128
 msgid "show packages owning the provided tags"
 msgstr ""
 
-#: ../../client/equo.py:127
+#: ../../client/equo.py:129
 msgid "show packages owning the provided slot"
 msgstr ""
 
-#: ../../client/equo.py:128
+#: ../../client/equo.py:130
 msgid "show packages owning the provided licenses"
 msgstr ""
 
-#: ../../client/equo.py:129
+#: ../../client/equo.py:131
 msgid "list packages based on the chosen parameter below"
 msgstr ""
 
-#: ../../client/equo.py:130
+#: ../../client/equo.py:132
 #, fuzzy
 msgid "list installed packages"
 msgstr "顯示已安裝套件"
 
-#: ../../client/equo.py:131
+#: ../../client/equo.py:133
 msgid "search files that do not belong to any package"
 msgstr ""
 
-#: ../../client/equo.py:132 ../../server/reagent.py:64
+#: ../../client/equo.py:134 ../../client/equo.py:211
+#: ../../server/reagent.py:64
 #, fuzzy
 msgid "search packages by description"
 msgstr "套件描述"
 
-#: ../../client/equo.py:133 ../../client/equo.py:167
+#: ../../client/equo.py:135 ../../client/equo.py:214 ../../client/equo.py:224
 #: ../../server/reagent.py:67
 msgid "show more details"
 msgstr ""
 
-#: ../../client/equo.py:134 ../../client/equo.py:168
+#: ../../client/equo.py:136 ../../client/equo.py:215 ../../client/equo.py:225
 #: ../../server/reagent.py:68
 msgid "print results in a scriptable way"
 msgstr ""
 
-#: ../../client/equo.py:136
+#: ../../client/equo.py:138
 #, fuzzy
 msgid "Extended Options"
 msgstr "搜尋選項"
 
-#: ../../client/equo.py:138
+#: ../../client/equo.py:140
 msgid "handles extended functionalities"
 msgstr ""
 
-#: ../../client/equo.py:139
+#: ../../client/equo.py:141
 msgid "make a smart application for the provided atoms (experimental)"
 msgstr ""
 
-#: ../../client/equo.py:141
+#: ../../client/equo.py:143
 msgid ""
 "make a smart package for the provided atoms (multiple packages into one file)"
 msgstr ""
 
-#: ../../client/equo.py:142
+#: ../../client/equo.py:144
 msgid "recreate an Entropy package from your System"
 msgstr ""
 
-#: ../../client/equo.py:143 ../../client/equo.py:145 ../../client/equo.py:147
+#: ../../client/equo.py:145 ../../client/equo.py:147 ../../client/equo.py:149
 msgid "save new packages into the specified directory"
 msgstr ""
 
-#: ../../client/equo.py:144
+#: ../../client/equo.py:146
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
 msgstr ""
 
-#: ../../client/equo.py:146
+#: ../../client/equo.py:148
 msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
 msgstr ""
 
-#: ../../client/equo.py:148
+#: ../../client/equo.py:150
 msgid "extract Entropy metadata from provided .tbz2 packages"
 msgstr ""
 
-#: ../../client/equo.py:149
+#: ../../client/equo.py:151
 msgid "save new metadata into the specified directory"
 msgstr ""
 
-#: ../../client/equo.py:151
+#: ../../client/equo.py:153
 #, fuzzy
 msgid "handles installed packages database"
 msgstr "顯示已安裝套件"
 
-#: ../../client/equo.py:152
+#: ../../client/equo.py:154
 msgid "check System Database for errors"
 msgstr ""
 
 #. (2,'generate',2,'generate installed packages database using Portage database (Portage needed)'),
-#: ../../client/equo.py:154
+#: ../../client/equo.py:156
 msgid ""
 "generate installed packages database using files on the system [last hope]"
 msgstr ""
 
-#: ../../client/equo.py:155
+#: ../../client/equo.py:157
 msgid "regenerate depends caching table"
 msgstr ""
 
-#: ../../client/equo.py:156
+#: ../../client/equo.py:158
 msgid "update/generate counters table (Portage <-> Entropy packages table)"
 msgstr ""
 
-#: ../../client/equo.py:157
+#: ../../client/equo.py:159
 msgid "makes Entropy aware of your Portage-updated packages"
 msgstr ""
 
-#: ../../client/equo.py:159
+#: ../../client/equo.py:161
 msgid "handles packages helper applications"
 msgstr ""
 
-#: ../../client/equo.py:160
+#: ../../client/equo.py:162
 msgid "migrate all Python modules to the latest installed version"
 msgstr ""
 
-#: ../../client/equo.py:164
+#: ../../client/equo.py:166
+msgid "handles community-side features"
+msgstr ""
+
+#: ../../client/equo.py:168
+#, fuzzy
+msgid "community repositories management functions"
+msgstr "儲存庫選擇檢視"
+
+#: ../../client/equo.py:169 ../../server/reagent.py:48
+msgid "scan the System looking for newly compiled packages"
+msgstr ""
+
+#: ../../client/equo.py:170 ../../client/equo.py:175 ../../client/equo.py:178
+#: ../../client/equo.py:189 ../../client/equo.py:191
+#: ../../server/activator.py:48 ../../server/reagent.py:49
+#: ../../server/reagent.py:55 ../../server/reagent.py:77
+#: ../../server/reagent.py:79
+msgid "choose on what branch operating"
+msgstr ""
+
+#: ../../client/equo.py:171 ../../server/reagent.py:50
+msgid "analyze the Entropy Store directory directly"
+msgstr ""
+
+#: ../../client/equo.py:172 ../../server/reagent.py:51
+#, fuzzy
+msgid "repackage the specified atoms"
+msgstr "未選取任何套件"
+
+#: ../../client/equo.py:173 ../../client/equo.py:179
+#: ../../server/activator.py:49 ../../server/reagent.py:52
+msgid "do not ask anything except critical things"
+msgstr ""
+
+#: ../../client/equo.py:174 ../../server/reagent.py:54
+msgid "add binary packages to repository w/o affecting scopes (multipackages)"
+msgstr ""
+
+#: ../../client/equo.py:176
+#, fuzzy
+msgid "community repositories mirrors management functions"
+msgstr "儲存庫選擇檢視"
+
+#: ../../client/equo.py:177 ../../server/activator.py:47
+msgid "sync packages, database and also do some tidy"
+msgstr ""
+
+#: ../../client/equo.py:180 ../../server/activator.py:50
+#: ../../server/activator.py:58 ../../server/activator.py:68
+msgid "sync all the configured repositories"
+msgstr ""
+
+#: ../../client/equo.py:182
+#, fuzzy
+msgid "community repositories database functions"
+msgstr "儲存庫選擇檢視"
+
+#: ../../client/equo.py:183 ../../server/reagent.py:71
+msgid "(re)initialize the current repository database"
+msgstr ""
+
+#: ../../client/equo.py:184 ../../server/reagent.py:72
+msgid "do not refill database using packages on mirrors"
+msgstr ""
+
+#: ../../client/equo.py:185 ../../server/reagent.py:73
+msgid "(re)create the database for the specified repository"
+msgstr ""
+
+#: ../../client/equo.py:186 ../../server/reagent.py:74
+msgid "manually force a revision bump for the current repository database"
+msgstr ""
+
+#: ../../client/equo.py:187 ../../server/reagent.py:75
+#, fuzzy
+msgid "synchronize the database"
+msgstr "執行異動"
+
+#: ../../client/equo.py:188 ../../server/reagent.py:76
+msgid "remove the provided atoms from the current repository database"
+msgstr ""
+
+#: ../../client/equo.py:190 ../../server/reagent.py:78
+msgid "remove the provided injected atoms (all if no atom specified)"
+msgstr ""
+
+#: ../../client/equo.py:192 ../../server/reagent.py:80
+msgid "create an empty repository database in the provided path"
+msgstr ""
+
+#: ../../client/equo.py:193 ../../server/reagent.py:81
+msgid "switch to the specified branch the provided atoms (or world)"
+msgstr ""
+
+#: ../../client/equo.py:194 ../../server/reagent.py:82
+msgid "verify integrity of the provided atoms (or world)"
+msgstr ""
+
+#: ../../client/equo.py:195 ../../server/reagent.py:83
+msgid "verify remote integrity of the provided atoms (or world)"
+msgstr ""
+
+#: ../../client/equo.py:197 ../../server/reagent.py:85
+#, fuzzy
+msgid "manage a repository"
+msgstr "儲存庫"
+
+#: ../../client/equo.py:198 ../../server/reagent.py:86
+msgid "enable the specified repository"
+msgstr ""
+
+#: ../../client/equo.py:199 ../../server/reagent.py:87
+msgid "disable the specified repository"
+msgstr ""
+
+#: ../../client/equo.py:200 ../../server/reagent.py:88
+msgid "show the current Server Interface status"
+msgstr ""
+
+#: ../../client/equo.py:201 ../../server/reagent.py:89
+msgid "move packages from a repository to another"
+msgstr ""
+
+#: ../../client/equo.py:202 ../../server/reagent.py:90
+#, fuzzy
+msgid "set the default repository"
+msgstr "編輯儲存庫"
+
+#: ../../client/equo.py:204
+#, fuzzy
+msgid "do some searches into community repository databases"
+msgstr "儲存庫"
+
+#: ../../client/equo.py:205 ../../server/reagent.py:58
+msgid "search packages inside the default repository database"
+msgstr ""
+
+#: ../../client/equo.py:207 ../../server/reagent.py:60
+msgid "show what packages depend on the provided atoms"
+msgstr ""
+
+#: ../../client/equo.py:208 ../../server/reagent.py:61
+#, fuzzy
+msgid "show packages owning the specified tags"
+msgstr "未選取任何套件"
+
+#: ../../client/equo.py:210 ../../server/reagent.py:63
+msgid "show from what package the provided files belong"
+msgstr ""
+
+#: ../../client/equo.py:212 ../../server/reagent.py:65
+msgid "search packages using the provided eclasses"
+msgstr ""
+
+#: ../../client/equo.py:213 ../../server/reagent.py:66
+msgid "list all the packages in the default repository"
+msgstr ""
+
+#: ../../client/equo.py:217
+#, fuzzy
+msgid "look for unsatisfied dependencies across community repositories"
+msgstr "根據相依性進行移除"
+
+#: ../../client/equo.py:218 ../../server/reagent.py:99
+msgid "regenerate the depends table"
+msgstr ""
+
+#: ../../client/equo.py:221
 msgid "handles Entropy cache"
 msgstr ""
 
-#: ../../client/equo.py:165
+#: ../../client/equo.py:222
 msgid "clean Entropy cache"
 msgstr ""
 
-#: ../../client/equo.py:166
+#: ../../client/equo.py:223
 msgid "regenerate Entropy cache"
 msgstr ""
 
-#: ../../client/equo.py:170 ../../server/reagent.py:101
+#: ../../client/equo.py:227 ../../server/reagent.py:101
 msgid "remove downloaded packages and clean temp. directories)"
 msgstr ""
 
-#: ../../client/equo.py:172
+#: ../../client/equo.py:229
 msgid "show system information"
+msgstr ""
+
+#: ../../client/equo.py:417 ../../client/equo.py:432 ../../client/equo.py:444
+#: ../../client/equo.py:454 ../../client/equo.py:463 ../../client/equo.py:472
+#: ../../client/equo.py:482
+msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 
 #: ../../client/text_configuration.py:36
@@ -425,8 +602,8 @@ msgid "Type a number."
 msgstr ""
 
 #: ../../client/text_configuration.py:108
-#: ../../client/text_configuration.py:129 ../../server/server_reagent.py:91
-#: ../../server/server_reagent.py:103
+#: ../../client/text_configuration.py:129 ../../server/server_reagent.py:94
+#: ../../server/server_reagent.py:106
 #, fuzzy
 msgid "Configuration file"
 msgstr "條件"
@@ -731,8 +908,8 @@ msgid "Removal Search"
 msgstr ""
 
 #: ../../client/text_query.py:599 ../../client/text_ui.py:360
-#: ../../client/text_ui.py:917 ../../server/server_reagent.py:346
-#: ../../server/server_reagent.py:391 ../../server/server_reagent.py:440
+#: ../../client/text_ui.py:917 ../../server/server_reagent.py:353
+#: ../../server/server_reagent.py:398 ../../server/server_reagent.py:447
 #, fuzzy
 msgid "No packages found"
 msgstr "在佇列中沒有套件"
@@ -1932,7 +2109,7 @@ msgid ""
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:970 ../../server/server_reagent.py:222
+#: ../../client/text_ui.py:970 ../../server/server_reagent.py:225
 msgid "Would you like to remove them now ?"
 msgstr ""
 
@@ -2007,25 +2184,6 @@ msgstr ""
 msgid "Would you like to install them ?"
 msgstr ""
 
-#: ../../server/activator.py:47
-msgid "sync packages, database and also do some tidy"
-msgstr ""
-
-#: ../../server/activator.py:48 ../../server/reagent.py:49
-#: ../../server/reagent.py:55 ../../server/reagent.py:77
-#: ../../server/reagent.py:79
-msgid "choose on what branch operating"
-msgstr ""
-
-#: ../../server/activator.py:49 ../../server/reagent.py:52
-msgid "do not ask anything except critical things"
-msgstr ""
-
-#: ../../server/activator.py:50 ../../server/activator.py:58
-#: ../../server/activator.py:68
-msgid "sync all the configured repositories"
-msgstr ""
-
 #: ../../server/activator.py:52
 msgid "remove binary packages not in repositories and expired"
 msgstr ""
@@ -2077,128 +2235,15 @@ msgstr "儲存庫"
 msgid "show current lock status"
 msgstr ""
 
-#: ../../server/reagent.py:48
-msgid "scan the System looking for newly compiled packages"
-msgstr ""
-
-#: ../../server/reagent.py:50
-msgid "analyze the Entropy Store directory directly"
-msgstr ""
-
-#: ../../server/reagent.py:51
-#, fuzzy
-msgid "repackage the specified atoms"
-msgstr "未選取任何套件"
-
-#: ../../server/reagent.py:54
-msgid "add binary packages to repository w/o affecting scopes (multipackages)"
-msgstr ""
-
 #: ../../server/reagent.py:57
 #, fuzzy
 msgid "do some searches into repository databases"
 msgstr "儲存庫"
 
-#: ../../server/reagent.py:58
-msgid "search packages inside the default repository database"
-msgstr ""
-
-#: ../../server/reagent.py:60
-msgid "show what packages depend on the provided atoms"
-msgstr ""
-
-#: ../../server/reagent.py:61
-#, fuzzy
-msgid "show packages owning the specified tags"
-msgstr "未選取任何套件"
-
-#: ../../server/reagent.py:63
-msgid "show from what package the provided files belong"
-msgstr ""
-
-#: ../../server/reagent.py:65
-msgid "search packages using the provided eclasses"
-msgstr ""
-
-#: ../../server/reagent.py:66
-msgid "list all the packages in the default repository"
-msgstr ""
-
 #: ../../server/reagent.py:70
 #, fuzzy
 msgid "repository database functions"
 msgstr "儲存庫選擇檢視"
-
-#: ../../server/reagent.py:71
-msgid "(re)initialize the current repository database"
-msgstr ""
-
-#: ../../server/reagent.py:72
-msgid "do not refill database using packages on mirrors"
-msgstr ""
-
-#: ../../server/reagent.py:73
-msgid "(re)create the database for the specified repository"
-msgstr ""
-
-#: ../../server/reagent.py:74
-msgid "manually force a revision bump for the current repository database"
-msgstr ""
-
-#: ../../server/reagent.py:75
-#, fuzzy
-msgid "synchronize the database"
-msgstr "執行異動"
-
-#: ../../server/reagent.py:76
-msgid "remove the provided atoms from the current repository database"
-msgstr ""
-
-#: ../../server/reagent.py:78
-msgid "remove the provided injected atoms (all if no atom specified)"
-msgstr ""
-
-#: ../../server/reagent.py:80
-msgid "create an empty repository database in the provided path"
-msgstr ""
-
-#: ../../server/reagent.py:81
-msgid "switch to the specified branch the provided atoms (or world)"
-msgstr ""
-
-#: ../../server/reagent.py:82
-msgid "verify integrity of the provided atoms (or world)"
-msgstr ""
-
-#: ../../server/reagent.py:83
-msgid "verify remote integrity of the provided atoms (or world)"
-msgstr ""
-
-#: ../../server/reagent.py:85
-#, fuzzy
-msgid "manage a repository"
-msgstr "儲存庫"
-
-#: ../../server/reagent.py:86
-msgid "enable the specified repository"
-msgstr ""
-
-#: ../../server/reagent.py:87
-msgid "disable the specified repository"
-msgstr ""
-
-#: ../../server/reagent.py:88
-msgid "show the current Server Interface status"
-msgstr ""
-
-#: ../../server/reagent.py:89
-msgid "move packages from a repository to another"
-msgstr ""
-
-#: ../../server/reagent.py:90
-#, fuzzy
-msgid "set the default repository"
-msgstr "編輯儲存庫"
 
 #: ../../server/reagent.py:92
 #, fuzzy
@@ -2218,108 +2263,104 @@ msgstr ""
 msgid "just list packages"
 msgstr "下載套件："
 
-#: ../../server/reagent.py:99
-msgid "regenerate the depends table"
-msgstr ""
-
-#: ../../server/server_activator.py:43
+#: ../../server/server_activator.py:46
 msgid "Starting to sync data across mirrors (packages/database)"
 msgstr ""
 
-#: ../../server/server_activator.py:62
+#: ../../server/server_activator.py:65
 msgid "Please insert a commit message"
 msgstr ""
 
-#: ../../server/server_activator.py:69
+#: ../../server/server_activator.py:72
 msgid "Should I continue with the tidy procedure ?"
 msgstr ""
 
-#: ../../server/server_activator.py:73
+#: ../../server/server_activator.py:76
 msgid "Aborting !"
 msgstr ""
 
-#: ../../server/server_activator.py:129
+#: ../../server/server_activator.py:132
 msgid "Starting to lock mirrors databases"
 msgstr ""
 
-#: ../../server/server_activator.py:132 ../../server/server_activator.py:142
-#: ../../server/server_activator.py:152 ../../server/server_activator.py:162
+#: ../../server/server_activator.py:135 ../../server/server_activator.py:145
+#: ../../server/server_activator.py:155 ../../server/server_activator.py:165
 msgid "A problem occured on at least one mirror"
 msgstr ""
 
-#: ../../server/server_activator.py:134
+#: ../../server/server_activator.py:137
 msgid "Databases lock complete"
 msgstr ""
 
-#: ../../server/server_activator.py:139
+#: ../../server/server_activator.py:142
 msgid "Starting to unlock mirrors databases"
 msgstr ""
 
-#: ../../server/server_activator.py:144
+#: ../../server/server_activator.py:147
 #, fuzzy
 msgid "Databases unlock complete"
 msgstr "綜覽完成"
 
-#: ../../server/server_activator.py:149
+#: ../../server/server_activator.py:152
 msgid "Starting to lock download mirrors databases"
 msgstr ""
 
-#: ../../server/server_activator.py:154
+#: ../../server/server_activator.py:157
 #, fuzzy
 msgid "Download mirrors lock complete"
 msgstr "綜覽完成"
 
-#: ../../server/server_activator.py:159
+#: ../../server/server_activator.py:162
 msgid "Starting to unlock download mirrors databases"
 msgstr ""
 
-#: ../../server/server_activator.py:164
+#: ../../server/server_activator.py:167
 #, fuzzy
 msgid "Download mirrors unlock complete"
 msgstr "綜覽完成"
 
-#: ../../server/server_activator.py:169
+#: ../../server/server_activator.py:172
 msgid "Mirrors status table"
 msgstr ""
 
-#: ../../server/server_activator.py:173 ../../server/server_activator.py:177
+#: ../../server/server_activator.py:176 ../../server/server_activator.py:180
 msgid "Locked"
 msgstr ""
 
-#: ../../server/server_activator.py:175 ../../server/server_activator.py:179
+#: ../../server/server_activator.py:178 ../../server/server_activator.py:182
 msgid "Unlocked"
 msgstr ""
 
-#: ../../server/server_activator.py:180
+#: ../../server/server_activator.py:183
 msgid "DATABASE"
 msgstr ""
 
-#: ../../server/server_activator.py:180
+#: ../../server/server_activator.py:183
 msgid "DOWNLOAD"
 msgstr ""
 
-#: ../../server/server_activator.py:197
+#: ../../server/server_activator.py:200
 #, fuzzy
 msgid "Syncing databases"
 msgstr "執行異動"
 
-#: ../../server/server_activator.py:200
+#: ../../server/server_activator.py:203
 msgid "Database sync errors, cannot continue."
 msgstr ""
 
-#: ../../server/server_activator.py:212 ../../server/server_activator.py:226
+#: ../../server/server_activator.py:215 ../../server/server_activator.py:229
 msgid "Remote Entropy Database Repository Status"
 msgstr ""
 
-#: ../../server/server_activator.py:214 ../../server/server_activator.py:228
+#: ../../server/server_activator.py:217 ../../server/server_activator.py:231
 msgid "Host"
 msgstr ""
 
-#: ../../server/server_activator.py:215 ../../server/server_activator.py:229
+#: ../../server/server_activator.py:218 ../../server/server_activator.py:232
 msgid "Database revision"
 msgstr ""
 
-#: ../../server/server_activator.py:218
+#: ../../server/server_activator.py:221
 msgid "Database local revision currently at"
 msgstr ""
 
@@ -2328,194 +2369,198 @@ msgstr ""
 msgid "Nothing found"
 msgstr "在佇列中沒有套件"
 
-#: ../../server/server_reagent.py:43
+#: ../../server/server_reagent.py:46
 #, fuzzy
 msgid "no package specified."
 msgstr "未選取任何套件"
 
-#: ../../server/server_reagent.py:78
+#: ../../server/server_reagent.py:81
 #, fuzzy
 msgid "No valid repositories specified."
 msgstr "未選取任何套件"
 
-#: ../../server/server_reagent.py:82
+#: ../../server/server_reagent.py:85
 #, fuzzy
 msgid "Enabling"
 msgstr "安裝中"
 
-#: ../../server/server_reagent.py:82 ../../server/server_reagent.py:85
-#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:97
-#: ../../server/server_reagent.py:123
+#: ../../server/server_reagent.py:85 ../../server/server_reagent.py:88
+#: ../../server/server_reagent.py:97 ../../server/server_reagent.py:100
+#: ../../server/server_reagent.py:126
 #, fuzzy
 msgid "repository"
 msgstr "儲存庫"
 
-#: ../../server/server_reagent.py:85
+#: ../../server/server_reagent.py:88
 #, fuzzy
 msgid "Enabled"
 msgstr "已啟用(_E)"
 
-#: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
+#: ../../server/server_reagent.py:91 ../../server/server_reagent.py:103
 #: ../../spritz/src/views.py:433 ../../spritz/src/views.py:966
 msgid "Repository"
 msgstr "儲存庫"
 
-#: ../../server/server_reagent.py:88
+#: ../../server/server_reagent.py:91
 msgid "already enabled"
 msgstr ""
 
-#: ../../server/server_reagent.py:91 ../../server/server_reagent.py:103
+#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:106
 msgid "not found"
 msgstr ""
 
-#: ../../server/server_reagent.py:94
+#: ../../server/server_reagent.py:97
 #, fuzzy
 msgid "Disabling"
 msgstr "停用外掛程式"
 
-#: ../../server/server_reagent.py:97
+#: ../../server/server_reagent.py:100
 #, fuzzy
 msgid "Disabled"
 msgstr "已安裝"
 
-#: ../../server/server_reagent.py:100
+#: ../../server/server_reagent.py:103
 msgid "already disabled"
 msgstr ""
 
-#: ../../server/server_reagent.py:122 ../../server/server_reagent.py:174
-#: ../../server/server_reagent.py:341
+#: ../../server/server_reagent.py:125 ../../server/server_reagent.py:177
+#: ../../server/server_reagent.py:348
 msgid "Cannot match"
 msgstr ""
 
-#: ../../server/server_reagent.py:123
+#: ../../server/server_reagent.py:126
 msgid "in"
 msgstr ""
 
-#: ../../server/server_reagent.py:185
+#: ../../server/server_reagent.py:188
 #, fuzzy
 msgid "No valid packages to repackage."
 msgstr "未選取任何套件"
 
 #. normal scanning
-#: ../../server/server_reagent.py:189
+#: ../../server/server_reagent.py:192
 msgid "Scanning database for differences"
 msgstr ""
 
-#: ../../server/server_reagent.py:194
+#: ../../server/server_reagent.py:197
 msgid "Zarro thinggz totoo"
 msgstr ""
 
-#: ../../server/server_reagent.py:198
+#: ../../server/server_reagent.py:201
 msgid "These are the packages that would be changed to injected status"
 msgstr ""
 
-#: ../../server/server_reagent.py:204
+#: ../../server/server_reagent.py:207
 msgid "Would you like to transform them now ?"
 msgstr ""
 
-#: ../../server/server_reagent.py:211
+#: ../../server/server_reagent.py:214
 msgid "Transforming from database"
 msgstr ""
 
-#: ../../server/server_reagent.py:213
+#: ../../server/server_reagent.py:216
 msgid "Database transform complete"
 msgstr ""
 
-#: ../../server/server_reagent.py:216 ../../server/server_reagent.py:394
+#: ../../server/server_reagent.py:219 ../../server/server_reagent.py:401
 msgid "These are the packages that would be removed from the database"
 msgstr ""
 
-#: ../../server/server_reagent.py:235
+#: ../../server/server_reagent.py:238
 msgid "These are the packages that would be added/updated to the add list"
 msgstr ""
 
-#: ../../server/server_reagent.py:240
+#: ../../server/server_reagent.py:243
 msgid "Would you like to package them now ?"
 msgstr ""
 
-#: ../../server/server_reagent.py:241
+#: ../../server/server_reagent.py:244
 msgid "inside"
 msgstr ""
 
 #. package them
-#: ../../server/server_reagent.py:249
+#: ../../server/server_reagent.py:252
 #, fuzzy
 msgid "Compressing packages"
 msgstr "排序套件"
 
-#: ../../server/server_reagent.py:263
+#: ../../server/server_reagent.py:259
+msgid "Ignoring broken Spm entry, please recompile it"
+msgstr ""
+
+#: ../../server/server_reagent.py:270
 msgid "Nothing to do, check later."
 msgstr ""
 
-#: ../../server/server_reagent.py:274
+#: ../../server/server_reagent.py:281
 msgid "Statistics"
 msgstr ""
 
-#: ../../server/server_reagent.py:274
+#: ../../server/server_reagent.py:281
 msgid "Entries handled"
 msgstr ""
 
-#: ../../server/server_reagent.py:300 ../../server/server_reagent.py:325
-#: ../../server/server_reagent.py:376
+#: ../../server/server_reagent.py:307 ../../server/server_reagent.py:332
+#: ../../server/server_reagent.py:383
 msgid "Not enough parameters"
 msgstr ""
 
-#: ../../server/server_reagent.py:307
+#: ../../server/server_reagent.py:314
 msgid "Entropy database has been reinitialized using binary packages available"
 msgstr ""
 
-#: ../../server/server_reagent.py:315
+#: ../../server/server_reagent.py:322
 msgid "Creating empty database to"
 msgstr ""
 
-#: ../../server/server_reagent.py:317
+#: ../../server/server_reagent.py:324
 msgid "Cannot overwrite already existing file"
 msgstr ""
 
-#: ../../server/server_reagent.py:329
+#: ../../server/server_reagent.py:336
 msgid "Switching branch, be sure to have your packages in sync."
 msgstr ""
 
-#: ../../server/server_reagent.py:330
+#: ../../server/server_reagent.py:337
 msgid "Collecting packages that would be marked"
 msgstr ""
 
-#: ../../server/server_reagent.py:349
+#: ../../server/server_reagent.py:356
 #, fuzzy
 msgid "These are the packages that would be marked"
 msgstr "顯示已安裝套件"
 
 #. ask to continue
-#: ../../server/server_reagent.py:354 ../../server/server_reagent.py:401
-#: ../../server/server_reagent.py:451
+#: ../../server/server_reagent.py:361 ../../server/server_reagent.py:408
+#: ../../server/server_reagent.py:458
 msgid "Would you like to continue ?"
 msgstr ""
 
-#: ../../server/server_reagent.py:366
+#: ../../server/server_reagent.py:373
 #, fuzzy
 msgid "Matching packages to remove"
 msgstr "剖析套件到 %s "
 
-#: ../../server/server_reagent.py:405 ../../server/server_reagent.py:455
+#: ../../server/server_reagent.py:412 ../../server/server_reagent.py:462
 #, fuzzy
 msgid "Removing selected packages"
 msgstr "顯示已安裝套件"
 
-#: ../../server/server_reagent.py:407 ../../server/server_reagent.py:459
+#: ../../server/server_reagent.py:414 ../../server/server_reagent.py:466
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr ""
 
-#: ../../server/server_reagent.py:413
+#: ../../server/server_reagent.py:420
 #, fuzzy
 msgid "Searching injected packages to remove"
 msgstr "剖析套件到 %s "
 
-#: ../../server/server_reagent.py:443
+#: ../../server/server_reagent.py:450
 #, fuzzy
 msgid "These are the injected packages pulled in for removal"
 msgstr "顯示已安裝套件"
 
-#: ../../server/server_reagent.py:477
+#: ../../server/server_reagent.py:484
 #, fuzzy
 msgid "Bumping Repository database"
 msgstr "儲存庫"
