@@ -659,43 +659,49 @@ def const_defaultSettings(rootdir):
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {
-                    'exec': "/usr/bin/emerge", # source package manager executable
-                    'ask_cmd': "--ask",
-                    'pretend_cmd': "--pretend",
-                    'verbose_cmd': "--verbose",
-                    'backend': "portage",
-                    'available_backends': ["portage"],
-                    'cache': {},
-                    'xpak_entries': {
-                        'description': "DESCRIPTION",
-                        'homepage': "HOMEPAGE",
-                        'chost': "CHOST",
-                        'category': "CATEGORY",
-                        'cflags': "CFLAGS",
-                        'cxxflags': "CXXFLAGS",
-                        'license': "LICENSE",
-                        'src_uri': "SRC_URI",
-                        'use': "USE",
-                        'iuse': "IUSE",
-                        'slot': "SLOT",
-                        'provide': "PROVIDE",
-                        'depend': "DEPEND",
-                        'rdepend': "RDEPEND",
-                        'pdepend': "PDEPEND",
-                        'needed': "NEEDED",
-                        'inherited': "INHERITED",
-                        'keywords': "KEYWORDS",
-                        'contents': "CONTENTS",
-                        'counter': "COUNTER"
-                    },
-                    'system_packages': [
-                        "sys-kernel/linux-sabayon", # our kernel
-                        "dev-db/sqlite", # our interface
-                        "dev-python/pysqlite",  # our python interface to our interface
-                        "virtual/cron", # our cron service
-                        "app-admin/equo", # our package manager (client)
-                        "sys-apps/entropy" # our package manager (server+client)
-                    ],
+            'global_make_conf': "/etc/make.conf",
+            'global_package_keywords': "/etc/portage/package.keywords",
+            'global_package_use': "/etc/portage/package.use",
+            'global_package_mask': "/etc/portage/package.mask",
+            'global_package_unmask': "/etc/portage/package.unmask",
+            'global_make_profile': "/etc/make.profile",
+            'exec': "/usr/bin/emerge", # source package manager executable
+            'ask_cmd': "--ask",
+            'pretend_cmd': "--pretend",
+            'verbose_cmd': "--verbose",
+            'backend': "portage",
+            'available_backends': ["portage"],
+            'cache': {},
+            'xpak_entries': {
+                'description': "DESCRIPTION",
+                'homepage': "HOMEPAGE",
+                'chost': "CHOST",
+                'category': "CATEGORY",
+                'cflags': "CFLAGS",
+                'cxxflags': "CXXFLAGS",
+                'license': "LICENSE",
+                'src_uri': "SRC_URI",
+                'use': "USE",
+                'iuse': "IUSE",
+                'slot': "SLOT",
+                'provide': "PROVIDE",
+                'depend': "DEPEND",
+                'rdepend': "RDEPEND",
+                'pdepend': "PDEPEND",
+                'needed': "NEEDED",
+                'inherited': "INHERITED",
+                'keywords': "KEYWORDS",
+                'contents': "CONTENTS",
+                'counter': "COUNTER"
+            },
+            'system_packages': [
+                "sys-kernel/linux-sabayon", # our kernel
+                "dev-db/sqlite", # our interface
+                "dev-python/pysqlite",  # our python interface to our interface
+                "virtual/cron", # our cron service
+                "app-admin/equo", # our package manager (client)
+                "sys-apps/entropy" # our package manager (server+client)
+            ],
         },
 
         'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)

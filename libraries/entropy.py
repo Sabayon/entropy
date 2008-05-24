@@ -5470,19 +5470,33 @@ class RepoInterface:
     def __unpack_downloaded_database(self, repo, cmethod):
 
         self.__validate_repository_id(repo)
+        rc = 0
+        path = None
 
         if self.dbformat_eapi == 1:
-            path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
-            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]])
+            myfile = etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]]
+            try:
+                path = eval("self.Entropy.entropyTools."+cmethod[1])(myfile)
+            except EOFError:
+                rc = 1
+            if os.path.isfile(myfile):
+                os.remove(myfile)
         elif self.dbformat_eapi == 2:
-            path = eval("self.Entropy.entropyTools."+cmethod[1])(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
-            os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
+            myfile = etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]]
+            try:
+                path = eval("self.Entropy.entropyTools."+cmethod[1])(myfile)
+            except EOFError:
+                rc = 1
+            if os.path.isfile(myfile):
+                os.remove(myfile)
         else:
             mytxt = _("self.dbformat_eapi must be in (1,2)")
             raise exceptionTools.InvalidData('InvalidData: %s' % (mytxt,))
 
-        self.Entropy.setup_default_file_perms(path)
-        return path
+        if rc == 0:
+            self.Entropy.setup_default_file_perms(path)
+
+        return rc
 
     def __verify_database_checksum(self, repo, cmethod = None):
 
@@ -5786,7 +5800,20 @@ class RepoInterface:
                     pass
 
             # unpack database
-            self.__unpack_downloaded_database(repo, cmethod)
+            myrc = self.__unpack_downloaded_database(repo, cmethod)
+            if myrc != 0:
+                mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),red(_("Skipping repository")),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "\t"
+                )
+                # delete all
+                self.__remove_repository_files(repo, cmethod)
+                self.syncErrors = True
+                self.Entropy.cycleDone()
+                continue
 
             if self.dbformat_eapi == 1 and db_down_status:
                 rc = self.check_downloaded_database(repo, cmethod)
@@ -15266,8 +15293,22 @@ class ServerMirrorsInterface:
         # EAPI 1
         data['compressed_database_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[2]])
         critical.append(data['compressed_database_path'])
-        data['compressed_database_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasehashfile'])
+        data['compressed_database_path_digest'] = os.path.join(
+            self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasehashfile']
+        )
         critical.append(data['compressed_database_path_digest'])
+
+        # Some information regarding how packages are built
+        spm_files = [
+            (etpConst['spm']['global_make_conf'],"global_make_conf"),
+            (etpConst['spm']['global_package_keywords'],"global_package_keywords"),
+            (etpConst['spm']['global_package_use'],"global_package_use"),
+            (etpConst['spm']['global_package_mask'],"global_package_mask"),
+            (etpConst['spm']['global_package_unmask'],"global_package_unmask")
+        ]
+        for myfile,myname in spm_files:
+            if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
+                data[myname] = myfile
 
         return data, critical
 
