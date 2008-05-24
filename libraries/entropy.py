@@ -15304,7 +15304,8 @@ class ServerMirrorsInterface:
             (etpConst['spm']['global_package_keywords'],"global_package_keywords"),
             (etpConst['spm']['global_package_use'],"global_package_use"),
             (etpConst['spm']['global_package_mask'],"global_package_mask"),
-            (etpConst['spm']['global_package_unmask'],"global_package_unmask")
+            (etpConst['spm']['global_package_unmask'],"global_package_unmask"),
+            (etpConst['spm']['global_make_profile'],"global_make_profile"),
         ]
         for myfile,myname in spm_files:
             if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
