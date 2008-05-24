@@ -53,6 +53,10 @@ def sync(options, justTidy = False):
 
     for repo in repos:
 
+        # avoid __default__
+        if repo == etpConst['clientserverrepoid']:
+            continue
+
         if repo != Entropy.default_repository:
             Entropy.switch_default_repository(repo)
 
@@ -105,6 +109,10 @@ def packages(options):
         old_default = Entropy.default_repository
 
         for repo in repos:
+
+            # avoid __default__
+            if repo == etpConst['clientserverrepoid']:
+                continue
 
             if repo != Entropy.default_repository:
                 Entropy.switch_default_repository(repo)
@@ -193,6 +201,10 @@ def database(options):
 
         problems = 0
         for repo in repos:
+
+            # avoid __default__
+            if repo == etpConst['clientserverrepoid']:
+                continue
 
             if repo != Entropy.default_repository:
                 Entropy.switch_default_repository(repo)

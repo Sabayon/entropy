@@ -12527,6 +12527,11 @@ class ServerInterface(TextInterface):
             instance.closeDB()
 
     def switch_default_repository(self, repoid, save = None):
+
+        # avoid setting __default__ as default server repo
+        if repoid == etpConst['clientserverrepoid']:
+            return
+
         if save == None:
             save = self.do_save_repository
         if repoid not in etpConst['server_repositories']:
@@ -12621,6 +12626,11 @@ class ServerInterface(TextInterface):
 
 
     def save_default_repository(self, repoid):
+
+        # avoid setting __default__ as default server repo
+        if repoid == etpConst['clientserverrepoid']:
+            return
+
         if os.path.isfile(etpConst['serverconf']):
             f = open(etpConst['serverconf'],"r")
             content = f.readlines()
@@ -12648,6 +12658,11 @@ class ServerInterface(TextInterface):
             f.close()
 
     def toggle_repository(self, repoid, enable = True):
+
+        # avoid setting __default__ as default server repo
+        if repoid == etpConst['clientserverrepoid']:
+            return False
+
         if not os.path.isfile(etpConst['serverconf']):
             return None
         f = open(etpConst['serverconf'])
@@ -12998,6 +13013,19 @@ class ServerInterface(TextInterface):
     def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True):
 
         switched = set()
+
+        # avoid setting __default__ as default server repo
+        if etpConst['clientserverrepoid'] in (to_repo,from_repo):
+            self.updateProgress(
+                "%s: %s" % (
+                        blue(_("You cannot switch packages from/to your system database")),
+                        red(etpConst['clientserverrepoid']),
+                ),
+                importance = 2,
+                type = "warning",
+                header = darkred(" @@ ")
+            )
+            return switched
 
         if not matches and from_repo:
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = from_repo)
@@ -15807,6 +15835,11 @@ class ServerMirrorsInterface:
         server_repos = etpConst['server_repositories'].keys()
         all_actions = set()
         for myrepo in server_repos:
+
+            # avoid __default__
+            if myrepo == etpConst['clientserverrepoid']:
+                continue
+
             mydbc = self.Entropy.openServerDatabase(just_reading = True, repo = myrepo)
             actions = mydbc.listAllTreeUpdatesActions(no_ids_repos = True)
             for data in actions:
