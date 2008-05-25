@@ -1,0 +1,31 @@
+#!/usr/bin/python
+import os
+import sys
+if os.getuid():
+    print "Please run %s as root" % (sys.argv[0],)
+    sys.exit(1)
+sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/client')
+sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../client')
+# disable pid management
+sys.argv.append("--no-pid-handling")
+do_ssl = False
+if "--ssl" in sys.argv:
+    do_ssl = True
+from entropy import RepositorySocketServerInterface
+
+# configure my repositories
+repositories = {
+    ('sabayonlinux.org','amd64','standard',): {
+        'dbpath': '/home/fabio/new.sabayonlinux.org/standard/amd64',
+        'cmethod': 'bz2',
+    },
+}
+srv = RepositorySocketServerInterface(do_ssl = do_ssl, repositories = repositories)
+try:
+    srv.go()
+except KeyboardInterrupt:
+    srv.Gc.kill()
+    sys.exit(0)
+

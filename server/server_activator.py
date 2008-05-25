@@ -22,12 +22,10 @@
 
 from entropyConstants import *
 from outputTools import *
-from entropy import ServerInterface, CommunityServerInterface
-if etpConst['community']['mode']:
-    Entropy = CommunityServerInterface()
-else:
-    Entropy = ServerInterface()
+from entropy import ServerInterface
 from entropy_i18n import _
+Entropy = ServerInterface(community_repo = etpConst['community']['mode'])
+
 
 def sync(options, justTidy = False):
 

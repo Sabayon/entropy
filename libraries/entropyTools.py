@@ -256,6 +256,17 @@ def md5sum_directory(directory, get_obj = False):
     else:
         return m.hexdigest()
 
+def uncompress_file(file_path, destination_path, opener):
+    f_out = open(destination_path,"wb")
+    f_in = opener(file_path,"rb")
+    data = f_in.read(8192)
+    while data:
+        f_out.write(data)
+        data = f_in.read(8192)
+    f_out.flush()
+    f_out.close()
+    f_in.close()
+
 def unpackGzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz

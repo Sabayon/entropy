@@ -68,6 +68,9 @@ class InvalidDataType(EntropyException):
 class RepositoryError(EntropyException):
         """Cannot open repository database"""
 
+class ConnectionError(EntropyException):
+        """Cannot connect to service"""
+
 class SystemDatabaseError(EntropyException):
         """Cannot open system database"""
 

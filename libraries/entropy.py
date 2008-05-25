@@ -11644,7 +11644,13 @@ class SocketHostInterface:
                         self.timed_out = False
 
                         try:
+                            myeot = self.server.processor.HostInterface.answers['eot']
                             data = self.request.recv(8192)
+                            while not (data.endswith(myeot) and not data.endswith(myeot*2)):
+                                x = self.request.recv(8192)
+                                if not x: break
+                                data += x
+                            data = data[:-len(myeot)] # remove EOT
                         except self.socket.timeout, e:
                             self.server.processor.HostInterface.updateProgress(
                                 'interrupted: %s, reason: %s - from client: %s' % (
@@ -11805,7 +11811,8 @@ class SocketHostInterface:
             Entropy = intf(*args, **kwds)
             Entropy.urlFetcher = SocketUrlFetcher
             Entropy.updateProgress = self.remoteUpdateProgress
-            Entropy.clientDbconn.updateProgress = self.remoteUpdateProgress
+            if Entropy.clientDbconn != None:
+                Entropy.clientDbconn.updateProgress = self.remoteUpdateProgress
             Entropy.progress = self.remoteUpdateProgress
             return Entropy
 
@@ -11851,6 +11858,7 @@ class SocketHostInterface:
                 try:
                     self.run_task(cmd, args, session, Entropy)
                 except Exception, e:
+                    self.entropyTools.printTraceback()
                     # store error
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: %s, type: %s' % (
@@ -11869,9 +11877,7 @@ class SocketHostInterface:
             self.handle_end_answer(cmd, whoops, valid_cmd)
 
         def duplicate_termination_cmd(self, data):
-            if data.find(self.HostInterface.answers['eot']) != -1:
-                data = data.replace(self.HostInterface.answers['eot'],self.HostInterface.answers['eot']*2)
-            return data
+            return data.replace(self.HostInterface.answers['eot'],self.HostInterface.answers['eot']*2)
 
         def transmit(self, data):
             data = self.duplicate_termination_cmd(data)
@@ -11996,7 +12002,7 @@ class SocketHostInterface:
 
             self.valid_commands = {
                 'begin':    {
-                                'auth': True, # does it need authentication ?
+                                'auth': False, # does it need authentication ?
                                 'built_in': True, # is it built-in ?
                                 'cb': self.docmd_begin, # function to call
                                 'args': ["self.transmit"], # arguments to be passed before *args and **kwards
@@ -12007,7 +12013,7 @@ class SocketHostInterface:
                                 'from': str(self), # from what class
                             },
                 'end':      {
-                                'auth': True,
+                                'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_end,
                                 'args': ["self.transmit", "session"],
@@ -12028,7 +12034,7 @@ class SocketHostInterface:
                                 'from': str(self),
                             },
                 'rc':       {
-                                'auth': True,
+                                'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_rc,
                                 'args': ["self.transmit","session"],
@@ -12243,11 +12249,11 @@ class SocketHostInterface:
                     myfrom = self.HostInterface.valid_commands[cmd]['from']
                 else:
                     myfrom = 'N/A'
-                text += "[%s] %s\n   %s: %s\n   %s: %s\n\n" % (
+                text += "[%s] %s\n   %s: %s\n   %s: %s\n" % (
                     myfrom,
                     blue(cmd),
                     red("description"),
-                    desc,
+                    desc.strip(),
                     darkgreen("syntax"),
                     syntax,
                 )
@@ -12472,9 +12478,9 @@ class SocketHostInterface:
         if len(self.sessions) > self.threads:
             # fuck!
             return "0"
-        rng = str(int(random.random()*100000000000)+1)
+        rng = str(int(random.random()*100000000000000000)+1)
         while rng in self.sessions:
-            rng = str(int(random.random()*100000000000)+1)
+            rng = str(int(random.random()*100000000000000000)+1)
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
@@ -14757,10 +14763,489 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
-class CommunityServerInterface(ServerInterface):
+class RepositorySocketServerInterface(SocketHostInterface):
+
+    class RepositoryCommands:
+
+        import dumpTools
+        import entropyTools
+        def __str__(self):
+            return self.inst_name
+
+        def __init__(self, HostInterface, Authenticator):
+
+            self.HostInterface = HostInterface
+            self.Authenticator = Authenticator
+            self.inst_name = "repository-server"
+            self.no_acked_commands = []
+            self.termination_commands = []
+            self.initialization_commands = []
+            self.login_pass_commands = []
+            self.no_session_commands = []
+
+            self.valid_commands = {
+                'dbdiff':    {
+                    'auth': False,
+                    'built_in': False,
+                    'cb': self.docmd_dbdiff,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "returns idpackage differences against the latest available repository",
+                    'syntax': "<SESSION_ID> dbdiff <repository> <arch> <product> [idpackages]",
+                    'from': str(self), # from what class
+                },
+                'pkginfo':    {
+                    'auth': False,
+                    'built_in': False,
+                    'cb': self.docmd_pkginfo,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "returns idpackage differences against the latest available repository",
+                    'syntax': "<SESSION_ID> pkginfo <content fmt True/False> <repository> <arch> <product> <idpackage>",
+                    'from': str(self), # from what class
+                },
+            }
+
+        def register(
+                self,
+                valid_commands,
+                no_acked_commands,
+                termination_commands,
+                initialization_commands,
+                login_pass_commads,
+                no_session_commands
+            ):
+            valid_commands.update(self.valid_commands)
+            no_acked_commands.extend(self.no_acked_commands)
+            termination_commands.extend(self.termination_commands)
+            initialization_commands.extend(self.initialization_commands)
+            login_pass_commads.extend(self.login_pass_commands)
+            no_session_commands.extend(self.no_session_commands)
+
+        def docmd_dbdiff(self, myargs):
+
+            if len(myargs) < 4:
+                return None
+            repository = myargs[0]
+            arch = myargs[1]
+            product = myargs[2]
+            foreign_idpackages = myargs[3:]
+
+            if (repository,arch,product,) not in self.HostInterface.repositories:
+                return None
+
+            dbpath = self.get_database_path(repository, arch, product)
+            dbconn = self.open_db(dbpath)
+            myids = dbconn.listAllIdpackages()
+            foreign_idpackages = set(foreign_idpackages)
+
+            removed_ids = foreign_idpackages - myids
+            added_ids = myids - foreign_idpackages
+
+            return {'removed': removed_ids, 'added': added_ids}
+
+        def docmd_pkginfo(self, myargs):
+            if len(myargs) < 5:
+                return None
+            format_content_for_insert = myargs[0]
+            if type(format_content_for_insert) is not bool:
+                format_content_for_insert = False
+            repository = myargs[1]
+            arch = myargs[2]
+            product = myargs[3]
+            try:
+                idpackage = int(myargs[4])
+            except ValueError:
+                return None
+
+            if (repository,arch,product,) not in self.HostInterface.repositories:
+                return None
+
+            dbpath = self.get_database_path(repository, arch, product)
+            dbconn = self.open_db(dbpath)
+            try:
+                return dbconn.getPackageData(
+                    idpackage,
+                    content_insert_formatted = format_content_for_insert,
+                    trigger_unicode = True
+                )
+            except:
+                self.entropyTools.printTraceback()
+                return None
+
+        def open_db(self, dbpath):
+            return self.HostInterface.Entropy.openGenericDatabase(
+                dbpath,
+                xcache = False,
+                readOnly = True
+            )
+
+        def get_database_path(self, repository, arch, product):
+            repoitems = (repository,arch,product)
+            mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
+            dbpath = os.path.join(mydbroot,etpConst['etpdatabasefile'])
+            return dbpath
+
+    import entropyTools
+    def __init__(self, repositories, do_ssl = False):
+        self.Entropy = EquoInterface(noclientdb = 2)
+        self.do_ssl = do_ssl
+        SocketHostInterface.__init__(
+            self,
+            EquoInterface,
+            noclientdb = 2,
+            sock_output = self.Entropy,
+            ssl = do_ssl,
+            external_cmd_classes = [self.RepositoryCommands]
+        )
+        self.repositories = repositories
+        self.expand_repositories()
+
+    def unpack_database(self, dbroot, mycmethod):
+        import bz2
+        import gzip
+        x = bz2, gzip
+        del x
+        cmethod = etpConst['etpdatabasecompressclasses'][mycmethod]
+        dbfile = os.path.join(dbroot,etpConst['etpdatabasefile'])
+        dbfile_compressed = os.path.join(dbroot,etpConst[cmethod[2]])
+        self.entropyTools.uncompress_file(dbfile_compressed, dbfile, eval(cmethod[0]))
+
+    def expand_repositories(self):
+
+        def show_unpack(x):
+            mytxt = blue("%s") % (_("Unpacking new database"),)
+            self.Entropy.updateProgress(
+                "[%s] %s %s" % (
+                        brown(str(x)),
+                        blue(mytxt),
+                        darkred("..."),
+                ),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+
+        for repository,arch,product in self.repositories:
+            x = (repository,arch,product)
+            mydbpath = self.repositories[x]['dbpath']
+            cmethod = self.repositories[x]['cmethod']
+            myrevfile = os.path.join(os.path.dirname(mydbpath),etpConst['etpdatabaserevisionfile'])
+            myrev = '0'
+            if os.path.isfile(myrevfile):
+                while 1:
+                    try:
+                        f = open(myrevfile)
+                        myrev = f.readline().strip()
+                        f.close()
+                    except IOError: # should never happen but who knows
+                        continue
+                    break
+            if not self.repositories[x].has_key('dbrevision'):
+                show_unpack(x)
+                self.unpack_database(mydbpath, cmethod)
+            elif self.repositories[x]['dbrevision'] != myrev:
+                show_unpack(x)
+                self.unpack_database(mydbpath, cmethod)
+            self.repositories[x]['dbrevision'] = myrev
+
+class EntropySocketClientCommands:
 
     def __init__(self):
-        ServerInterface.__init__(self, community_repo = True)
+        pass
+
+class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
+
+    import entropyTools
+    def __init__(self, EntropyInterface, ServiceInterface):
+
+        if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
+            not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
+                mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
+
+        if not isinstance(ServiceInterface, (RepositorySocketClientInterface,)) and \
+            not issubclass(ServiceInterface, (RepositorySocketClientInterface,)):
+                mytxt = _("A valid RepositorySocketClientInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ServiceInterface,mytxt,))
+
+        self.Entropy = EntropyInterface
+        self.Service = ServiceInterface
+        EntropySocketClientCommands.__init__(self)
+
+    def hello(self):
+        self.Entropy.updateProgress(
+            "%s" % (_("hello world!"),),
+            importance = 1,
+            type = "info"
+        )
+
+    def handle_standard_answer(self, data, repository = None, arch = None, product = None):
+        do_skip = False
+        # elaborate answer
+        if data == None:
+            mytxt = _("feature not supported remotely")
+            self.Entropy.updateProgress(
+                "[%s:%s|%s:%s|%s:%s] %s" % (
+                        darkblue(_("repo")),
+                        bold(repository),
+                        darkred(_("arch")),
+                        bold(arch),
+                        darkgreen(_("product")),
+                        bold(product),
+                        blue(mytxt),
+                ),
+                importance = 1,
+                type = "error"
+            )
+            do_skip = True
+        elif data != self.Service.answers['ok']:
+            mytxt = _("received wrong answer")
+            self.Entropy.updateProgress(
+                "[%s:%s|%s:%s|%s:%s] %s: %s" % (
+                        darkblue(_("repo")),
+                        bold(repository),
+                        darkred(_("arch")),
+                        bold(arch),
+                        darkgreen(_("product")),
+                        bold(product),
+                        blue(mytxt),
+                        repr(data),
+                ),
+                importance = 1,
+                type = "error"
+            )
+            do_skip = True
+        return do_skip
+
+    def get_result(self, session):
+        # get the information
+        cmd = "%s rc" % (session,)
+        self.Service.transmit(cmd)
+        try:
+            data = self.Service.receive()
+            return data
+        except:
+            self.entropyTools.printTraceback()
+            return None
+
+    def convert_stream_to_object(self, data, repository = None, arch = None, product = None):
+
+        # unstream object
+        try:
+            data = self.Service.stream_to_object(data)
+        except EOFError:
+            mytxt = _("cannot convert stream into object")
+            self.Entropy.updateProgress(
+                "[%s:%s|%s:%s|%s:%s] %s" % (
+                        darkblue(_("repo")),
+                        bold(repository),
+                        darkred(_("arch")),
+                        bold(arch),
+                        darkgreen(_("product")),
+                        bold(product),
+                        blue(mytxt),
+                ),
+                importance = 1,
+                type = "error"
+            )
+            data = None
+        return data
+
+    def differential_packages_comparison(self, idpackages, repository, arch, product):
+        self.Service.check_socket_connection()
+
+        session_id = self.Service.open_session()
+        myidlist = ' '.join([str(x) for x in idpackages])
+        cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
+        # send command
+        self.Service.transmit(cmd)
+        # receive answer
+        data = self.Service.receive()
+
+        skip = self.handle_standard_answer(data, repository, arch, product)
+        if skip:
+            self.Service.close_session(session_id)
+            return None
+
+        data = self.get_result(session_id)
+        if data == None:
+            self.Service.close_session(session_id)
+            return None
+
+        data = self.convert_stream_to_object(data, repository, arch, product)
+
+        self.Service.close_session(session_id)
+        return data
+
+    def get_package_information(self, idpackage, repository, arch, product):
+
+        session_id = self.Service.open_session()
+        cmd = "%s %s %s %s %s %s %s" % (session_id, 'pkginfo', True, repository, arch, product, idpackage,)
+        # send command
+        self.Service.transmit(cmd)
+        # receive answer
+        data = self.Service.receive()
+
+        skip = self.handle_standard_answer(data, repository, arch, product)
+        if skip:
+            self.Service.close_session(session_id)
+            return None
+
+        data = self.get_result(session_id)
+        if data == None:
+            self.Service.close_session(session_id)
+            return None
+
+        data = self.convert_stream_to_object(data, repository, arch, product)
+        self.Service.close_session(session_id)
+        return data
+
+
+class RepositorySocketClientInterface:
+
+    import socket
+    import dumpTools
+    try:
+        import cStringIO as stringio
+    except ImportError:
+        import StringIO as stringio
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False):
+
+        if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
+            not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
+                mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
+
+        if not issubclass(ClientCommandsClass, (EntropySocketClientCommands,)):
+            mytxt = _("A valid EntropySocketClientCommands based class is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass,mytxt,))
+
+        self.answers = etpConst['socket_service']['answers']
+        self.Entropy = EntropyInterface
+        self.sock_conn = None
+        self.hostname = None
+        self.hostport = None
+        self.quiet = quiet
+        self.CmdInterface = ClientCommandsClass(self.Entropy, self)
+
+    def stream_to_object(self, data):
+        f = self.stringio.StringIO(data)
+        obj = self.dumpTools.unserialize(f)
+        f.close()
+        return obj
+
+    def duplicate_termination_cmd(self, data):
+        return data.replace(self.answers['eot'],self.answers['eot']*2)
+
+    def cut_termination_cmd(self, data):
+        if len(data) > len(self.answers['eot']):
+            data = data.replace(self.answers['eot']*2,self.answers['eot'])
+            data = data[:-len(self.answers['eot'])]
+        return data
+
+    def transmit(self, data):
+        self.check_socket_connection()
+        data = self.duplicate_termination_cmd(data)
+        self.sock_conn.sendall(data)
+        self.sock_conn.sendall(self.answers['eot'])
+
+    def close_session(self, session_id):
+        self.check_socket_connection()
+        self.transmit("%s end" % (session_id,))
+        data = self.receive()
+        return data
+
+    def open_session(self):
+        self.check_socket_connection()
+        self.transmit('begin')
+        data = self.receive()
+        return data
+
+    def receive(self):
+        data = ''
+        eot = self.answers['eot']
+
+        while 1:
+
+            try:
+                x = self.sock_conn.recv(8192)
+            except self.socket.timeout, e:
+                if not self.quiet:
+                    mytxt = _("connection timed out while receiving data")
+                    self.Entropy.updateProgress(
+                        "[%s:%s] %s: %s" % (
+                                brown(self.hostname),
+                                bold(str(self.hostport)),
+                                blue(mytxt),
+                                e,
+                        ),
+                        importance = 1,
+                        type = "warning"
+                    )
+                return None
+
+            if not x:
+                break
+
+            data += x
+            eot_count = 0
+            for mychar in data[::-1]:
+                if mychar == eot:
+                    eot_count += 1
+                else:
+                    break
+            if eot_count%2 == 1:
+                break
+
+        return self.cut_termination_cmd(data)
+
+    def check_socket_connection(self):
+        if not self.sock_conn:
+            raise exceptionTools.ConnectionError("ConnectionError: %s" % (_("Not connected to host"),))
+
+    def connect(self, host, port):
+        self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
+        try:
+            self.sock_conn.connect((host, port))
+        except self.socket.error, e:
+            if e[0] == 111:
+                mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"),host,_("on port"),port,)
+                raise exceptionTools.ConnectionError("ConnectionError: %s" % (mytxt,))
+            else:
+                raise
+        self.hostname = host
+        self.hostport = port
+        if not self.quiet:
+            mytxt = _("Successfully connected to host")
+            self.Entropy.updateProgress(
+                "[%s:%s] %s" % (
+                        brown(self.hostname),
+                        bold(str(self.hostport)),
+                        blue(mytxt),
+                ),
+                importance = 1,
+                type = "info"
+            )
+
+    def disconnect(self):
+        if not self.sock_conn:
+            return True
+        self.sock_conn.close()
+        if not self.quiet:
+            mytxt = _("Successfully disconnected from host")
+            self.Entropy.updateProgress(
+                "[%s:%s] %s" % (
+                        brown(self.hostname),
+                        bold(str(self.hostport)),
+                        blue(mytxt),
+                ),
+                importance = 1,
+                type = "info"
+            )
+        self.sock_conn = None
+        self.hostname = None
+        self.hostport = None
 
 
 class ServerMirrorsInterface:
@@ -15407,17 +15892,6 @@ class ServerMirrorsInterface:
         except:
             pass
         f_out.close()
-
-    def uncompress_file(self, file_path, destination_path, opener):
-        f_out = open(destination_path,"wb")
-        f_in = opener(file_path,"rb")
-        data = f_in.read(8192)
-        while data:
-            f_out.write(data)
-            data = f_in.read(8192)
-        f_out.flush()
-        f_out.close()
-        f_in.close()
 
     def get_files_to_sync(self, cmethod, download = False, repo = None):
 
@@ -16252,7 +16726,7 @@ class ServerMirrorsInterface:
                 uncompressed_db_filename = os.path.basename(database_path)
                 compressed_file = os.path.join(mytmpdir,compressed_db_filename)
                 uncompressed_file = os.path.join(mytmpdir,uncompressed_db_filename)
-                self.uncompress_file(compressed_file, uncompressed_file, eval(cmethod[0]))
+                self.entropyTools.uncompress_file(compressed_file, uncompressed_file, eval(cmethod[0]))
                 # now move
                 for myfile in os.listdir(mytmpdir):
                     fromfile = os.path.join(mytmpdir,myfile)
@@ -17816,6 +18290,9 @@ class EntropyDatabaseInterface:
     # changes required if running as root.
     def clientUpdatePackagesData(self, clientDbconn, force = False):
 
+        if clientDbconn == None:
+            return
+
         repository = self.dbname[len(etpConst['dbnamerepoprefix']):]
         etpConst['client_treeupdatescalled'].add(repository)
 
@@ -19273,20 +19750,23 @@ class EntropyDatabaseInterface:
 
         return data
 
-    def getPackageData(self, idpackage, get_content = True):
+    def getPackageData(self, idpackage, get_content = True, content_insert_formatted = False, trigger_unicode = False):
         data = {}
 
-        atom, data['name'], data['version'], data['versiontag'], \
-        data['description'], data['category'], data['chost'], \
-        data['cflags'], data['cxxflags'],data['homepage'], \
-        data['license'], data['branch'], data['download'], \
-        data['digest'], data['slot'], data['etpapi'], \
-        data['datecreation'], data['size'], data['revision']  = self.getBaseData(idpackage)
+        try:
+            atom, data['name'], data['version'], data['versiontag'], \
+            data['description'], data['category'], data['chost'], \
+            data['cflags'], data['cxxflags'],data['homepage'], \
+            data['license'], data['branch'], data['download'], \
+            data['digest'], data['slot'], data['etpapi'], \
+            data['datecreation'], data['size'], data['revision']  = self.getBaseData(idpackage)
+        except TypeError:
+            return None
 
         ### risky to add to the sql above
         data['counter'] = self.retrieveCounter(idpackage)
         data['messages'] = self.retrieveMessages(idpackage)
-        data['trigger'] = self.retrieveTrigger(idpackage)
+        data['trigger'] = self.retrieveTrigger(idpackage, get_unicode = trigger_unicode)
         data['disksize'] = self.retrieveOnDiskSize(idpackage)
 
         data['injected'] = self.isInjected(idpackage)
@@ -19315,7 +19795,12 @@ class EntropyDatabaseInterface:
 
         data['content'] = {}
         if get_content:
-            data['content'] = self.retrieveContent(idpackage, extended = True, formatted = True)
+            data['content'] = self.retrieveContent(
+                idpackage,
+                extended = True,
+                formatted = True,
+                insert_formatted = content_insert_formatted
+            )
 
         mydeps = {}
         depdata = self.retrieveDependencies(idpackage, extended = True)
@@ -19456,13 +19941,15 @@ class EntropyDatabaseInterface:
         if br:
             return br[0]
 
-    def retrieveTrigger(self, idpackage):
+    def retrieveTrigger(self, idpackage, get_unicode = False):
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
         if trigger:
             trigger = trigger[0]
         else:
             trigger = ''
+        if get_unicode:
+            trigger = unicode(trigger,'raw_unicode_escape')
         return trigger
 
     def retrieveDownloadURL(self, idpackage):
@@ -20658,12 +21145,19 @@ class EntropyDatabaseInterface:
             mytxt = _("extrainfo table not found. Either does not exist or corrupted.")
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
-    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
-
+    def getIdpackagesDifferences(self, foreign_idpackages):
         myids = self.listAllIdpackages()
-        outids = dbconn.listAllIdpackages()
+        if type(foreign_idpackages) in (list,tuple,):
+            outids = set(foreign_idpackages)
+        else:
+            outids = foreign_idpackages
         added_ids = outids - myids
         removed_ids = myids - outids
+        return added_ids, removed_ids
+
+    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
+
+        added_ids, removed_ids = self.getIdpackagesDifferences(dbconn.listAllIdpackages())
 
         if not force:
             if len(added_ids) > align_limit: # too much hassle

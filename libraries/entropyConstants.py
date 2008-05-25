@@ -758,12 +758,12 @@ def const_defaultSettings(rootdir):
             'ssl_cert': ETP_CONF_DIR+"/socket_server.crt",
             'ssl_port': 998,
             'answers': {
-                'ok': chr(0)+"OK\n"+chr(0), # command run
-                'er': chr(0)+"ER\n"+chr(1), # execution error
-                'no': chr(0)+"NO\n"+chr(2), # not allowed
-                'cl': chr(0)+"CL\n"+chr(3), # close connection
-                'eot': chr(0)+"\nEOT\n"+chr(4), # end of transmittion
-                'mcr': chr(0)+"\nMCR\n"+chr(4) # max connections reached
+                'ok': chr(0)+"OK"+chr(0), # command run
+                'er': chr(0)+"ER"+chr(1), # execution error
+                'no': chr(0)+"NO"+chr(2), # not allowed
+                'cl': chr(0)+"CL"+chr(3), # close connection
+                'eot': chr(10), # end of transmittion
+                'mcr': chr(0)+"MCR"+chr(4) # max connections reached
             },
         },
 
