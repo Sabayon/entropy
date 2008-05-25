@@ -697,7 +697,7 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
     # search inside each available database
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.validRepositories:
         foundPackages[repo] = {}
         repoNumber += 1
 
@@ -802,7 +802,7 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Slot Search"),) ))
     # search inside each available database
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.validRepositories:
         foundPackages[repo] = {}
         repoNumber += 1
 
@@ -846,7 +846,7 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),)))
     # search inside each available database
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.validRepositories:
         foundPackages[repo] = {}
         repoNumber += 1
 
@@ -889,7 +889,7 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("License Search"),)))
     # search inside each available database
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.validRepositories:
         foundPackages[repo] = {}
         repoNumber += 1
 
@@ -932,7 +932,7 @@ def searchDescription(descriptions, idreturn = False, EquoConnection = None):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Description Search"),) ))
     # search inside each available database
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.validRepositories:
         foundPackages[repo] = {}
         repoNumber += 1
 

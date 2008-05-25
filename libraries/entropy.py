@@ -12624,6 +12624,7 @@ class ServerInterface(TextInterface):
             noclientdb = 1
         )
         self.ClientService.FtpInterface = self.FtpInterface
+        self.validRepositories = self.ClientService.validRepositories
         self.entropyTools = self.ClientService.entropyTools
         self.dumpTools = self.ClientService.dumpTools
         self.QA = self.ClientService.QA
@@ -17463,6 +17464,7 @@ class EntropyDatabaseInterface:
         if dbFile == None:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (_("valid database path needed"),) )
 
+        self.dbapi2 = dbapi2
         # setup output interface
         self.OutputInterface = OutputInterface
         self.updateProgress = self.OutputInterface.updateProgress
@@ -17495,7 +17497,7 @@ class EntropyDatabaseInterface:
         self.live_cache = {}
 
         # create connection
-        self.connection = dbapi2.connect(dbFile,timeout=300.0)
+        self.connection = self.dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
         try:
@@ -19004,7 +19006,7 @@ class EntropyDatabaseInterface:
                     branch,
                     )
                 )
-            except dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
+            except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
                 self.migrateCountersTable()
                 self.cursor.execute(
                 'INSERT into counters VALUES '
@@ -21157,7 +21159,7 @@ class EntropyDatabaseInterface:
                             'INSERT into counters VALUES '
                             '(?,?,?)', ( counter, myid, mybranch )
                     )
-                except dbapi2.IntegrityError:
+                except self.dbapi2.IntegrityError:
                     if output:
                         mytxt = "%s: %s: %s" % (
                             bold(_("ATTENTION")),
