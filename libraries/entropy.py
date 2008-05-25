@@ -4106,11 +4106,7 @@ class PackageInterface:
     def __fill_image_dir(self, mergeFrom, imageDir):
 
         dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
-        content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True)
-        package_content = {}
-        for cdata in content:
-            package_content[cdata[0]] = cdata[1]
-        del content
+        package_content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True, formatted = True)
         contents = [x for x in package_content]
         contents.sort()
 
@@ -18828,16 +18824,25 @@ class EntropyDatabaseInterface:
         self.cursor.execute("DELETE FROM content WHERE idpackage = (?)", (idpackage,))
         self.commitChanges()
 
-    def insertContent(self, idpackage, content):
+    def insertContent(self, idpackage, content, already_formatted = False):
+
+        do_encode = False
+        for item in content:
+            if type(item) is unicode:
+                do_encode = True
+                break
 
         def myiter():
             for xfile in content:
-                contenttype = content.get(xfile)
-                if type(xfile) is unicode:
+                contenttype = content[xfile]
+                if do_encode:
                     xfile = xfile.encode('raw_unicode_escape')
                 yield (idpackage,xfile,contenttype,)
 
-        self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',myiter())
+        if already_formatted:
+            self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',content)
+        else:
+            self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',myiter())
 
     def insertLicenses(self, licenses_data):
 
@@ -19308,11 +19313,7 @@ class EntropyDatabaseInterface:
 
         data['content'] = {}
         if get_content:
-            mydc = {}
-            mycontent = self.retrieveContent(idpackage, extended = True)
-            for xfile, filetype in mycontent:
-                mydc[xfile] = filetype
-            data['content'] = mydc
+            data['content'] = self.retrieveContent(idpackage, extended = True, formatted = True)
 
         mydeps = {}
         depdata = self.retrieveDependencies(idpackage, extended = True)
@@ -19654,7 +19655,7 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def retrieveContent(self, idpackage, extended = False, contentType = None):
+    def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False):
 
         # like portage does
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -19662,6 +19663,9 @@ class EntropyDatabaseInterface:
         extstring = ''
         if extended:
             extstring = ",type"
+        extstring_idpackage = ''
+        if insert_formatted:
+            extstring_idpackage = 'idpackage,'
 
         searchkeywords = [idpackage]
         contentstring = ''
@@ -19669,9 +19673,17 @@ class EntropyDatabaseInterface:
             searchkeywords.append(contentType)
             contentstring = ' and type = (?)'
 
-        self.cursor.execute('SELECT file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
+        self.cursor.execute('SELECT '+extstring_idpackage+'file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
 
-        if extended:
+        if extended and insert_formatted:
+            fl = self.cursor.fetchall()
+        elif extended and formatted:
+            fl = {}
+            items = self.cursor.fetchone()
+            while items:
+                fl[items[0]] = items[1]
+                items = self.cursor.fetchone()
+        elif extended:
             fl = self.cursor.fetchall()
         else:
             fl = self.fetchall2set(self.cursor.fetchall())
@@ -20644,7 +20656,7 @@ class EntropyDatabaseInterface:
             mytxt = _("extrainfo table not found. Either does not exist or corrupted.")
             raise exceptionTools.SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
-    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 220):
+    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
 
         myids = self.listAllIdpackages()
         outids = dbconn.listAllIdpackages()
@@ -20696,7 +20708,8 @@ class EntropyDatabaseInterface:
                 back = True,
                 count = (mycount,maxcount)
             )
-            mydata = dbconn.getPackageData(idpackage)
+            mydata = dbconn.getPackageData(idpackage, get_content = False)
+            mycontent = dbconn.retrieveContent(idpackage, extended = True, insert_formatted = True)
             self.addPackage(
                 mydata,
                 revision = mydata['revision'],
@@ -20704,6 +20717,7 @@ class EntropyDatabaseInterface:
                 do_remove = False,
                 do_commit = False
             )
+            self.insertContent(idpackage, mycontent, already_formatted = True)
 
         # do some cleanups
         self.doCleanups()

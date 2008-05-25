@@ -285,6 +285,8 @@ if (not options) or ("--help" in options):
     if not options:
         print_error("not enough parameters")
     sys.exit()
+# sure we don't need this after
+del myopts
 
 # print version
 if (options[0] == "--version"):
