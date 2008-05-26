@@ -763,8 +763,8 @@ def const_defaultSettings(rootdir):
                 'er': chr(0)+"ER"+chr(1), # execution error
                 'no': chr(0)+"NO"+chr(2), # not allowed
                 'cl': chr(0)+"CL"+chr(3), # close connection
-                'eot': chr(10), # end of transmittion
-                'mcr': chr(0)+"MCR"+chr(4) # max connections reached
+                'mcr': chr(0)+"MCR"+chr(4), # max connections reached
+                'eos': chr(0) # end of size
             },
         },
 

@@ -162,6 +162,7 @@ class EquoInterface(TextInterface):
                                     type = "warning"
                                    )
                 continue
+        # to avoid having zillions of open files when loading a lot of EquoInterfaces
         self.closeAllRepositoryDatabases(mask_clear = False)
 
     def setup_default_file_perms(self, filepath):
@@ -372,7 +373,8 @@ class EquoInterface(TextInterface):
         for item in self.repoDbCache:
             self.repoDbCache[item].closeDB()
         self.repoDbCache.clear()
-        etpConst['packagemasking'] = None
+        if mask_clear:
+            etpConst['packagemasking'] = None
 
     def openClientDatabase(self):
         if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
@@ -6423,6 +6425,12 @@ class QAInterface:
 
     def content_test(self, mycontent):
 
+        def is_contained(needed, content):
+            for item in content:
+                if os.path.basename(item) == needed:
+                    return True
+            return False
+
         mylibs = {}
         for myfile in mycontent:
             myfile = myfile.encode('raw_unicode_escape')
@@ -6437,6 +6445,9 @@ class QAInterface:
         broken_libs = {}
         for mylib in mylibs:
             for myneeded in mylibs[mylib]:
+                # is this inside myself ?
+                if is_contained(myneeded, mycontent):
+                    continue
                 found = self.resolve_dynamic_library(myneeded, mylib)
                 if found:
                     continue
@@ -11630,10 +11641,13 @@ class SocketHostInterface:
             self.default_timeout = self.server.processor.HostInterface.timeout
             ssl = self.server.processor.HostInterface.SSL
             ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
+            myeos = self.server.processor.HostInterface.answers['eos']
 
             if self.valid_connection:
 
                 while 1:
+
+                    mylen = -1
 
                     if self.timed_out:
                         break
@@ -11645,13 +11659,33 @@ class SocketHostInterface:
                         self.timed_out = False
 
                         try:
-                            myeot = self.server.processor.HostInterface.answers['eot']
-                            data = self.request.recv(8192)
-                            while not (data.endswith(myeot) and not data.endswith(myeot*2)):
-                                x = self.request.recv(8192)
-                                if not x: break
-                                data += x
-                            data = data[:-len(myeot)] # remove EOT
+                            data = self.request.recv(256)
+                            if mylen == -1:
+                                if len(data) < len(myeos):
+                                    self.server.processor.HostInterface.updateProgress(
+                                        'interrupted: %s, reason: %s - from client: %s' % (
+                                            self.server.server_address,
+                                            "malformed EOS",
+                                            self.client_address,
+                                        )
+                                    )
+                                    break
+                                mylen = data.split(myeos)[0]
+                                data = data[len(mylen)+1:]
+                                mylen = int(mylen)
+                                mylen -= len(data)
+                            while mylen > 0:
+                                data += self.request.recv(128)
+                                mylen -= 128
+                        except ValueError:
+                            self.server.processor.HostInterface.updateProgress(
+                                'interrupted: %s, reason: %s - from client: %s' % (
+                                    self.server.server_address,
+                                    "malformed transmission",
+                                    self.client_address,
+                                )
+                            )
+                            break
                         except self.socket.timeout, e:
                             self.server.processor.HostInterface.updateProgress(
                                 'interrupted: %s, reason: %s - from client: %s' % (
@@ -11720,7 +11754,10 @@ class SocketHostInterface:
 
         def max_connections_check(self, current, maximum):
             if current >= maximum:
-                self.request.sendall(self.server.processor.HostInterface.answers['mcr'])
+                self.server.processor.HostInterface.transmit(
+                    self.request,
+                    self.server.processor.HostInterface.answers['mcr']
+                )
                 self.valid_connection = False
                 return False
             else:
@@ -11769,7 +11806,6 @@ class SocketHostInterface:
                 self.transmit(self.HostInterface.answers['er'])
             elif cmd not in self.HostInterface.no_acked_commands:
                 self.transmit(self.HostInterface.answers['ok'])
-            self.channel.sendall(self.HostInterface.answers['eot'])
 
         def validate_command(self, cmd, args, session):
 
@@ -11879,12 +11915,8 @@ class SocketHostInterface:
                 self.HostInterface.unset_session_running(session)
             self.handle_end_answer(cmd, whoops, valid_cmd)
 
-        def duplicate_termination_cmd(self, data):
-            return data.replace(self.HostInterface.answers['eot'],self.HostInterface.answers['eot']*2)
-
         def transmit(self, data):
-            data = self.duplicate_termination_cmd(data)
-            self.channel.sendall(data)
+            self.HostInterface.transmit(self.channel, data)
 
         def remoteUpdateProgress(
                 self,
@@ -12152,8 +12184,13 @@ class SocketHostInterface:
             if option == "compression":
                 docomp = True
                 if myopts:
-                    if type(myopts[0]) is bool:
+                    if isinstance(myopts[0],bool):
                         docomp = myopts[0]
+                    else:
+                        try:
+                            docomp = eval(myopts[0])
+                        except (NameError, TypeError,):
+                            pass
                 self.HostInterface.sessions[session]['compression'] = docomp
                 return True,"compression now: %s" % (docomp,)
             else:
@@ -12394,7 +12431,10 @@ class SocketHostInterface:
         self.start_session_garbage_collector()
         self.setup_ssl()
 
-
+    def append_eos(self, data):
+        return str(len(data)) + \
+            self.answers['eos'] + \
+                data
 
     def setup_ssl(self):
 
@@ -12600,6 +12640,9 @@ class SocketHostInterface:
 
     def get_rc(self, session):
         return self.sessions[session]['rc']
+
+    def transmit(self, channel, data):
+        channel.sendall(self.append_eos(data))
 
     def updateProgress(self, *args, **kwargs):
         message = args[0]
@@ -14913,32 +14956,40 @@ class RepositorySocketServerInterface(SocketHostInterface):
             repository = myargs[1]
             arch = myargs[2]
             product = myargs[3]
-            try:
-                idpackage = int(myargs[4])
-            except ValueError:
+            zidpackages = myargs[4:]
+            idpackages = []
+            for idpackage in zidpackages:
+                if type(idpackage) is int:
+                    idpackages.append(idpackage)
+            if not idpackages:
                 return None
+            idpackages = tuple(sorted(idpackages))
 
             if (repository,arch,product,) not in self.HostInterface.repositories:
                 return None
 
-            cached = self.HostInterface.get_dcache((repository, arch, product, idpackage, 'docmd_pkginfo'))
+            cached = self.HostInterface.get_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'))
             if cached != None:
                 return cached
 
             dbpath = self.get_database_path(repository, arch, product)
             dbconn = self.HostInterface.open_db(dbpath)
-            result = None
-            try:
-                result = dbconn.getPackageData(
-                    idpackage,
-                    content_insert_formatted = format_content_for_insert,
-                    trigger_unicode = True
-                )
-            except:
-                self.entropyTools.printTraceback()
+            result = {}
 
-            if result != None:
-                self.HostInterface.set_dcache((repository, arch, product, idpackage, 'docmd_pkginfo'), result)
+            for idpackage in idpackages:
+                try:
+                    mydata = dbconn.getPackageData(
+                        idpackage,
+                        content_insert_formatted = format_content_for_insert,
+                        trigger_unicode = True
+                    )
+                except:
+                    self.entropyTools.printTraceback()
+                    return None
+                result[idpackage] = mydata.copy()
+
+            if result:
+                self.HostInterface.set_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), result)
 
             return result
 
@@ -14994,7 +15045,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
             mydbpath = self.repositories[x]['dbpath']
-            cmethod = self.repositories[x]['cmethod']
+            #cmethod = self.repositories[x]['cmethod']
             myrevfile = os.path.join(os.path.dirname(mydbpath),etpConst['etpdatabaserevisionfile'])
             myrev = '0'
             if os.path.isfile(myrevfile):
@@ -15015,7 +15066,7 @@ class EntropySocketClientCommands:
 
 class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
-    import entropyTools
+    import entropyTools, socket, struct
     def __init__(self, EntropyInterface, ServiceInterface):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
@@ -15111,10 +15162,16 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             data = None
         return data
 
-    def differential_packages_comparison(self, idpackages, repository, arch, product):
+    def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = True):
         self.Service.check_socket_connection()
-        session_id = self.Service.open_session()
-        docomp = self.set_gzip_compression_on_rc(session_id, True)
+        close_session = False
+        if session_id == None:
+            close_session = True
+            session_id = self.Service.open_session()
+        if compression:
+            docomp = self.set_gzip_compression_on_rc(session_id, True)
+        else:
+            docomp = False
 
         myidlist = ' '.join([str(x) for x in idpackages])
         cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
@@ -15125,27 +15182,46 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
         skip = self.handle_standard_answer(data, repository, arch, product)
         if skip:
-            self.Service.close_session(session_id)
+            if close_session:
+                self.Service.close_session(session_id)
             return None
 
         data = self.get_result(session_id)
         if data == None:
-            self.Service.close_session(session_id)
+            if close_session:
+                self.Service.close_session(session_id)
             return None
 
         data = self.convert_stream_to_object(data, docomp, repository, arch, product)
 
-        self.Service.close_session(session_id)
+        if docomp:
+            self.set_gzip_compression_on_rc(session_id, False)
+
+        if close_session:
+            self.Service.close_session(session_id)
         return data
 
-    def get_package_information(self, idpackage, repository, arch, product):
+    def package_information_handler(self, idpackages, repository, arch, product, session_id, compression):
 
-        self.Service.check_socket_connection()
-        session_id = self.Service.open_session()
+        close_session = False
+        if session_id == None:
+            close_session = True
+            session_id = self.Service.open_session()
         # set gzip on rc commands
-        docomp = self.set_gzip_compression_on_rc(session_id, True)
+        if compression:
+            docomp = self.set_gzip_compression_on_rc(session_id, True)
+        else:
+            docomp = False
 
-        cmd = "%s %s %s %s %s %s %s" % (session_id, 'pkginfo', True, repository, arch, product, idpackage,)
+        cmd = "%s %s %s %s %s %s %s" % (
+            session_id,
+            'pkginfo',
+            True,
+            repository,
+            arch,
+            product,
+            ' '.join([str(x) for x in idpackages]),
+        )
         # send command
         self.Service.transmit(cmd)
         # receive answer
@@ -15153,18 +15229,46 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
         skip = self.handle_standard_answer(data, repository, arch, product)
         if skip:
-            self.Service.close_session(session_id)
+            if close_session:
+                self.Service.close_session(session_id)
             return None
 
         data = self.get_result(session_id)
         if data == None:
-            self.Service.close_session(session_id)
+            if close_session:
+                self.Service.close_session(session_id)
             return None
 
-        self.set_gzip_compression_on_rc(session_id, False) # reset gzip on rc commands
+        if docomp:
+            self.set_gzip_compression_on_rc(session_id, False) # reset gzip on rc commands
         data = self.convert_stream_to_object(data, docomp, repository, arch, product)
-        self.Service.close_session(session_id)
+        if close_session:
+            self.Service.close_session(session_id)
         return data
+
+    def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = True):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                data = self.package_information_handler(
+                    idpackages,
+                    repository,
+                    arch,
+                    product,
+                    session_id = session_id,
+                    compression = compression
+                )
+                return data
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+
 
     def set_gzip_compression_on_rc(self, session, do):
         self.Service.check_socket_connection()
@@ -15174,7 +15278,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         if data == self.Service.answers['ok']:
             return True
         return False
-
 
 class RepositorySocketClientInterface:
 
@@ -15224,20 +15327,12 @@ class RepositorySocketClientInterface:
 
         return obj
 
-    def duplicate_termination_cmd(self, data):
-        return data.replace(self.answers['eot'],self.answers['eot']*2)
-
-    def cut_termination_cmd(self, data):
-        if len(data) > len(self.answers['eot']):
-            data = data.replace(self.answers['eot']*2,self.answers['eot'])
-            data = data[:-len(self.answers['eot'])]
-        return data
+    def append_eos(self, data):
+        return str(len(data))+self.answers['eos']+data
 
     def transmit(self, data):
         self.check_socket_connection()
-        data = self.duplicate_termination_cmd(data)
-        self.sock_conn.sendall(data)
-        self.sock_conn.sendall(self.answers['eot'])
+        self.sock_conn.sendall(self.append_eos(data))
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -15252,13 +15347,58 @@ class RepositorySocketClientInterface:
         return data
 
     def receive(self):
+
+        myeos = self.answers['eos']
         data = ''
-        eot = self.answers['eot']
+        mylen = -1
 
         while 1:
 
             try:
-                x = self.sock_conn.recv(8192)
+                data = self.sock_conn.recv(256)
+
+                if mylen == -1:
+                    if len(data) < len(myeos):
+                        data = ''
+                        break
+                    mylen = data.split(myeos)[0]
+                    data = data[len(mylen)+1:]
+                    mylen = int(mylen)
+                    mylen -= len(data)
+
+                if len(data) < len(myeos):
+                    if not self.quiet:
+                        mytxt = _("malformed EOS. receive aborted")
+                        self.Entropy.updateProgress(
+                            "[%s:%s] %s" % (
+                                    brown(self.hostname),
+                                    bold(str(self.hostport)),
+                                    blue(mytxt),
+                            ),
+                            importance = 1,
+                            type = "warning"
+                        )
+                    return None
+
+                while mylen > 0:
+                    data += self.sock_conn.recv(128)
+                    mylen -= 128
+                break
+
+            except ValueError, e:
+                if not self.quiet:
+                    mytxt = _("malformed data. receive aborted")
+                    self.Entropy.updateProgress(
+                        "[%s:%s] %s: %s" % (
+                                brown(self.hostname),
+                                bold(str(self.hostport)),
+                                blue(mytxt),
+                                e,
+                        ),
+                        importance = 1,
+                        type = "warning"
+                    )
+                return None
             except self.socket.timeout, e:
                 if not self.quiet:
                     mytxt = _("connection timed out while receiving data")
@@ -15274,20 +15414,21 @@ class RepositorySocketClientInterface:
                     )
                 return None
 
-            if not x:
-                break
+        return data
 
-            data += x
-            eot_count = 0
-            for mychar in data[::-1]:
-                if mychar == eot:
-                    eot_count += 1
-                else:
-                    break
-            if eot_count%2 == 1:
-                break
-
-        return self.cut_termination_cmd(data)
+    def reconnect_socket(self):
+        if not self.quiet:
+            mytxt = _("Reconnecting to socket")
+            self.Entropy.updateProgress(
+                "[%s:%s] %s" % (
+                        brown(self.hostname),
+                        bold(str(self.hostport)),
+                        blue(mytxt),
+                ),
+                importance = 1,
+                type = "info"
+            )
+        self.connect(self.hostname,self.hostport)
 
     def check_socket_connection(self):
         if not self.sock_conn:
