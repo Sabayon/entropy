@@ -162,6 +162,7 @@ class EquoInterface(TextInterface):
                                     type = "warning"
                                    )
                 continue
+        self.closeAllRepositoryDatabases(mask_clear = False)
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
@@ -367,7 +368,7 @@ class EquoInterface(TextInterface):
         self.clientDbconn.closeDB()
         self.openClientDatabase()
 
-    def closeAllRepositoryDatabases(self):
+    def closeAllRepositoryDatabases(self, mask_clear = True):
         for item in self.repoDbCache:
             self.repoDbCache[item].closeDB()
         self.repoDbCache.clear()
@@ -11811,8 +11812,10 @@ class SocketHostInterface:
             Entropy = intf(*args, **kwds)
             Entropy.urlFetcher = SocketUrlFetcher
             Entropy.updateProgress = self.remoteUpdateProgress
-            if Entropy.clientDbconn != None:
+            try:
                 Entropy.clientDbconn.updateProgress = self.remoteUpdateProgress
+            except AttributeError:
+                pass
             Entropy.progress = self.remoteUpdateProgress
             return Entropy
 
@@ -12022,6 +12025,16 @@ class SocketHostInterface:
                                 'syntax': "<SESSION_ID> end",
                                 'from': str(self),
                             },
+                'session_config':      {
+                                'auth': False,
+                                'built_in': True,
+                                'cb': self.docmd_session_config,
+                                'args': ["session","myargs"],
+                                'as_user': False,
+                                'desc': "set session configuration options",
+                                'syntax': "<SESSION_ID> session_config <option> [parameters]",
+                                'from': str(self),
+                            },
                 'reposync': {
                                 'auth': True,
                                 'built_in': True,
@@ -12127,6 +12140,25 @@ class SocketHostInterface:
             initialization_commands.extend(self.initialization_commands)
             login_pass_commads.extend(self.login_pass_commands)
             no_session_commands.extend(self.no_session_commands)
+
+        def docmd_session_config(self, session, myargs):
+
+            if not myargs:
+                return False,"not enough parameters"
+
+            option = myargs[0]
+            myopts = myargs[1:]
+
+            if option == "compression":
+                docomp = True
+                if myopts:
+                    if type(myopts[0]) is bool:
+                        docomp = myopts[0]
+                self.HostInterface.sessions[session]['compression'] = docomp
+                return True,"compression now: %s" % (docomp,)
+            else:
+                return False,"invalid config option"
+
 
         def docmd_login(self, transmitter, session, client_address, myargs):
 
@@ -12273,14 +12305,41 @@ class SocketHostInterface:
 
         def docmd_rc(self, transmitter, session):
             rc = self.HostInterface.get_rc(session)
-            try:
-                import cStringIO as stringio
-            except ImportError:
-                import StringIO as stringio
-            f = stringio.StringIO()
-            self.dumpTools.serialize(rc, f)
-            transmitter(f.getvalue())
-            f.close()
+            comp = self.HostInterface.sessions[session]['compression']
+            if comp:
+                import gzip
+                try:
+                    import cStringIO as stringio
+                except ImportError:
+                    import StringIO as stringio
+                f = stringio.StringIO()
+
+                self.dumpTools.serialize(rc, f)
+                myf = stringio.StringIO()
+                mygz = gzip.GzipFile(
+                    mode = 'wb',
+                    fileobj = myf
+                )
+                f.seek(0)
+                chunk = f.read(8192)
+                while chunk:
+                    mygz.write(chunk)
+                    chunk = f.read(8192)
+                mygz.flush()
+                mygz.close()
+                transmitter(myf.getvalue())
+                f.close()
+                myf.close()
+            else:
+                try:
+                    import cStringIO as stringio
+                except ImportError:
+                    import StringIO as stringio
+                f = stringio.StringIO()
+                self.dumpTools.serialize(rc, f)
+                transmitter(f.getvalue())
+                f.close()
+
             return rc
 
         def docmd_match(self, Entropy, *myargs, **mykwargs):
@@ -12484,6 +12543,7 @@ class SocketHostInterface:
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
+        self.sessions[rng]['compression'] = False
         self.sessions[rng]['t'] = time.time()
         return rng
 
@@ -14835,7 +14895,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 return None
 
             dbpath = self.get_database_path(repository, arch, product)
-            dbconn = self.open_db(dbpath)
+            dbconn = self.HostInterface.open_db(dbpath)
             myids = dbconn.listAllIdpackages()
             foreign_idpackages = set(foreign_idpackages)
 
@@ -14861,24 +14921,26 @@ class RepositorySocketServerInterface(SocketHostInterface):
             if (repository,arch,product,) not in self.HostInterface.repositories:
                 return None
 
+            cached = self.HostInterface.get_dcache((repository, arch, product, idpackage, 'docmd_pkginfo'))
+            if cached != None:
+                return cached
+
             dbpath = self.get_database_path(repository, arch, product)
-            dbconn = self.open_db(dbpath)
+            dbconn = self.HostInterface.open_db(dbpath)
+            result = None
             try:
-                return dbconn.getPackageData(
+                result = dbconn.getPackageData(
                     idpackage,
                     content_insert_formatted = format_content_for_insert,
                     trigger_unicode = True
                 )
             except:
                 self.entropyTools.printTraceback()
-                return None
 
-        def open_db(self, dbpath):
-            return self.HostInterface.Entropy.openGenericDatabase(
-                dbpath,
-                xcache = False,
-                readOnly = True
-            )
+            if result != None:
+                self.HostInterface.set_dcache((repository, arch, product, idpackage, 'docmd_pkginfo'), result)
+
+            return result
 
         def get_database_path(self, repository, arch, product):
             repoitems = (repository,arch,product)
@@ -14886,13 +14948,21 @@ class RepositorySocketServerInterface(SocketHostInterface):
             dbpath = os.path.join(mydbroot,etpConst['etpdatabasefile'])
             return dbpath
 
-    import entropyTools
+    class ServiceInterface(TextInterface):
+        def __init__(self, *args, **kwargs):
+            pass
+
+    import entropyTools, dumpTools
     def __init__(self, repositories, do_ssl = False):
         self.Entropy = EquoInterface(noclientdb = 2)
         self.do_ssl = do_ssl
+        self.syscache = {
+            'db': {},
+        }
+        etpConst['socket_service']['max_connections'] = 5000
         SocketHostInterface.__init__(
             self,
-            EquoInterface,
+            self.ServiceInterface,
             noclientdb = 2,
             sock_output = self.Entropy,
             ssl = do_ssl,
@@ -14901,30 +14971,25 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.repositories = repositories
         self.expand_repositories()
 
-    def unpack_database(self, dbroot, mycmethod):
-        import bz2
-        import gzip
-        x = bz2, gzip
-        del x
-        cmethod = etpConst['etpdatabasecompressclasses'][mycmethod]
-        dbfile = os.path.join(dbroot,etpConst['etpdatabasefile'])
-        dbfile_compressed = os.path.join(dbroot,etpConst[cmethod[2]])
-        self.entropyTools.uncompress_file(dbfile_compressed, dbfile, eval(cmethod[0]))
+    def get_dcache(self, item):
+        return self.dumpTools.loadobj(etpCache['repository_server']+str(hash(item)))
+
+    def set_dcache(self, item, data):
+        self.dumpTools.dumpobj(etpCache['repository_server']+str(hash(item)),data)
+
+    def open_db(self, dbpath):
+        cached = self.syscache['db'].get(dbpath)
+        if cached != None:
+            return cached
+        dbc = self.Entropy.openGenericDatabase(
+            dbpath,
+            xcache = False,
+            readOnly = True
+        )
+        self.syscache['db'][dbpath] = dbc
+        return dbc
 
     def expand_repositories(self):
-
-        def show_unpack(x):
-            mytxt = blue("%s") % (_("Unpacking new database"),)
-            self.Entropy.updateProgress(
-                "[%s] %s %s" % (
-                        brown(str(x)),
-                        blue(mytxt),
-                        darkred("..."),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * ")
-            )
 
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
@@ -14941,12 +15006,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     except IOError: # should never happen but who knows
                         continue
                     break
-            if not self.repositories[x].has_key('dbrevision'):
-                show_unpack(x)
-                self.unpack_database(mydbpath, cmethod)
-            elif self.repositories[x]['dbrevision'] != myrev:
-                show_unpack(x)
-                self.unpack_database(mydbpath, cmethod)
             self.repositories[x]['dbrevision'] = myrev
 
 class EntropySocketClientCommands:
@@ -15029,11 +15088,11 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.entropyTools.printTraceback()
             return None
 
-    def convert_stream_to_object(self, data, repository = None, arch = None, product = None):
+    def convert_stream_to_object(self, data, gzipped, repository = None, arch = None, product = None):
 
         # unstream object
         try:
-            data = self.Service.stream_to_object(data)
+            data = self.Service.stream_to_object(data, gzipped)
         except EOFError:
             mytxt = _("cannot convert stream into object")
             self.Entropy.updateProgress(
@@ -15054,8 +15113,9 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def differential_packages_comparison(self, idpackages, repository, arch, product):
         self.Service.check_socket_connection()
-
         session_id = self.Service.open_session()
+        docomp = self.set_gzip_compression_on_rc(session_id, True)
+
         myidlist = ' '.join([str(x) for x in idpackages])
         cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
         # send command
@@ -15073,14 +15133,18 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.Service.close_session(session_id)
             return None
 
-        data = self.convert_stream_to_object(data, repository, arch, product)
+        data = self.convert_stream_to_object(data, docomp, repository, arch, product)
 
         self.Service.close_session(session_id)
         return data
 
     def get_package_information(self, idpackage, repository, arch, product):
 
+        self.Service.check_socket_connection()
         session_id = self.Service.open_session()
+        # set gzip on rc commands
+        docomp = self.set_gzip_compression_on_rc(session_id, True)
+
         cmd = "%s %s %s %s %s %s %s" % (session_id, 'pkginfo', True, repository, arch, product, idpackage,)
         # send command
         self.Service.transmit(cmd)
@@ -15097,9 +15161,19 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.Service.close_session(session_id)
             return None
 
-        data = self.convert_stream_to_object(data, repository, arch, product)
+        self.set_gzip_compression_on_rc(session_id, False) # reset gzip on rc commands
+        data = self.convert_stream_to_object(data, docomp, repository, arch, product)
         self.Service.close_session(session_id)
         return data
+
+    def set_gzip_compression_on_rc(self, session, do):
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s %s" % (session, 'session_config', 'compression', do,)
+        self.Service.transmit(cmd)
+        data = self.Service.receive()
+        if data == self.Service.answers['ok']:
+            return True
+        return False
 
 
 class RepositorySocketClientInterface:
@@ -15129,10 +15203,25 @@ class RepositorySocketClientInterface:
         self.quiet = quiet
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
 
-    def stream_to_object(self, data):
-        f = self.stringio.StringIO(data)
-        obj = self.dumpTools.unserialize(f)
-        f.close()
+    def stream_to_object(self, data, gzipped):
+
+        if gzipped:
+            import gzip
+            myio = self.stringio.StringIO(data)
+            myio.seek(0)
+            f = gzip.GzipFile(
+                filename = 'gzipped_data',
+                mode = 'rb',
+                fileobj = myio
+            )
+            obj = self.dumpTools.unserialize(f)
+            f.close()
+            myio.close()
+        else:
+            f = self.stringio.StringIO(data)
+            obj = self.dumpTools.unserialize(f)
+            f.close()
+
         return obj
 
     def duplicate_termination_cmd(self, data):

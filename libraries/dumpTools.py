@@ -62,10 +62,11 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
    @input: object, file object
    @output: file object, pointer to the beginning
 '''
-def serialize(object, f):
+def serialize(object, f, do_seek = True):
     pickle.dump(object,f)
     f.flush()
-    f.seek(0)
+    if do_seek:
+        f.seek(0)
     return f
 
 '''

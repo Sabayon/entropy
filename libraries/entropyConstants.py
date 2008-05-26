@@ -397,7 +397,8 @@ etpCache = {
     'depends_tree': 'depends/depends_tree_',
     'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
     'library_breakage': 'libs_break/library_breakage_',
-    'repolist': 'repos/repolist'
+    'repolist': 'repos/repolist',
+    'repository_server': 'reposerver/item_',
 }
 
 # ahahaha
