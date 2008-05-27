@@ -5802,7 +5802,7 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 2000, chunk_size = 10):
+    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1200, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
         mydbconn = self.get_eapi3_local_database(repo)
@@ -12138,10 +12138,11 @@ class SocketHostInterface:
                             if self.data_counter == None:
                                 if len(data) < len(myeos):
                                     self.server.processor.HostInterface.updateProgress(
-                                        'interrupted: %s, reason: %s - from client: %s' % (
+                                        'interrupted: %s, reason: %s - from client: %s - data: "%s"' % (
                                             self.server.server_address,
                                             "malformed EOS",
                                             self.client_address,
+                                            data,
                                         )
                                     )
                                     self.buffered_data = ''
