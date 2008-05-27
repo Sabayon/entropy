@@ -12010,7 +12010,12 @@ class SocketHostInterface:
                 self.load_ssl_context()
                 self.make_ssl_connection_alive()
             else:
-                self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
+                try:
+                    self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
+                except self.socket.error, e:
+                    if e[0] == 13:
+                        raise exceptionTools.ConnectionError('ConnectionError: %s' % (_("Cannot bind the service"),))
+                    raise
 
         def load_ssl_context(self):
             # setup an SSL context.
