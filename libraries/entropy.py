@@ -12063,7 +12063,7 @@ class SocketHostInterface:
 
                 while 1:
 
-                    mylen = -1
+                    mylen = None
 
                     if self.timed_out:
                         break
@@ -12075,8 +12075,8 @@ class SocketHostInterface:
                         self.timed_out = False
 
                         try:
-                            data = self.request.recv(256)
-                            if mylen == -1:
+                            data = self.request.recv(128)
+                            if mylen == None:
                                 if len(data) < len(myeos):
                                     self.server.processor.HostInterface.updateProgress(
                                         'interrupted: %s, reason: %s - from client: %s' % (
@@ -12126,7 +12126,6 @@ class SocketHostInterface:
                         if not data:
                             break
 
-                        mylen = -1
                         cmd = self.server.processor.process(data, self.request, self.client_address)
                         if cmd == 'close':
                             break
@@ -15895,14 +15894,13 @@ class RepositorySocketClientInterface:
 
         myeos = self.answers['eos']
         data = ''
-        mylen = -1
-
+        mylen = None
         while 1:
 
             try:
                 data = self.sock_conn.recv(256)
 
-                if mylen == -1:
+                if mylen == None:
                     if len(data) < len(myeos):
                         data = ''
                         break
