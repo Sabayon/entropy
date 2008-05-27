@@ -5394,14 +5394,14 @@ class RepoInterface:
         except IndexError:
             return False
 
-        hostname = dburl
+        #XXX dburl = '127.0.0.1'
         port = etpRepositories[repository]['service_port']
 
         try:
             self.eapi3_socket = RepositorySocketClientInterface(
                 self.Entropy, EntropyRepositorySocketClientCommands
             )
-            self.eapi3_socket.connect(hostname, port)
+            self.eapi3_socket.connect(dburl, port)
         except exceptionTools.ConnectionError:
             self.eapi3_socket = None
             return False
@@ -15344,11 +15344,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
             foreign_idpackages = myargs[3:]
             x = (repository,arch,product,)
 
-            if x not in self.HostInterface.repositories:
-                return None
-            # is repository being updated
-            if self.HostInterface.repositories[x]['locked']:
-                return False
+            valid = self.HostInterface.is_repository_available(x)
+            if not valid:
+                return valid
 
             dbpath = self.get_database_path(repository, arch, product)
             dbconn = self.HostInterface.open_db(dbpath)
@@ -15380,13 +15378,11 @@ class RepositorySocketServerInterface(SocketHostInterface):
             idpackages = tuple(sorted(idpackages))
             x = (repository,arch,product,)
 
-            if x not in self.HostInterface.repositories:
-                return None
-            # is repository being updated
-            if self.HostInterface.repositories[x]['locked']:
-                return False
+            valid = self.HostInterface.is_repository_available(x)
+            if not valid:
+                return valid
 
-            cached = self.HostInterface.get_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'))
+            cached = self.HostInterface.get_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), repository)
             if cached != None:
                 return cached
 
@@ -15407,7 +15403,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 result[idpackage] = mydata.copy()
 
             if result:
-                self.HostInterface.set_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), result)
+                self.HostInterface.set_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), result, repository)
 
             return result
 
@@ -15449,27 +15445,89 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.LockScanner.setName("Lock_Scanner::"+str(random.random()))
         self.LockScanner.start()
 
+    def set_repository_db_availability(self, repo_tuple):
+        self.repositories[repo_tuple]['enabled'] = False
+        mydbpath = os.path.join(self.repositories[repo_tuple]['dbpath'],etpConst['etpdatabasefile'])
+        if os.path.isfile(mydbpath) and os.access(mydbpath, os.W_OK):
+            self.repositories[repo_tuple]['enabled'] = True
+
+    def is_repository_available(self, repo_tuple):
+
+        if repo_tuple not in self.repositories:
+            return None
+        # is repository being updated
+        if self.repositories[repo_tuple]['locked']:
+            return False
+        # repository database does not exist
+        if not self.repositories[repo_tuple]['enabled']:
+            return False
+
+        return True
+
     def lock_scan(self):
-        do_lock = False
+        do_lock = set()
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
+            self.set_repository_db_availability(x)
+            if not self.repositories[x]['enabled']:
+                mytxt = blue("%s.") % (_("database does not exist. Locking services for it"),)
+                self.updateProgress(
+                    "[%s] %s" % (
+                            brown(str(x)),
+                            mytxt,
+                    ),
+                    importance = 1,
+                    type = "info"
+                )
+                do_lock.add(repository)
+                continue
             if os.path.isfile(self.repositories[x]['download_lock']) and \
                 not self.repositories[x]['locked']:
                     self.repositories[x]['locked'] = True
                     self.close_db(self.repositories[x]['dbpath'])
-                    do_lock = True
-        if do_lock:
-            self.Entropy.clear_dump_cache(etpCache['repository_server'])
+                    do_lock.add(repository)
+                    mytxt = blue("%s.") % (_("database got locked. Locking services for it"),)
+                    self.updateProgress(
+                        "[%s] %s" % (
+                                brown(str(x)),
+                                mytxt,
+                        ),
+                        importance = 1,
+                        type = "info"
+                    )
+            elif not os.path.isfile(self.repositories[x]['download_lock']) and \
+                self.repositories[x]['locked']:
+                mytxt = blue("%s.") % (_("unlocking and indexing database"),)
+                self.updateProgress(
+                    "[%s] %s" % (
+                            brown(str(x)),
+                            mytxt,
+                    ),
+                    importance = 1,
+                    type = "info"
+                )
+                # woohoo, got unlocked eventually
+                mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
+                mydb = self.open_db(mydbpath)
+                mydb.createAllIndexes()
+                mydb.commitChanges()
+                self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repository+"/")
+                self.repositories[x]['locked'] = False
+        for repo in do_lock:
+            self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repo+"/")
 
-    def get_dcache(self, item):
-        return self.dumpTools.loadobj(etpCache['repository_server']+str(hash(item)))
+    def get_dcache(self, item, repo = '_norepo_'):
+        return self.dumpTools.loadobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)))
 
-    def set_dcache(self, item, data):
-        self.dumpTools.dumpobj(etpCache['repository_server']+str(hash(item)),data)
+    def set_dcache(self, item, data, repo = '_norepo_'):
+        self.dumpTools.dumpobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)),data)
 
     def close_db(self, dbpath):
-        dbc = self.syscache['db'].pop(dbpath)
-        dbc.closeDB()
+        try:
+            dbc = self.syscache['db'].pop(dbpath)
+            dbc.closeDB()
+        except KeyError:
+            pass
 
     def open_db(self, dbpath):
         cached = self.syscache['db'].get(dbpath)
@@ -15487,10 +15545,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
-            self.repositories[x]['locked'] = False
+            self.repositories[x]['locked'] = True # loading locked
+            self.set_repository_db_availability(x)
             mydbpath = self.repositories[x]['dbpath']
-            #cmethod = self.repositories[x]['cmethod']
-            myrevfile = os.path.join(os.path.dirname(mydbpath),etpConst['etpdatabaserevisionfile'])
+            myrevfile = os.path.join(mydbpath,etpConst['etpdatabaserevisionfile'])
             myrev = '0'
             if os.path.isfile(myrevfile):
                 while 1:
@@ -15503,7 +15561,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     break
             self.repositories[x]['dbrevision'] = myrev
             self.repositories[x]['download_lock'] = os.path.join(
-                os.path.dirname(mydbpath),
+                mydbpath,
                 etpConst['etpdatabasedownloadlockfile']
             )
 
@@ -18660,7 +18718,7 @@ class EntropyDatabaseInterface:
         if self.entropyTools.islive():
             self.indexing = False
         self.dbFile = dbFile
-        self.dbclosed = False
+        self.dbclosed = True
         self.server_repo = None
 
         if not self.clientDatabase:
@@ -18694,6 +18752,9 @@ class EntropyDatabaseInterface:
                     self.databaseStructureUpdates()
             else:
                 self.databaseStructureUpdates()
+
+        # now we can set this to False
+        self.dbclosed = False
 
     def __del__(self):
         if not self.dbclosed:
