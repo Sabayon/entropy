@@ -5400,7 +5400,7 @@ class RepoInterface:
 
         try:
             self.eapi3_socket = RepositorySocketClientInterface(
-                self.Entropy, EntropyRepositorySocketClientCommands
+                self.Entropy, EntropyRepositorySocketClientCommands, output_header = "\t"
             )
             self.eapi3_socket.connect(dburl, port)
         except exceptionTools.ConnectionError:
@@ -12143,6 +12143,7 @@ class SocketHostInterface:
                                             self.client_address,
                                         )
                                     )
+                                    self.buffered_data = ''
                                     break
                                 mystrlen = data.split(myeos)[0]
                                 self.data_counter = int(mystrlen)
@@ -15916,7 +15917,7 @@ class RepositorySocketClientInterface:
         import cStringIO as stringio
     except ImportError:
         import StringIO as stringio
-    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False):
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = ''):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
@@ -15935,6 +15936,7 @@ class RepositorySocketClientInterface:
         self.buffered_data = ''
         self.buffer_length = None
         self.quiet = quiet
+        self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
 
     def stream_to_object(self, data, gzipped):
@@ -16004,7 +16006,8 @@ class RepositorySocketClientInterface:
                                         blue(mytxt),
                                 ),
                                 importance = 1,
-                                type = "warning"
+                                type = "warning",
+                                header = self.output_header
                             )
                         if etpUi['debug']:
                             self.entropyTools.printTraceback()
@@ -16035,7 +16038,8 @@ class RepositorySocketClientInterface:
                                 e,
                         ),
                         importance = 1,
-                        type = "warning"
+                        type = "warning",
+                        header = self.output_header
                     )
                 return None
             except self.socket.timeout, e:
@@ -16049,7 +16053,8 @@ class RepositorySocketClientInterface:
                                 e,
                         ),
                         importance = 1,
-                        type = "warning"
+                        type = "warning",
+                        header = self.output_header
                     )
                 return None
             except:
@@ -16067,7 +16072,8 @@ class RepositorySocketClientInterface:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "info"
+                type = "info",
+                header = self.output_header
             )
         self.connect(self.hostname,self.hostport)
 
@@ -16096,7 +16102,8 @@ class RepositorySocketClientInterface:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "info"
+                type = "info",
+                header = self.output_header
             )
 
     def disconnect(self):
@@ -16112,7 +16119,8 @@ class RepositorySocketClientInterface:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "info"
+                type = "info",
+                header = self.output_header
             )
         self.sock_conn = None
         self.hostname = None
