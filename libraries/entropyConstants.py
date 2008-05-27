@@ -360,6 +360,7 @@ etpSys = {
 }
 
 etpUi = {
+    'debug': False,
     'quiet': False,
     'verbose': False,
     'ask': False,
@@ -372,6 +373,8 @@ etpUi = {
     'preinstall_triggers_disable': set(),
     'preremove_triggers_disable': set()
 }
+if "--debug" in sys.argv:
+    etpUi['debug'] = True
 
 # static logging stuff
 ETP_LOGLEVEL_NORMAL = 1

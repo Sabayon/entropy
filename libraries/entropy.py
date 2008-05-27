@@ -5343,6 +5343,7 @@ class RepoInterface:
 
     import dumpTools
     import entropyTools
+    import socket
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
 
         self.LockScanner = None
@@ -5801,7 +5802,7 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def handle_eapi3_database_sync(self, repo, compression = False):
+    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 2000, chunk_size = 10):
 
         session = self.eapi3_socket.open_session()
         mydbconn = self.get_eapi3_local_database(repo)
@@ -5840,7 +5841,12 @@ class RepoInterface:
             self.eapi3_socket.close_session(session)
             return False
 
-        chunk_size = 8
+        # is it worth it?
+        if len(added_ids) > threshold:
+            mydbconn.closeDB()
+            self.eapi3_socket.close_session(session)
+            return False
+
         count = 0
         added_segments = []
         mytmp = set()
@@ -5870,50 +5876,60 @@ class RepoInterface:
                 back = True,
                 count = (count,maxcount,)
             )
-            pkgdata = self.eapi3_socket.CmdInterface.get_package_information(
-                segment,
-                repo,
-                etpConst['currentarch'],
-                etpConst['product'],
-                session_id = session,
-                compression = compression
-            )
-            if pkgdata == None:
-                mytxt = "%s: %s" % (
-                    blue(_("Fetch error on segment")),
-                    darkred(str(segment)),
+            fetch_count = 0
+            max_fetch_count = 5
+            while 1:
+                fetch_count += 1
+                pkgdata = self.eapi3_socket.CmdInterface.get_package_information(
+                    segment,
+                    repo,
+                    etpConst['currentarch'],
+                    etpConst['product'],
+                    session_id = session,
+                    compression = compression
                 )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "\t",
-                    count = (count,maxcount,)
-                )
-                mydbconn.closeDB()
-                self.eapi3_socket.close_session(session)
-                return False
-            elif pkgdata == False:
-                mytxt = "%s: %s" % (
-                    blue(_("Service status")),
-                    darkred("remote database suddenly locked"),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "info",
-                    header = "\t",
-                    count = (count,maxcount,)
-                )
-                mydbconn.closeDB()
-                self.eapi3_socket.close_session(session)
-                return None
-            for idpackage in pkgdata:
-                self.dumpTools.dumpobj(
-                    etpCache['eapi3_fetch']+str(idpackage),
-                    pkgdata[idpackage]
-                )
+                if pkgdata == None:
+                    mytxt = "%s: %s" % (
+                        blue(_("Fetch error on segment")),
+                        darkred(str(segment)),
+                    )
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = "\t",
+                        count = (count,maxcount,)
+                    )
+                    if fetch_count > max_fetch_count:
+                        mydbconn.closeDB()
+                        self.eapi3_socket.close_session(session)
+                        return False
+                    continue # retry
+                elif pkgdata == False:
+                    mytxt = "%s: %s" % (
+                        blue(_("Service status")),
+                        darkred("remote database suddenly locked"),
+                    )
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "info",
+                        header = "\t",
+                        count = (count,maxcount,)
+                    )
+                    mydbconn.closeDB()
+                    self.eapi3_socket.close_session(session)
+                    return None
+                for idpackage in pkgdata:
+                    self.dumpTools.dumpobj(
+                        etpCache['eapi3_fetch']+str(idpackage),
+                        pkgdata[idpackage]
+                    )
+                break
         del added_segments
+
+        # I don't need you anymore
+        self.eapi3_socket.close_session(session)
 
         # now that we have all stored, add
         count = 0
@@ -5994,8 +6010,6 @@ class RepoInterface:
         if checksum == mychecksum:
             result = True
 
-        # bye!
-        self.eapi3_socket.close_session(session)
         mydbconn.closeDB()
         return result
 
@@ -6071,7 +6085,22 @@ class RepoInterface:
 
                 elif self.dbformat_eapi == 3:
 
-                    status = self.handle_eapi3_database_sync(repo)
+                    try:
+                        self.socket.setdefaulttimeout(10)
+                        status = self.handle_eapi3_database_sync(repo)
+                    except self.socket.error, e:
+                        mytxt = "%s: %s" % (
+                            blue(_("EAPI3 Service error")),
+                            darkred(str(e)),
+                        )
+                        self.Entropy.updateProgress(
+                            mytxt,
+                            importance = 0,
+                            type = "info",
+                            header = blue("  # "),
+                        )
+                        status = False
+                    self.socket.setdefaulttimeout(2)
                     if status == False:
                         # set to none and completely skip database alignment
                         do_db_update_transfer = None
@@ -12282,14 +12311,15 @@ class SocketHostInterface:
             self.client_address = client_address
 
             if data.strip():
+                self.HostInterface.updateProgress("----")
                 mycommand = data.strip().split()
                 if mycommand[0] in self.HostInterface.login_pass_commands:
                     mycommand = self.Authenticator.hide_login_data(mycommand)
-                self.HostInterface.updateProgress("[from: %s] call: %s" % (
-                                self.client_address,
-                                repr(' '.join(mycommand)),
-                            )
-                )
+                #self.HostInterface.updateProgress("[from: %s] call: %s" % (
+                #                self.client_address,
+                #                repr(' '.join(mycommand)),
+                #            )
+                #)
 
             term = self.handle_termination_commands(data)
             if term:
@@ -15346,7 +15376,13 @@ class RepositorySocketServerInterface(SocketHostInterface):
             login_pass_commads.extend(self.login_pass_commands)
             no_session_commands.extend(self.no_session_commands)
 
+        def trash_old_databases(self):
+            for db in self.HostInterface.syscache['db_trashed']:
+                db.closeDB()
+
         def docmd_dbdiff(self, myargs):
+
+            self.trash_old_databases()
 
             if len(myargs) < 4:
                 return None
@@ -15372,6 +15408,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
             return {'removed': removed_ids, 'added': added_ids, 'checksum': mychecksum}
 
         def docmd_pkginfo(self, myargs):
+
+            self.trash_old_databases()
+
             if len(myargs) < 5:
                 return None
             format_content_for_insert = myargs[0]
@@ -15436,6 +15475,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.LockScanner = None
         self.syscache = {
             'db': {},
+            'db_trashed': set(),
             'dbs_not_available': set(),
         }
         etpConst['socket_service']['max_connections'] = 5000
@@ -15549,6 +15589,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
             dbc.closeDB()
         except KeyError:
             pass
+        except dbapi2.ProgrammingError:
+            # they've been opened by the Commands Processor
+            self.syscache['db_trashed'].add(dbc)
 
     def open_db(self, dbpath, docache = True):
         if docache:
@@ -15836,6 +15879,7 @@ class RepositorySocketClientInterface:
 
     import socket
     import dumpTools
+    import entropyTools
     try:
         import cStringIO as stringio
     except ImportError:
@@ -15892,8 +15936,14 @@ class RepositorySocketClientInterface:
 
     def close_session(self, session_id):
         self.check_socket_connection()
-        self.transmit("%s end" % (session_id,))
-        data = self.receive()
+        try:
+            self.transmit("%s end" % (session_id,))
+            # since we don't know if it's expired, we need to wrap it
+            data = self.receive()
+        except self.socket.error, e:
+            if e[0] == 32: # broken pipe
+                return None
+            raise
         return data
 
     def open_session(self):
@@ -15904,13 +15954,12 @@ class RepositorySocketClientInterface:
 
     def receive(self):
 
-        self.socket.setdefaulttimeout(10)
         myeos = self.answers['eos']
         while 1:
 
             try:
-                data = self.sock_conn.recv(4096)
 
+                data = self.sock_conn.recv(4096)
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -15925,6 +15974,10 @@ class RepositorySocketClientInterface:
                                 importance = 1,
                                 type = "warning"
                             )
+                        if etpUi['debug']:
+                            self.entropyTools.printTraceback()
+                            import pdb
+                            pdb.set_trace()
                         return None
                     mystrlen = data.split(myeos)[0]
                     self.buffer_length = int(mystrlen)
@@ -15952,7 +16005,6 @@ class RepositorySocketClientInterface:
                         importance = 1,
                         type = "warning"
                     )
-                self.socket.setdefaulttimeout(2)
                 return None
             except self.socket.timeout, e:
                 if not self.quiet:
@@ -15967,13 +16019,10 @@ class RepositorySocketClientInterface:
                         importance = 1,
                         type = "warning"
                     )
-                self.socket.setdefaulttimeout(2)
                 return None
             except:
-                self.socket.setdefaulttimeout(2)
                 raise
 
-        self.socket.setdefaulttimeout(2)
         return self.buffered_data
 
     def reconnect_socket(self):

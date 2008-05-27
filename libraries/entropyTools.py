@@ -27,12 +27,6 @@ import re
 import threading
 import time
 
-global __etp_debug
-__etp_debug = False
-def enableDebug():
-    import pdb
-    pdb.set_trace()
-
 def getDebug():
     return __etp_debug
 
