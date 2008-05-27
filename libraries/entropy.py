@@ -12046,6 +12046,7 @@ class SocketHostInterface:
         import SocketServer
         import select
         import socket
+        import entropyTools
         timed_out = False
 
         def __init__(self, request, client_address, server):
@@ -12093,6 +12094,7 @@ class SocketHostInterface:
                                 data += self.request.recv(128)
                                 mylen -= 128
                         except ValueError:
+                            self.entropyTools.printTraceback()
                             self.server.processor.HostInterface.updateProgress(
                                 'interrupted: %s, reason: %s - from client: %s' % (
                                     self.server.server_address,
