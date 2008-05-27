@@ -15429,6 +15429,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.LockScanner = None
         self.syscache = {
             'db': {},
+            'dbs_not_available': set(),
         }
         etpConst['socket_service']['max_connections'] = 5000
         SocketHostInterface.__init__(
@@ -15454,6 +15455,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.repositories[repo_tuple]['enabled'] = False
         mydbpath = os.path.join(self.repositories[repo_tuple]['dbpath'],etpConst['etpdatabasefile'])
         if os.path.isfile(mydbpath) and os.access(mydbpath, os.W_OK):
+            if repo_tuple in self.syscache['dbs_not_available']:
+                self.syscache['dbs_not_available'].remove(x)
             self.repositories[repo_tuple]['enabled'] = True
 
     def is_repository_available(self, repo_tuple):
@@ -15475,6 +15478,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
             x = (repository,arch,product)
             self.set_repository_db_availability(x)
             if not self.repositories[x]['enabled']:
+                if x in self.syscache['dbs_not_available']:
+                    continue
+                self.syscache['dbs_not_available'].add(x)
                 mytxt = blue("%s.") % (_("database does not exist. Locking services for it"),)
                 self.updateProgress(
                     "[%s] %s" % (
