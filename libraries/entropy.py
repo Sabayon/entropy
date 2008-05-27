@@ -12087,7 +12087,7 @@ class SocketHostInterface:
                                 mystrlen = data.split(myeos)[0]
                                 self.data_counter = int(mystrlen)
                                 data = data[len(mystrlen)+1:]
-                                mylen -= len(data)
+                                self.data_counter -= len(data)
                             while self.data_counter > 0:
                                 data += self.request.recv(4096)
                                 self.data_counter -= 4096
