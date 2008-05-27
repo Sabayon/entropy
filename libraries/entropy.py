@@ -12126,6 +12126,7 @@ class SocketHostInterface:
                         if not data:
                             break
 
+                        mylen = -1
                         cmd = self.server.processor.process(data, self.request, self.client_address)
                         if cmd == 'close':
                             break
@@ -15848,6 +15849,7 @@ class RepositorySocketClientInterface:
         self.hostport = None
         self.quiet = quiet
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
+        self.socket.setdefaulttimeout(60)
 
     def stream_to_object(self, data, gzipped):
 
