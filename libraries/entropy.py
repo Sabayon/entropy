@@ -12130,6 +12130,7 @@ class SocketHostInterface:
                         cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
                         if cmd == 'close':
                             break
+                        self.buffered_data = ''
 
             self.request.close()
 
