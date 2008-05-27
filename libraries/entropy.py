@@ -15456,7 +15456,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
         mydbpath = os.path.join(self.repositories[repo_tuple]['dbpath'],etpConst['etpdatabasefile'])
         if os.path.isfile(mydbpath) and os.access(mydbpath, os.W_OK):
             if repo_tuple in self.syscache['dbs_not_available']:
-                self.syscache['dbs_not_available'].remove(x)
+                self.syscache['dbs_not_available'].remove(repo_tuple)
             self.repositories[repo_tuple]['enabled'] = True
 
     def is_repository_available(self, repo_tuple):
@@ -16692,12 +16692,14 @@ class ServerMirrorsInterface:
             if not download:
                 critical.append(data['database_rss_light_file'])
 
-        # EAPI 2
+        # EAPI 2,3
         if not download: # we don't need to get the dump
             data['dump_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[3]])
             critical.append(data['dump_path'])
             data['dump_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[4]])
             critical.append(data['dump_path_digest'])
+            data['database_path'] = self.Entropy.get_local_database_file(repo)
+            critical.append(data['database_path'])
 
         # EAPI 1
         data['compressed_database_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[2]])
@@ -17048,6 +17050,26 @@ class ServerMirrorsInterface:
 
             return errors,fine_uris,broken_uris
 
+    def _show_eapi3_upload_messages(self, crippled_uri, database_path, repo):
+        self.Entropy.updateProgress(
+            "[repo:%s|%s|%s:%s] %s" % (
+                brown(repo),
+                darkgreen(crippled_uri),
+                red("EAPI"),
+                bold("3"),
+                blue(_("preparing uncompressed database for the upload")),
+            ),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        self.Entropy.updateProgress(
+            "%s: %s" % (_("database path"),blue(database_path),),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+
     def _show_eapi2_upload_messages(self, crippled_uri, database_path, upload_data, cmethod, repo):
 
         if repo == None:
@@ -17322,6 +17344,9 @@ class ServerMirrorsInterface:
                     pass
 
             self.shrink_database_and_close(repo)
+
+            # EAPI 3
+            self._show_eapi3_upload_messages(crippled_uri, database_path, repo)
 
             # EAPI 2
             self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
