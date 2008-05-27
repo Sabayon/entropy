@@ -15528,9 +15528,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     type = "info"
                 )
                 # woohoo, got unlocked eventually
-                mydb = self.open_db(mydbpath)
+                mydb = self.open_db(mydbpath, docache = False)
                 mydb.createAllIndexes()
                 mydb.commitChanges()
+                mydb.closeDB()
                 self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repository+"/")
                 self.repositories[x]['locked'] = False
         for repo in do_lock:
@@ -15549,16 +15550,18 @@ class RepositorySocketServerInterface(SocketHostInterface):
         except KeyError:
             pass
 
-    def open_db(self, dbpath):
-        cached = self.syscache['db'].get(dbpath)
-        if cached != None:
-            return cached
+    def open_db(self, dbpath, docache = True):
+        if docache:
+            cached = self.syscache['db'].get(dbpath)
+            if cached != None:
+                return cached
         dbc = self.Entropy.openGenericDatabase(
             dbpath,
             xcache = False,
             readOnly = True
         )
-        self.syscache['db'][dbpath] = dbc
+        if docache:
+            self.syscache['db'][dbpath] = dbc
         return dbc
 
     def expand_repositories(self):
