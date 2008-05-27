@@ -1,9 +1,5 @@
 #!/usr/bin/python
-import os
 import sys
-if os.getuid():
-    print "Please run %s as root" % (sys.argv[0],)
-    sys.exit(1)
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -27,5 +23,5 @@ try:
     srv.go()
 except KeyboardInterrupt:
     srv.Gc.kill()
-    sys.exit(0)
+    sys.exit(1)
 
