@@ -6014,7 +6014,7 @@ class RepoInterface:
         mydbconn.commitChanges()
         # now verify if both checksums match
         result = False
-        mychecksum = mydbconn.database_checksum(do_order = True, strict = False)
+        mychecksum = mydbconn.database_checksum(do_order = True, strict = False, strings = True)
         if checksum == mychecksum:
             result = True
         else:
@@ -15429,7 +15429,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
             dbpath = self.get_database_path(repository, arch, product)
             dbconn = self.HostInterface.open_db(dbpath)
-            mychecksum = dbconn.database_checksum(do_order = True, strict = False)
+            mychecksum = dbconn.database_checksum(do_order = True, strict = False, strings = True)
             myids = dbconn.listAllIdpackages()
             foreign_idpackages = set(foreign_idpackages)
 
@@ -15606,7 +15606,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 mydb.createAllIndexes()
                 mydb.commitChanges()
                 self.updateProgress(
-                    str(mydb.database_checksum()),
+                    str(mydb.database_checksum(do_order = True, strict = False, strings = True)),
                     importance = 1,
                     type = "info"
                 )
@@ -22230,8 +22230,8 @@ class EntropyDatabaseInterface:
             columns.append(row[1])
         return columns
 
-    def database_checksum(self, do_order = False, strict = True):
-        # primary keys are now autoincrement
+    def database_checksum(self, do_order = False, strict = True, strings = False):
+
         idpackage_order = ''
         category_order = ''
         license_order = ''
@@ -22242,20 +22242,48 @@ class EntropyDatabaseInterface:
             license_order = ' order by license'
             flags_order = ' order by chost'
 
+        def do_update_md5(m, cursor):
+            mydata = cursor.fetchall()
+            for record in mydata:
+                for item in record:
+                    m.update(str(item))
+
+        if strings:
+            import md5
+            m = md5.new()
+
         self.cursor.execute('select idpackage,atom,name,version,versiontag,revision,branch,slot,etpapi,trigger from baseinfo'+idpackage_order)
-        a_hash = hash(tuple(self.cursor.fetchall()))
+        if strings:
+            do_update_md5(m,self.cursor)
+        else:
+            a_hash = hash(tuple(self.cursor.fetchall()))
         self.cursor.execute('select idpackage,description,homepage,download,size,digest,datecreation from extrainfo'+idpackage_order)
-        b_hash = hash(tuple(self.cursor.fetchall()))
+        if strings:
+            do_update_md5(m,self.cursor)
+        else:
+            b_hash = hash(tuple(self.cursor.fetchall()))
         self.cursor.execute('select category from categories'+category_order)
-        c_hash = hash(tuple(self.cursor.fetchall()))
+        if strings:
+            do_update_md5(m,self.cursor)
+        else:
+            c_hash = hash(tuple(self.cursor.fetchall()))
         d_hash = '0'
         e_hash = '0'
         if strict:
             self.cursor.execute('select * from licenses'+license_order)
-            d_hash = hash(tuple(self.cursor.fetchall()))
+            if strings:
+                do_update_md5(m,self.cursor)
+            else:
+                d_hash = hash(tuple(self.cursor.fetchall()))
             self.cursor.execute('select * from flags'+flags_order)
-            e_hash = hash(tuple(self.cursor.fetchall()))
-        return str(a_hash)+":"+str(b_hash)+":"+str(c_hash)+":"+str(d_hash)+":"+str(e_hash)
+            if strings:
+                do_update_md5(m,self.cursor)
+            else:
+                e_hash = hash(tuple(self.cursor.fetchall()))
+        if strings:
+            return m.hexdigest()
+        else:
+            return str(a_hash)+":"+str(b_hash)+":"+str(c_hash)+":"+str(d_hash)+":"+str(e_hash)
 
 
 ########################################################
