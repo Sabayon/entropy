@@ -15851,9 +15851,10 @@ class RepositorySocketClientInterface:
         self.sock_conn = None
         self.hostname = None
         self.hostport = None
+        self.buffered_data = ''
+        self.buffer_length = None
         self.quiet = quiet
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
-        self.socket.setdefaulttimeout(60)
 
     def stream_to_object(self, data, gzipped):
 
@@ -15882,7 +15883,6 @@ class RepositorySocketClientInterface:
     def transmit(self, data):
         self.check_socket_connection()
         data = self.append_eos(data)
-        print data
         self.sock_conn.sendall(data)
 
     def close_session(self, session_id):
@@ -15899,40 +15899,39 @@ class RepositorySocketClientInterface:
 
     def receive(self):
 
+        self.socket.setdefaulttimeout(10)
         myeos = self.answers['eos']
-        data = ''
-        mylen = None
         while 1:
 
             try:
-                data = self.sock_conn.recv(128)
+                data = self.sock_conn.recv(4096)
 
-                if mylen == None:
+                if self.buffer_length == None:
+                    self.buffered_data = ''
                     if len(data) < len(myeos):
-                        data = ''
-                        break
+                        if not self.quiet:
+                            mytxt = _("malformed EOS. receive aborted")
+                            self.Entropy.updateProgress(
+                                "[%s:%s] %s" % (
+                                        brown(self.hostname),
+                                        bold(str(self.hostport)),
+                                        blue(mytxt),
+                                ),
+                                importance = 1,
+                                type = "warning"
+                            )
+                        return None
                     mystrlen = data.split(myeos)[0]
-                    mylen = int(mystrlen)
+                    self.buffer_length = int(mystrlen)
                     data = data[len(mystrlen)+1:]
-                    mylen -= len(data)
+                    self.buffer_length -= len(data)
+                    self.buffered_data = data
 
-                if len(data) < len(myeos):
-                    if not self.quiet:
-                        mytxt = _("malformed EOS. receive aborted")
-                        self.Entropy.updateProgress(
-                            "[%s:%s] %s" % (
-                                    brown(self.hostname),
-                                    bold(str(self.hostport)),
-                                    blue(mytxt),
-                            ),
-                            importance = 1,
-                            type = "warning"
-                        )
-                    return None
-
-                while mylen > 0:
-                    data += self.sock_conn.recv(128)
-                    mylen -= 128
+                while self.buffer_length > 0:
+                    x = self.sock_conn.recv(4096)
+                    self.buffer_length -= len(x)
+                    self.buffered_data += x
+                self.buffer_length = None
                 break
 
             except ValueError, e:
@@ -15948,6 +15947,7 @@ class RepositorySocketClientInterface:
                         importance = 1,
                         type = "warning"
                     )
+                self.socket.setdefaulttimeout(2)
                 return None
             except self.socket.timeout, e:
                 if not self.quiet:
@@ -15962,9 +15962,14 @@ class RepositorySocketClientInterface:
                         importance = 1,
                         type = "warning"
                     )
+                self.socket.setdefaulttimeout(2)
                 return None
+            except:
+                self.socket.setdefaulttimeout(2)
+                raise
 
-        return data
+        self.socket.setdefaulttimeout(2)
+        return self.buffered_data
 
     def reconnect_socket(self):
         if not self.quiet:
