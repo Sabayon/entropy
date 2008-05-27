@@ -12090,7 +12090,7 @@ class SocketHostInterface:
                                 self.data_counter -= len(data)
                                 self.buffered_data += data
                             while self.data_counter > 0:
-                                x += self.request.recv(4096)
+                                x = self.request.recv(4096)
                                 self.data_counter -= len(x)
                                 self.buffered_data += x
                             self.data_counter = None
