@@ -12075,6 +12075,7 @@ class SocketHostInterface:
                         try:
                             data = self.request.recv(4096)
                             if self.data_counter == None:
+                                self.buffered_data = ''
                                 if len(data) < len(myeos):
                                     self.server.processor.HostInterface.updateProgress(
                                         'interrupted: %s, reason: %s - from client: %s' % (
@@ -12088,8 +12089,9 @@ class SocketHostInterface:
                                 self.data_counter = int(mystrlen)
                                 data = data[len(mystrlen)+1:]
                                 self.data_counter -= len(data)
+                                self.buffered_data = data
                             while self.data_counter > 0:
-                                data += self.request.recv(4096)
+                                self.buffered_data += self.request.recv(4096)
                                 self.data_counter -= 4096
                             self.data_counter = None
                         except ValueError:
@@ -12122,10 +12124,10 @@ class SocketHostInterface:
                             )
                             break
 
-                        if not data:
+                        if not self.buffered_data:
                             break
 
-                        cmd = self.server.processor.process(data, self.request, self.client_address)
+                        cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
                         if cmd == 'close':
                             break
 
@@ -12135,6 +12137,7 @@ class SocketHostInterface:
 
             self.valid_connection = True
             self.data_counter = None
+            self.buffered_data = ''
             allowed = self.max_connections_check(
                 self.server.processor.HostInterface.connections,
                 self.server.processor.HostInterface.max_connections
