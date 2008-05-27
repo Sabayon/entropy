@@ -5802,7 +5802,7 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 2000, chunk_size = 15):
+    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 2000, chunk_size = 10):
 
         session = self.eapi3_socket.open_session()
         mydbconn = self.get_eapi3_local_database(repo)
@@ -6142,6 +6142,7 @@ class RepoInterface:
                             self.Entropy.cycleDone()
                             self.notAvailable += 1
                             do_skip = True
+                            skip_this_repo = True
                         else: # ah, well... dunno then...
                             do_db_update_transfer = None
                             self.dbformat_eapi -= 1
@@ -6599,7 +6600,7 @@ class RepoInterface:
                     mytype = 'warning'
                     message = "%s: %s." % (blue(myfile),darkred(_("not available, not much ok!")))
             else:
-                message = "%s: %s." % (blue(myfile),red(_("not available, it's ok")))
+                message = "%s: %s." % (blue(myfile),darkgreen(_("available, w00t!")))
             self.Entropy.updateProgress(
                 message,
                 importance = 0,
@@ -15411,6 +15412,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
         def trash_old_databases(self):
             for db in self.HostInterface.syscache['db_trashed']:
                 db.closeDB()
+            self.HostInterface.syscache['db_trashed'].clear()
 
         def docmd_dbdiff(self, myargs):
 
@@ -15693,13 +15695,15 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
         self.Entropy = EntropyInterface
         self.Service = ServiceInterface
+        self.output_header = ''
         EntropySocketClientCommands.__init__(self)
 
     def hello(self):
         self.Entropy.updateProgress(
             "%s" % (_("hello world!"),),
             importance = 1,
-            type = "info"
+            type = "info",
+            header = self.output_header
         )
 
     def handle_standard_answer(self, data, repository = None, arch = None, product = None):
@@ -15718,7 +15722,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error"
+                type = "error",
+                header = self.output_header
             )
             do_skip = True
         elif not data:
@@ -15734,7 +15739,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error"
+                type = "error",
+                header = self.output_header
             )
             do_skip = True
         elif data != self.Service.answers['ok']:
@@ -15751,7 +15757,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                         repr(data),
                 ),
                 importance = 1,
-                type = "error"
+                type = "error",
+                header = self.output_header
             )
             do_skip = True
         return do_skip
@@ -15785,7 +15792,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error"
+                type = "error",
+                header = self.output_header
             )
             data = None
         return data
@@ -15938,6 +15946,7 @@ class RepositorySocketClientInterface:
         self.quiet = quiet
         self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
+        self.CmdInterface.output_header = self.output_header
 
     def stream_to_object(self, data, gzipped):
 
