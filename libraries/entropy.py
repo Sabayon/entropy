@@ -12063,8 +12063,6 @@ class SocketHostInterface:
 
                 while 1:
 
-                    mylen = None
-
                     if self.timed_out:
                         break
                     self.timed_out = True
@@ -12075,8 +12073,8 @@ class SocketHostInterface:
                         self.timed_out = False
 
                         try:
-                            data = self.request.recv(128)
-                            if mylen == None:
+                            data = self.request.recv(4096)
+                            if self.data_counter == None:
                                 if len(data) < len(myeos):
                                     self.server.processor.HostInterface.updateProgress(
                                         'interrupted: %s, reason: %s - from client: %s' % (
@@ -12087,12 +12085,13 @@ class SocketHostInterface:
                                     )
                                     break
                                 mystrlen = data.split(myeos)[0]
-                                mylen = int(mystrlen)
+                                self.data_counter = int(mystrlen)
                                 data = data[len(mystrlen)+1:]
                                 mylen -= len(data)
-                            while mylen > 0:
-                                data += self.request.recv(128)
-                                mylen -= 128
+                            while self.data_counter > 0:
+                                data += self.request.recv(4096)
+                                self.data_counter -= 4096
+                            self.data_counter = None
                         except ValueError:
                             self.entropyTools.printTraceback()
                             self.server.processor.HostInterface.updateProgress(
@@ -12135,6 +12134,7 @@ class SocketHostInterface:
         def setup(self):
 
             self.valid_connection = True
+            self.data_counter = None
             allowed = self.max_connections_check(
                 self.server.processor.HostInterface.connections,
                 self.server.processor.HostInterface.max_connections
@@ -12298,9 +12298,10 @@ class SocketHostInterface:
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = self.Authenticator.hide_login_data(p_args)
             self.HostInterface.updateProgress(
-                '[from: %s] command validation :: called %s: args: %s, session: %s, valid: %s, reason: %s' % (
+                '[from: %s] command validation :: called %s: length: %s, args: %s, session: %s, valid: %s, reason: %s' % (
                     self.client_address,
                     cmd,
+                    len(data),
                     p_args,
                     session,
                     valid_cmd,
@@ -15876,7 +15877,9 @@ class RepositorySocketClientInterface:
 
     def transmit(self, data):
         self.check_socket_connection()
-        self.sock_conn.sendall(self.append_eos(data))
+        data = self.append_eos(data)
+        print data
+        self.sock_conn.sendall(data)
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -15898,15 +15901,15 @@ class RepositorySocketClientInterface:
         while 1:
 
             try:
-                data = self.sock_conn.recv(256)
+                data = self.sock_conn.recv(128)
 
                 if mylen == None:
                     if len(data) < len(myeos):
                         data = ''
                         break
-                    mylen = data.split(myeos)[0]
-                    data = data[len(mylen)+1:]
-                    mylen = int(mylen)
+                    mystrlen = data.split(myeos)[0]
+                    mylen = int(mystrlen)
+                    data = data[len(mystrlen)+1:]
                     mylen -= len(data)
 
                 if len(data) < len(myeos):
