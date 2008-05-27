@@ -5802,7 +5802,7 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1200, chunk_size = 12):
+    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1500, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
         mydbconn = self.get_eapi3_local_database(repo)
@@ -5843,9 +5843,12 @@ class RepoInterface:
 
         # is it worth it?
         if len(added_ids) > threshold:
-            mytxt = "%s: %s" % (
+            mytxt = "%s: %s (%s: %s/%s)" % (
                 blue(_("EAPI3 Service")),
                 darkred(_("skipping differential sync")),
+                brown(_("threshold")),
+                blue(str(len(added_ids))),
+                darkred(str(threshold)),
             )
             self.Entropy.updateProgress(
                 mytxt,
@@ -12171,7 +12174,7 @@ class SocketHostInterface:
                                 self.buffered_data += x
                             self.data_counter = None
                         except ValueError:
-                            self.entropyTools.printTraceback()
+                            #self.entropyTools.printTraceback()
                             self.server.processor.HostInterface.updateProgress(
                                 'interrupted: %s, reason: %s - from client: %s' % (
                                     self.server.server_address,
@@ -12226,6 +12229,7 @@ class SocketHostInterface:
                         self.client_address,
                     )
                 )
+                self.valid_connection = False
                 return False
 
             allowed = self.max_connections_check(
@@ -12239,6 +12243,7 @@ class SocketHostInterface:
                         self.server.processor.HostInterface.max_connections,
                     )
                 )
+                self.valid_connection = False
                 return False
 
             ### let's go!
@@ -12263,7 +12268,8 @@ class SocketHostInterface:
                 )
             )
             if self.valid_connection:
-                self.server.processor.HostInterface.connections -= 1
+                if self.server.processor.HostInterface.connections > 0:
+                    self.server.processor.HostInterface.connections -= 1
 
         def ip_blacklist_check(self, client_addr_data, blacklist):
             if client_addr_data[0] in blacklist:
