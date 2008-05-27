@@ -5802,7 +5802,7 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 2000, chunk_size = 10):
+    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 2000, chunk_size = 15):
 
         session = self.eapi3_socket.open_session()
         mydbconn = self.get_eapi3_local_database(repo)
@@ -5860,6 +5860,10 @@ class RepoInterface:
         if mytmp:
             added_segments.append(list(mytmp))
         del mytmp
+
+        # enable compression
+        if compression:
+            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, True)
 
         # fetch and store
         count = 0
@@ -5927,6 +5931,10 @@ class RepoInterface:
                     )
                 break
         del added_segments
+
+        # disable compression
+        if compression:
+            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, False)
 
         # I don't need you anymore
         self.eapi3_socket.close_session(session)
@@ -6009,6 +6017,20 @@ class RepoInterface:
         mychecksum = mydbconn.database_checksum(do_order = True, strict = False)
         if checksum == mychecksum:
             result = True
+        else:
+            mytxt = "%s: %s: %s | %s: %s" % (
+                blue(_("Database checksum doesn't match remote.")),
+                darkgreen(_("local")),
+                mychecksum,
+                darkred(_("remote")),
+                checksum,
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t",
+            )
 
         mydbconn.closeDB()
         return result
@@ -6085,6 +6107,12 @@ class RepoInterface:
 
                 elif self.dbformat_eapi == 3:
 
+                    def do_close_conn():
+                        # close conn
+                        if self.eapi3_socket != None:
+                            self.eapi3_socket.disconnect()
+                            self.eapi3_socket == None
+
                     try:
                         self.socket.setdefaulttimeout(10)
                         status = self.handle_eapi3_database_sync(repo)
@@ -6102,6 +6130,7 @@ class RepoInterface:
                         status = False
                     self.socket.setdefaulttimeout(2)
                     if status == False:
+                        do_close_conn()
                         # set to none and completely skip database alignment
                         do_db_update_transfer = None
                         self.dbformat_eapi -= 1
@@ -6116,8 +6145,10 @@ class RepoInterface:
                         else: # ah, well... dunno then...
                             do_db_update_transfer = None
                             self.dbformat_eapi -= 1
+                        do_close_conn()
                         continue
 
+                    do_close_conn()
                     break
 
             if skip_this_repo:
@@ -15558,7 +15589,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 self.repositories[x]['locked']:
                 mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
                 self.close_db(mydbpath)
-                mytxt = blue("%s.") % (_("unlocking and indexing database"),)
+                mytxt = blue("%s. %s:") % (
+                    _("unlocking and indexing database"),
+                    _("hash"),
+                )
                 self.updateProgress(
                     "[%s] %s" % (
                             brown(str(x)),
@@ -15571,6 +15605,11 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 mydb = self.open_db(mydbpath, docache = False)
                 mydb.createAllIndexes()
                 mydb.commitChanges()
+                self.updateProgress(
+                    str(mydb.database_checksum()),
+                    importance = 1,
+                    type = "info"
+                )
                 mydb.closeDB()
                 self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repository+"/")
                 self.repositories[x]['locked'] = False
@@ -15750,7 +15789,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             data = None
         return data
 
-    def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = True):
+    def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = False):
         self.Service.check_socket_connection()
         close_session = False
         if session_id == None:
@@ -15799,11 +15838,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         if session_id == None:
             close_session = True
             session_id = self.Service.open_session()
-        # set gzip on rc commands
-        if compression:
-            docomp = self.set_gzip_compression_on_rc(session_id, True)
-        else:
-            docomp = False
 
         cmd = "%s %s %s %s %s %s %s" % (
             session_id,
@@ -15835,14 +15869,12 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 self.Service.close_session(session_id)
             return False
 
-        if docomp:
-            self.set_gzip_compression_on_rc(session_id, False) # reset gzip on rc commands
-        data = self.convert_stream_to_object(data, docomp, repository, arch, product)
+        data = self.convert_stream_to_object(data, compression, repository, arch, product)
         if close_session:
             self.Service.close_session(session_id)
         return data
 
-    def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = True):
+    def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = False):
 
         self.Service.check_socket_connection()
 
