@@ -5843,6 +5843,16 @@ class RepoInterface:
 
         # is it worth it?
         if len(added_ids) > threshold:
+            mytxt = "%s: %s" % (
+                blue(_("EAPI3 Service")),
+                darkred(_("skipping differential sync")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             return False
@@ -12136,13 +12146,16 @@ class SocketHostInterface:
                         try:
                             data = self.request.recv(4096)
                             if self.data_counter == None:
-                                if len(data) < len(myeos):
+                                if data == '': # client wants to close
+                                    break
+                                elif len(data) < len(myeos):
                                     self.server.processor.HostInterface.updateProgress(
-                                        'interrupted: %s, reason: %s - from client: %s - data: "%s"' % (
+                                        'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
                                             self.server.server_address,
                                             "malformed EOS",
                                             self.client_address,
-                                            data,
+                                            repr(data),
+                                            self.data_counter,
                                         )
                                     )
                                     self.buffered_data = ''
@@ -15985,6 +15998,10 @@ class RepositorySocketClientInterface:
             # since we don't know if it's expired, we need to wrap it
             data = self.receive()
         except self.socket.error, e:
+            if etpUi['debug']:
+                self.entropyTools.printTraceback()
+                import pdb
+                pdb.set_trace()
             if e[0] == 32: # broken pipe
                 return None
             raise
