@@ -12075,7 +12075,6 @@ class SocketHostInterface:
                         try:
                             data = self.request.recv(4096)
                             if self.data_counter == None:
-                                self.buffered_data = ''
                                 if len(data) < len(myeos):
                                     self.server.processor.HostInterface.updateProgress(
                                         'interrupted: %s, reason: %s - from client: %s' % (
@@ -12089,10 +12088,11 @@ class SocketHostInterface:
                                 self.data_counter = int(mystrlen)
                                 data = data[len(mystrlen)+1:]
                                 self.data_counter -= len(data)
-                                self.buffered_data = data
+                                self.buffered_data += data
                             while self.data_counter > 0:
-                                self.buffered_data += self.request.recv(4096)
-                                self.data_counter -= 4096
+                                x += self.request.recv(4096)
+                                self.data_counter -= len(x)
+                                self.buffered_data += x
                             self.data_counter = None
                         except ValueError:
                             self.entropyTools.printTraceback()
