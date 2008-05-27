@@ -12910,9 +12910,14 @@ class SocketHostInterface:
 
         self.args = args
         self.kwds = kwds
-        self.socketLog = LogFile(level = 2, filename = etpConst['socketlogfile'], header = "[Socket]")
+        self.socketLog = LogFile(
+            level = etpConst['socketloglevel'],
+            filename = etpConst['socketlogfile'],
+            header = "[Socket]"
+        )
 
         # settings
+        self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
         self.session_ttl = etpConst['socket_service']['session_ttl']
@@ -13168,7 +13173,7 @@ class SocketHostInterface:
         message = args[0]
         if message != self.last_print:
             self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
-            if self.__output != None:
+            if self.__output != None and self.stdout_logging:
                 self.__output.updateProgress(*args,**kwargs)
             self.last_print = message
 
@@ -15539,7 +15544,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             pass
 
     import entropyTools, dumpTools
-    def __init__(self, repositories, do_ssl = False):
+    def __init__(self, repositories, do_ssl = False, stdout_logging = True):
         self.Entropy = EquoInterface(noclientdb = 2)
         self.do_ssl = do_ssl
         self.LockScanner = None
@@ -15549,6 +15554,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             'dbs_not_available': set(),
         }
         etpConst['socket_service']['max_connections'] = 5000
+        etpConst['socketloglevel'] = 1
         SocketHostInterface.__init__(
             self,
             self.ServiceInterface,
@@ -15557,6 +15563,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             ssl = do_ssl,
             external_cmd_classes = [self.RepositoryCommands]
         )
+        self.stdout_logging = stdout_logging
         self.repositories = repositories
         self.expand_repositories()
         # start timed lock file scanning

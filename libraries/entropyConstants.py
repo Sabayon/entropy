@@ -599,6 +599,7 @@ def const_defaultSettings(rootdir):
         'proxy': {}, # proxy configuration information, used system wide
 
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
+        'socketloglevel': 2, # # Entropy Socket Interface log level
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
 
