@@ -351,7 +351,7 @@ else:
 
 etpSys = {
     'archs': ["x86", "amd64"],
-    'api': '2',
+    'api': '3',
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
     'maxthreads': 100,
@@ -399,6 +399,7 @@ etpCache = {
     'library_breakage': 'libs_break/library_breakage_',
     'repolist': 'repos/repolist',
     'repository_server': 'reposerver/item_',
+    'eapi3_fetch': 'eapi3/segment_',
 }
 
 # ahahaha
@@ -819,6 +820,18 @@ def const_readRepositoriesSettings():
                 repodesc = line.split("|")[2]
                 repopackages = line.split("|")[3]
                 repodatabase = line.split("|")[4]
+
+                eapi3_port = None
+                eapi3_formatcolon = repodatabase.rfind("#")
+                if eapi3_formatcolon != -1:
+                    try:
+                        eapi3_port = int(repodatabase[eapi3_formatcolon+1:])
+                        repodatabase = repodatabase[:eapi3_formatcolon]
+                    except (ValueError, IndexError,):
+                        eapi3_port = int(etpConst['socket_service']['port'])
+                else:
+                    eapi3_port = int(etpConst['socket_service']['port'])
+
                 dbformat = etpConst['etpdatabasefileformat']
                 dbformatcolon = repodatabase.rfind("#")
                 if dbformatcolon != -1:
@@ -835,6 +848,7 @@ def const_readRepositoriesSettings():
 
                     if not myRepodata.has_key(reponame):
                         myRepodata[reponame] = {}
+                        myRepodata[reponame]['service_port'] = eapi3_port
                         myRepodata[reponame]['description'] = repodesc
                         myRepodata[reponame]['packages'] = []
                         myRepodata[reponame]['plain_packages'] = []
