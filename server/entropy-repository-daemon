@@ -23,5 +23,7 @@ try:
     srv.go()
 except KeyboardInterrupt:
     srv.Gc.kill()
+    if srv.LockScanner != None:
+        srv.LockScanner.kill()
     sys.exit(1)
 
