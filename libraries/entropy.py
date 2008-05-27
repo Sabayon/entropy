@@ -12086,9 +12086,9 @@ class SocketHostInterface:
                                         )
                                     )
                                     break
-                                mylen = data.split(myeos)[0]
-                                data = data[len(mylen)+1:]
-                                mylen = int(mylen)
+                                mystrlen = data.split(myeos)[0]
+                                mylen = int(mystrlen)
+                                data = data[len(mystrlen)+1:]
                                 mylen -= len(data)
                             while mylen > 0:
                                 data += self.request.recv(128)
