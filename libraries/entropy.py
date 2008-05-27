@@ -15502,7 +15502,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
             if os.path.isfile(self.repositories[x]['download_lock']) and \
                 not self.repositories[x]['locked']:
                     self.repositories[x]['locked'] = True
-                    self.close_db(self.repositories[x]['dbpath'])
+                    mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
+                    self.close_db(mydbpath)
                     do_lock.add(repository)
                     mytxt = blue("%s.") % (_("database got locked. Locking services for it"),)
                     self.updateProgress(
@@ -15515,6 +15516,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     )
             elif not os.path.isfile(self.repositories[x]['download_lock']) and \
                 self.repositories[x]['locked']:
+                mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
+                self.close_db(mydbpath)
                 mytxt = blue("%s.") % (_("unlocking and indexing database"),)
                 self.updateProgress(
                     "[%s] %s" % (
@@ -15525,7 +15528,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     type = "info"
                 )
                 # woohoo, got unlocked eventually
-                mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
                 mydb = self.open_db(mydbpath)
                 mydb.createAllIndexes()
                 mydb.commitChanges()
@@ -17239,6 +17241,7 @@ class ServerMirrorsInterface:
     def shrink_database_and_close(self, repo = None):
         dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo, indexing = False)
         dbconn.dropAllIndexes()
+        dbconn.vacuum()
         dbconn.vacuum()
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
