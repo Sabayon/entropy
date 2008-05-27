@@ -6121,7 +6121,7 @@ class RepoInterface:
                         # close conn
                         if self.eapi3_socket != None:
                             self.eapi3_socket.disconnect()
-                            self.eapi3_socket == None
+                            self.eapi3_socket = None
 
                     try:
                         self.socket.setdefaulttimeout(10)
@@ -12215,28 +12215,44 @@ class SocketHostInterface:
             self.valid_connection = True
             self.data_counter = None
             self.buffered_data = ''
+
+            allowed = self.ip_blacklist_check(
+                self.client_address,
+                self.server.processor.HostInterface.ip_blacklist
+            )
+            if not allowed:
+                self.server.processor.HostInterface.updateProgress(
+                    '[from: %s] connection refused, ip blacklisted' % (
+                        self.client_address,
+                    )
+                )
+                return False
+
             allowed = self.max_connections_check(
                 self.server.processor.HostInterface.connections,
                 self.server.processor.HostInterface.max_connections
             )
-            if allowed:
-                self.server.processor.HostInterface.connections += 1
+            if not allowed:
                 self.server.processor.HostInterface.updateProgress(
-                    '[from: %s] connection established (%s of %s max connections)' % (
-                                        self.client_address,
-                                        self.server.processor.HostInterface.connections,
-                                        self.server.processor.HostInterface.max_connections,
-                                )
+                    '[from: %s] connection refused (max connections reached: %s)' % (
+                        self.client_address,
+                        self.server.processor.HostInterface.max_connections,
+                    )
                 )
-                return True
+                return False
 
+            ### let's go!
+            self.server.processor.HostInterface.connections += 1
             self.server.processor.HostInterface.updateProgress(
-                '[from: %s] connection refused (max connections reached: %s)' % (
-                    self.client_address,
-                    self.server.processor.HostInterface.max_connections,
-                )
+                '[from: %s] connection established (%s of %s max connections)' % (
+                                    self.client_address,
+                                    self.server.processor.HostInterface.connections,
+                                    self.server.processor.HostInterface.max_connections,
+                            )
             )
-            return False
+            return True
+
+
 
         def finish(self):
             self.server.processor.HostInterface.updateProgress(
@@ -12248,6 +12264,11 @@ class SocketHostInterface:
             )
             if self.valid_connection:
                 self.server.processor.HostInterface.connections -= 1
+
+        def ip_blacklist_check(self, client_addr_data, blacklist):
+            if client_addr_data[0] in blacklist:
+                return False
+            return True
 
         def max_connections_check(self, current, maximum):
             if current >= maximum:
@@ -12900,6 +12921,7 @@ class SocketHostInterface:
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
         self.max_connections = etpConst['socket_service']['max_connections']
         self.disabled_commands = etpConst['socket_service']['disabled_cmds']
+        self.ip_blacklist = etpConst['socket_service']['ip_blacklist']
         self.connections = 0
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']

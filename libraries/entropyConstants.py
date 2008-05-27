@@ -759,6 +759,7 @@ def const_defaultSettings(rootdir):
             'default_uid': 0,
             'max_connections': 5,
             'disabled_cmds': set(),
+            'ip_blacklist': set(),
             'ssl_key': ETP_CONF_DIR+"/socket_server.key",
             'ssl_cert': ETP_CONF_DIR+"/socket_server.crt",
             'ssl_port': 998,
@@ -964,6 +965,10 @@ def const_readSocketSettings():
                 x = line.split("|")[1].strip().split()
                 for y in x:
                     etpConst['socket_service']['disabled_cmds'].add(y)
+            elif line.startswith("ip-blacklist|") and (len(line.split("|")) > 1):
+                x = line.split("|")[1].strip().split()
+                for y in x:
+                    etpConst['socket_service']['ip_blacklist'].add(y)
 
 def const_readEntropySettings():
     # entropy section
