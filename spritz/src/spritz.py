@@ -992,8 +992,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setStatus(msg)
         self.addPackages()
         self.populateCategories()
-        msg = _('Ready')
-        self.setStatus(msg)
 
     def cleanEntropyCaches(self, alone = False):
         if alone:
@@ -1133,14 +1131,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
             msg = "%s: %s" % (_('Calculating'),flt,)
             self.setStatus(msg)
             allpkgs += self.etpbase.getPackages(flt)
-            self.setStatus(_("Ready"))
         if self.doProgress: self.progress.total.next() # -> Sort Lists
 
         if action == "updates":
             msg = "%s: available" % (_('Calculating'),)
             self.setStatus(msg)
             self.etpbase.getPackages("available")
-            self.setStatus(_("Ready"))
 
         if bootstrap:
             self.endWorking()
@@ -1149,6 +1145,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
         if not allpkgs and action == "updates":
             allpkgs = self.etpbase.getPackages('fake_updates')
             empty = True
+
+        self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
 
         self.pkgView.populate(allpkgs, empty = empty)
         self.progress.total.show()
