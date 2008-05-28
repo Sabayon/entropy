@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-24 20:02+0200\n"
+"POT-Creation-Date: 2008-05-28 09:53+0200\n"
 "PO-Revision-Date: 2008-02-26 20:07+0100\n"
 "Last-Translator: Mathias Gottschlag <mathias-go@web.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -688,8 +688,8 @@ msgid "Type a number."
 msgstr ""
 
 #: ../../client/text_configuration.py:108
-#: ../../client/text_configuration.py:129 ../../server/server_reagent.py:94
-#: ../../server/server_reagent.py:106
+#: ../../client/text_configuration.py:129 ../../server/server_reagent.py:91
+#: ../../server/server_reagent.py:103
 #, fuzzy
 msgid "Configuration file"
 msgstr "Konfigurationsdateien"
@@ -991,8 +991,8 @@ msgid "Removal Search"
 msgstr "Löschen"
 
 #: ../../client/text_query.py:599 ../../client/text_ui.py:360
-#: ../../client/text_ui.py:917 ../../server/server_reagent.py:353
-#: ../../server/server_reagent.py:398 ../../server/server_reagent.py:447
+#: ../../client/text_ui.py:917 ../../server/server_reagent.py:350
+#: ../../server/server_reagent.py:395 ../../server/server_reagent.py:444
 #, fuzzy
 msgid "No packages found"
 msgstr "Keine Pakete in der Warteschlange"
@@ -2253,7 +2253,7 @@ msgid ""
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:970 ../../server/server_reagent.py:225
+#: ../../client/text_ui.py:970 ../../server/server_reagent.py:222
 #, fuzzy
 msgid "Would you like to remove them now ?"
 msgstr "Huh. Warum willst du das Hauptrepository entfernen?"
@@ -2370,7 +2370,7 @@ msgstr ""
 msgid "just list packages"
 msgstr "Installierte Pakete zeigen"
 
-#: ../../server/server_activator.py:46
+#: ../../server/server_activator.py:44
 msgid "Starting to sync data across mirrors (packages/database)"
 msgstr ""
 
@@ -2477,209 +2477,209 @@ msgstr ""
 msgid "Nothing found"
 msgstr "Nichts zu tun."
 
-#: ../../server/server_reagent.py:46
+#: ../../server/server_reagent.py:43
 #, fuzzy
 msgid "no package specified."
 msgstr "Keine Pakete ausgewählt"
 
-#: ../../server/server_reagent.py:81
+#: ../../server/server_reagent.py:78
 #, fuzzy
 msgid "No valid repositories specified."
 msgstr "Keine Repositories spezifiziert in %s"
 
-#: ../../server/server_reagent.py:85
+#: ../../server/server_reagent.py:82
 #, fuzzy
 msgid "Enabling"
 msgstr "Installiere"
 
-#: ../../server/server_reagent.py:85 ../../server/server_reagent.py:88
-#: ../../server/server_reagent.py:97 ../../server/server_reagent.py:100
-#: ../../server/server_reagent.py:126
+#: ../../server/server_reagent.py:82 ../../server/server_reagent.py:85
+#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:97
+#: ../../server/server_reagent.py:123
 #, fuzzy
 msgid "repository"
 msgstr "Repository"
 
-#: ../../server/server_reagent.py:88
+#: ../../server/server_reagent.py:85
 #, fuzzy
 msgid "Enabled"
 msgstr "Installiert"
 
-#: ../../server/server_reagent.py:91 ../../server/server_reagent.py:103
+#: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
 #: ../../spritz/src/views.py:433 ../../spritz/src/views.py:966
 msgid "Repository"
 msgstr "Repository"
 
-#: ../../server/server_reagent.py:91
+#: ../../server/server_reagent.py:88
 msgid "already enabled"
 msgstr ""
 
-#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:106
+#: ../../server/server_reagent.py:91 ../../server/server_reagent.py:103
 msgid "not found"
 msgstr ""
 
-#: ../../server/server_reagent.py:97
+#: ../../server/server_reagent.py:94
 msgid "Disabling"
 msgstr ""
 
-#: ../../server/server_reagent.py:100
+#: ../../server/server_reagent.py:97
 #, fuzzy
 msgid "Disabled"
 msgstr "Installiert"
 
-#: ../../server/server_reagent.py:103
+#: ../../server/server_reagent.py:100
 msgid "already disabled"
 msgstr ""
 
-#: ../../server/server_reagent.py:125 ../../server/server_reagent.py:177
-#: ../../server/server_reagent.py:348
+#: ../../server/server_reagent.py:122 ../../server/server_reagent.py:174
+#: ../../server/server_reagent.py:345
 msgid "Cannot match"
 msgstr ""
 
-#: ../../server/server_reagent.py:126
+#: ../../server/server_reagent.py:123
 msgid "in"
 msgstr ""
 
-#: ../../server/server_reagent.py:188
+#: ../../server/server_reagent.py:185
 #, fuzzy
 msgid "No valid packages to repackage."
 msgstr "Keine Pakete ausgewählt"
 
 #. normal scanning
-#: ../../server/server_reagent.py:192
+#: ../../server/server_reagent.py:189
 msgid "Scanning database for differences"
 msgstr ""
 
-#: ../../server/server_reagent.py:197
+#: ../../server/server_reagent.py:194
 #, fuzzy
 msgid "Zarro thinggz totoo"
 msgstr "Nichts zu tun."
 
-#: ../../server/server_reagent.py:201
+#: ../../server/server_reagent.py:198
 #, fuzzy
 msgid "These are the packages that would be changed to injected status"
 msgstr "Die folgenden Pakete würden gelöscht"
 
-#: ../../server/server_reagent.py:207
+#: ../../server/server_reagent.py:204
 #, fuzzy
 msgid "Would you like to transform them now ?"
 msgstr "Huh. Warum willst du das Hauptrepository entfernen?"
 
-#: ../../server/server_reagent.py:214
+#: ../../server/server_reagent.py:211
 msgid "Transforming from database"
 msgstr ""
 
-#: ../../server/server_reagent.py:216
+#: ../../server/server_reagent.py:213
 #, fuzzy
 msgid "Database transform complete"
 msgstr "Datenbankkomprimierung"
 
-#: ../../server/server_reagent.py:219 ../../server/server_reagent.py:401
+#: ../../server/server_reagent.py:216 ../../server/server_reagent.py:398
 #, fuzzy
 msgid "These are the packages that would be removed from the database"
 msgstr "Die folgenden Pakete würden gelöscht"
 
-#: ../../server/server_reagent.py:238
+#: ../../server/server_reagent.py:235
 #, fuzzy
 msgid "These are the packages that would be added/updated to the add list"
 msgstr "Die folgenden Pakete würden installiert/aktualisiert"
 
-#: ../../server/server_reagent.py:243
+#: ../../server/server_reagent.py:240
 #, fuzzy
 msgid "Would you like to package them now ?"
 msgstr "Huh. Warum willst du das Hauptrepository entfernen?"
 
-#: ../../server/server_reagent.py:244
+#: ../../server/server_reagent.py:241
 #, fuzzy
 msgid "inside"
 msgstr "Lizenz"
 
 #. package them
-#: ../../server/server_reagent.py:252
+#: ../../server/server_reagent.py:249
 #, fuzzy
 msgid "Compressing packages"
 msgstr "Bearbeite Pakete in der Warteschlange"
 
-#: ../../server/server_reagent.py:259
+#: ../../server/server_reagent.py:256
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr ""
 
-#: ../../server/server_reagent.py:270
+#: ../../server/server_reagent.py:267
 #, fuzzy
 msgid "Nothing to do, check later."
 msgstr "Nichts zu tun."
 
-#: ../../server/server_reagent.py:281
+#: ../../server/server_reagent.py:278
 msgid "Statistics"
 msgstr ""
 
-#: ../../server/server_reagent.py:281
+#: ../../server/server_reagent.py:278
 msgid "Entries handled"
 msgstr ""
 
-#: ../../server/server_reagent.py:307 ../../server/server_reagent.py:332
-#: ../../server/server_reagent.py:383
+#: ../../server/server_reagent.py:304 ../../server/server_reagent.py:329
+#: ../../server/server_reagent.py:380
 msgid "Not enough parameters"
 msgstr ""
 
-#: ../../server/server_reagent.py:314
+#: ../../server/server_reagent.py:311
 msgid "Entropy database has been reinitialized using binary packages available"
 msgstr ""
 
-#: ../../server/server_reagent.py:322
+#: ../../server/server_reagent.py:319
 #, fuzzy
 msgid "Creating empty database to"
 msgstr "Erstelle Metadaten, bitte warten."
 
-#: ../../server/server_reagent.py:324
+#: ../../server/server_reagent.py:321
 msgid "Cannot overwrite already existing file"
 msgstr ""
 
-#: ../../server/server_reagent.py:336
+#: ../../server/server_reagent.py:333
 msgid "Switching branch, be sure to have your packages in sync."
 msgstr ""
 
-#: ../../server/server_reagent.py:337
+#: ../../server/server_reagent.py:334
 #, fuzzy
 msgid "Collecting packages that would be marked"
 msgstr "Die folgenden Pakete würden gelöscht"
 
-#: ../../server/server_reagent.py:356
+#: ../../server/server_reagent.py:353
 #, fuzzy
 msgid "These are the packages that would be marked"
 msgstr "Die folgenden Pakete würden gelöscht"
 
 #. ask to continue
-#: ../../server/server_reagent.py:361 ../../server/server_reagent.py:408
-#: ../../server/server_reagent.py:458
+#: ../../server/server_reagent.py:358 ../../server/server_reagent.py:405
+#: ../../server/server_reagent.py:455
 #, fuzzy
 msgid "Would you like to continue ?"
 msgstr "Huh. Warum willst du das Hauptrepository entfernen?"
 
-#: ../../server/server_reagent.py:373
+#: ../../server/server_reagent.py:370
 #, fuzzy
 msgid "Matching packages to remove"
 msgstr "Nichts zu tun."
 
-#: ../../server/server_reagent.py:412 ../../server/server_reagent.py:462
+#: ../../server/server_reagent.py:409 ../../server/server_reagent.py:459
 #, fuzzy
 msgid "Removing selected packages"
 msgstr "Ausgewählte Pakete installieren"
 
-#: ../../server/server_reagent.py:414 ../../server/server_reagent.py:466
+#: ../../server/server_reagent.py:411 ../../server/server_reagent.py:463
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr ""
 
-#: ../../server/server_reagent.py:420
+#: ../../server/server_reagent.py:417
 #, fuzzy
 msgid "Searching injected packages to remove"
 msgstr "Die folgenden Pakete würden gelöscht"
 
-#: ../../server/server_reagent.py:450
+#: ../../server/server_reagent.py:447
 #, fuzzy
 msgid "These are the injected packages pulled in for removal"
 msgstr "Die folgenden Pakete würden gelöscht"
 
-#: ../../server/server_reagent.py:484
+#: ../../server/server_reagent.py:481
 #, fuzzy
 msgid "Bumping Repository database"
 msgstr "Repositorybezeichner"
