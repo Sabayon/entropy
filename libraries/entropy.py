@@ -3369,6 +3369,7 @@ class PackageInterface:
         self.valid_actions = ()
         self.action = None
         self.prepared = False
+        self.fetch_abort_function = None
 
     def error_on_prepared(self):
         if self.prepared:
@@ -5025,6 +5026,11 @@ class PackageInterface:
         idpackage = self.matched_atom[0]
         repository = self.matched_atom[1]
         dochecksum = True
+
+        # fetch abort function
+        if self.metaopts.has_key('fetch_abort_function'):
+            self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+
         if self.metaopts.has_key('dochecksum'):
             dochecksum = self.metaopts.get('dochecksum')
         self.infoDict['repository'] = repository
