@@ -30,7 +30,7 @@ sys.path.insert(1,"../../client")
 sys.path.insert(2,"/usr/lib/entropy/libraries")
 sys.path.insert(3,"/usr/lib/entropy/client")
 from entropyConstants import *
-import exceptionTools
+import exceptionTools, entropyTools
 from packages import EntropyPackages
 from entropyapi import EquoConnection, QueueExecutor
 from entropy import ErrorReportInterface
@@ -78,8 +78,6 @@ class SpritzController(Controller):
         gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
-            self.logger.critical(_('Quiting, please wait !!!!!!'))
-            time.sleep(3)
             self.exitNow()
             return False
         else:
@@ -107,7 +105,7 @@ class SpritzController(Controller):
 
     def runEditor(self, filename, delete = False):
         cmd = ' '.join([self.fileEditor,filename])
-        task = self.Equo.entropyTools.parallelTask(self.__runEditor, {'cmd': cmd, 'delete': delete,'file': filename})
+        task = entropyTools.parallelTask(self.__runEditor, {'cmd': cmd, 'delete': delete,'file': filename})
         task.start()
 
     def __runEditor(self, data):
@@ -252,7 +250,7 @@ class SpritzController(Controller):
         identifier, source, dest = self.__get_Edit_filename()
         if not identifier:
             return True
-        randomfile = self.Equo.entropyTools.getRandomTempFile()+".diff"
+        randomfile = entropyTools.getRandomTempFile()+".diff"
         diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
         os.system(diffcmd)
         self.runEditor(randomfile, delete = True)
@@ -470,7 +468,7 @@ class SpritzController(Controller):
         repostuff = selection.get_selected()
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
-            repodata = self.Equo.entropyTools.getRepositorySettings(repoid)
+            repodata = entropyTools.getRepositorySettings(repoid)
             self.__loadRepodata(repodata)
             self.addrepo_ui.addRepoWin.show()
 
@@ -1231,6 +1229,14 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
 
 if __name__ == "__main__":
+
+    def killThreads():
+        # kill threads
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if thread.getName().startswith("download::"): # equo current download speed thread
+                thread.kill()
+
     gtkEventThread = ProcessGtkEventsThread()
     try:
         gtkEventThread.start()
@@ -1240,25 +1246,25 @@ if __name__ == "__main__":
             pass
         mainApp = SpritzApplication()
         gtk.main()
-    except SystemExit, e:
+        killThreads()
+    except SystemExit:
         print "Quit by User"
         gtkEventThread.doQuit()
+        killThreads()
         sys.exit(1)
     except KeyboardInterrupt:
-        print "Quit by User"
+        print "Quit by User (KeyboardInterrupt)"
         gtkEventThread.doQuit()
+        killThreads()
         sys.exit(1)
     except: # catch other exception and write it to the logger.
-        etype = sys.exc_info()[0]
-        evalue = sys.exc_info()[1]
-        etb = traceback.extract_tb(sys.exc_info()[2])
-        import entropyTools
         conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
-        rc, (name,mail,description) = errorMessage( None,
-                                                    _( "Exception caught" ),
-                                                    _( "Spritz crashed! An unexpected error occured." ),
-                                                    errmsg,
-                                                    showreport = conntest
+        rc, (name,mail,description) = errorMessage(
+            None,
+            _( "Exception caught" ),
+            _( "Spritz crashed! An unexpected error occured." ),
+            errmsg,
+            showreport = conntest
         )
         if rc == -1:
             error = ErrorReportInterface()
@@ -1269,6 +1275,8 @@ if __name__ == "__main__":
             else:
                 okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
         gtkEventThread.doQuit()
+        killThreads()
         sys.exit(1)
 
     gtkEventThread.doQuit()
+    killThreads()
