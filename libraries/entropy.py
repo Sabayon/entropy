@@ -21749,8 +21749,22 @@ class EntropyDatabaseInterface:
 
         return results
 
-    def listAllPackages(self):
-        self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo')
+    def isPackageScopeAvailable(self, atom, slot, revision):
+        searchdata = (atom,slot,revision,)
+        self.cursor.execute('SELECT idpackage FROM baseinfo where atom = (?) and slot = (?) and revision = (?)',searchdata)
+        rslt = self.cursor.fetchone()
+        if rslt:
+            return rslt[0]
+        return None
+
+    def listAllPackages(self, get_scope = False, order_by = None):
+        order_txt = ''
+        if order_by:
+            order_txt = ' order by '+str(order_by)
+        if get_scope:
+            self.cursor.execute('SELECT idpackage,atom,slot,revision FROM baseinfo'+order_txt)
+        else:
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo'+order_txt)
         return self.cursor.fetchall()
 
     def listAllInjectedPackages(self, justFiles = False):
