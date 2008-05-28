@@ -15478,9 +15478,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 return valid
 
             dbpath = self.get_database_path(repository, arch, product)
-            dbconn = self.HostInterface.open_db(dbpath)
+            dbconn = self.HostInterface.open_db(dbpath, docache = False)
             mychecksum = dbconn.database_checksum(do_order = True, strict = False, strings = True)
             myids = dbconn.listAllIdpackages()
+            dbconn.closeDB()
             foreign_idpackages = set(foreign_idpackages)
 
             removed_ids = foreign_idpackages - myids
@@ -15519,7 +15520,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 return cached
 
             dbpath = self.get_database_path(repository, arch, product)
-            dbconn = self.HostInterface.open_db(dbpath)
+            dbconn = self.HostInterface.open_db(dbpath, docache = False)
             result = {}
 
             for idpackage in idpackages:
@@ -15536,6 +15537,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
             if result:
                 self.HostInterface.set_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), result, repository)
+
+            dbconn.closeDB()
 
             return result
 
@@ -15655,6 +15658,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 )
                 # woohoo, got unlocked eventually
                 mydb = self.open_db(mydbpath, docache = False)
+                mydb.setCacheSize(6000)
+                mydb.setDefaultCacheSize(6000)
                 mydb.createAllIndexes()
                 mydb.commitChanges()
                 self.updateProgress(
@@ -15692,7 +15697,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
         dbc = self.Entropy.openGenericDatabase(
             dbpath,
             xcache = False,
-            readOnly = True
+            readOnly = True,
+            OutputInterface = self.Entropy,
+            skipChecks = True
         )
         if docache:
             self.syscache['db'][dbpath] = dbc
@@ -18896,7 +18903,8 @@ class EntropyDatabaseInterface:
             dbname = etpConst['serverdbid'],
             indexing = True,
             OutputInterface = None,
-            ServiceInterface = None
+            ServiceInterface = None,
+            skipChecks = False # dangerous!
         ):
 
         if OutputInterface == None:
@@ -18918,12 +18926,14 @@ class EntropyDatabaseInterface:
         self.xcache = xcache
         self.dbname = dbname
         self.indexing = indexing
-        if not self.entropyTools.is_user_in_entropy_group():
-            # forcing since we won't have write access to db
-            self.indexing = False
-        # live systems don't like wasting RAM
-        if self.entropyTools.islive():
-            self.indexing = False
+        self.skipChecks = skipChecks
+        if not self.skipChecks:
+            if not self.entropyTools.is_user_in_entropy_group():
+                # forcing since we won't have write access to db
+                self.indexing = False
+            # live systems don't like wasting RAM
+            if self.entropyTools.islive():
+                self.indexing = False
         self.dbFile = dbFile
         self.dbclosed = True
         self.server_repo = None
@@ -18932,36 +18942,42 @@ class EntropyDatabaseInterface:
             self.server_repo = self.dbname[len(etpConst['serverdbid']):]
             self.create_dbstatus_data()
 
-        # no caching for non root and server connections
-        if (self.dbname.startswith(etpConst['serverdbid'])) or (not self.entropyTools.is_user_in_entropy_group()):
-            self.xcache = False
+        if not self.skipChecks:
+            # no caching for non root and server connections
+            if (self.dbname.startswith(etpConst['serverdbid'])) or (not self.entropyTools.is_user_in_entropy_group()):
+                self.xcache = False
         self.live_cache = {}
 
         # create connection
         self.connection = self.dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
-        try:
-            self.cursor.execute('PRAGMA cache_size = 6000')
-            self.cursor.execute('PRAGMA default_cache_size = 6000')
-        except:
-            pass
-
         if not self.clientDatabase and not self.readOnly:
             # server side is calling
             # lock mirror remotely and ensure to have latest database revision
             self.doServerDatabaseSyncLock(self.noUpload)
 
-        if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
-            if self.entropyTools.islive():
-                # check where's the file
-                if etpConst['systemroot']:
+        if not self.skipChecks:
+            if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
+                if self.entropyTools.islive():
+                    # check where's the file
+                    if etpConst['systemroot']:
+                        self.databaseStructureUpdates()
+                else:
                     self.databaseStructureUpdates()
-            else:
-                self.databaseStructureUpdates()
+                # set cache size
+                self.setCacheSize(6000)
+                self.setDefaultCacheSize(6000)
 
         # now we can set this to False
         self.dbclosed = False
+
+    def setCacheSize(self, size):
+        self.cursor.execute('PRAGMA cache_size = (?)', (size,))
+
+    def setDefaultCacheSize(self, size):
+        self.cursor.execute('PRAGMA default_cache_size = (?)', (size,))
+
 
     def __del__(self):
         if not self.dbclosed:
