@@ -99,9 +99,9 @@ class parallelTask(threading.Thread):
         else:
             self.function()
 
-def printTraceback():
+def printTraceback(f = None):
     import traceback
-    traceback.print_exc()
+    traceback.print_exc(file = f)
 
 def printException(returndata = False):
     import traceback

@@ -12425,6 +12425,7 @@ class SocketHostInterface:
                 except Exception, e:
                     # write to self.HostInterface.socketLog
                     self.entropyTools.printTraceback()
+                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
                     # store error
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: %s, type: %s' % (
@@ -15533,6 +15534,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     )
                 except:
                     self.entropyTools.printTraceback()
+                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
                     return None
                 result[idpackage] = mydata.copy()
 
