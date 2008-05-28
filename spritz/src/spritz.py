@@ -820,9 +820,13 @@ class SpritzController(Controller):
         self.unsetBusy()
 
     def on_skipMirror_clicked(self,widget):
-        if self.skipMirror:
-            self.logger.info('skipmirror')
-            self.skipMirrorNow = True
+        self.skipMirrorNow = True
+
+    def mirror_bombing(self):
+        if self.skipMirrorNow:
+            self.skipMirrorNow = False
+            mytxt = _("Skipping current mirror.")
+            raise exceptionTools.OnlineMirrorError('OnlineMirrorError %s' % (mytxt,))
 
     def on_search_clicked(self,widget):
         ''' Search entry+button handler'''
@@ -876,7 +880,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger = logging.getLogger("yumex.main")
 
         # init flags
-        self.skipMirror = False
         self.skipMirrorNow = False
         self.doProgress = False
         self.categoryOn = False
@@ -975,9 +978,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
             if os.access('/usr/bin/gedit',os.X_OK):
                 self.fileEditor = '/usr/bin/gedit'
 
-    def startWorking(self):
+    def startWorking(self, do_busy = True):
         self.isWorking = True
-        busyCursor(self.ui.main)
+        if do_busy:
+            busyCursor(self.ui.main)
         self.ui.progressVBox.grab_add()
         gtkEventThread.startProcessing()
 
@@ -1173,7 +1177,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
         state = True
         if total > 0:
-            self.startWorking()
+            self.startWorking(do_busy = True)
+            normalCursor(self.ui.main)
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
 
@@ -1184,6 +1189,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             if install_queue or removal_queue:
                 controller = QueueExecutor(self)
                 e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
+                self.ui.skipMirror.hide()
                 if e != 0:
                     okDialog(   self.ui.main,
                                 _("Attention. An error occured when processing the queue."
@@ -1243,21 +1249,9 @@ if __name__ == "__main__":
         gtkEventThread.doQuit()
         sys.exit(1)
     except: # catch other exception and write it to the logger.
-        logger = logging.getLogger('yumex.main')
         etype = sys.exc_info()[0]
         evalue = sys.exc_info()[1]
         etb = traceback.extract_tb(sys.exc_info()[2])
-        logger.error('Error Type: %s' % str(etype) )
-        errmsg = 'Error Type: %s \n' % str(etype)
-        logger.error('Error Value: ' + str(evalue))
-        errmsg += 'Error Value: %s \n' % str(evalue)
-        logger.error('Traceback: \n')
-        for tub in etb:
-            f,l,m,c = tub # file,lineno, function, codeline
-            logger.error('  File : %s , line %s, in %s' % (f,str(l),m))
-            errmsg += '  File : %s , line %s, in %s\n' % (f,str(l),m)
-            logger.error('    %s ' % c)
-            errmsg += '    %s \n' % c
         import entropyTools
         conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
         rc, (name,mail,description) = errorMessage( None,

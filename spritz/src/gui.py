@@ -97,7 +97,7 @@ class ProgressTotal:
         return False
 
     def setAbsProgress( self, now, prefix=None ):
-        if (not now >= self.lastFrac) or (now >= 1.0) or (now < 0.0):
+        if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
             return
         while gtk.events_pending():      # process gtk events
            gtk.main_iteration()
@@ -162,10 +162,6 @@ class SpritzProgress:
             self.ui.progressBar.set_fraction( 0 )
         if text != None:
             self.ui.progressBar.set_text( text )
-        # Check if skip mirror has been pressed
-        if self.parent.skipMirrorNow:
-            self.parent.skipMirrorNow = False
-            self.parent.yumbase._interrupt_callback(None)
 
         self.lastFrac = frac
 

@@ -201,6 +201,9 @@ class EntropyPackage:
     def getKeySlot(self):
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
 
+    def getDescriptionNoMarkup(self):
+        return self.getDescription(markup = False)
+
     def getDescription(self, markup = True):
         if markup:
             return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
@@ -319,6 +322,7 @@ class EntropyPackage:
     sources = property(fget=getSources)
     keyslot = property(fget=getKeySlot)
     description =  property(fget=getDescription)
+    description_nomarkup = property(fget=getDescriptionNoMarkup)
     size =  property(fget=getDownSize)
     intelligentsizeFmt = property(fget=getIntelligentSize)
     sizeFmt =  property(fget=getDownSizeFmt)

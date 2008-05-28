@@ -718,7 +718,7 @@ class EntropyQueueView:
     def populate_list( self, label, mylist ):
         parent = self.model.append( None, [label, ""] )
         for pkg in mylist:
-            self.model.append( parent, [str( pkg ), pkg.description] )
+            self.model.append( parent, [str( pkg ), pkg.description_nomarkup] )
 
 class EntropyFilesView:
     """ Queue View Class"""

@@ -77,12 +77,15 @@ class QueueExecutor:
         myrange.append(step)
         self.Entropy.progress.total.setup( myrange )
 
+        self.Spritz.ui.skipMirror.show()
         # first fetch all
         fetchqueue = 0
         for packageInfo in runQueue:
             fetchqueue += 1
             Package = self.Entropy.Package()
-            Package.prepare(packageInfo,"fetch")
+            metaopts = {}
+            metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
+            Package.prepare(packageInfo,"fetch",metaopts)
             self.Entropy.updateProgress(
                                             "Fetching: "+Package.infoDict['atom'],
                                             importance = 2,
@@ -94,6 +97,7 @@ class QueueExecutor:
             Package.kill()
             del Package
             self.Entropy.cycleDone()
+        self.Spritz.ui.skipMirror.hide()
 
         # then removalQueue
         # NOT conflicts! :-)
@@ -127,12 +131,14 @@ class QueueExecutor:
             del metaopts
             del Package
 
+        self.Spritz.ui.skipMirror.show()
         totalqueue = len(runQueue)
         currentqueue = 0
         for packageInfo in runQueue:
             currentqueue += 1
 
             metaopts = {}
+            metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
             metaopts['removeconfig'] = False
             Package = self.Entropy.Package()
             Package.prepare(packageInfo,"install", metaopts)
@@ -151,6 +157,7 @@ class QueueExecutor:
             self.Entropy.cycleDone()
             del metaopts
             del Package
+        self.Spritz.ui.skipMirror.hide()
 
         return 0,0
 
