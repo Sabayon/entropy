@@ -18976,10 +18976,10 @@ class EntropyDatabaseInterface:
         self.dbclosed = False
 
     def setCacheSize(self, size):
-        self.cursor.execute('PRAGMA cache_size = (?)', (size,))
+        self.cursor.execute('PRAGMA cache_size = '+size)
 
     def setDefaultCacheSize(self, size):
-        self.cursor.execute('PRAGMA default_cache_size = (?)', (size,))
+        self.cursor.execute('PRAGMA default_cache_size = '+size)
 
 
     def __del__(self):
