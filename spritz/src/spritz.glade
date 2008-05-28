@@ -1003,44 +1003,101 @@
                                                   </widget>
                                                 </child>
                                                 <child>
-                                                  <widget class="GtkButton" id="skipMirror">
-                                                    <property name="can_focus">True</property>
-                                                    <property name="response_id">0</property>
-                                                    <signal name="clicked" handler="on_skipMirror_clicked"/>
+                                                  <widget class="GtkVBox" id="vbox26">
+                                                    <property name="visible">True</property>
+                                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                                     <child>
-                                                      <widget class="GtkAlignment" id="alignment52">
-                                                        <property name="visible">True</property>
-                                                        <property name="xscale">0</property>
-                                                        <property name="yscale">0</property>
+                                                      <widget class="GtkButton" id="skipMirror">
+                                                        <property name="can_focus">True</property>
+                                                        <property name="response_id">0</property>
+                                                        <signal name="clicked" handler="on_skipMirror_clicked"/>
                                                         <child>
-                                                          <widget class="GtkHBox" id="hbox84">
+                                                          <widget class="GtkAlignment" id="alignment52">
                                                             <property name="visible">True</property>
-                                                            <property name="spacing">2</property>
+                                                            <property name="xscale">0</property>
+                                                            <property name="yscale">0</property>
                                                             <child>
-                                                              <widget class="GtkImage" id="image189">
+                                                              <widget class="GtkHBox" id="hbox84">
                                                                 <property name="visible">True</property>
-                                                                <property name="stock">gtk-media-forward</property>
+                                                                <property name="spacing">2</property>
+                                                                <child>
+                                                                  <widget class="GtkImage" id="image189">
+                                                                    <property name="visible">True</property>
+                                                                    <property name="stock">gtk-media-forward</property>
+                                                                  </widget>
+                                                                  <packing>
+                                                                    <property name="expand">False</property>
+                                                                    <property name="fill">False</property>
+                                                                  </packing>
+                                                                </child>
+                                                                <child>
+                                                                  <widget class="GtkLabel" id="label130">
+                                                                    <property name="visible">True</property>
+                                                                    <property name="label" translatable="yes">_Skip mirror</property>
+                                                                    <property name="use_underline">True</property>
+                                                                  </widget>
+                                                                  <packing>
+                                                                    <property name="expand">False</property>
+                                                                    <property name="fill">False</property>
+                                                                    <property name="position">1</property>
+                                                                  </packing>
+                                                                </child>
                                                               </widget>
-                                                              <packing>
-                                                                <property name="expand">False</property>
-                                                                <property name="fill">False</property>
-                                                              </packing>
-                                                            </child>
-                                                            <child>
-                                                              <widget class="GtkLabel" id="label130">
-                                                                <property name="visible">True</property>
-                                                                <property name="label" translatable="yes">_Skip mirror</property>
-                                                                <property name="use_underline">True</property>
-                                                              </widget>
-                                                              <packing>
-                                                                <property name="expand">False</property>
-                                                                <property name="fill">False</property>
-                                                                <property name="position">1</property>
-                                                              </packing>
                                                             </child>
                                                           </widget>
                                                         </child>
                                                       </widget>
+                                                      <packing>
+                                                        <property name="expand">False</property>
+                                                        <property name="fill">False</property>
+                                                      </packing>
+                                                    </child>
+                                                    <child>
+                                                      <widget class="GtkButton" id="abortQueue">
+                                                        <property name="can_focus">True</property>
+                                                        <property name="response_id">0</property>
+                                                        <signal name="clicked" handler="on_abortQueue_clicked"/>
+                                                        <child>
+                                                          <widget class="GtkAlignment" id="alignment6">
+                                                            <property name="visible">True</property>
+                                                            <property name="xscale">0</property>
+                                                            <property name="yscale">0</property>
+                                                            <child>
+                                                              <widget class="GtkHBox" id="hbox14">
+                                                                <property name="visible">True</property>
+                                                                <property name="spacing">2</property>
+                                                                <child>
+                                                                  <widget class="GtkImage" id="image5">
+                                                                    <property name="visible">True</property>
+                                                                    <property name="stock">gtk-media-stop</property>
+                                                                  </widget>
+                                                                  <packing>
+                                                                    <property name="expand">False</property>
+                                                                    <property name="fill">False</property>
+                                                                  </packing>
+                                                                </child>
+                                                                <child>
+                                                                  <widget class="GtkLabel" id="label11">
+                                                                    <property name="visible">True</property>
+                                                                    <property name="label" translatable="yes">_Abort queue</property>
+                                                                    <property name="use_underline">True</property>
+                                                                  </widget>
+                                                                  <packing>
+                                                                    <property name="expand">False</property>
+                                                                    <property name="fill">False</property>
+                                                                    <property name="position">1</property>
+                                                                  </packing>
+                                                                </child>
+                                                              </widget>
+                                                            </child>
+                                                          </widget>
+                                                        </child>
+                                                      </widget>
+                                                      <packing>
+                                                        <property name="expand">False</property>
+                                                        <property name="fill">False</property>
+                                                        <property name="position">1</property>
+                                                      </packing>
                                                     </child>
                                                   </widget>
                                                   <packing>

@@ -820,6 +820,18 @@ class SpritzController(Controller):
     def on_skipMirror_clicked(self,widget):
         self.skipMirrorNow = True
 
+    def on_abortQueue_clicked(self,widget):
+        msg = _("You have chosen to interrupt the queue processing. Doing so could be risky and you should let Entropy to close all its tasks. Are you sure you want it?")
+        rc = questionDialog(self.ui.main, msg)
+        if rc:
+            self.abortQueueNow = True
+
+    def queue_bombing(self):
+        if self.abortQueueNow:
+            self.abortQueueNow = False
+            mytxt = _("Aborting queue tasks.")
+            raise exceptionTools.QueueError('QueueError %s' % (mytxt,))
+
     def mirror_bombing(self):
         if self.skipMirrorNow:
             self.skipMirrorNow = False
@@ -879,6 +891,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         # init flags
         self.skipMirrorNow = False
+        self.abortQueueNow = False
         self.doProgress = False
         self.categoryOn = False
         self.quitNow = False
@@ -1186,8 +1199,12 @@ class SpritzApplication(SpritzController,SpritzGUI):
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
             if install_queue or removal_queue:
                 controller = QueueExecutor(self)
-                e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
+                try:
+                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
+                except exceptionTools.QueueError:
+                    e = 1
                 self.ui.skipMirror.hide()
+                self.ui.abortQueue.hide()
                 if e != 0:
                     okDialog(   self.ui.main,
                                 _("Attention. An error occured when processing the queue."

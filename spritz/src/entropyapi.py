@@ -77,10 +77,15 @@ class QueueExecutor:
         myrange.append(step)
         self.Entropy.progress.total.setup( myrange )
 
+        self.Spritz.skipMirrorNow = False
         self.Spritz.ui.skipMirror.show()
+        self.Spritz.ui.abortQueue.show()
         # first fetch all
         fetchqueue = 0
         for packageInfo in runQueue:
+
+            self.Spritz.queue_bombing()
+
             fetchqueue += 1
             Package = self.Entropy.Package()
             metaopts = {}
@@ -104,6 +109,9 @@ class QueueExecutor:
         totalremovalqueue = len(removalQueue)
         currentremovalqueue = 0
         for rem_data in removalQueue:
+
+            self.Spritz.queue_bombing()
+
             idpackage = rem_data[0]
             currentremovalqueue += 1
 
@@ -131,11 +139,14 @@ class QueueExecutor:
             del metaopts
             del Package
 
+        self.Spritz.skipMirrorNow = False
         self.Spritz.ui.skipMirror.show()
         totalqueue = len(runQueue)
         currentqueue = 0
         for packageInfo in runQueue:
             currentqueue += 1
+
+            self.Spritz.queue_bombing()
 
             metaopts = {}
             metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
@@ -157,7 +168,9 @@ class QueueExecutor:
             self.Entropy.cycleDone()
             del metaopts
             del Package
+
         self.Spritz.ui.skipMirror.hide()
+        self.Spritz.ui.abortQueue.hide()
 
         return 0,0
 
