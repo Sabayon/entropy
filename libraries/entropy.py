@@ -2504,11 +2504,6 @@ class EquoInterface(TextInterface):
         Package interface :: begin
     '''
 
-    '''
-    @description: check if Equo has to download the given package
-    @input package: filename to check inside the packages directory -> file, checksum of the package -> checksum
-    @output: -1 = should be downloaded, -2 = digest broken (not mandatory), remove & download, 0 = all fine, we don't need to download it
-    '''
     def check_needed_package_download(self, filepath, checksum = None):
         # is the file available
         if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath):
@@ -2524,18 +2519,13 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
-    '''
-    @description: download a package into etpConst['packagesbindir'] and check for digest if digest is not False
-    @input package: url -> HTTP/FTP url, digest -> md5 hash of the file
-    @output: -1 = download error (cannot find the file), -2 = digest error, 0 = all fine
-    '''
-    def fetch_file(self, url, digest = None, resume = True):
+    def fetch_file(self, url, digest = None, resume = True, fetch_file_abort_function = None):
         # remove old
         filename = os.path.basename(url)
         filepath = etpConst['packagesbindir']+"/"+etpConst['branch']+"/"+filename
 
         # load class
-        fetchConn = self.urlFetcher(url, filepath, resume = resume)
+        fetchConn = self.urlFetcher(url, filepath, resume = resume, abort_check_func = fetch_file_abort_function)
         fetchConn.progress = self.progress
 
         # start to download
@@ -2578,12 +2568,7 @@ class EquoInterface(TextInterface):
         else:
             return item
 
-    '''
-    @description: download a package into etpConst['packagesbindir'] passing all the available mirrors
-    @input package: repository -> name of the repository, filename -> name of the file to download, digest -> md5 hash of the file
-    @output: 0 = all fine, !=0 = error on all the available mirrors
-    '''
-    def fetch_file_on_mirrors(self, repository, filename, digest = False, verified = False):
+    def fetch_file_on_mirrors(self, repository, filename, digest = False, verified = False, fetch_abort_function = None):
 
         uris = etpRepositories[repository]['packages'][::-1]
         remaining = set(uris[:])
@@ -2644,7 +2629,12 @@ class EquoInterface(TextInterface):
                         type = "warning",
                         header = red("   ## ")
                     )
-                    rc, data_transfer, resumed = self.fetch_file(url, digest, do_resume)
+                    rc, data_transfer, resumed = self.fetch_file(
+                        url,
+                        digest,
+                        do_resume,
+                        fetch_file_abort_function = fetch_abort_function
+                    )
                     if rc == 0:
                         mytxt = mirrorCountText
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
@@ -3371,6 +3361,7 @@ class PackageInterface:
         self.matched_atom = ()
         self.valid_actions = ("fetch","remove","install")
         self.action = None
+        self.fetch_abort_function = None
 
     def kill(self):
         self.infoDict.clear()
@@ -3429,7 +3420,8 @@ class PackageInterface:
                 fetch = self.Entropy.fetch_file_on_mirrors(
                             self.infoDict['repository'],
                             self.infoDict['download'],
-                            self.infoDict['checksum']
+                            self.infoDict['checksum'],
+                            fetch_abort_function = self.fetch_abort_function
                         )
                 if fetch != 0:
                     self.Entropy.updateProgress(
@@ -4422,7 +4414,8 @@ class PackageInterface:
             self.infoDict['repository'],
             self.infoDict['download'],
             self.infoDict['checksum'],
-            self.infoDict['verified']
+            self.infoDict['verified'],
+            fetch_abort_function = self.fetch_abort_function
         )
         if rc != 0:
             mytxt = "%s. %s: %s" % (
@@ -4882,6 +4875,11 @@ class PackageInterface:
         repository = self.matched_atom[1]
         self.infoDict['idpackage'] = idpackage
         self.infoDict['repository'] = repository
+
+        # fetch abort function
+        if self.metaopts.has_key('fetch_abort_function'):
+            self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+
         # get package atom
         dbconn = self.Entropy.openRepositoryDatabase(repository)
         self.infoDict['triggers'] = {}
