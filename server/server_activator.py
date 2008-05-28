@@ -61,7 +61,9 @@ def sync(options, justTidy = False):
         errors = False
         if not justTidy:
             mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(ask = not do_noask, pretend = etpUi['pretend'])
-            if not mirrors_errors:
+            if not successfull_mirrors:
+                continue
+            elif not mirrors_errors:
                 if mirrors_tainted:
                     if (not do_noask) and etpConst['rss-feed']:
                         etpRSSMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )

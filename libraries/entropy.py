@@ -18575,7 +18575,7 @@ class ServerMirrorsInterface:
                 if ask:
                     rc = self.Entropy.askQuestion(_("Would you like to run the steps above ?"))
                     if rc == "No":
-                        continue
+                        break
 
                 try:
 
