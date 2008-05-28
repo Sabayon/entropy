@@ -191,10 +191,10 @@ class SpritzProgress:
 
 class SpritzGUI:
     ''' This class contains GUI related methods '''
-    def __init__(self, EquoConnection, etpbase):
+    def __init__(self, Equo, etpbase):
         self.settings = SpritzConf()
         # Package & Queue Views
-        self.Entropy = EquoConnection
+        self.Entropy = Equo
         self.etpbase = etpbase
         self.queue = SpritzQueue()
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)

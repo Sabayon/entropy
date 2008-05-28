@@ -74,10 +74,10 @@ class EntropyPackage:
 
     def getNameDesc(self):
         t = cleanMarkupString('/'.join(self.getName().split("/")[1:]))
-        desc = self.getDescription()
+        desc = self.getDescription(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
-        t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
+        t += '\n<small><span foreground=\'#FF0000\'>%s</span></small>' % (cleanMarkupString(desc),)
         return t
 
     def getOnlyName(self):
@@ -201,8 +201,11 @@ class EntropyPackage:
     def getKeySlot(self):
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
 
-    def getDescription(self):
-        return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
+    def getDescription(self, markup = True):
+        if markup:
+            return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
+        else:
+            return self.dbconn.retrieveDescription(self.matched_atom[0])
 
     def getDownSize(self):
         return self.dbconn.retrieveSize(self.matched_atom[0])

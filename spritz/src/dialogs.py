@@ -196,7 +196,7 @@ class PkgInfoMenu:
         self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
 
         self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupString(pkg.name),))
-        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupString(pkg.description),))
+        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
 
         bold_items = [  self.pkginfo_ui.locationLabel,
                         self.pkginfo_ui.homepageLabel,
@@ -266,7 +266,7 @@ class PkgInfoMenu:
         masked = 'False'
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
         if idpackage_masked == -1:
-            masked = 'True, %s' % (etpConst['packagemaskingreasons'][idmasking_reason],)
+            masked = 'True, %s' % (self.entropyConstants.etpConst['packagemaskingreasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
 
         # sources view
@@ -486,7 +486,7 @@ class ConfirmationDialog:
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
                 mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
-                level2 = model.append( level1, [mypkg+mydesc] )
+                model.append( level1, [mypkg+mydesc] )
         if install:
             label = "<b>%s</b>" % _("To be installed")
             level1 = model.append( None, [label] )
@@ -497,7 +497,7 @@ class ConfirmationDialog:
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
                 mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
-                level2 = model.append( level1, [mypkg+mydesc] )
+                model.append( level1, [mypkg+mydesc] )
         if update:
             label = "<b>%s</b>" % _("To be updated")
             level1 = model.append( None, [label] )
@@ -508,7 +508,7 @@ class ConfirmationDialog:
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
                 mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
-                level2 = model.append( level1, [mypkg+mydesc] )
+                model.append( level1, [mypkg+mydesc] )
         if remove:
             label = "<b>%s</b>" % _("To be removed")
             level1 = model.append( None, [label] )
@@ -519,7 +519,7 @@ class ConfirmationDialog:
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
                 mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
-                level2 = model.append( level1, [mypkg+mydesc] )
+                model.append( level1, [mypkg+mydesc] )
 
     def destroy( self ):
         return self.dialog.destroy()
@@ -865,13 +865,11 @@ class LicenseDialog:
                 return
             packages = self.licenses[license_identifier]
             license_text = ''
-            found = False
             for package in packages:
                 repoid = package[1]
                 dbconn = self.Entropy.openRepositoryDatabase(repoid)
                 if dbconn.isLicensedataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
-                    found = True
                     break
             # prepare textview
             mybuffer = gtk.TextBuffer()

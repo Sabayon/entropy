@@ -38,8 +38,6 @@ from entropy_i18n import _
 
 # GTK Imports
 import gtk, gobject
-import thread
-import exceptions
 from etpgui.widgets import UI, Controller
 from etpgui import *
 from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupString
