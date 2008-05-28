@@ -629,17 +629,17 @@ class EntryDialog:
             return self.entry.get_text()
         else:
             return None
-    
+
     def destroy( self ):
-        return self.dialog.destroy()  
+        return self.dialog.destroy()
 
 class AboutDialog(gtk.Window):
 
-    """ Class for a fancy "About" dialog. 
-        Mostly ripped from the one in gDesklets 
+    """ Class for a fancy "About" dialog.
+        Mostly ripped from the one in gDesklets
     """
 
-    def __init__(self, gfx,creditText,title="Spritz Package Manager"):
+    def __init__(self, gfx, creditText, title = "Spritz Package Manager"):
 
         self.__is_stopped = True
         self.__scroller_values = ()
@@ -654,6 +654,7 @@ class AboutDialog(gtk.Window):
         self.connect("key-press-event", self.__on_close)
         self.connect("delete-event", self.__on_close)
         self.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.set_decorated(False)
 
         fixed = gtk.Fixed()
         self.add(fixed)
@@ -675,7 +676,7 @@ class AboutDialog(gtk.Window):
             text += "\n\n\n\n"
         text = "<big>" + text.strip() + "</big>"
 
-        mycredits = gtk.Label(text)
+        mycredits = gtk.Label("<span foreground='#FFFFFF'>%s</span>" % (text,))
         mycredits.set_use_markup(True)
         mycredits.set_justify(gtk.JUSTIFY_CENTER)
 
