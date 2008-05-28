@@ -530,7 +530,7 @@ class SpritzController(Controller):
         self.setPage('repos')
 
     def on_cacheButton_clicked(self,widget):
-        repos = self.repoView.get_selected()
+        self.repoView.get_selected()
         self.setPage('output')
         self.logger.info( "Cleaning cache")
         self.cleanEntropyCaches(alone = True)
@@ -851,14 +851,14 @@ class SpritzController(Controller):
         """ Handle selection of row in Comps Category  view  """
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
-            id = model.get_value( iterator, 0 )
-            self.populateCategoryPackages(id)
+            myid = model.get_value( iterator, 0 )
+            self.populateCategoryPackages(myid)
         self.unsetBusy()
 
     def on_FileQuit( self, widget ):
         self.quit()
 
-    def on_HelpAbout( self, widget ):
+    def on_HelpAbout( self, widget = None ):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
 
@@ -1074,7 +1074,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progressLog(msg, extra = "repositories")
             return 2
         rc = repoConn.sync()
-        if repoConn.syncErrors:
+        if repoConn.syncErrors or (rc != 0):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(_('Please check logs below for more info'))
         else:
@@ -1163,7 +1163,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         # reset labels
         self.resetProgressText()
 
-    def processPackageQueue( self, pkgs, doAll=False):
+    def processPackageQueue(self, pkgs):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
@@ -1216,14 +1216,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         else:
             self.setStatus( _( "No packages selected" ) )
             return state
-
-    def get_confimation( self, task ):
-        self.progress.hide( False )
-        dlg = ConfirmationDialog(self.ui.main, [], 0 )
-        rc = dlg.run()
-        dlg.destroy()
-        self.progress.show()
-        return rc == gtk.RESPONSE_OK
 
     def populateCategories(self):
         self.setBusy()

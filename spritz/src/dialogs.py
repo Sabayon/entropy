@@ -21,10 +21,6 @@ import gtk
 import gobject
 import pango
 from etpgui.widgets import UI
-try:
-    from iniparse.compat import ConfigParser,SafeConfigParser
-except ImportError:
-    from ConfigParser import ConfigParser,SafeConfigParser
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities
 from entropy_i18n import _
 
