@@ -25,7 +25,7 @@ try:
     from iniparse.compat import ConfigParser,SafeConfigParser
 except ImportError:
     from ConfigParser import ConfigParser,SafeConfigParser
-from spritz_setup import const, cleanMarkupSting, SpritzConf, unicode2htmlentities
+from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities
 from entropy_i18n import _
 
 class PkgInfoMenu:
@@ -199,8 +199,8 @@ class PkgInfoMenu:
         self.pkginfo_ui.vote4.set_from_file(heart_pixmap)
         self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
 
-        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupSting(pkg.name),))
-        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupSting(pkg.description),))
+        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupString(pkg.name),))
+        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (cleanMarkupString(pkg.description),))
 
         bold_items = [  self.pkginfo_ui.locationLabel,
                         self.pkginfo_ui.homepageLabel,
@@ -231,9 +231,9 @@ class PkgInfoMenu:
         if repo == 0:
             self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
         else:
-            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupSting(self.entropyConstants.etpRepositories[repo]['description']),))
+            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(self.entropyConstants.etpRepositories[repo]['description']),))
 
-        self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupSting(pkg.onlyver),) )
+        self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
         tag = pkg.tag
         if not tag: tag = "None"
         self.pkginfo_ui.tag.set_markup( "%s" % (tag,) )
@@ -241,7 +241,7 @@ class PkgInfoMenu:
         self.pkginfo_ui.revision.set_markup( "%s" % (pkg.revision,) )
         self.pkginfo_ui.branch.set_markup( "%s" % (pkg.release,) )
         self.pkginfo_ui.eapi.set_markup( "%s" % (pkg.api,) )
-        self.pkginfo_ui.homepage.set_markup( "%s" % (cleanMarkupSting(pkg.homepage),) )
+        self.pkginfo_ui.homepage.set_markup( "%s" % (cleanMarkupString(pkg.homepage),) )
 
         # license view
         self.licenseModel.clear()
@@ -304,13 +304,13 @@ class PkgInfoMenu:
         self.useflagsModel.clear()
         self.useflagsView.set_model( self.useflagsModel )
         for x in pkg.useflags:
-            self.useflagsModel.append([cleanMarkupSting(x)])
+            self.useflagsModel.append([cleanMarkupString(x)])
 
         # eclasses view
         self.eclassesModel.clear()
         self.eclassesView.set_model( self.eclassesModel )
         for x in pkg.eclasses:
-            self.eclassesModel.append([cleanMarkupSting(x)])
+            self.eclassesModel.append([cleanMarkupString(x)])
 
         # dependencies view
         self.dependenciesModel.clear()
@@ -318,23 +318,23 @@ class PkgInfoMenu:
         deps = pkg.dependencies
         conflicts = pkg.conflicts
         for x in deps:
-            self.dependenciesModel.append(None,[cleanMarkupSting(x)])
+            self.dependenciesModel.append(None,[cleanMarkupString(x)])
         for x in conflicts:
-            self.dependenciesModel.append(None,[cleanMarkupSting("!"+x)])
+            self.dependenciesModel.append(None,[cleanMarkupString("!"+x)])
 
         # depends view
         self.dependsModel.clear()
         self.dependsView.set_model( self.dependsModel )
         depends = pkg.dependsFmt
         for x in depends:
-            self.dependsModel.append(None,[cleanMarkupSting(x)])
+            self.dependsModel.append(None,[cleanMarkupString(x)])
 
         # needed view
         self.neededModel.clear()
         self.neededView.set_model( self.neededModel )
         neededs = pkg.needed
         for x in neededs:
-            self.neededModel.append(None,[cleanMarkupSting(x)])
+            self.neededModel.append(None,[cleanMarkupString(x)])
 
         # content view
         self.contentModel.clear()
@@ -485,7 +485,7 @@ class ConfirmationDialog:
             level1 = model.append( None, [label] )
             for pkg in reinstall:
                 desc = pkg.description[:desc_len].rstrip()+"..."
-                desc = cleanMarkupSting(desc)
+                desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
@@ -496,7 +496,7 @@ class ConfirmationDialog:
             level1 = model.append( None, [label] )
             for pkg in install:
                 desc = pkg.description[:desc_len].rstrip()+"..."
-                desc = cleanMarkupSting(desc)
+                desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
@@ -507,7 +507,7 @@ class ConfirmationDialog:
             level1 = model.append( None, [label] )
             for pkg in update:
                 desc = pkg.description[:desc_len].rstrip()+"..."
-                desc = cleanMarkupSting(desc)
+                desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
@@ -518,7 +518,7 @@ class ConfirmationDialog:
             level1 = model.append( None, [label] )
             for pkg in remove:
                 desc = pkg.description[:desc_len].rstrip()+"..."
-                desc = cleanMarkupSting(desc)
+                desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
@@ -753,7 +753,7 @@ def questionDialog(parent, msg, message_format = _("Hey!")):
                             type=gtk.MESSAGE_QUESTION,
                             buttons=gtk.BUTTONS_YES_NO, message_format = message_format)
     dlg.set_title( _("Spritz Question") )
-    dlg.format_secondary_markup(cleanMarkupSting(msg))
+    dlg.format_secondary_markup(cleanMarkupString(msg))
     rc = dlg.run()
     dlg.destroy()
     if rc == gtk.RESPONSE_YES:

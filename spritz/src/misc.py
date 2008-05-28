@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from entropy_i18n import _
-from spritz_setup import cleanMarkupSting, SpritzConf
+from spritz_setup import cleanMarkupString, SpritzConf
 
 class SpritzQueue:
 
@@ -120,7 +120,7 @@ class SpritzQueue:
             if idpackage not in newdepends:
                 mystring = "<span foreground='#FF0000'>%s</span>\n<small><span foreground='#418C0F'>%s</span></small>" % (
                     self.Entropy.clientDbconn.retrieveAtom(idpackage),
-                    cleanMarkupSting(self.Entropy.clientDbconn.retrieveDescription(idpackage)),
+                    cleanMarkupString(self.Entropy.clientDbconn.retrieveDescription(idpackage)),
                 )
                 atoms.append(mystring)
         atoms.sort()

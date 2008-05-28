@@ -19,7 +19,7 @@
 
 import gtk
 import gobject
-from spritz_setup import const, cleanMarkupSting, SpritzConf
+from spritz_setup import const, cleanMarkupString, SpritzConf
 from etpgui.widgets import UI
 from packages import DummyEntropyPackage
 from entropyapi import EquoConnection
@@ -471,7 +471,7 @@ class EntropyPackageView:
                     cat_desc = cat_desc_data[_LOCALE]
                 elif cat_desc_data.has_key('en'):
                     cat_desc = cat_desc_data['en']
-                cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupSting(cat_desc),)
+                cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
                 mydummy = DummyEntropyPackage(
                         namedesc = cat_text,
                         dummy_type = SpritzConf.dummy_category,

@@ -19,7 +19,7 @@
 
 from entropyConstants import *
 from entropyapi import EquoConnection
-from spritz_setup import cleanMarkupSting, SpritzConf
+from spritz_setup import cleanMarkupString, SpritzConf
 
 class DummyEntropyPackage:
 
@@ -73,8 +73,8 @@ class EntropyPackage:
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     def getNameDesc(self):
-        t = cleanMarkupSting('/'.join(self.getName().split("/")[1:]))
-        desc = cleanMarkupSting(self.getDescription())
+        t = cleanMarkupString('/'.join(self.getName().split("/")[1:]))
+        desc = self.getDescription()
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
         t += "\n<small><span foreground='#FF0000'>%s</span></small>" % (desc,)
@@ -202,7 +202,7 @@ class EntropyPackage:
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
 
     def getDescription(self):
-        return self.dbconn.retrieveDescription(self.matched_atom[0])
+        return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
 
     def getDownSize(self):
         return self.dbconn.retrieveSize(self.matched_atom[0])
@@ -237,7 +237,7 @@ class EntropyPackage:
     def getAttr(self,attr):
         x = None
         if attr == "description":
-            x = cleanMarkupSting(self.dbconn.retrieveDescription(self.matched_atom[0]))
+            x = cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
         elif attr == "category":
             x = self.dbconn.retrieveCategory(self.matched_atom[0])
         elif attr == "license":

@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from etpgui import *
-from spritz_setup import SpritzConf, const, cleanMarkupSting
+from spritz_setup import SpritzConf, const, cleanMarkupString
 from misc import SpritzQueue
 from views import *
 from etpgui.widgets import SpritzConsole
@@ -97,7 +97,7 @@ class ProgressTotal:
         return False
 
     def setAbsProgress( self, now, prefix=None ):
-        if not now >= self.lastFrac and now < 1:
+        if (not now >= self.lastFrac) or (now >= 1.0) or (now < 0.0):
             return
         while gtk.events_pending():      # process gtk events
            gtk.main_iteration()
@@ -185,7 +185,7 @@ class SpritzProgress:
         self.ui.progressExtraLabel.set_text( "" )
 
     def set_extraLabel( self, text ):
-        self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupSting(text) )
+        self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(text) )
         self.lastFrac = -1
 
 

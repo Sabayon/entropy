@@ -138,7 +138,7 @@ class SpritzConf:
     dummy_empty = 0
     dummy_category = 1
 
-def cleanMarkupSting(msg):
+def cleanMarkupString(msg):
     import gobject
     msg = str(msg) # make sure it is a string
     msg = gobject.markup_escape_text(msg)

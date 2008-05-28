@@ -42,7 +42,7 @@ import thread
 import exceptions
 from etpgui.widgets import UI, Controller
 from etpgui import *
-from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupSting
+from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupString
 
 # spritz imports
 import filters
@@ -702,22 +702,22 @@ class SpritzController(Controller):
             if vul_atoms:
                 myparent = self.affectedModel.append(parent,[_('Vulnerables')])
                 for atom in vul_atoms:
-                    self.affectedModel.append(myparent,[cleanMarkupSting(atom)])
+                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
             if unaff_atoms:
                 myparent = self.affectedModel.append(parent,[_('Unaffected')])
                 for atom in unaff_atoms:
-                    self.affectedModel.append(myparent,[cleanMarkupSting(atom)])
+                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
 
         # bugs
         self.bugsModel.clear()
         self.bugsView.set_model( self.bugsModel )
         for bug in data['bugs']:
-            self.bugsModel.append([cleanMarkupSting(bug)])
+            self.bugsModel.append([cleanMarkupString(bug)])
 
         self.referencesModel.clear()
         self.referencesView.set_model( self.referencesModel )
         for reference in data['references']:
-            self.referencesModel.append([cleanMarkupSting(reference)])
+            self.referencesModel.append([cleanMarkupString(reference)])
 
         # announcedTextLabel
         self.advinfo_ui.announcedTextLabel.set_markup(data['announced'])
