@@ -547,7 +547,7 @@ class EquoInterface(TextInterface):
                 pass
         return conn
 
-    def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None):
+    def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None, skipChecks = False):
         if xcache == None:
             xcache = self.xcache
         if indexing_override != None:
@@ -563,7 +563,8 @@ class EquoInterface(TextInterface):
             dbname = dbname,
             xcache = xcache,
             indexing = indexing,
-            OutputInterface = self
+            OutputInterface = self,
+            skipChecks = skipChecks
         )
 
     def listAllAvailableBranches(self):
