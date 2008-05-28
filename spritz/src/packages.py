@@ -171,15 +171,16 @@ class EntropyPackages:
                 yp.color = SpritzConf.color_update
                 yield yp
         elif mask == "reinstallable":
-            for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
-                matched = self.isReinstallable(idpackage)
-                if not matched:
-                    continue
+            pkgdata = self.Entropy.clientDbconn.listAllPackages(get_scope = True,order_by = 'atom')
+            pkgdata = self.filterReinstallable(pkgdata)
+            # (idpackage,(idpackage,repoid,))
+            for idpackage, matched in pkgdata:
                 yp, new = self.getPackageItem(matched,True)
                 yp.installed_match = (idpackage,0)
                 yp.action = 'rr'
                 yp.color = SpritzConf.color_install
                 yield yp
+
 
         elif mask == "fake_updates":
             # load a pixmap inside the treeview
@@ -193,16 +194,34 @@ class EntropyPackages:
             myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SpritzConf.dummy_empty)
             yield myobj
 
-    def isReinstallable(self, client_idpackage):
-        atom = self.Entropy.clientDbconn.retrieveAtom(client_idpackage)
-        upd, matched = self.Entropy.check_package_update(atom)
-        if (not upd) and matched:
-            if matched[0] != -1:
-                inst_rev = self.Entropy.clientDbconn.retrieveRevision(client_idpackage)
-                dbconn = self.Entropy.openRepositoryDatabase(matched[1])
-                avail_rev = dbconn.retrieveRevision(matched[0])
-                if avail_rev == inst_rev:
-                    return matched
+    def isReinstallable(self, atom, slot, revision):
+        for repoid in self.Entropy.validRepositories:
+            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            idpackage = dbconn.isPackageScopeAvailable(atom, slot, revision)
+            if idpackage != None:
+                return (repoid,idpackage,)
+        return None
+
+    def filterReinstallable(self, client_scope_data):
+        clientdata = {}
+        for idpackage, atom, slot, revision in client_scope_data:
+            clientdata[(atom,slot,revision,)] = idpackage
+        del client_scope_data
+
+        matched_data = set()
+        for repoid in self.Entropy.validRepositories:
+            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            repodata = dbconn.listAllPackages(get_scope = True)
+            mydata = {}
+            for idpackage, atom, slot, revision in repodata:
+                mydata[(atom, slot, revision)] = idpackage
+            del repodata
+            found = False
+            for item in clientdata:
+                if item in mydata:
+                    found = True
+                    matched_data.add((clientdata[item],(mydata[item],repoid,)))
+        return matched_data
 
     def getCategories(self):
         catlist = []
