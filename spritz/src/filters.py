@@ -90,6 +90,8 @@ class KeywordFilter(SpritzFilter):
             for crit_re in self.reList:
                 found = False
                 for field in self.fields:
+                    if pkg.dummy_type != None:
+                        continue
                     value = pkg.getAttr( field )
                     if value and crit_re.search(value):
                         found = True
