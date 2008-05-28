@@ -12423,6 +12423,7 @@ class SocketHostInterface:
                 try:
                     self.run_task(cmd, args, session, Entropy)
                 except Exception, e:
+                    # write to self.HostInterface.socketLog
                     self.entropyTools.printTraceback()
                     # store error
                     self.HostInterface.updateProgress(
@@ -15698,7 +15699,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
             dbpath,
             xcache = False,
             readOnly = True,
-            OutputInterface = self.Entropy,
             skipChecks = True
         )
         if docache:
