@@ -40,6 +40,7 @@ class EntropyPackages:
         self._packages.clear()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
+        self._categoryPackages.clear()
 
     def clearCache(self):
         self.pkgCache.clear()
