@@ -312,14 +312,7 @@ class EquoInterface(TextInterface):
             raise exceptionTools.InvalidData("InvalidData: %s" % (t,))
 
     def set_priority(self, low = 0):
-        default_nice = etpConst['default_nice']
-        current_nice = etpConst['current_nice']
-        delta = current_nice - default_nice
-        try:
-            etpConst['current_nice'] = os.nice(delta*-1+low)
-        except OSError:
-            pass
-        return current_nice # aka, the old value
+        return const_setNiceLevel(low)
 
     def switchChroot(self, chroot = ""):
         # clean caches

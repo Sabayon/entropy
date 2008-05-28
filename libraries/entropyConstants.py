@@ -492,7 +492,6 @@ def initConfig_entropyConstants(rootdir):
     # reflow back settings
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
-
     const_setupWithEnvironment()
 
 def initConfig_clientConstants():
@@ -791,6 +790,15 @@ def const_defaultSettings(rootdir):
 
     etpConst.update(myConst)
 
+def const_setNiceLevel(low = 0):
+    default_nice = etpConst['default_nice']
+    current_nice = etpConst['current_nice']
+    delta = current_nice - default_nice
+    try:
+        etpConst['current_nice'] = os.nice(delta*-1+low)
+    except OSError:
+        pass
+    return current_nice
 
 def const_readRepositoriesSettings():
 
@@ -997,6 +1005,14 @@ def const_readEntropySettings():
                     etpConst['proxy']['http'] = httpproxy[-1]
             elif line.startswith("system-name|") and (len(line.split("|")) == 2):
                 etpConst['systemname'] = line.split("|")[1].strip()
+            elif line.startswith("nice-level|") and (len(line.split("|")) == 2):
+                mylevel = line.split("|")[1].strip()
+                try:
+                    mylevel = int(mylevel)
+                    if (mylevel >= -19) and (mylevel <= 19):
+                        const_setNiceLevel(mylevel)
+                except (ValueError,):
+                    pass
 
 def const_readEntropyRelease():
     # handle Entropy Version
