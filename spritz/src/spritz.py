@@ -347,6 +347,7 @@ class SpritzController(Controller):
     def __loadRepodata(self, repodata):
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
+        self.addrepo_ui.repodbPort.set_text(str(repodata['service_port']))
         self.repoMirrorsView.store.clear()
         for x in repodata['plain_packages']:
             self.repoMirrorsView.add(x)
@@ -391,6 +392,14 @@ class SpritzController(Controller):
             errors.append(_("No download mirrors"))
         if not repodata['plain_database'] or not (repodata['plain_database'].startswith("http://") or repodata['plain_database'].startswith("ftp://") or repodata['plain_database'].startswith("file://")):
             errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
+
+        if not repodata['service_port']:
+            repodata['service_port'] = int(etpConst['socket_service']['port'])
+        else:
+            try:
+                repodata['service_port'] = int(repodata['service_port'])
+            except (ValueError,):
+                errors.append(_("Repository Services Port not valid"))
         return errors
 
     def __getRepodata(self):
@@ -400,6 +409,7 @@ class SpritzController(Controller):
         repodata['plain_packages'] = self.repoMirrorsView.get_all()
         repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
         repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
+        repodata['service_port'] = self.addrepo_ui.repodbPort.get_text()
         return repodata
 
     def on_repoSubmit_clicked( self, widget ):
@@ -433,7 +443,21 @@ class SpritzController(Controller):
                 repodata['description'] = textdata[2]
                 repodata['packages'] = textdata[3].split()
                 repodata['database'] = textdata[4].split("#")[0]
-                dbcformat = textdata[4].split("#")[-1]
+                repodatabase = textdata[4]
+
+                eapi3_port = None
+                eapi3_formatcolon = repodatabase.rfind("#")
+                if eapi3_formatcolon != -1:
+                    try:
+                        eapi3_port = int(repodatabase[eapi3_formatcolon+1:])
+                        repodatabase = repodatabase[:eapi3_formatcolon]
+                    except (ValueError, IndexError,):
+                        eapi3_port = int(etpConst['socket_service']['port'])
+                else:
+                    eapi3_port = int(etpConst['socket_service']['port'])
+
+                repodata['service_port'] = eapi3_port
+                dbcformat = repodatabase.split("#")[-1]
                 if dbcformat in etpConst['etpdatabasesupportedcformats']:
                     repodata['dbcformat'] = dbcformat
                 else:
@@ -1275,6 +1299,17 @@ if __name__ == "__main__":
         killThreads()
         sys.exit(1)
     except: # catch other exception and write it to the logger.
+
+        etype = sys.exc_info()[0]
+        evalue = sys.exc_info()[1]
+        etb = traceback.extract_tb(sys.exc_info()[2])
+        errmsg = 'Error Type: %s \n' % str(etype)
+        errmsg += 'Error Value: %s \n' % str(evalue)
+        for tub in etb:
+            f,l,m,c = tub # file,lineno, function, codeline
+            errmsg += '  File : %s , line %s, in %s\n' % (f,str(l),m)
+            errmsg += '    %s \n' % c
+
         conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
         rc, (name,mail,description) = errorMessage(
             None,

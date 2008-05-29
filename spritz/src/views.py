@@ -645,28 +645,46 @@ class EntropyPackageView:
         self.view.queue_draw()
 
 class EntropyQueueView:
-    """ Queue View Class"""
+
     def __init__( self, widget, queue ):
         self.view = widget
         self.model = self.setup_view()
         self.queue = queue
+        self.Equo = EquoConnection
 
     def setup_view( self ):
-        """ Create Notebook list for single page  """
-        model = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
+
+        #column.set_fixed_width( size )
+
+        model = gtk.TreeStore( gobject.TYPE_STRING )
         self.view.set_model( model )
         cell1 = gtk.CellRendererText()
         column1= gtk.TreeViewColumn( _( "Packages" ), cell1, markup=0 )
         column1.set_resizable( True )
+        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column1.set_expand(True)
+        column1.set_fixed_width( 300 )
+        column1.set_cell_data_func( cell1, self.get_data_text )
         self.view.append_column( column1 )
 
-        cell2 = gtk.CellRendererText()
-        column2= gtk.TreeViewColumn( _( "Description" ), cell2, text=1 )
-        column2.set_resizable( True )
-        self.view.append_column( column2 )
-        model.set_sort_column_id( 0, gtk.SORT_ASCENDING )
-        self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
+        column1.set_sort_column_id( -1 )
         return model
+
+    def get_data_text( self, column, cell, model, iter ):
+        namedesc = model.get_value( iter, 0 )
+        cell.set_property('markup',namedesc)
+
+    def set_line_status(self, obj, cell, stype = "cell-background"):
+        if obj.queued == "r":
+            cell.set_property(stype,'#FFE2A3')
+        elif obj.queued == "u":
+            cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "i":
+            cell.set_property(stype,'#D895FF')
+        elif obj.queued == "rr":
+            cell.set_property(stype,'#B7BEFF')
+        elif not obj.queued:
+            cell.set_property(stype,None)
 
     def deleteSelected( self ):
         rmvlist = []
@@ -698,27 +716,63 @@ class EntropyQueueView:
         """ Populate view with data from queue """
         self.model.clear()
         label = "<b>%s</b>" % (_( "Packages To Reinstall" ),)
-        list = self.queue.packages['rr']
-        if len( list ) > 0:
-            self.populate_list( label, list )
+        mylist = self.queue.packages['rr']
+        if len( mylist ) > 0:
+            self.populate_list( label, mylist )
         label = "<b>%s</b>" % (_( "Packages To Update" ),)
-        list = self.queue.packages['u']
-        if len( list ) > 0:
-            self.populate_list( label, list )
+        mylist = self.queue.packages['u']
+        if len( mylist ) > 0:
+            self.populate_list( label, mylist )
         label = "<b>%s</b>" % (_( "Packages To Install" ),)
-        list = self.queue.packages['i']
-        if len( list ) > 0:
-            self.populate_list( label, list )
+        mylist = self.queue.packages['i']
+        if len( mylist ) > 0:
+            self.populate_list( label, mylist )
         label = "<b>%s</b>" % (_( "Packages To Remove" ),)
-        list = self.queue.packages['r']
-        if len( list ) > 0:
-            self.populate_list( label, list )
+        mylist = self.queue.packages['r']
+        if len( mylist ) > 0:
+            self.populate_list( label, mylist )
         self.view.expand_all()
 
+    def atom_search(self, model, column, key, iterator):
+        namedesc = model.get_value( iterator, 0 )
+        return not (namedesc.find(key) != -1)
+
     def populate_list( self, label, mylist ):
-        parent = self.model.append( None, [label, ""] )
-        for pkg in mylist:
-            self.model.append( parent, [str( pkg ), pkg.description_nomarkup] )
+
+        search_col = 0
+        categories = {}
+        for po in mylist:
+            mycat = po.cat
+            if not categories.has_key(mycat):
+                categories[mycat] = []
+            categories[mycat].append(po)
+
+        cats = categories.keys()
+        cats.sort()
+
+        grandfather = self.model.append( None, (label,) )
+        for category in cats:
+            cat_desc = _("No description")
+            cat_desc_data = self.Equo.get_category_description_data(category)
+            if cat_desc_data.has_key(_LOCALE):
+                cat_desc = cat_desc_data[_LOCALE]
+            elif cat_desc_data.has_key('en'):
+                cat_desc = cat_desc_data['en']
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
+            mydummy = DummyEntropyPackage(
+                    namedesc = cat_text,
+                    dummy_type = SpritzConf.dummy_category,
+                    onlyname = category
+            )
+            mydummy.color = '#9C7234'
+            parent = self.model.append( grandfather, (mydummy.namedesc,) )
+            for po in categories[category]:
+                self.model.append( parent, (po.namedesc,) )
+
+        self.view.set_search_column( search_col )
+        self.view.set_search_equal_func(self.atom_search)
+        self.view.set_property('headers-visible',True)
+        self.view.set_property('enable-search',True)
 
 class EntropyFilesView:
     """ Queue View Class"""
