@@ -75,7 +75,10 @@ class SystemDatabaseError(EntropyException):
         """Cannot open system database"""
 
 class OnlineMirrorError(EntropyException):
-        """Cannot lock online mirror for syncing"""
+        """Mirror issue"""
+
+class QueueError(EntropyException):
+        """Action queue issue"""
 
 class InvalidLocation(EntropyException):
         """Data was not found when it was expected to exist or was specified incorrectly"""
