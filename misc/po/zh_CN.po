@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: yumex 1.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-28 09:53+0200\n"
+"POT-Creation-Date: 2008-05-29 16:06+0200\n"
 "PO-Revision-Date: 2007-03-24 18:48+0800\n"
 "Last-Translator: 宋浩 <mousesh360@163.com>\n"
 "Language-Team: Chinese/Simplified <i18n-translation@lists.linux.net.cn>\n"
@@ -176,7 +176,7 @@ msgid "show information about provided advisories identifiers"
 msgstr ""
 
 #: ../../client/equo.py:85
-msgid "automaticly install all the available security updates"
+msgid "automatically install all the available security updates"
 msgstr ""
 
 #: ../../client/equo.py:88 ../../client/equo.py:93 ../../client/equo.py:114
@@ -633,8 +633,8 @@ msgstr ""
 msgid "regenerate Entropy cache"
 msgstr ""
 
-#: ../../client/equo.py:247 ../../server/reagent.py:101
-msgid "remove downloaded packages and clean temp. directories)"
+#: ../../client/equo.py:247
+msgid "remove downloaded packages and clean temp. directories"
 msgstr ""
 
 #: ../../client/equo.py:249
@@ -907,8 +907,8 @@ msgid "Eclass Search"
 msgstr ""
 
 #: ../../client/text_query.py:444 ../../client/text_query.py:1050
-#: ../../spritz/src/dialogs.py:419 ../../spritz/src/dialogs.py:425
-#: ../../spritz/src/spritz.py:920 ../../spritz/src/views.py:432
+#: ../../spritz/src/dialogs.py:415 ../../spritz/src/dialogs.py:421
+#: ../../spritz/src/spritz.py:932 ../../spritz/src/views.py:432
 msgid "Package"
 msgstr "软件包"
 
@@ -1090,7 +1090,7 @@ msgstr ""
 msgid "Checksum"
 msgstr ""
 
-#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:134
+#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:130
 #, fuzzy
 msgid "Dependencies"
 msgstr "首选项"
@@ -1112,7 +1112,7 @@ msgid "Description"
 msgstr "描述（_D）"
 
 #. print use flags
-#: ../../client/text_query.py:1077 ../../spritz/src/dialogs.py:118
+#: ../../client/text_query.py:1077 ../../spritz/src/dialogs.py:114
 msgid "USE flags"
 msgstr ""
 
@@ -1132,7 +1132,7 @@ msgstr ""
 msgid "Gentoo eclasses"
 msgstr ""
 
-#: ../../client/text_query.py:1089 ../../spritz/src/dialogs.py:94
+#: ../../client/text_query.py:1089 ../../spritz/src/dialogs.py:90
 msgid "Sources"
 msgstr ""
 
@@ -1148,7 +1148,7 @@ msgstr ""
 msgid "Compiled with"
 msgstr ""
 
-#: ../../client/text_query.py:1095 ../../spritz/src/dialogs.py:110
+#: ../../client/text_query.py:1095 ../../spritz/src/dialogs.py:106
 msgid "Keywords"
 msgstr ""
 
@@ -1158,7 +1158,7 @@ msgid "Created"
 msgstr "已删除的"
 
 #: ../../client/text_query.py:1097 ../../client/text_ui.py:781
-#: ../../spritz/src/dialogs.py:824
+#: ../../spritz/src/dialogs.py:821
 msgid "License"
 msgstr ""
 
@@ -1242,16 +1242,16 @@ msgstr ""
 msgid "Repository revision"
 msgstr "软件仓库"
 
-#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1066
+#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1077
 #: ../../spritz/src/applet/etp_applet.py:614
 msgid "No repositories specified in"
 msgstr ""
 
-#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1070
+#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1081
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1073
+#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1084
 #: ../../spritz/src/applet/etp_applet.py:622
 msgid "Unhandled exception"
 msgstr ""
@@ -1410,7 +1410,7 @@ msgstr ""
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../client/text_ui.py:690 ../../client/text_ui.py:691
-#: ../../spritz/src/dialogs.py:770 ../../spritz/src/misc.py:91
+#: ../../spritz/src/dialogs.py:767 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:259
 msgid "Attention"
 msgstr ""
@@ -1487,10 +1487,6 @@ msgstr ""
 msgid ""
 "has never been in sync with Portage. So, you can't run this unless you run "
 "first"
-msgstr ""
-
-#: ../../client/text_rescue.py:423
-msgid "equo database generate"
 msgstr ""
 
 #: ../../client/text_rescue.py:424
@@ -2326,6 +2322,10 @@ msgstr ""
 msgid "just list packages"
 msgstr "正在下载软件包："
 
+#: ../../server/reagent.py:101
+msgid "remove downloaded packages and clean temp. directories)"
+msgstr ""
+
 #: ../../server/server_activator.py:44
 msgid "Starting to sync data across mirrors (packages/database)"
 msgstr ""
@@ -2628,141 +2628,141 @@ msgstr "显示已安装的软件包"
 msgid "Bumping Repository database"
 msgstr "软件仓库"
 
-#: ../../spritz/src/dialogs.py:86
+#: ../../spritz/src/dialogs.py:82
 #, fuzzy
 msgid "License name"
 msgstr "文件名"
 
-#: ../../spritz/src/dialogs.py:102
+#: ../../spritz/src/dialogs.py:98
 #, fuzzy
 msgid "Mirrors"
 msgstr "镜像站点列表（_M）"
 
-#: ../../spritz/src/dialogs.py:126
+#: ../../spritz/src/dialogs.py:122
 #, fuzzy
 msgid "Eclasses"
 msgstr "排除"
 
-#: ../../spritz/src/dialogs.py:142
+#: ../../spritz/src/dialogs.py:138
 msgid "Depends"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:150
+#: ../../spritz/src/dialogs.py:146
 #, fuzzy
 msgid "Needed libraries"
 msgstr "为软件包 %s 所需要"
 
-#: ../../spritz/src/dialogs.py:158
+#: ../../spritz/src/dialogs.py:154
 msgid "Protected item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:161 ../../spritz/src/dialogs.py:173
+#: ../../spritz/src/dialogs.py:157 ../../spritz/src/dialogs.py:169
 msgid "Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:169
+#: ../../spritz/src/dialogs.py:165
 #, fuzzy
 msgid "File"
 msgstr "文件（_F）"
 
-#: ../../spritz/src/dialogs.py:232
+#: ../../spritz/src/dialogs.py:228
 msgid "From your Operating System"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:381
+#: ../../spritz/src/dialogs.py:377
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:442 ../../spritz/src/dialogs.py:484
+#: ../../spritz/src/dialogs.py:438 ../../spritz/src/dialogs.py:480
 #, fuzzy
 msgid "To be reinstalled"
 msgstr "已安装"
 
-#: ../../spritz/src/dialogs.py:448 ../../spritz/src/dialogs.py:495
+#: ../../spritz/src/dialogs.py:444 ../../spritz/src/dialogs.py:491
 #, fuzzy
 msgid "To be installed"
 msgstr "已安装"
 
-#: ../../spritz/src/dialogs.py:454 ../../spritz/src/dialogs.py:506
+#: ../../spritz/src/dialogs.py:450 ../../spritz/src/dialogs.py:502
 #, fuzzy
 msgid "To be updated"
 msgstr "已被更新的"
 
-#: ../../spritz/src/dialogs.py:460
+#: ../../spritz/src/dialogs.py:456
 msgid "To be downgraded"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:466 ../../spritz/src/dialogs.py:517
+#: ../../spritz/src/dialogs.py:462 ../../spritz/src/dialogs.py:513
 msgid "To be removed"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:490 ../../spritz/src/dialogs.py:501
-#: ../../spritz/src/dialogs.py:512 ../../spritz/src/dialogs.py:523
+#: ../../spritz/src/dialogs.py:486 ../../spritz/src/dialogs.py:497
+#: ../../spritz/src/dialogs.py:508 ../../spritz/src/dialogs.py:519
 #: ../../spritz/src/views.py:468
 #, fuzzy
 msgid "No description"
 msgstr "描述（_D）"
 
-#: ../../spritz/src/dialogs.py:656
+#: ../../spritz/src/dialogs.py:652
 #, fuzzy
 msgid "About"
 msgstr "关于（_A）"
 
-#: ../../spritz/src/dialogs.py:751
+#: ../../spritz/src/dialogs.py:748
 msgid "Hey!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:755
+#: ../../spritz/src/dialogs.py:752
 msgid "Spritz Question"
 msgstr ""
 
 #. new
-#: ../../spritz/src/dialogs.py:827
+#: ../../spritz/src/dialogs.py:824
 msgid "Accepted"
 msgstr ""
 
-#: ../../spritz/src/gui.py:273
+#: ../../spritz/src/gui.py:269
 msgid "Show Package Updates"
 msgstr "显示软件包更新信息"
 
-#: ../../spritz/src/gui.py:274
+#: ../../spritz/src/gui.py:270
 msgid "Show available Packages"
 msgstr "显示可用的软件包"
 
-#: ../../spritz/src/gui.py:275
+#: ../../spritz/src/gui.py:271
 msgid "Show Installed Packages"
 msgstr "显示已安装的软件包"
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/gui.py:300 ../../spritz/src/views.py:659
+#: ../../spritz/src/gui.py:296 ../../spritz/src/views.py:659
 msgid "Packages"
 msgstr "软件包"
 
-#: ../../spritz/src/gui.py:301
+#: ../../spritz/src/gui.py:297
 #, fuzzy
 msgid "Package Categories"
 msgstr "类别"
 
-#: ../../spritz/src/gui.py:302
+#: ../../spritz/src/gui.py:298
 #, fuzzy
 msgid "Package Queue"
 msgstr "待处理软件包队列："
 
-#: ../../spritz/src/gui.py:303 ../../spritz/src/packages.py:185
+#: ../../spritz/src/gui.py:299 ../../spritz/src/packages.py:187
 #, fuzzy
 msgid "Repository Selection"
 msgstr "软件仓库选择视图"
 
-#: ../../spritz/src/gui.py:304
+#: ../../spritz/src/gui.py:300
 #, fuzzy
 msgid "Configuration Files"
 msgstr "有前提条件的"
 
-#: ../../spritz/src/gui.py:305
+#: ../../spritz/src/gui.py:301
 msgid "Security Advisories"
 msgstr ""
 
-#: ../../spritz/src/gui.py:306
+#: ../../spritz/src/gui.py:302
 #, fuzzy
 msgid "Output"
 msgstr "输出信息视图"
@@ -2812,300 +2812,315 @@ msgid "These are the packages that would be removed"
 msgstr ""
 
 #. load a pixmap inside the treeview
-#: ../../spritz/src/packages.py:185
+#: ../../spritz/src/packages.py:187
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../spritz/src/packages.py:185 ../../spritz/src/spritz.py:417
-#: ../../spritz/src/spritz.py:462
+#: ../../spritz/src/packages.py:187 ../../spritz/src/spritz.py:413
+#: ../../spritz/src/spritz.py:458
 #, fuzzy
 msgid "Update Repositories"
 msgstr "软件仓库"
 
-#: ../../spritz/src/packages.py:188
+#: ../../spritz/src/packages.py:190
 msgid "No updates available"
 msgstr ""
 
-#: ../../spritz/src/packages.py:189
+#: ../../spritz/src/packages.py:191
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:83
-msgid "Quiting, please wait !!!!!!"
-msgstr "正在退出，请稍等！！！！！！"
-
-#: ../../spritz/src/spritz.py:142
+#: ../../spritz/src/spritz.py:138
 msgid "The chosen package is not vulnerable"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:150
+#: ../../spritz/src/spritz.py:146
 msgid "Packages in Advisory have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:165
+#: ../../spritz/src/spritz.py:161
 msgid "Packages in all Advisories have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:177
+#: ../../spritz/src/spritz.py:173
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:263
+#: ../../spritz/src/spritz.py:259
 msgid "Branch switching"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:263
+#: ../../spritz/src/spritz.py:259
 msgid "Enter a valid branch you want to switch to"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:266
+#: ../../spritz/src/spritz.py:262
 msgid "The selected branch is not available."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:269
+#: ../../spritz/src/spritz.py:265
 msgid "New branch is"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:269
+#: ../../spritz/src/spritz.py:265
 msgid "It is suggested to synchronize repositories"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:313 ../../spritz/src/spritz.py:335
+#: ../../spritz/src/spritz.py:309 ../../spritz/src/spritz.py:331
 msgid "Insert URL"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:313 ../../spritz/src/spritz.py:335
+#: ../../spritz/src/spritz.py:309 ../../spritz/src/spritz.py:331
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:318
+#: ../../spritz/src/spritz.py:314
 msgid "You must enter either a HTTP or a FTP url."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:370 ../../spritz/src/spritz.py:420
+#: ../../spritz/src/spritz.py:366 ../../spritz/src/spritz.py:416
 msgid "Wrong entries, errors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:382 ../../spritz/src/spritz.py:417
+#: ../../spritz/src/spritz.py:378 ../../spritz/src/spritz.py:413
 #: ../../spritz/src/views.py:986
 msgid "You should press the button"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:382 ../../spritz/src/spritz.py:462
+#: ../../spritz/src/spritz.py:378 ../../spritz/src/spritz.py:458
 #: ../../spritz/src/views.py:986
 msgid "Regenerate Cache"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:382 ../../spritz/src/spritz.py:417
-#: ../../spritz/src/spritz.py:462 ../../spritz/src/views.py:986
+#: ../../spritz/src/spritz.py:378 ../../spritz/src/spritz.py:413
+#: ../../spritz/src/spritz.py:458 ../../spritz/src/views.py:986
 msgid "now"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:388
+#: ../../spritz/src/spritz.py:384
 #, fuzzy
 msgid "No Repository Identifier"
 msgstr "软件仓库选择视图"
 
-#: ../../spritz/src/spritz.py:391
+#: ../../spritz/src/spritz.py:387
 msgid "Duplicated Repository Identifier"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:395
+#: ../../spritz/src/spritz.py:391
 msgid "No download mirrors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:397
+#: ../../spritz/src/spritz.py:393
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:430
+#: ../../spritz/src/spritz.py:426
 #, fuzzy
 msgid "Insert Repository"
 msgstr "编辑软件仓库信息"
 
-#: ../../spritz/src/spritz.py:430
+#: ../../spritz/src/spritz.py:426
 msgid "Insert Repository identification string"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:448
+#: ../../spritz/src/spritz.py:444
 msgid "This Repository identification string is malformed"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:458
+#: ../../spritz/src/spritz.py:454
 msgid "You! Why do you want to remove the main repository ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:462
+#: ../../spritz/src/spritz.py:458
 msgid "You must now either press the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:462
+#: ../../spritz/src/spritz.py:458
 msgid "or the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:518
+#: ../../spritz/src/spritz.py:514
 msgid "Please select at least one repository"
 msgstr ""
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:554
+#: ../../spritz/src/spritz.py:550
 msgid "No packages in queue"
 msgstr "在待处理软件包队列中没有软件包"
 
-#: ../../spritz/src/spritz.py:620
+#: ../../spritz/src/spritz.py:616
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:687
+#: ../../spritz/src/spritz.py:683
 msgid "impact"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:689
+#: ../../spritz/src/spritz.py:685
 msgid "access"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:703
+#: ../../spritz/src/spritz.py:699
 msgid "Vulnerables"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:707
+#: ../../spritz/src/spritz.py:703
 msgid "Unaffected"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:872
+#: ../../spritz/src/spritz.py:824
+msgid ""
+"You have chosen to interrupt the queue processing. Doing so could be risky "
+"and you should let Entropy to close all its tasks. Are you sure you want it?"
+msgstr ""
+
+#: ../../spritz/src/spritz.py:832
+msgid "Aborting queue tasks."
+msgstr ""
+
+#: ../../spritz/src/spritz.py:838
+msgid "Skipping current mirror."
+msgstr ""
+
+#: ../../spritz/src/spritz.py:884
 msgid "Entropy resources are locked and not accessible. "
 msgstr ""
 
-#: ../../spritz/src/spritz.py:887
+#: ../../spritz/src/spritz.py:899
 #, fuzzy
 msgid "Entropy Config Setup"
 msgstr "Yum配置设置"
 
-#: ../../spritz/src/spritz.py:899
+#: ../../spritz/src/spritz.py:911
 msgid "GUI Setup Completed"
 msgstr "图形用户界面设置完成"
 
-#: ../../spritz/src/spritz.py:928
+#: ../../spritz/src/spritz.py:940
 msgid "Bug"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:936
+#: ../../spritz/src/spritz.py:948
 #, fuzzy
 msgid "Reference"
 msgstr "首选项"
 
-#: ../../spritz/src/spritz.py:993
+#: ../../spritz/src/spritz.py:1006
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:997 ../../spritz/src/spritz.py:1138
-#: ../../spritz/src/spritz.py:1145
-msgid "Ready"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:1025
+#: ../../spritz/src/spritz.py:1036
 #, fuzzy
 msgid "Error loading advisories"
 msgstr "下载软件包时出现错误：\n"
 
-#: ../../spritz/src/spritz.py:1057
+#: ../../spritz/src/spritz.py:1068
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1063
+#: ../../spritz/src/spritz.py:1074
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1078
+#: ../../spritz/src/spritz.py:1089
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1079
+#: ../../spritz/src/spritz.py:1090
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1082
+#: ../../spritz/src/spritz.py:1093
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1085
+#: ../../spritz/src/spritz.py:1096
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1087
+#: ../../spritz/src/spritz.py:1098
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1090
+#: ../../spritz/src/spritz.py:1101
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1095
+#: ../../spritz/src/spritz.py:1106
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1096
+#: ../../spritz/src/spritz.py:1107
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1097
+#: ../../spritz/src/spritz.py:1108
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1131
+#: ../../spritz/src/spritz.py:1142
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1132
+#: ../../spritz/src/spritz.py:1143
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1133
+#: ../../spritz/src/spritz.py:1144
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1135 ../../spritz/src/spritz.py:1142
+#: ../../spritz/src/spritz.py:1146 ../../spritz/src/spritz.py:1152
 msgid "Calculating"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1171
+#: ../../spritz/src/spritz.py:1164
+#, fuzzy
+msgid "Showing"
+msgstr "正在删除"
+
+#: ../../spritz/src/spritz.py:1164
+#, fuzzy
+msgid "items"
+msgstr "文件（_L）"
+
+#: ../../spritz/src/spritz.py:1182
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1176
+#: ../../spritz/src/spritz.py:1187
 #, fuzzy
 msgid "Running tasks"
 msgstr "正在执行事务"
 
-#: ../../spritz/src/spritz.py:1182
+#: ../../spritz/src/spritz.py:1194
 msgid "Processing Packages in queue"
 msgstr "正在处理队列中的软件包"
 
-#: ../../spritz/src/spritz.py:1193
+#: ../../spritz/src/spritz.py:1210
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1218
+#: ../../spritz/src/spritz.py:1234
 msgid "No packages selected"
 msgstr "没有软件包被选中"
 
-#: ../../spritz/src/spritz.py:1277
+#: ../../spritz/src/spritz.py:1281
 msgid "Exception caught"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1278
+#: ../../spritz/src/spritz.py:1282
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1287
+#: ../../spritz/src/spritz.py:1291
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1289
+#: ../../spritz/src/spritz.py:1293
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -3115,15 +3130,10 @@ msgstr ""
 
 #: ../../spritz/src/spritz_setup.py:87
 #, fuzzy
-msgid "Yum Extender Programmers:"
-msgstr "Yum Extender首选项"
-
-#: ../../spritz/src/spritz_setup.py:90
-#, fuzzy
 msgid "Translation:"
 msgstr "正在执行事务"
 
-#: ../../spritz/src/spritz_setup.py:111
+#: ../../spritz/src/spritz_setup.py:101
 msgid "Dedicated to:"
 msgstr ""
 
@@ -3426,6 +3436,13 @@ msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
 msgstr ""
+
+#~ msgid "Quiting, please wait !!!!!!"
+#~ msgstr "正在退出，请稍等！！！！！！"
+
+#, fuzzy
+#~ msgid "Yum Extender Programmers:"
+#~ msgstr "Yum Extender首选项"
 
 #~ msgid "Getting : %s"
 #~ msgstr "正在获取：%s"
