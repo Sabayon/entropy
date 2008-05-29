@@ -30,3 +30,4 @@
 ../spritz/src/applet/etp_applet_config.py
 ../spritz/src/applet/etp_applet_dialogs.py
 ../spritz/src/applet/etp_applet.py
+../spritz/src/spritz.glade

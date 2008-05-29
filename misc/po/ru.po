@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: yumex-ru\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-29 16:06+0200\n"
+"POT-Creation-Date: 2008-05-29 16:17+0200\n"
 "PO-Revision-Date: 2007-05-25 11:46+0200\n"
 "Last-Translator:  Nik <niktr@mail.ru>\n"
 "Language-Team: Russian <ru@li.org>\n"
@@ -866,6 +866,7 @@ msgid "Matched"
 msgstr ""
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#: ../../spritz/src/spritz.glade.h:40
 #, fuzzy
 msgid "Masked"
 msgstr "Удалённые"
@@ -1058,6 +1059,7 @@ msgstr "Имя"
 
 #: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
+#: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
 msgstr "Доступные"
 
@@ -1069,11 +1071,11 @@ msgstr ""
 msgid "revision"
 msgstr ""
 
-#: ../../client/text_query.py:1057
+#: ../../client/text_query.py:1057 ../../spritz/src/spritz.glade.h:34
 msgid "Installed"
 msgstr "Установленные"
 
-#: ../../client/text_query.py:1059
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:67
 msgid "Slot"
 msgstr ""
 
@@ -1105,7 +1107,7 @@ msgstr ""
 #. print description
 #: ../../client/text_query.py:1075 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:664 ../../spritz/src/views.py:820
-#: ../../spritz/src/views.py:1028
+#: ../../spritz/src/views.py:1028 ../../spritz/src/spritz.glade.h:23
 #, fuzzy
 msgid "Description"
 msgstr "_Описание"
@@ -1115,15 +1117,15 @@ msgstr "_Описание"
 msgid "USE flags"
 msgstr ""
 
-#: ../../client/text_query.py:1081
+#: ../../client/text_query.py:1081 ../../spritz/src/spritz.glade.h:14
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1082
+#: ../../client/text_query.py:1082 ../../spritz/src/spritz.glade.h:13
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1083
+#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:16
 msgid "CXXFLAGS"
 msgstr ""
 
@@ -1197,6 +1199,7 @@ msgid "Packages Mirror"
 msgstr "Пакеты"
 
 #: ../../client/text_repositories.py:119 ../../client/text_repositories.py:141
+#: ../../spritz/src/spritz.glade.h:20
 msgid "Database URL"
 msgstr ""
 
@@ -1607,7 +1610,7 @@ msgstr ""
 msgid "Title"
 msgstr "_Файл"
 
-#: ../../client/text_security.py:112
+#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:10
 msgid "Background"
 msgstr ""
 
@@ -1615,7 +1618,7 @@ msgstr ""
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124
+#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:30
 msgid "Impact"
 msgstr ""
 
@@ -1623,19 +1626,19 @@ msgstr ""
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/text_security.py:135
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:61
 msgid "Revised"
 msgstr ""
 
-#: ../../client/text_security.py:139
+#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:8
 msgid "Announced"
 msgstr ""
 
-#: ../../client/text_security.py:143
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:70
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/text_security.py:150
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:52
 #, fuzzy
 msgid "References"
 msgstr "Параметры"
@@ -1656,11 +1659,11 @@ msgstr ""
 msgid "unaffected versions"
 msgstr ""
 
-#: ../../client/text_security.py:176
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:87
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/text_security.py:180
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:60
 msgid "Resolution"
 msgstr ""
 
@@ -1974,11 +1977,12 @@ msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
+#: ../../spritz/src/spritz.glade.h:53
 #, fuzzy
 msgid "Reinstall"
 msgstr "Установленные"
 
-#: ../../client/text_ui.py:433
+#: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:31
 #, fuzzy
 msgid "Install"
 msgstr "Установленные"
@@ -3194,13 +3198,13 @@ msgstr "Файл"
 msgid "Active"
 msgstr ""
 
-#: ../../spritz/src/views.py:1016
+#: ../../spritz/src/views.py:1016 ../../spritz/src/spritz.glade.h:81
 #, fuzzy
 msgid "Update"
 msgstr "Обновлённые"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1024
+#: ../../spritz/src/views.py:1024 ../../spritz/src/spritz.glade.h:62
 #, fuzzy
 msgid "Revision"
 msgstr "Удаляется"
@@ -3427,6 +3431,401 @@ msgid ""
 "packages"
 msgstr ""
 
+#: ../../spritz/src/spritz.glade.h:1
+msgid "7"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:2
+msgid ""
+"<b><big>Please wait</big></b>\n"
+"<small>...take a little break !</small>"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:4
+#, fuzzy
+msgid "Add/Edit Repository"
+msgstr "Хранилище"
+
+#: ../../spritz/src/spritz.glade.h:5
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:6
+#, fuzzy
+msgid "Advisory information"
+msgstr "Выбор хранилищ"
+
+#: ../../spritz/src/spritz.glade.h:7
+#, fuzzy
+msgid "Affected packages"
+msgstr "Показать установленные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:11
+#, fuzzy
+msgid "Branch"
+msgstr "Архитектура"
+
+#: ../../spritz/src/spritz.glade.h:12
+msgid "Bugs"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:15
+msgid "CONFIG_PROTECT"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:17
+#, fuzzy
+msgid "C_hanges"
+msgstr "Список _изменений"
+
+#: ../../spritz/src/spritz.glade.h:18
+#, fuzzy
+msgid "Creation date"
+msgstr "Удалённые"
+
+#: ../../spritz/src/spritz.glade.h:19
+#, fuzzy
+msgid "D_ependencies"
+msgstr "Параметры"
+
+#: ../../spritz/src/spritz.glade.h:21
+#, fuzzy
+msgid "Database compression"
+msgstr "Заполнение закончено"
+
+#: ../../spritz/src/spritz.glade.h:22
+#, fuzzy
+msgid "Dele_te all"
+msgstr "О_тменить выделение"
+
+#: ../../spritz/src/spritz.glade.h:24
+#, fuzzy
+msgid "Download Path"
+msgstr "<b>Общий объём загрузки</b>"
+
+#: ../../spritz/src/spritz.glade.h:25
+#, fuzzy
+msgid "Download mirrors"
+msgstr "Заполнение закончено"
+
+#: ../../spritz/src/spritz.glade.h:26
+msgid "Entropy API"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:27
+msgid "Error"
+msgstr "Ошибка"
+
+#: ../../spritz/src/spritz.glade.h:28
+msgid "External Trigger"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:29
+#, fuzzy
+msgid "Identifier"
+msgstr "Выбор хранилищ"
+
+#: ../../spritz/src/spritz.glade.h:32
+#, fuzzy
+msgid "Install Size"
+msgstr "Установленные"
+
+#: ../../spritz/src/spritz.glade.h:33
+#, fuzzy
+msgid "Install the selected package"
+msgstr "Показать установленные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:35
+msgid "Kernel Tag"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:36
+msgid "Load content"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:37
+msgid "Location"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:38
+msgid "MD5 Signature"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:39
+msgid "M_erge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:41
+msgid "Merge all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:42
+msgid "Messages"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:43
+#, fuzzy
+msgid "O_ther"
+msgstr "_Другое"
+
+#: ../../spritz/src/spritz.glade.h:44
+#, fuzzy
+msgid "Package Info."
+msgstr "Пакет"
+
+#: ../../spritz/src/spritz.glade.h:45
+#, fuzzy
+msgid "Package Information"
+msgstr "_Сведения"
+
+#: ../../spritz/src/spritz.glade.h:46
+#, fuzzy
+msgid "Package Size"
+msgstr "Выбор пакетов"
+
+#: ../../spritz/src/spritz.glade.h:47
+#, fuzzy
+msgid "Please Confirm"
+msgstr "Подтверждение обработки очереди"
+
+#: ../../spritz/src/spritz.glade.h:48
+msgid ""
+"Please submit this error to us providing as much information as possible."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:49
+msgid "Purge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:50
+#, fuzzy
+msgid "Q_ueue packages in selected Advisory"
+msgstr "Пакеты не выбраны"
+
+#: ../../spritz/src/spritz.glade.h:51
+msgid "R_egenerate Cache"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:54
+#, fuzzy
+msgid "Reinstall the selected package"
+msgstr "Показать установленные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:55
+#, fuzzy
+msgid "Remove"
+msgstr "Удаляется"
+
+#: ../../spritz/src/spritz.glade.h:56
+#, fuzzy
+msgid "Remove the selected package"
+msgstr "Показать установленные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:57
+#, fuzzy
+msgid "Remove the selected package and its configuration"
+msgstr "Показать установленные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:58
+#, fuzzy
+msgid "Repositories options"
+msgstr "Хранилища"
+
+#: ../../spritz/src/spritz.glade.h:59
+#, fuzzy
+msgid "Repository information"
+msgstr "Выбор хранилищ"
+
+#: ../../spritz/src/spritz.glade.h:63
+msgid "S_end Error Report"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:64
+msgid "Show all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:65
+msgid "Show applied"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:66
+msgid "Show unapplied"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:68
+msgid "Soon!"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:69
+msgid "Spritz Package Manager"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:71
+#, fuzzy
+msgid "Undo Install"
+msgstr "Установленные"
+
+#: ../../spritz/src/spritz.glade.h:72
+msgid "Undo Install action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:73
+msgid "Undo Purge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:74
+msgid "Undo Purge action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:75
+#, fuzzy
+msgid "Undo Reinstall"
+msgstr "Установленные"
+
+#: ../../spritz/src/spritz.glade.h:76
+#, fuzzy
+msgid "Undo Reinstall action"
+msgstr "Установленные"
+
+#: ../../spritz/src/spritz.glade.h:77
+msgid "Undo Remove"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:78
+msgid "Undo Remove action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:79
+#, fuzzy
+msgid "Undo Update"
+msgstr "Обновлённые"
+
+#: ../../spritz/src/spritz.glade.h:80
+msgid "Undo Update action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:82
+#, fuzzy
+msgid "Update the selected package"
+msgstr "Показать установленные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:83
+#, fuzzy
+msgid "Updates"
+msgstr "Обновлённые"
+
+#: ../../spritz/src/spritz.glade.h:84
+#, fuzzy
+msgid "Version"
+msgstr "Удаляется"
+
+#: ../../spritz/src/spritz.glade.h:85
+msgid "Website"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:86
+msgid "What you were doing"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:88
+msgid ""
+"You <b>need to accept</b> the licenses below.\n"
+"Please read them carefully and <b>make your choice</b>."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:90
+msgid "Your E-mail"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:91
+msgid "Your Full Name"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:92
+msgid "_Abort queue"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:93
+msgid "_Accept License"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:94
+msgid "_Add All"
+msgstr "Добавить _все"
+
+#: ../../spritz/src/spritz.glade.h:95
+msgid "_Branch ..."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:96
+msgid "_Details"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:97
+#, fuzzy
+msgid "_File"
+msgstr "_Файл"
+
+#: ../../spritz/src/spritz.glade.h:98
+#, fuzzy
+msgid "_Force repositories update"
+msgstr "Хранилища"
+
+#: ../../spritz/src/spritz.glade.h:99
+msgid "_Help"
+msgstr "_Справка"
+
+#: ../../spritz/src/spritz.glade.h:100
+msgid "_Insert String"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:101
+msgid "_More"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:102
+msgid "_Overview"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:103
+msgid "_Process Queue"
+msgstr "_Обработка очереди"
+
+#: ../../spritz/src/spritz.glade.h:104
+#, fuzzy
+msgid "_Queue all vulnerable packages"
+msgstr "Показать все доступные пакеты"
+
+#: ../../spritz/src/spritz.glade.h:105
+msgid "_Read License"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:106
+#, fuzzy
+msgid "_References"
+msgstr "Параметры"
+
+#: ../../spritz/src/spritz.glade.h:107
+msgid "_Remove All"
+msgstr "_Удалить все"
+
+#: ../../spritz/src/spritz.glade.h:108
+msgid "_Skip mirror"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:109
+#, fuzzy
+msgid "_Update Repositories"
+msgstr "Хранилища"
+
+#: ../../spritz/src/spritz.glade.h:110
+msgid "_Your Ego!"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:111
+msgid "please wait"
+msgstr ""
+
 #~ msgid "Quiting, please wait !!!!!!"
 #~ msgstr "Завершение, пожалуйста подождите !!!!!!"
 
@@ -3473,9 +3872,6 @@ msgstr ""
 
 #~ msgid "---> Downloading header for %s to pack into transaction set."
 #~ msgstr "---> Загружается заголовок %s для добавления в набор транзакции."
-
-#~ msgid "Arch"
-#~ msgstr "Архитектура"
 
 #~ msgid "Ver"
 #~ msgstr "Версия"
@@ -3656,9 +4052,6 @@ msgstr ""
 #~ msgid "Profile : %s creation failed"
 #~ msgstr "Профиль : ошибка создания %s"
 
-#~ msgid "Error"
-#~ msgstr "Ошибка"
-
 #~ msgid "Error in Yum Setup"
 #~ msgstr "Ошибка в начальной настройке Yum"
 
@@ -3779,9 +4172,6 @@ msgstr ""
 #~ msgid "All"
 #~ msgstr "Все"
 
-#~ msgid "C_hangelog"
-#~ msgstr "Список _изменений"
-
 #~ msgid "Console"
 #~ msgstr "Консоль"
 
@@ -3797,9 +4187,6 @@ msgstr ""
 #~ msgid "Plugins"
 #~ msgstr "Плагины"
 
-#~ msgid "Process Queue Confirmation"
-#~ msgstr "Подтверждение обработки очереди"
-
 #~ msgid "Repos"
 #~ msgstr "Хранилища"
 
@@ -3809,29 +4196,11 @@ msgstr ""
 #~ msgid "Yum Extender"
 #~ msgstr "Yum Extender"
 
-#~ msgid "_Add All"
-#~ msgstr "Добавить _все"
-
 #~ msgid "_Auto refresh on start"
 #~ msgstr "_Автоматически обновлять при запуске"
 
-#~ msgid "_Deselect All"
-#~ msgstr "О_тменить выделение"
-
-#~ msgid "_Help"
-#~ msgstr "_Справка"
-
-#~ msgid "_Other"
-#~ msgstr "_Другое"
-
-#~ msgid "_Process Queue"
-#~ msgstr "_Обработка очереди"
-
 #~ msgid "_Profiles"
 #~ msgstr "П_рофили"
-
-#~ msgid "_Remove All"
-#~ msgstr "_Удалить все"
 
 #~ msgid "_Tools"
 #~ msgstr "С_ервис"

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-29 16:06+0200\n"
+"POT-Creation-Date: 2008-05-29 16:17+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -865,6 +865,7 @@ msgid "Matched"
 msgstr ""
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#: ../../spritz/src/spritz.glade.h:40
 #, fuzzy
 msgid "Masked"
 msgstr "Slettet"
@@ -1057,6 +1058,7 @@ msgstr "Navn"
 
 #: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
+#: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
 msgstr "Tilgængelige"
 
@@ -1068,11 +1070,11 @@ msgstr ""
 msgid "revision"
 msgstr ""
 
-#: ../../client/text_query.py:1057
+#: ../../client/text_query.py:1057 ../../spritz/src/spritz.glade.h:34
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1059
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:67
 msgid "Slot"
 msgstr ""
 
@@ -1104,7 +1106,7 @@ msgstr ""
 #. print description
 #: ../../client/text_query.py:1075 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:664 ../../spritz/src/views.py:820
-#: ../../spritz/src/views.py:1028
+#: ../../spritz/src/views.py:1028 ../../spritz/src/spritz.glade.h:23
 #, fuzzy
 msgid "Description"
 msgstr "_Beskrivelse"
@@ -1114,15 +1116,15 @@ msgstr "_Beskrivelse"
 msgid "USE flags"
 msgstr ""
 
-#: ../../client/text_query.py:1081
+#: ../../client/text_query.py:1081 ../../spritz/src/spritz.glade.h:14
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1082
+#: ../../client/text_query.py:1082 ../../spritz/src/spritz.glade.h:13
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1083
+#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:16
 msgid "CXXFLAGS"
 msgstr ""
 
@@ -1196,6 +1198,7 @@ msgid "Packages Mirror"
 msgstr "Pakker."
 
 #: ../../client/text_repositories.py:119 ../../client/text_repositories.py:141
+#: ../../spritz/src/spritz.glade.h:20
 msgid "Database URL"
 msgstr ""
 
@@ -1606,7 +1609,7 @@ msgstr ""
 msgid "Title"
 msgstr "_Filer"
 
-#: ../../client/text_security.py:112
+#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:10
 msgid "Background"
 msgstr ""
 
@@ -1614,7 +1617,7 @@ msgstr ""
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124
+#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:30
 msgid "Impact"
 msgstr ""
 
@@ -1622,19 +1625,19 @@ msgstr ""
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/text_security.py:135
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:61
 msgid "Revised"
 msgstr ""
 
-#: ../../client/text_security.py:139
+#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:8
 msgid "Announced"
 msgstr ""
 
-#: ../../client/text_security.py:143
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:70
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/text_security.py:150
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:52
 #, fuzzy
 msgid "References"
 msgstr "Indstillinger"
@@ -1655,11 +1658,11 @@ msgstr ""
 msgid "unaffected versions"
 msgstr ""
 
-#: ../../client/text_security.py:176
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:87
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/text_security.py:180
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:60
 msgid "Resolution"
 msgstr ""
 
@@ -1972,11 +1975,12 @@ msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
+#: ../../spritz/src/spritz.glade.h:53
 #, fuzzy
 msgid "Reinstall"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:433
+#: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:31
 #, fuzzy
 msgid "Install"
 msgstr "Installeret"
@@ -3191,13 +3195,13 @@ msgstr "Filnavn"
 msgid "Active"
 msgstr ""
 
-#: ../../spritz/src/views.py:1016
+#: ../../spritz/src/views.py:1016 ../../spritz/src/spritz.glade.h:81
 #, fuzzy
 msgid "Update"
 msgstr "Opdateret"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1024
+#: ../../spritz/src/views.py:1024 ../../spritz/src/spritz.glade.h:62
 #, fuzzy
 msgid "Revision"
 msgstr "Sletter"
@@ -3424,6 +3428,401 @@ msgid ""
 "packages"
 msgstr ""
 
+#: ../../spritz/src/spritz.glade.h:1
+msgid "7"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:2
+msgid ""
+"<b><big>Please wait</big></b>\n"
+"<small>...take a little break !</small>"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:4
+#, fuzzy
+msgid "Add/Edit Repository"
+msgstr "Kilde"
+
+#: ../../spritz/src/spritz.glade.h:5
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:6
+#, fuzzy
+msgid "Advisory information"
+msgstr "Filkilder"
+
+#: ../../spritz/src/spritz.glade.h:7
+#, fuzzy
+msgid "Affected packages"
+msgstr "Vis Installerede Pakker"
+
+#: ../../spritz/src/spritz.glade.h:11
+#, fuzzy
+msgid "Branch"
+msgstr "Arkitektur"
+
+#: ../../spritz/src/spritz.glade.h:12
+msgid "Bugs"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:15
+msgid "CONFIG_PROTECT"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:17
+#, fuzzy
+msgid "C_hanges"
+msgstr "C_hangelog"
+
+#: ../../spritz/src/spritz.glade.h:18
+#, fuzzy
+msgid "Creation date"
+msgstr "Slettet"
+
+#: ../../spritz/src/spritz.glade.h:19
+#, fuzzy
+msgid "D_ependencies"
+msgstr "Indstillinger"
+
+#: ../../spritz/src/spritz.glade.h:21
+#, fuzzy
+msgid "Database compression"
+msgstr "Indlæsning afsluttet"
+
+#: ../../spritz/src/spritz.glade.h:22
+#, fuzzy
+msgid "Dele_te all"
+msgstr "_Fravælg Alle"
+
+#: ../../spritz/src/spritz.glade.h:24
+#, fuzzy
+msgid "Download Path"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../spritz/src/spritz.glade.h:25
+#, fuzzy
+msgid "Download mirrors"
+msgstr "Indlæsning afsluttet"
+
+#: ../../spritz/src/spritz.glade.h:26
+msgid "Entropy API"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:27
+msgid "Error"
+msgstr "Fejl"
+
+#: ../../spritz/src/spritz.glade.h:28
+msgid "External Trigger"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:29
+#, fuzzy
+msgid "Identifier"
+msgstr "Filkilder"
+
+#: ../../spritz/src/spritz.glade.h:32
+#, fuzzy
+msgid "Install Size"
+msgstr "Installeret"
+
+#: ../../spritz/src/spritz.glade.h:33
+#, fuzzy
+msgid "Install the selected package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../spritz/src/spritz.glade.h:35
+msgid "Kernel Tag"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:36
+msgid "Load content"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:37
+msgid "Location"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:38
+msgid "MD5 Signature"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:39
+msgid "M_erge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:41
+msgid "Merge all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:42
+msgid "Messages"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:43
+#, fuzzy
+msgid "O_ther"
+msgstr "_Andre"
+
+#: ../../spritz/src/spritz.glade.h:44
+#, fuzzy
+msgid "Package Info."
+msgstr "Pakke"
+
+#: ../../spritz/src/spritz.glade.h:45
+#, fuzzy
+msgid "Package Information"
+msgstr "I_nformation"
+
+#: ../../spritz/src/spritz.glade.h:46
+#, fuzzy
+msgid "Package Size"
+msgstr "Pakker"
+
+#: ../../spritz/src/spritz.glade.h:47
+#, fuzzy
+msgid "Please Confirm"
+msgstr "Konfirmation af behandling af køen"
+
+#: ../../spritz/src/spritz.glade.h:48
+msgid ""
+"Please submit this error to us providing as much information as possible."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:49
+msgid "Purge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:50
+#, fuzzy
+msgid "Q_ueue packages in selected Advisory"
+msgstr "Ingen valgte pakker"
+
+#: ../../spritz/src/spritz.glade.h:51
+msgid "R_egenerate Cache"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:54
+#, fuzzy
+msgid "Reinstall the selected package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../spritz/src/spritz.glade.h:55
+#, fuzzy
+msgid "Remove"
+msgstr "Sletter"
+
+#: ../../spritz/src/spritz.glade.h:56
+#, fuzzy
+msgid "Remove the selected package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../spritz/src/spritz.glade.h:57
+#, fuzzy
+msgid "Remove the selected package and its configuration"
+msgstr "Vis Installerede Pakker"
+
+#: ../../spritz/src/spritz.glade.h:58
+#, fuzzy
+msgid "Repositories options"
+msgstr "Filkilder"
+
+#: ../../spritz/src/spritz.glade.h:59
+#, fuzzy
+msgid "Repository information"
+msgstr "Filkilder"
+
+#: ../../spritz/src/spritz.glade.h:63
+msgid "S_end Error Report"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:64
+msgid "Show all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:65
+msgid "Show applied"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:66
+msgid "Show unapplied"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:68
+msgid "Soon!"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:69
+msgid "Spritz Package Manager"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:71
+#, fuzzy
+msgid "Undo Install"
+msgstr "Installeret"
+
+#: ../../spritz/src/spritz.glade.h:72
+msgid "Undo Install action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:73
+msgid "Undo Purge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:74
+msgid "Undo Purge action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:75
+#, fuzzy
+msgid "Undo Reinstall"
+msgstr "Installeret"
+
+#: ../../spritz/src/spritz.glade.h:76
+#, fuzzy
+msgid "Undo Reinstall action"
+msgstr "Installeret"
+
+#: ../../spritz/src/spritz.glade.h:77
+msgid "Undo Remove"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:78
+msgid "Undo Remove action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:79
+#, fuzzy
+msgid "Undo Update"
+msgstr "Opdateret"
+
+#: ../../spritz/src/spritz.glade.h:80
+msgid "Undo Update action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:82
+#, fuzzy
+msgid "Update the selected package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../spritz/src/spritz.glade.h:83
+#, fuzzy
+msgid "Updates"
+msgstr "Opdateret"
+
+#: ../../spritz/src/spritz.glade.h:84
+#, fuzzy
+msgid "Version"
+msgstr "Sletter"
+
+#: ../../spritz/src/spritz.glade.h:85
+msgid "Website"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:86
+msgid "What you were doing"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:88
+msgid ""
+"You <b>need to accept</b> the licenses below.\n"
+"Please read them carefully and <b>make your choice</b>."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:90
+msgid "Your E-mail"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:91
+msgid "Your Full Name"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:92
+msgid "_Abort queue"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:93
+msgid "_Accept License"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:94
+msgid "_Add All"
+msgstr "Tilføj _Alle"
+
+#: ../../spritz/src/spritz.glade.h:95
+msgid "_Branch ..."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:96
+msgid "_Details"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:97
+#, fuzzy
+msgid "_File"
+msgstr "_Filer"
+
+#: ../../spritz/src/spritz.glade.h:98
+#, fuzzy
+msgid "_Force repositories update"
+msgstr "Filkilder"
+
+#: ../../spritz/src/spritz.glade.h:99
+msgid "_Help"
+msgstr "_Hjælp"
+
+#: ../../spritz/src/spritz.glade.h:100
+msgid "_Insert String"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:101
+msgid "_More"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:102
+msgid "_Overview"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:103
+msgid "_Process Queue"
+msgstr "_Behanling af Køen"
+
+#: ../../spritz/src/spritz.glade.h:104
+#, fuzzy
+msgid "_Queue all vulnerable packages"
+msgstr "Vis Tilgængelige Pakker"
+
+#: ../../spritz/src/spritz.glade.h:105
+msgid "_Read License"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:106
+#, fuzzy
+msgid "_References"
+msgstr "Indstillinger"
+
+#: ../../spritz/src/spritz.glade.h:107
+msgid "_Remove All"
+msgstr "_Fjern Alle"
+
+#: ../../spritz/src/spritz.glade.h:108
+msgid "_Skip mirror"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:109
+#, fuzzy
+msgid "_Update Repositories"
+msgstr "Filkilder"
+
+#: ../../spritz/src/spritz.glade.h:110
+msgid "_Your Ego!"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:111
+msgid "please wait"
+msgstr ""
+
 #~ msgid "Quiting, please wait !!!!!!"
 #~ msgstr "Afslutter, Vent venligst !!!"
 
@@ -3469,9 +3868,6 @@ msgstr ""
 
 #~ msgid "---> Downloading header for %s to pack into transaction set."
 #~ msgstr "---> Henter header for %s til indsættelse i transaktions sættet"
-
-#~ msgid "Arch"
-#~ msgstr "Arkitektur"
 
 #~ msgid "Ver"
 #~ msgstr "Version"
@@ -3635,9 +4031,6 @@ msgstr ""
 #~ msgid "Profile : %s created ok"
 #~ msgstr "Profilen %s er oprettet"
 
-#~ msgid "Error"
-#~ msgstr "Fejl"
-
 #~ msgid "Error in Yum Setup"
 #~ msgstr "Fejl i Yum opsætning"
 
@@ -3728,9 +4121,6 @@ msgstr ""
 #~ msgid "All"
 #~ msgstr "Alle"
 
-#~ msgid "C_hangelog"
-#~ msgstr "C_hangelog"
-
 #~ msgid "Console"
 #~ msgstr "Konsol"
 
@@ -3746,9 +4136,6 @@ msgstr ""
 #~ msgid "Plugins"
 #~ msgstr "Udvidelser"
 
-#~ msgid "Process Queue Confirmation"
-#~ msgstr "Konfirmation af behandling af køen"
-
 #~ msgid "Repos"
 #~ msgstr "Filkilder"
 
@@ -3758,29 +4145,11 @@ msgstr ""
 #~ msgid "Yum Extender"
 #~ msgstr "Yum Extender"
 
-#~ msgid "_Add All"
-#~ msgstr "Tilføj _Alle"
-
 #~ msgid "_Auto refresh on start"
 #~ msgstr "_Automatisk indlæsning ved start"
 
-#~ msgid "_Deselect All"
-#~ msgstr "_Fravælg Alle"
-
-#~ msgid "_Help"
-#~ msgstr "_Hjælp"
-
-#~ msgid "_Other"
-#~ msgstr "_Andre"
-
-#~ msgid "_Process Queue"
-#~ msgstr "_Behanling af Køen"
-
 #~ msgid "_Profiles"
 #~ msgstr "_Profiler"
-
-#~ msgid "_Remove All"
-#~ msgstr "_Fjern Alle"
 
 #~ msgid "_Tools"
 #~ msgstr "_Værktøjer"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-29 16:06+0200\n"
+"POT-Creation-Date: 2008-05-29 16:17+0200\n"
 "PO-Revision-Date: 2008-05-01 11:03-0000\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Català\n"
@@ -888,6 +888,7 @@ msgid "Matched"
 msgstr "Emmascarat"
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#: ../../spritz/src/spritz.glade.h:40
 msgid "Masked"
 msgstr "Emmascarat"
 
@@ -1079,6 +1080,7 @@ msgstr ""
 
 #: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
+#: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
 msgstr "Disponible"
 
@@ -1092,11 +1094,11 @@ msgstr "Versió"
 msgid "revision"
 msgstr "Revisió"
 
-#: ../../client/text_query.py:1057
+#: ../../client/text_query.py:1057 ../../spritz/src/spritz.glade.h:34
 msgid "Installed"
 msgstr "Instal·lat"
 
-#: ../../client/text_query.py:1059
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:67
 msgid "Slot"
 msgstr "Slot"
 
@@ -1128,7 +1130,7 @@ msgstr ""
 #. print description
 #: ../../client/text_query.py:1075 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:664 ../../spritz/src/views.py:820
-#: ../../spritz/src/views.py:1028
+#: ../../spritz/src/views.py:1028 ../../spritz/src/spritz.glade.h:23
 msgid "Description"
 msgstr "Descripció"
 
@@ -1138,15 +1140,15 @@ msgstr "Descripció"
 msgid "USE flags"
 msgstr "USE Flags"
 
-#: ../../client/text_query.py:1081
+#: ../../client/text_query.py:1081 ../../spritz/src/spritz.glade.h:14
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/text_query.py:1082
+#: ../../client/text_query.py:1082 ../../spritz/src/spritz.glade.h:13
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/text_query.py:1083
+#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:16
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
@@ -1223,6 +1225,7 @@ msgid "Packages Mirror"
 msgstr "Paquets"
 
 #: ../../client/text_repositories.py:119 ../../client/text_repositories.py:141
+#: ../../spritz/src/spritz.glade.h:20
 msgid "Database URL"
 msgstr "URL de base de dades"
 
@@ -1651,7 +1654,7 @@ msgstr "Identificador"
 msgid "Title"
 msgstr "Fitxer"
 
-#: ../../client/text_security.py:112
+#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:10
 msgid "Background"
 msgstr "Rerefons"
 
@@ -1659,7 +1662,7 @@ msgstr "Rerefons"
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124
+#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:30
 msgid "Impact"
 msgstr "Impacte"
 
@@ -1668,19 +1671,19 @@ msgstr "Impacte"
 msgid "Impact type"
 msgstr "Impacte"
 
-#: ../../client/text_security.py:135
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:61
 msgid "Revised"
 msgstr "Revisat"
 
-#: ../../client/text_security.py:139
+#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:8
 msgid "Announced"
 msgstr "Anunciat"
 
-#: ../../client/text_security.py:143
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:70
 msgid "Synopsis"
 msgstr "Sinopsi"
 
-#: ../../client/text_security.py:150
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:52
 msgid "References"
 msgstr "Referències"
 
@@ -1703,11 +1706,11 @@ msgstr "Vulnerables"
 msgid "unaffected versions"
 msgstr "No afectats"
 
-#: ../../client/text_security.py:176
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:87
 msgid "Workaround"
 msgstr "Via de solució"
 
-#: ../../client/text_security.py:180
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:60
 msgid "Resolution"
 msgstr "Resolució"
 
@@ -2027,10 +2030,11 @@ msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
+#: ../../spritz/src/spritz.glade.h:53
 msgid "Reinstall"
 msgstr "Instal·la de nou"
 
-#: ../../client/text_ui.py:433
+#: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:31
 msgid "Install"
 msgstr "Instal·la"
 
@@ -3249,12 +3253,12 @@ msgstr "Nom de fitxer"
 msgid "Active"
 msgstr "Actiu"
 
-#: ../../spritz/src/views.py:1016
+#: ../../spritz/src/views.py:1016 ../../spritz/src/spritz.glade.h:81
 msgid "Update"
 msgstr "Actualitza"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1024
+#: ../../spritz/src/views.py:1024 ../../spritz/src/spritz.glade.h:62
 msgid "Revision"
 msgstr "Revisió"
 
@@ -3481,6 +3485,395 @@ msgstr ""
 "És recomanable que actualitzeu a l'última versió abans d'actualitzar cap "
 "altre paquet"
 
+#: ../../spritz/src/spritz.glade.h:1
+msgid "7"
+msgstr "7"
+
+#: ../../spritz/src/spritz.glade.h:2
+msgid ""
+"<b><big>Please wait</big></b>\n"
+"<small>...take a little break !</small>"
+msgstr ""
+"<b><big>Si us plau espereu</big></b>\n"
+"<small>...preneu-vos un descans!</small>"
+
+#: ../../spritz/src/spritz.glade.h:4
+msgid "Add/Edit Repository"
+msgstr "Afegeix/Edita repositori"
+
+#: ../../spritz/src/spritz.glade.h:5
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr ""
+"S'està afegint un <b>nou repositori</b> que us permetrà accedir a <b>més "
+"programari</b>"
+
+#: ../../spritz/src/spritz.glade.h:6
+#, fuzzy
+msgid "Advisory information"
+msgstr "Informació d'advertències"
+
+#: ../../spritz/src/spritz.glade.h:7
+#, fuzzy
+msgid "Affected packages"
+msgstr "Paquets afectats"
+
+#: ../../spritz/src/spritz.glade.h:11
+msgid "Branch"
+msgstr "Branca"
+
+#: ../../spritz/src/spritz.glade.h:12
+msgid "Bugs"
+msgstr "Errors"
+
+#: ../../spritz/src/spritz.glade.h:15
+msgid "CONFIG_PROTECT"
+msgstr "CONFIG_PROTECT"
+
+#: ../../spritz/src/spritz.glade.h:17
+msgid "C_hanges"
+msgstr "C_anvis"
+
+#: ../../spritz/src/spritz.glade.h:18
+#, fuzzy
+msgid "Creation date"
+msgstr "S'estan generant metadades. Espereu si us plau."
+
+#: ../../spritz/src/spritz.glade.h:19
+msgid "D_ependencies"
+msgstr "D_ependències"
+
+#: ../../spritz/src/spritz.glade.h:21
+#, fuzzy
+msgid "Database compression"
+msgstr "Revisió"
+
+#: ../../spritz/src/spritz.glade.h:22
+msgid "Dele_te all"
+msgstr "Esborra-ho _tot"
+
+#: ../../spritz/src/spritz.glade.h:24
+#, fuzzy
+msgid "Download Path"
+msgstr "Camí de baixada"
+
+#: ../../spritz/src/spritz.glade.h:25
+msgid "Download mirrors"
+msgstr "Rèpliques de baixada"
+
+#: ../../spritz/src/spritz.glade.h:26
+#, fuzzy
+msgid "Entropy API"
+msgstr "API de Entropy"
+
+#: ../../spritz/src/spritz.glade.h:27
+msgid "Error"
+msgstr "Error"
+
+#: ../../spritz/src/spritz.glade.h:28
+msgid "External Trigger"
+msgstr "Activador extern"
+
+#: ../../spritz/src/spritz.glade.h:29
+#, fuzzy
+msgid "Identifier"
+msgstr "Identificador"
+
+#: ../../spritz/src/spritz.glade.h:32
+msgid "Install Size"
+msgstr "Tamany d'instal·lació"
+
+#: ../../spritz/src/spritz.glade.h:33
+#, fuzzy
+msgid "Install the selected package"
+msgstr "Instal·la el paquet seleccionat"
+
+#: ../../spritz/src/spritz.glade.h:35
+msgid "Kernel Tag"
+msgstr "Etiqueta del nucli"
+
+#: ../../spritz/src/spritz.glade.h:36
+msgid "Load content"
+msgstr "Mostra el contingut"
+
+#: ../../spritz/src/spritz.glade.h:37
+#, fuzzy
+msgid "Location"
+msgstr "Ubicació"
+
+#: ../../spritz/src/spritz.glade.h:38
+msgid "MD5 Signature"
+msgstr "Signatura MD5"
+
+#: ../../spritz/src/spritz.glade.h:39
+#, fuzzy
+msgid "M_erge"
+msgstr "C_ombina"
+
+#: ../../spritz/src/spritz.glade.h:41
+msgid "Merge all"
+msgstr "_Combina-ho tot"
+
+#: ../../spritz/src/spritz.glade.h:42
+msgid "Messages"
+msgstr "Missatges"
+
+#: ../../spritz/src/spritz.glade.h:43
+msgid "O_ther"
+msgstr "_Altres"
+
+#: ../../spritz/src/spritz.glade.h:44
+msgid "Package Info."
+msgstr "Informació del paquet"
+
+#: ../../spritz/src/spritz.glade.h:45
+msgid "Package Information"
+msgstr "Informació del paquet"
+
+#: ../../spritz/src/spritz.glade.h:46
+#, fuzzy
+msgid "Package Size"
+msgstr "Nom del paquet"
+
+#: ../../spritz/src/spritz.glade.h:47
+msgid "Please Confirm"
+msgstr "Confirmeu si us plau"
+
+#: ../../spritz/src/spritz.glade.h:48
+msgid ""
+"Please submit this error to us providing as much information as possible."
+msgstr ""
+"Si us plau, envieu aquest error facilitant-nos la màxima informació possible."
+
+#: ../../spritz/src/spritz.glade.h:49
+msgid "Purge"
+msgstr "Purga"
+
+#: ../../spritz/src/spritz.glade.h:50
+#, fuzzy
+msgid "Q_ueue packages in selected Advisory"
+msgstr "No hi ha paquets seleccionats"
+
+#: ../../spritz/src/spritz.glade.h:51
+msgid "R_egenerate Cache"
+msgstr "R_egenera la memòria cau"
+
+#: ../../spritz/src/spritz.glade.h:54
+#, fuzzy
+msgid "Reinstall the selected package"
+msgstr "Instal·la el paquet seleccionat"
+
+#: ../../spritz/src/spritz.glade.h:55
+#, fuzzy
+msgid "Remove"
+msgstr "Elimina"
+
+#: ../../spritz/src/spritz.glade.h:56
+#, fuzzy
+msgid "Remove the selected package"
+msgstr "Instal·la el paquet seleccionat"
+
+#: ../../spritz/src/spritz.glade.h:57
+msgid "Remove the selected package and its configuration"
+msgstr "Elimina els paquets seleccionats i la seva configuració"
+
+#: ../../spritz/src/spritz.glade.h:58
+#, fuzzy
+msgid "Repositories options"
+msgstr "Selecció de repositori"
+
+#: ../../spritz/src/spritz.glade.h:59
+#, fuzzy
+msgid "Repository information"
+msgstr "Informació d'advertències"
+
+#: ../../spritz/src/spritz.glade.h:63
+msgid "S_end Error Report"
+msgstr "_Envia l'informe d'error"
+
+#: ../../spritz/src/spritz.glade.h:64
+msgid "Show all"
+msgstr "Mostra'ls tots"
+
+#: ../../spritz/src/spritz.glade.h:65
+msgid "Show applied"
+msgstr "Mostra els aplicats"
+
+#: ../../spritz/src/spritz.glade.h:66
+msgid "Show unapplied"
+msgstr "Mostra els no aplicats"
+
+#: ../../spritz/src/spritz.glade.h:68
+msgid "Soon!"
+msgstr "Aviat!"
+
+#: ../../spritz/src/spritz.glade.h:69
+msgid "Spritz Package Manager"
+msgstr "Gestor de paquets Spritz"
+
+#: ../../spritz/src/spritz.glade.h:71
+msgid "Undo Install"
+msgstr "Desfés la instal·lació"
+
+#: ../../spritz/src/spritz.glade.h:72
+msgid "Undo Install action"
+msgstr "Desfés l'acció d'instal·lar"
+
+#: ../../spritz/src/spritz.glade.h:73
+msgid "Undo Purge"
+msgstr "Desfés purga"
+
+#: ../../spritz/src/spritz.glade.h:74
+msgid "Undo Purge action"
+msgstr "Desfés l'acció de purgar"
+
+#: ../../spritz/src/spritz.glade.h:75
+msgid "Undo Reinstall"
+msgstr "Desfés la reinstal·lació"
+
+#: ../../spritz/src/spritz.glade.h:76
+msgid "Undo Reinstall action"
+msgstr "Desfés l'acció de reinstal·lar"
+
+#: ../../spritz/src/spritz.glade.h:77
+msgid "Undo Remove"
+msgstr "Desfés eliminar"
+
+#: ../../spritz/src/spritz.glade.h:78
+#, fuzzy
+msgid "Undo Remove action"
+msgstr "Desfés eliminar"
+
+#: ../../spritz/src/spritz.glade.h:79
+msgid "Undo Update"
+msgstr "Desfés actualitza"
+
+#: ../../spritz/src/spritz.glade.h:80
+msgid "Undo Update action"
+msgstr "Desfés l'acció d'actualitzar"
+
+#: ../../spritz/src/spritz.glade.h:82
+#, fuzzy
+msgid "Update the selected package"
+msgstr "Instal·la el paquet seleccionat"
+
+#: ../../spritz/src/spritz.glade.h:83
+msgid "Updates"
+msgstr "Actualitzacions"
+
+#: ../../spritz/src/spritz.glade.h:84
+#, fuzzy
+msgid "Version"
+msgstr "Versió"
+
+#: ../../spritz/src/spritz.glade.h:85
+msgid "Website"
+msgstr "Lloc Web"
+
+#: ../../spritz/src/spritz.glade.h:86
+#, fuzzy
+msgid "What you were doing"
+msgstr "El que estàveu fent"
+
+#: ../../spritz/src/spritz.glade.h:88
+msgid ""
+"You <b>need to accept</b> the licenses below.\n"
+"Please read them carefully and <b>make your choice</b>."
+msgstr ""
+"Heu <b>d'acceptar</b> les llicències de baix.\n"
+"Si us plau, llegiu-les amb atenció i <b>escolliu una opció</b>."
+
+#: ../../spritz/src/spritz.glade.h:90
+msgid "Your E-mail"
+msgstr "La vostra adreça de correu electrònic"
+
+#: ../../spritz/src/spritz.glade.h:91
+msgid "Your Full Name"
+msgstr "El vostre nom sencer"
+
+#: ../../spritz/src/spritz.glade.h:92
+msgid "_Abort queue"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:93
+msgid "_Accept License"
+msgstr "Accepta la _llicència"
+
+#: ../../spritz/src/spritz.glade.h:94
+msgid "_Add All"
+msgstr "_Afegeix-los tots"
+
+#: ../../spritz/src/spritz.glade.h:95
+msgid "_Branch ..."
+msgstr "_Branca..."
+
+#: ../../spritz/src/spritz.glade.h:96
+msgid "_Details"
+msgstr "_Detalls"
+
+#: ../../spritz/src/spritz.glade.h:97
+msgid "_File"
+msgstr "_Fitxer"
+
+#: ../../spritz/src/spritz.glade.h:98
+#, fuzzy
+msgid "_Force repositories update"
+msgstr "F_orça l'actualització dels repositioris"
+
+#: ../../spritz/src/spritz.glade.h:99
+msgid "_Help"
+msgstr "A_juda"
+
+#: ../../spritz/src/spritz.glade.h:100
+msgid "_Insert String"
+msgstr "_Insereix cadena"
+
+#: ../../spritz/src/spritz.glade.h:101
+msgid "_More"
+msgstr "Mé_s"
+
+#: ../../spritz/src/spritz.glade.h:102
+#, fuzzy
+msgid "_Overview"
+msgstr "Resu_m"
+
+#: ../../spritz/src/spritz.glade.h:103
+msgid "_Process Queue"
+msgstr "_Processa la cua"
+
+#: ../../spritz/src/spritz.glade.h:104
+msgid "_Queue all vulnerable packages"
+msgstr "Posa a la cua tots els paq_uets vulnerables"
+
+#: ../../spritz/src/spritz.glade.h:105
+#, fuzzy
+msgid "_Read License"
+msgstr "Llegi_r la llicència"
+
+#: ../../spritz/src/spritz.glade.h:106
+msgid "_References"
+msgstr "_Referències"
+
+#: ../../spritz/src/spritz.glade.h:107
+msgid "_Remove All"
+msgstr "Sup_rimeix-los tots"
+
+#: ../../spritz/src/spritz.glade.h:108
+msgid "_Skip mirror"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:109
+msgid "_Update Repositories"
+msgstr "A_ctualitza els repositoris"
+
+#: ../../spritz/src/spritz.glade.h:110
+msgid "_Your Ego!"
+msgstr "El _vostre Ego!"
+
+#: ../../spritz/src/spritz.glade.h:111
+#, fuzzy
+msgid "please wait"
+msgstr "espereu si us plau"
+
 #~ msgid "Quiting, please wait !!!!!!"
 #~ msgstr "S'està tancant, espereu si us plau !!!!!!"
 
@@ -3495,199 +3888,3 @@ msgstr ""
 
 #~ msgid "_Load Package Manager"
 #~ msgstr "Executa el gestor de _paquets"
-
-#~ msgid "7"
-#~ msgstr "7"
-
-#~ msgid ""
-#~ "<b><big>Please wait</big></b>\n"
-#~ "<small>...take a little break !</small>"
-#~ msgstr ""
-#~ "<b><big>Si us plau espereu</big></b>\n"
-#~ "<small>...preneu-vos un descans!</small>"
-
-#~ msgid "Add/Edit Repository"
-#~ msgstr "Afegeix/Edita repositori"
-
-#~ msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-#~ msgstr ""
-#~ "S'està afegint un <b>nou repositori</b> que us permetrà accedir a <b>més "
-#~ "programari</b>"
-
-#~ msgid "Branch"
-#~ msgstr "Branca"
-
-#~ msgid "Bugs"
-#~ msgstr "Errors"
-
-#~ msgid "CONFIG_PROTECT"
-#~ msgstr "CONFIG_PROTECT"
-
-#~ msgid "C_hanges"
-#~ msgstr "C_anvis"
-
-#~ msgid "D_ependencies"
-#~ msgstr "D_ependències"
-
-#~ msgid "Dele_te all"
-#~ msgstr "Esborra-ho _tot"
-
-#~ msgid "Download mirrors"
-#~ msgstr "Rèpliques de baixada"
-
-#~ msgid "Error"
-#~ msgstr "Error"
-
-#~ msgid "External Trigger"
-#~ msgstr "Activador extern"
-
-#~ msgid "Install Size"
-#~ msgstr "Tamany d'instal·lació"
-
-#~ msgid "Kernel Tag"
-#~ msgstr "Etiqueta del nucli"
-
-#~ msgid "Load content"
-#~ msgstr "Mostra el contingut"
-
-#~ msgid "MD5 Signature"
-#~ msgstr "Signatura MD5"
-
-#~ msgid "Merge all"
-#~ msgstr "_Combina-ho tot"
-
-#~ msgid "Messages"
-#~ msgstr "Missatges"
-
-#~ msgid "O_ther"
-#~ msgstr "_Altres"
-
-#~ msgid "Package Info."
-#~ msgstr "Informació del paquet"
-
-#~ msgid "Package Information"
-#~ msgstr "Informació del paquet"
-
-#~ msgid "Please Confirm"
-#~ msgstr "Confirmeu si us plau"
-
-#~ msgid ""
-#~ "Please submit this error to us providing as much information as possible."
-#~ msgstr ""
-#~ "Si us plau, envieu aquest error facilitant-nos la màxima informació "
-#~ "possible."
-
-#~ msgid "Purge"
-#~ msgstr "Purga"
-
-#~ msgid "R_egenerate Cache"
-#~ msgstr "R_egenera la memòria cau"
-
-#~ msgid "Remove the selected package and its configuration"
-#~ msgstr "Elimina els paquets seleccionats i la seva configuració"
-
-#~ msgid "S_end Error Report"
-#~ msgstr "_Envia l'informe d'error"
-
-#~ msgid "Show all"
-#~ msgstr "Mostra'ls tots"
-
-#~ msgid "Show applied"
-#~ msgstr "Mostra els aplicats"
-
-#~ msgid "Show unapplied"
-#~ msgstr "Mostra els no aplicats"
-
-#~ msgid "Soon!"
-#~ msgstr "Aviat!"
-
-#~ msgid "Spritz Package Manager"
-#~ msgstr "Gestor de paquets Spritz"
-
-#~ msgid "Undo Install"
-#~ msgstr "Desfés la instal·lació"
-
-#~ msgid "Undo Install action"
-#~ msgstr "Desfés l'acció d'instal·lar"
-
-#~ msgid "Undo Purge"
-#~ msgstr "Desfés purga"
-
-#~ msgid "Undo Purge action"
-#~ msgstr "Desfés l'acció de purgar"
-
-#~ msgid "Undo Reinstall"
-#~ msgstr "Desfés la reinstal·lació"
-
-#~ msgid "Undo Reinstall action"
-#~ msgstr "Desfés l'acció de reinstal·lar"
-
-#~ msgid "Undo Remove"
-#~ msgstr "Desfés eliminar"
-
-#~ msgid "Undo Update"
-#~ msgstr "Desfés actualitza"
-
-#~ msgid "Undo Update action"
-#~ msgstr "Desfés l'acció d'actualitzar"
-
-#~ msgid "Updates"
-#~ msgstr "Actualitzacions"
-
-#~ msgid "Website"
-#~ msgstr "Lloc Web"
-
-#~ msgid ""
-#~ "You <b>need to accept</b> the licenses below.\n"
-#~ "Please read them carefully and <b>make your choice</b>."
-#~ msgstr ""
-#~ "Heu <b>d'acceptar</b> les llicències de baix.\n"
-#~ "Si us plau, llegiu-les amb atenció i <b>escolliu una opció</b>."
-
-#~ msgid "Your E-mail"
-#~ msgstr "La vostra adreça de correu electrònic"
-
-#~ msgid "Your Full Name"
-#~ msgstr "El vostre nom sencer"
-
-#~ msgid "_Accept License"
-#~ msgstr "Accepta la _llicència"
-
-#~ msgid "_Add All"
-#~ msgstr "_Afegeix-los tots"
-
-#~ msgid "_Branch ..."
-#~ msgstr "_Branca..."
-
-#~ msgid "_Details"
-#~ msgstr "_Detalls"
-
-#~ msgid "_File"
-#~ msgstr "_Fitxer"
-
-#~ msgid "_Help"
-#~ msgstr "A_juda"
-
-#~ msgid "_Insert String"
-#~ msgstr "_Insereix cadena"
-
-#~ msgid "_More"
-#~ msgstr "Mé_s"
-
-#~ msgid "_Process Queue"
-#~ msgstr "_Processa la cua"
-
-#~ msgid "_Queue all vulnerable packages"
-#~ msgstr "Posa a la cua tots els paq_uets vulnerables"
-
-#~ msgid "_References"
-#~ msgstr "_Referències"
-
-#~ msgid "_Remove All"
-#~ msgstr "Sup_rimeix-los tots"
-
-#~ msgid "_Update Repositories"
-#~ msgstr "A_ctualitza els repositoris"
-
-#~ msgid "_Your Ego!"
-#~ msgstr "El _vostre Ego!"

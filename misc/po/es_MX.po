@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: spritz\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-29 16:06+0200\n"
+"POT-Creation-Date: 2008-05-29 16:17+0200\n"
 "PO-Revision-Date: 2008-04-25 10:04-0500\n"
 "Last-Translator: Vicente Plata [ XnT ] <xientyto@gmail.com>\n"
 "Language-Team: Español ( México ) <en@li.org>\n"
@@ -890,6 +890,7 @@ msgid "Matched"
 msgstr "Enmascarado"
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#: ../../spritz/src/spritz.glade.h:40
 msgid "Masked"
 msgstr "Enmascarado"
 
@@ -1081,6 +1082,7 @@ msgstr ""
 
 #: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
+#: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
 msgstr "Disponible"
 
@@ -1094,11 +1096,11 @@ msgstr "Versión"
 msgid "revision"
 msgstr "Revisión"
 
-#: ../../client/text_query.py:1057
+#: ../../client/text_query.py:1057 ../../spritz/src/spritz.glade.h:34
 msgid "Installed"
 msgstr "Instalado"
 
-#: ../../client/text_query.py:1059
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:67
 msgid "Slot"
 msgstr "Slot"
 
@@ -1130,7 +1132,7 @@ msgstr ""
 #. print description
 #: ../../client/text_query.py:1075 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:664 ../../spritz/src/views.py:820
-#: ../../spritz/src/views.py:1028
+#: ../../spritz/src/views.py:1028 ../../spritz/src/spritz.glade.h:23
 msgid "Description"
 msgstr "Descripción"
 
@@ -1140,15 +1142,15 @@ msgstr "Descripción"
 msgid "USE flags"
 msgstr "Banderas USE"
 
-#: ../../client/text_query.py:1081
+#: ../../client/text_query.py:1081 ../../spritz/src/spritz.glade.h:14
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/text_query.py:1082
+#: ../../client/text_query.py:1082 ../../spritz/src/spritz.glade.h:13
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/text_query.py:1083
+#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:16
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
@@ -1225,6 +1227,7 @@ msgid "Packages Mirror"
 msgstr "Paquetes"
 
 #: ../../client/text_repositories.py:119 ../../client/text_repositories.py:141
+#: ../../spritz/src/spritz.glade.h:20
 msgid "Database URL"
 msgstr "URL de la base de datos"
 
@@ -1653,7 +1656,7 @@ msgstr "Identificador"
 msgid "Title"
 msgstr "Archivo"
 
-#: ../../client/text_security.py:112
+#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:10
 msgid "Background"
 msgstr "Detrás"
 
@@ -1661,7 +1664,7 @@ msgstr "Detrás"
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124
+#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:30
 msgid "Impact"
 msgstr "Impacto"
 
@@ -1670,19 +1673,19 @@ msgstr "Impacto"
 msgid "Impact type"
 msgstr "Impacto"
 
-#: ../../client/text_security.py:135
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:61
 msgid "Revised"
 msgstr "Revisado"
 
-#: ../../client/text_security.py:139
+#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:8
 msgid "Announced"
 msgstr "Anuncio"
 
-#: ../../client/text_security.py:143
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:70
 msgid "Synopsis"
 msgstr "Sinópsis"
 
-#: ../../client/text_security.py:150
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:52
 msgid "References"
 msgstr "Referencias"
 
@@ -1705,11 +1708,11 @@ msgstr "Vulnerables"
 msgid "unaffected versions"
 msgstr "Sin afectar"
 
-#: ../../client/text_security.py:176
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:87
 msgid "Workaround"
 msgstr "Arreglo"
 
-#: ../../client/text_security.py:180
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:60
 msgid "Resolution"
 msgstr "Resolución"
 
@@ -2029,10 +2032,11 @@ msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
+#: ../../spritz/src/spritz.glade.h:53
 msgid "Reinstall"
 msgstr "Reinstalar"
 
-#: ../../client/text_ui.py:433
+#: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:31
 msgid "Install"
 msgstr "Instalar"
 
@@ -3252,12 +3256,12 @@ msgstr "Nombre de archivo"
 msgid "Active"
 msgstr "Activo"
 
-#: ../../spritz/src/views.py:1016
+#: ../../spritz/src/views.py:1016 ../../spritz/src/spritz.glade.h:81
 msgid "Update"
 msgstr "Actualización"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1024
+#: ../../spritz/src/views.py:1024 ../../spritz/src/spritz.glade.h:62
 msgid "Revision"
 msgstr "Revisión"
 
@@ -3484,6 +3488,396 @@ msgstr ""
 "se recomienda que actualices a la última versión antes de actualizar "
 "cualquier otro paquete"
 
+#: ../../spritz/src/spritz.glade.h:1
+msgid "7"
+msgstr "7 "
+
+#: ../../spritz/src/spritz.glade.h:2
+msgid ""
+"<b><big>Please wait</big></b>\n"
+"<small>...take a little break !</small>"
+msgstr ""
+"<b><big>Por favor espera</big></b>\n"
+"<small>...Toma un pequeño descanso!</small>"
+
+#: ../../spritz/src/spritz.glade.h:4
+msgid "Add/Edit Repository"
+msgstr "Agregar/Editar repositorio"
+
+#: ../../spritz/src/spritz.glade.h:5
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr ""
+"Agregando un <b>nuevo repositorio</b> te permite acceder a <b>más software</"
+"b>"
+
+#: ../../spritz/src/spritz.glade.h:6
+#, fuzzy
+msgid "Advisory information"
+msgstr "Información de aviso"
+
+#: ../../spritz/src/spritz.glade.h:7
+#, fuzzy
+msgid "Affected packages"
+msgstr "Paquetes afectados"
+
+#: ../../spritz/src/spritz.glade.h:11
+msgid "Branch"
+msgstr "Rama"
+
+#: ../../spritz/src/spritz.glade.h:12
+msgid "Bugs"
+msgstr "Bugs"
+
+#: ../../spritz/src/spritz.glade.h:15
+msgid "CONFIG_PROTECT"
+msgstr "CONFIG_PROTECT"
+
+#: ../../spritz/src/spritz.glade.h:17
+msgid "C_hanges"
+msgstr "C_ambios"
+
+#: ../../spritz/src/spritz.glade.h:18
+#, fuzzy
+msgid "Creation date"
+msgstr "Generando metadatos. Por favor espera."
+
+#: ../../spritz/src/spritz.glade.h:19
+msgid "D_ependencies"
+msgstr "D_ependencias"
+
+#: ../../spritz/src/spritz.glade.h:21
+#, fuzzy
+msgid "Database compression"
+msgstr "Revisión"
+
+#: ../../spritz/src/spritz.glade.h:22
+msgid "Dele_te all"
+msgstr "Eliminar todos"
+
+#: ../../spritz/src/spritz.glade.h:24
+#, fuzzy
+msgid "Download Path"
+msgstr "Ruta de descarga"
+
+#: ../../spritz/src/spritz.glade.h:25
+msgid "Download mirrors"
+msgstr "Mirrors de descarga"
+
+#: ../../spritz/src/spritz.glade.h:26
+#, fuzzy
+msgid "Entropy API"
+msgstr "API de Entropy"
+
+#: ../../spritz/src/spritz.glade.h:27
+msgid "Error"
+msgstr "Error"
+
+#: ../../spritz/src/spritz.glade.h:28
+msgid "External Trigger"
+msgstr "Trigger Externo"
+
+#: ../../spritz/src/spritz.glade.h:29
+#, fuzzy
+msgid "Identifier"
+msgstr "Identificador"
+
+#: ../../spritz/src/spritz.glade.h:32
+msgid "Install Size"
+msgstr "Tamaño de la instalación"
+
+#: ../../spritz/src/spritz.glade.h:33
+#, fuzzy
+msgid "Install the selected package"
+msgstr "Instalar el paquete seleccionado"
+
+#: ../../spritz/src/spritz.glade.h:35
+msgid "Kernel Tag"
+msgstr "Tag del Kernel"
+
+#: ../../spritz/src/spritz.glade.h:36
+msgid "Load content"
+msgstr "Cargar contenido"
+
+#: ../../spritz/src/spritz.glade.h:37
+#, fuzzy
+msgid "Location"
+msgstr "Ubicación"
+
+#: ../../spritz/src/spritz.glade.h:38
+msgid "MD5 Signature"
+msgstr "Firma MD5"
+
+#: ../../spritz/src/spritz.glade.h:39
+#, fuzzy
+msgid "M_erge"
+msgstr "M_erge"
+
+#: ../../spritz/src/spritz.glade.h:41
+msgid "Merge all"
+msgstr "Merge todos"
+
+#: ../../spritz/src/spritz.glade.h:42
+msgid "Messages"
+msgstr "Mensajes"
+
+#: ../../spritz/src/spritz.glade.h:43
+#, fuzzy
+msgid "O_ther"
+msgstr "_Otros"
+
+#: ../../spritz/src/spritz.glade.h:44
+msgid "Package Info."
+msgstr "Información de paquete"
+
+#: ../../spritz/src/spritz.glade.h:45
+msgid "Package Information"
+msgstr "Información de paquete"
+
+#: ../../spritz/src/spritz.glade.h:46
+#, fuzzy
+msgid "Package Size"
+msgstr "Llave de paquete"
+
+#: ../../spritz/src/spritz.glade.h:47
+msgid "Please Confirm"
+msgstr "Por favor Confirma"
+
+#: ../../spritz/src/spritz.glade.h:48
+msgid ""
+"Please submit this error to us providing as much information as possible."
+msgstr ""
+"Por favor envíanos este error junto con tanta información como te sea posible"
+
+#: ../../spritz/src/spritz.glade.h:49
+msgid "Purge"
+msgstr "Purgar"
+
+#: ../../spritz/src/spritz.glade.h:50
+#, fuzzy
+msgid "Q_ueue packages in selected Advisory"
+msgstr "No se seleccionaron paquetes"
+
+#: ../../spritz/src/spritz.glade.h:51
+msgid "R_egenerate Cache"
+msgstr "R_egenerar Cache"
+
+#: ../../spritz/src/spritz.glade.h:54
+#, fuzzy
+msgid "Reinstall the selected package"
+msgstr "Instalar el paquete seleccionado"
+
+#: ../../spritz/src/spritz.glade.h:55
+#, fuzzy
+msgid "Remove"
+msgstr "Eliminar"
+
+#: ../../spritz/src/spritz.glade.h:56
+#, fuzzy
+msgid "Remove the selected package"
+msgstr "Instalar el paquete seleccionado"
+
+#: ../../spritz/src/spritz.glade.h:57
+msgid "Remove the selected package and its configuration"
+msgstr "Eliminar el paquete seleccionado y su configuración"
+
+#: ../../spritz/src/spritz.glade.h:58
+#, fuzzy
+msgid "Repositories options"
+msgstr "Selección de repositorio"
+
+#: ../../spritz/src/spritz.glade.h:59
+#, fuzzy
+msgid "Repository information"
+msgstr "Información de aviso"
+
+#: ../../spritz/src/spritz.glade.h:63
+msgid "S_end Error Report"
+msgstr "Enviar reporte de error"
+
+#: ../../spritz/src/spritz.glade.h:64
+msgid "Show all"
+msgstr "Mostrar todos"
+
+#: ../../spritz/src/spritz.glade.h:65
+msgid "Show applied"
+msgstr "Mostrar aplicados"
+
+#: ../../spritz/src/spritz.glade.h:66
+msgid "Show unapplied"
+msgstr "Mostrar no aplicados"
+
+#: ../../spritz/src/spritz.glade.h:68
+msgid "Soon!"
+msgstr "Pronto!"
+
+#: ../../spritz/src/spritz.glade.h:69
+msgid "Spritz Package Manager"
+msgstr "Administrador de paquetes Spritz"
+
+#: ../../spritz/src/spritz.glade.h:71
+msgid "Undo Install"
+msgstr "Deshacer instalación"
+
+#: ../../spritz/src/spritz.glade.h:72
+msgid "Undo Install action"
+msgstr "Deshacer acción de instalación"
+
+#: ../../spritz/src/spritz.glade.h:73
+msgid "Undo Purge"
+msgstr "Deshacer Purgar"
+
+#: ../../spritz/src/spritz.glade.h:74
+msgid "Undo Purge action"
+msgstr "Deshacer acción de Purgado"
+
+#: ../../spritz/src/spritz.glade.h:75
+msgid "Undo Reinstall"
+msgstr "Deshacer Reinstalar"
+
+#: ../../spritz/src/spritz.glade.h:76
+msgid "Undo Reinstall action"
+msgstr "Deshacer acción de Reinstalación"
+
+#: ../../spritz/src/spritz.glade.h:77
+msgid "Undo Remove"
+msgstr "Deshacer Eliminar"
+
+#: ../../spritz/src/spritz.glade.h:78
+#, fuzzy
+msgid "Undo Remove action"
+msgstr "Deshacer Eliminar"
+
+#: ../../spritz/src/spritz.glade.h:79
+msgid "Undo Update"
+msgstr "Deshacer Actualizar"
+
+#: ../../spritz/src/spritz.glade.h:80
+msgid "Undo Update action"
+msgstr "Deshacer acción de Actualización"
+
+#: ../../spritz/src/spritz.glade.h:82
+#, fuzzy
+msgid "Update the selected package"
+msgstr "Instalar el paquete seleccionado"
+
+#: ../../spritz/src/spritz.glade.h:83
+msgid "Updates"
+msgstr "Actualizaciones"
+
+#: ../../spritz/src/spritz.glade.h:84
+#, fuzzy
+msgid "Version"
+msgstr "Versión"
+
+#: ../../spritz/src/spritz.glade.h:85
+msgid "Website"
+msgstr "Sitio Web"
+
+#: ../../spritz/src/spritz.glade.h:86
+#, fuzzy
+msgid "What you were doing"
+msgstr "Qué estás haciendo"
+
+#: ../../spritz/src/spritz.glade.h:88
+msgid ""
+"You <b>need to accept</b> the licenses below.\n"
+"Please read them carefully and <b>make your choice</b>."
+msgstr ""
+"<b>Necesitas aceptar</b> estas licencias.\n"
+"Por favor leelas cuidadosamente y <b>toma tu decisión</b>"
+
+#: ../../spritz/src/spritz.glade.h:90
+msgid "Your E-mail"
+msgstr "Tu Email"
+
+#: ../../spritz/src/spritz.glade.h:91
+msgid "Your Full Name"
+msgstr "Tu nombre completo"
+
+#: ../../spritz/src/spritz.glade.h:92
+msgid "_Abort queue"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:93
+msgid "_Accept License"
+msgstr "_Aceptar Licencia"
+
+#: ../../spritz/src/spritz.glade.h:94
+msgid "_Add All"
+msgstr "_Agregar todos"
+
+#: ../../spritz/src/spritz.glade.h:95
+msgid "_Branch ..."
+msgstr "Rama..."
+
+#: ../../spritz/src/spritz.glade.h:96
+msgid "_Details"
+msgstr "_Detalles"
+
+#: ../../spritz/src/spritz.glade.h:97
+msgid "_File"
+msgstr "_Archivo"
+
+#: ../../spritz/src/spritz.glade.h:98
+#, fuzzy
+msgid "_Force repositories update"
+msgstr "_Forzar actualización de repositorios"
+
+#: ../../spritz/src/spritz.glade.h:99
+msgid "_Help"
+msgstr "Ayuda"
+
+#: ../../spritz/src/spritz.glade.h:100
+msgid "_Insert String"
+msgstr "_Insertar cadena"
+
+#: ../../spritz/src/spritz.glade.h:101
+msgid "_More"
+msgstr "_Mas"
+
+#: ../../spritz/src/spritz.glade.h:102
+#, fuzzy
+msgid "_Overview"
+msgstr "O_verview"
+
+#: ../../spritz/src/spritz.glade.h:103
+msgid "_Process Queue"
+msgstr "_Cola de procesos"
+
+#: ../../spritz/src/spritz.glade.h:104
+msgid "_Queue all vulnerable packages"
+msgstr "_Encolar todos los paquetes vulnerables"
+
+#: ../../spritz/src/spritz.glade.h:105
+#, fuzzy
+msgid "_Read License"
+msgstr "_Leer licencia"
+
+#: ../../spritz/src/spritz.glade.h:106
+msgid "_References"
+msgstr "_Referencias"
+
+#: ../../spritz/src/spritz.glade.h:107
+msgid "_Remove All"
+msgstr "_Eliminar Todos"
+
+#: ../../spritz/src/spritz.glade.h:108
+msgid "_Skip mirror"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:109
+msgid "_Update Repositories"
+msgstr "_Actualizar Repositorios"
+
+#: ../../spritz/src/spritz.glade.h:110
+msgid "_Your Ego!"
+msgstr "_Tu Ego!"
+
+#: ../../spritz/src/spritz.glade.h:111
+#, fuzzy
+msgid "please wait"
+msgstr "por favor espera"
+
 #~ msgid "Quiting, please wait !!!!!!"
 #~ msgstr "Saliendo, por favor espera!!"
 
@@ -3498,199 +3892,3 @@ msgstr ""
 
 #~ msgid "_Load Package Manager"
 #~ msgstr "_Cargar Administrador de Paquetes"
-
-#~ msgid "7"
-#~ msgstr "7 "
-
-#~ msgid ""
-#~ "<b><big>Please wait</big></b>\n"
-#~ "<small>...take a little break !</small>"
-#~ msgstr ""
-#~ "<b><big>Por favor espera</big></b>\n"
-#~ "<small>...Toma un pequeño descanso!</small>"
-
-#~ msgid "Add/Edit Repository"
-#~ msgstr "Agregar/Editar repositorio"
-
-#~ msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-#~ msgstr ""
-#~ "Agregando un <b>nuevo repositorio</b> te permite acceder a <b>más "
-#~ "software</b>"
-
-#~ msgid "Branch"
-#~ msgstr "Rama"
-
-#~ msgid "Bugs"
-#~ msgstr "Bugs"
-
-#~ msgid "CONFIG_PROTECT"
-#~ msgstr "CONFIG_PROTECT"
-
-#~ msgid "C_hanges"
-#~ msgstr "C_ambios"
-
-#~ msgid "D_ependencies"
-#~ msgstr "D_ependencias"
-
-#~ msgid "Dele_te all"
-#~ msgstr "Eliminar todos"
-
-#~ msgid "Download mirrors"
-#~ msgstr "Mirrors de descarga"
-
-#~ msgid "Error"
-#~ msgstr "Error"
-
-#~ msgid "External Trigger"
-#~ msgstr "Trigger Externo"
-
-#~ msgid "Install Size"
-#~ msgstr "Tamaño de la instalación"
-
-#~ msgid "Kernel Tag"
-#~ msgstr "Tag del Kernel"
-
-#~ msgid "Load content"
-#~ msgstr "Cargar contenido"
-
-#~ msgid "MD5 Signature"
-#~ msgstr "Firma MD5"
-
-#~ msgid "Merge all"
-#~ msgstr "Merge todos"
-
-#~ msgid "Messages"
-#~ msgstr "Mensajes"
-
-#~ msgid "Package Info."
-#~ msgstr "Información de paquete"
-
-#~ msgid "Package Information"
-#~ msgstr "Información de paquete"
-
-#~ msgid "Please Confirm"
-#~ msgstr "Por favor Confirma"
-
-#~ msgid ""
-#~ "Please submit this error to us providing as much information as possible."
-#~ msgstr ""
-#~ "Por favor envíanos este error junto con tanta información como te sea "
-#~ "posible"
-
-#~ msgid "Purge"
-#~ msgstr "Purgar"
-
-#~ msgid "R_egenerate Cache"
-#~ msgstr "R_egenerar Cache"
-
-#~ msgid "Remove the selected package and its configuration"
-#~ msgstr "Eliminar el paquete seleccionado y su configuración"
-
-#~ msgid "S_end Error Report"
-#~ msgstr "Enviar reporte de error"
-
-#~ msgid "Show all"
-#~ msgstr "Mostrar todos"
-
-#~ msgid "Show applied"
-#~ msgstr "Mostrar aplicados"
-
-#~ msgid "Show unapplied"
-#~ msgstr "Mostrar no aplicados"
-
-#~ msgid "Soon!"
-#~ msgstr "Pronto!"
-
-#~ msgid "Spritz Package Manager"
-#~ msgstr "Administrador de paquetes Spritz"
-
-#~ msgid "Undo Install"
-#~ msgstr "Deshacer instalación"
-
-#~ msgid "Undo Install action"
-#~ msgstr "Deshacer acción de instalación"
-
-#~ msgid "Undo Purge"
-#~ msgstr "Deshacer Purgar"
-
-#~ msgid "Undo Purge action"
-#~ msgstr "Deshacer acción de Purgado"
-
-#~ msgid "Undo Reinstall"
-#~ msgstr "Deshacer Reinstalar"
-
-#~ msgid "Undo Reinstall action"
-#~ msgstr "Deshacer acción de Reinstalación"
-
-#~ msgid "Undo Remove"
-#~ msgstr "Deshacer Eliminar"
-
-#~ msgid "Undo Update"
-#~ msgstr "Deshacer Actualizar"
-
-#~ msgid "Undo Update action"
-#~ msgstr "Deshacer acción de Actualización"
-
-#~ msgid "Updates"
-#~ msgstr "Actualizaciones"
-
-#~ msgid "Website"
-#~ msgstr "Sitio Web"
-
-#~ msgid ""
-#~ "You <b>need to accept</b> the licenses below.\n"
-#~ "Please read them carefully and <b>make your choice</b>."
-#~ msgstr ""
-#~ "<b>Necesitas aceptar</b> estas licencias.\n"
-#~ "Por favor leelas cuidadosamente y <b>toma tu decisión</b>"
-
-#~ msgid "Your E-mail"
-#~ msgstr "Tu Email"
-
-#~ msgid "Your Full Name"
-#~ msgstr "Tu nombre completo"
-
-#~ msgid "_Accept License"
-#~ msgstr "_Aceptar Licencia"
-
-#~ msgid "_Add All"
-#~ msgstr "_Agregar todos"
-
-#~ msgid "_Branch ..."
-#~ msgstr "Rama..."
-
-#~ msgid "_Details"
-#~ msgstr "_Detalles"
-
-#~ msgid "_File"
-#~ msgstr "_Archivo"
-
-#~ msgid "_Help"
-#~ msgstr "Ayuda"
-
-#~ msgid "_Insert String"
-#~ msgstr "_Insertar cadena"
-
-#~ msgid "_More"
-#~ msgstr "_Mas"
-
-#~ msgid "_Other"
-#~ msgstr "_Otros"
-
-#~ msgid "_Process Queue"
-#~ msgstr "_Cola de procesos"
-
-#~ msgid "_Queue all vulnerable packages"
-#~ msgstr "_Encolar todos los paquetes vulnerables"
-
-#~ msgid "_References"
-#~ msgstr "_Referencias"
-
-#~ msgid "_Remove All"
-#~ msgstr "_Eliminar Todos"
-
-#~ msgid "_Update Repositories"
-#~ msgstr "_Actualizar Repositorios"
-
-#~ msgid "_Your Ego!"
-#~ msgstr "_Tu Ego!"
