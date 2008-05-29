@@ -420,7 +420,7 @@ def database(options):
             mytxt = "%s %s: %s %s." % (
                 bold(_("Entropy database")),
                 red(_("has never been in sync with Portage. So, you can't run this unless you run first")),
-                bold(_("equo database generate")),
+                bold("equo database generate"),
                 red(_("Sorry")),
             )
             print_error(darkred(" * ")+mytxt)
