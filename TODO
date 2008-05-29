@@ -1,6 +1,7 @@
 TODO list
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - make.profile support (saving profile information into the db)
+  - database backup tools
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - handle multiple versions within the same slot
