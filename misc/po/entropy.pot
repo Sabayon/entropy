@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-29 17:55+0200\n"
+"POT-Creation-Date: 2008-05-30 10:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -631,7 +631,7 @@ msgid "Scanning filesystem"
 msgstr ""
 
 #: ../../client/text_configuration.py:79
-#: ../../client/text_configuration.py:315
+#: ../../client/text_configuration.py:320
 msgid "file"
 msgstr ""
 
@@ -671,114 +671,114 @@ msgstr ""
 
 #: ../../client/text_configuration.py:152
 #: ../../client/text_configuration.py:162
-#: ../../client/text_configuration.py:224
+#: ../../client/text_configuration.py:229
 msgid "Automerging file"
 msgstr ""
 
-#: ../../client/text_configuration.py:168
+#: ../../client/text_configuration.py:170
 msgid "Selected file"
 msgstr ""
 
-#: ../../client/text_configuration.py:176
+#: ../../client/text_configuration.py:181
 msgid "You don't have typed a number."
 msgstr ""
 
-#: ../../client/text_configuration.py:184
+#: ../../client/text_configuration.py:189
 msgid "Replacing"
 msgstr ""
 
-#: ../../client/text_configuration.py:185
+#: ../../client/text_configuration.py:190
 msgid "with"
 msgstr ""
 
-#: ../../client/text_configuration.py:195
+#: ../../client/text_configuration.py:200
 msgid "Deleting file"
 msgstr ""
 
-#: ../../client/text_configuration.py:206
+#: ../../client/text_configuration.py:211
 msgid "Editing file"
 msgstr ""
 
-#: ../../client/text_configuration.py:212
+#: ../../client/text_configuration.py:217
 msgid "Cannot find a suitable editor. Can't edit file directly."
 msgstr ""
 
-#: ../../client/text_configuration.py:218
+#: ../../client/text_configuration.py:223
 msgid "Edited file"
 msgstr ""
 
-#: ../../client/text_configuration.py:219
+#: ../../client/text_configuration.py:224
 msgid "showing differencies"
 msgstr ""
 
-#: ../../client/text_configuration.py:249
+#: ../../client/text_configuration.py:254
 msgid "Please choose a file to update by typing its identification number."
 msgstr ""
 
-#: ../../client/text_configuration.py:250
+#: ../../client/text_configuration.py:255
 msgid "Other options are:"
 msgstr ""
 
-#: ../../client/text_configuration.py:251
+#: ../../client/text_configuration.py:256
 #: ../../spritz/src/applet/etp_applet.py:211
 msgid "Exit"
 msgstr ""
 
-#: ../../client/text_configuration.py:252
+#: ../../client/text_configuration.py:257
 msgid "Automerge all the files asking you one by one"
 msgstr ""
 
-#: ../../client/text_configuration.py:253
+#: ../../client/text_configuration.py:258
 msgid "Automerge all the files without questioning"
 msgstr ""
 
-#: ../../client/text_configuration.py:254
+#: ../../client/text_configuration.py:259
 msgid "Discard all the files asking you one by one"
 msgstr ""
 
-#: ../../client/text_configuration.py:255
+#: ../../client/text_configuration.py:260
 msgid "Discard all the files without questioning"
 msgstr ""
 
 #. wait user interaction
-#: ../../client/text_configuration.py:257
-#: ../../client/text_configuration.py:272
+#: ../../client/text_configuration.py:262
+#: ../../client/text_configuration.py:277
 msgid "Your choice (type a number and press enter):"
 msgstr ""
 
-#: ../../client/text_configuration.py:265
+#: ../../client/text_configuration.py:270
 msgid "Please choose an action to take for the selected file."
 msgstr ""
 
-#: ../../client/text_configuration.py:266
+#: ../../client/text_configuration.py:271
 msgid "Come back to the files list"
 msgstr ""
 
-#: ../../client/text_configuration.py:267
+#: ../../client/text_configuration.py:272
 msgid "Replace original with update"
 msgstr ""
 
-#: ../../client/text_configuration.py:268
+#: ../../client/text_configuration.py:273
 msgid "Delete update, keeping original as is"
 msgstr ""
 
-#: ../../client/text_configuration.py:269
+#: ../../client/text_configuration.py:274
 msgid "Edit proposed file and show diffs again"
 msgstr ""
 
-#: ../../client/text_configuration.py:270
+#: ../../client/text_configuration.py:275
 msgid "Show differences again"
 msgstr ""
 
-#: ../../client/text_configuration.py:310
+#: ../../client/text_configuration.py:315
 msgid "These are the files that would be updated:"
 msgstr ""
 
-#: ../../client/text_configuration.py:316
+#: ../../client/text_configuration.py:321
 msgid "Unique files that would be update"
 msgstr ""
 
-#: ../../client/text_configuration.py:321
+#: ../../client/text_configuration.py:326
 msgid "Unique files that would be automerged"
 msgstr ""
 
@@ -824,7 +824,7 @@ msgstr ""
 msgid "Matched"
 msgstr ""
 
-#: ../../client/text_query.py:262 ../../client/text_query.py:1054
+#: ../../client/text_query.py:262 ../../client/text_query.py:1056
 #: ../../spritz/src/spritz.glade.h:40
 msgid "Masked"
 msgstr ""
@@ -861,7 +861,7 @@ msgstr ""
 msgid "Eclass Search"
 msgstr ""
 
-#: ../../client/text_query.py:444 ../../client/text_query.py:1050
+#: ../../client/text_query.py:444 ../../client/text_query.py:1052
 #: ../../spritz/src/dialogs.py:415 ../../spritz/src/dialogs.py:421
 #: ../../spritz/src/spritz.py:956 ../../spritz/src/views.py:432
 msgid "Package"
@@ -981,122 +981,122 @@ msgid "Description Search"
 msgstr ""
 
 #. client info
-#: ../../client/text_query.py:1034 ../../client/text_ui.py:387
+#: ../../client/text_query.py:1036 ../../client/text_ui.py:387
 #: ../../client/text_ui.py:416 ../../spritz/src/applet/etp_applet.py:868
 msgid "Not installed"
 msgstr ""
 
-#: ../../client/text_query.py:1035 ../../client/text_query.py:1036
+#: ../../client/text_query.py:1037 ../../client/text_query.py:1038
 msgid "N/A"
 msgstr ""
 
-#: ../../client/text_query.py:1052
+#: ../../client/text_query.py:1054
 msgid "Category"
 msgstr ""
 
-#: ../../client/text_query.py:1053
+#: ../../client/text_query.py:1055
 msgid "Name"
 msgstr ""
 
-#: ../../client/text_query.py:1055
+#: ../../client/text_query.py:1057
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
 #: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
 msgstr ""
 
-#: ../../client/text_query.py:1055 ../../client/text_query.py:1057
+#: ../../client/text_query.py:1057 ../../client/text_query.py:1059
 msgid "version"
 msgstr ""
 
-#: ../../client/text_query.py:1055 ../../client/text_query.py:1057
+#: ../../client/text_query.py:1057 ../../client/text_query.py:1059
 msgid "revision"
 msgstr ""
 
-#: ../../client/text_query.py:1057 ../../spritz/src/spritz.glade.h:34
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:34
 msgid "Installed"
 msgstr ""
 
-#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:68
+#: ../../client/text_query.py:1061 ../../spritz/src/spritz.glade.h:68
 msgid "Slot"
 msgstr ""
 
-#: ../../client/text_query.py:1060
+#: ../../client/text_query.py:1062
 msgid "Size"
 msgstr ""
 
-#: ../../client/text_query.py:1061
+#: ../../client/text_query.py:1063
 msgid "Download"
 msgstr ""
 
-#: ../../client/text_query.py:1062
+#: ../../client/text_query.py:1064
 msgid "Checksum"
 msgstr ""
 
-#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:130
+#: ../../client/text_query.py:1066 ../../spritz/src/dialogs.py:130
 msgid "Dependencies"
 msgstr ""
 
-#: ../../client/text_query.py:1068
+#: ../../client/text_query.py:1070
 msgid "Conflicts"
 msgstr ""
 
-#: ../../client/text_query.py:1071
+#: ../../client/text_query.py:1073
 msgid "Homepage"
 msgstr ""
 
 #. print description
-#: ../../client/text_query.py:1075 ../../client/text_security.py:89
+#: ../../client/text_query.py:1077 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:874 ../../spritz/src/views.py:1082
 #: ../../spritz/src/spritz.glade.h:23
 msgid "Description"
 msgstr ""
 
 #. print use flags
-#: ../../client/text_query.py:1077 ../../spritz/src/dialogs.py:114
+#: ../../client/text_query.py:1079 ../../spritz/src/dialogs.py:114
 msgid "USE flags"
 msgstr ""
 
-#: ../../client/text_query.py:1081 ../../spritz/src/spritz.glade.h:14
+#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:14
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1082 ../../spritz/src/spritz.glade.h:13
+#: ../../client/text_query.py:1084 ../../spritz/src/spritz.glade.h:13
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:16
+#: ../../client/text_query.py:1085 ../../spritz/src/spritz.glade.h:16
 msgid "CXXFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1087
+#: ../../client/text_query.py:1089
 msgid "Gentoo eclasses"
 msgstr ""
 
-#: ../../client/text_query.py:1089 ../../spritz/src/dialogs.py:90
+#: ../../client/text_query.py:1091 ../../spritz/src/dialogs.py:90
 msgid "Sources"
 msgstr ""
 
-#: ../../client/text_query.py:1091
+#: ../../client/text_query.py:1093
 msgid "Source"
 msgstr ""
 
-#: ../../client/text_query.py:1092
+#: ../../client/text_query.py:1094
 msgid "Entry API"
 msgstr ""
 
-#: ../../client/text_query.py:1094
+#: ../../client/text_query.py:1096
 msgid "Compiled with"
 msgstr ""
 
-#: ../../client/text_query.py:1095 ../../spritz/src/dialogs.py:106
+#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:106
 msgid "Keywords"
 msgstr ""
 
-#: ../../client/text_query.py:1096
+#: ../../client/text_query.py:1098
 msgid "Created"
 msgstr ""
 
-#: ../../client/text_query.py:1097 ../../client/text_ui.py:781
+#: ../../client/text_query.py:1099 ../../client/text_ui.py:781
 #: ../../spritz/src/dialogs.py:821
 msgid "License"
 msgstr ""
