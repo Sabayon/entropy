@@ -8,12 +8,12 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-30 12:41+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"POT-Creation-Date: 2008-05-29 17:55+0200\n"
+"PO-Revision-Date: 2008-02-28 HO:MI+ZONE\n"
+"Last-Translator: Joost Ruis <joostruis@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../../client/equo.py:41 ../../server/activator.py:39
@@ -28,8 +28,9 @@ msgstr ""
 
 #: ../../client/equo.py:44 ../../client/equo.py:49
 #: ../../server/activator.py:42 ../../server/reagent.py:43
+#, fuzzy
 msgid "print version"
-msgstr ""
+msgstr "Spritz Vraag"
 
 #: ../../client/equo.py:45 ../../server/activator.py:43
 #: ../../server/reagent.py:44
@@ -46,44 +47,54 @@ msgid "force sync regardless repositories status"
 msgstr ""
 
 #: ../../client/equo.py:51
+#, fuzzy
 msgid "show repositories information"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ../../client/equo.py:52
+#, fuzzy
 msgid "show make.conf for the chosen repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/equo.py:53
+#, fuzzy
 msgid "show package.mask for the chosen repositories"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:54
+#, fuzzy
 msgid "show package.unmask for the chosen repositories"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:55
+#, fuzzy
 msgid "show package.keywords for the chosen repositories"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:56
+#, fuzzy
 msgid "show package.use for the chosen repositories"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:57
+#, fuzzy
 msgid "show make.profile link for the chosen repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/equo.py:58
+#, fuzzy
 msgid "show respositories status"
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../client/equo.py:60
+#, fuzzy
 msgid "search packages in repositories"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:61
+#, fuzzy
 msgid "match a package in repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/equo.py:62
 msgid "return all the possible matches"
@@ -94,8 +105,9 @@ msgid "return matches from every repository"
 msgstr ""
 
 #: ../../client/equo.py:64
+#, fuzzy
 msgid "print repository information (w/--quiet)"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ../../client/equo.py:65
 msgid "print description too (w/--quiet)"
@@ -182,8 +194,9 @@ msgid "show less details (useful for scripting)"
 msgstr ""
 
 #: ../../client/equo.py:91 ../../client/equo.py:109
+#, fuzzy
 msgid "install atoms or .tbz2 packages"
-msgstr ""
+msgstr "Herinstalleer geselecteerd pakket"
 
 #: ../../client/equo.py:94
 msgid "just download packages without doing the install"
@@ -214,8 +227,9 @@ msgid "makes old configuration files to be removed"
 msgstr ""
 
 #: ../../client/equo.py:105
+#, fuzzy
 msgid "remove one or more packages"
-msgstr ""
+msgstr "Verwijder geselecteerd pakket"
 
 #: ../../client/equo.py:106
 msgid "also pull unused dependencies where depends list is empty"
@@ -238,8 +252,9 @@ msgid "print broken files to stdout"
 msgstr ""
 
 #: ../../client/equo.py:122
+#, fuzzy
 msgid "configuration files update tool"
-msgstr ""
+msgstr "Configuratie Bestanden"
 
 #: ../../client/equo.py:123
 msgid "show configuration files to be updated"
@@ -300,8 +315,9 @@ msgid "list packages based on the chosen parameter below"
 msgstr ""
 
 #: ../../client/equo.py:138
+#, fuzzy
 msgid "list installed packages"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../client/equo.py:139
 msgid "search files that do not belong to any package"
@@ -364,8 +380,9 @@ msgid "save new metadata into the specified directory"
 msgstr ""
 
 #: ../../client/equo.py:159
+#, fuzzy
 msgid "handles installed packages database"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../client/equo.py:160
 msgid "check System Database for errors"
@@ -402,8 +419,9 @@ msgid "handles community-side features"
 msgstr ""
 
 #: ../../client/equo.py:174
+#, fuzzy
 msgid "community repositories management functions"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:175 ../../server/reagent.py:48
 msgid "scan the System looking for newly compiled packages"
@@ -422,8 +440,9 @@ msgid "analyze the Entropy Store directory directly"
 msgstr ""
 
 #: ../../client/equo.py:178 ../../server/reagent.py:51
+#, fuzzy
 msgid "repackage the specified atoms"
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #: ../../client/equo.py:179 ../../client/equo.py:185
 #: ../../server/activator.py:49 ../../server/reagent.py:52
@@ -435,8 +454,9 @@ msgid "add binary packages to repository w/o affecting scopes (multipackages)"
 msgstr ""
 
 #: ../../client/equo.py:182
+#, fuzzy
 msgid "community repositories mirrors management functions"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:183 ../../server/activator.py:47
 msgid "sync packages, database and also do some tidy"
@@ -445,8 +465,9 @@ msgstr ""
 #: ../../client/equo.py:186 ../../client/equo.py:190 ../../client/equo.py:193
 #: ../../server/activator.py:50 ../../server/activator.py:58
 #: ../../server/activator.py:68
+#, fuzzy
 msgid "sync all the configured repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/equo.py:187
 msgid "sync packages across primary mirrors"
@@ -461,32 +482,39 @@ msgid "sync the current repository database across primary mirrors"
 msgstr ""
 
 #: ../../client/equo.py:194 ../../server/activator.py:63
+#, fuzzy
 msgid "lock the current repository database (server-side)"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:195 ../../server/activator.py:64
+#, fuzzy
 msgid "unlock the current repository database (server-side)"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:196 ../../server/activator.py:65
+#, fuzzy
 msgid "lock the current repository database (client-side)"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:197 ../../server/activator.py:66
+#, fuzzy
 msgid "unlock the current repository database (client-side)"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:198 ../../server/activator.py:67
+#, fuzzy
 msgid "show current lock status"
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../client/equo.py:199 ../../server/activator.py:52
+#, fuzzy
 msgid "remove binary packages not in repositories and expired"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:202
+#, fuzzy
 msgid "community repositories database functions"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:203 ../../server/reagent.py:71
 msgid "(re)initialize the current repository database"
@@ -505,8 +533,9 @@ msgid "manually force a revision bump for the current repository database"
 msgstr ""
 
 #: ../../client/equo.py:207 ../../server/reagent.py:75
+#, fuzzy
 msgid "synchronize the database"
-msgstr ""
+msgstr "Bezig met uitvoeren van taken"
 
 #: ../../client/equo.py:208 ../../server/reagent.py:76
 msgid "remove the provided atoms from the current repository database"
@@ -533,12 +562,14 @@ msgid "verify remote integrity of the provided atoms (or world)"
 msgstr ""
 
 #: ../../client/equo.py:217 ../../server/reagent.py:85
+#, fuzzy
 msgid "manage a repository"
-msgstr ""
+msgstr "Repository"
 
 #: ../../client/equo.py:218 ../../server/reagent.py:86
+#, fuzzy
 msgid "enable the specified repository"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/equo.py:219 ../../server/reagent.py:87
 msgid "disable the specified repository"
@@ -549,48 +580,56 @@ msgid "show the current Server Interface status"
 msgstr ""
 
 #: ../../client/equo.py:221 ../../server/reagent.py:89
+#, fuzzy
 msgid "move packages from a repository to another"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:222 ../../server/reagent.py:90
+#, fuzzy
 msgid "set the default repository"
-msgstr ""
+msgstr "Selecteer tenminste één repository"
 
 #: ../../client/equo.py:224
+#, fuzzy
 msgid "do some searches into community repository databases"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/equo.py:225 ../../server/reagent.py:58
+#, fuzzy
 msgid "search packages inside the default repository database"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:227 ../../server/reagent.py:60
 msgid "show what packages depend on the provided atoms"
 msgstr ""
 
 #: ../../client/equo.py:228 ../../server/reagent.py:61
+#, fuzzy
 msgid "show packages owning the specified tags"
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #: ../../client/equo.py:230 ../../server/reagent.py:63
 msgid "show from what package the provided files belong"
 msgstr ""
 
 #: ../../client/equo.py:232 ../../server/reagent.py:65
+#, fuzzy
 msgid "search packages using the provided eclasses"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:233 ../../server/reagent.py:66
+#, fuzzy
 msgid "list all the packages in the default repository"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../client/equo.py:237
 msgid "look for unsatisfied dependencies across community repositories"
 msgstr ""
 
 #: ../../client/equo.py:238 ../../server/reagent.py:99
+#, fuzzy
 msgid "regenerate the depends table"
-msgstr ""
+msgstr "Hergenereer Cache"
 
 #: ../../client/equo.py:241
 msgid "handles Entropy cache"
@@ -601,16 +640,18 @@ msgid "clean Entropy cache"
 msgstr ""
 
 #: ../../client/equo.py:243
+#, fuzzy
 msgid "regenerate Entropy cache"
-msgstr ""
+msgstr "Hergenereer Cache"
 
 #: ../../client/equo.py:247
 msgid "remove downloaded packages and clean temp. directories"
 msgstr ""
 
 #: ../../client/equo.py:249
+#, fuzzy
 msgid "show system information"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ../../client/equo.py:439 ../../client/equo.py:454 ../../client/equo.py:473
 #: ../../client/equo.py:483 ../../client/equo.py:492 ../../client/equo.py:501
@@ -631,13 +672,15 @@ msgid "Scanning filesystem"
 msgstr ""
 
 #: ../../client/text_configuration.py:79
-#: ../../client/text_configuration.py:320
+#: ../../client/text_configuration.py:315
+#, fuzzy
 msgid "file"
-msgstr ""
+msgstr "Bestand"
 
 #: ../../client/text_configuration.py:83
+#, fuzzy
 msgid "All fine baby. Nothing to do!"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../client/text_configuration.py:94
 msgid "Type a number."
@@ -646,16 +689,18 @@ msgstr ""
 #: ../../client/text_configuration.py:108
 #: ../../client/text_configuration.py:129 ../../server/server_reagent.py:91
 #: ../../server/server_reagent.py:103
+#, fuzzy
 msgid "Configuration file"
-msgstr ""
+msgstr "Configuratie Bestanden"
 
 #: ../../client/text_configuration.py:110
 msgid "Overwrite ?"
 msgstr ""
 
 #: ../../client/text_configuration.py:113
+#, fuzzy
 msgid "Moving"
-msgstr ""
+msgstr "Verwijderen"
 
 #: ../../client/text_configuration.py:113
 msgid "to"
@@ -671,114 +716,120 @@ msgstr ""
 
 #: ../../client/text_configuration.py:152
 #: ../../client/text_configuration.py:162
-#: ../../client/text_configuration.py:229
+#: ../../client/text_configuration.py:224
 msgid "Automerging file"
 msgstr ""
 
-#: ../../client/text_configuration.py:170
+#: ../../client/text_configuration.py:168
+#, fuzzy
 msgid "Selected file"
-msgstr ""
+msgstr "Repostitory Selectie"
 
-#: ../../client/text_configuration.py:181
+#: ../../client/text_configuration.py:176
 msgid "You don't have typed a number."
 msgstr ""
 
-#: ../../client/text_configuration.py:189
+#: ../../client/text_configuration.py:184
+#, fuzzy
 msgid "Replacing"
-msgstr ""
+msgstr "Bestemming"
 
-#: ../../client/text_configuration.py:190
+#: ../../client/text_configuration.py:185
 msgid "with"
 msgstr ""
 
-#: ../../client/text_configuration.py:200
+#: ../../client/text_configuration.py:195
+#, fuzzy
 msgid "Deleting file"
-msgstr ""
+msgstr "Bestemming"
 
-#: ../../client/text_configuration.py:211
+#: ../../client/text_configuration.py:206
 msgid "Editing file"
 msgstr ""
 
-#: ../../client/text_configuration.py:217
+#: ../../client/text_configuration.py:212
 msgid "Cannot find a suitable editor. Can't edit file directly."
 msgstr ""
 
-#: ../../client/text_configuration.py:223
+#: ../../client/text_configuration.py:218
 msgid "Edited file"
 msgstr ""
 
-#: ../../client/text_configuration.py:224
+#: ../../client/text_configuration.py:219
+#, fuzzy
 msgid "showing differencies"
-msgstr ""
+msgstr "Afhankelijkheden"
 
-#: ../../client/text_configuration.py:254
+#: ../../client/text_configuration.py:249
 msgid "Please choose a file to update by typing its identification number."
 msgstr ""
 
-#: ../../client/text_configuration.py:255
+#: ../../client/text_configuration.py:250
 msgid "Other options are:"
 msgstr ""
 
-#: ../../client/text_configuration.py:256
+#: ../../client/text_configuration.py:251
 #: ../../spritz/src/applet/etp_applet.py:211
+#, fuzzy
 msgid "Exit"
-msgstr ""
+msgstr "Extra"
 
-#: ../../client/text_configuration.py:257
+#: ../../client/text_configuration.py:252
 msgid "Automerge all the files asking you one by one"
 msgstr ""
 
-#: ../../client/text_configuration.py:258
+#: ../../client/text_configuration.py:253
 msgid "Automerge all the files without questioning"
 msgstr ""
 
-#: ../../client/text_configuration.py:259
+#: ../../client/text_configuration.py:254
 msgid "Discard all the files asking you one by one"
 msgstr ""
 
-#: ../../client/text_configuration.py:260
+#: ../../client/text_configuration.py:255
 msgid "Discard all the files without questioning"
 msgstr ""
 
 #. wait user interaction
-#: ../../client/text_configuration.py:262
-#: ../../client/text_configuration.py:277
+#: ../../client/text_configuration.py:257
+#: ../../client/text_configuration.py:272
 msgid "Your choice (type a number and press enter):"
 msgstr ""
 
-#: ../../client/text_configuration.py:270
+#: ../../client/text_configuration.py:265
 msgid "Please choose an action to take for the selected file."
 msgstr ""
 
-#: ../../client/text_configuration.py:271
+#: ../../client/text_configuration.py:266
 msgid "Come back to the files list"
 msgstr ""
 
-#: ../../client/text_configuration.py:272
+#: ../../client/text_configuration.py:267
 msgid "Replace original with update"
 msgstr ""
 
-#: ../../client/text_configuration.py:273
+#: ../../client/text_configuration.py:268
 msgid "Delete update, keeping original as is"
 msgstr ""
 
-#: ../../client/text_configuration.py:274
+#: ../../client/text_configuration.py:269
 msgid "Edit proposed file and show diffs again"
 msgstr ""
 
-#: ../../client/text_configuration.py:275
+#: ../../client/text_configuration.py:270
 msgid "Show differences again"
 msgstr ""
 
-#: ../../client/text_configuration.py:315
+#: ../../client/text_configuration.py:310
+#, fuzzy
 msgid "These are the files that would be updated:"
-msgstr ""
+msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
 
-#: ../../client/text_configuration.py:321
+#: ../../client/text_configuration.py:316
 msgid "Unique files that would be update"
 msgstr ""
 
-#: ../../client/text_configuration.py:326
+#: ../../client/text_configuration.py:321
 msgid "Unique files that would be automerged"
 msgstr ""
 
@@ -791,8 +842,9 @@ msgstr ""
 #: ../../client/text_query.py:775 ../../client/text_query.py:822
 #: ../../client/text_query.py:865 ../../client/text_query.py:911
 #: ../../client/text_query.py:971 ../../server/server_query.py:96
+#, fuzzy
 msgid "Keyword"
-msgstr ""
+msgstr "Keywords"
 
 #: ../../client/text_query.py:136 ../../client/text_query.py:191
 #: ../../client/text_query.py:267 ../../client/text_query.py:315
@@ -817,67 +869,76 @@ msgid "Belong Search"
 msgstr ""
 
 #: ../../client/text_query.py:211
+#, fuzzy
 msgid "Depends Search"
-msgstr ""
+msgstr "Afhankelijk van"
 
 #: ../../client/text_query.py:258 ../../client/text_ui.py:1205
 msgid "Matched"
 msgstr ""
 
-#: ../../client/text_query.py:262 ../../client/text_query.py:1056
+#: ../../client/text_query.py:262 ../../client/text_query.py:1054
 #: ../../spritz/src/spritz.glade.h:40
+#, fuzzy
 msgid "Masked"
-msgstr ""
+msgstr "Verwijderd"
 
 #: ../../client/text_query.py:264
+#, fuzzy
 msgid "from repository"
-msgstr ""
+msgstr "Repository"
 
 #: ../../client/text_query.py:266
+#, fuzzy
 msgid "from installed packages database"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../client/text_query.py:292 ../../client/text_query.py:334
+#, fuzzy
 msgid "Needed Search"
-msgstr ""
+msgstr "Benodigde schijfruimte"
 
 #: ../../client/text_query.py:314
 msgid "Atom"
 msgstr ""
 
 #: ../../client/text_query.py:315
+#, fuzzy
 msgid "libraries"
-msgstr ""
+msgstr "Benodigde bibliotheken"
 
 #: ../../client/text_query.py:354
 msgid "Library"
 msgstr ""
 
 #: ../../client/text_query.py:355 ../../client/text_query.py:399
+#, fuzzy
 msgid "packages"
-msgstr ""
+msgstr "Pakketten"
 
 #: ../../client/text_query.py:374
 msgid "Eclass Search"
 msgstr ""
 
-#: ../../client/text_query.py:444 ../../client/text_query.py:1052
+#: ../../client/text_query.py:444 ../../client/text_query.py:1050
 #: ../../spritz/src/dialogs.py:415 ../../spritz/src/dialogs.py:421
 #: ../../spritz/src/spritz.py:956 ../../spritz/src/views.py:432
 msgid "Package"
-msgstr ""
+msgstr "Pakket"
 
 #: ../../client/text_query.py:445
+#, fuzzy
 msgid "files"
-msgstr ""
+msgstr "Bestand"
 
 #: ../../client/text_query.py:465
 msgid "Orphans Search"
 msgstr ""
 
 #: ../../client/text_query.py:490
+#, fuzzy
 msgid "Analyzing"
-msgstr ""
+msgstr "Installeren"
 
 #: ../../client/text_query.py:501
 msgid "Analyzed directories"
@@ -892,8 +953,9 @@ msgid "Number of files collected on the filesystem"
 msgstr ""
 
 #: ../../client/text_query.py:504
+#, fuzzy
 msgid "Now looking into Installed Packages database"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../client/text_query.py:516
 msgid "Intersecting with content of the package"
@@ -924,22 +986,25 @@ msgid "Total wasted space"
 msgstr ""
 
 #: ../../client/text_query.py:589
+#, fuzzy
 msgid "Removal Search"
-msgstr ""
+msgstr "Verwijder"
 
 #: ../../client/text_query.py:599 ../../client/text_ui.py:360
 #: ../../client/text_ui.py:917 ../../server/server_reagent.py:350
 #: ../../server/server_reagent.py:395 ../../server/server_reagent.py:444
+#, fuzzy
 msgid "No packages found"
-msgstr ""
+msgstr "De wachtrij is leeg"
 
 #: ../../client/text_query.py:604
 msgid "Calculating removal dependencies, please wait"
 msgstr ""
 
 #: ../../client/text_query.py:615
+#, fuzzy
 msgid "These are the packages that would added to the removal queue"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_query.py:624 ../../client/text_smart.py:106
 #: ../../client/text_smart.py:254 ../../client/text_smart.py:387
@@ -949,16 +1014,19 @@ msgid "from"
 msgstr ""
 
 #: ../../client/text_query.py:650
+#, fuzzy
 msgid "Installed Search"
-msgstr ""
+msgstr "Geïnstalleerd"
 
 #: ../../client/text_query.py:661
+#, fuzzy
 msgid "These are the installed packages"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../client/text_query.py:750 ../../client/text_rescue.py:661
+#, fuzzy
 msgid "Matching"
-msgstr ""
+msgstr "Updaten"
 
 #: ../../client/text_query.py:779
 msgid "No matches"
@@ -973,180 +1041,200 @@ msgid "Tag Search"
 msgstr ""
 
 #: ../../client/text_query.py:889
+#, fuzzy
 msgid "License Search"
-msgstr ""
+msgstr "Licentie naam"
 
 #: ../../client/text_query.py:932
+#, fuzzy
 msgid "Description Search"
-msgstr ""
+msgstr "Omschrijving"
 
 #. client info
-#: ../../client/text_query.py:1036 ../../client/text_ui.py:387
+#: ../../client/text_query.py:1034 ../../client/text_ui.py:387
 #: ../../client/text_ui.py:416 ../../spritz/src/applet/etp_applet.py:868
+#, fuzzy
 msgid "Not installed"
-msgstr ""
+msgstr "Gemarkeerd voor Installatie"
 
-#: ../../client/text_query.py:1037 ../../client/text_query.py:1038
+#: ../../client/text_query.py:1035 ../../client/text_query.py:1036
 msgid "N/A"
 msgstr ""
 
-#: ../../client/text_query.py:1054
+#: ../../client/text_query.py:1052
+#, fuzzy
 msgid "Category"
-msgstr ""
+msgstr "Categorieën"
 
-#: ../../client/text_query.py:1055
+#: ../../client/text_query.py:1053
 msgid "Name"
 msgstr ""
 
-#: ../../client/text_query.py:1057
+#: ../../client/text_query.py:1055
 #: ../../spritz/src/applet/etp_applet_dialogs.py:41
 #: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
-msgstr ""
+msgstr "Beschikbaar"
 
-#: ../../client/text_query.py:1057 ../../client/text_query.py:1059
+#: ../../client/text_query.py:1055 ../../client/text_query.py:1057
+#, fuzzy
 msgid "version"
-msgstr ""
+msgstr "Herziening"
 
-#: ../../client/text_query.py:1057 ../../client/text_query.py:1059
+#: ../../client/text_query.py:1055 ../../client/text_query.py:1057
+#, fuzzy
 msgid "revision"
-msgstr ""
+msgstr "Herziening"
 
-#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:34
+#: ../../client/text_query.py:1057 ../../spritz/src/spritz.glade.h:34
 msgid "Installed"
-msgstr ""
+msgstr "Geïnstalleerd"
 
-#: ../../client/text_query.py:1061 ../../spritz/src/spritz.glade.h:68
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:68
 msgid "Slot"
-msgstr ""
+msgstr "Slot"
 
-#: ../../client/text_query.py:1062
+#: ../../client/text_query.py:1060
 msgid "Size"
 msgstr ""
 
-#: ../../client/text_query.py:1063
+#: ../../client/text_query.py:1061
+#, fuzzy
 msgid "Download"
-msgstr ""
+msgstr "Download mirrors"
 
-#: ../../client/text_query.py:1064
+#: ../../client/text_query.py:1062
 msgid "Checksum"
 msgstr ""
 
-#: ../../client/text_query.py:1066 ../../spritz/src/dialogs.py:130
+#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:130
 msgid "Dependencies"
-msgstr ""
+msgstr "Afhankelijkheden"
 
-#: ../../client/text_query.py:1070
+#: ../../client/text_query.py:1068
 msgid "Conflicts"
 msgstr ""
 
-#: ../../client/text_query.py:1073
+#: ../../client/text_query.py:1071
 msgid "Homepage"
 msgstr ""
 
 #. print description
-#: ../../client/text_query.py:1077 ../../client/text_security.py:89
+#: ../../client/text_query.py:1075 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:874 ../../spritz/src/views.py:1082
 #: ../../spritz/src/spritz.glade.h:23
 msgid "Description"
-msgstr ""
+msgstr "Omschrijving"
 
 #. print use flags
-#: ../../client/text_query.py:1079 ../../spritz/src/dialogs.py:114
+#: ../../client/text_query.py:1077 ../../spritz/src/dialogs.py:114
+#, fuzzy
 msgid "USE flags"
-msgstr ""
+msgstr "<b>USE Flags</b>"
 
-#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:14
+#: ../../client/text_query.py:1081 ../../spritz/src/spritz.glade.h:14
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1084 ../../spritz/src/spritz.glade.h:13
+#: ../../client/text_query.py:1082 ../../spritz/src/spritz.glade.h:13
+#, fuzzy
 msgid "CFLAGS"
-msgstr ""
+msgstr "<b>CFLAGS</b>"
 
-#: ../../client/text_query.py:1085 ../../spritz/src/spritz.glade.h:16
+#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:16
+#, fuzzy
 msgid "CXXFLAGS"
-msgstr ""
+msgstr "<b>CXXFLAGS</b>"
 
-#: ../../client/text_query.py:1089
+#: ../../client/text_query.py:1087
 msgid "Gentoo eclasses"
 msgstr ""
 
-#: ../../client/text_query.py:1091 ../../spritz/src/dialogs.py:90
+#: ../../client/text_query.py:1089 ../../spritz/src/dialogs.py:90
 msgid "Sources"
-msgstr ""
+msgstr "Broncode"
 
-#: ../../client/text_query.py:1093
+#: ../../client/text_query.py:1091
+#, fuzzy
 msgid "Source"
-msgstr ""
+msgstr "Broncode"
+
+#: ../../client/text_query.py:1092
+#, fuzzy
+msgid "Entry API"
+msgstr "<b>Entropy API</b>"
 
 #: ../../client/text_query.py:1094
-msgid "Entry API"
-msgstr ""
-
-#: ../../client/text_query.py:1096
 msgid "Compiled with"
 msgstr ""
 
-#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:106
+#: ../../client/text_query.py:1095 ../../spritz/src/dialogs.py:106
 msgid "Keywords"
-msgstr ""
+msgstr "Keywords"
 
-#: ../../client/text_query.py:1098
+#: ../../client/text_query.py:1096
+#, fuzzy
 msgid "Created"
-msgstr ""
+msgstr "Verwijderd"
 
-#: ../../client/text_query.py:1099 ../../client/text_ui.py:781
+#: ../../client/text_query.py:1097 ../../client/text_ui.py:781
 #: ../../spritz/src/dialogs.py:821
 msgid "License"
-msgstr ""
+msgstr "Licentie"
 
 #: ../../client/text_repositories.py:51 ../../client/text_repositories.py:158
 #: ../../client/text_security.py:47
-#, python-format
+#, fuzzy, python-format
 msgid "You must be either root or in the %s group."
-msgstr ""
+msgstr "Druk op de %s of op de %s toets"
 
 #: ../../client/text_repositories.py:84
+#, fuzzy
 msgid "No valid repositories"
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../client/text_repositories.py:91
+#, fuzzy
 msgid "not available"
-msgstr ""
+msgstr "Beschikbaar"
 
 #: ../../client/text_repositories.py:98
 msgid "is empty"
 msgstr ""
 
 #: ../../client/text_repositories.py:102
+#, fuzzy
 msgid "showing"
-msgstr ""
+msgstr "Verwijderen"
 
 #: ../../client/text_repositories.py:110
+#, fuzzy
 msgid "Active Repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/text_repositories.py:118
+#, fuzzy
 msgid "Packages Mirror"
-msgstr ""
+msgstr "Pakketten"
 
 #: ../../client/text_repositories.py:119 ../../client/text_repositories.py:141
 #: ../../spritz/src/spritz.glade.h:20
 msgid "Database URL"
-msgstr ""
+msgstr "Database URL"
 
 #: ../../client/text_repositories.py:120
+#, fuzzy
 msgid "Repository identifier"
-msgstr ""
+msgstr "Geen Repository Identifier"
 
 #: ../../client/text_repositories.py:121 ../../client/text_repositories.py:143
 msgid "Repository database path"
 msgstr ""
 
 #: ../../client/text_repositories.py:133
+#, fuzzy
 msgid "active"
-msgstr ""
+msgstr "Actief"
 
 #: ../../client/text_repositories.py:135
 msgid "never synced"
@@ -1157,34 +1245,40 @@ msgid "Status"
 msgstr ""
 
 #: ../../client/text_repositories.py:140
+#, fuzzy
 msgid "Packages URL"
-msgstr ""
+msgstr "Pakketten"
 
 #: ../../client/text_repositories.py:142
+#, fuzzy
 msgid "Repository name"
-msgstr ""
+msgstr "Repository"
 
 #: ../../client/text_repositories.py:146
+#, fuzzy
 msgid "Repository database checksum"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/text_repositories.py:147
+#, fuzzy
 msgid "Repository revision"
-msgstr ""
+msgstr "Repostitory Selectie"
 
 #: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1101
 #: ../../spritz/src/applet/etp_applet.py:614
+#, fuzzy
 msgid "No repositories specified in"
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1105
 msgid "You are not connected to the Internet. You should."
-msgstr ""
+msgstr "Je bent niet verbonden met het internet. Dat is een vereiste."
 
 #: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1108
 #: ../../spritz/src/applet/etp_applet.py:622
+#, fuzzy
 msgid "Unhandled exception"
-msgstr ""
+msgstr "Onuitvoerbare opdracht: %s"
 
 #: ../../client/text_rescue.py:42 ../../client/text_smart.py:138
 msgid "Source Package Manager backend not available"
@@ -1215,8 +1309,9 @@ msgid "Understood ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:80
+#, fuzzy
 msgid "Really ?"
-msgstr ""
+msgstr "Klaar"
 
 #: ../../client/text_rescue.py:83
 msgid "This is your last chance"
@@ -1257,8 +1352,9 @@ msgstr ""
 
 #: ../../client/text_rescue.py:156 ../../client/text_rescue.py:201
 #: ../../client/text_rescue.py:566
+#, fuzzy
 msgid "Exception"
-msgstr ""
+msgstr "Omschrijving"
 
 #: ../../client/text_rescue.py:178
 msgid "All the Gentoo packages have been injected into Entropy database"
@@ -1282,8 +1378,9 @@ msgid "These are the invalid entries"
 msgstr ""
 
 #: ../../client/text_rescue.py:208
+#, fuzzy
 msgid "Removing database information"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ../../client/text_rescue.py:212 ../../client/text_rescue.py:364
 msgid "Now generating depends caching table"
@@ -1333,8 +1430,9 @@ msgid "Writing to temporary file"
 msgstr ""
 
 #: ../../client/text_rescue.py:277
+#, fuzzy
 msgid "Please wait"
-msgstr ""
+msgstr "Bevestig alstublieft"
 
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
@@ -1342,7 +1440,7 @@ msgstr ""
 #: ../../spritz/src/dialogs.py:767 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:259
 msgid "Attention"
-msgstr ""
+msgstr "Attentie"
 
 #: ../../client/text_rescue.py:286
 msgid "You must have 'find' installed"
@@ -1379,8 +1477,9 @@ msgid "Adding"
 msgstr ""
 
 #: ../../client/text_rescue.py:362
+#, fuzzy
 msgid "Database resurrected successfully"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/text_rescue.py:371
 msgid ""
@@ -1389,16 +1488,19 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_rescue.py:380
+#, fuzzy
 msgid "Regenerating depends caching table"
-msgstr ""
+msgstr "Hergenereer Cache"
 
 #: ../../client/text_rescue.py:382
+#, fuzzy
 msgid "Depends caching table regenerated successfully"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../client/text_rescue.py:395
+#, fuzzy
 msgid "Regenerating counters table"
-msgstr ""
+msgstr "Hergenereer Cache"
 
 #: ../../client/text_rescue.py:397
 msgid "Counters table regenerated. Look above for errors."
@@ -1439,12 +1541,14 @@ msgid "Databases already synced"
 msgstr ""
 
 #: ../../client/text_rescue.py:479
+#, fuzzy
 msgid "Entropy locked, giving up"
-msgstr ""
+msgstr "Entropy Configuratie"
 
 #: ../../client/text_rescue.py:486
+#, fuzzy
 msgid "Someone removed these packages"
-msgstr ""
+msgstr "Verwijder geselecteerd pakket"
 
 #: ../../client/text_rescue.py:487
 msgid "They would be removed from the system database"
@@ -1456,15 +1560,17 @@ msgstr ""
 
 #: ../../client/text_rescue.py:507
 msgid "Removing"
-msgstr ""
+msgstr "Verwijderen"
 
 #: ../../client/text_rescue.py:512
+#, fuzzy
 msgid "Database removal complete"
-msgstr ""
+msgstr "Database compressie"
 
 #: ../../client/text_rescue.py:516
+#, fuzzy
 msgid "Someone added these packages"
-msgstr ""
+msgstr "Verwijder geselecteerd pakket"
 
 #: ../../client/text_rescue.py:517
 msgid "They would be added to the system database"
@@ -1475,8 +1581,9 @@ msgid "Continue with adding ?"
 msgstr ""
 
 #: ../../client/text_rescue.py:586
+#, fuzzy
 msgid "Database update completed"
-msgstr ""
+msgstr "Database compressie"
 
 #: ../../client/text_rescue.py:604 ../../client/text_smart.py:32
 msgid "You are not"
@@ -1499,8 +1606,9 @@ msgid "There are no files belonging to your old Python installation in"
 msgstr ""
 
 #: ../../client/text_rescue.py:647
+#, fuzzy
 msgid "These are the installed packages with files in:"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_rescue.py:658
 msgid "Searching inside available repositories"
@@ -1526,13 +1634,15 @@ msgstr ""
 
 #. print advisory code
 #: ../../client/text_security.py:82
+#, fuzzy
 msgid "GLSA Identifier"
-msgstr ""
+msgstr "Identifier"
 
 #. title
 #: ../../client/text_security.py:85
+#, fuzzy
 msgid "Title"
-msgstr ""
+msgstr "Bestand"
 
 #: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:10
 msgid "Background"
@@ -1551,8 +1661,9 @@ msgid "Impact type"
 msgstr ""
 
 #: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:62
+#, fuzzy
 msgid "Revised"
-msgstr ""
+msgstr "Herziening"
 
 #: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:8
 msgid "Announced"
@@ -1563,16 +1674,18 @@ msgid "Synopsis"
 msgstr ""
 
 #: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:52
+#, fuzzy
 msgid "References"
-msgstr ""
+msgstr "Afhankelijkheden"
 
 #: ../../client/text_security.py:156
 msgid "Upstream bugs"
 msgstr ""
 
 #: ../../client/text_security.py:162
+#, fuzzy
 msgid "Affected"
-msgstr ""
+msgstr "Geaccepteerd"
 
 #: ../../client/text_security.py:169
 msgid "vulnerable versions"
@@ -1587,16 +1700,18 @@ msgid "Workaround"
 msgstr ""
 
 #: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:61
+#, fuzzy
 msgid "Resolution"
-msgstr ""
+msgstr "Herziening"
 
 #: ../../client/text_security.py:196
 msgid "No advisories available or applicable"
 msgstr ""
 
 #: ../../client/text_security.py:229
+#, fuzzy
 msgid "Calculating security updates"
-msgstr ""
+msgstr "Berekenen %s"
 
 #: ../../client/text_security.py:245
 msgid "All the available updates have been already installed"
@@ -1604,8 +1719,9 @@ msgstr ""
 
 #: ../../client/text_smart.py:72 ../../client/text_smart.py:129
 #: ../../client/text_smart.py:232 ../../client/text_smart.py:360
+#, fuzzy
 msgid "No packages specified"
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #: ../../client/text_smart.py:91 ../../client/text_smart.py:241
 #: ../../client/text_smart.py:374
@@ -1614,21 +1730,25 @@ msgstr ""
 
 #: ../../client/text_smart.py:94 ../../client/text_smart.py:244
 #: ../../client/text_smart.py:377
+#, fuzzy
 msgid "No valid packages specified"
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #. print the list
 #: ../../client/text_smart.py:98
+#, fuzzy
 msgid "This is the list of the packages that would be quickpkg'd"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_smart.py:106 ../../spritz/src/applet/etp_applet.py:891
+#, fuzzy
 msgid "installed"
-msgstr ""
+msgstr "Geïnstalleerd"
 
 #: ../../client/text_smart.py:109
+#, fuzzy
 msgid "Would you like to recompose the selected packages ?"
-msgstr ""
+msgstr "Verwijder geselecteerd pakket"
 
 #: ../../client/text_smart.py:114
 msgid "Compressing"
@@ -1660,29 +1780,35 @@ msgid "Using branch"
 msgstr ""
 
 #: ../../client/text_smart.py:198
+#, fuzzy
 msgid "Inflated package"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../client/text_smart.py:206
+#, fuzzy
 msgid "Deflating"
-msgstr ""
+msgstr "Bestemming"
 
 #: ../../client/text_smart.py:211
+#, fuzzy
 msgid "Deflated package"
-msgstr ""
+msgstr "Verwijder geselecteerd pakket"
 
 #: ../../client/text_smart.py:219
+#, fuzzy
 msgid "Extracting Entropy metadata from"
-msgstr ""
+msgstr "Verwerken van metadata voor : %s"
 
 #: ../../client/text_smart.py:225
+#, fuzzy
 msgid "Extracted Entropy metadata from"
-msgstr ""
+msgstr "Verwerken van metadata voor : %s"
 
 #. print the list
 #: ../../client/text_smart.py:248
+#, fuzzy
 msgid "This is the list of the packages that would be merged into a single one"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_smart.py:256 ../../client/text_smart.py:389
 msgid "Would you like to create the packages above ?"
@@ -1693,8 +1819,9 @@ msgid "Creating merged Smart Package"
 msgstr ""
 
 #: ../../client/text_smart.py:304
+#, fuzzy
 msgid "collecting Entropy metadata"
-msgstr ""
+msgstr "opschonen van yum metadata"
 
 #: ../../client/text_smart.py:332
 msgid "Unpack failed due to unknown reasons"
@@ -1718,28 +1845,33 @@ msgstr ""
 
 #. print the list
 #: ../../client/text_smart.py:381
+#, fuzzy
 msgid "This is the list of the packages that would be worked out"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_smart.py:394
 msgid "Creating Smart Application from"
 msgstr ""
 
 #: ../../client/text_smart.py:421
+#, fuzzy
 msgid "Missing dependencies"
-msgstr ""
+msgstr "Afhankelijkheden"
 
 #: ../../client/text_smart.py:428
+#, fuzzy
 msgid "This is the list of the dependencies that would be included"
-msgstr ""
+msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
 
 #: ../../client/text_smart.py:449
+#, fuzzy
 msgid "Unpacking the main package"
-msgstr ""
+msgstr "Update geselecteerd pakket"
 
 #: ../../client/text_smart.py:470
+#, fuzzy
 msgid "Unpacking dependency package"
-msgstr ""
+msgstr "--> Verwerken van Afhankelijkheid: %s voor pakket %s"
 
 #: ../../client/text_smart.py:568
 msgid "Compressing smart application"
@@ -1747,33 +1879,39 @@ msgstr ""
 
 #: ../../client/text_ui.py:102 ../../client/text_ui.py:112
 #: ../../client/text_ui.py:486 ../../client/text_ui.py:962
+#, fuzzy
 msgid "Nothing to do"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../client/text_ui.py:124 ../../client/text_ui.py:255
 #: ../../client/text_ui.py:889
+#, fuzzy
 msgid "Running with"
-msgstr ""
+msgstr "Bezig met uitvoeren van taken"
 
 #: ../../client/text_ui.py:135
 msgid "Selected release"
 msgstr ""
 
 #: ../../client/text_ui.py:136
+#, fuzzy
 msgid "is not available"
-msgstr ""
+msgstr "Beschikbaar"
 
 #: ../../client/text_ui.py:143
+#, fuzzy
 msgid "Calculating System Updates"
-msgstr ""
+msgstr "Berekenen %s"
 
 #: ../../client/text_ui.py:147
+#, fuzzy
 msgid "Packages matching update"
-msgstr ""
+msgstr "<b>Pakketten voor Update</b>"
 
 #: ../../client/text_ui.py:148
+#, fuzzy
 msgid "Packages matching not available"
-msgstr ""
+msgstr "Geselecteerde branch is niet beschikbaar"
 
 #: ../../client/text_ui.py:149
 msgid "Packages matching already up to date"
@@ -1782,8 +1920,9 @@ msgstr ""
 #. None or {}
 #: ../../client/text_ui.py:175 ../../client/text_ui.py:723
 #: ../../client/text_ui.py:1049
+#, fuzzy
 msgid "Nothing to resume"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../client/text_ui.py:186 ../../client/text_ui.py:736
 #: ../../client/text_ui.py:1057
@@ -1791,8 +1930,9 @@ msgid "Resume cache corrupted"
 msgstr ""
 
 #: ../../client/text_ui.py:210
+#, fuzzy
 msgid "Nothing to update"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../client/text_ui.py:222
 msgid ""
@@ -1809,12 +1949,14 @@ msgid "Would you like to scan them ?"
 msgstr ""
 
 #: ../../client/text_ui.py:244
+#, fuzzy
 msgid "Calculation complete"
-msgstr ""
+msgstr "Berekenen %s"
 
 #: ../../client/text_ui.py:247
+#, fuzzy
 msgid "Nothing to remove"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../client/text_ui.py:284
 msgid "Every package matching"
@@ -1825,8 +1967,9 @@ msgid "is masked"
 msgstr ""
 
 #: ../../client/text_ui.py:300
+#, fuzzy
 msgid "matching"
-msgstr ""
+msgstr "Updaten"
 
 #: ../../client/text_ui.py:302
 msgid "is broken"
@@ -1837,8 +1980,9 @@ msgid "No match for"
 msgstr ""
 
 #: ../../client/text_ui.py:310
+#, fuzzy
 msgid "in repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../client/text_ui.py:322
 msgid "When you wrote"
@@ -1862,16 +2006,19 @@ msgstr ""
 
 #. now print the selected packages
 #: ../../client/text_ui.py:366 ../../client/text_ui.py:924
+#, fuzzy
 msgid "These are the chosen packages"
-msgstr ""
+msgstr "Herinstalleer geselecteerd pakket"
 
 #: ../../client/text_ui.py:390 ../../client/text_ui.py:540
+#, fuzzy
 msgid "Not available"
-msgstr ""
+msgstr "Beschikbaar"
 
 #: ../../client/text_ui.py:404
+#, fuzzy
 msgid "Versions"
-msgstr ""
+msgstr "<b>Versie</b>"
 
 #: ../../client/text_ui.py:427
 msgid "Switch repo"
@@ -1880,43 +2027,48 @@ msgstr ""
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
 #: ../../spritz/src/spritz.glade.h:53
 msgid "Reinstall"
-msgstr ""
+msgstr "Herinstalleer"
 
 #: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:31
 msgid "Install"
-msgstr ""
+msgstr "Installeer"
 
 #: ../../client/text_ui.py:435
+#, fuzzy
 msgid "Upgrade"
-msgstr ""
+msgstr "Update"
 
 #: ../../client/text_ui.py:437
 msgid "Downgrade"
 msgstr ""
 
 #: ../../client/text_ui.py:438
+#, fuzzy
 msgid "Action"
-msgstr ""
+msgstr "Attentie"
 
 #: ../../client/text_ui.py:441 ../../client/text_ui.py:959
+#, fuzzy
 msgid "Packages involved"
-msgstr ""
+msgstr "Pakket Info."
 
 #: ../../client/text_ui.py:445
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr ""
 
 #: ../../client/text_ui.py:454
+#, fuzzy
 msgid "Calculating dependencies"
-msgstr ""
+msgstr "Berekenen %s"
 
 #: ../../client/text_ui.py:458
 msgid "Cannot find needed dependencies"
 msgstr ""
 
 #: ../../client/text_ui.py:465
+#, fuzzy
 msgid "Reason"
-msgstr ""
+msgstr "Herziening"
 
 #: ../../client/text_ui.py:472
 msgid "Not found"
@@ -1927,16 +2079,18 @@ msgid "Probably needed by"
 msgstr ""
 
 #: ../../client/text_ui.py:502 ../../client/text_ui.py:606
+#, fuzzy
 msgid "These are the packages that would be"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_ui.py:502
 msgid "merged"
 msgstr ""
 
 #: ../../client/text_ui.py:607
+#, fuzzy
 msgid "removed"
-msgstr ""
+msgstr "Verwijder"
 
 #: ../../client/text_ui.py:608
 msgid "conflicting/substituted"
@@ -1952,12 +2106,14 @@ msgid "Packages needing to be removed"
 msgstr ""
 
 #: ../../client/text_ui.py:629
+#, fuzzy
 msgid "Packages needing to be installed"
-msgstr ""
+msgstr "<b>Pakketten voor Herinstallatie</b>"
 
 #: ../../client/text_ui.py:634
+#, fuzzy
 msgid "Packages needing to be reinstalled"
-msgstr ""
+msgstr "Gemarkeerd voor Herinstallatie"
 
 #: ../../client/text_ui.py:639
 msgid "Packages needing to be updated"
@@ -1968,24 +2124,27 @@ msgid "Packages needing to be downgraded"
 msgstr ""
 
 #: ../../client/text_ui.py:654
+#, fuzzy
 msgid "Download size"
-msgstr ""
+msgstr "Download mirrors"
 
 #: ../../client/text_ui.py:660
+#, fuzzy
 msgid "Used disk space"
-msgstr ""
+msgstr "Vrijgemaakte schijfruimte"
 
 #: ../../client/text_ui.py:662 ../../spritz/src/misc.py:323
 msgid "Freed disk space"
-msgstr ""
+msgstr "Vrijgemaakte schijfruimte"
 
 #: ../../client/text_ui.py:674
 msgid "You need at least"
 msgstr ""
 
 #: ../../client/text_ui.py:676
+#, fuzzy
 msgid "of free space"
-msgstr ""
+msgstr "Vrijgemaakte schijfruimte"
 
 #: ../../client/text_ui.py:684
 msgid "You don't have enough space for the installation. Free some space into"
@@ -2000,8 +2159,9 @@ msgid "Resuming previous operations"
 msgstr ""
 
 #: ../../client/text_ui.py:758
+#, fuzzy
 msgid "Please select an option"
-msgstr ""
+msgstr "Selecteer tenminste één repository"
 
 #: ../../client/text_ui.py:759
 msgid "Read the license"
@@ -2037,8 +2197,9 @@ msgid "No file viewer"
 msgstr ""
 
 #: ../../client/text_ui.py:801
+#, fuzzy
 msgid "License saved into"
-msgstr ""
+msgstr "Licentie naam"
 
 #: ../../client/text_ui.py:823
 msgid "fetch"
@@ -2049,21 +2210,24 @@ msgid "Download completed"
 msgstr ""
 
 #: ../../client/text_ui.py:847
+#, fuzzy
 msgid "install"
-msgstr ""
+msgstr "Herinstalleer"
 
 #: ../../client/text_ui.py:875
 msgid "Installation completed"
 msgstr ""
 
 #: ../../client/text_ui.py:910
+#, fuzzy
 msgid "is not installed"
-msgstr ""
+msgstr "Gemarkeerd voor Installatie"
 
 #. every package matching app-foo is masked
 #: ../../client/text_ui.py:943
+#, fuzzy
 msgid "vital package"
-msgstr ""
+msgstr "Toon beschikbare Pakketten"
 
 #: ../../client/text_ui.py:944
 msgid "Removal forbidden"
@@ -2074,8 +2238,9 @@ msgid "Disk size"
 msgstr ""
 
 #: ../../client/text_ui.py:955
+#, fuzzy
 msgid "Installed from"
-msgstr ""
+msgstr "Geïnstalleerd"
 
 #: ../../client/text_ui.py:967
 msgid ""
@@ -2084,8 +2249,9 @@ msgid ""
 msgstr ""
 
 #: ../../client/text_ui.py:970 ../../server/server_reagent.py:222
+#, fuzzy
 msgid "Would you like to remove them now ?"
-msgstr ""
+msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
 
 #: ../../client/text_ui.py:986
 msgid "This is the new removal queue"
@@ -2108,8 +2274,9 @@ msgid "Starting removal in"
 msgstr ""
 
 #: ../../client/text_ui.py:1086
+#, fuzzy
 msgid "Remove this one ?"
-msgstr ""
+msgstr "Verwijder actie ongedaan maken"
 
 #: ../../client/text_ui.py:1122
 msgid "All done"
@@ -2120,20 +2287,23 @@ msgid "Running dependency test"
 msgstr ""
 
 #: ../../client/text_ui.py:1144
+#, fuzzy
 msgid "These are the dependencies not found"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../client/text_ui.py:1148
+#, fuzzy
 msgid "Needed by"
-msgstr ""
+msgstr "Benodigde schijfruimte"
 
 #: ../../client/text_ui.py:1153
 msgid "Would you like to install the available packages ?"
 msgstr ""
 
 #: ../../client/text_ui.py:1158 ../../client/text_ui.py:1234
+#, fuzzy
 msgid "Installing available packages in"
-msgstr ""
+msgstr "Toon beschikbare Pakketten"
 
 #: ../../client/text_ui.py:1159 ../../client/text_ui.py:1235
 msgid "10 seconds"
@@ -2156,24 +2326,28 @@ msgid "Would you like to install them ?"
 msgstr ""
 
 #: ../../server/activator.py:54
+#, fuzzy
 msgid "package repositories handling functions"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../server/activator.py:55
 msgid "sync package repositories across primary mirrors"
 msgstr ""
 
 #: ../../server/activator.py:61
+#, fuzzy
 msgid "database handling functions"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../server/reagent.py:57
+#, fuzzy
 msgid "do some searches into repository databases"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../server/reagent.py:70
+#, fuzzy
 msgid "repository database functions"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../server/reagent.py:92
 msgid "source package manager functions"
@@ -2188,8 +2362,9 @@ msgid "compile packages belonging to the provided categories"
 msgstr ""
 
 #: ../../server/reagent.py:95
+#, fuzzy
 msgid "just list packages"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../server/reagent.py:101
 msgid "remove downloaded packages and clean temp. directories)"
@@ -2221,24 +2396,27 @@ msgid "A problem occured on at least one mirror"
 msgstr ""
 
 #: ../../server/server_activator.py:145
+#, fuzzy
 msgid "Databases lock complete"
-msgstr ""
+msgstr "Database compressie"
 
 #: ../../server/server_activator.py:150
 msgid "Starting to unlock mirrors databases"
 msgstr ""
 
 #: ../../server/server_activator.py:155
+#, fuzzy
 msgid "Databases unlock complete"
-msgstr ""
+msgstr "Database compressie"
 
 #: ../../server/server_activator.py:160
 msgid "Starting to lock download mirrors databases"
 msgstr ""
 
 #: ../../server/server_activator.py:165
+#, fuzzy
 msgid "Download mirrors lock complete"
-msgstr ""
+msgstr "Geen download locatie"
 
 #: ../../server/server_activator.py:170
 msgid "Starting to unlock download mirrors databases"
@@ -2269,8 +2447,9 @@ msgid "DOWNLOAD"
 msgstr ""
 
 #: ../../server/server_activator.py:212
+#, fuzzy
 msgid "Syncing databases"
-msgstr ""
+msgstr "Bezig met uitvoeren van taken"
 
 #: ../../server/server_activator.py:215
 msgid "Database sync errors, cannot continue."
@@ -2285,43 +2464,50 @@ msgid "Host"
 msgstr ""
 
 #: ../../server/server_activator.py:230 ../../server/server_activator.py:244
+#, fuzzy
 msgid "Database revision"
-msgstr ""
+msgstr "Herziening"
 
 #: ../../server/server_activator.py:233
 msgid "Database local revision currently at"
 msgstr ""
 
 #: ../../server/server_query.py:58
+#, fuzzy
 msgid "Nothing found"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../server/server_reagent.py:43
+#, fuzzy
 msgid "no package specified."
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #: ../../server/server_reagent.py:78
+#, fuzzy
 msgid "No valid repositories specified."
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../server/server_reagent.py:82
+#, fuzzy
 msgid "Enabling"
-msgstr ""
+msgstr "Installeren"
 
 #: ../../server/server_reagent.py:82 ../../server/server_reagent.py:85
 #: ../../server/server_reagent.py:94 ../../server/server_reagent.py:97
 #: ../../server/server_reagent.py:123
+#, fuzzy
 msgid "repository"
-msgstr ""
+msgstr "Repository"
 
 #: ../../server/server_reagent.py:85
+#, fuzzy
 msgid "Enabled"
-msgstr ""
+msgstr "Geïnstalleerd"
 
 #: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
 #: ../../spritz/src/views.py:433 ../../spritz/src/views.py:1020
 msgid "Repository"
-msgstr ""
+msgstr "Repository"
 
 #: ../../server/server_reagent.py:88
 msgid "already enabled"
@@ -2336,8 +2522,9 @@ msgid "Disabling"
 msgstr ""
 
 #: ../../server/server_reagent.py:97
+#, fuzzy
 msgid "Disabled"
-msgstr ""
+msgstr "Geïnstalleerd"
 
 #: ../../server/server_reagent.py:100
 msgid "already disabled"
@@ -2353,8 +2540,9 @@ msgid "in"
 msgstr ""
 
 #: ../../server/server_reagent.py:185
+#, fuzzy
 msgid "No valid packages to repackage."
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #. normal scanning
 #: ../../server/server_reagent.py:189
@@ -2362,53 +2550,63 @@ msgid "Scanning database for differences"
 msgstr ""
 
 #: ../../server/server_reagent.py:194
+#, fuzzy
 msgid "Zarro thinggz totoo"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../server/server_reagent.py:198
+#, fuzzy
 msgid "These are the packages that would be changed to injected status"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../server/server_reagent.py:204
+#, fuzzy
 msgid "Would you like to transform them now ?"
-msgstr ""
+msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
 
 #: ../../server/server_reagent.py:211
 msgid "Transforming from database"
 msgstr ""
 
 #: ../../server/server_reagent.py:213
+#, fuzzy
 msgid "Database transform complete"
-msgstr ""
+msgstr "Database compressie"
 
 #: ../../server/server_reagent.py:216 ../../server/server_reagent.py:398
+#, fuzzy
 msgid "These are the packages that would be removed from the database"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../server/server_reagent.py:235
+#, fuzzy
 msgid "These are the packages that would be added/updated to the add list"
-msgstr ""
+msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
 
 #: ../../server/server_reagent.py:240
+#, fuzzy
 msgid "Would you like to package them now ?"
-msgstr ""
+msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
 
 #: ../../server/server_reagent.py:241
+#, fuzzy
 msgid "inside"
-msgstr ""
+msgstr "Licentie"
 
 #. package them
 #: ../../server/server_reagent.py:249
+#, fuzzy
 msgid "Compressing packages"
-msgstr ""
+msgstr "Verwerken van pakket wachtlijst"
 
 #: ../../server/server_reagent.py:256
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr ""
 
 #: ../../server/server_reagent.py:267
+#, fuzzy
 msgid "Nothing to do, check later."
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../server/server_reagent.py:278
 msgid "Statistics"
@@ -2428,8 +2626,9 @@ msgid "Entropy database has been reinitialized using binary packages available"
 msgstr ""
 
 #: ../../server/server_reagent.py:319
+#, fuzzy
 msgid "Creating empty database to"
-msgstr ""
+msgstr "Genereren van Metadata. Even geduld."
 
 #: ../../server/server_reagent.py:321
 msgid "Cannot overwrite already existing file"
@@ -2440,158 +2639,169 @@ msgid "Switching branch, be sure to have your packages in sync."
 msgstr ""
 
 #: ../../server/server_reagent.py:334
+#, fuzzy
 msgid "Collecting packages that would be marked"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../server/server_reagent.py:353
+#, fuzzy
 msgid "These are the packages that would be marked"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #. ask to continue
 #: ../../server/server_reagent.py:358 ../../server/server_reagent.py:405
 #: ../../server/server_reagent.py:455
+#, fuzzy
 msgid "Would you like to continue ?"
-msgstr ""
+msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
 
 #: ../../server/server_reagent.py:370
+#, fuzzy
 msgid "Matching packages to remove"
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../server/server_reagent.py:409 ../../server/server_reagent.py:459
+#, fuzzy
 msgid "Removing selected packages"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../server/server_reagent.py:411 ../../server/server_reagent.py:463
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr ""
 
 #: ../../server/server_reagent.py:417
+#, fuzzy
 msgid "Searching injected packages to remove"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../server/server_reagent.py:447
+#, fuzzy
 msgid "These are the injected packages pulled in for removal"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #: ../../server/server_reagent.py:481
+#, fuzzy
 msgid "Bumping Repository database"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../spritz/src/dialogs.py:82
 msgid "License name"
-msgstr ""
+msgstr "Licentie naam"
 
 #: ../../spritz/src/dialogs.py:98
 msgid "Mirrors"
-msgstr ""
+msgstr "Mirrors"
 
 #: ../../spritz/src/dialogs.py:122
+#, fuzzy
 msgid "Eclasses"
-msgstr ""
+msgstr "<b>Eclassen</b>"
 
 #: ../../spritz/src/dialogs.py:138
 msgid "Depends"
-msgstr ""
+msgstr "Afhankelijk van"
 
 #: ../../spritz/src/dialogs.py:146
 msgid "Needed libraries"
-msgstr ""
+msgstr "Benodigde bibliotheken"
 
 #: ../../spritz/src/dialogs.py:154
 msgid "Protected item"
-msgstr ""
+msgstr "Beschermd item"
 
 #: ../../spritz/src/dialogs.py:157 ../../spritz/src/dialogs.py:169
 msgid "Type"
-msgstr ""
+msgstr "Type"
 
 #: ../../spritz/src/dialogs.py:165
 msgid "File"
-msgstr ""
+msgstr "Bestand"
 
 #: ../../spritz/src/dialogs.py:228
 msgid "From your Operating System"
-msgstr ""
+msgstr "Van je Besturings Systeem"
 
 #: ../../spritz/src/dialogs.py:377
 msgid "Please confirm the actions above"
-msgstr ""
+msgstr "Bevestig bovenstaande actie"
 
 #: ../../spritz/src/dialogs.py:438 ../../spritz/src/dialogs.py:480
 msgid "To be reinstalled"
-msgstr ""
+msgstr "Gemarkeerd voor Herinstallatie"
 
 #: ../../spritz/src/dialogs.py:444 ../../spritz/src/dialogs.py:491
 msgid "To be installed"
-msgstr ""
+msgstr "Gemarkeerd voor Installatie"
 
 #: ../../spritz/src/dialogs.py:450 ../../spritz/src/dialogs.py:502
 msgid "To be updated"
-msgstr ""
+msgstr "Gemarkeerd voor update"
 
 #: ../../spritz/src/dialogs.py:456
+#, fuzzy
 msgid "To be downgraded"
-msgstr ""
+msgstr "Gemarkeerd voor update"
 
 #: ../../spritz/src/dialogs.py:462 ../../spritz/src/dialogs.py:513
 msgid "To be removed"
-msgstr ""
+msgstr "Gemarkeerd voor verwijdering"
 
 #: ../../spritz/src/dialogs.py:486 ../../spritz/src/dialogs.py:497
 #: ../../spritz/src/dialogs.py:508 ../../spritz/src/dialogs.py:519
 #: ../../spritz/src/views.py:468 ../../spritz/src/views.py:755
 msgid "No description"
-msgstr ""
+msgstr "Geen omschrijving"
 
 #: ../../spritz/src/dialogs.py:652
+#, fuzzy
 msgid "About"
-msgstr ""
+msgstr "Over %s"
 
 #: ../../spritz/src/dialogs.py:748
 msgid "Hey!"
-msgstr ""
+msgstr "Hey!"
 
 #: ../../spritz/src/dialogs.py:752
 msgid "Spritz Question"
-msgstr ""
+msgstr "Spritz Vraag"
 
 #. new
 #: ../../spritz/src/dialogs.py:824
 msgid "Accepted"
-msgstr ""
+msgstr "Geaccepteerd"
 
 #: ../../spritz/src/gui.py:269
 msgid "Show Package Updates"
-msgstr ""
+msgstr "Toon Pakket Updates"
 
 #: ../../spritz/src/gui.py:270
 msgid "Show available Packages"
-msgstr ""
+msgstr "Toon beschikbare Pakketten"
 
 #: ../../spritz/src/gui.py:271
 msgid "Show Installed Packages"
-msgstr ""
+msgstr "Toon geïnstalleerde pakketten"
 
 #. Setup Vertical Toolbar
 #: ../../spritz/src/gui.py:296 ../../spritz/src/views.py:662
 msgid "Packages"
-msgstr ""
+msgstr "Pakketten"
 
 #: ../../spritz/src/gui.py:297
 msgid "Package Categories"
-msgstr ""
+msgstr "Pakket Categorieën"
 
 #: ../../spritz/src/gui.py:298
 msgid "Package Queue"
-msgstr ""
+msgstr "Pakket Wachtrij"
 
 #: ../../spritz/src/gui.py:299 ../../spritz/src/packages.py:187
 msgid "Repository Selection"
-msgstr ""
+msgstr "Repostitory Selectie"
 
 #: ../../spritz/src/gui.py:300
 msgid "Configuration Files"
-msgstr ""
+msgstr "Configuratie Bestanden"
 
 #: ../../spritz/src/gui.py:301
 msgid "Security Advisories"
@@ -2599,17 +2809,20 @@ msgstr ""
 
 #: ../../spritz/src/gui.py:302
 msgid "Output"
-msgstr ""
+msgstr "Output"
 
 #: ../../spritz/src/misc.py:92
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
 msgstr ""
+"Er zijn pakketten die niet tegelijkertijd geïnstalleerd kunnen worden. "
+"Volgende pakketten veroorzaken het probleem:"
 
 #: ../../spritz/src/misc.py:134
+#, fuzzy
 msgid "These are the needed packages"
-msgstr ""
+msgstr "Verwijder geselecteerd pakket"
 
 #: ../../spritz/src/misc.py:135
 msgid ""
@@ -2622,26 +2835,28 @@ msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr ""
+"Sommige afhankelijkheden konden niet worden gevonden. Wellicht zijn ze "
+"gemaskeerd of ontbreken in de actieve repository."
 
 #: ../../spritz/src/misc.py:320
 msgid "Needed disk space"
-msgstr ""
+msgstr "Benodigde schijfruimte"
 
 #: ../../spritz/src/misc.py:327
 msgid "These are the packages that would be installed/updated"
-msgstr ""
+msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
 
 #: ../../spritz/src/misc.py:382
 msgid "Freed space"
-msgstr ""
+msgstr "Vrijgemaakte schijfruimte"
 
 #: ../../spritz/src/misc.py:385
 msgid "Needed space"
-msgstr ""
+msgstr "Benodigde schijfruimte"
 
 #: ../../spritz/src/misc.py:390
 msgid "These are the packages that would be removed"
-msgstr ""
+msgstr "Volgende pakketten worden verwijderd"
 
 #. load a pixmap inside the treeview
 #: ../../spritz/src/packages.py:187
@@ -2652,7 +2867,7 @@ msgstr ""
 #: ../../spritz/src/packages.py:187 ../../spritz/src/spritz.py:423
 #: ../../spritz/src/spritz.py:482
 msgid "Update Repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../spritz/src/packages.py:190
 msgid "No updates available"
@@ -2663,8 +2878,9 @@ msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
 #: ../../spritz/src/spritz.py:138
+#, fuzzy
 msgid "The chosen package is not vulnerable"
-msgstr ""
+msgstr "Geselecteerde branch is niet beschikbaar"
 
 #: ../../spritz/src/spritz.py:146
 msgid "Packages in Advisory have been queued."
@@ -2680,49 +2896,52 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:259
 msgid "Branch switching"
-msgstr ""
+msgstr "Veranderen van Branch"
 
 #: ../../spritz/src/spritz.py:259
 msgid "Enter a valid branch you want to switch to"
-msgstr ""
+msgstr "Voor een geldige Branch in"
 
 #: ../../spritz/src/spritz.py:262
 msgid "The selected branch is not available."
-msgstr ""
+msgstr "Geselecteerde branch is niet beschikbaar"
 
 #: ../../spritz/src/spritz.py:265
 msgid "New branch is"
 msgstr ""
 
 #: ../../spritz/src/spritz.py:265
+#, fuzzy
 msgid "It is suggested to synchronize repositories"
-msgstr ""
+msgstr "Nieuwe branch is %s. Synchroniseer de repositories opnieuw."
 
 #: ../../spritz/src/spritz.py:309 ../../spritz/src/spritz.py:331
 msgid "Insert URL"
-msgstr ""
+msgstr "Voer URL in"
 
 #: ../../spritz/src/spritz.py:309 ../../spritz/src/spritz.py:331
 msgid "Enter a download mirror, HTTP or FTP"
-msgstr ""
+msgstr "Voer een download mirror in, HTTP of FTP"
 
 #: ../../spritz/src/spritz.py:314
 msgid "You must enter either a HTTP or a FTP url."
-msgstr ""
+msgstr "Vul een geldige HTTP of FTP url in."
 
 #: ../../spritz/src/spritz.py:367 ../../spritz/src/spritz.py:426
+#, fuzzy
 msgid "Wrong entries, errors"
-msgstr ""
+msgstr "Verkeerde invoer, fouten: %s"
 
 #: ../../spritz/src/spritz.py:379 ../../spritz/src/spritz.py:423
 #: ../../spritz/src/views.py:1040
+#, fuzzy
 msgid "You should press the button"
-msgstr ""
+msgstr "Druk op de %s toets"
 
 #: ../../spritz/src/spritz.py:379 ../../spritz/src/spritz.py:482
 #: ../../spritz/src/views.py:1040
 msgid "Regenerate Cache"
-msgstr ""
+msgstr "Hergenereer Cache"
 
 #: ../../spritz/src/spritz.py:379 ../../spritz/src/spritz.py:423
 #: ../../spritz/src/spritz.py:482 ../../spritz/src/views.py:1040
@@ -2731,27 +2950,28 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:385
 msgid "No Repository Identifier"
-msgstr ""
+msgstr "Geen Repository Identifier"
 
 #: ../../spritz/src/spritz.py:388
 msgid "Duplicated Repository Identifier"
-msgstr ""
+msgstr "Dubbele Repository identifier"
 
 #: ../../spritz/src/spritz.py:392
 msgid "No download mirrors"
-msgstr ""
+msgstr "Geen download locatie"
 
 #: ../../spritz/src/spritz.py:394
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
 #: ../../spritz/src/spritz.py:402
+#, fuzzy
 msgid "Repository Services Port not valid"
-msgstr ""
+msgstr "Repostitory Selectie"
 
 #: ../../spritz/src/spritz.py:436
 msgid "Insert Repository"
-msgstr ""
+msgstr "Voer Repository in"
 
 #: ../../spritz/src/spritz.py:436
 msgid "Insert Repository identification string"
@@ -2759,15 +2979,16 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:468
 msgid "This Repository identification string is malformed"
-msgstr ""
+msgstr "Ongeldige Repository invoer"
 
 #: ../../spritz/src/spritz.py:478
 msgid "You! Why do you want to remove the main repository ?"
-msgstr ""
+msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
 
 #: ../../spritz/src/spritz.py:482
+#, fuzzy
 msgid "You must now either press the"
-msgstr ""
+msgstr "Druk op de %s of op de %s toets"
 
 #: ../../spritz/src/spritz.py:482
 msgid "or the"
@@ -2775,16 +2996,16 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:538
 msgid "Please select at least one repository"
-msgstr ""
+msgstr "Selecteer tenminste één repository"
 
 #. Check there are any packages in the queue
 #: ../../spritz/src/spritz.py:574
 msgid "No packages in queue"
-msgstr ""
+msgstr "De wachtrij is leeg"
 
 #: ../../spritz/src/spritz.py:640
 msgid "Queue is too old. Cannot load."
-msgstr ""
+msgstr "De wachtrij is te oud en kon niet geladen worden."
 
 #: ../../spritz/src/spritz.py:707
 msgid "impact"
@@ -2822,11 +3043,11 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:923
 msgid "Entropy Config Setup"
-msgstr ""
+msgstr "Entropy Configuratie"
 
 #: ../../spritz/src/spritz.py:935
 msgid "GUI Setup Completed"
-msgstr ""
+msgstr "GUI setup voltooid"
 
 #: ../../spritz/src/spritz.py:964
 msgid "Bug"
@@ -2838,80 +3059,86 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:1030
 msgid "Generating metadata. Please wait."
-msgstr ""
+msgstr "Genereren van Metadata. Even geduld."
 
 #: ../../spritz/src/spritz.py:1060
+#, fuzzy
 msgid "Error loading advisories"
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../spritz/src/spritz.py:1092
 msgid "Initializing Repository module..."
-msgstr ""
+msgstr "Initialiseren van Repository module"
 
 #: ../../spritz/src/spritz.py:1098
 msgid "You must run this application as root"
-msgstr ""
+msgstr "Je moet deze applicatie als root uitvoeren"
 
 #: ../../spritz/src/spritz.py:1113
 msgid "Errors updating repositories."
-msgstr ""
+msgstr "Fouten tijdens het updaten van de repositories"
 
 #: ../../spritz/src/spritz.py:1114
 msgid "Please check logs below for more info"
-msgstr ""
+msgstr "Controleer onderstaande log voor uitgebreide informatie."
 
 #: ../../spritz/src/spritz.py:1117
 msgid "Repositories updated successfully"
-msgstr ""
+msgstr "Repositories succesvol geupdate"
 
 #: ../../spritz/src/spritz.py:1120
 msgid "All the repositories were already up to date."
-msgstr ""
+msgstr "Alle repositories waren reeds up to date"
 
 #: ../../spritz/src/spritz.py:1122
+#, fuzzy
 msgid "repositories were already up to date. Others have been updated."
-msgstr ""
+msgstr "%s repositories waren reeds up to date, de overige zijn geupdate"
 
 #: ../../spritz/src/spritz.py:1125
+#, fuzzy
 msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr ""
+msgstr "app-admin/equo dient zo spoedig mogelijk geupdate te worden!"
 
 #: ../../spritz/src/spritz.py:1130
 msgid "Nothing to do. I am idle."
-msgstr ""
+msgstr "Niets te doen. Ik wacht."
 
 #: ../../spritz/src/spritz.py:1131
 msgid "Really, don't waste your time here. This is just a placeholder"
-msgstr ""
+msgstr "Niets te zien hier mensen, doorlopen!"
 
 #: ../../spritz/src/spritz.py:1132
 msgid "I am still alive and kickin'"
-msgstr ""
+msgstr "Joehoe! Ik leef nog hoor!"
 
 #. -> Get lists
 #: ../../spritz/src/spritz.py:1166
 msgid "Generating Metadata, please wait."
-msgstr ""
+msgstr "Genereren van Metadata, even geduld."
 
 #: ../../spritz/src/spritz.py:1167
 msgid "Entropy is indexing the repositories. It will take a few seconds"
-msgstr ""
+msgstr "Entropy indexeert de repositories, even geduld"
 
 #: ../../spritz/src/spritz.py:1168
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
-msgstr ""
+msgstr "Terwijl je wacht kijk eens naar buiten. Regent het?"
 
 #: ../../spritz/src/spritz.py:1170 ../../spritz/src/spritz.py:1176
+#, fuzzy
 msgid "Calculating"
-msgstr ""
+msgstr "Berekenen %s"
 
 #: ../../spritz/src/spritz.py:1188
+#, fuzzy
 msgid "Showing"
-msgstr ""
+msgstr "Verwijderen"
 
 #: ../../spritz/src/spritz.py:1188
+#, fuzzy
 msgid "items"
-msgstr ""
+msgstr "Bestand"
 
 #: ../../spritz/src/spritz.py:1206
 msgid "Another Entropy instance is running. Cannot process queue."
@@ -2919,21 +3146,24 @@ msgstr ""
 
 #: ../../spritz/src/spritz.py:1211
 msgid "Running tasks"
-msgstr ""
+msgstr "Bezig met uitvoeren van taken"
 
 #: ../../spritz/src/spritz.py:1218
 msgid "Processing Packages in queue"
-msgstr ""
+msgstr "Verwerken van pakket wachtlijst"
 
 #: ../../spritz/src/spritz.py:1234
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
+"Attentie! Er is een fout opgetreden tijdens het verwerken van de "
+"wachtlijst.\n"
+" Kijk in het terminal venster voor meer informatie"
 
 #: ../../spritz/src/spritz.py:1258
 msgid "No packages selected"
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #: ../../spritz/src/spritz.py:1316
 msgid "Exception caught"
@@ -2953,59 +3183,65 @@ msgstr ""
 
 #: ../../spritz/src/spritz_setup.py:84
 msgid "Programming:"
-msgstr ""
+msgstr "Programmeerwerk:"
 
 #: ../../spritz/src/spritz_setup.py:87
 msgid "Translation:"
-msgstr ""
+msgstr "Vertaling"
 
 #: ../../spritz/src/spritz_setup.py:101
 msgid "Dedicated to:"
-msgstr ""
+msgstr "Opgedragen aan:"
 
 #: ../../spritz/src/views.py:42
 msgid "Categories"
-msgstr ""
+msgstr "Categorieën"
 
 #: ../../spritz/src/views.py:63
+#, fuzzy
 msgid "Selection"
-msgstr ""
+msgstr "Repostitory Selectie"
 
 #: ../../spritz/src/views.py:718
+#, fuzzy
 msgid "Packages To Reinstall"
-msgstr ""
+msgstr "<b>Pakketten voor Herinstallatie</b>"
 
 #: ../../spritz/src/views.py:722
+#, fuzzy
 msgid "Packages To Update"
-msgstr ""
+msgstr "<b>Pakketten voor Update</b>"
 
 #: ../../spritz/src/views.py:726
+#, fuzzy
 msgid "Packages To Install"
-msgstr ""
+msgstr "<b>Pakketten voor Installatie</b>"
 
 #: ../../spritz/src/views.py:730
+#, fuzzy
 msgid "Packages To Remove"
-msgstr ""
+msgstr "Pakket Wachtrij"
 
 #: ../../spritz/src/views.py:795
 msgid "Proposed"
-msgstr ""
+msgstr "Voorgesteld"
 
 #: ../../spritz/src/views.py:802
 msgid "Destination"
-msgstr ""
+msgstr "Bestemming"
 
 #: ../../spritz/src/views.py:809
 msgid "Rev."
-msgstr ""
+msgstr "Rev."
 
 #: ../../spritz/src/views.py:858
 msgid "GLSA id."
 msgstr ""
 
 #: ../../spritz/src/views.py:866
+#, fuzzy
 msgid "Package key"
-msgstr ""
+msgstr "Pakket"
 
 #: ../../spritz/src/views.py:959
 msgid "No advisories"
@@ -3017,20 +3253,20 @@ msgstr ""
 
 #: ../../spritz/src/views.py:1020
 msgid "Filename"
-msgstr ""
+msgstr "Bestandsnaam"
 
 #: ../../spritz/src/views.py:1060
 msgid "Active"
-msgstr ""
+msgstr "Actief"
 
 #: ../../spritz/src/views.py:1070 ../../spritz/src/spritz.glade.h:82
 msgid "Update"
-msgstr ""
+msgstr "Update"
 
 #. Setup revision column
 #: ../../spritz/src/views.py:1078 ../../spritz/src/spritz.glade.h:63
 msgid "Revision"
-msgstr ""
+msgstr "Herziening"
 
 #. Setup reponame & repofile column's
 #: ../../spritz/src/views.py:1081
@@ -3038,16 +3274,19 @@ msgid "Repository Identifier"
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:39
+#, fuzzy
 msgid "Package Name"
-msgstr ""
+msgstr "Pakket"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:40
+#, fuzzy
 msgid "Version Installed"
-msgstr ""
+msgstr "Geïnstalleerd"
 
 #: ../../spritz/src/applet/etp_applet_dialogs.py:86
+#, fuzzy
 msgid "Critical Information"
-msgstr ""
+msgstr "Pakket Informatie"
 
 #. #         file = pixmap_file('gnome-warning.png')
 #. #         if file:
@@ -3060,8 +3299,9 @@ msgid ""
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:62
+#, fuzzy
 msgid "Updates Notification"
-msgstr ""
+msgstr "Update actie ongedaan maken"
 
 #: ../../spritz/src/applet/etp_applet.py:203
 msgid "_Disable Notification Applet"
@@ -3088,16 +3328,19 @@ msgid "Check for updates"
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:206
+#, fuzzy
 msgid "_Launch Package Manager"
-msgstr ""
+msgstr "Spritz Pakket Beheer"
 
 #: ../../spritz/src/applet/etp_applet.py:206
+#, fuzzy
 msgid "Launch Package Manager"
-msgstr ""
+msgstr "Spritz Pakket Beheer"
 
 #: ../../spritz/src/applet/etp_applet.py:207
+#, fuzzy
 msgid "_Packages Website"
-msgstr ""
+msgstr "Pakket Wachtrij"
 
 #: ../../spritz/src/applet/etp_applet.py:207
 msgid "Use Packages web interface"
@@ -3112,16 +3355,19 @@ msgid "Launch Sabayon Linux Website"
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:210
+#, fuzzy
 msgid "_About"
-msgstr ""
+msgstr "Over %s"
 
 #: ../../spritz/src/applet/etp_applet.py:210
+#, fuzzy
 msgid "About..."
-msgstr ""
+msgstr "Over %s"
 
 #: ../../spritz/src/applet/etp_applet.py:211
+#, fuzzy
 msgid "_Exit"
-msgstr ""
+msgstr "Extra"
 
 #: ../../spritz/src/applet/etp_applet.py:276
 msgid "You must add yourself to this group"
@@ -3148,16 +3394,19 @@ msgid "Checking for updates..."
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:617
+#, fuzzy
 msgid "Repository Network Error"
-msgstr ""
+msgstr "Repostitory Selectie"
 
 #: ../../spritz/src/applet/etp_applet.py:631
+#, fuzzy
 msgid "No repositories specified. Cannot check for package updates."
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../spritz/src/applet/etp_applet.py:632
+#, fuzzy
 msgid "Updates: attention"
-msgstr ""
+msgstr "Update actie ongedaan maken"
 
 #: ../../spritz/src/applet/etp_applet.py:636
 msgid ""
@@ -3176,12 +3425,14 @@ msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:642
 #: ../../spritz/src/applet/etp_applet.py:647
+#, fuzzy
 msgid "Updates: repository issues"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../spritz/src/applet/etp_applet.py:646
+#, fuzzy
 msgid "No repositories found online"
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../spritz/src/applet/etp_applet.py:651
 msgid "Synchronization errors. Cannot update repositories. Check logs."
@@ -3196,12 +3447,14 @@ msgid "Updates: unhandled error"
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:673
+#, fuzzy
 msgid "Updates: error"
-msgstr ""
+msgstr "Updates"
 
 #: ../../spritz/src/applet/etp_applet.py:681
+#, fuzzy
 msgid "Updates issue:"
-msgstr ""
+msgstr "Updates"
 
 #: ../../spritz/src/applet/etp_applet.py:699
 msgid "There are"
@@ -3212,8 +3465,9 @@ msgid "updates available."
 msgstr ""
 
 #: ../../spritz/src/applet/etp_applet.py:701
+#, fuzzy
 msgid "Updates available"
-msgstr ""
+msgstr "Beschikbaar"
 
 #: ../../spritz/src/applet/etp_applet.py:710
 #: ../../spritz/src/applet/etp_applet.py:712
@@ -3251,102 +3505,123 @@ msgid ""
 "<b><big>Please wait</big></b>\n"
 "<small>...take a little break !</small>"
 msgstr ""
+"<b><big>Even geduld</big></b>\n"
+"<small>...neem een kleine pauze!</small>"
 
 #: ../../spritz/src/spritz.glade.h:4
 msgid "Add/Edit Repository"
-msgstr ""
+msgstr "Repository Toevoegen/Bewerken"
 
 #: ../../spritz/src/spritz.glade.h:5
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
 msgstr ""
+"Het toevoegen van een <b>nieuwe repository</b> maakt het mogelijk om "
+"<b>extra software</b> te installeren."
 
 #: ../../spritz/src/spritz.glade.h:6
+#, fuzzy
 msgid "Advisory information"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ../../spritz/src/spritz.glade.h:7
+#, fuzzy
 msgid "Affected packages"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../spritz/src/spritz.glade.h:11
+#, fuzzy
 msgid "Branch"
-msgstr ""
+msgstr "<b>Branch</b>"
 
 #: ../../spritz/src/spritz.glade.h:12
 msgid "Bugs"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:15
+#, fuzzy
 msgid "CONFIG_PROTECT"
-msgstr ""
+msgstr "<b>CONFIG_PROTECT info</b>"
 
 #: ../../spritz/src/spritz.glade.h:17
 msgid "C_hanges"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:18
+#, fuzzy
 msgid "Creation date"
-msgstr ""
+msgstr "<b>Creatie datum</b>"
 
 #: ../../spritz/src/spritz.glade.h:19
+#, fuzzy
 msgid "D_ependencies"
-msgstr ""
+msgstr "Afhankelijkheden"
 
 #: ../../spritz/src/spritz.glade.h:21
+#, fuzzy
 msgid "Database compression"
-msgstr ""
+msgstr "Herziening"
 
 #: ../../spritz/src/spritz.glade.h:22
 msgid "Dele_te all"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:24
+#, fuzzy
 msgid "Download Path"
-msgstr ""
+msgstr "<b>Download Pad</b>"
 
 #: ../../spritz/src/spritz.glade.h:25
+#, fuzzy
 msgid "Download mirrors"
-msgstr ""
+msgstr "Geen download locatie"
 
 #: ../../spritz/src/spritz.glade.h:26
+#, fuzzy
 msgid "Entropy API"
-msgstr ""
+msgstr "<b>Entropy API</b>"
 
 #: ../../spritz/src/spritz.glade.h:27
 msgid "Error"
-msgstr ""
+msgstr "Fout"
 
 #: ../../spritz/src/spritz.glade.h:28
+#, fuzzy
 msgid "External Trigger"
-msgstr ""
+msgstr "<b>Externe Trigger</b>"
 
 #: ../../spritz/src/spritz.glade.h:29
+#, fuzzy
 msgid "Identifier"
-msgstr ""
+msgstr "Identifier"
 
 #: ../../spritz/src/spritz.glade.h:32
+#, fuzzy
 msgid "Install Size"
-msgstr ""
+msgstr "<b>Installatie Grootte</b>"
 
 #: ../../spritz/src/spritz.glade.h:33
+#, fuzzy
 msgid "Install the selected package"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../spritz/src/spritz.glade.h:35
+#, fuzzy
 msgid "Kernel Tag"
-msgstr ""
+msgstr "<b>Kernel Tag</b>"
 
 #: ../../spritz/src/spritz.glade.h:36
 msgid "Load content"
-msgstr ""
+msgstr "Laad inhoud"
 
 #: ../../spritz/src/spritz.glade.h:37
+#, fuzzy
 msgid "Location"
-msgstr ""
+msgstr "Attentie"
 
 #: ../../spritz/src/spritz.glade.h:38
+#, fuzzy
 msgid "MD5 Signature"
-msgstr ""
+msgstr "<b>MD5 Sleutel</b>"
 
 #: ../../spritz/src/spritz.glade.h:39
 msgid "M_erge"
@@ -3357,28 +3632,33 @@ msgid "Merge all"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:42
+#, fuzzy
 msgid "Messages"
-msgstr ""
+msgstr "<b>Meldingen</b>"
 
 #: ../../spritz/src/spritz.glade.h:43
 msgid "O_ther"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:44
+#, fuzzy
 msgid "Package Info."
-msgstr ""
+msgstr "Pakket"
 
 #: ../../spritz/src/spritz.glade.h:45
+#, fuzzy
 msgid "Package Information"
-msgstr ""
+msgstr "Pakket Informatie"
 
 #: ../../spritz/src/spritz.glade.h:46
+#, fuzzy
 msgid "Package Size"
-msgstr ""
+msgstr "Pakket"
 
 #: ../../spritz/src/spritz.glade.h:47
+#, fuzzy
 msgid "Please Confirm"
-msgstr ""
+msgstr "Bevestig alstublieft"
 
 #: ../../spritz/src/spritz.glade.h:48
 msgid ""
@@ -3387,43 +3667,51 @@ msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:49
 msgid "Purge"
-msgstr ""
+msgstr "Volledig verwijderen"
 
 #: ../../spritz/src/spritz.glade.h:50
+#, fuzzy
 msgid "Q_ueue packages in selected Advisory"
-msgstr ""
+msgstr "Geen pakketten geselecteerd"
 
 #: ../../spritz/src/spritz.glade.h:51
+#, fuzzy
 msgid "R_egenerate Cache"
-msgstr ""
+msgstr "Hergenereer Cache"
 
 #: ../../spritz/src/spritz.glade.h:54
+#, fuzzy
 msgid "Reinstall the selected package"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../spritz/src/spritz.glade.h:55
+#, fuzzy
 msgid "Remove"
-msgstr ""
+msgstr "Verwijder"
 
 #: ../../spritz/src/spritz.glade.h:56
+#, fuzzy
 msgid "Remove the selected package"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../spritz/src/spritz.glade.h:57
 msgid "Remove the selected package and its configuration"
-msgstr ""
+msgstr "Verwijder geselecteerd en configuratie"
 
 #: ../../spritz/src/spritz.glade.h:58
+#, fuzzy
 msgid "Repositories options"
-msgstr ""
+msgstr "<b>Repositories opties</b>"
 
 #: ../../spritz/src/spritz.glade.h:59
+#, fuzzy
 msgid "Repository Services Port"
-msgstr ""
+msgstr "Repostitory Selectie"
 
 #: ../../spritz/src/spritz.glade.h:60
+#, fuzzy
 msgid "Repository information"
-msgstr ""
+msgstr "Repository informatie"
 
 #: ../../spritz/src/spritz.glade.h:64
 msgid "S_end Error Report"
@@ -3443,67 +3731,76 @@ msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:69
 msgid "Soon!"
-msgstr ""
+msgstr "Binnenkort!"
 
 #: ../../spritz/src/spritz.glade.h:70
+#, fuzzy
 msgid "Spritz Package Manager"
-msgstr ""
+msgstr "Spritz Pakket Beheer"
 
 #: ../../spritz/src/spritz.glade.h:72
 msgid "Undo Install"
-msgstr ""
+msgstr "Installatie ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:73
 msgid "Undo Install action"
-msgstr ""
+msgstr "Installatie actie ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:74
+#, fuzzy
 msgid "Undo Purge"
-msgstr ""
+msgstr "Volledig verwijderen"
 
 #: ../../spritz/src/spritz.glade.h:75
+#, fuzzy
 msgid "Undo Purge action"
-msgstr ""
+msgstr "Herinstallatie actie ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:76
 msgid "Undo Reinstall"
-msgstr ""
+msgstr "Herinstallatie ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:77
 msgid "Undo Reinstall action"
-msgstr ""
+msgstr "Herinstallatie actie ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:78
 msgid "Undo Remove"
-msgstr ""
+msgstr "Verwijderen ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:79
+#, fuzzy
 msgid "Undo Remove action"
-msgstr ""
+msgstr "Verwijderen ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:80
 msgid "Undo Update"
-msgstr ""
+msgstr "Update ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:81
+#, fuzzy
 msgid "Undo Update action"
-msgstr ""
+msgstr "Update ongedaan maken"
 
 #: ../../spritz/src/spritz.glade.h:83
+#, fuzzy
 msgid "Update the selected package"
-msgstr ""
+msgstr "Installeer geselecteerd pakket"
 
 #: ../../spritz/src/spritz.glade.h:84
+#, fuzzy
 msgid "Updates"
-msgstr ""
+msgstr "Update"
 
 #: ../../spritz/src/spritz.glade.h:85
+#, fuzzy
 msgid "Version"
-msgstr ""
+msgstr "<b>Versie</b>"
 
 #: ../../spritz/src/spritz.glade.h:86
+#, fuzzy
 msgid "Website"
-msgstr ""
+msgstr "<b>Website</b>"
 
 #: ../../spritz/src/spritz.glade.h:87
 msgid "What you were doing"
@@ -3514,6 +3811,8 @@ msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
+"Je <b>moet</b> onderstaande licentie accepteren.\n"
+"Lees goed door <b>en maak een keuze</b>."
 
 #: ../../spritz/src/spritz.glade.h:91
 msgid "Your E-mail"
@@ -3529,11 +3828,11 @@ msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:94
 msgid "_Accept License"
-msgstr ""
+msgstr "_Accepteer Licentie"
 
 #: ../../spritz/src/spritz.glade.h:95
 msgid "_Add All"
-msgstr ""
+msgstr "_Alles toevoegen"
 
 #: ../../spritz/src/spritz.glade.h:96
 msgid "_Branch ..."
@@ -3544,12 +3843,14 @@ msgid "_Details"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:98
+#, fuzzy
 msgid "_File"
-msgstr ""
+msgstr "Bestand"
 
 #: ../../spritz/src/spritz.glade.h:99
+#, fuzzy
 msgid "_Force repositories update"
-msgstr ""
+msgstr "Geen repositories gespecificeerd in %s"
 
 #: ../../spritz/src/spritz.glade.h:100
 msgid "_Help"
@@ -3568,37 +3869,239 @@ msgid "_Overview"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:104
+#, fuzzy
 msgid "_Process Queue"
-msgstr ""
+msgstr "Pakket Wachtrij"
 
 #: ../../spritz/src/spritz.glade.h:105
+#, fuzzy
 msgid "_Queue all vulnerable packages"
-msgstr ""
+msgstr "Toon beschikbare Pakketten"
 
 #: ../../spritz/src/spritz.glade.h:106
+#, fuzzy
 msgid "_Read License"
-msgstr ""
+msgstr "_Accepteer Licentie"
 
 #: ../../spritz/src/spritz.glade.h:107
+#, fuzzy
 msgid "_References"
-msgstr ""
+msgstr "Afhankelijkheden"
 
 #: ../../spritz/src/spritz.glade.h:108
 msgid "_Remove All"
-msgstr ""
+msgstr "_Verwijder Alles"
 
 #: ../../spritz/src/spritz.glade.h:109
 msgid "_Skip mirror"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:110
+#, fuzzy
 msgid "_Update Repositories"
-msgstr ""
+msgstr "Update Repositories"
 
 #: ../../spritz/src/spritz.glade.h:111
 msgid "_Your Ego!"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:112
+#, fuzzy
 msgid "please wait"
-msgstr ""
+msgstr "Bevestig alstublieft"
+
+#~ msgid "Quiting, please wait !!!!!!"
+#~ msgstr "Bezig met afsluiten, even geduld!!!!!"
+
+#~ msgid "Ready"
+#~ msgstr "Klaar"
+
+#~ msgid "Yum Extender Programmers:"
+#~ msgstr "Yum Extender Programmeurs:"
+
+#~ msgid "Getting : %s"
+#~ msgstr "Ophalen: %s"
+
+#~ msgid "Cleanup"
+#~ msgstr "Opruimen"
+
+#~ msgid "Erased: %s"
+#~ msgstr "Verwijderd: %s"
+
+#~ msgid "Processing metadata"
+#~ msgstr "Verwerken van metadata"
+
+#~ msgid "--> Running transaction check"
+#~ msgstr "--> Transactie controle"
+
+#~ msgid "--> Restarting Dependency Resolution with new changes."
+#~ msgstr "--> Herstart Afhankelijkheids Controle met nieuwe aanpassingen"
+
+#~ msgid "--> Finished Dependency Resolution"
+#~ msgstr "--> Afhankelijkheids Controle Gereed"
+
+#~ msgid "--> Unresolved Dependency: %s"
+#~ msgstr "--> Onopgeloste Afhankelijkheid: %s"
+
+#~ msgid "--> Processing Conflict: %s conflicts %s"
+#~ msgstr "--> Verwerken van Conflict: %s conflicteert met %s"
+
+#~ msgid "--> Populating transaction set with selected packages. Please wait."
+#~ msgstr ""
+#~ "--> Opbouwen van transactie set met geselecteerde pakketen. Even geduld."
+
+#~ msgid "---> Downloading header for %s to pack into transaction set."
+#~ msgstr "---> Download headerinformatie voor %s voor de transactie set."
+
+#~ msgid "Database URL must be HTTP or FTP"
+#~ msgstr "Database URL moet HTTP of FTP zijn"
+
+#~ msgid "You should now press the %s button now"
+#~ msgstr "Druk op de %s toets"
+
+#~ msgid ""
+#~ "<big><b>Sorry to tell you</b></big>\t\t\n"
+#~ "Another instance of Entropy <b>is running</b>. <u>Close</u> it or "
+#~ "<u>remove</u>: %s"
+#~ msgstr ""
+#~ "<big><b>Helaas</b></big>\t\t\n"
+#~ "Entropy is <b>al in gebruik</b> door een ander process. <u>Sluit</u> het "
+#~ "of <u>verwijder</u>: %s"
+
+#~ msgid "Package View Population"
+#~ msgstr "Pakket weergave vullen"
+
+#~ msgid "Package View Population Completed"
+#~ msgstr "Pakket weergave vullen gereed"
+
+#~ msgid "Category View Population"
+#~ msgstr "Categorie overzicht vullen"
+
+#~ msgid "Category View Population Completed"
+#~ msgstr "Categorie overzicht vullen gereed"
+
+#~ msgid "Error in Yumex"
+#~ msgstr "Fout in Yumex"
+
+#~ msgid "Erasing"
+#~ msgstr "Verwijderen"
+
+#~ msgid "Obsoleted"
+#~ msgstr "Verouderd"
+
+#~ msgid "Updated"
+#~ msgstr "Geupdate"
+
+#~ msgid "No header - huh?"
+#~ msgstr "Geen header - wat?"
+
+#~ msgid " "
+#~ msgstr " "
+
+#~ msgid "0"
+#~ msgstr "0"
+
+#~ msgid "1"
+#~ msgstr "1"
+
+#~ msgid "2"
+#~ msgstr "2"
+
+#~ msgid "3"
+#~ msgstr "3"
+
+#~ msgid "4"
+#~ msgstr "4"
+
+#~ msgid "5"
+#~ msgstr "5"
+
+#~ msgid "<b>CHOST</b>"
+#~ msgstr "<b>CHOST</b>"
+
+#~ msgid "<b>Location</b>"
+#~ msgstr "<b>Locatie</b>"
+
+#~ msgid "<b>Masked</b>"
+#~ msgstr "<b>Masked</b>"
+
+#~ msgid "<b>Package Size</b>"
+#~ msgstr "<b>Pakket Grootte</b>"
+
+#~ msgid "<b>Requested actions</b>"
+#~ msgstr "<b>Gevraagde acties</b>"
+
+#~ msgid "<b>Revision</b>"
+#~ msgstr "<b>Revisie</b>"
+
+#~ msgid "<b>SUBACTION</b>\n"
+#~ msgstr "<b>SUBACTIE</b>\n"
+
+#~ msgid "<b>Slot</b>"
+#~ msgstr "<b>Slot</b>"
+
+#~ msgid "<b>Total Download Size</b>"
+#~ msgstr "<b>Totale Download Grootte</b>"
+
+#~ msgid "<big><b>media-libs/foo-1.2.3</b></big>"
+#~ msgstr "<big><b>media-libs/foo-1.2.3</b></big>"
+
+#~ msgid "<small>0</small>"
+#~ msgstr "<small>0</small>"
+
+#~ msgid "<small>1.0MB</small>"
+#~ msgstr "<small>1.0MB</small>"
+
+#~ msgid "<small>1.2.3</small>"
+#~ msgstr "<small>1.2.3</small>"
+
+#~ msgid "<small>123123123123123123123</small>"
+#~ msgstr "<small>123123123123123123123</small>"
+
+#~ msgid "<small>2</small>"
+#~ msgstr "<small>2</small>"
+
+#~ msgid "<small>3.5</small>"
+#~ msgstr "<small>3.5</small>"
+
+#~ msgid "<small>3.5MB</small>"
+#~ msgstr "<small>3.5MB</small>"
+
+#~ msgid "<small>None</small>"
+#~ msgstr "<small>Geen</small>"
+
+#~ msgid "<small>Official Sabayon Linux Repository</small>"
+#~ msgstr "<small>Officiële Sabayon Linux Repository</small>"
+
+#~ msgid "<small>This is a description placeholder</small>"
+#~ msgstr "<small>Dit is een omschrijving veld</small>"
+
+#~ msgid "<small>Today, yesterday, who knows</small>"
+#~ msgstr "<small>Vandaag, gisteren, wie zal het zeggen</small>"
+
+#~ msgid "<small>http://www.sabayonlinux.org</small>"
+#~ msgstr "<small>http://www.sabayonlinux.org</small>"
+
+#~ msgid "<small>path/to/download/blah.tbz2</small>"
+#~ msgstr "<small>pad/naar/download/blah.tbz2</small>"
+
+#~ msgid "<small>why?</small>"
+#~ msgstr "<small>waarom?</small>"
+
+#~ msgid "<small>you me they</small>"
+#~ msgstr "<small>jij ik zij</small>"
+
+#~ msgid "<span size=\"large\"><b>Action</b></span>\n"
+#~ msgstr "<span size=\"large\"><b>Actie</b></span>\n"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Files Update</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Bestanden Update</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Package Categories</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Pakket Categorieën</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Package Queue</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Pakket Wachtlijst</span>"
+
+#~ msgid "<span size=\"xx-large\" color=\"black\">Repositories</span>"
+#~ msgstr "<span size=\"xx-large\" color=\"black\">Repositories</span>"
