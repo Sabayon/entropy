@@ -548,6 +548,9 @@ except exceptionTools.RepositoryError, e:
     reset_cache()
     print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
     sys.exit(101)
+except exceptionTools.PermissionDenied, e:
+    print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
+    sys.exit(1)
 except SystemExit:
     pass
 except IOError, e:
