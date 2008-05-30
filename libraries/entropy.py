@@ -5819,7 +5819,7 @@ class RepoInterface:
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             return False
-        elif False in (added_ids,removed_ids,checksum):
+        elif ((added_ids == False) or (removed_ids == False) or (checksum == False)):
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             mytxt = "%s: %s" % (
@@ -6125,7 +6125,7 @@ class RepoInterface:
                             self.eapi3_socket = None
 
                     try:
-                        self.socket.setdefaulttimeout(10)
+                        self.eapi3_socket.socket.setdefaulttimeout(20)
                         status = self.handle_eapi3_database_sync(repo)
                     except self.socket.error, e:
                         mytxt = "%s: %s" % (
@@ -6139,7 +6139,7 @@ class RepoInterface:
                             header = blue("  # "),
                         )
                         status = False
-                    self.socket.setdefaulttimeout(2)
+                    self.eapi3_socket.socket.setdefaulttimeout(5)
                     if status == False:
                         do_close_conn()
                         # set to none and completely skip database alignment
