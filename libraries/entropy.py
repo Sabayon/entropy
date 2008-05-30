@@ -21206,6 +21206,8 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("licensedata"):
             return {}
         licenses = self.retrieveLicense(idpackage)
+        if licenses == None:
+            return {}
         licenses = licenses.split()
         licdata = {}
         for licname in licenses:
@@ -21227,6 +21229,8 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("licensedata"):
             return set()
         licenses = self.retrieveLicense(idpackage)
+        if licenses == None:
+            return set()
         licenses = licenses.split()
         licdata = set()
         for licname in licenses:
