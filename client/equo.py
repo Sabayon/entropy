@@ -46,7 +46,7 @@ myopts = [
     None,
     (0,_('Application Options'),0,None),
     None,
-    (1,'update',2,_('print version')),
+    (1,'update',2,_('update configured repositories')),
     (2,'--force',2,_('force sync regardless repositories status')),
     (1,'repoinfo',1,_('show repositories information')),
         (2,'make.conf [repos]',2,_('show make.conf for the chosen repositories')),
