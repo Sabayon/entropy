@@ -276,14 +276,14 @@ def print_menu(data):
             elif n_ident == 3:
                 myfunc = darkblue
                 myfunc_desc = purple
-            writechar(myfunc(name))
+            print myfunc(name),
 
             # write desc
             if desc:
                 while n_d_ident > 0:
                     n_d_ident -= 1
                     writechar("\t")
-                writechar(myfunc_desc(desc))
+                print myfunc_desc(desc),
             writechar("\n")
 
 def reset_cursor():
