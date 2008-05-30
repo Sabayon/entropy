@@ -292,38 +292,38 @@ def reset_cursor():
 def print_error(msg, back = False):
     if etpUi['mute']:
         return
-    if (back):
-        reset_cursor()
-        writechar("\r"+red(">>")+" "+msg)
-        return
-    setcols()
+    if not back:
+        setcols()
     reset_cursor()
     writechar("\r")
-    print darkred(">>")+" "+msg
+    if back:
+        print darkred(">>"),msg,
+    else:
+        print darkred(">>"),msg
 
 def print_info(msg, back = False):
     if etpUi['mute']:
         return
-    if back:
-        reset_cursor()
-        writechar("\r"+green(">>")+" "+msg)
-        return
-    setcols()
+    if not back:
+        setcols()
     reset_cursor()
     writechar("\r")
-    print green(">>")+" "+msg
+    if back:
+        print darkgreen(">>"),msg,
+    else:
+        print darkgreen(">>"),msg
 
 def print_warning(msg, back = False):
     if etpUi['mute']:
         return
-    if back:
-        reset_cursor()
-        writechar("\r"+red(">>")+" "+msg)
-        return
-    setcols()
+    if not back:
+        setcols()
     reset_cursor()
     writechar("\r")
-    print red(">>")+" "+msg
+    if back:
+        print red(">>"),msg,
+    else:
+        print red(">>"),msg
 
 def print_generic(msg): # here we'll wrap any nice formatting
     if etpUi['mute']:
@@ -344,7 +344,8 @@ def writechar(char):
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")
-    text = raw_input(request) # using readline module
+    print request,
+    text = raw_input() # using readline module
     return text
 
 class TextInterface:

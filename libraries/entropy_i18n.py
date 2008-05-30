@@ -20,14 +20,11 @@ Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 _LOCALE = None
 try:
     import gettext
-    import sys,os
-    if sys.version_info[0] == 2:
-        t = gettext.translation('entropy')
-        _ = t.gettext
-    else:
-        gettext.bindtextdomain('entropy', '/usr/share/locale')
-        gettext.textdomain('entropy')
-        _ = gettext.gettext
+    import sys, os
+    gettext.bindtextdomain('entropy', '/usr/share/locale')
+    gettext.textdomain('entropy')
+    gettext.install('entropy', unicode=True)
+    _ = _
 
     _LOCALE_FULL = os.getenv('LC_ALL')
     if _LOCALE_FULL == None:

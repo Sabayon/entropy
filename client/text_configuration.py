@@ -165,7 +165,12 @@ def update(cmd = None):
                     scandata = Equo.FileUpdates.scandata
 
                     continue
-                print_info(darkred("%s: " % (_("Selected file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+
+                mytxt = "%s: %s" % (
+                    darkred(_("Selected file")),
+                    darkgreen(etpConst['systemroot']+scandata[cmd]['source']),
+                )
+                print_info(mytxt)
 
                 comeback = False
                 while 1:
