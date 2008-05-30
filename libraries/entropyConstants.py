@@ -1098,6 +1098,10 @@ def const_setupEntropyPid():
                             pass
                         else:
                             raise
+                    try:
+                        const_chmod_entropy_pid()
+                    except OSError:
+                        pass
 
     else:
         #if etpConst['uid'] == 0:
@@ -1114,6 +1118,19 @@ def const_setupEntropyPid():
             f.write(str(pid))
             f.flush()
             f.close()
+
+            try:
+                const_chmod_entropy_pid()
+            except OSError:
+                pass
+
+
+def const_chmod_entropy_pid():
+    try:
+        mygid = const_get_entropy_gid()
+    except KeyError:
+        mygid = 0
+    const_setup_file(etpConst['pidfile'], mygid, 0664)
 
 def const_createWorkingDirectories():
 
@@ -1380,14 +1397,17 @@ def const_setup_perms(mydir, gid):
         for item in files:
             item = os.path.join(currentdir,item)
             try:
-                cur_gid = os.stat(item)[stat.ST_GID]
-                if cur_gid != gid:
-                    os.chown(item,-1,gid)
-                cur_mod = const_get_chmod(item)
-                if cur_mod != oct(0664):
-                    os.chmod(item,0664)
+                const_setup_file(item, gid, 0664)
             except OSError:
                 pass
+
+def const_setup_file(myfile, gid, chmod):
+    cur_gid = os.stat(myfile)[stat.ST_GID]
+    if cur_gid != gid:
+        os.chown(myfile,-1,gid)
+    cur_mod = const_get_chmod(myfile)
+    if cur_mod != oct(chmod):
+        os.chmod(myfile,chmod)
 
 # you need to convert to int
 def const_get_chmod(item):

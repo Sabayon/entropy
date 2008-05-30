@@ -6231,7 +6231,10 @@ class RepoInterface:
                 continue
 
             if os.path.isfile(dbfile) and os.access(dbfile,os.W_OK):
-                self.Entropy.setup_default_file_perms(dbfile)
+                try:
+                    self.Entropy.setup_default_file_perms(dbfile)
+                except OSError: # notification applet
+                    pass
 
             # database is going to be updated
             self.dbupdated = True
