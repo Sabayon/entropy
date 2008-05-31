@@ -276,14 +276,20 @@ def print_menu(data):
             elif n_ident == 3:
                 myfunc = darkblue
                 myfunc_desc = purple
-            print myfunc(name),
+            try:
+                print myfunc(name),
+            except UnicodeEncodeError:
+                print myfunc(name.encode('utf-8')),
 
             # write desc
             if desc:
                 while n_d_ident > 0:
                     n_d_ident -= 1
                     writechar("\t")
-                print myfunc_desc(desc),
+                try:
+                    print myfunc_desc(desc),
+                except UnicodeEncodeError:
+                    print myfunc_desc(desc.encode('utf-8')),
             writechar("\n")
 
 def reset_cursor():
@@ -297,9 +303,15 @@ def print_error(msg, back = False):
     reset_cursor()
     writechar("\r")
     if back:
-        print darkred(">>"),msg,
+        try:
+            print darkred(">>"),msg,
+        except UnicodeEncodeError:
+            print darkred(">>"),msg.encode('utf-8'),
     else:
-        print darkred(">>"),msg
+        try:
+            print darkred(">>"),msg
+        except UnicodeEncodeError:
+            print darkred(">>"),msg.encode('utf-8')
 
 def print_info(msg, back = False):
     if etpUi['mute']:
@@ -309,9 +321,15 @@ def print_info(msg, back = False):
     reset_cursor()
     writechar("\r")
     if back:
-        print darkgreen(">>"),msg,
+        try:
+            print darkgreen(">>"),msg,
+        except UnicodeEncodeError:
+            print darkgreen(">>"),msg.encode('utf-8'),
     else:
-        print darkgreen(">>"),msg
+        try:
+            print darkgreen(">>"),msg
+        except UnicodeEncodeError:
+            print darkgreen(">>"),msg.encode('utf-8')
 
 def print_warning(msg, back = False):
     if etpUi['mute']:
@@ -321,15 +339,24 @@ def print_warning(msg, back = False):
     reset_cursor()
     writechar("\r")
     if back:
-        print red(">>"),msg,
+        try:
+            print red(">>"),msg,
+        except UnicodeEncodeError:
+            print red(">>"),msg.encode('utf-8'),
     else:
-        print red(">>"),msg
+        try:
+            print red(">>"),msg
+        except UnicodeEncodeError:
+            print red(">>"),msg.encode('utf-8')
 
 def print_generic(msg): # here we'll wrap any nice formatting
     if etpUi['mute']:
         return
     writechar("\r")
-    print msg
+    try:
+        print msg
+    except UnicodeEncodeError:
+        print msg.encode('utf-8')
 
 def writechar(char):
     if etpUi['mute']:
@@ -344,7 +371,10 @@ def writechar(char):
 
 def readtext(request):
     xtermTitle("Entropy needs your attention")
-    print request,
+    try:
+        print request,
+    except UnicodeEncodeError:
+        print request.encode('utf-8'),
     text = raw_input() # using readline module
     return text
 
@@ -438,7 +468,10 @@ class TextInterface:
         if len(responses) > len(colours):
             import exceptionTools
             raise exceptionTools.IncorrectParameter("IncorrectParameter: maximum responses length = %s" % (len(colours),))
-        print darkgreen(question),
+        try:
+            print darkgreen(question),
+        except UnicodeEncodeError:
+            print darkgreen(question.encode('utf-8')),
         try:
             while True:
                 xtermTitle("Entropy got a question for you")
@@ -448,7 +481,10 @@ class TextInterface:
                     if response.upper()==key[:len(response)].upper():
                         xtermTitleReset()
                         return key
+                    try:
                         print "I cannot understand '%s'" % response,
+                    except UnicodeEncodeError:
+                        print "I cannot understand '%s'" % response.encode('utf-8'),
         except (EOFError, KeyboardInterrupt):
             print "Interrupted."
             xtermTitleReset()
