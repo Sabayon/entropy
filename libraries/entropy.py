@@ -1610,6 +1610,94 @@ class EquoInterface(TextInterface):
 
         return unsatisfiedDeps, satisfiedDeps
 
+    def get_masked_packages_tree(self, atomInfo, atoms = False, flat = False, matchfilter = None):
+
+        usefilter = False
+        if matchfilter != None:
+            usefilter = True
+        maskedtree = {}
+        mybuffer = self.entropyTools.lifobuffer()
+        matchcache = set()
+        depcache = set()
+        treelevel = -1
+
+        do = True
+        if usefilter:
+            if matchfilter.inside(atomInfo):
+                do = False
+
+        if not do:
+            return {}
+
+        mydbconn = self.openRepositoryDatabase(atomInfo[1])
+        myatom = mydbconn.retrieveAtom(atomInfo[0])
+        idpackage, idreason = mydbconn.idpackageValidator(atomInfo[0])
+        if idpackage == -1:
+            treelevel += 1
+            if atoms:
+                mydict = {myatom: idreason,}
+            else:
+                mydict = {atomInfo: idreason,}
+            if flat:
+                maskedtree.update(mydict)
+            else:
+                maskedtree[treelevel] = {}
+                maskedtree[treelevel].update(mydict)
+
+        mydeps = mydbconn.retrieveDependencies(atomInfo[0])
+        for mydep in mydeps:
+            mybuffer.push(mydep)
+        mydep = mybuffer.pop()
+
+        while mydep != None:
+
+            if mydep in depcache:
+                mydep = mybuffer.pop()
+                continue
+
+            idpackage, repoid = self.atomMatch(mydep)
+            if (idpackage, repoid) in matchcache:
+                mydep = mybuffer.pop()
+                continue
+
+            # already analyzed by the calling function
+            if usefilter:
+                if matchfilter.inside((idpackage, repoid)):
+                    mydep = mybuffer.pop()
+                    continue
+                matchfilter.add((idpackage, repoid))
+
+            # collect masked
+            if idpackage == -1:
+                idpackage, repoid = self.atomMatch(mydep, packagesFilter = False)
+                if idpackage != -1:
+                    treelevel += 1
+                    if not maskedtree.has_key(treelevel) and not flat:
+                        maskedtree[treelevel] = {}
+                    dbconn = self.openRepositoryDatabase(repoid)
+                    vidpackage, idreason = dbconn.idpackageValidator(idpackage)
+                    if atoms:
+                        mydict = {dbconn.retrieveAtom(idpackage): idreason}
+                    else:
+                        mydict = {(idpackage,repoid): idreason}
+                    if flat:
+                        maskedtree.update(mydict)
+                    else:
+                        maskedtree[treelevel].update(mydict)
+
+            # push its dep into the buffer
+            if idpackage != -1:
+                matchcache.add((idpackage, repoid))
+                dbconn = self.openRepositoryDatabase(repoid)
+                owndeps = dbconn.retrieveDependencies(idpackage)
+                for owndep in owndeps:
+                    mybuffer.push(owndep)
+
+            depcache.add(mydep)
+            mydep = mybuffer.pop()
+
+        return maskedtree
+
 
     '''
     @description: generates a dependency tree using unsatisfied dependencies
@@ -1666,6 +1754,10 @@ class EquoInterface(TextInterface):
             if virgin:
                 virgin = False
                 match = atomInfo
+                dbconn = self.openRepositoryDatabase(match[1])
+                myidpackage, idreason = dbconn.idpackageValidator(match[0])
+                if myidpackage == -1:
+                    match = (-1,match[1])
             else:
                 match = self.atomMatch(mydep[1])
             if match[0] == -1:
@@ -2165,21 +2257,28 @@ class EquoInterface(TextInterface):
         c_hash = str(hash(c_hash))
         return c_hash
 
+    def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
+        if myhash == None:
+            myhash = self.get_available_packages_chash(etpConst['branch'])
+        disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
+        try:
+            if disk_cache['chash'] == myhash:
+                return disk_cache['available']
+        except (KeyError,TypeError,):
+            return None
+
     # this function searches all the not installed packages available in the repositories
     def calculate_available_packages(self):
 
         # clear masking reasons
         maskingReasonsStorage.clear()
 
+        c_hash = self.get_available_packages_chash(etpConst['branch'])
+
         if self.xcache:
-            c_hash = self.get_available_packages_chash(etpConst['branch'])
-            disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
-            if disk_cache != None:
-                try:
-                    if disk_cache['chash'] == c_hash:
-                        return disk_cache['available']
-                except KeyError:
-                    pass
+            cached = self.get_available_packages_cache(myhash = c_hash)
+            if cached != None:
+                return cached
 
         available = []
         self.setTotalCycles(len(self.validRepositories))
@@ -2265,12 +2364,13 @@ class EquoInterface(TextInterface):
         idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
         maxlen = len(idpackages)
         count = 0
+        mytxt = _("Calculating world packages")
         for idpackage in idpackages:
 
             count += 1
             if (count%10 == 0) or (count == maxlen) or (count == 1):
                 self.updateProgress(
-                    _("Calculating world packages"),
+                    mytxt,
                     importance = 0,
                     type = "info",
                     back = True,
@@ -20659,6 +20759,22 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.version,baseinfo.versiontag,baseinfo.revision,baseinfo.atom FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         return self.cursor.fetchone()
 
+    def getStrictScopeData(self, idpackage):
+        self.cursor.execute("""
+                SELECT 
+                        baseinfo.atom,
+                        baseinfo.slot,
+                        baseinfo.revision
+                FROM 
+                        baseinfo
+                WHERE 
+                        idpackage = (?)
+        """, (idpackage,))
+        rslt = self.cursor.fetchone()
+        if rslt:
+            return rslt[0]
+        return None
+
     def getScopeData(self, idpackage):
         self.cursor.execute("""
                 SELECT 
@@ -21764,18 +21880,28 @@ class EntropyDatabaseInterface:
         searchdata = (atom,slot,revision,)
         self.cursor.execute('SELECT idpackage FROM baseinfo where atom = (?) and slot = (?) and revision = (?)',searchdata)
         rslt = self.cursor.fetchone()
+        idreason = 0
+        idpackage = -1
         if rslt:
-            return rslt[0]
-        return None
+            # check if it's masked
+            idpackage, idreason = self.idpackageValidator(rslt[0])
+        return idpackage,idreason
 
-    def listAllPackages(self, get_scope = False, order_by = None):
+    def listAllPackages(self, get_scope = False, order_by = None, branch = None, branch_operator = "="):
+
+        branchstring = ''
+        searchkeywords = []
+        if branch:
+            searchkeywords = [branch]
+            branchstring = ' where branch %s (?)' % (str(branch_operator),)
+
         order_txt = ''
         if order_by:
             order_txt = ' order by '+str(order_by)
         if get_scope:
-            self.cursor.execute('SELECT idpackage,atom,slot,revision FROM baseinfo'+order_txt)
+            self.cursor.execute('SELECT idpackage,atom,slot,revision FROM baseinfo'+order_txt+branchstring,searchkeywords)
         else:
-            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo'+order_txt)
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo'+order_txt+branchstring,searchkeywords)
         return self.cursor.fetchall()
 
     def listAllInjectedPackages(self, justFiles = False):
