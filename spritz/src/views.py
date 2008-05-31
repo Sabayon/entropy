@@ -974,14 +974,14 @@ class EntropyAdvisoriesView:
                         (key,identifiers[key],adv_metadata[key].copy(),),
                         key,
                         "<b>%s</b>" % (a_key,),
-                        "<small>%s</small>" % (mydata['title'],)
+                        "<small>%s</small>" % (cleanMarkupString(mydata['title']),)
                     ]
                 )
 
 
 class CategoriesView:
 
-    def __init__( self, treeview,qview):
+    def __init__( self, treeview, qview):
 
         self.view = treeview
         self.model = self.setup_view()

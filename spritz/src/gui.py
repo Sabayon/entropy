@@ -269,6 +269,7 @@ class SpritzGUI:
         self.setupPkgRadio(self.ui.rbUpdates,"updates",_('Show Package Updates'))
         self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
         self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
+        self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
 
     def setupPkgRadio(self, widget, tag, tip):
         widget.connect('toggled',self.on_pkgFilter_toggled,tag)
@@ -283,6 +284,8 @@ class SpritzGUI:
                 pix = self.ui.rbAvailableImage
             elif tag == "installed":
                 pix = self.ui.rbInstalledImage
+            elif tag == "masked":
+                pix = self.ui.rbMaskedImage
             pix.set_from_pixbuf( p )
             pix.show()
         except gobject.GError:

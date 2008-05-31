@@ -2458,6 +2458,85 @@ class EquoInterface(TextInterface):
             return False
         return True
 
+    def unmask_match(self, match, method = 'atom', dry_run = False):
+
+        valid_masks = ["atom"]
+
+        if method not in valid_masks:
+            raise exceptionTools.IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"),method,) )
+        if not self.is_match_masked(match):
+            return True
+
+        done = False
+        if method == "atom":
+            done = self.unmask_match_by_atom(match, dry_run)
+
+        if done and not dry_run:
+            self.parse_masking_settings() # cache will be erased by this
+
+        return done
+
+    def unmask_match_by_atom(self, match, dry_run = False):
+        self.clear_match_mask(match, dry_run)
+        dbconn = self.openRepositoryDatabase(match[1])
+        atom = dbconn.retrieveAtom(match[0])
+        unmask_file = self.MaskingParser.etpMaskFiles['mask']
+        if not os.path.isfile(unmask_file):
+            if not os.access(os.path.dirname(unmask_file),os.W_OK):
+                return False # cannot write
+            if not dry_run:
+                f = open(unmask_file,"w")
+        elif not os.access(unmask_file, os.W_OK):
+            return False
+        elif not dry_run:
+            f = open(unmask_file,"aw")
+
+        if dry_run:
+            return True
+
+        f.writelines([atom])
+        f.flush()
+        f.close()
+        return True
+
+    def clear_match_mask(self, match, dry_run = False):
+
+        idpackage, repoid = match
+        dbconn = self.openRepositoryDatabase(repoid)
+        masking_list = [self.MaskingParser.etpMaskFiles['mask']]
+
+        for mask_file in masking_list:
+            if not os.path.isfile(mask_file):
+                continue
+            if not os.access(mask_file,os.W_OK):
+                continue
+            if dry_run:
+                continue
+            f = open(mask_file,"r")
+            newf = self.entropyTools.open_buffer()
+            line = f.readline()
+            while line:
+                line = line.strip()
+                if line.startswith("#"):
+                    newf.write(line+"\n")
+                    continue
+                elif not line:
+                    newf.write("\n")
+                    continue
+                mymatch = self.atomMatch(line, packagesFilter = False)
+                if mymatch == match:
+                    continue
+                newf.write(line+"\n")
+                line = f.readline()
+            f.close()
+            tmpfile = mask_file+".w_tmp"
+            f = open(tmpfile,"w")
+            f.write(newf.getvalue())
+            f.flush()
+            f.close()
+            newf.close()
+            shutil.move(tmpfile,mask_file)
+
     # every tbz2 file that would be installed must pass from here
     def add_tbz2_to_repos(self, tbz2file):
         atoms_contained = []
@@ -9900,8 +9979,6 @@ class PackageMaskingParser:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
 
-    def parse(self):
-
         self.etpMaskFiles = {
             'keywords': etpConst['confdir']+"/packages/package.keywords", # keywording configuration files
             'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
@@ -9910,14 +9987,6 @@ class PackageMaskingParser:
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
-        # append repositories mask files
-        for repoid in etpRepositoriesOrder:
-            maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
-            wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
-            if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
-                self.etpMaskFiles['repos_mask'][repoid] = maskpath
-            if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
-                self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
 
         self.etpMtimeFiles = {
             'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime",
@@ -9927,6 +9996,18 @@ class PackageMaskingParser:
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
+
+    def parse(self):
+
+        # append repositories mask files
+        for repoid in etpRepositoriesOrder:
+            maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
+            wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
+            if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
+                self.etpMaskFiles['repos_mask'][repoid] = maskpath
+            if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
+                self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
+
         # append repositories mtime files
         for repoid in etpRepositoriesOrder:
             if repoid in self.etpMaskFiles['repos_mask']:
@@ -22858,7 +22939,7 @@ class EntropyDatabaseInterface:
         countersdata = self.cursor.fetchall()
         if countersdata:
             for row in countersdata:
-                self.cursor.execute('INSERT INTO counterstemp VALUES = (?,?,?)',row)
+                self.cursor.execute('INSERT INTO counterstemp VALUES (?,?,?)',row)
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()

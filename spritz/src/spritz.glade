@@ -622,6 +622,43 @@
                                 <property name="position">2</property>
                               </packing>
                             </child>
+                            <child>
+                              <widget class="GtkRadioButton" id="rbMasked">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="response_id">0</property>
+                                <property name="group">rbUpdates</property>
+                                <child>
+                                  <widget class="GtkVBox" id="vbox46">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <child>
+                                      <widget class="GtkImage" id="rbMaskedImage">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="stock">gtk-missing-image</property>
+                                      </widget>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="rbMaskedLabel">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="label" translatable="yes">Masked</property>
+                                        <property name="use_markup">True</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </widget>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">3</property>
+                              </packing>
+                            </child>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -769,51 +806,19 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkHPaned" id="hpaned2">
+                      <widget class="GtkScrolledWindow" id="swPkg">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                        <property name="shadow_type">GTK_SHADOW_IN</property>
                         <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <widget class="GtkVPaned" id="instPaned">
+                          <widget class="GtkTreeView" id="viewPkg">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="position">250</property>
-                            <child>
-                              <widget class="GtkVBox" id="vbox48">
-                                <property name="visible">True</property>
-                                <child>
-                                  <widget class="GtkScrolledWindow" id="swPkg">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                                    <property name="shadow_type">GTK_SHADOW_IN</property>
-                                    <child>
-                                      <widget class="GtkTreeView" id="viewPkg">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="rules_hint">True</property>
-                                        <signal name="row_activated" handler="on_pkg_doubleclick"/>
-                                      </widget>
-                                    </child>
-                                  </widget>
-                                </child>
-                              </widget>
-                              <packing>
-                                <property name="resize">False</property>
-                                <property name="shrink">True</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
+                            <property name="rules_hint">True</property>
+                            <signal name="row_activated" handler="on_pkg_doubleclick"/>
                           </widget>
-                          <packing>
-                            <property name="resize">True</property>
-                            <property name="shrink">True</property>
-                          </packing>
                         </child>
                       </widget>
                       <packing>
@@ -821,7 +826,7 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkHButtonBox" id="hbuttonbox2">
+                      <widget class="GtkHButtonBox" id="updatesButtonbox">
                         <property name="visible">True</property>
                         <property name="border_width">8</property>
                         <property name="spacing">9</property>
@@ -924,6 +929,26 @@
                         <property name="fill">False</property>
                         <property name="padding">5</property>
                         <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkVBox" id="maskedWarningBox">
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <child>
+                          <widget class="GtkLabel" id="maskedWarningLabel">
+                            <property name="visible">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="xalign">0</property>
+                            <property name="label">Hello world</property>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="position">3</property>
                       </packing>
                     </child>
                   </widget>
@@ -2203,11 +2228,26 @@
                   <widget class="GtkLabel" id="6">
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="label" translatable="yes">7</property>
+                    <property name="label">7</property>
                   </widget>
                   <packing>
                     <property name="type">tab</property>
                     <property name="position">6</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label8">
+                    <property name="visible">True</property>
+                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                    <property name="label">8</property>
+                  </widget>
+                  <packing>
+                    <property name="type">tab</property>
+                    <property name="position">7</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2509,18 +2549,6 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkHButtonBox" id="hbuttonbox17">
-                <property name="visible">True</property>
-                <property name="spacing">6</property>
-                <property name="layout_style">GTK_BUTTONBOX_END</property>
-              </widget>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
               <widget class="GtkLabel" id="confSubtext">
                 <property name="width_request">580</property>
                 <property name="visible">True</property>
@@ -2531,7 +2559,7 @@
               </widget>
               <packing>
                 <property name="expand">False</property>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
@@ -2559,7 +2587,7 @@
                 </child>
               </widget>
               <packing>
-                <property name="position">3</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child>
@@ -2608,7 +2636,7 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">4</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </widget>
@@ -5553,6 +5581,238 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
             <property name="fill">False</property>
             <property name="padding">7</property>
             <property name="position">2</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkDialog" id="maskdialog">
+    <property name="width_request">650</property>
+    <property name="height_request">400</property>
+    <property name="visible">True</property>
+    <property name="border_width">5</property>
+    <property name="title" translatable="yes">Please Confirm</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="has_separator">False</property>
+    <child internal-child="vbox">
+      <widget class="GtkVBox" id="dialog-vbox12">
+        <property name="visible">True</property>
+        <property name="spacing">2</property>
+        <child>
+          <widget class="GtkVBox" id="vbox45">
+            <property name="visible">True</property>
+            <property name="border_width">5</property>
+            <property name="spacing">6</property>
+            <child>
+              <widget class="GtkLabel" id="maskAction">
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="maskSubtext">
+                <property name="width_request">580</property>
+                <property name="visible">True</property>
+                <property name="xalign">0</property>
+                <property name="yalign">0</property>
+                <property name="use_markup">True</property>
+                <property name="wrap">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkVBox" id="vbox48">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkHBox" id="hbox17">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkVButtonBox" id="vbuttonbox2">
+                        <property name="visible">True</property>
+                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="spacing">7</property>
+                        <property name="layout_style">GTK_BUTTONBOX_CENTER</property>
+                        <child>
+                          <widget class="GtkButton" id="enableButton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="response_id">0</property>
+                            <child>
+                              <widget class="GtkHBox" id="hbox20">
+                                <property name="visible">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <child>
+                                  <widget class="GtkImage" id="image4">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="stock">gtk-apply</property>
+                                  </widget>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label16">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="label" translatable="yes">Enable</property>
+                                    <property name="use_underline">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </widget>
+                            </child>
+                          </widget>
+                        </child>
+                        <child>
+                          <widget class="GtkButton" id="enableAllButton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="response_id">0</property>
+                            <child>
+                              <widget class="GtkHBox" id="hbox21">
+                                <property name="visible">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <child>
+                                  <widget class="GtkImage" id="image6">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="stock">gtk-redo</property>
+                                  </widget>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label17">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="label" translatable="yes">Enable all</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkButton" id="propertiesButton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                            <property name="response_id">0</property>
+                            <child>
+                              <widget class="GtkHBox" id="hbox18">
+                                <property name="visible">True</property>
+                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                <child>
+                                  <widget class="GtkImage" id="image3">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="stock">gtk-info</property>
+                                  </widget>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="label15">
+                                    <property name="visible">True</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                    <property name="label" translatable="yes">_Properties</property>
+                                    <property name="use_underline">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </widget>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">6</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkScrolledWindow" id="scrolledwindow25">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                        <property name="shadow_type">GTK_SHADOW_IN</property>
+                        <child>
+                          <widget class="GtkTreeView" id="maskPkg">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <widget class="GtkHButtonBox" id="dialog-action_area12">
+            <property name="visible">True</property>
+            <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <child>
+              <widget class="GtkButton" id="cancelbutton5">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="label">gtk-cancel</property>
+                <property name="use_stock">True</property>
+                <property name="response_id">-6</property>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkButton" id="okbutton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="label">gtk-ok</property>
+                <property name="use_stock">True</property>
+                <property name="response_id">-5</property>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
       </widget>

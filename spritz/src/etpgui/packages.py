@@ -31,6 +31,7 @@ class DummyEntropyPackage:
         self.color = None
         self.action = None
         self.dbconn = None
+        self.masked = None
         self.dummy_type = dummy_type
         self.onlyname = onlyname
 
@@ -43,6 +44,7 @@ class EntropyPackage:
         self.dummy_type = None
         self.available = avail
         self.do_purge = False
+        self.masked = None
         self.color = SpritzConf.color_normal
 
         if matched_atom[1] == 0:
@@ -74,6 +76,9 @@ class EntropyPackage:
 
     def getNameDesc(self):
         t = cleanMarkupString('/'.join(self.getName().split("/")[1:]))
+        if self.masked:
+            t +=  " <small>[<span foreground='#016AA3'>%s</span>]</small>" % (etpConst['packagemaskingreasons'][self.masked],)
+
         desc = self.getDescription(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."

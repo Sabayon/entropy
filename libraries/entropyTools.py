@@ -1752,6 +1752,13 @@ def is_valid_string(string):
             return False
     return True
 
+def open_buffer():
+    try:
+        import cStringIO as stringio
+    except ImportError:
+        import StringIO as stringio
+    return stringio.StringIO()
+
 def read_elf_class(elf_file):
     import struct
     f = open(elf_file,"rb")

@@ -523,11 +523,14 @@ class SpritzController(Controller):
             self.lastPkgPB = action
             # Only show add/remove all when showing updates
             if action == 'updates':
-                self.ui.pkgSelect.show()
-                self.ui.pkgDeSelect.show()
+                self.ui.updatesButtonbox.show()
             else:
-                self.ui.pkgSelect.hide()
-                self.ui.pkgDeSelect.hide()
+                self.ui.updatesButtonbox.hide()
+            if action == "masked":
+                self.setupMaskedPackagesWarningBox()
+                self.ui.maskedWarningBox.show()
+            else:
+                self.ui.maskedWarningBox.hide()
 
             self.addPackages()
             rb.grab_remove()
@@ -944,6 +947,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.pkgProperties_selected = None
         self.setupAdvPropertiesView()
 
+    def setupMaskedPackagesWarningBox(self):
+        mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
+            _("Attention"),
+            _("These packages are masked either by default or due to your choice. Please be careful, at least."),
+        )
+        self.ui.maskedWarningLabel.set_markup(mytxt)
+
     def setupAdvisories(self):
         self.Advisories = self.Equo.Security()
 
@@ -1152,6 +1162,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setBusy()
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
+            bootstrap = True
+            self.setPage('output')
+        elif (self.Equo.get_available_packages_cache() == None) and ('available' in masks):
             bootstrap = True
             self.setPage('output')
         self.progress.total.hide()
