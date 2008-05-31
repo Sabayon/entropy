@@ -72,7 +72,7 @@ myopts = [
     (2,'--replay',1,_('reinstall all the packages and their dependencies')),
     (2,'--empty',2,_('same as --replay')),
     (2,'--resume',1,_('resume previously interrupted operations')),
-    (2,'--skipfirst',1,_('update system with the latest available packages')),
+    (2,'--skipfirst',1,_('used with --resume, makes the first package to be skipped')),
     (2,'--upgrade',1,_('upgrade your distribution to the specified release')),
     (2,'--nochecksum',1,_('disable package integrity check')),
     None,
@@ -106,7 +106,6 @@ myopts = [
     (2,'--deep',2,_('also pull unused dependencies where depends list is empty')),
     (2,'--configfiles',1,_('makes configuration files to be removed')),
     (2,'--resume',1,_('resume previously interrupted operations')),
-    (2,'--deep',2,_('install atoms or .tbz2 packages')),
     None,
     (1,'deptest',2,_('look for unsatisfied dependencies')),
     (2,'--quiet',2,_('show less details (useful for scripting)')),
@@ -325,7 +324,7 @@ def reset_cache():
         pass
 
 def load_conf_cache():
-    if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching equo conf"), back = True)
+    if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
     import text_configuration
     try:
         oldquiet = etpUi['quiet']
@@ -338,14 +337,20 @@ def load_conf_cache():
                 continue
         etpUi['quiet'] = oldquiet
     except:
-        if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching not run."))
+        if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching not run.")))
         return
-    if not etpUi['quiet']: print_info(red(" @@ ")+blue("Caching complete."))
+    if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching complete.")))
     if scandata: # can be None
         if len(scandata) > 0: # strict check
             if not etpUi['quiet']:
-                print_warning(darkgreen("There are "+str(len(scandata))+" configuration file(s) that need(s) to be updated."))
-                print_warning(red("Please run: ")+bold("equo conf update"))
+                mytxt = "%s %s %s." % (
+                    _("There are"),
+                    len(scandata),
+                    _("configuration file(s) needing update"),
+                )
+                print_warning(darkgreen(mytxt))
+                mytxt = "%s: %s" % (red(_("Please run")),bold("equo conf update"))
+                print_warning(mytxt)
 
 try:
     rc = 0
@@ -538,18 +543,18 @@ try:
     sys.exit(rc)
 except exceptionTools.SystemDatabaseError:
     reset_cache()
-    print_error(darkred(" * ")+red("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools"))
+    print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
     sys.exit(101)
 except exceptionTools.OnlineMirrorError, e:
     reset_cache()
-    print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.RepositoryError, e:
     reset_cache()
-    print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.PermissionDenied, e:
-    print_error(darkred(" * ")+red(str(e)+". Cannot continue."))
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
 except SystemExit:
     pass
@@ -560,7 +565,7 @@ except IOError, e:
 except OSError, e:
     if e.errno == 28:
         entropyTools.printException()
-        print_error(darkred("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-("))
+        print_error(darkred(_("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-(")))
         sys.exit(5)
     else:
         raise
@@ -572,10 +577,10 @@ except:
     reset_cache()
 
     Text = TextInterface()
-    print_error(darkred("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens."))
-    print_error(darkred("But there's something you could do to help Equo to be a better application."))
-    print_error(darkred("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"))
-    print_error(darkgreen("Now I am showing you what happened. Don't panic, I'm here to help you."))
+    print_error(darkred(_("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens.")))
+    print_error(darkred(_("But there's something you could do to help Equo to be a better application.")))
+    print_error(darkred(_("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --")))
+    print_error(darkgreen(_("Now I am showing you what happened. Don't panic, I'm here to help you.")))
 
     entropyTools.printException()
 
@@ -601,33 +606,33 @@ except:
         ferror.close()
     except Exception, e:
         print
-        print_error(darkred("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org."))
+        print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org.")))
         sys.exit(1)
 
     print
-    print_error(blue("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?"))
+    print_error(blue(_("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?")))
 
     conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
     if (conntest != False):
-        print_error(darkgreen("Of course you are on the Internet..."))
-        rc = Text.askQuestion("   Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)")
+        print_error(darkgreen(_("Of course you are on the Internet...")))
+        rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
         if rc == "No":
-            print_error(darkgreen("Ok, ok ok ok... Sorry!"))
+            print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
             sys.exit(2)
     else:
-        print_error(darkgreen("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+        print_error(darkgreen(_("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
         sys.exit(3)
 
-    print_error(darkgreen("If you want to be contacted back (and actively supported), also answer the questions below:"))
-    name = readtext("Your Full name: ")
-    email = readtext("Your E-Mail address: ")
-    description = readtext("What you were doing: ")
+    print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
+    name = readtext(_("Your Full name:"))
+    email = readtext(_("Your E-Mail address:"))
+    description = readtext(_("What you were doing:"))
     errorText = ''.join(errorText)
     error = ErrorReportInterface()
     error.prepare(errorText, name, email, '\n'.join([str(x) for x in exception_data]), description)
     result = error.submit()
     if (result):
-        print_error(darkgreen("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible."))
+        print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
     else:
-        print_error(darkred("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org."))
+        print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
         sys.exit(4)
