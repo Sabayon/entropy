@@ -430,8 +430,6 @@ class MaskedPackagesDialog:
         self.refresh()
 
     def refresh(self):
-        if self.pkgcount == self.maxcount:
-            self.okbutton.set_sensitive(True)
         self.pkg.queue_draw()
         self.pkg.expand_all()
 
@@ -474,6 +472,10 @@ class MaskedPackagesDialog:
             cell.set_property( 'stock-id', None )
 
     def new_pixbuf( self, column, cell, model, iterator ):
+
+        if self.pkgcount >= self.maxcount:
+            self.okbutton.set_sensitive(True)
+
         obj = model.get_value( iterator, 0 )
         if obj.matched_atom in self.etpbase.unmaskingPackages:
             self.set_pixbuf_to_cell(cell, True)
