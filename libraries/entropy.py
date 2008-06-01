@@ -19747,6 +19747,7 @@ class EntropyDatabaseInterface:
             else:
                 self.ServiceInterface.SpmService.run_fixpackages()
 
+        spm_moves = set()
         quickpkg_atoms = set()
         for action in actions:
             command = action.split()
@@ -19762,6 +19763,7 @@ class EntropyDatabaseInterface:
                 header = darkred(" * ")
             )
             if command[0] == "move":
+                spm_moves.add(action)
                 quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:], quickpkg_atoms)
             elif command[0] == "slotmove":
                 quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:], quickpkg_atoms)
@@ -19785,6 +19787,18 @@ class EntropyDatabaseInterface:
                     header = darkred(" * ")
                 )
             self.commitChanges()
+
+        if spm_moves:
+            try:
+                self.doTreeupdatesSpmCleanup(spm_moves)
+            except Exception, e:
+                mytxt = "%s: %s: %s, %s." % (
+                    bold(_("WARNING")),
+                    red(_("Cannot run SPM cleanup, error")),
+                    Exception,
+                    e,
+                )
+                self.entropyTools.printTraceback()
 
         # discard cache
         self.clearCache()
@@ -20028,6 +20042,51 @@ class EntropyDatabaseInterface:
                 type = "warning",
                 header = darkred(" * ")
             )
+
+    def doTreeupdatesSpmCleanup(self, spm_moves):
+
+        # now erase Spm entries if necessary
+        for action in spm_moves:
+            command = action.split()
+            if len(command) < 2:
+                continue
+            key = command[1]
+            name = key.split("/")[1]
+            if self.clientDatabase:
+                try:
+                    Spm = self.ServiceInterface.Spm()
+                except:
+                    continue
+            else:
+                Spm = self.ServiceInterface.SpmService
+            vdb_path = Spm.get_vdb_path()
+            pkg_path = os.path.join(vdb_path,key.split("/")[0])
+            mydirs = [os.path.join(pkg_path,x) for x in os.listdir(pkg_path) if x.startswith(name)]
+            mydirs = [x for x in mydirs if os.path.isdir(x)]
+            # now move these dirs
+            for mydir in mydirs:
+                to_path = os.path.join(etpConst['packagestmpdir'],os.path.basename(mydir))
+                mytxt = "%s: %s '%s' %s '%s'" % (
+                    bold(_("SPM")),
+                    red(_("Moving old entry")),
+                    blue(mydir),
+                    red(_("to")),
+                    blue(to_path),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                if os.path.isdir(to_path):
+                    shutil.rmtree(to_path,True)
+                    try:
+                        os.rmdir(to_path)
+                    except OSError:
+                        pass
+                shutil.move(mydir,to_path)
+
 
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
@@ -21255,8 +21314,17 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         mytime = str(self.entropyTools.getCurrentUnixTime())
         for command in actions:
-            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,forbranch,mytime,))
+            if not self.doesTreeupdatesActionExist(repository, command, forbranch):
+                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,forbranch,mytime,))
         self.commitChanges()
+
+    def doesTreeupdatesActionExist(self, repository, command, branch):
+        self.cursor.execute('SELECT * FROM treeupdatesactions WHERE repository = (?) and command = (?) and branch = (?)', (repository,command,branch,))
+        result = self.cursor.fetchone()
+        if result:
+            return True
+        return False
+
 
     def retrieveAtom(self, idpackage):
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
