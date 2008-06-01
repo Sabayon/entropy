@@ -6011,6 +6011,24 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
+    def get_eapi3_database_treeupdates(self, repo, compression, session):
+        data = self.eapi3_socket.CmdInterface.get_repository_treeupdates(
+                repo,
+                etpConst['currentarch'],
+                etpConst['product'],
+                session_id = session,
+                compression = compression
+        )
+        if not isinstance(data,dict):
+            return None,None
+        else:
+            if not data.has_key('digest'):
+                return None,None
+            elif not data.has_key('actions'):
+                return None,None
+            else:
+                return data['digest'],data['actions']
+
     def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1500, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
@@ -6068,6 +6086,43 @@ class RepoInterface:
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             return False
+
+        # get treeupdates stuff
+        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(repo, compression, session)
+        if dbdigest == None:
+            mydbconn.closeDB()
+            self.eapi3_socket.close_session(session)
+            mytxt = "%s: %s" % (
+                blue(_("EAPI3 Service status")),
+                darkred(_("treeupdates data not available")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
+        else:
+            try:
+                # inject new digest
+                mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
+                # bump new actions
+                mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
+            except (dbapi2.OperationalError,dbapi2.IntegrityError,):
+                mydbconn.closeDB()
+                self.eapi3_socket.close_session(session)
+                mytxt = "%s: %s" % (
+                    blue(_("EAPI3 Service status")),
+                    darkred(_("cannot update treeupdates data")),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    type = "info",
+                    header = blue("  # "),
+                )
+                return None
 
         count = 0
         added_segments = []
@@ -15654,6 +15709,16 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'syntax': "<SESSION_ID> pkginfo <content fmt True/False> <repository> <arch> <product> <idpackage>",
                     'from': str(self), # from what class
                 },
+                'treeupdates':    {
+                    'auth': False,
+                    'built_in': False,
+                    'cb': self.docmd_treeupdates,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "returns repository treeupdates metadata",
+                    'syntax': "<SESSION_ID> treeupdates <repository> <arch> <product>",
+                    'from': str(self), # from what class
+                },
             }
 
         def register(
@@ -15704,6 +15769,39 @@ class RepositorySocketServerInterface(SocketHostInterface):
             added_ids = myids - foreign_idpackages
 
             return {'removed': removed_ids, 'added': added_ids, 'checksum': mychecksum}
+
+        def docmd_treeupdates(self, myargs):
+
+            self.trash_old_databases()
+
+            if len(myargs) < 3:
+                return None
+            repository = myargs[1]
+            arch = myargs[2]
+            product = myargs[3]
+
+            x = (repository,arch,product,)
+            valid = self.HostInterface.is_repository_available(x)
+            if not valid:
+                return valid
+
+            cached = self.HostInterface.get_dcache((repository, arch, product, 'docmd_treeupdates'), repository)
+            if cached != None:
+                return cached
+
+            dbpath = self.get_database_path(repository, arch, product)
+            dbconn = self.HostInterface.open_db(dbpath, docache = False)
+
+            # get data
+            data = {}
+            data['actions'] = dbconn.listAllTreeUpdatesActions()
+            data['digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
+
+            self.HostInterface.set_dcache((repository, arch, product, 'docmd_treeupdates'), data, repository)
+            dbconn.closeDB()
+
+            return data
+
 
         def docmd_pkginfo(self, myargs):
 
@@ -16083,28 +16181,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
         myidlist = ' '.join([str(x) for x in idpackages])
         cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
-        # send command
-        self.Service.transmit(cmd)
-        # receive answer
-        data = self.Service.receive()
 
-        skip = self.handle_standard_answer(data, repository, arch, product)
-        if skip:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-
-        data = self.get_result(session_id)
-        if data == None:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-        elif not data:
-            if close_session:
-                self.Service.close_session(session_id)
-            return False
-
-        data = self.convert_stream_to_object(data, docomp, repository, arch, product)
+        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
 
         if docomp:
             self.set_gzip_compression_on_rc(session_id, False)
@@ -16112,6 +16190,25 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         if close_session:
             self.Service.close_session(session_id)
         return data
+
+    def retrieve_command_answer(self, cmd, repository, arch, product, compression, session_id):
+
+        # send command
+        self.Service.transmit(cmd)
+        # receive answer
+        data = self.Service.receive()
+
+        skip = self.handle_standard_answer(data, repository, arch, product)
+        if skip:
+            return None
+
+        data = self.get_result(session_id)
+        if data == None:
+            return None
+        elif not data:
+            return False
+
+        return self.convert_stream_to_object(data, compression, repository, arch, product)
 
     def package_information_handler(self, idpackages, repository, arch, product, session_id, compression):
 
@@ -16129,31 +16226,53 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             product,
             ' '.join([str(x) for x in idpackages]),
         )
-        # send command
-        self.Service.transmit(cmd)
-        # receive answer
-        data = self.Service.receive()
 
-        skip = self.handle_standard_answer(data, repository, arch, product)
-        if skip:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-
-        data = self.get_result(session_id)
-        if data == None:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-        elif not data:
-            if close_session:
-                self.Service.close_session(session_id)
-            return False
-
-        data = self.convert_stream_to_object(data, compression, repository, arch, product)
+        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
         if close_session:
             self.Service.close_session(session_id)
         return data
+
+    def repository_treeupdates_handler(self, repository, arch, product, session_id, compression):
+
+        close_session = False
+        if session_id == None:
+            close_session = True
+            session_id = self.Service.open_session()
+
+        """<SESSION_ID> treeupdates <repository> <arch> <product>"""
+        cmd = "%s %s %s %s %s" % (
+            session_id,
+            'treeupdates',
+            repository,
+            arch,
+            product,
+        )
+
+        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
+        if close_session:
+            self.Service.close_session(session_id)
+        return data
+
+    def get_repository_treeupdates(self, repository, arch, product, session_id = None, compression = False):
+
+        self.Service.check_socket_connection()
+        tries = 5
+        while 1:
+            try:
+                data = self.repository_treeupdates_handler(
+                    repository,
+                    arch,
+                    product,
+                    session_id = session_id,
+                    compression = compression
+                )
+                return data
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
 
     def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = False):
 
