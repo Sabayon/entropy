@@ -642,7 +642,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info(red(" @@ ")+mytxt)
                 mytxt = "%s: %s" % (
                     red(_("Packages needing to be downgraded")),
-                    red(str(pkgsToUpdate)),
+                    red(str(pkgsToDowngrade)),
                 )
                 print_info(red(" @@ ")+mytxt)
 
