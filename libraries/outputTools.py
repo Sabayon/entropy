@@ -26,6 +26,7 @@ import sys, os
 import curses
 import readline
 from entropyConstants import etpUi
+from entropy_i18n import _
 stuff = {}
 stuff['cols'] = 30
 try:
@@ -370,7 +371,7 @@ def writechar(char):
         raise
 
 def readtext(request):
-    xtermTitle("Entropy needs your attention")
+    xtermTitle(_("Entropy needs your attention"))
     try:
         print request,
     except UnicodeEncodeError:
@@ -467,14 +468,14 @@ class TextInterface:
         colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
         if len(responses) > len(colours):
             import exceptionTools
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: maximum responses length = %s" % (len(colours),))
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
         try:
             print darkgreen(question),
         except UnicodeEncodeError:
             print darkgreen(question.encode('utf-8')),
         try:
             while True:
-                xtermTitle("Entropy got a question for you")
+                xtermTitle(_("Entropy got a question for you"))
                 response = raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
                 for key in responses:
                     # An empty response will match the first value in responses.
@@ -482,11 +483,11 @@ class TextInterface:
                         xtermTitleReset()
                         return key
                     try:
-                        print "I cannot understand '%s'" % response,
+                        print "%s '%s'" % (_("I cannot understand"),response,),
                     except UnicodeEncodeError:
-                        print "I cannot understand '%s'" % response.encode('utf-8'),
+                        print "%s '%s'" % (_("I cannot understand"),response.encode('utf-8'),),
         except (EOFError, KeyboardInterrupt):
-            print "Interrupted."
+            print "%s." % (_("Interrupted"),)
             xtermTitleReset()
             sys.exit(100)
         xtermTitleReset()
