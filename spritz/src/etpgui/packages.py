@@ -74,6 +74,12 @@ class EntropyPackage:
     def getName(self):
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
+    def isMasked(self):
+        idpackage, idmask = self.dbconn.idpackageValidator(self.matched_atom[0])
+        if idpackage != -1:
+            return False
+        return True
+
     def getNameDesc(self):
         t = cleanMarkupString('/'.join(self.getName().split("/")[1:]))
         if self.masked:
@@ -307,6 +313,7 @@ class EntropyPackage:
     version = property(fget=getVer)
     release = property(fget=getRel)
     slot = property(fget=getSlot)
+    maskstat = property(fget=isMasked)
     keywords = property(fget=getKeywords)
     useflags = property(fget=getUseflags)
     homepage = property(fget=getHomepage)

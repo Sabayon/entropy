@@ -241,6 +241,9 @@ class SpritzGUI:
         self.setupPkgFilter()
         self.setupAdvisoriesFilter()
 
+        self.setupImages()
+
+
     def on_console_click(self, widget, event):
         self.console_menu.popup( None, None, None, event.button, event.time )
         return True
@@ -333,6 +336,18 @@ class SpritzGUI:
         button.show()
         self.ui.content.pack_start( button, False )
         self.pageButtons[page] = button
+
+    def setupImages(self):
+
+        # progressImage
+        iconpath = os.path.join(const.PIXMAPS_PATH,"sabayon.png")
+        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                self.ui.progressImage.set_from_pixbuf(p)
+            except gobject.GError:
+                pass
+
 
     def setPage( self, page ):
         self.activePage = page

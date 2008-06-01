@@ -1017,7 +1017,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             elif rc == "Yes" and human:
                 doSelectiveRemoval = True
             elif rc == "No" and human:
-                rc = Equo.askQuestion("     %s") % (_("Would you like to skip this step then ?"),)
+                rc = Equo.askQuestion("     %s" % (_("Would you like to skip this step then ?"),))
                 if rc == "Yes":
                     return 0,0
         elif deps:

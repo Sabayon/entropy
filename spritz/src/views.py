@@ -26,6 +26,7 @@ from entropyapi import EquoConnection
 from etpgui import *
 from entropyConstants import *
 from entropy_i18n import _,_LOCALE
+from dialogs import MaskedPackagesDialog
 
 TOGGLE_WIDTH = 12
 
@@ -133,6 +134,7 @@ class EntropyPackageView:
         self.installed_undopurge = self.installed_menu_xml.get_widget( "undopurge" )
         self.installed_remove = self.installed_menu_xml.get_widget( "remove" )
         self.installed_undoremove = self.installed_menu_xml.get_widget( "undoremove" )
+        self.installed_unmask = self.installed_menu_xml.get_widget( "unmask" )
         self.installed_reinstall.set_image(self.img_pkg_reinstall)
         self.installed_undoreinstall.set_image(self.img_pkg_undoreinstall)
         self.installed_remove.set_image(self.img_pkg_remove)
@@ -175,6 +177,7 @@ class EntropyPackageView:
         self.updates_update.hide()
 
     def reset_installed_packages_menu(self):
+        self.installed_unmask.hide()
         self.installed_undoremove.hide()
         self.installed_undoreinstall.hide()
         self.installed_undopurge.hide()
@@ -187,6 +190,7 @@ class EntropyPackageView:
             self.installed_purge.show()
 
     def hide_installed_packages_menu(self):
+        self.installed_unmask.hide()
         self.installed_undoremove.hide()
         self.installed_undoreinstall.hide()
         self.installed_undopurge.hide()
@@ -270,6 +274,10 @@ class EntropyPackageView:
     def run_installed_menu_stuff(self, obj):
         do_show = True
         self.reset_installed_packages_menu()
+        if obj.masked:
+            # still ?
+            if obj.maskstat:
+                self.installed_unmask.show()
         if obj.queued:
             self.hide_installed_packages_menu()
             if obj.queued == "r" and not obj.do_purge:
@@ -306,6 +314,19 @@ class EntropyPackageView:
             if str(obj) == str(to_obj):
                 self.loaded_reinstallable = to_obj
                 break
+
+    def on_unmask_activate(self, widget):
+        busyCursor(self.main_window)
+        model, iter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( iter, 0 )
+
+        oldmask = self.etpbase.unmaskingPackages.copy()
+        mydialog = MaskedPackagesDialog(self.Equo, self.etpbase, self.ui.main, [obj])
+        result = mydialog.run()
+        if result != -5:
+            self.etpbase.unmaskingPackages = oldmask.copy()
+        mydialog.destroy()
+        normalCursor(self.main_window)
 
     def on_remove_activate(self, widget, do_purge = False):
         busyCursor(self.main_window)
@@ -653,8 +674,6 @@ class EntropyQueueView:
         self.Equo = EquoConnection
 
     def setup_view( self ):
-
-        #column.set_fixed_width( size )
 
         model = gtk.TreeStore( gobject.TYPE_STRING )
         self.view.set_model( model )
