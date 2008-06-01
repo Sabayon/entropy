@@ -6012,6 +6012,7 @@ class RepoInterface:
         return data['added'],data['removed'],data['checksum']
 
     def get_eapi3_database_treeupdates(self, repo, compression, session):
+        self.socket.setdefaulttimeout(20)
         data = self.eapi3_socket.CmdInterface.get_repository_treeupdates(
                 repo,
                 etpConst['currentarch'],
@@ -15776,9 +15777,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
             if len(myargs) < 3:
                 return None
-            repository = myargs[1]
-            arch = myargs[2]
-            product = myargs[3]
+            repository = myargs[0]
+            arch = myargs[1]
+            product = myargs[2]
 
             x = (repository,arch,product,)
             valid = self.HostInterface.is_repository_available(x)
@@ -16247,6 +16248,9 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             arch,
             product,
         )
+        print "CMD"
+        print cmd
+        print "---"
 
         data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
         if close_session:
