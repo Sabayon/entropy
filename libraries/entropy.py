@@ -6039,6 +6039,10 @@ class RepoInterface:
             return False
         myidpackages = mydbconn.listAllIdpackages()
 
+        # enable compression
+        if compression:
+            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, True)
+
         added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
             repo,
             myidpackages,
@@ -6138,10 +6142,6 @@ class RepoInterface:
         if mytmp:
             added_segments.append(list(mytmp))
         del mytmp
-
-        # enable compression
-        if compression:
-            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, True)
 
         # fetch and store
         count = 0
@@ -16175,18 +16175,11 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         if session_id == None:
             close_session = True
             session_id = self.Service.open_session()
-        if compression:
-            docomp = self.set_gzip_compression_on_rc(session_id, True)
-        else:
-            docomp = False
 
         myidlist = ' '.join([str(x) for x in idpackages])
         cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
 
         data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
-
-        if docomp:
-            self.set_gzip_compression_on_rc(session_id, False)
 
         if close_session:
             self.Service.close_session(session_id)
@@ -16248,9 +16241,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             arch,
             product,
         )
-        print "CMD"
-        print cmd
-        print "---"
 
         data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
         if close_session:
