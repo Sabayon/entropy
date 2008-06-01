@@ -205,9 +205,15 @@ def getRandomNumber():
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
         if back:
-            sys.stdout.write(red(">> ")+what)
+            try:
+                print red(">>"), what,
+            except UnicodeEncodeError:
+                print red(">>"),what.encode('utf-8'),
         else:
-            print what
+            try:
+                print what
+            except UnicodeEncodeError:
+                print what.encode('utf-8')
         for i in range(secs)[::-1]:
             sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
