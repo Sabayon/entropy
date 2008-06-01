@@ -717,6 +717,10 @@ def const_defaultSettings(rootdir):
 
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser
+        'live_packagemasking': {
+            'unmask_matches': set(),
+            'mask_matches': set(),
+        },
         'packagemaskingreasons': {
             0: _('reason not available'),
             1: _('user package.mask'),
@@ -729,6 +733,8 @@ def const_defaultSettings(rootdir):
             8: _('repository general packages.db.mask'),
             9: _('repository in branch packages.db.mask'),
             10: _('user license.mask'),
+            11: _('user live unmask'),
+            12: _('user live mask'),
         },
 
         'misc_counters': {

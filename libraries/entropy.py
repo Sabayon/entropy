@@ -2259,7 +2259,7 @@ class EquoInterface(TextInterface):
 
     def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
         if myhash == None:
-            myhash = self.get_available_packages_chash(etpConst['branch'])
+            myhash = self.get_available_packages_chash(branch)
         disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
         try:
             if disk_cache['chash'] == myhash:
@@ -2451,28 +2451,45 @@ class EquoInterface(TextInterface):
                 found_conflicts.add(match[0])
         return found_conflicts
 
-    def is_match_masked(self, match):
+    def is_match_masked(self, match, live_check = True):
         dbconn = self.openRepositoryDatabase(match[1])
-        idpackage, idreason = dbconn.idpackageValidator(match[0])
+        idpackage, idreason = dbconn.idpackageValidator(match[0], live = live_check)
         if idpackage != -1:
             return False
         return True
 
-    def unmask_match(self, match, method = 'atom', dry_run = False):
+    def unmask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
 
         valid_masks = ["atom"]
 
         if method not in valid_masks:
             raise exceptionTools.IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"),method,) )
-        if not self.is_match_masked(match):
+        if not self.is_match_masked(match, live_check = False):
             return True
 
         done = False
         if method == "atom":
             done = self.unmask_match_by_atom(match, dry_run)
 
-        if done and not dry_run:
+        if done:
             self.parse_masking_settings() # cache will be erased by this
+        if dry_run and method == "atom": # inject if done "live"
+            etpConst['live_packagemasking']['unmask_matches'].add(match)
+        # clear atomMatch cache anyway
+
+        # you must manually update
+        if clean_all_cache and not dry_run:
+            self.clear_dump_cache(etpCache['world_available'])
+            self.clear_dump_cache(etpCache['world_update'])
+
+        self.clear_dump_cache(etpCache['check_package_update'])
+        self.clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self.clear_dump_cache(etpCache['atomMatch'])
+        self.clear_dump_cache(etpCache['dep_tree'])
+        self.clear_dump_cache(etpCache['dbMatch']+"/"+match[1]+"/")
+        self.clear_dump_cache(etpCache['dbSearch']+"/"+match[1]+"/")
+
+        idpackageValidatorCache.clear()
 
         return done
 
@@ -2480,29 +2497,41 @@ class EquoInterface(TextInterface):
         self.clear_match_mask(match, dry_run)
         dbconn = self.openRepositoryDatabase(match[1])
         atom = dbconn.retrieveAtom(match[0])
-        unmask_file = self.MaskingParser.etpMaskFiles['mask']
+        unmask_file = self.MaskingParser.etpMaskFiles['unmask']
+        exist = False
         if not os.path.isfile(unmask_file):
             if not os.access(os.path.dirname(unmask_file),os.W_OK):
                 return False # cannot write
-            if not dry_run:
-                f = open(unmask_file,"w")
         elif not os.access(unmask_file, os.W_OK):
             return False
         elif not dry_run:
-            f = open(unmask_file,"aw")
+            exist = True
 
         if dry_run:
             return True
 
-        f.writelines([atom])
+        content = []
+        if exist:
+            f = open(unmask_file,"r")
+            content = [x.strip() for x in f.readlines()]
+            f.close()
+        content.append(atom)
+        unmask_file_tmp = unmask_file+".tmp"
+        f = open(unmask_file_tmp,"w")
+        for line in content:
+            f.write(line+"\n")
         f.flush()
         f.close()
+        shutil.move(unmask_file_tmp,unmask_file)
         return True
 
     def clear_match_mask(self, match, dry_run = False):
 
-        idpackage, repoid = match
-        dbconn = self.openRepositoryDatabase(repoid)
+        if match in etpConst['live_packagemasking']['unmask_matches']:
+            etpConst['live_packagemasking']['unmask_matches'].remove(match)
+        if match in etpConst['live_packagemasking']['mask_matches']:
+            etpConst['live_packagemasking']['mask_matches'].remove(match)
+
         masking_list = [self.MaskingParser.etpMaskFiles['mask']]
 
         for mask_file in masking_list:
@@ -2519,12 +2548,15 @@ class EquoInterface(TextInterface):
                 line = line.strip()
                 if line.startswith("#"):
                     newf.write(line+"\n")
+                    line = f.readline()
                     continue
                 elif not line:
                     newf.write("\n")
+                    line = f.readline()
                     continue
                 mymatch = self.atomMatch(line, packagesFilter = False)
                 if mymatch == match:
+                    line = f.readline()
                     continue
                 newf.write(line+"\n")
                 line = f.readline()
@@ -5580,7 +5612,7 @@ class RepoInterface:
                 self.Entropy, EntropyRepositorySocketClientCommands, output_header = "\t"
             )
             self.eapi3_socket.connect(dburl, port)
-        except exceptionTools.ConnectionError:
+        except (exceptionTools.ConnectionError,self.socket.error,):
             self.eapi3_socket = None
             return False
         return True
@@ -20843,18 +20875,16 @@ class EntropyDatabaseInterface:
     def getStrictScopeData(self, idpackage):
         self.cursor.execute("""
                 SELECT 
-                        baseinfo.atom,
-                        baseinfo.slot,
-                        baseinfo.revision
+                        atom,
+                        slot,
+                        revision
                 FROM 
                         baseinfo
                 WHERE 
                         idpackage = (?)
         """, (idpackage,))
         rslt = self.cursor.fetchone()
-        if rslt:
-            return rslt[0]
-        return None
+        return rslt
 
     def getScopeData(self, idpackage):
         self.cursor.execute("""
@@ -23118,15 +23148,22 @@ class EntropyDatabaseInterface:
 
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache
-    def idpackageValidator(self,idpackage):
+    def idpackageValidator(self,idpackage, live = True):
 
         if self.dbname == etpConst['clientdbid']:
             return idpackage,0
 
         reponame = self.dbname[5:]
-        cached = idpackageValidatorCache.get((idpackage,reponame))
+        cached = idpackageValidatorCache.get((idpackage,reponame,live))
         if cached != None:
             return cached
+
+        if live:
+            if (idpackage,reponame) in etpConst['live_packagemasking']['mask_matches']:
+                # do not cache this
+                return -1,12
+            elif (idpackage,reponame) in etpConst['live_packagemasking']['unmask_matches']:
+                return idpackage,11
 
         # check if user package.mask needs it masked
         user_package_mask_ids = etpConst['packagemasking'].get(reponame+'mask_ids')
@@ -23140,7 +23177,7 @@ class EntropyDatabaseInterface:
             user_package_mask_ids = etpConst['packagemasking'][reponame+'mask_ids']
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            idpackageValidatorCache[(idpackage,reponame)] = -1,1
+            idpackageValidatorCache[(idpackage,reponame,live)] = -1,1
             return -1,1
 
         # see if we can unmask by just lookin into user package.unmask stuff -> etpConst['packagemasking']['unmask']
@@ -23154,7 +23191,7 @@ class EntropyDatabaseInterface:
                 etpConst['packagemasking'][reponame+'unmask_ids'] |= set(matches[0])
             user_package_unmask_ids = etpConst['packagemasking'][reponame+'unmask_ids']
         if idpackage in user_package_unmask_ids:
-            idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
+            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,3
             return idpackage,3
 
         # check if repository packages.db.mask needs it masked
@@ -23173,7 +23210,7 @@ class EntropyDatabaseInterface:
                         etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] |= set(matches[0])
                     all_branches_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['*_ids']
                 if idpackage in all_branches_mask_ids:
-                    idpackageValidatorCache[(idpackage,reponame)] = -1,8
+                    idpackageValidatorCache[(idpackage,reponame,live)] = -1,8
                     return -1,8
             # no universal mask
             branches_mask = repomask.get("branch")
@@ -23190,7 +23227,7 @@ class EntropyDatabaseInterface:
                         branch_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"]
                     if idpackage in branch_mask_ids:
                         if  self.retrieveBranch(idpackage) == branch:
-                            idpackageValidatorCache[(idpackage,reponame)] = -1,9
+                            idpackageValidatorCache[(idpackage,reponame,live)] = -1,9
                             return -1,9
 
         if etpConst['packagemasking']['license_mask']:
@@ -23199,7 +23236,7 @@ class EntropyDatabaseInterface:
             if mylicenses:
                 for mylicense in mylicenses:
                     if mylicense in etpConst['packagemasking']['license_mask']:
-                        idpackageValidatorCache[(idpackage,reponame)] = -1,10
+                        idpackageValidatorCache[(idpackage,reponame,live)] = -1,10
                         return -1,10
 
         mykeywords = self.retrieveKeywords(idpackage)
@@ -23210,7 +23247,7 @@ class EntropyDatabaseInterface:
         for key in etpConst['keywords']:
             if key in mykeywords:
                 # found! all fine
-                idpackageValidatorCache[(idpackage,reponame)] = idpackage,2
+                idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,2
                 return idpackage,2
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
@@ -23222,7 +23259,7 @@ class EntropyDatabaseInterface:
                     keyword_data = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword)
                     if keyword_data:
                         if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                            idpackageValidatorCache[(idpackage,reponame)] = idpackage,4
+                            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,4
                             return idpackage,4
                         keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword+"_ids")
                         if keyword_data_ids == None:
@@ -23234,7 +23271,7 @@ class EntropyDatabaseInterface:
                                 etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"] |= matches[0]
                             keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"]
                         if idpackage in keyword_data_ids:
-                            idpackageValidatorCache[(idpackage,reponame)] = idpackage,5
+                            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,5
                             return idpackage,5
 
         # if we get here, it means we didn't find a match in repositories
@@ -23257,11 +23294,11 @@ class EntropyDatabaseInterface:
                         keyword_data_ids = etpConst['packagemasking']['keywords']['packages'][reponame+keyword+"_ids"]
                     if idpackage in keyword_data_ids:
                         # valid!
-                        idpackageValidatorCache[(idpackage,reponame)] = idpackage,6
+                        idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,6
                         return idpackage,6
 
         # holy crap, can't validate
-        idpackageValidatorCache[(idpackage,reponame)] = -1,7
+        idpackageValidatorCache[(idpackage,reponame,live)] = -1,7
         return -1,7
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
