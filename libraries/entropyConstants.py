@@ -595,7 +595,10 @@ def const_defaultSettings(rootdir):
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
         'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
         'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
-        'proxy': {}, # proxy configuration information, used system wide
+        'proxy': {
+            'ftp': None,
+            'http': None,
+        }, # proxy configuration information, used system wide
 
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'socketloglevel': 2, # # Entropy Socket Interface log level
@@ -913,8 +916,12 @@ def const_readRepositoriesSettings():
 
             elif (line.find("downloadspeedlimit|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 try:
-                    etpConst['downloadspeedlimit'] = int(line.split("|")[1])
-                except:
+                    myval = int(line.split("|")[1])
+                    if myval > 0:
+                        etpConst['downloadspeedlimit'] = myval
+                    else:
+                        etpConst['downloadspeedlimit'] = None
+                except (ValueError,IndexError,):
                     etpConst['downloadspeedlimit'] = None
 
             elif (line.find("securityurl|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
@@ -1048,19 +1055,19 @@ def const_readEquoSettings():
 
             elif line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
-                if compatopt == "disable":
+                if compatopt.lower() in ("disable","disabled","false","0","no"):
                     etpConst['gentoo-compat'] = False
                 else:
                     etpConst['gentoo-compat'] = True
 
             elif line.startswith("filesbackup|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
-                if compatopt == "disable":
+                if compatopt.lower() in ("disable","disabled","false","0","no"):
                     etpConst['filesbackup'] = False
 
             elif line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
                 collopt = line.split("|")[1].strip()
-                if collopt == "0" or collopt == "1" or collopt == "2":
+                if collopt.lower() in ("0","1","2",):
                     etpConst['collisionprotect'] = int(collopt)
 
             elif line.startswith("configprotect|") and (len(line.split("|")) == 2):
@@ -1246,7 +1253,7 @@ def const_readReagentSettings():
                 feed = line.split("rss-feed|")[1]
                 if feed in ("enable","enabled","true","1"):
                     etpConst['rss-feed'] = True
-                elif feed in ("disable","disabled","false","0"):
+                elif feed in ("disable","disabled","false","0","no",):
                     etpConst['rss-feed'] = False
             elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
                 feedname = line.split("rss-name|")[1].strip()

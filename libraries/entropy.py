@@ -1431,10 +1431,9 @@ class EquoInterface(TextInterface):
                 etpRepositoriesOrder.insert(repodata['position'],repodata['repoid'])
             else:
                 etpRepositoriesOrder.append(repodata['repoid'])
-            if repodata.has_key("service_port"):
-                etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
-            else:
-                etpRepositories[repodata['repoid']]['service_port'] = int(etpConst['socket_service']['port'])
+            if not repodata.has_key("service_port"):
+                repodata['service_port'] = int(etpConst['socket_service']['port'])
+            etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
             self.repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
@@ -7761,8 +7760,13 @@ class urlFetcher:
             self.localfile = open(self.pathToSave,"wb")
 
         # setup proxy, doing here because config is dynamic
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            proxy_support = urllib2.ProxyHandler(mydict)
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
         #FIXME else: unset opener??
@@ -10407,8 +10411,13 @@ class ErrorReportInterface:
         self.generated = False
         self.params = {}
 
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            proxy_support = urllib2.ProxyHandler(mydict)
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
 
@@ -14990,8 +14999,13 @@ class ServerInterface(TextInterface):
 
         # now pray the server
         try:
-            if etpConst['proxy']:
-                proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            mydict = {}
+            if etpConst['proxy']['ftp']:
+                mydict['ftp'] = etpConst['proxy']['ftp']
+            if etpConst['proxy']['http']:
+                mydict['http'] = etpConst['proxy']['http']
+            if mydict:
+                proxy_support = urllib2.ProxyHandler(mydict)
                 opener = urllib2.build_opener(proxy_support)
                 urllib2.install_opener(opener)
             item = urllib2.urlopen(request)

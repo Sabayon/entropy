@@ -1662,11 +1662,12 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
 
         if not disable and not enable: # so it's a add
 
-            line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
+            line = "repository|%s|%s|%s|%s#%s#%s" % (   repodata['repoid'],
                                                     repodata['description'],
                                                     ' '.join(repodata['plain_packages']),
                                                     repodata['plain_database'],
                                                     repodata['dbcformat'],
+                                                    repodata['service_port'],
                                                 )
 
             # seek in repolines_data for a disabled entry and remove
@@ -1706,33 +1707,42 @@ def _saveRepositoriesContent(content):
     f.flush()
     f.close()
 
-def writeNewBranch(branch):
+def writeParameterToFile(config_file, name, data):
 
-    content = read_repositories_conf()
+    # check write perms
+    if not os.access(os.path.dirname(config_file),os.W_OK):
+        return False
 
-    found = False
-    new_content = []
-    for line in content:
-        if line.strip().startswith("branch|"):
-            line = line.replace(line.strip(),"branch|"+str(branch))
-            found = True
-        new_content.append(line)
-    if found:
-        f = open(etpConst['repositoriesconf'],"w")
-        f.writelines(new_content)
-        f.flush()
+    import shutil
+    content = []
+    if os.path.isfile(config_file):
+        f = open(config_file,"r")
+        content = [x.strip() for x in f.readlines()]
         f.close()
-    elif not new_content:
-        f = open(etpConst['repositoriesconf'],"w")
-        f.write("branch|"+str(branch)+"\n")
-        f.flush()
-        f.close()
+
+    # write new
+    config_file_tmp = config_file+".tmp"
+    f = open(config_file_tmp,"w")
+    param_found = False
+    if data:
+        proposed_line = "%s|%s" % (name,data,)
     else:
-        f = open(etpConst['repositoriesconf'],"aw")
-        f.seek(0,2)
-        f.write("\nbranch|"+str(branch)+"\n")
-        f.flush()
-        f.close()
+        proposed_line = "# %s|" % (name,)
+    for line in content:
+        if line.startswith(name+"|"):
+            param_found = True
+            line = proposed_line
+        f.write(line+"\n")
+    if not param_found:
+        f.write(proposed_line+"\n")
+    f.flush()
+    f.close()
+    shutil.move(config_file_tmp,config_file)
+    return True
+
+def writeNewBranch(branch):
+    return writeParameterToFile(etpConst['repositoriesconf'],"branch",branch)
+
 
 def isEntropyTbz2(tbz2file):
     import tarfile
