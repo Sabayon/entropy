@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-02 10:11+0200\n"
+"POT-Creation-Date: 2008-06-03 00:26+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -1002,7 +1002,7 @@ msgid "Matched"
 msgstr ""
 
 #: ../../client/text_query.py:262 ../../client/text_query.py:1056
-#: ../../spritz/src/spritz.glade.h:53
+#: ../../spritz/src/spritz.glade.h:55
 #, fuzzy
 msgid "Masked"
 msgstr "Slettet"
@@ -1044,7 +1044,7 @@ msgstr ""
 
 #: ../../client/text_query.py:444 ../../client/text_query.py:1052
 #: ../../spritz/src/dialogs.py:617 ../../spritz/src/dialogs.py:623
-#: ../../spritz/src/spritz.py:1248 ../../spritz/src/views.py:453
+#: ../../spritz/src/spritz.py:1320 ../../spritz/src/views.py:453
 msgid "Package"
 msgstr "Pakke"
 
@@ -1207,11 +1207,11 @@ msgstr ""
 msgid "revision"
 msgstr ""
 
-#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:47
+#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:49
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1061 ../../spritz/src/spritz.glade.h:88
+#: ../../client/text_query.py:1061 ../../spritz/src/spritz.glade.h:90
 msgid "Slot"
 msgstr ""
 
@@ -1295,7 +1295,7 @@ msgid "Created"
 msgstr "Slettet"
 
 #: ../../client/text_query.py:1099 ../../client/text_ui.py:781
-#: ../../spritz/src/dialogs.py:1023
+#: ../../spritz/src/dialogs.py:1047
 msgid "License"
 msgstr ""
 
@@ -1379,16 +1379,16 @@ msgstr ""
 msgid "Repository revision"
 msgstr "Filkilder"
 
-#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1393
+#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1465
 #: ../../spritz/src/applet/etp_applet.py:614
 msgid "No repositories specified in"
 msgstr ""
 
-#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1397
+#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1469
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1400
+#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1472
 #: ../../spritz/src/applet/etp_applet.py:622
 msgid "Unhandled exception"
 msgstr ""
@@ -1547,8 +1547,8 @@ msgstr ""
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../client/text_ui.py:690 ../../client/text_ui.py:691
-#: ../../spritz/src/dialogs.py:969 ../../spritz/src/misc.py:91
-#: ../../spritz/src/misc.py:301 ../../spritz/src/spritz.py:1234
+#: ../../spritz/src/dialogs.py:993 ../../spritz/src/misc.py:91
+#: ../../spritz/src/misc.py:301 ../../spritz/src/spritz.py:1306
 msgid "Attention"
 msgstr ""
 
@@ -1762,7 +1762,7 @@ msgstr ""
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:81
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:83
 msgid "Revised"
 msgstr ""
 
@@ -1770,11 +1770,11 @@ msgstr ""
 msgid "Announced"
 msgstr ""
 
-#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:92
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:94
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:70
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:72
 #, fuzzy
 msgid "References"
 msgstr "Indstillinger"
@@ -1795,11 +1795,11 @@ msgstr ""
 msgid "unaffected versions"
 msgstr ""
 
-#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:112
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:114
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:79
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:81
 msgid "Resolution"
 msgstr ""
 
@@ -1864,6 +1864,7 @@ msgid "directory does not exist"
 msgstr ""
 
 #: ../../client/text_smart.py:153 ../../client/text_ui.py:344
+#: ../../spritz/src/spritz.py:626
 msgid "is not a valid Entropy package"
 msgstr ""
 
@@ -2078,7 +2079,7 @@ msgstr ""
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:346
+#: ../../client/text_ui.py:346 ../../spritz/src/spritz.py:628
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
@@ -2106,7 +2107,7 @@ msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
-#: ../../spritz/src/spritz.glade.h:71
+#: ../../spritz/src/spritz.glade.h:73
 #, fuzzy
 msgid "Reinstall"
 msgstr "Installeret"
@@ -2847,16 +2848,16 @@ msgstr ""
 msgid "About"
 msgstr "Om"
 
-#: ../../spritz/src/dialogs.py:950
+#: ../../spritz/src/dialogs.py:974
 msgid "Hey!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:954
+#: ../../spritz/src/dialogs.py:978
 msgid "Spritz Question"
 msgstr ""
 
 #. new
-#: ../../spritz/src/dialogs.py:1026
+#: ../../spritz/src/dialogs.py:1050
 msgid "Accepted"
 msgstr ""
 
@@ -3104,256 +3105,270 @@ msgstr ""
 msgid "or the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:511
+#: ../../spritz/src/spritz.py:512
 msgid "Are you sure ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:524
+#: ../../spritz/src/spritz.py:525
 #, fuzzy
 msgid "Error saving parameter"
 msgstr "Fejl opstået i Yum Extender"
 
-#: ../../spritz/src/spritz.py:525 ../../spritz/src/spritz.py:1115
+#: ../../spritz/src/spritz.py:526 ../../spritz/src/spritz.py:1187
 msgid "An issue occured while saving a preference"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:526 ../../spritz/src/spritz.py:1090
-#: ../../spritz/src/spritz.py:1116
+#: ../../spritz/src/spritz.py:527 ../../spritz/src/spritz.py:1162
+#: ../../spritz/src/spritz.py:1188
 msgid "Parameter"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:526
+#: ../../spritz/src/spritz.py:527
 #, fuzzy
 msgid "not saved"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:535 ../../spritz/src/spritz.py:541
-#: ../../spritz/src/spritz.py:547 ../../spritz/src/spritz.py:571
-#: ../../spritz/src/spritz.py:581 ../../spritz/src/spritz.py:591
+#: ../../spritz/src/spritz.py:539 ../../spritz/src/spritz.py:545
+#: ../../spritz/src/spritz.py:551 ../../spritz/src/spritz.py:575
+#: ../../spritz/src/spritz.py:585 ../../spritz/src/spritz.py:595
 msgid "New"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:535 ../../spritz/src/spritz.py:541
-#: ../../spritz/src/spritz.py:547
+#: ../../spritz/src/spritz.py:539 ../../spritz/src/spritz.py:545
+#: ../../spritz/src/spritz.py:551
 msgid "Please insert a new path"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:571 ../../spritz/src/spritz.py:581
-#: ../../spritz/src/spritz.py:591
+#: ../../spritz/src/spritz.py:575 ../../spritz/src/spritz.py:585
+#: ../../spritz/src/spritz.py:595
 #, fuzzy
 msgid "Please edit the selected path"
 msgstr "Vis Installerede Pakker"
 
+#: ../../spritz/src/spritz.py:612
+#, fuzzy
+msgid "You have chosen to install this package"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../spritz/src/spritz.py:614
+msgid "Are you supa sure?"
+msgstr ""
+
 #: ../../spritz/src/spritz.py:632
+#, fuzzy
+msgid "Cannot install"
+msgstr "Installeret"
+
+#: ../../spritz/src/spritz.py:715
 msgid "Please select at least one repository"
 msgstr ""
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:668
+#: ../../spritz/src/spritz.py:751
 msgid "No packages in queue"
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:734
+#: ../../spritz/src/spritz.py:794
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:801
+#: ../../spritz/src/spritz.py:861
 msgid "impact"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:803
+#: ../../spritz/src/spritz.py:863
 msgid "access"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:817
+#: ../../spritz/src/spritz.py:877
 msgid "Vulnerables"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:821
+#: ../../spritz/src/spritz.py:881
 msgid "Unaffected"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:942
+#: ../../spritz/src/spritz.py:1002
 msgid ""
 "You have chosen to interrupt the queue processing. Doing so could be risky "
 "and you should let Entropy to close all its tasks. Are you sure you want it?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:950
+#: ../../spritz/src/spritz.py:1010
 msgid "Aborting queue tasks."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:956
+#: ../../spritz/src/spritz.py:1016
 msgid "Skipping current mirror."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1002
+#: ../../spritz/src/spritz.py:1062
 msgid "Entropy resources are locked and not accessible. "
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1018
+#: ../../spritz/src/spritz.py:1078
 #, fuzzy
 msgid "Entropy Config Setup"
 msgstr "Opsætning af Yum Konfiguration"
 
-#: ../../spritz/src/spritz.py:1030
+#: ../../spritz/src/spritz.py:1090
 msgid "GUI Setup Completed"
 msgstr "Opsætning af GUI afsluttet"
 
-#: ../../spritz/src/spritz.py:1051 ../../spritz/src/spritz.py:1060
-#: ../../spritz/src/spritz.py:1069
+#: ../../spritz/src/spritz.py:1123 ../../spritz/src/spritz.py:1132
+#: ../../spritz/src/spritz.py:1141
 #, fuzzy
 msgid "Item"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.py:1088 ../../spritz/src/spritz.py:1114
+#: ../../spritz/src/spritz.py:1160 ../../spritz/src/spritz.py:1186
 #, fuzzy
 msgid "Error setting parameter"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:1089
+#: ../../spritz/src/spritz.py:1161
 msgid "An issue occured while loading a preference"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1090 ../../spritz/src/spritz.py:1116
+#: ../../spritz/src/spritz.py:1162 ../../spritz/src/spritz.py:1188
 msgid "must be of type"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1090 ../../spritz/src/spritz.py:1116
+#: ../../spritz/src/spritz.py:1162 ../../spritz/src/spritz.py:1188
 msgid "got"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1235
+#: ../../spritz/src/spritz.py:1307
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1256
+#: ../../spritz/src/spritz.py:1328
 msgid "Bug"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1264
+#: ../../spritz/src/spritz.py:1336
 #, fuzzy
 msgid "Reference"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.py:1322
+#: ../../spritz/src/spritz.py:1394
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1352
+#: ../../spritz/src/spritz.py:1424
 #, fuzzy
 msgid "Error loading advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../spritz/src/spritz.py:1384
+#: ../../spritz/src/spritz.py:1456
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1390
+#: ../../spritz/src/spritz.py:1462
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1405
+#: ../../spritz/src/spritz.py:1477
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1406
+#: ../../spritz/src/spritz.py:1478
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1409
+#: ../../spritz/src/spritz.py:1481
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1412
+#: ../../spritz/src/spritz.py:1484
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1414
+#: ../../spritz/src/spritz.py:1486
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1417
+#: ../../spritz/src/spritz.py:1489
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1422
+#: ../../spritz/src/spritz.py:1494
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1423
+#: ../../spritz/src/spritz.py:1495
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1424
+#: ../../spritz/src/spritz.py:1496
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1461
+#: ../../spritz/src/spritz.py:1533
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1462
+#: ../../spritz/src/spritz.py:1534
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1463
+#: ../../spritz/src/spritz.py:1535
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1465 ../../spritz/src/spritz.py:1471
+#: ../../spritz/src/spritz.py:1537 ../../spritz/src/spritz.py:1543
 msgid "Calculating"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1483
+#: ../../spritz/src/spritz.py:1555
 #, fuzzy
 msgid "Showing"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.py:1483
+#: ../../spritz/src/spritz.py:1555
 #, fuzzy
 msgid "items"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.py:1501
+#: ../../spritz/src/spritz.py:1573
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1506
+#: ../../spritz/src/spritz.py:1578
 #, fuzzy
 msgid "Running tasks"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/spritz.py:1513
+#: ../../spritz/src/spritz.py:1585
 msgid "Processing Packages in queue"
 msgstr "Behander pakker i køen"
 
-#: ../../spritz/src/spritz.py:1529
+#: ../../spritz/src/spritz.py:1601
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1553
+#: ../../spritz/src/spritz.py:1627
 msgid "No packages selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:1611
+#: ../../spritz/src/spritz.py:1685
 msgid "Exception caught"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1612
+#: ../../spritz/src/spritz.py:1686
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1621
+#: ../../spritz/src/spritz.py:1695
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1623
+#: ../../spritz/src/spritz.py:1697
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -3437,13 +3452,13 @@ msgstr "Filnavn"
 msgid "Active"
 msgstr ""
 
-#: ../../spritz/src/views.py:1089 ../../spritz/src/spritz.glade.h:106
+#: ../../spritz/src/views.py:1089 ../../spritz/src/spritz.glade.h:108
 #, fuzzy
 msgid "Update"
 msgstr "Opdateret"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1097 ../../spritz/src/spritz.glade.h:82
+#: ../../spritz/src/views.py:1097 ../../spritz/src/spritz.glade.h:84
 #, fuzzy
 msgid "Revision"
 msgstr "Sletter"
@@ -3819,363 +3834,372 @@ msgstr "Installeret"
 
 #: ../../spritz/src/spritz.glade.h:46
 #, fuzzy
+msgid "Install a stand-alone package file"
+msgstr "Vis Tilgængelige Pakker"
+
+#: ../../spritz/src/spritz.glade.h:47
+msgid "Install from binary package..."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:48
+#, fuzzy
 msgid "Install the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:48
+#: ../../spritz/src/spritz.glade.h:50
 msgid "Kernel Tag"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:49
+#: ../../spritz/src/spritz.glade.h:51
 msgid "Load content"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:50
+#: ../../spritz/src/spritz.glade.h:52
 msgid "Location"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:51
+#: ../../spritz/src/spritz.glade.h:53
 msgid "MD5 Signature"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:52
+#: ../../spritz/src/spritz.glade.h:54
 msgid "M_erge"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:54
+#: ../../spritz/src/spritz.glade.h:56
 msgid "Merge all"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:55
+#: ../../spritz/src/spritz.glade.h:57
 msgid "Messages"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:56
+#: ../../spritz/src/spritz.glade.h:58
 msgid "Networking"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:57
+#: ../../spritz/src/spritz.glade.h:59
 #, fuzzy
 msgid "O_ther"
 msgstr "_Andre"
 
-#: ../../spritz/src/spritz.glade.h:58
+#: ../../spritz/src/spritz.glade.h:60
 #, fuzzy
 msgid "Package Info."
 msgstr "Pakke"
 
-#: ../../spritz/src/spritz.glade.h:59
+#: ../../spritz/src/spritz.glade.h:61
 #, fuzzy
 msgid "Package Information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/spritz.glade.h:60
+#: ../../spritz/src/spritz.glade.h:62
 #, fuzzy
 msgid "Package Size"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.glade.h:61
+#: ../../spritz/src/spritz.glade.h:63
 #, fuzzy
 msgid "Please Confirm"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../spritz/src/spritz.glade.h:62
+#: ../../spritz/src/spritz.glade.h:64
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:63
+#: ../../spritz/src/spritz.glade.h:65
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:64
+#: ../../spritz/src/spritz.glade.h:66
 msgid "Process priority (nice)"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:65
+#: ../../spritz/src/spritz.glade.h:67
 msgid "Protected files and directories"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:66
+#: ../../spritz/src/spritz.glade.h:68
 msgid "Protected files and directories mask"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:67
+#: ../../spritz/src/spritz.glade.h:69
 msgid "Purge"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:68
+#: ../../spritz/src/spritz.glade.h:70
 #, fuzzy
 msgid "Q_ueue packages in selected Advisory"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:69
+#: ../../spritz/src/spritz.glade.h:71
 msgid "R_egenerate Cache"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:72
+#: ../../spritz/src/spritz.glade.h:74
 #, fuzzy
 msgid "Reinstall the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:73
+#: ../../spritz/src/spritz.glade.h:75
 #, fuzzy
 msgid "Remove"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:74
+#: ../../spritz/src/spritz.glade.h:76
 #, fuzzy
 msgid "Remove the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:75
+#: ../../spritz/src/spritz.glade.h:77
 #, fuzzy
 msgid "Remove the selected package and its configuration"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:76
+#: ../../spritz/src/spritz.glade.h:78
 #, fuzzy
 msgid "Repositories options"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:77
+#: ../../spritz/src/spritz.glade.h:79
 #, fuzzy
 msgid "Repository Services Port"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:78
+#: ../../spritz/src/spritz.glade.h:80
 #, fuzzy
 msgid "Repository information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:80
+#: ../../spritz/src/spritz.glade.h:82
 #, fuzzy
 msgid "Restore"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.glade.h:83
+#: ../../spritz/src/spritz.glade.h:85
 msgid "S_end Error Report"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:84
+#: ../../spritz/src/spritz.glade.h:86
 msgid "Save"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:85
+#: ../../spritz/src/spritz.glade.h:87
 msgid "Show all"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:86
+#: ../../spritz/src/spritz.glade.h:88
 msgid "Show applied"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:87
+#: ../../spritz/src/spritz.glade.h:89
 msgid "Show unapplied"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:89
+#: ../../spritz/src/spritz.glade.h:91
 #, fuzzy
 msgid "Socket settings"
 msgstr "Aktuelle indstillinger :"
 
-#: ../../spritz/src/spritz.glade.h:90
+#: ../../spritz/src/spritz.glade.h:92
 msgid "Soon!"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:91
+#: ../../spritz/src/spritz.glade.h:93
 msgid "Spritz Package Manager"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:93
+#: ../../spritz/src/spritz.glade.h:95
 msgid "System"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:94
+#: ../../spritz/src/spritz.glade.h:96
 msgid "This is what they call \"nice level\""
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:95
+#: ../../spritz/src/spritz.glade.h:97
 #, fuzzy
 msgid "Undo Install"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:96
+#: ../../spritz/src/spritz.glade.h:98
 msgid "Undo Install action"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:97
+#: ../../spritz/src/spritz.glade.h:99
 msgid "Undo Purge"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:98
+#: ../../spritz/src/spritz.glade.h:100
 msgid "Undo Purge action"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:99
+#: ../../spritz/src/spritz.glade.h:101
 #, fuzzy
 msgid "Undo Reinstall"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:100
+#: ../../spritz/src/spritz.glade.h:102
 #, fuzzy
 msgid "Undo Reinstall action"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:101
+#: ../../spritz/src/spritz.glade.h:103
 msgid "Undo Remove"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:102
-msgid "Undo Remove action"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:103
-#, fuzzy
-msgid "Undo Update"
-msgstr "Opdateret"
-
 #: ../../spritz/src/spritz.glade.h:104
-msgid "Undo Update action"
+msgid "Undo Remove action"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:105
 #, fuzzy
+msgid "Undo Update"
+msgstr "Opdateret"
+
+#: ../../spritz/src/spritz.glade.h:106
+msgid "Undo Update action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:107
+#, fuzzy
 msgid "Unmask this package"
 msgstr "Henter Pakker:"
 
-#: ../../spritz/src/spritz.glade.h:107
+#: ../../spritz/src/spritz.glade.h:109
 #, fuzzy
 msgid "Update the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:108
+#: ../../spritz/src/spritz.glade.h:110
 #, fuzzy
 msgid "Updates"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.glade.h:109
+#: ../../spritz/src/spritz.glade.h:111
 #, fuzzy
 msgid "Version"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:110
+#: ../../spritz/src/spritz.glade.h:112
 msgid "Website"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:111
+#: ../../spritz/src/spritz.glade.h:113
 msgid "What you were doing"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:113
+#: ../../spritz/src/spritz.glade.h:115
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:115
+#: ../../spritz/src/spritz.glade.h:117
 msgid "Your E-mail"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:116
+#: ../../spritz/src/spritz.glade.h:118
 msgid "Your Full Name"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:117
+#: ../../spritz/src/spritz.glade.h:119
 msgid "_Abort queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:118
+#: ../../spritz/src/spritz.glade.h:120
 msgid "_Accept License"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:119
+#: ../../spritz/src/spritz.glade.h:121
 msgid "_Add All"
 msgstr "Tilføj _Alle"
 
-#: ../../spritz/src/spritz.glade.h:120
+#: ../../spritz/src/spritz.glade.h:122
 msgid "_Branch ..."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:121
+#: ../../spritz/src/spritz.glade.h:123
 msgid "_Details"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:122
+#: ../../spritz/src/spritz.glade.h:124
 #, fuzzy
 msgid "_Enable"
 msgstr "_Valgt"
 
-#: ../../spritz/src/spritz.glade.h:123
+#: ../../spritz/src/spritz.glade.h:125
 #, fuzzy
 msgid "_File"
 msgstr "_Filer"
 
-#: ../../spritz/src/spritz.glade.h:124
+#: ../../spritz/src/spritz.glade.h:126
 #, fuzzy
 msgid "_Force repositories update"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:125
+#: ../../spritz/src/spritz.glade.h:127
 msgid "_Help"
 msgstr "_Hjælp"
 
-#: ../../spritz/src/spritz.glade.h:126
+#: ../../spritz/src/spritz.glade.h:128
 msgid "_Insert String"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:127
+#: ../../spritz/src/spritz.glade.h:129
 msgid "_More"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:128
+#: ../../spritz/src/spritz.glade.h:130
 msgid "_Overview"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:129
+#: ../../spritz/src/spritz.glade.h:131
 msgid "_Process Queue"
 msgstr "_Behanling af Køen"
 
-#: ../../spritz/src/spritz.glade.h:130
+#: ../../spritz/src/spritz.glade.h:132
 #, fuzzy
 msgid "_Properties"
 msgstr "_Profiler"
 
-#: ../../spritz/src/spritz.glade.h:131
+#: ../../spritz/src/spritz.glade.h:133
 #, fuzzy
 msgid "_Queue all vulnerable packages"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../spritz/src/spritz.glade.h:132
+#: ../../spritz/src/spritz.glade.h:134
 msgid "_Read License"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:133
+#: ../../spritz/src/spritz.glade.h:135
 #, fuzzy
 msgid "_References"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.glade.h:134
+#: ../../spritz/src/spritz.glade.h:136
 msgid "_Remove All"
 msgstr "_Fjern Alle"
 
-#: ../../spritz/src/spritz.glade.h:135
+#: ../../spritz/src/spritz.glade.h:137
 msgid "_Skip mirror"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:136
+#: ../../spritz/src/spritz.glade.h:138
 #, fuzzy
 msgid "_Update Repositories"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:137
+#: ../../spritz/src/spritz.glade.h:139
 msgid "_Your Ego!"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:138
+#: ../../spritz/src/spritz.glade.h:140
 msgid "kb/sec"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:139
+#: ../../spritz/src/spritz.glade.h:141
 msgid "please wait"
 msgstr ""
 
@@ -4365,9 +4389,6 @@ msgstr ""
 
 #~ msgid "Yum has not been initialized yet"
 #~ msgstr "Yum er ikke blevet initialiseret endnu."
-
-#~ msgid "You are about to add %s packages\n"
-#~ msgstr "Du er ved at tilføje %s pakker\n"
 
 #~ msgid "It will take some time\n"
 #~ msgstr "Det kan tage noget tid\n"
