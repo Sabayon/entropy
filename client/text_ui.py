@@ -340,7 +340,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     if status == 0:
                         foundAtoms += atomsfound[:]
                         del atomsfound
-                    elif status in (-1,-2,-3,):
+                    elif status in (-1,-2,-3,-4,):
                         errtxt = _("is not a valid Entropy package")
                         if status == -3:
                             errtxt = _("is not compiled with the same architecture of the system")

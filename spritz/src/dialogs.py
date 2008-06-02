@@ -934,6 +934,30 @@ def inputBox( parent, title, text, input_text = None):
     dlg.destroy()
     return rc
 
+def FileChooser(basedir = None, pattern = None):
+    # open file selector
+    dialog = gtk.FileChooserDialog(
+        title = None,
+        action = gtk.FILE_CHOOSER_ACTION_OPEN,
+        buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK)
+    )
+    if not basedir:
+        basedir = os.getenv('HOME')
+        if not basedir:
+            basedir = "/tmp"
+
+    fn = None
+    dialog.set_current_folder(basedir)
+    if pattern:
+        myfilter = gtk.FileFilter()
+        myfilter.add_pattern(pattern)
+        dialog.set_filter(myfilter)
+    response = dialog.run()
+    if response == gtk.RESPONSE_OK:
+        fn = dialog.get_filename()
+    dialog.destroy()
+    return fn
+
 def errorMessage( parent, title, text, longtext=None, modal= True, showreport = False ):
      dlg = ErrorDialog( parent, title, text, longtext, modal )
      rc = dlg.run(showreport)

@@ -594,6 +594,82 @@ class SpritzController(Controller):
             model.remove(myiter)
             self.configProtectSkipModel.append([data])
 
+    def on_installPackageItem_activate(self, widget = None, fn = None):
+
+        if not fn:
+            mypattern = '*'+etpConst['packagesext']
+            fn = FileChooser(pattern = mypattern)
+        if not fn:
+            return
+        elif not os.access(fn,os.R_OK):
+            return
+
+        msg = "%s: %s. %s" % (
+            _("You have chosen to install this package"),
+            os.path.basename(fn),
+            _("Are you supa sure?"),
+        )
+        rc = questionDialog(self.ui.main, msg)
+        if not rc:
+            return
+
+        newrepo = os.path.basename(fn)
+        # we have it !
+        status, atomsfound = self.Equo.add_tbz2_to_repos(fn)
+        if status != 0:
+            errtxt = _("is not a valid Entropy package")
+            if status == -3:
+                errtxt = _("is not compiled with the same architecture of the system")
+            mytxt = "%s %s. %s." % (
+                os.path.basename(fn),
+                errtxt,
+                _("Cannot install"),
+            )
+            okDialog(self.ui.main, mytxt)
+            return
+
+        def clean_n_quit(newrepo):
+            self.etpbase.clearPackages()
+            self.etpbase.clearCache()
+            self.Equo.removeRepository(newrepo)
+            self.addPackages()
+            self.pkgView.queue_draw()
+            self.queueView.refresh()
+
+        if not atomsfound:
+            clean_n_quit(newrepo)
+            return
+
+        pkgs = []
+        for idpackage, atom in atomsfound:
+            yp, new = self.etpbase.getPackageItem((idpackage,newrepo,),True)
+            yp.action = 'i'
+            yp.queued = 'i'
+            pkgs.append(yp)
+        # welcome to our world, now process !
+
+        busyCursor(self.ui.main)
+        status, myaction = self.queue.add(pkgs)
+        if status != 0:
+            for obj in pkgs:
+                obj.queued = None
+            clean_n_quit(newrepo)
+            normalCursor(self.ui.main)
+            return
+
+        normalCursor(self.ui.main)
+        self.setPage('output')
+
+        rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+        if rc:
+            self.queue.clear()
+            self.queueView.refresh()
+            return True
+        else: # not done
+            clean_n_quit(newrepo)
+            return False
+
+
     def on_PageButton_pressed( self, widget, page ):
         pass
 
@@ -674,19 +750,7 @@ class SpritzController(Controller):
             self.queueView.refresh() # Refresh Package Queue
 
     def on_queueSave_clicked( self, widget ):
-        dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                                  buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
-        homedir = os.getenv('HOME')
-        if not homedir:
-            homedir = "/tmp"
-        dialog.set_current_folder(homedir)
-        dialog.set_current_name('queue.spritz')
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            fn = dialog.get_filename()
-        elif response == gtk.RESPONSE_CANCEL:
-            fn = None
-        dialog.destroy()
+        fn = FileChooser()
         if fn:
             self.logger.info("Saving queue to %s" % fn)
             pkgdata = self.queue.get()
@@ -697,18 +761,7 @@ class SpritzController(Controller):
             self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
 
     def on_queueOpen_clicked( self, widget ):
-        dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                  buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
-        homedir = os.getenv('HOME')
-        if not homedir:
-            homedir = "/tmp"
-        dialog.set_current_folder(homedir)
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            fn = dialog.get_filename()
-        elif response == gtk.RESPONSE_CANCEL:
-            fn = None
-        dialog.destroy()
+        fn = FileChooser()
         if fn:
             self.logger.info("Loading queue from %s" % fn)
             try:
@@ -1493,7 +1546,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         # reset labels
         self.resetProgressText()
 
-    def processPackageQueue(self, pkgs):
+    def processPackageQueue(self, pkgs, remove_repos = []):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
@@ -1538,6 +1591,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.reset_progress()
             self.etpbase.clearPackages()
             self.etpbase.clearCache()
+            for myrepo in remove_repos:
+                self.Equo.removeRepository(myrepo)
             self.Equo.closeAllRepositoryDatabases()
             self.Equo.reopenClientDbconn()
             # regenerate packages information

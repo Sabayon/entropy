@@ -1442,6 +1442,9 @@ class EquoInterface(TextInterface):
 
     def removeRepository(self, repoid, disable = False):
 
+        # ensure that all dbs are closed
+        self.closeAllRepositoryDatabases()
+
         done = False
         if etpRepositories.has_key(repoid):
             del etpRepositories[repoid]
@@ -2587,21 +2590,26 @@ class EquoInterface(TextInterface):
         repodata['dbpath'] = os.path.dirname(dbfile)
         repodata['pkgpath'] = os.path.realpath(tbz2file) # extra info added
         repodata['smartpackage'] = False # extra info added
-        self.addRepository(repodata)
+
         mydbconn = self.openGenericDatabase(dbfile)
         # read all idpackages
         try:
             myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
         except:
-            del etpRepositories[basefile]
             return -2,atoms_contained
         if len(myidpackages) > 1:
-            etpRepositories[basefile]['smartpackage'] = True
+            repodata[basefile]['smartpackage'] = True
         for myidpackage in myidpackages:
             compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
                 return -3,atoms_contained
             atoms_contained.append((int(myidpackage),basefile))
+
+        self.addRepository(repodata)
+        self.validate_repositories()
+        if basefile not in self.validRepositories:
+            self.removeRepository(repofile)
+            return -4,atoms_contained
         mydbconn.closeDB()
         del mydbconn
         return 0,atoms_contained
@@ -22352,6 +22360,9 @@ class EntropyDatabaseInterface:
 
     def databaseStructureUpdates(self):
 
+        old_readonly = self.readOnly
+        self.readOnly = False
+
         if not self.doesTableExist("licensedata"):
             self.createLicensedataTable()
 
@@ -22453,11 +22464,9 @@ class EntropyDatabaseInterface:
         # FIXME: remove this ASAP (0.16.x branch)
         if os.access(self.dbFile,os.W_OK) and \
             (self.dbname != etpConst['genericdbid']):
-                old_readonly = self.readOnly
-                self.readOnly = False
                 self.fixKdeDepStrings()
-                self.readOnly = old_readonly
 
+        self.readOnly = old_readonly
         self.connection.commit()
 
     def migrateTableToAutoincrement(self, table):
