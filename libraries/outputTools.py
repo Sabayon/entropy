@@ -167,14 +167,17 @@ codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
 def xtermTitle(mystr, raw=False):
-        if dotitles and "TERM" in os.environ and sys.stderr.isatty():
-                myt=os.environ["TERM"]
-                legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
-                if myt in legal_terms:
-                        if not raw:
-                                mystr = "\x1b]0;%s\x07" % mystr
-                        sys.stderr.write(mystr)
-                        sys.stderr.flush()
+    if dotitles and "TERM" in os.environ and sys.stderr.isatty():
+        myt=os.environ["TERM"]
+        legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
+        if myt in legal_terms:
+            if not raw:
+                mystr = "\x1b]0;%s\x07" % mystr
+            try:
+                sys.stderr.write(mystr)
+            except UnicodeEncodeError:
+                sys.stderr.write(mystr.encode('utf-8'))
+            sys.stderr.flush()
 
 default_xterm_title = None
 
