@@ -613,6 +613,8 @@ class SpritzController(Controller):
         if not rc:
             return
 
+        self.pkgView.store.clear()
+
         newrepo = os.path.basename(fn)
         # we have it !
         status, atomsfound = self.Equo.add_tbz2_to_repos(fn)
@@ -632,9 +634,10 @@ class SpritzController(Controller):
             self.etpbase.clearPackages()
             self.etpbase.clearCache()
             self.Equo.removeRepository(newrepo)
-            self.addPackages()
-            self.pkgView.queue_draw()
-            self.queueView.refresh()
+            self.Equo.closeAllRepositoryDatabases()
+            self.Equo.reopenClientDbconn()
+            # regenerate packages information
+            self.setupSpritz()
 
         if not atomsfound:
             clean_n_quit(newrepo)
@@ -1091,8 +1094,20 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.resetProgressText()
         self.pkgProperties_selected = None
         self.setupAdvPropertiesView()
-
         self.setupPreferences()
+
+        packages_install = os.getenv("SPRITZ_PACKAGES")
+        if packages_install:
+            packages_install = [x for x in packages_install.split(";") if os.path.isfile(x)]
+        for arg in sys.argv:
+            if arg.endswith(etpConst['packagesext']) and os.path.isfile(arg):
+                arg = os.path.realpath(arg)
+                packages_install.append(arg)
+        if packages_install:
+            time.sleep(1)
+            fn = packages_install[0]
+            self.on_installPackageItem_activate(None,fn)
+
 
     def setupPreferences(self):
 

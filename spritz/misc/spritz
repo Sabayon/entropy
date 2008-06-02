@@ -35,6 +35,9 @@ def setup_env():
 
 
 setup_env()
+tbz2s = [x for x in sys.argv[1:] if x.endswith(".tbz2")]
+if tbz2s:
+    os.environ['SPRITZ_PACKAGES'] = ';'.join(tbz2s)
 if os.getuid() == 0:
     rc = os.system(spritz_path)
 else:

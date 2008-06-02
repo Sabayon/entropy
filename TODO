@@ -15,7 +15,6 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - configuration menu (equo.conf + others interface)
     - Popularity feature / Your Ego service
     - Category <-> Image dictionary (for the properties menu)
     - Spritz related preferences

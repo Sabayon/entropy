@@ -7,4 +7,4 @@ Icon=/usr/share/pixmaps/spritz/spritz-icon.png
 Exec=spritz %f
 Type=Application
 Terminal=false
-MimeType=application/x-bzip-compressed-tar
+MimeType=application/x-tar;application/x-tgz;application/x-tbz;application/x-tbz2;application/x-tarz
