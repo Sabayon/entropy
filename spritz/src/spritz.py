@@ -503,6 +503,7 @@ class SpritzController(Controller):
     def on_terminal_copy_activate(self, widget):
         self.clipboard.clear()
         self.clipboard.set_text(''.join(self.output.text_written))
+
     def on_Preferences_toggled(self, widget, toggle = True):
         self.ui.preferencesSaveButton.set_sensitive(toggle)
         self.ui.preferencesRestoreButton.set_sensitive(toggle)
@@ -526,6 +527,9 @@ class SpritzController(Controller):
                             "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
                         )
         initConfig_entropyConstants(etpConst['systemroot'])
+        # re-read configprotect
+        self.Equo.parse_masking_settings()
+        self.Equo.reloadRepositoriesConfigProtect()
         self.setupPreferences()
 
     def on_preferencesRestoreButton_clicked(self, widget):

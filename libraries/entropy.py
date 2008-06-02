@@ -314,6 +314,13 @@ class EquoInterface(TextInterface):
     def set_priority(self, low = 0):
         return const_setNiceLevel(low)
 
+    def reloadRepositoriesConfigProtect(self, repositories = None):
+        if repositories == None:
+            repositories = self.validRepositories
+        for repoid in repositories:
+            dbconn = self.openRepositoryDatabase(repoid)
+            self.loadRepositoryConfigProtect(repoid, dbconn)
+
     def switchChroot(self, chroot = ""):
         # clean caches
         self.purge_cache()
@@ -388,7 +395,8 @@ class EquoInterface(TextInterface):
             dbname = etpConst['clientdbid'],
             xcache = self.xcache,
             indexing = self.indexing,
-            OutputInterface = self
+            OutputInterface = self,
+            ServiceInterface = self
         )
         # validate database
         if not self.noclientdb:
@@ -513,32 +521,38 @@ class EquoInterface(TextInterface):
             dbname = etpConst['dbnamerepoprefix']+repositoryName,
             xcache = xcache,
             indexing = indexing,
-            OutputInterface = self
+            OutputInterface = self,
+            ServiceInterface = self
         )
         # initialize CONFIG_PROTECT
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
             (etpRepositories[repositoryName]['configprotectmask'] == None):
+                self.loadRepositoryConfigProtect(repositoryName, conn)
 
-            try:
-                etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-            except (dbapi2.OperationalError, dbapi2.DatabaseError):
-                etpRepositories[repositoryName]['configprotect'] = []
-            try:
-                etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-            except (dbapi2.OperationalError, dbapi2.DatabaseError):
-                etpRepositories[repositoryName]['configprotectmask'] = []
-
-            etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
-            etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
-
-            etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
-            etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
         if (repositoryName not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
             try:
                 conn.clientUpdatePackagesData(self.clientDbconn)
             except (dbapi2.OperationalError, dbapi2.DatabaseError):
                 pass
         return conn
+
+    def loadRepositoryConfigProtect(self, repoid, dbconn):
+
+        try:
+            etpRepositories[repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
+        except (dbapi2.OperationalError, dbapi2.DatabaseError):
+            etpRepositories[repoid]['configprotect'] = []
+        try:
+            etpRepositories[repoid]['configprotectmask'] = dbconn.listConfigProtectDirectories(mask = True)
+        except (dbapi2.OperationalError, dbapi2.DatabaseError):
+            etpRepositories[repoid]['configprotectmask'] = []
+
+        etpRepositories[repoid]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repoid]['configprotect']]
+        etpRepositories[repoid]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repoid]['configprotectmask']]
+
+        etpRepositories[repoid]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotect']]
+        etpRepositories[repoid]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotectmask']]
+
 
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None, skipChecks = False):
         if xcache == None:
@@ -2608,7 +2622,7 @@ class EquoInterface(TextInterface):
         self.addRepository(repodata)
         self.validate_repositories()
         if basefile not in self.validRepositories:
-            self.removeRepository(repofile)
+            self.removeRepository(basefile)
             return -4,atoms_contained
         mydbconn.closeDB()
         del mydbconn
@@ -23356,6 +23370,11 @@ class EntropyDatabaseInterface:
 
         if self.dbname == etpConst['clientdbid']:
             return idpackage,0
+        elif self.dbname.startswith(etpConst['serverdbid']):
+            return idpackage,0
+
+        if (etpConst['packagemasking'] == None) and self.ServiceInterface != None:
+            self.ServiceInterface.parse_masking_settings()
 
         reponame = self.dbname[5:]
         cached = idpackageValidatorCache.get((idpackage,reponame,live))
