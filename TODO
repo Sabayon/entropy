@@ -16,13 +16,10 @@ TODO list
 
   Spritz:
     - configuration menu (equo.conf + others interface)
-    - package masking menu
     - install tbz2
     - Popularity feature / Your Ego service
     - Category <-> Image dictionary (for the properties menu)
-    - Skip Mirror buttons
-    - button to stop the queue
-    - show the number of packages found in a list
+    - Spritz related preferences
 
 Notes:
 - when supporting more than one ":" in atoms, remember to fix treeupdates functions accordingly

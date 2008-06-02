@@ -808,7 +808,7 @@ class infoDialog:
         return self.dialog.run()
 
     def destroy( self ):
-        return self.dialog.destroy() 
+        return self.dialog.destroy()
 
 
 class EntryDialog:

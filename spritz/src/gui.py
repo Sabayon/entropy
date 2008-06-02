@@ -242,6 +242,7 @@ class SpritzGUI:
         self.setupAdvisoriesFilter()
 
         self.setupImages()
+        self.setupLabels()
 
 
     def on_console_click(self, widget, event):
@@ -301,10 +302,11 @@ class SpritzGUI:
         # Setup Vertical Toolbar
         self.createButton( _( "Packages" ), "button-packages.png", 'packages',True )
         self.createButton( _( "Package Categories" ), "button-group.png", 'group')
-        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
+        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
         self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
-        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
+        self.createButton( _( "Preferences" ), "preferences.png", 'preferences' )
+        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
 
     def createButton( self, text, icon, page,first = None ):
@@ -314,7 +316,7 @@ class SpritzGUI:
         else:
             button = gtk.RadioButton( self.firstButton )
         button.connect( "clicked", self.on_PageButton_changed, page )
-        button.connect( "pressed", self.on_PageButton_pressed, page )
+        #button.connect( "pressed", self.on_PageButton_pressed, page )
 
         button.set_relief( gtk.RELIEF_NONE )
         button.set_mode( False )
@@ -338,6 +340,7 @@ class SpritzGUI:
         self.pageButtons[page] = button
 
     def setupImages(self):
+        """ setup misc application images """
 
         # progressImage
         iconpath = os.path.join(const.PIXMAPS_PATH,"sabayon.png")
@@ -347,6 +350,14 @@ class SpritzGUI:
                 self.ui.progressImage.set_from_pixbuf(p)
             except gobject.GError:
                 pass
+
+    def setupLabels(self):
+        """ setup misc application labels """
+
+        mytxt = "<span size='x-large' foreground='#8A381B'>%s</span>" % (_("Preferences"),)
+        self.ui.preferencesTitleLabel.set_markup(mytxt)
+        mytxt = "<span foreground='#084670'>%s</span>" % (_("Some configuration options are critical for the health of your System. Be careful."),)
+        self.ui.preferencesLabel.set_markup(mytxt)
 
 
     def setPage( self, page ):

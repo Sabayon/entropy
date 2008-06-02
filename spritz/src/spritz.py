@@ -503,11 +503,102 @@ class SpritzController(Controller):
     def on_terminal_copy_activate(self, widget):
         self.clipboard.clear()
         self.clipboard.set_text(''.join(self.output.text_written))
+    def on_Preferences_toggled(self, widget, toggle = True):
+        self.ui.preferencesSaveButton.set_sensitive(toggle)
+        self.ui.preferencesRestoreButton.set_sensitive(toggle)
+
+    def on_preferencesSaveButton_clicked(self, widget):
+        sure = questionDialog(self.ui.main, _("Are you sure ?"))
+        if not sure:
+            return
+        for config_file in self.Preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+                if mytype == list:
+                    savefunc(config_file, name, setting, mytype, wgwrite, wgread)
+                else:
+                    data = wgread()
+                    result = savefunc(config_file, name, setting, mytype, data)
+                    if not result:
+                        errorMessage(
+                            self.ui.main,
+                            cleanMarkupString("%s: %s") % (_("Error saving parameter"),name,),
+                            _("An issue occured while saving a preference"),
+                            "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
+                        )
+        initConfig_entropyConstants(etpConst['systemroot'])
+        self.setupPreferences()
+
+    def on_preferencesRestoreButton_clicked(self, widget):
+        self.setupPreferences()
+
+    def on_configProtectNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectModel.append([data])
+
+    def on_configProtectMaskNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectMaskModel.append([data])
+
+    def on_configProtectSkipNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectSkipModel.append([data])
+
+    def on_configProtectDelete_clicked(self, widget):
+        model, myiter = self.configProtectView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectMaskDelete_clicked(self, widget):
+        model, myiter = self.configProtectMaskView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectSkipDelete_clicked(self, widget):
+        model, myiter = self.configProtectSkipView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectEdit_clicked(self, widget):
+        model, myiter = self.configProtectView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectModel.append([data])
+
+    def on_configProtectMaskEdit_clicked(self, widget):
+        model, myiter = self.configProtectMaskView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectMaskModel.append([data])
+
+    def on_configProtectSkipEdit_clicked(self, widget):
+        model, myiter = self.configProtectSkipView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectSkipModel.append([data])
 
     def on_PageButton_pressed( self, widget, page ):
         pass
 
     def on_PageButton_changed( self, widget, page ):
+
         ''' Left Side Toolbar Handler'''
         # do not put here actions for 'packages' and 'output' but use on_PageButton_pressed
         if page == "filesconf":
@@ -917,6 +1008,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger = logging.getLogger("yumex.main")
 
         # init flags
+        self.Preferences = None
         self.skipMirrorNow = False
         self.abortQueueNow = False
         self.doProgress = False
@@ -946,6 +1038,196 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.resetProgressText()
         self.pkgProperties_selected = None
         self.setupAdvPropertiesView()
+
+        self.setupPreferences()
+
+    def setupPreferences(self):
+
+        # config protect
+        self.configProtectView = self.ui.configProtectView
+        for mycol in self.configProtectView.get_columns(): self.configProtectView.remove_column(mycol)
+        self.configProtectModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectView.append_column( column )
+        self.configProtectView.set_model( self.configProtectModel )
+
+        # config protect mask
+        self.configProtectMaskView = self.ui.configProtectMaskView
+        for mycol in self.configProtectMaskView.get_columns(): self.configProtectMaskView.remove_column(mycol)
+        self.configProtectMaskModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectMaskView.append_column( column )
+        self.configProtectMaskView.set_model( self.configProtectMaskModel )
+
+        # config protect skip
+        self.configProtectSkipView = self.ui.configProtectSkipView
+        for mycol in self.configProtectSkipView.get_columns(): self.configProtectSkipView.remove_column(mycol)
+        self.configProtectSkipModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectSkipView.append_column( column )
+        self.configProtectSkipView.set_model( self.configProtectSkipModel )
+
+        # prepare generic config to allow filling of data
+        def fillSettingView(model, view, data):
+            model.clear()
+            view.set_model(model)
+            view.set_property('headers-visible',False)
+            for item in data:
+                model.append([item])
+            view.expand_all()
+
+        def fillSetting(name, mytype, wgwrite, data):
+            if type(data) != mytype:
+                if data == None: # empty parameter
+                    return
+                errorMessage(
+                    self.ui.main,
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    _("An issue occured while loading a preference"),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                )
+                return
+            wgwrite(data)
+
+        def saveSettingView(config_file, name, setting, mytype, model, view):
+
+            data = []
+            iterator = model.get_iter_first()
+            while iterator != None:
+                item = model.get_value( iterator, 0 )
+                if item:
+                    data.append(item)
+                iterator = model.iter_next( iterator )
+
+            return saveSetting(config_file, name, setting, mytype, data)
+
+
+        def saveSetting(config_file, name, myvariable, mytype, data):
+            # saving setting
+            writedata = ''
+            if (not isinstance(data,mytype)) and (data != None):
+                errorMessage(
+                    self.ui.main,
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    _("An issue occured while saving a preference"),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                )
+                return False
+
+            if isinstance(data,int):
+                writedata = str(data)
+            elif isinstance(data,list):
+                writedata = ' '.join(data)
+            elif isinstance(data,bool):
+                writedata = "disable"
+                if data: writedata = "enable"
+            return saveParameter(config_file, name, writedata)
+
+        def saveParameter(config_file, name, data):
+            return entropyTools.writeParameterToFile(config_file,name,data)
+
+        self.Preferences = {
+            etpConst['entropyconf']: [
+                (
+                    'ftp-proxy',
+                    etpConst['proxy']['ftp'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.ftpProxyEntry.set_text,
+                    self.ui.ftpProxyEntry.get_text,
+                ),
+                (
+                    'http-proxy',
+                    etpConst['proxy']['http'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.httpProxyEntry.set_text,
+                    self.ui.httpProxyEntry.get_text,
+                ),
+                (
+                    'nice-level',
+                    etpConst['current_nice'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.niceSpinSelect.set_value,
+                    self.ui.niceSpinSelect.get_value_as_int,
+                )
+            ],
+            etpConst['equoconf']: [
+                (
+                    'collisionprotect',
+                    etpConst['collisionprotect'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.collisionProtectionCombo.set_active,
+                    self.ui.collisionProtectionCombo.get_active,
+                ),
+                (
+                    'configprotect',
+                    etpConst['configprotect'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectModel,
+                    self.configProtectView,
+                ),
+                (
+                    'configprotectmask',
+                    etpConst['configprotectmask'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectMaskModel,
+                    self.configProtectMaskView,
+                ),
+                (
+                    'configprotectskip',
+                    etpConst['configprotectskip'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectSkipModel,
+                    self.configProtectSkipView,
+                ),
+                (
+                    'filesbackup',
+                    etpConst['filesbackup'],
+                    bool,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.filesBackupCheckbutton.set_active,
+                    self.ui.filesBackupCheckbutton.get_active,
+                )
+            ],
+            etpConst['repositoriesconf']: [
+                (
+                    'downloadspeedlimit',
+                    etpConst['downloadspeedlimit'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.speedLimitSpin.set_value,
+                    self.ui.speedLimitSpin.get_value_as_int,
+                )
+            ],
+        }
+
+        # load data
+        for config_file in self.Preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+                if mytype == list:
+                    fillfunc(wgwrite,wgread,setting)
+                else:
+                    fillfunc(name, mytype, wgwrite, setting)
+
+        self.on_Preferences_toggled(None,False)
 
     def setupMaskedPackagesWarningBox(self):
         mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
