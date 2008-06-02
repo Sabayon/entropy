@@ -2246,7 +2246,7 @@ msgstr "Download completato"
 
 #: ../../client/text_ui.py:847
 msgid "install"
-msgstr "installre"
+msgstr "installare"
 
 #: ../../client/text_ui.py:875
 msgid "Installation completed"
