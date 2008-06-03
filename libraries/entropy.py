@@ -12471,8 +12471,11 @@ class SocketHostInterface:
                                 self.buffered_data += data
                             while self.data_counter > 0:
                                 x = self.request.recv(4096)
-                                self.data_counter -= len(x)
+                                xlen = len(x)
+                                self.data_counter -= xlen
                                 self.buffered_data += x
+                                if xlen == 0:
+                                    break
                             self.data_counter = None
                         except ValueError:
                             #self.entropyTools.printTraceback()
