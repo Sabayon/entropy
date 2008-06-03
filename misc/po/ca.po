@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-03 10:14+0200\n"
+"POT-Creation-Date: 2008-06-03 17:40+0200\n"
 "PO-Revision-Date: 2008-06-02 13:14-0000\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team:  <ca@li.org>\n"
@@ -565,7 +565,7 @@ msgid "An error occured while trying to remove the package"
 msgstr "S'ha produït un error mentre s'estava analitzant"
 
 #: ../../libraries/entropy.py:4762
-msgid "heck if you have enough disk space on your hard disk"
+msgid "Check if you have enough disk space on your hard disk"
 msgstr ""
 
 #: ../../libraries/entropy.py:4776 ../../libraries/entropy.py:4967
