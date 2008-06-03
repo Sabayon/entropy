@@ -1,3 +1,14 @@
+../libraries/dumpTools.py
+../libraries/entropyConstants.py
+../libraries/entropy_i18n.py
+../libraries/entropy.py
+../libraries/entropyTools.py
+../libraries/etpXpak.py
+../libraries/exceptionTools.py
+../libraries/outputTools.py
+../libraries/test2.py
+../libraries/test3.py
+../libraries/test.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py

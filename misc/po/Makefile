@@ -13,7 +13,7 @@ CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
 
 GLADEFILES = $(wildcard ../../spritz/src/*.glade) $(wildcard ../../spritz/applet/*.glade)
-PYFILES  = $(wildcard ../../entropy/*.py) $(wildcard ../../client/*.py) $(wildcard ../../server/*.py) $(wildcard ../../spritz/src/*.py) $(wildcard ../../spritz/src/spritz/*.py) $(wildcard ../../spritz/src/etpgui/*.py) $(wildcard ../../spritz/src/applet/*.py)
+PYFILES  = $(wildcard ../../entropy/*.py) $(wildcard ../../libraries/*.py) $(wildcard ../../client/*.py) $(wildcard ../../server/*.py) $(wildcard ../../spritz/src/*.py) $(wildcard ../../spritz/src/spritz/*.py) $(wildcard ../../spritz/src/etpgui/*.py) $(wildcard ../../spritz/src/applet/*.py)
 POTFILES  = $(PYFILES) $(GLADEFILES)
 
 all: $(NLSPACKAGE).pot $(FMTCATALOGS)
