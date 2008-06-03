@@ -76,10 +76,10 @@ class TimeScheduled(threading.Thread):
                 self.function(self.data)
             else:
                 self.function()
-	    try:
+            try:
                 time.sleep(self.delay)
-	    except:
-		pass
+            except:
+                pass
     def kill(self):
         self.alive = 0
 
@@ -1726,10 +1726,12 @@ def writeParameterToFile(config_file, name, data):
     param_found = False
     if data:
         proposed_line = "%s|%s" % (name,data,)
+        myreg = re.compile('^(%s)?[|].*$' % (name,))
     else:
         proposed_line = "# %s|" % (name,)
+        myreg = re.compile('^#([ \t]+?)?(%s)?[|].*$' % (name,))
     for line in content:
-        if line.startswith(name+"|"):
+        if myreg.match(line):
             param_found = True
             line = proposed_line
         f.write(line+"\n")
