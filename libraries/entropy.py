@@ -12436,7 +12436,22 @@ class SocketHostInterface:
 
             if self.valid_connection:
 
+                loop_counter = 0
+
                 while 1:
+
+                    # XXX: remove this, testing !
+                    loop_counter += 1
+                    if loop_conter > 100000000:
+                        self.server.processor.HostInterface.updateProgress(
+                            'interrupted: %s, reason: %s - from client: %s' % (
+                                self.server.server_address,
+                                "max while loop count reached",
+                                self.client_address,
+                            )
+                        )
+                        self.entropyTools.printTraceback()
+                        break
 
                     if self.timed_out:
                         break
@@ -12474,7 +12489,7 @@ class SocketHostInterface:
                                 xlen = len(x)
                                 self.data_counter -= xlen
                                 self.buffered_data += x
-                                if xlen == 0:
+                                if not xlen:
                                     break
                             self.data_counter = None
                         except ValueError:
