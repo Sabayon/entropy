@@ -4759,7 +4759,7 @@ class PackageInterface:
         if rc != 0:
             mytxt = "%s. %s. %s: %s" % (
                 red(_("An error occured while trying to remove the package")),
-                red(_("heck if you have enough disk space on your hard disk")),
+                red(_("Check if you have enough disk space on your hard disk")),
                 blue(_("Error")),
                 rc,
             )

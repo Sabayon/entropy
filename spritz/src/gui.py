@@ -131,7 +131,8 @@ class SpritzProgress:
 
     def reset_progress( self ):
         self.lastFrac = -1
-        self.set_progress(0.0)
+        self.ui.progressBar.set_fraction( 0 )
+        self.ui.progressBar.set_text(" ")
 
     def hide( self, clean=False ):
         self.ui.progressBox.hide()
@@ -172,7 +173,7 @@ class SpritzProgress:
         self.ui.progressBar.set_text( text )
 
     def set_mainLabel( self, text ):
-        self.ui.progressMainLabel.set_markup( "<span size=\"large\"><b>%s</b></span>" % text )
+        self.ui.progressMainLabel.set_markup( "<b>%s</b>" % text )
         self.ui.progressSubLabel.set_text( "" )
         self.ui.progressExtraLabel.set_text( "" )
 
