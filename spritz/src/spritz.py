@@ -668,6 +668,7 @@ class SpritzController(Controller):
         self.setPage('output')
 
         rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+        self.resetQueueProgressBars()
         if rc:
             self.queue.clear()
             self.queueView.refresh()
@@ -752,6 +753,7 @@ class SpritzController(Controller):
             return
 
         rc = self.processPackageQueue(self.queue.packages)
+        self.resetQueueProgressBars()
         if rc:
             self.queue.clear()       # Clear package queue
             self.queueView.refresh() # Refresh Package Queue
@@ -1495,6 +1497,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.progress.set_subLabel(_('Really, don\'t waste your time here. This is just a placeholder'))
         self.progress.set_extraLabel(_('I am still alive and kickin\''))
 
+    def resetQueueProgressBars(self):
+        self.progress.reset_progress()
+        self.progress.total.clear()
+
     def setupRepoView(self):
         self.repoView.populate()
 
@@ -1564,6 +1570,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.unsetBusy()
         # reset labels
         self.resetProgressText()
+        self.resetQueueProgressBars()
 
     def processPackageQueue(self, pkgs, remove_repos = []):
 
