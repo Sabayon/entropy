@@ -16188,7 +16188,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         # unstream object
         try:
             data = self.Service.stream_to_object(data, gzipped)
-        except EOFError:
+        except (EOFError,IOError,):
             mytxt = _("cannot convert stream into object")
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
