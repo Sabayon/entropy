@@ -12800,6 +12800,8 @@ class SocketHostInterface:
                         myargs.append(eval(arg))
                     except (NameError, SyntaxError):
                         myargs.append(str(arg))
+                    except TypeError:
+                        pass
             return myargs, mykwargs
 
         def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
