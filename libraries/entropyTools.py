@@ -149,8 +149,13 @@ def get_remote_data(url):
     socket.setdefaulttimeout(60)
     # now pray the server
     try:
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            proxy_support = urllib2.ProxyHandler(mydict)
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
         item = urllib2.urlopen(url)
