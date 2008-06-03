@@ -12442,7 +12442,7 @@ class SocketHostInterface:
 
                     # XXX: remove this, testing !
                     loop_counter += 1
-                    if loop_conter > 100000000:
+                    if loop_counter > 100000000:
                         self.server.processor.HostInterface.updateProgress(
                             'interrupted: %s, reason: %s - from client: %s' % (
                                 self.server.server_address,
