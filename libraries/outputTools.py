@@ -298,6 +298,11 @@ def print_menu(data):
 
 def reset_cursor():
     sys.stdout.write(stuff['ESC'] + '[2K')
+    flush_stdouterr()
+
+def flush_stdouterr():
+    sys.stdout.flush()
+    sys.stderr.flush()
 
 def print_error(msg, back = False):
     if etpUi['mute']:
@@ -316,6 +321,7 @@ def print_error(msg, back = False):
             print darkred(">>"),msg
         except UnicodeEncodeError:
             print darkred(">>"),msg.encode('utf-8')
+    flush_stdouterr()
 
 def print_info(msg, back = False):
     if etpUi['mute']:
@@ -334,6 +340,7 @@ def print_info(msg, back = False):
             print darkgreen(">>"),msg
         except UnicodeEncodeError:
             print darkgreen(">>"),msg.encode('utf-8')
+    flush_stdouterr()
 
 def print_warning(msg, back = False):
     if etpUi['mute']:
@@ -352,6 +359,7 @@ def print_warning(msg, back = False):
             print red(">>"),msg
         except UnicodeEncodeError:
             print red(">>"),msg.encode('utf-8')
+    flush_stdouterr()
 
 def print_generic(msg): # here we'll wrap any nice formatting
     if etpUi['mute']:
@@ -361,6 +369,7 @@ def print_generic(msg): # here we'll wrap any nice formatting
         print msg
     except UnicodeEncodeError:
         print msg.encode('utf-8')
+    flush_stdouterr()
 
 def writechar(char):
     if etpUi['mute']:
@@ -379,6 +388,7 @@ def readtext(request):
         print request,
     except UnicodeEncodeError:
         print request.encode('utf-8'),
+    flush_stdouterr()
     text = raw_input() # using readline module
     return text
 
@@ -431,8 +441,7 @@ class TextInterface:
     # in this case, we run a separate thread
     def __TextInterface_updateText(self, data):
 
-        sys.stdout.flush()
-        sys.stderr.flush()
+        flush_stdouterr()
 
         myfunc = print_info
         if data['type'] == "warning":
@@ -454,8 +463,7 @@ class TextInterface:
         elif data['importance'] in (2,3):
             myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
 
-        sys.stdout.flush()
-        sys.stderr.flush()
+        flush_stdouterr()
 
     # @input question: question to do
     #
@@ -468,6 +476,7 @@ class TextInterface:
     #
     # feel free to reimplement this
     def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+
         colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
         if len(responses) > len(colours):
             import exceptionTools
@@ -489,11 +498,13 @@ class TextInterface:
                         print "%s '%s'" % (_("I cannot understand"),response,),
                     except UnicodeEncodeError:
                         print "%s '%s'" % (_("I cannot understand"),response.encode('utf-8'),),
+                    flush_stdouterr()
         except (EOFError, KeyboardInterrupt):
             print "%s." % (_("Interrupted"),)
             xtermTitleReset()
             sys.exit(100)
         xtermTitleReset()
+        flush_stdouterr()
 
     # useful for reimplementation
     # in this wait you can send a signal to a widget (total progress bar?)

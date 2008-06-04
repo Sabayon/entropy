@@ -91,7 +91,7 @@ class const:
                 "Joost Ruis (Dutch)",
                 "Fabio Erculiani (Italian)",
                 "Roger Calvò (Catalan)",
-                "??? (Spanish)",
+                "Daniel Halens (Spanish)",
                 "??? (French)",
                 "??? (German)",
                 "??? (Polish)",

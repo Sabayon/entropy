@@ -7746,7 +7746,10 @@ class FtpInterface:
         return self.FTPbuffer
 
     def closeConnection(self):
-        self.ftpconn.quit()
+        try:
+            self.ftpconn.quit()
+        except EOFError:
+            pass
 
 
 class urlFetcher:
