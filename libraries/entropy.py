@@ -7566,7 +7566,9 @@ class FtpInterface:
                 try:
                     self.mkdir(mycurpath)
                 except self.ftplib.error_perm, e:
-                    if e[0][:3] != '550':
+                    if e[0].lower().find("permission denied") != -1:
+                        raise
+                    elif e[0][:3] != '550':
                         raise
 
     def mkdir(self,directory):
@@ -12427,108 +12429,128 @@ class SocketHostInterface:
         def __init__(self, request, client_address, server):
             self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
 
+        def data_receiver(self):
+
+            # XXX: remove this, testing !
+            self.loop_counter += 1
+            if self.loop_counter > 100000000:
+                self.server.processor.HostInterface.updateProgress(
+                    'interrupted: %s, reason: %s - from client: %s' % (
+                        self.server.server_address,
+                        "max while loop count reached",
+                        self.client_address,
+                    )
+                )
+                self.entropyTools.printTraceback()
+                return True
+
+            if self.timed_out:
+                return True
+            self.timed_out = True
+            ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
+
+            if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
+
+                self.timed_out = False
+
+                try:
+                    data = self.request.recv(4096)
+                    if self.data_counter == None:
+                        if data == '': # client wants to close
+                            return True
+                        elif len(data) < len(self.myeos):
+                            self.server.processor.HostInterface.updateProgress(
+                                'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
+                                    self.server.server_address,
+                                    "malformed EOS",
+                                    self.client_address,
+                                    repr(data),
+                                    self.data_counter,
+                                )
+                            )
+                            self.buffered_data = ''
+                            return True
+                        mystrlen = data.split(self.myeos)[0]
+                        self.data_counter = int(mystrlen)
+                        data = data[len(mystrlen)+1:]
+                        self.data_counter -= len(data)
+                        self.buffered_data += data
+                    while self.data_counter > 0:
+                        x = self.request.recv(4096)
+                        xlen = len(x)
+                        self.data_counter -= xlen
+                        self.buffered_data += x
+                        if not xlen:
+                            break
+                    self.data_counter = None
+                except ValueError:
+                    #self.entropyTools.printTraceback()
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: %s, reason: %s - from client: %s' % (
+                            self.server.server_address,
+                            "malformed transmission",
+                            self.client_address,
+                        )
+                    )
+                    return True
+                except self.socket.timeout, e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: %s, reason: %s - from client: %s' % (
+                            self.server.server_address,
+                            e,
+                            self.client_address,
+                        )
+                    )
+                    return True
+                except self.ssl_exceptions['WantReadError']:
+                    return False
+                except self.ssl_exceptions['Error'], e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: SSL Error, reason: %s - from client: %s' % (
+                            e,
+                            self.client_address,
+                        )
+                    )
+                    return True
+
+                if not self.buffered_data:
+                    return True
+
+                cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
+                if cmd == 'close':
+                    return True
+                self.buffered_data = ''
+                return False
+
         def handle(self):
 
             self.default_timeout = self.server.processor.HostInterface.timeout
-            ssl = self.server.processor.HostInterface.SSL
-            ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
-            myeos = self.server.processor.HostInterface.answers['eos']
+            self.ssl = self.server.processor.HostInterface.SSL
+            self.ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
+            self.myeos = self.server.processor.HostInterface.answers['eos']
 
             if self.valid_connection:
 
-                loop_counter = 0
+                self.loop_counter = 0
 
                 while 1:
 
-                    # XXX: remove this, testing !
-                    loop_counter += 1
-                    if loop_counter > 100000000:
+                    try:
+                        dobreak = self.data_receiver()
+                        if dobreak:
+                            break
+                    except Exception, e:
                         self.server.processor.HostInterface.updateProgress(
-                            'interrupted: %s, reason: %s - from client: %s' % (
-                                self.server.server_address,
-                                "max while loop count reached",
+                            'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
+                                Exception,
+                                e,
                                 self.client_address,
                             )
                         )
+                        # print exception
                         self.entropyTools.printTraceback()
+                        self.entropyTools.printTraceback(f = self.server.processor.HostInterface.socketLog)
                         break
-
-                    if self.timed_out:
-                        break
-                    self.timed_out = True
-                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
-
-                    if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
-
-                        self.timed_out = False
-
-                        try:
-                            data = self.request.recv(4096)
-                            if self.data_counter == None:
-                                if data == '': # client wants to close
-                                    break
-                                elif len(data) < len(myeos):
-                                    self.server.processor.HostInterface.updateProgress(
-                                        'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
-                                            self.server.server_address,
-                                            "malformed EOS",
-                                            self.client_address,
-                                            repr(data),
-                                            self.data_counter,
-                                        )
-                                    )
-                                    self.buffered_data = ''
-                                    break
-                                mystrlen = data.split(myeos)[0]
-                                self.data_counter = int(mystrlen)
-                                data = data[len(mystrlen)+1:]
-                                self.data_counter -= len(data)
-                                self.buffered_data += data
-                            while self.data_counter > 0:
-                                x = self.request.recv(4096)
-                                xlen = len(x)
-                                self.data_counter -= xlen
-                                self.buffered_data += x
-                                if not xlen:
-                                    break
-                            self.data_counter = None
-                        except ValueError:
-                            #self.entropyTools.printTraceback()
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: %s, reason: %s - from client: %s' % (
-                                    self.server.server_address,
-                                    "malformed transmission",
-                                    self.client_address,
-                                )
-                            )
-                            break
-                        except self.socket.timeout, e:
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: %s, reason: %s - from client: %s' % (
-                                    self.server.server_address,
-                                    e,
-                                    self.client_address,
-                                )
-                            )
-                            break
-                        except ssl_exceptions['WantReadError']:
-                            continue
-                        except ssl_exceptions['Error'], e:
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: SSL Error, reason: %s - from client: %s' % (
-                                    e,
-                                    self.client_address,
-                                )
-                            )
-                            break
-
-                        if not self.buffered_data:
-                            break
-
-                        cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
-                        if cmd == 'close':
-                            break
-                        self.buffered_data = ''
 
             self.request.close()
 
@@ -12579,6 +12601,9 @@ class SocketHostInterface:
 
 
         def finish(self):
+            if self.valid_connection:
+                if self.server.processor.HostInterface.connections > 0:
+                    self.server.processor.HostInterface.connections -= 1
             self.server.processor.HostInterface.updateProgress(
                 '[from: %s] connection closed (%s of %s max connections)' % (
                     self.client_address,
@@ -12586,9 +12611,6 @@ class SocketHostInterface:
                     self.server.processor.HostInterface.max_connections,
                 )
             )
-            if self.valid_connection:
-                if self.server.processor.HostInterface.connections > 0:
-                    self.server.processor.HostInterface.connections -= 1
 
         def ip_blacklist_check(self, client_addr_data, blacklist):
             if client_addr_data[0] in blacklist:
