@@ -1073,12 +1073,12 @@ def const_readEquoSettings():
             elif line.startswith("configprotect|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
-                    etpConst['configprotect'].append(x)
+                    etpConst['configprotect'].append(unicode(x,'raw_unicode_escape'))
 
             elif line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
-                    etpConst['configprotectmask'].append(x)
+                    etpConst['configprotectmask'].append(unicode(x,'raw_unicode_escape'))
 
             elif line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
