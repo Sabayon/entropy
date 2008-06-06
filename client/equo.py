@@ -34,6 +34,21 @@ try:
 except ImportError:
     def _(x): return x
 
+dbapi2Exceptions = {}
+dbapi2Exceptions['OperationalError'] = None
+dbapi2_done = False
+try: # try with sqlite3 from python 2.5 - default one
+    from sqlite3 import dbapi2
+    dbapi2_done = True
+except: # fallback to embedded pysqlite
+    try:
+        from pysqlite2 import dbapi2
+        dbapi2_done = True
+    except:
+        pass
+if dbapi2_done:
+    dbapi2Exceptions['OperationalError'] = dbapi2.OperationalError
+
 myopts = [
     None,
     (0," ~ "+etpConst['systemname']+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.getYear(),) ),
@@ -556,6 +571,11 @@ except exceptionTools.RepositoryError, e:
 except exceptionTools.PermissionDenied, e:
     print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
+except dbapi2Exceptions['OperationalError'], e:
+    if str(e).find("disk I/O error") == -1:
+        raise
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
+    sys.exit(101)
 except SystemExit:
     pass
 except IOError, e:

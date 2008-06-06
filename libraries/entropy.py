@@ -530,10 +530,14 @@ class EquoInterface(TextInterface):
                 self.loadRepositoryConfigProtect(repositoryName, conn)
 
         if (repositoryName not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
+            updated = False
             try:
-                conn.clientUpdatePackagesData(self.clientDbconn)
+                updated = conn.clientUpdatePackagesData(self.clientDbconn)
             except (dbapi2.OperationalError, dbapi2.DatabaseError):
                 pass
+            if updated:
+                self.calculate_world_updates(use_cache = False)
+                self.calculate_available_packages(use_cache = False)
         return conn
 
     def loadRepositoryConfigProtect(self, repoid, dbconn):
@@ -2284,14 +2288,14 @@ class EquoInterface(TextInterface):
             return None
 
     # this function searches all the not installed packages available in the repositories
-    def calculate_available_packages(self):
+    def calculate_available_packages(self, use_cache = True):
 
         # clear masking reasons
         maskingReasonsStorage.clear()
 
         c_hash = self.get_available_packages_chash(etpConst['branch'])
 
-        if self.xcache:
+        if use_cache and self.xcache:
             cached = self.get_available_packages_cache(myhash = c_hash)
             if cached != None:
                 return cached
@@ -2362,15 +2366,16 @@ class EquoInterface(TextInterface):
                     str(hash(branch))
         return str(hash(c_hash))
 
-    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
+    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch'], use_cache = True):
 
         # clear masking reasons
         maskingReasonsStorage.clear()
 
         db_digest = self.all_repositories_checksum()
-        cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
-        if cached != None:
-            return cached
+        if use_cache and self.xcache:
+            cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
+            if cached != None:
+                return cached
 
         update = []
         remove = []
@@ -3073,7 +3078,7 @@ class EquoInterface(TextInterface):
 
         if not silent:
             self.updateProgress(
-                red(info_package+_("Extacting package metadata")+" ..."),
+                red(info_package+_("Extracting package metadata")+" ..."),
                 importance = 0,
                 type = "info",
                 header = brown(" * "),
@@ -19741,6 +19746,7 @@ class EntropyDatabaseInterface:
 
             # clear client cache
             clientDbconn.clearCache()
+            return True
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
