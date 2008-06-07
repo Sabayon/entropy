@@ -851,7 +851,7 @@ class EquoInterface(TextInterface):
                     filepath = os.path.join(currentdir,item)
                     if filepath in etpConst['libtest_files_blacklist']:
                         continue
-                    if not os.access(filepath,os.X_OK):
+                    if not os.access(filepath,os.R_OK):
                         continue
                     if not self.entropyTools.is_elf_file(filepath):
                         continue
