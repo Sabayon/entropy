@@ -834,6 +834,7 @@ class EquoInterface(TextInterface):
         executables = set()
         total = len(ldpaths)
         count = 0
+        # FIXME: merge the two for cycles below
         for ldpath in ldpaths:
             count += 1
             self.updateProgress(
@@ -850,6 +851,8 @@ class EquoInterface(TextInterface):
                 for item in files:
                     filepath = os.path.join(currentdir,item)
                     if filepath in etpConst['libtest_files_blacklist']:
+                        continue
+                    if not os.path.isfile(filepath):
                         continue
                     if not os.access(filepath,os.R_OK):
                         continue
