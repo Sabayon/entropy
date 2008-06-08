@@ -537,7 +537,6 @@ class EquoInterface(TextInterface):
                 pass
             if updated:
                 self.calculate_world_updates(use_cache = False)
-                self.calculate_available_packages(use_cache = False)
         return conn
 
     def loadRepositoryConfigProtect(self, repoid, dbconn):
