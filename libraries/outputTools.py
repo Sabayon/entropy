@@ -304,7 +304,7 @@ def flush_stdouterr():
     sys.stdout.flush()
     sys.stderr.flush()
 
-def print_error(msg, back = False):
+def print_error(msg, back = False, flush = True):
     if etpUi['mute']:
         return
     if not back:
@@ -321,9 +321,10 @@ def print_error(msg, back = False):
             print darkred(">>"),msg
         except UnicodeEncodeError:
             print darkred(">>"),msg.encode('utf-8')
-    flush_stdouterr()
+    if flush:
+        flush_stdouterr()
 
-def print_info(msg, back = False):
+def print_info(msg, back = False, flush = True):
     if etpUi['mute']:
         return
     if not back:
@@ -340,9 +341,10 @@ def print_info(msg, back = False):
             print darkgreen(">>"),msg
         except UnicodeEncodeError:
             print darkgreen(">>"),msg.encode('utf-8')
-    flush_stdouterr()
+    if flush:
+        flush_stdouterr()
 
-def print_warning(msg, back = False):
+def print_warning(msg, back = False, flush = True):
     if etpUi['mute']:
         return
     if not back:
@@ -359,7 +361,8 @@ def print_warning(msg, back = False):
             print red(">>"),msg
         except UnicodeEncodeError:
             print red(">>"),msg.encode('utf-8')
-    flush_stdouterr()
+    if flush:
+        flush_stdouterr()
 
 def print_generic(msg): # here we'll wrap any nice formatting
     if etpUi['mute']:
@@ -457,11 +460,11 @@ class TextInterface:
                 else:
                     count_str = " (%s/%s) " % (red(str(data['count'][0])),blue(str(data['count'][1])),)
         if data['importance'] == 0:
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
         elif data['importance'] == 1:
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
         elif data['importance'] in (2,3):
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
 
         flush_stdouterr()
 

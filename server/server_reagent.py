@@ -233,8 +233,9 @@ def update(options):
 
         if toBeAdded:
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
-            for x in toBeAdded:
-                print_info(brown("    # ")+red(x[0]))
+            items = sorted([x[0] for x in toBeAdded])
+            for item in items:
+                print_info(brown("    # ")+red(item))
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s (%s %s)" % (
                         _("Would you like to package them now ?"),

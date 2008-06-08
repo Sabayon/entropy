@@ -12641,6 +12641,7 @@ class SocketHostInterface:
     class CommandProcessor:
 
         import entropyTools
+        import socket
 
         def __init__(self, HostInterface):
             self.HostInterface = HostInterface
@@ -12773,6 +12774,23 @@ class SocketHostInterface:
                 Entropy = self.load_service_interface(session)
                 try:
                     self.run_task(cmd, args, session, Entropy)
+                except self.socket.timeout:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] command error: timeout, closing connection' % (
+                            self.client_address,
+                        )
+                    )
+                    # close connection
+                    return "close"
+                except self.socket.error, e:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] command error: socket error: %s' % (
+                            self.client_address,
+                            e,
+                        )
+                    )
+                    # close connection
+                    return "close"
                 except Exception, e:
                     # write to self.HostInterface.socketLog
                     self.entropyTools.printTraceback()
@@ -18407,7 +18425,7 @@ class ServerMirrorsInterface:
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            "%s:\t\t%s" % (
+            "%s:\t%s" % (
                 darkgreen(_("Packages to be moved locally")),
                 darkgreen(str(len(copy))),
             ),
