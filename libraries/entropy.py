@@ -5588,6 +5588,7 @@ class RepoInterface:
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
+        self.big_socket_timeout = 25
         self.Entropy = EquoInstance
         self.reponames = reponames
         self.forceUpdate = forceUpdate
@@ -6040,7 +6041,7 @@ class RepoInterface:
         return data['added'],data['removed'],data['checksum']
 
     def get_eapi3_database_treeupdates(self, repo, compression, session):
-        self.socket.setdefaulttimeout(20)
+        self.socket.setdefaulttimeout(self.big_socket_timeout)
         data = self.eapi3_socket.CmdInterface.get_repository_treeupdates(
                 repo,
                 etpConst['currentarch'],
@@ -6081,7 +6082,7 @@ class RepoInterface:
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             return False
-        elif ((added_ids == False) or (removed_ids == False) or (checksum == False)):
+        elif not checksum: # {added_ids, removed_ids, checksum} == False
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             mytxt = "%s: %s" % (
@@ -6215,7 +6216,7 @@ class RepoInterface:
                         self.eapi3_socket.close_session(session)
                         return False
                     continue # retry
-                elif pkgdata == False:
+                elif not pkgdata: # pkgdata == False
                     mytxt = "%s: %s" % (
                         blue(_("Service status")),
                         darkred("remote database suddenly locked"),
@@ -6419,8 +6420,9 @@ class RepoInterface:
                             self.eapi3_socket.disconnect()
                             self.eapi3_socket = None
 
+                    status = False
                     try:
-                        self.eapi3_socket.socket.setdefaulttimeout(20)
+                        self.eapi3_socket.socket.setdefaulttimeout(self.big_socket_timeout)
                         status = self.handle_eapi3_database_sync(repo)
                     except self.socket.error, e:
                         mytxt = "%s: %s" % (
@@ -6435,13 +6437,7 @@ class RepoInterface:
                         )
                         status = False
                     self.eapi3_socket.socket.setdefaulttimeout(5)
-                    if status == False:
-                        do_close_conn()
-                        # set to none and completely skip database alignment
-                        do_db_update_transfer = None
-                        self.dbformat_eapi -= 1
-                        continue
-                    elif status == None: # remote db not available anymore ?
+                    if status == None: # remote db not available anymore ?
                         time.sleep(5)
                         locked = self.handle_repository_lock(repo)
                         if locked:
@@ -6454,6 +6450,13 @@ class RepoInterface:
                             self.dbformat_eapi -= 1
                         do_close_conn()
                         continue
+                    elif not status: # (status == False)
+                        do_close_conn()
+                        # set to none and completely skip database alignment
+                        do_db_update_transfer = None
+                        self.dbformat_eapi -= 1
+                        continue
+
 
                     do_close_conn()
                     break
@@ -6472,7 +6475,7 @@ class RepoInterface:
                         self.Entropy.cycleDone()
                         continue
 
-                if do_db_update_transfer == False:
+                if isinstance(do_db_update_transfer,bool) and not do_db_update_transfer:
                     if os.path.isfile(dbfile):
                         try:
                             shutil.move(dbfile,dbfile_old)
@@ -16293,22 +16296,32 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def retrieve_command_answer(self, cmd, repository, arch, product, compression, session_id):
 
-        # send command
-        self.Service.transmit(cmd)
-        # receive answer
-        data = self.Service.receive()
+        tries = 3
+        lasterr = None
+        while 1:
 
-        skip = self.handle_standard_answer(data, repository, arch, product)
-        if skip:
-            return None
+            if tries <= 0:
+                return lasterr
+            tries -= 1
 
-        data = self.get_result(session_id)
-        if data == None:
-            return None
-        elif not data:
-            return False
+            # send command
+            self.Service.transmit(cmd)
+            # receive answer
+            data = self.Service.receive()
 
-        return self.convert_stream_to_object(data, compression, repository, arch, product)
+            skip = self.handle_standard_answer(data, repository, arch, product)
+            if skip:
+                continue
+
+            data = self.get_result(session_id)
+            if data == None:
+                lasterr = None
+                continue
+            elif not data:
+                lasterr = False
+                continue
+
+            return self.convert_stream_to_object(data, compression, repository, arch, product)
 
     def package_information_handler(self, idpackages, repository, arch, product, session_id, compression):
 
