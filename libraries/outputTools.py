@@ -494,13 +494,15 @@ class TextInterface:
                 response = raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
                 for key in responses:
                     # An empty response will match the first value in responses.
-                    if response.upper()==key[:len(response)].upper():
+                    if response.upper() == key[:len(response)].upper():
                         xtermTitleReset()
                         return key
+                    '''
                     try:
                         print "%s '%s'" % (_("I cannot understand"),response,),
                     except UnicodeEncodeError:
                         print "%s '%s'" % (_("I cannot understand"),response.encode('utf-8'),),
+                    '''
                     flush_stdouterr()
         except (EOFError, KeyboardInterrupt):
             print "%s." % (_("Interrupted"),)

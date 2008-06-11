@@ -3985,7 +3985,7 @@ class PackageInterface:
                 shutil.rmtree(portDbDir+myatom,True)
 
         if not others_installed:
-            world_file = etpConst['systemroot']+'/var/lib/portage/world'
+            world_file = Spm.get_world_file()
             world_file_tmp = world_file+".entropy.tmp"
             if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
                 new = open(world_file_tmp,"w")
@@ -4004,6 +4004,7 @@ class PackageInterface:
                 new.close()
                 old.close()
                 shutil.move(world_file_tmp,world_file)
+
         return 0
 
     '''
@@ -4225,6 +4226,7 @@ class PackageInterface:
             return -1 # no Portage support
         portDbDir = Spm.get_vdb_path()
         if os.path.isdir(portDbDir):
+
             # extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
             key = self.infoDict['category']+"/"+self.infoDict['name']
             atomsfound = set()
@@ -4306,6 +4308,32 @@ class PackageInterface:
                         type = "warning",
                         header = darkred("   ## ")
                     )
+
+            # add to Portage world
+            # key: key
+            # slot: self.infoDict['slot']
+            keyslot = key+":"+self.infoDict['slot']
+            world_file = Spm.get_world_file()
+            world_atoms = set()
+
+            if os.access(world_file,os.R_OK) and os.path.isfile(world_file):
+                f = open(world_file,"r")
+                world_atoms = set([x.strip() for x in f.readlines() if x.strip()])
+                f.close()
+
+            if keyslot not in world_atoms and os.access(os.path.dirname(world_file),os.W_OK):
+                if key in world_atoms:
+                    world_atoms.remove(key)
+                world_atoms.add(keyslot)
+                world_atoms = list(world_atoms)
+                world_atoms.sort()
+                world_file_tmp = world_file+".entropy_inst"
+                f = open(world_file_tmp,"w")
+                for item in world_atoms:
+                    f.write(item+"\n")
+                f.flush()
+                f.close()
+                shutil.move(world_file_tmp,world_file)
 
         return 0
 
@@ -6802,7 +6830,7 @@ class RepoInterface:
             securityConn = self.Entropy.Security()
             securityConn.fetch_advisories()
         except Exception, e:
-            self.entropyTools.printTraceback()
+            self.entropyTools.printTraceback(f = self.Entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
             self.Entropy.updateProgress(
                 mytxt,
@@ -11280,6 +11308,9 @@ class PortageInterface:
         mydb[myroot]['bintree'] = self._get_portage_binarytree(myroot)
         mydb[myroot]['virtuals'] = self.portage.settings.getvirtuals(myroot)
         self.portage._global_updates(mydb, {}) # always force
+
+    def get_world_file(self):
+        return os.path.join(etpConst['systemroot'],"/",self.portage_const.WORLD_FILE)
 
     def get_third_party_mirrors(self, mirrorname):
         x = []
