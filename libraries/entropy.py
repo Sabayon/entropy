@@ -8533,22 +8533,43 @@ class TriggerInterface:
         Real triggers
     '''
     def trigger_call_ext_preinstall(self):
-        rc = self.trigger_call_ext_generic()
-        return rc
+        return self.trigger_call_ext_generic()
 
     def trigger_call_ext_postinstall(self):
-        rc = self.trigger_call_ext_generic()
-        return rc
+        return self.trigger_call_ext_generic()
 
     def trigger_call_ext_preremove(self):
-        rc = self.trigger_call_ext_generic()
-        return rc
+        return self.trigger_call_ext_generic()
 
     def trigger_call_ext_postremove(self):
-        rc = self.trigger_call_ext_generic()
-        return rc
+        return self.trigger_call_ext_generic()
 
     def trigger_call_ext_generic(self):
+        try:
+            return self.do_trigger_call_ext_generic()
+        except Exception, e:
+            mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
+            self.entropyTools.printTraceback()
+            self.entropyTools.printTraceback(f = self.Entropy.clientLog)
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[POST] ATTENTION Cannot run External trigger for "+mykey+"!! "+str(Exception)+": "+str(e)
+            )
+            mytxt = "%s: %s %s. %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run External trigger for")),
+                bold(mykey),
+                brown(_("Please report it")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            return 0
+
+    def do_trigger_call_ext_generic(self):
 
         # if mute, supress portage output
         if etpUi['mute']:
@@ -8561,6 +8582,9 @@ class TriggerInterface:
         triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(self.Entropy.entropyTools.getRandomNumber())
         while os.path.isfile(triggerfile):
             triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(self.Entropy.entropyTools.getRandomNumber())
+        triggerdir = os.path.dirname(triggerfile)
+        if not os.path.isdir(triggerdir):
+            os.makedirs(triggerdir)
         f = open(triggerfile,"w")
         for x in self.pkgdata['trigger']:
             f.write(x)

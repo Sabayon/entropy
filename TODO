@@ -1,6 +1,6 @@
 TODO list
   - community repos: add repository handling on dependencies to avoid library breakages
-  - EAPI=3 make timeout configurable
+  - External trigger: rewrite support and use bash
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - make.profile support (saving profile information into the db)
   - database backup tools
