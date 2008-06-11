@@ -5640,6 +5640,7 @@ class RepoInterface:
             self.eapi3_socket = RepositorySocketClientInterface(
                 self.Entropy, EntropyRepositorySocketClientCommands, output_header = "\t"
             )
+            self.eapi3_socket.socket_timeout = self.big_socket_timeout
             self.eapi3_socket.connect(dburl, port)
         except (exceptionTools.ConnectionError,self.socket.error,):
             self.eapi3_socket = None
@@ -12467,7 +12468,7 @@ class SocketHostInterface:
                 self.timed_out = False
 
                 try:
-                    data = self.request.recv(4096)
+                    data = self.request.recv(1024)
                     if self.data_counter == None:
                         if data == '': # client wants to close
                             return True
@@ -12489,7 +12490,7 @@ class SocketHostInterface:
                         self.data_counter -= len(data)
                         self.buffered_data += data
                     while self.data_counter > 0:
-                        x = self.request.recv(4096)
+                        x = self.request.recv(1024)
                         xlen = len(x)
                         self.data_counter -= xlen
                         self.buffered_data += x
@@ -16260,6 +16261,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
     def convert_stream_to_object(self, data, gzipped, repository = None, arch = None, product = None):
 
         # unstream object
+        error = False
         try:
             data = self.Service.stream_to_object(data, gzipped)
         except (EOFError,IOError,):
@@ -16279,7 +16281,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 header = self.output_header
             )
             data = None
-        return data
+            error = True
+        return data, error
 
     def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = False):
         self.Service.check_socket_connection()
@@ -16324,7 +16327,9 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 lasterr = False
                 continue
 
-            return self.convert_stream_to_object(data, compression, repository, arch, product)
+            objdata, error = self.convert_stream_to_object(data, compression, repository, arch, product)
+            if not error:
+                return objdata
 
     def package_information_handler(self, idpackages, repository, arch, product, session_id, compression):
 
@@ -16454,6 +16459,8 @@ class RepositorySocketClientInterface:
         self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
         self.CmdInterface.output_header = self.output_header
+        self.socket_timeout = 25
+        self.socket.setdefaulttimeout(self.socket_timeout)
 
     def stream_to_object(self, data, gzipped):
 
@@ -16502,6 +16509,7 @@ class RepositorySocketClientInterface:
 
     def open_session(self):
         self.check_socket_connection()
+        self.socket.setdefaulttimeout(self.socket_timeout)
         self.transmit('begin')
         data = self.receive()
         return data
@@ -16513,7 +16521,7 @@ class RepositorySocketClientInterface:
 
             try:
 
-                data = self.sock_conn.recv(4096)
+                data = self.sock_conn.recv(1024)
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -16541,7 +16549,7 @@ class RepositorySocketClientInterface:
                     self.buffered_data = data
 
                 while self.buffer_length > 0:
-                    x = self.sock_conn.recv(4096)
+                    x = self.sock_conn.recv(1024)
                     self.buffer_length -= len(x)
                     self.buffered_data += x
                 self.buffer_length = None
