@@ -16611,6 +16611,7 @@ class RepositorySocketClientInterface:
 
     def connect(self, host, port):
         self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
+        self.sock_conn.settimeout(self.socket_timeout)
         try:
             self.sock_conn.connect((host, port))
         except self.socket.error, e:
