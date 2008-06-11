@@ -251,7 +251,49 @@ class SpritzQueue:
             status = self.elaborateRemoval(xlist,False, accept)
             return status,1
 
+    def elaborateMaskedPackages(self, matches):
+
+        masks = {}
+        for match in matches:
+            mymasks = self.Entropy.get_masked_packages_tree(match, atoms = False, flat = True)
+            masks.update(mymasks)
+        # run dialog if found some
+        if not masks:
+            return 0
+
+        # filter already masked
+        mymasks = {}
+        for match in masks:
+            if match not in self.etpbase.unmaskingPackages:
+                mymasks[match] = masks[match]
+        if not mymasks:
+            return 0
+
+        pkgs = []
+        self.etpbase.getRawPackages('masked')
+        for match in masks:
+            pkg, new = self.etpbase.getPackageItem(match,True)
+            pkgs.append(pkg)
+
+        # save old
+        oldmask = self.etpbase.unmaskingPackages.copy()
+        maskDialog = self.dialogs.MaskedPackagesDialog(self.Entropy, self.etpbase, self.ui.main, pkgs)
+        result = maskDialog.run()
+        if result == -5: # ok
+            result = 0
+        else:
+            # discard changes
+            self.etpbase.unmaskingPackages = oldmask.copy()
+        maskDialog.destroy()
+
+        return result
+
     def elaborateInstall(self, xlist, actions, deep_deps, accept):
+
+        status = self.elaborateMaskedPackages(xlist)
+        if status != 0:
+            return status
+
         (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps)
         if status == -2: # dependencies not found
             confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,

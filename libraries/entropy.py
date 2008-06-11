@@ -314,6 +314,13 @@ class EquoInterface(TextInterface):
     def set_priority(self, low = 0):
         return const_setNiceLevel(low)
 
+    def reloadRepositoriesConfigProtect(self, repositories = None):
+        if repositories == None:
+            repositories = self.validRepositories
+        for repoid in repositories:
+            dbconn = self.openRepositoryDatabase(repoid)
+            self.loadRepositoryConfigProtect(repoid, dbconn)
+
     def switchChroot(self, chroot = ""):
         # clean caches
         self.purge_cache()
@@ -388,7 +395,8 @@ class EquoInterface(TextInterface):
             dbname = etpConst['clientdbid'],
             xcache = self.xcache,
             indexing = self.indexing,
-            OutputInterface = self
+            OutputInterface = self,
+            ServiceInterface = self
         )
         # validate database
         if not self.noclientdb:
@@ -513,32 +521,41 @@ class EquoInterface(TextInterface):
             dbname = etpConst['dbnamerepoprefix']+repositoryName,
             xcache = xcache,
             indexing = indexing,
-            OutputInterface = self
+            OutputInterface = self,
+            ServiceInterface = self
         )
         # initialize CONFIG_PROTECT
         if (etpRepositories[repositoryName]['configprotect'] == None) or \
             (etpRepositories[repositoryName]['configprotectmask'] == None):
+                self.loadRepositoryConfigProtect(repositoryName, conn)
 
-            try:
-                etpRepositories[repositoryName]['configprotect'] = conn.listConfigProtectDirectories()
-            except (dbapi2.OperationalError, dbapi2.DatabaseError):
-                etpRepositories[repositoryName]['configprotect'] = []
-            try:
-                etpRepositories[repositoryName]['configprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-            except (dbapi2.OperationalError, dbapi2.DatabaseError):
-                etpRepositories[repositoryName]['configprotectmask'] = []
-
-            etpRepositories[repositoryName]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotect']]
-            etpRepositories[repositoryName]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repositoryName]['configprotectmask']]
-
-            etpRepositories[repositoryName]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotect']]
-            etpRepositories[repositoryName]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repositoryName]['configprotectmask']]
         if (repositoryName not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
+            updated = False
             try:
-                conn.clientUpdatePackagesData(self.clientDbconn)
+                updated = conn.clientUpdatePackagesData(self.clientDbconn)
             except (dbapi2.OperationalError, dbapi2.DatabaseError):
                 pass
+            if updated:
+                self.calculate_world_updates(use_cache = False)
         return conn
+
+    def loadRepositoryConfigProtect(self, repoid, dbconn):
+
+        try:
+            etpRepositories[repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
+        except (dbapi2.OperationalError, dbapi2.DatabaseError):
+            etpRepositories[repoid]['configprotect'] = []
+        try:
+            etpRepositories[repoid]['configprotectmask'] = dbconn.listConfigProtectDirectories(mask = True)
+        except (dbapi2.OperationalError, dbapi2.DatabaseError):
+            etpRepositories[repoid]['configprotectmask'] = []
+
+        etpRepositories[repoid]['configprotect'] = [etpConst['systemroot']+x for x in etpRepositories[repoid]['configprotect']]
+        etpRepositories[repoid]['configprotectmask'] = [etpConst['systemroot']+x for x in etpRepositories[repoid]['configprotectmask']]
+
+        etpRepositories[repoid]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotect']]
+        etpRepositories[repoid]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotectmask']]
+
 
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None, skipChecks = False):
         if xcache == None:
@@ -816,6 +833,7 @@ class EquoInterface(TextInterface):
         executables = set()
         total = len(ldpaths)
         count = 0
+        # FIXME: merge the two for cycles below
         for ldpath in ldpaths:
             count += 1
             self.updateProgress(
@@ -833,7 +851,9 @@ class EquoInterface(TextInterface):
                     filepath = os.path.join(currentdir,item)
                     if filepath in etpConst['libtest_files_blacklist']:
                         continue
-                    if not os.access(filepath,os.X_OK):
+                    if not os.path.isfile(filepath):
+                        continue
+                    if not os.access(filepath,os.R_OK):
                         continue
                     if not self.entropyTools.is_elf_file(filepath):
                         continue
@@ -1431,10 +1451,9 @@ class EquoInterface(TextInterface):
                 etpRepositoriesOrder.insert(repodata['position'],repodata['repoid'])
             else:
                 etpRepositoriesOrder.append(repodata['repoid'])
-            if repodata.has_key("service_port"):
-                etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
-            else:
-                etpRepositories[repodata['repoid']]['service_port'] = int(etpConst['socket_service']['port'])
+            if not repodata.has_key("service_port"):
+                repodata['service_port'] = int(etpConst['socket_service']['port'])
+            etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
             self.repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
@@ -1442,6 +1461,9 @@ class EquoInterface(TextInterface):
         self.validate_repositories()
 
     def removeRepository(self, repoid, disable = False):
+
+        # ensure that all dbs are closed
+        self.closeAllRepositoryDatabases()
 
         done = False
         if etpRepositories.has_key(repoid):
@@ -1610,6 +1632,94 @@ class EquoInterface(TextInterface):
 
         return unsatisfiedDeps, satisfiedDeps
 
+    def get_masked_packages_tree(self, atomInfo, atoms = False, flat = False, matchfilter = None):
+
+        usefilter = False
+        if matchfilter != None:
+            usefilter = True
+        maskedtree = {}
+        mybuffer = self.entropyTools.lifobuffer()
+        matchcache = set()
+        depcache = set()
+        treelevel = -1
+
+        do = True
+        if usefilter:
+            if matchfilter.inside(atomInfo):
+                do = False
+
+        if not do:
+            return {}
+
+        mydbconn = self.openRepositoryDatabase(atomInfo[1])
+        myatom = mydbconn.retrieveAtom(atomInfo[0])
+        idpackage, idreason = mydbconn.idpackageValidator(atomInfo[0])
+        if idpackage == -1:
+            treelevel += 1
+            if atoms:
+                mydict = {myatom: idreason,}
+            else:
+                mydict = {atomInfo: idreason,}
+            if flat:
+                maskedtree.update(mydict)
+            else:
+                maskedtree[treelevel] = {}
+                maskedtree[treelevel].update(mydict)
+
+        mydeps = mydbconn.retrieveDependencies(atomInfo[0])
+        for mydep in mydeps:
+            mybuffer.push(mydep)
+        mydep = mybuffer.pop()
+
+        while mydep != None:
+
+            if mydep in depcache:
+                mydep = mybuffer.pop()
+                continue
+
+            idpackage, repoid = self.atomMatch(mydep)
+            if (idpackage, repoid) in matchcache:
+                mydep = mybuffer.pop()
+                continue
+
+            # already analyzed by the calling function
+            if usefilter:
+                if matchfilter.inside((idpackage, repoid)):
+                    mydep = mybuffer.pop()
+                    continue
+                matchfilter.add((idpackage, repoid))
+
+            # collect masked
+            if idpackage == -1:
+                idpackage, repoid = self.atomMatch(mydep, packagesFilter = False)
+                if idpackage != -1:
+                    treelevel += 1
+                    if not maskedtree.has_key(treelevel) and not flat:
+                        maskedtree[treelevel] = {}
+                    dbconn = self.openRepositoryDatabase(repoid)
+                    vidpackage, idreason = dbconn.idpackageValidator(idpackage)
+                    if atoms:
+                        mydict = {dbconn.retrieveAtom(idpackage): idreason}
+                    else:
+                        mydict = {(idpackage,repoid): idreason}
+                    if flat:
+                        maskedtree.update(mydict)
+                    else:
+                        maskedtree[treelevel].update(mydict)
+
+            # push its dep into the buffer
+            if idpackage != -1:
+                matchcache.add((idpackage, repoid))
+                dbconn = self.openRepositoryDatabase(repoid)
+                owndeps = dbconn.retrieveDependencies(idpackage)
+                for owndep in owndeps:
+                    mybuffer.push(owndep)
+
+            depcache.add(mydep)
+            mydep = mybuffer.pop()
+
+        return maskedtree
+
 
     '''
     @description: generates a dependency tree using unsatisfied dependencies
@@ -1666,6 +1776,10 @@ class EquoInterface(TextInterface):
             if virgin:
                 virgin = False
                 match = atomInfo
+                dbconn = self.openRepositoryDatabase(match[1])
+                myidpackage, idreason = dbconn.idpackageValidator(match[0])
+                if myidpackage == -1:
+                    match = (-1,match[1])
             else:
                 match = self.atomMatch(mydep[1])
             if match[0] == -1:
@@ -2165,21 +2279,28 @@ class EquoInterface(TextInterface):
         c_hash = str(hash(c_hash))
         return c_hash
 
+    def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
+        if myhash == None:
+            myhash = self.get_available_packages_chash(branch)
+        disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
+        try:
+            if disk_cache['chash'] == myhash:
+                return disk_cache['available']
+        except (KeyError,TypeError,):
+            return None
+
     # this function searches all the not installed packages available in the repositories
-    def calculate_available_packages(self):
+    def calculate_available_packages(self, use_cache = True):
 
         # clear masking reasons
         maskingReasonsStorage.clear()
 
-        if self.xcache:
-            c_hash = self.get_available_packages_chash(etpConst['branch'])
-            disk_cache = self.dumpTools.loadobj(etpCache['world_available'])
-            if disk_cache != None:
-                try:
-                    if disk_cache['chash'] == c_hash:
-                        return disk_cache['available']
-                except KeyError:
-                    pass
+        c_hash = self.get_available_packages_chash(etpConst['branch'])
+
+        if use_cache and self.xcache:
+            cached = self.get_available_packages_cache(myhash = c_hash)
+            if cached != None:
+                return cached
 
         available = []
         self.setTotalCycles(len(self.validRepositories))
@@ -2247,15 +2368,16 @@ class EquoInterface(TextInterface):
                     str(hash(branch))
         return str(hash(c_hash))
 
-    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch']):
+    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch'], use_cache = True):
 
         # clear masking reasons
         maskingReasonsStorage.clear()
 
         db_digest = self.all_repositories_checksum()
-        cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
-        if cached != None:
-            return cached
+        if use_cache and self.xcache:
+            cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
+            if cached != None:
+                return cached
 
         update = []
         remove = []
@@ -2265,12 +2387,13 @@ class EquoInterface(TextInterface):
         idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
         maxlen = len(idpackages)
         count = 0
+        mytxt = _("Calculating world packages")
         for idpackage in idpackages:
 
             count += 1
             if (count%10 == 0) or (count == maxlen) or (count == 1):
                 self.updateProgress(
-                    _("Calculating world packages"),
+                    mytxt,
                     importance = 0,
                     type = "info",
                     back = True,
@@ -2351,12 +2474,123 @@ class EquoInterface(TextInterface):
                 found_conflicts.add(match[0])
         return found_conflicts
 
-    def is_match_masked(self, match):
+    def is_match_masked(self, match, live_check = True):
         dbconn = self.openRepositoryDatabase(match[1])
-        idpackage, idreason = dbconn.idpackageValidator(match[0])
+        idpackage, idreason = dbconn.idpackageValidator(match[0], live = live_check)
         if idpackage != -1:
             return False
         return True
+
+    def unmask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
+
+        valid_masks = ["atom"]
+
+        if method not in valid_masks:
+            raise exceptionTools.IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"),method,) )
+        if not self.is_match_masked(match, live_check = False):
+            return True
+
+        done = False
+        if method == "atom":
+            done = self.unmask_match_by_atom(match, dry_run)
+
+        if done:
+            self.parse_masking_settings() # cache will be erased by this
+        if dry_run and method == "atom": # inject if done "live"
+            etpConst['live_packagemasking']['unmask_matches'].add(match)
+        # clear atomMatch cache anyway
+
+        # you must manually update
+        if clean_all_cache and not dry_run:
+            self.clear_dump_cache(etpCache['world_available'])
+            self.clear_dump_cache(etpCache['world_update'])
+
+        self.clear_dump_cache(etpCache['check_package_update'])
+        self.clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self.clear_dump_cache(etpCache['atomMatch'])
+        self.clear_dump_cache(etpCache['dep_tree'])
+        self.clear_dump_cache(etpCache['dbMatch']+"/"+match[1]+"/")
+        self.clear_dump_cache(etpCache['dbSearch']+"/"+match[1]+"/")
+
+        idpackageValidatorCache.clear()
+
+        return done
+
+    def unmask_match_by_atom(self, match, dry_run = False):
+        self.clear_match_mask(match, dry_run)
+        dbconn = self.openRepositoryDatabase(match[1])
+        atom = dbconn.retrieveAtom(match[0])
+        unmask_file = self.MaskingParser.etpMaskFiles['unmask']
+        exist = False
+        if not os.path.isfile(unmask_file):
+            if not os.access(os.path.dirname(unmask_file),os.W_OK):
+                return False # cannot write
+        elif not os.access(unmask_file, os.W_OK):
+            return False
+        elif not dry_run:
+            exist = True
+
+        if dry_run:
+            return True
+
+        content = []
+        if exist:
+            f = open(unmask_file,"r")
+            content = [x.strip() for x in f.readlines()]
+            f.close()
+        content.append(atom)
+        unmask_file_tmp = unmask_file+".tmp"
+        f = open(unmask_file_tmp,"w")
+        for line in content:
+            f.write(line+"\n")
+        f.flush()
+        f.close()
+        shutil.move(unmask_file_tmp,unmask_file)
+        return True
+
+    def clear_match_mask(self, match, dry_run = False):
+
+        if match in etpConst['live_packagemasking']['unmask_matches']:
+            etpConst['live_packagemasking']['unmask_matches'].remove(match)
+        if match in etpConst['live_packagemasking']['mask_matches']:
+            etpConst['live_packagemasking']['mask_matches'].remove(match)
+
+        masking_list = [self.MaskingParser.etpMaskFiles['mask']]
+
+        for mask_file in masking_list:
+            if not os.path.isfile(mask_file):
+                continue
+            if not os.access(mask_file,os.W_OK):
+                continue
+            if dry_run:
+                continue
+            f = open(mask_file,"r")
+            newf = self.entropyTools.open_buffer()
+            line = f.readline()
+            while line:
+                line = line.strip()
+                if line.startswith("#"):
+                    newf.write(line+"\n")
+                    line = f.readline()
+                    continue
+                elif not line:
+                    newf.write("\n")
+                    line = f.readline()
+                    continue
+                mymatch = self.atomMatch(line, packagesFilter = False)
+                if mymatch == match:
+                    line = f.readline()
+                    continue
+                newf.write(line+"\n")
+                line = f.readline()
+            f.close()
+            tmpfile = mask_file+".w_tmp"
+            f = open(tmpfile,"w")
+            f.write(newf.getvalue())
+            f.flush()
+            f.close()
+            newf.close()
+            shutil.move(tmpfile,mask_file)
 
     # every tbz2 file that would be installed must pass from here
     def add_tbz2_to_repos(self, tbz2file):
@@ -2377,21 +2611,26 @@ class EquoInterface(TextInterface):
         repodata['dbpath'] = os.path.dirname(dbfile)
         repodata['pkgpath'] = os.path.realpath(tbz2file) # extra info added
         repodata['smartpackage'] = False # extra info added
-        self.addRepository(repodata)
+
         mydbconn = self.openGenericDatabase(dbfile)
         # read all idpackages
         try:
             myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
         except:
-            del etpRepositories[basefile]
             return -2,atoms_contained
         if len(myidpackages) > 1:
-            etpRepositories[basefile]['smartpackage'] = True
+            repodata[basefile]['smartpackage'] = True
         for myidpackage in myidpackages:
             compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
                 return -3,atoms_contained
             atoms_contained.append((int(myidpackage),basefile))
+
+        self.addRepository(repodata)
+        self.validate_repositories()
+        if basefile not in self.validRepositories:
+            self.removeRepository(basefile)
+            return -4,atoms_contained
         mydbconn.closeDB()
         del mydbconn
         return 0,atoms_contained
@@ -2841,7 +3080,7 @@ class EquoInterface(TextInterface):
 
         if not silent:
             self.updateProgress(
-                red(info_package+_("Extacting package metadata")+" ..."),
+                red(info_package+_("Extracting package metadata")+" ..."),
                 importance = 0,
                 type = "info",
                 header = brown(" * "),
@@ -4527,7 +4766,7 @@ class PackageInterface:
         if rc != 0:
             mytxt = "%s. %s. %s: %s" % (
                 red(_("An error occured while trying to remove the package")),
-                red(_("heck if you have enough disk space on your hard disk")),
+                red(_("Check if you have enough disk space on your hard disk")),
                 blue(_("Error")),
                 rc,
             )
@@ -5349,6 +5588,7 @@ class RepoInterface:
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
+        self.big_socket_timeout = 25
         self.Entropy = EquoInstance
         self.reponames = reponames
         self.forceUpdate = forceUpdate
@@ -5400,8 +5640,9 @@ class RepoInterface:
             self.eapi3_socket = RepositorySocketClientInterface(
                 self.Entropy, EntropyRepositorySocketClientCommands, output_header = "\t"
             )
+            self.eapi3_socket.socket_timeout = self.big_socket_timeout
             self.eapi3_socket.connect(dburl, port)
-        except exceptionTools.ConnectionError:
+        except (exceptionTools.ConnectionError,self.socket.error,):
             self.eapi3_socket = None
             return False
         return True
@@ -5800,6 +6041,25 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
+    def get_eapi3_database_treeupdates(self, repo, compression, session):
+        self.socket.setdefaulttimeout(self.big_socket_timeout)
+        data = self.eapi3_socket.CmdInterface.get_repository_treeupdates(
+                repo,
+                etpConst['currentarch'],
+                etpConst['product'],
+                session_id = session,
+                compression = compression
+        )
+        if not isinstance(data,dict):
+            return None,None
+        else:
+            if not data.has_key('digest'):
+                return None,None
+            elif not data.has_key('actions'):
+                return None,None
+            else:
+                return data['digest'],data['actions']
+
     def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1500, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
@@ -5808,6 +6068,10 @@ class RepoInterface:
             self.eapi3_socket.close_session(session)
             return False
         myidpackages = mydbconn.listAllIdpackages()
+
+        # enable compression
+        if compression:
+            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, True)
 
         added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
             repo,
@@ -5819,7 +6083,7 @@ class RepoInterface:
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             return False
-        elif False in (added_ids,removed_ids,checksum):
+        elif not checksum: # {added_ids, removed_ids, checksum} == False
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
             mytxt = "%s: %s" % (
@@ -5858,6 +6122,43 @@ class RepoInterface:
             self.eapi3_socket.close_session(session)
             return False
 
+        # get treeupdates stuff
+        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(repo, compression, session)
+        if dbdigest == None:
+            mydbconn.closeDB()
+            self.eapi3_socket.close_session(session)
+            mytxt = "%s: %s" % (
+                blue(_("EAPI3 Service status")),
+                darkred(_("treeupdates data not available")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
+        else:
+            try:
+                # inject new digest
+                mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
+                # bump new actions
+                mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
+            except (dbapi2.OperationalError,dbapi2.IntegrityError,):
+                mydbconn.closeDB()
+                self.eapi3_socket.close_session(session)
+                mytxt = "%s: %s" % (
+                    blue(_("EAPI3 Service status")),
+                    darkred(_("cannot update treeupdates data")),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    type = "info",
+                    header = blue("  # "),
+                )
+                return None
+
         count = 0
         added_segments = []
         mytmp = set()
@@ -5871,10 +6172,6 @@ class RepoInterface:
         if mytmp:
             added_segments.append(list(mytmp))
         del mytmp
-
-        # enable compression
-        if compression:
-            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, True)
 
         # fetch and store
         count = 0
@@ -5920,7 +6217,7 @@ class RepoInterface:
                         self.eapi3_socket.close_session(session)
                         return False
                     continue # retry
-                elif pkgdata == False:
+                elif not pkgdata: # pkgdata == False
                     mytxt = "%s: %s" % (
                         blue(_("Service status")),
                         darkred("remote database suddenly locked"),
@@ -6124,8 +6421,9 @@ class RepoInterface:
                             self.eapi3_socket.disconnect()
                             self.eapi3_socket = None
 
+                    status = False
                     try:
-                        self.socket.setdefaulttimeout(10)
+                        self.eapi3_socket.socket.setdefaulttimeout(self.big_socket_timeout)
                         status = self.handle_eapi3_database_sync(repo)
                     except self.socket.error, e:
                         mytxt = "%s: %s" % (
@@ -6139,14 +6437,8 @@ class RepoInterface:
                             header = blue("  # "),
                         )
                         status = False
-                    self.socket.setdefaulttimeout(2)
-                    if status == False:
-                        do_close_conn()
-                        # set to none and completely skip database alignment
-                        do_db_update_transfer = None
-                        self.dbformat_eapi -= 1
-                        continue
-                    elif status == None: # remote db not available anymore ?
+                    self.eapi3_socket.socket.setdefaulttimeout(5)
+                    if status == None: # remote db not available anymore ?
                         time.sleep(5)
                         locked = self.handle_repository_lock(repo)
                         if locked:
@@ -6159,6 +6451,13 @@ class RepoInterface:
                             self.dbformat_eapi -= 1
                         do_close_conn()
                         continue
+                    elif not status: # (status == False)
+                        do_close_conn()
+                        # set to none and completely skip database alignment
+                        do_db_update_transfer = None
+                        self.dbformat_eapi -= 1
+                        continue
+
 
                     do_close_conn()
                     break
@@ -6177,7 +6476,7 @@ class RepoInterface:
                         self.Entropy.cycleDone()
                         continue
 
-                if do_db_update_transfer == False:
+                if isinstance(do_db_update_transfer,bool) and not do_db_update_transfer:
                     if os.path.isfile(dbfile):
                         try:
                             shutil.move(dbfile,dbfile_old)
@@ -6231,7 +6530,10 @@ class RepoInterface:
                 continue
 
             if os.path.isfile(dbfile) and os.access(dbfile,os.W_OK):
-                self.Entropy.setup_default_file_perms(dbfile)
+                try:
+                    self.Entropy.setup_default_file_perms(dbfile)
+                except OSError: # notification applet
+                    pass
 
             # database is going to be updated
             self.dbupdated = True
@@ -7275,7 +7577,9 @@ class FtpInterface:
                 try:
                     self.mkdir(mycurpath)
                 except self.ftplib.error_perm, e:
-                    if e[0][:3] != '550':
+                    if e[0].lower().find("permission denied") != -1:
+                        raise
+                    elif e[0][:3] != '550':
                         raise
 
     def mkdir(self,directory):
@@ -7453,7 +7757,10 @@ class FtpInterface:
         return self.FTPbuffer
 
     def closeConnection(self):
-        self.ftpconn.quit()
+        try:
+            self.ftpconn.quit()
+        except EOFError:
+            pass
 
 
 class urlFetcher:
@@ -7491,8 +7798,13 @@ class urlFetcher:
             self.localfile = open(self.pathToSave,"wb")
 
         # setup proxy, doing here because config is dynamic
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            proxy_support = urllib2.ProxyHandler(mydict)
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
         #FIXME else: unset opener??
@@ -9797,8 +10109,6 @@ class PackageMaskingParser:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
 
-    def parse(self):
-
         self.etpMaskFiles = {
             'keywords': etpConst['confdir']+"/packages/package.keywords", # keywording configuration files
             'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
@@ -9807,14 +10117,6 @@ class PackageMaskingParser:
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
-        # append repositories mask files
-        for repoid in etpRepositoriesOrder:
-            maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
-            wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
-            if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
-                self.etpMaskFiles['repos_mask'][repoid] = maskpath
-            if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
-                self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
 
         self.etpMtimeFiles = {
             'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime",
@@ -9824,6 +10126,18 @@ class PackageMaskingParser:
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
+
+    def parse(self):
+
+        # append repositories mask files
+        for repoid in etpRepositoriesOrder:
+            maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
+            wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
+            if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
+                self.etpMaskFiles['repos_mask'][repoid] = maskpath
+            if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
+                self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
+
         # append repositories mtime files
         for repoid in etpRepositoriesOrder:
             if repoid in self.etpMaskFiles['repos_mask']:
@@ -10135,8 +10449,13 @@ class ErrorReportInterface:
         self.generated = False
         self.params = {}
 
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            proxy_support = urllib2.ProxyHandler(mydict)
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
 
@@ -12124,90 +12443,128 @@ class SocketHostInterface:
         def __init__(self, request, client_address, server):
             self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
 
+        def data_receiver(self):
+
+            # XXX: remove this, testing !
+            self.loop_counter += 1
+            if self.loop_counter > 100000000:
+                self.server.processor.HostInterface.updateProgress(
+                    'interrupted: %s, reason: %s - from client: %s' % (
+                        self.server.server_address,
+                        "max while loop count reached",
+                        self.client_address,
+                    )
+                )
+                self.entropyTools.printTraceback()
+                return True
+
+            if self.timed_out:
+                return True
+            self.timed_out = True
+            ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
+
+            if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
+
+                self.timed_out = False
+
+                try:
+                    data = self.request.recv(1024)
+                    if self.data_counter == None:
+                        if data == '': # client wants to close
+                            return True
+                        elif len(data) < len(self.myeos):
+                            self.server.processor.HostInterface.updateProgress(
+                                'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
+                                    self.server.server_address,
+                                    "malformed EOS",
+                                    self.client_address,
+                                    repr(data),
+                                    self.data_counter,
+                                )
+                            )
+                            self.buffered_data = ''
+                            return True
+                        mystrlen = data.split(self.myeos)[0]
+                        self.data_counter = int(mystrlen)
+                        data = data[len(mystrlen)+1:]
+                        self.data_counter -= len(data)
+                        self.buffered_data += data
+                    while self.data_counter > 0:
+                        x = self.request.recv(1024)
+                        xlen = len(x)
+                        self.data_counter -= xlen
+                        self.buffered_data += x
+                        if not xlen:
+                            break
+                    self.data_counter = None
+                except ValueError:
+                    #self.entropyTools.printTraceback()
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: %s, reason: %s - from client: %s' % (
+                            self.server.server_address,
+                            "malformed transmission",
+                            self.client_address,
+                        )
+                    )
+                    return True
+                except self.socket.timeout, e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: %s, reason: %s - from client: %s' % (
+                            self.server.server_address,
+                            e,
+                            self.client_address,
+                        )
+                    )
+                    return True
+                except self.ssl_exceptions['WantReadError']:
+                    return False
+                except self.ssl_exceptions['Error'], e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: SSL Error, reason: %s - from client: %s' % (
+                            e,
+                            self.client_address,
+                        )
+                    )
+                    return True
+
+                if not self.buffered_data:
+                    return True
+
+                cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
+                if cmd == 'close':
+                    return True
+                self.buffered_data = ''
+                return False
+
         def handle(self):
 
             self.default_timeout = self.server.processor.HostInterface.timeout
-            ssl = self.server.processor.HostInterface.SSL
-            ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
-            myeos = self.server.processor.HostInterface.answers['eos']
+            self.ssl = self.server.processor.HostInterface.SSL
+            self.ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
+            self.myeos = self.server.processor.HostInterface.answers['eos']
 
             if self.valid_connection:
 
+                self.loop_counter = 0
+
                 while 1:
 
-                    if self.timed_out:
+                    try:
+                        dobreak = self.data_receiver()
+                        if dobreak:
+                            break
+                    except Exception, e:
+                        self.server.processor.HostInterface.updateProgress(
+                            'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
+                                Exception,
+                                e,
+                                self.client_address,
+                            )
+                        )
+                        # print exception
+                        self.entropyTools.printTraceback()
+                        self.entropyTools.printTraceback(f = self.server.processor.HostInterface.socketLog)
                         break
-                    self.timed_out = True
-                    ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
-
-                    if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
-
-                        self.timed_out = False
-
-                        try:
-                            data = self.request.recv(4096)
-                            if self.data_counter == None:
-                                if data == '': # client wants to close
-                                    break
-                                elif len(data) < len(myeos):
-                                    self.server.processor.HostInterface.updateProgress(
-                                        'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
-                                            self.server.server_address,
-                                            "malformed EOS",
-                                            self.client_address,
-                                            repr(data),
-                                            self.data_counter,
-                                        )
-                                    )
-                                    self.buffered_data = ''
-                                    break
-                                mystrlen = data.split(myeos)[0]
-                                self.data_counter = int(mystrlen)
-                                data = data[len(mystrlen)+1:]
-                                self.data_counter -= len(data)
-                                self.buffered_data += data
-                            while self.data_counter > 0:
-                                x = self.request.recv(4096)
-                                self.data_counter -= len(x)
-                                self.buffered_data += x
-                            self.data_counter = None
-                        except ValueError:
-                            #self.entropyTools.printTraceback()
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: %s, reason: %s - from client: %s' % (
-                                    self.server.server_address,
-                                    "malformed transmission",
-                                    self.client_address,
-                                )
-                            )
-                            break
-                        except self.socket.timeout, e:
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: %s, reason: %s - from client: %s' % (
-                                    self.server.server_address,
-                                    e,
-                                    self.client_address,
-                                )
-                            )
-                            break
-                        except ssl_exceptions['WantReadError']:
-                            continue
-                        except ssl_exceptions['Error'], e:
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: SSL Error, reason: %s - from client: %s' % (
-                                    e,
-                                    self.client_address,
-                                )
-                            )
-                            break
-
-                        if not self.buffered_data:
-                            break
-
-                        cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
-                        if cmd == 'close':
-                            break
-                        self.buffered_data = ''
 
             self.request.close()
 
@@ -12258,6 +12615,9 @@ class SocketHostInterface:
 
 
         def finish(self):
+            if self.valid_connection:
+                if self.server.processor.HostInterface.connections > 0:
+                    self.server.processor.HostInterface.connections -= 1
             self.server.processor.HostInterface.updateProgress(
                 '[from: %s] connection closed (%s of %s max connections)' % (
                     self.client_address,
@@ -12265,9 +12625,6 @@ class SocketHostInterface:
                     self.server.processor.HostInterface.max_connections,
                 )
             )
-            if self.valid_connection:
-                if self.server.processor.HostInterface.connections > 0:
-                    self.server.processor.HostInterface.connections -= 1
 
         def ip_blacklist_check(self, client_addr_data, blacklist):
             if client_addr_data[0] in blacklist:
@@ -12288,6 +12645,7 @@ class SocketHostInterface:
     class CommandProcessor:
 
         import entropyTools
+        import socket
 
         def __init__(self, HostInterface):
             self.HostInterface = HostInterface
@@ -12420,6 +12778,23 @@ class SocketHostInterface:
                 Entropy = self.load_service_interface(session)
                 try:
                     self.run_task(cmd, args, session, Entropy)
+                except self.socket.timeout:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] command error: timeout, closing connection' % (
+                            self.client_address,
+                        )
+                    )
+                    # close connection
+                    return "close"
+                except self.socket.error, e:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] command error: socket error: %s' % (
+                            self.client_address,
+                            e,
+                        )
+                    )
+                    # close connection
+                    return "close"
                 except Exception, e:
                     # write to self.HostInterface.socketLog
                     self.entropyTools.printTraceback()
@@ -12439,7 +12814,10 @@ class SocketHostInterface:
             if session != None:
                 self.HostInterface.update_session_time(session)
                 self.HostInterface.unset_session_running(session)
-            self.handle_end_answer(cmd, whoops, valid_cmd)
+            try:
+                self.handle_end_answer(cmd, whoops, valid_cmd)
+            except (self.socket.error, self.socket.timeout):
+                return "close"
 
         def transmit(self, data):
             self.HostInterface.transmit(self.channel, data)
@@ -12497,6 +12875,8 @@ class SocketHostInterface:
                         myargs.append(eval(arg))
                     except (NameError, SyntaxError):
                         myargs.append(str(arg))
+                    except TypeError:
+                        pass
             return myargs, mykwargs
 
         def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
@@ -14718,8 +15098,13 @@ class ServerInterface(TextInterface):
 
         # now pray the server
         try:
-            if etpConst['proxy']:
-                proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+            mydict = {}
+            if etpConst['proxy']['ftp']:
+                mydict['ftp'] = etpConst['proxy']['ftp']
+            if etpConst['proxy']['http']:
+                mydict['http'] = etpConst['proxy']['http']
+            if mydict:
+                proxy_support = urllib2.ProxyHandler(mydict)
                 opener = urllib2.build_opener(proxy_support)
                 urllib2.install_opener(opener)
             item = urllib2.urlopen(request)
@@ -15438,6 +15823,16 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'syntax': "<SESSION_ID> pkginfo <content fmt True/False> <repository> <arch> <product> <idpackage>",
                     'from': str(self), # from what class
                 },
+                'treeupdates':    {
+                    'auth': False,
+                    'built_in': False,
+                    'cb': self.docmd_treeupdates,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "returns repository treeupdates metadata",
+                    'syntax': "<SESSION_ID> treeupdates <repository> <arch> <product>",
+                    'from': str(self), # from what class
+                },
             }
 
         def register(
@@ -15488,6 +15883,39 @@ class RepositorySocketServerInterface(SocketHostInterface):
             added_ids = myids - foreign_idpackages
 
             return {'removed': removed_ids, 'added': added_ids, 'checksum': mychecksum}
+
+        def docmd_treeupdates(self, myargs):
+
+            self.trash_old_databases()
+
+            if len(myargs) < 3:
+                return None
+            repository = myargs[0]
+            arch = myargs[1]
+            product = myargs[2]
+
+            x = (repository,arch,product,)
+            valid = self.HostInterface.is_repository_available(x)
+            if not valid:
+                return valid
+
+            cached = self.HostInterface.get_dcache((repository, arch, product, 'docmd_treeupdates'), repository)
+            if cached != None:
+                return cached
+
+            dbpath = self.get_database_path(repository, arch, product)
+            dbconn = self.HostInterface.open_db(dbpath, docache = False)
+
+            # get data
+            data = {}
+            data['actions'] = dbconn.listAllTreeUpdatesActions()
+            data['digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
+
+            self.HostInterface.set_dcache((repository, arch, product, 'docmd_treeupdates'), data, repository)
+            dbconn.closeDB()
+
+            return data
+
 
         def docmd_pkginfo(self, myargs):
 
@@ -15833,9 +16261,10 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
     def convert_stream_to_object(self, data, gzipped, repository = None, arch = None, product = None):
 
         # unstream object
+        error = False
         try:
             data = self.Service.stream_to_object(data, gzipped)
-        except EOFError:
+        except (EOFError,IOError,):
             mytxt = _("cannot convert stream into object")
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
@@ -15852,7 +16281,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 header = self.output_header
             )
             data = None
-        return data
+            error = True
+        return data, error
 
     def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = False):
         self.Service.check_socket_connection()
@@ -15860,42 +16290,46 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         if session_id == None:
             close_session = True
             session_id = self.Service.open_session()
-        if compression:
-            docomp = self.set_gzip_compression_on_rc(session_id, True)
-        else:
-            docomp = False
 
         myidlist = ' '.join([str(x) for x in idpackages])
         cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
-        # send command
-        self.Service.transmit(cmd)
-        # receive answer
-        data = self.Service.receive()
 
-        skip = self.handle_standard_answer(data, repository, arch, product)
-        if skip:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-
-        data = self.get_result(session_id)
-        if data == None:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-        elif not data:
-            if close_session:
-                self.Service.close_session(session_id)
-            return False
-
-        data = self.convert_stream_to_object(data, docomp, repository, arch, product)
-
-        if docomp:
-            self.set_gzip_compression_on_rc(session_id, False)
+        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
 
         if close_session:
             self.Service.close_session(session_id)
         return data
+
+    def retrieve_command_answer(self, cmd, repository, arch, product, compression, session_id):
+
+        tries = 3
+        lasterr = None
+        while 1:
+
+            if tries <= 0:
+                return lasterr
+            tries -= 1
+
+            # send command
+            self.Service.transmit(cmd)
+            # receive answer
+            data = self.Service.receive()
+
+            skip = self.handle_standard_answer(data, repository, arch, product)
+            if skip:
+                continue
+
+            data = self.get_result(session_id)
+            if data == None:
+                lasterr = None
+                continue
+            elif not data:
+                lasterr = False
+                continue
+
+            objdata, error = self.convert_stream_to_object(data, compression, repository, arch, product)
+            if not error:
+                return objdata
 
     def package_information_handler(self, idpackages, repository, arch, product, session_id, compression):
 
@@ -15913,31 +16347,53 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             product,
             ' '.join([str(x) for x in idpackages]),
         )
-        # send command
-        self.Service.transmit(cmd)
-        # receive answer
-        data = self.Service.receive()
 
-        skip = self.handle_standard_answer(data, repository, arch, product)
-        if skip:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-
-        data = self.get_result(session_id)
-        if data == None:
-            if close_session:
-                self.Service.close_session(session_id)
-            return None
-        elif not data:
-            if close_session:
-                self.Service.close_session(session_id)
-            return False
-
-        data = self.convert_stream_to_object(data, compression, repository, arch, product)
+        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
         if close_session:
             self.Service.close_session(session_id)
         return data
+
+    def repository_treeupdates_handler(self, repository, arch, product, session_id, compression):
+
+        close_session = False
+        if session_id == None:
+            close_session = True
+            session_id = self.Service.open_session()
+
+        """<SESSION_ID> treeupdates <repository> <arch> <product>"""
+        cmd = "%s %s %s %s %s" % (
+            session_id,
+            'treeupdates',
+            repository,
+            arch,
+            product,
+        )
+
+        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
+        if close_session:
+            self.Service.close_session(session_id)
+        return data
+
+    def get_repository_treeupdates(self, repository, arch, product, session_id = None, compression = False):
+
+        self.Service.check_socket_connection()
+        tries = 5
+        while 1:
+            try:
+                data = self.repository_treeupdates_handler(
+                    repository,
+                    arch,
+                    product,
+                    session_id = session_id,
+                    compression = compression
+                )
+                return data
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
 
     def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = False):
 
@@ -16003,6 +16459,8 @@ class RepositorySocketClientInterface:
         self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
         self.CmdInterface.output_header = self.output_header
+        self.socket_timeout = 25
+        self.socket.setdefaulttimeout(self.socket_timeout)
 
     def stream_to_object(self, data, gzipped):
 
@@ -16051,6 +16509,7 @@ class RepositorySocketClientInterface:
 
     def open_session(self):
         self.check_socket_connection()
+        self.socket.setdefaulttimeout(self.socket_timeout)
         self.transmit('begin')
         data = self.receive()
         return data
@@ -16062,7 +16521,7 @@ class RepositorySocketClientInterface:
 
             try:
 
-                data = self.sock_conn.recv(4096)
+                data = self.sock_conn.recv(1024)
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -16090,7 +16549,7 @@ class RepositorySocketClientInterface:
                     self.buffered_data = data
 
                 while self.buffer_length > 0:
-                    x = self.sock_conn.recv(4096)
+                    x = self.sock_conn.recv(1024)
                     self.buffer_length -= len(x)
                     self.buffered_data += x
                 self.buffer_length = None
@@ -17990,7 +18449,7 @@ class ServerMirrorsInterface:
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            "%s:\t\t%s" % (
+            "%s:\t%s" % (
                 darkgreen(_("Packages to be moved locally")),
                 darkgreen(str(len(copy))),
             ),
@@ -18965,9 +19424,9 @@ class EntropyDatabaseInterface:
                         self.databaseStructureUpdates()
                 else:
                     self.databaseStructureUpdates()
-                # set cache size
-                self.setCacheSize(6000)
-                self.setDefaultCacheSize(6000)
+                    # set cache size
+                    self.setCacheSize(6000)
+                    self.setDefaultCacheSize(6000)
 
         # now we can set this to False
         self.dbclosed = False
@@ -19331,6 +19790,7 @@ class EntropyDatabaseInterface:
 
             # clear client cache
             clientDbconn.clearCache()
+            return True
 
     # this functions will filter either data from /usr/portage/profiles/updates/*
     # or repository database returning only the needed actions
@@ -19418,6 +19878,7 @@ class EntropyDatabaseInterface:
             else:
                 self.ServiceInterface.SpmService.run_fixpackages()
 
+        spm_moves = set()
         quickpkg_atoms = set()
         for action in actions:
             command = action.split()
@@ -19433,6 +19894,7 @@ class EntropyDatabaseInterface:
                 header = darkred(" * ")
             )
             if command[0] == "move":
+                spm_moves.add(action)
                 quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:], quickpkg_atoms)
             elif command[0] == "slotmove":
                 quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:], quickpkg_atoms)
@@ -19456,6 +19918,18 @@ class EntropyDatabaseInterface:
                     header = darkred(" * ")
                 )
             self.commitChanges()
+
+        if spm_moves:
+            try:
+                self.doTreeupdatesSpmCleanup(spm_moves)
+            except Exception, e:
+                mytxt = "%s: %s: %s, %s." % (
+                    bold(_("WARNING")),
+                    red(_("Cannot run SPM cleanup, error")),
+                    Exception,
+                    e,
+                )
+                self.entropyTools.printTraceback()
 
         # discard cache
         self.clearCache()
@@ -19699,6 +20173,51 @@ class EntropyDatabaseInterface:
                 type = "warning",
                 header = darkred(" * ")
             )
+
+    def doTreeupdatesSpmCleanup(self, spm_moves):
+
+        # now erase Spm entries if necessary
+        for action in spm_moves:
+            command = action.split()
+            if len(command) < 2:
+                continue
+            key = command[1]
+            name = key.split("/")[1]
+            if self.clientDatabase:
+                try:
+                    Spm = self.ServiceInterface.Spm()
+                except:
+                    continue
+            else:
+                Spm = self.ServiceInterface.SpmService
+            vdb_path = Spm.get_vdb_path()
+            pkg_path = os.path.join(vdb_path,key.split("/")[0])
+            mydirs = [os.path.join(pkg_path,x) for x in os.listdir(pkg_path) if x.startswith(name)]
+            mydirs = [x for x in mydirs if os.path.isdir(x)]
+            # now move these dirs
+            for mydir in mydirs:
+                to_path = os.path.join(etpConst['packagestmpdir'],os.path.basename(mydir))
+                mytxt = "%s: %s '%s' %s '%s'" % (
+                    bold(_("SPM")),
+                    red(_("Moving old entry")),
+                    blue(mydir),
+                    red(_("to")),
+                    blue(to_path),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                if os.path.isdir(to_path):
+                    shutil.rmtree(to_path,True)
+                    try:
+                        os.rmdir(to_path)
+                    except OSError:
+                        pass
+                shutil.move(mydir,to_path)
+
 
     # this function manages the submitted package
     # if it does not exist, it fires up addPackage
@@ -20656,6 +21175,20 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.version,baseinfo.versiontag,baseinfo.revision,baseinfo.atom FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         return self.cursor.fetchone()
 
+    def getStrictScopeData(self, idpackage):
+        self.cursor.execute("""
+                SELECT 
+                        atom,
+                        slot,
+                        revision
+                FROM 
+                        baseinfo
+                WHERE 
+                        idpackage = (?)
+        """, (idpackage,))
+        rslt = self.cursor.fetchone()
+        return rslt
+
     def getScopeData(self, idpackage):
         self.cursor.execute("""
                 SELECT 
@@ -20912,8 +21445,17 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         mytime = str(self.entropyTools.getCurrentUnixTime())
         for command in actions:
-            self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,forbranch,mytime,))
+            if not self.doesTreeupdatesActionExist(repository, command, forbranch):
+                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,forbranch,mytime,))
         self.commitChanges()
+
+    def doesTreeupdatesActionExist(self, repository, command, branch):
+        self.cursor.execute('SELECT * FROM treeupdatesactions WHERE repository = (?) and command = (?) and branch = (?)', (repository,command,branch,))
+        result = self.cursor.fetchone()
+        if result:
+            return True
+        return False
+
 
     def retrieveAtom(self, idpackage):
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
@@ -21206,6 +21748,8 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("licensedata"):
             return {}
         licenses = self.retrieveLicense(idpackage)
+        if licenses == None:
+            return {}
         licenses = licenses.split()
         licdata = {}
         for licname in licenses:
@@ -21227,6 +21771,8 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("licensedata"):
             return set()
         licenses = self.retrieveLicense(idpackage)
+        if licenses == None:
+            return set()
         licenses = licenses.split()
         licdata = set()
         for licname in licenses:
@@ -21757,18 +22303,28 @@ class EntropyDatabaseInterface:
         searchdata = (atom,slot,revision,)
         self.cursor.execute('SELECT idpackage FROM baseinfo where atom = (?) and slot = (?) and revision = (?)',searchdata)
         rslt = self.cursor.fetchone()
+        idreason = 0
+        idpackage = -1
         if rslt:
-            return rslt[0]
-        return None
+            # check if it's masked
+            idpackage, idreason = self.idpackageValidator(rslt[0])
+        return idpackage,idreason
 
-    def listAllPackages(self, get_scope = False, order_by = None):
+    def listAllPackages(self, get_scope = False, order_by = None, branch = None, branch_operator = "="):
+
+        branchstring = ''
+        searchkeywords = []
+        if branch:
+            searchkeywords = [branch]
+            branchstring = ' where branch %s (?)' % (str(branch_operator),)
+
         order_txt = ''
         if order_by:
             order_txt = ' order by '+str(order_by)
         if get_scope:
-            self.cursor.execute('SELECT idpackage,atom,slot,revision FROM baseinfo'+order_txt)
+            self.cursor.execute('SELECT idpackage,atom,slot,revision FROM baseinfo'+order_txt+branchstring,searchkeywords)
         else:
-            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo'+order_txt)
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo'+order_txt+branchstring,searchkeywords)
         return self.cursor.fetchall()
 
     def listAllInjectedPackages(self, justFiles = False):
@@ -21913,6 +22469,9 @@ class EntropyDatabaseInterface:
 
     def databaseStructureUpdates(self):
 
+        old_readonly = self.readOnly
+        self.readOnly = False
+
         if not self.doesTableExist("licensedata"):
             self.createLicensedataTable()
 
@@ -22014,11 +22573,9 @@ class EntropyDatabaseInterface:
         # FIXME: remove this ASAP (0.16.x branch)
         if os.access(self.dbFile,os.W_OK) and \
             (self.dbname != etpConst['genericdbid']):
-                old_readonly = self.readOnly
-                self.readOnly = False
                 self.fixKdeDepStrings()
-                self.readOnly = old_readonly
 
+        self.readOnly = old_readonly
         self.connection.commit()
 
     def migrateTableToAutoincrement(self, table):
@@ -22725,7 +23282,7 @@ class EntropyDatabaseInterface:
         countersdata = self.cursor.fetchall()
         if countersdata:
             for row in countersdata:
-                self.cursor.execute('INSERT INTO counterstemp VALUES = (?,?,?)',row)
+                self.cursor.execute('INSERT INTO counterstemp VALUES (?,?,?)',row)
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
@@ -22904,15 +23461,27 @@ class EntropyDatabaseInterface:
 
     # function that validate one atom by reading keywords settings
     # idpackageValidatorCache = {} >> function cache
-    def idpackageValidator(self,idpackage):
+    def idpackageValidator(self,idpackage, live = True):
 
         if self.dbname == etpConst['clientdbid']:
             return idpackage,0
+        elif self.dbname.startswith(etpConst['serverdbid']):
+            return idpackage,0
+
+        if (etpConst['packagemasking'] == None) and self.ServiceInterface != None:
+            self.ServiceInterface.parse_masking_settings()
 
         reponame = self.dbname[5:]
-        cached = idpackageValidatorCache.get((idpackage,reponame))
+        cached = idpackageValidatorCache.get((idpackage,reponame,live))
         if cached != None:
             return cached
+
+        if live:
+            if (idpackage,reponame) in etpConst['live_packagemasking']['mask_matches']:
+                # do not cache this
+                return -1,12
+            elif (idpackage,reponame) in etpConst['live_packagemasking']['unmask_matches']:
+                return idpackage,11
 
         # check if user package.mask needs it masked
         user_package_mask_ids = etpConst['packagemasking'].get(reponame+'mask_ids')
@@ -22926,7 +23495,7 @@ class EntropyDatabaseInterface:
             user_package_mask_ids = etpConst['packagemasking'][reponame+'mask_ids']
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            idpackageValidatorCache[(idpackage,reponame)] = -1,1
+            idpackageValidatorCache[(idpackage,reponame,live)] = -1,1
             return -1,1
 
         # see if we can unmask by just lookin into user package.unmask stuff -> etpConst['packagemasking']['unmask']
@@ -22940,7 +23509,7 @@ class EntropyDatabaseInterface:
                 etpConst['packagemasking'][reponame+'unmask_ids'] |= set(matches[0])
             user_package_unmask_ids = etpConst['packagemasking'][reponame+'unmask_ids']
         if idpackage in user_package_unmask_ids:
-            idpackageValidatorCache[(idpackage,reponame)] = idpackage,3
+            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,3
             return idpackage,3
 
         # check if repository packages.db.mask needs it masked
@@ -22959,7 +23528,7 @@ class EntropyDatabaseInterface:
                         etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] |= set(matches[0])
                     all_branches_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['*_ids']
                 if idpackage in all_branches_mask_ids:
-                    idpackageValidatorCache[(idpackage,reponame)] = -1,8
+                    idpackageValidatorCache[(idpackage,reponame,live)] = -1,8
                     return -1,8
             # no universal mask
             branches_mask = repomask.get("branch")
@@ -22976,7 +23545,7 @@ class EntropyDatabaseInterface:
                         branch_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"]
                     if idpackage in branch_mask_ids:
                         if  self.retrieveBranch(idpackage) == branch:
-                            idpackageValidatorCache[(idpackage,reponame)] = -1,9
+                            idpackageValidatorCache[(idpackage,reponame,live)] = -1,9
                             return -1,9
 
         if etpConst['packagemasking']['license_mask']:
@@ -22985,7 +23554,7 @@ class EntropyDatabaseInterface:
             if mylicenses:
                 for mylicense in mylicenses:
                     if mylicense in etpConst['packagemasking']['license_mask']:
-                        idpackageValidatorCache[(idpackage,reponame)] = -1,10
+                        idpackageValidatorCache[(idpackage,reponame,live)] = -1,10
                         return -1,10
 
         mykeywords = self.retrieveKeywords(idpackage)
@@ -22996,7 +23565,7 @@ class EntropyDatabaseInterface:
         for key in etpConst['keywords']:
             if key in mykeywords:
                 # found! all fine
-                idpackageValidatorCache[(idpackage,reponame)] = idpackage,2
+                idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,2
                 return idpackage,2
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
@@ -23008,7 +23577,7 @@ class EntropyDatabaseInterface:
                     keyword_data = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword)
                     if keyword_data:
                         if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                            idpackageValidatorCache[(idpackage,reponame)] = idpackage,4
+                            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,4
                             return idpackage,4
                         keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame].get(keyword+"_ids")
                         if keyword_data_ids == None:
@@ -23020,7 +23589,7 @@ class EntropyDatabaseInterface:
                                 etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"] |= matches[0]
                             keyword_data_ids = etpConst['packagemasking']['keywords']['repositories'][reponame][keyword+"_ids"]
                         if idpackage in keyword_data_ids:
-                            idpackageValidatorCache[(idpackage,reponame)] = idpackage,5
+                            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,5
                             return idpackage,5
 
         # if we get here, it means we didn't find a match in repositories
@@ -23043,11 +23612,11 @@ class EntropyDatabaseInterface:
                         keyword_data_ids = etpConst['packagemasking']['keywords']['packages'][reponame+keyword+"_ids"]
                     if idpackage in keyword_data_ids:
                         # valid!
-                        idpackageValidatorCache[(idpackage,reponame)] = idpackage,6
+                        idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,6
                         return idpackage,6
 
         # holy crap, can't validate
-        idpackageValidatorCache[(idpackage,reponame)] = -1,7
+        idpackageValidatorCache[(idpackage,reponame,live)] = -1,7
         return -1,7
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:

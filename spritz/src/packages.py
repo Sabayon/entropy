@@ -21,6 +21,7 @@ from etpgui.packages import EntropyPackage, DummyEntropyPackage
 import logging
 from spritz_setup import SpritzConf
 from entropy_i18n import _
+from entropyConstants import *
 
 class EntropyPackages:
 
@@ -33,6 +34,7 @@ class EntropyPackages:
         self.currentCategory = None
         self._categoryPackages = {}
         self.categories = set()
+        self.unmaskingPackages = set()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
 
@@ -41,6 +43,7 @@ class EntropyPackages:
         self.selected_treeview_item = None
         self.selected_advisory_item = None
         self._categoryPackages.clear()
+        self.unmaskingPackages.clear()
 
     def clearCache(self):
         self.pkgCache.clear()
@@ -90,10 +93,7 @@ class EntropyPackages:
         self._categoryPackages[category] = pkgsdata
 
     def populateCategories(self):
-        try:
-            self.categories = self.Entropy.list_repo_categories()
-        except self.Entropy.dbapi2.OperationalError:
-            self.categories.clear()
+        self.categories = self.Entropy.list_repo_categories()
 
     def getPackages(self,flt):
         if flt == 'all':
@@ -148,13 +148,14 @@ class EntropyPackages:
         return yp, new
 
     def _getPackages(self,mask):
-        #print "mask:",mask
+
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
                 yp, new = self.getPackageItem((idpackage,0),True)
                 yp.action = 'r'
                 yp.color = SpritzConf.color_install
                 yield yp
+
         elif mask == 'available':
             # Get the rest of the available packages.
             available = self.Entropy.calculate_available_packages()
@@ -162,6 +163,7 @@ class EntropyPackages:
                 yp, new = self.getPackageItem(pkgdata,True)
                 yp.action = 'i'
                 yield yp
+
         elif mask == 'updates':
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
@@ -170,6 +172,7 @@ class EntropyPackages:
                 yp.action = 'u'
                 yp.color = SpritzConf.color_update
                 yield yp
+
         elif mask == "reinstallable":
             pkgdata = self.Entropy.clientDbconn.listAllPackages(get_scope = True,order_by = 'atom')
             pkgdata = self.filterReinstallable(pkgdata)
@@ -178,6 +181,21 @@ class EntropyPackages:
                 yp, new = self.getPackageItem(matched,True)
                 yp.installed_match = (idpackage,0)
                 yp.action = 'rr'
+                yp.color = SpritzConf.color_install
+                yield yp
+
+        elif mask == "masked":
+            for match, idreason in self.getMaskedPackages():
+                yp, new = self.getPackageItem(match,True)
+                action = self.getMaskedPackageAction(match)
+                yp.action = action
+                if action == 'rr': # setup reinstallables
+                    idpackage = self.getInstalledMatch(match)
+                    if idpackage == None: # wtf!?
+                        yp.installed_match = None
+                    else:
+                        yp.installed_match = (idpackage,0)
+                yp.masked = idreason
                 yp.color = SpritzConf.color_install
                 yield yp
 
@@ -197,10 +215,42 @@ class EntropyPackages:
     def isReinstallable(self, atom, slot, revision):
         for repoid in self.Entropy.validRepositories:
             dbconn = self.Entropy.openRepositoryDatabase(repoid)
-            idpackage = dbconn.isPackageScopeAvailable(atom, slot, revision)
-            if idpackage != None:
-                return (repoid,idpackage,)
+            idpackage, idreason = dbconn.isPackageScopeAvailable(atom, slot, revision)
+            if idpackage == -1:
+                continue
+            return (repoid,idpackage,)
         return None
+
+    def getMaskedPackages(self):
+        maskdata = []
+        for repoid in self.Entropy.validRepositories:
+            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            repodata = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')
+            for idpackage in repodata:
+                idpackage_filtered, idreason = dbconn.idpackageValidator(idpackage)
+                if idpackage_filtered == -1:
+                    maskdata.append(((idpackage,repoid,),idreason))
+        return maskdata
+
+    def getMaskedPackageAction(self, match):
+        action = self.Entropy.get_package_action(match)
+        if action in [2,-1]:
+            return 'u'
+        elif action == 1:
+            return 'i'
+        else:
+            return 'rr'
+
+    def getInstalledMatch(self, match):
+        dbconn = self.Entropy.openRepositoryDatabase(match[1])
+        try:
+            atom, slot, revision = dbconn.getStrictScopeData(match[0])
+        except TypeError:
+            return None
+        idpackage, idresult = self.Entropy.clientDbconn.isPackageScopeAvailable(atom, slot, revision)
+        if idpackage == -1:
+            return None
+        return idpackage
 
     def filterReinstallable(self, client_scope_data):
         clientdata = {}
@@ -211,16 +261,17 @@ class EntropyPackages:
         matched_data = set()
         for repoid in self.Entropy.validRepositories:
             dbconn = self.Entropy.openRepositoryDatabase(repoid)
-            repodata = dbconn.listAllPackages(get_scope = True)
+            repodata = dbconn.listAllPackages(get_scope = True, branch = etpConst['branch'], branch_operator = "<=")
             mydata = {}
             for idpackage, atom, slot, revision in repodata:
                 mydata[(atom, slot, revision)] = idpackage
             del repodata
-            found = False
             for item in clientdata:
                 if item in mydata:
-                    found = True
-                    matched_data.add((clientdata[item],(mydata[item],repoid,)))
+                    idpackage = mydata[item]
+                    idpackage, idreason = dbconn.idpackageValidator(idpackage)
+                    if idpackage != -1:
+                        matched_data.add((clientdata[item],(mydata[item],repoid,)))
         return matched_data
 
     def getCategories(self):

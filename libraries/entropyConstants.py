@@ -595,7 +595,10 @@ def const_defaultSettings(rootdir):
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
         'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
         'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
-        'proxy': {}, # proxy configuration information, used system wide
+        'proxy': {
+            'ftp': None,
+            'http': None,
+        }, # proxy configuration information, used system wide
 
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'socketloglevel': 2, # # Entropy Socket Interface log level
@@ -717,6 +720,10 @@ def const_defaultSettings(rootdir):
 
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser
+        'live_packagemasking': {
+            'unmask_matches': set(),
+            'mask_matches': set(),
+        },
         'packagemaskingreasons': {
             0: _('reason not available'),
             1: _('user package.mask'),
@@ -729,6 +736,8 @@ def const_defaultSettings(rootdir):
             8: _('repository general packages.db.mask'),
             9: _('repository in branch packages.db.mask'),
             10: _('user license.mask'),
+            11: _('user live unmask'),
+            12: _('user live mask'),
         },
 
         'misc_counters': {
@@ -907,8 +916,12 @@ def const_readRepositoriesSettings():
 
             elif (line.find("downloadspeedlimit|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 try:
-                    etpConst['downloadspeedlimit'] = int(line.split("|")[1])
-                except:
+                    myval = int(line.split("|")[1])
+                    if myval > 0:
+                        etpConst['downloadspeedlimit'] = myval
+                    else:
+                        etpConst['downloadspeedlimit'] = None
+                except (ValueError,IndexError,):
                     etpConst['downloadspeedlimit'] = None
 
             elif (line.find("securityurl|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
@@ -1042,30 +1055,30 @@ def const_readEquoSettings():
 
             elif line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
-                if compatopt == "disable":
+                if compatopt.lower() in ("disable","disabled","false","0","no"):
                     etpConst['gentoo-compat'] = False
                 else:
                     etpConst['gentoo-compat'] = True
 
             elif line.startswith("filesbackup|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
-                if compatopt == "disable":
+                if compatopt.lower() in ("disable","disabled","false","0","no"):
                     etpConst['filesbackup'] = False
 
             elif line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
                 collopt = line.split("|")[1].strip()
-                if collopt == "0" or collopt == "1" or collopt == "2":
+                if collopt.lower() in ("0","1","2",):
                     etpConst['collisionprotect'] = int(collopt)
 
             elif line.startswith("configprotect|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
-                    etpConst['configprotect'].append(x)
+                    etpConst['configprotect'].append(unicode(x,'raw_unicode_escape'))
 
             elif line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
-                    etpConst['configprotectmask'].append(x)
+                    etpConst['configprotectmask'].append(unicode(x,'raw_unicode_escape'))
 
             elif line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
@@ -1098,6 +1111,10 @@ def const_setupEntropyPid():
                             pass
                         else:
                             raise
+                    try:
+                        const_chmod_entropy_pid()
+                    except OSError:
+                        pass
 
     else:
         #if etpConst['uid'] == 0:
@@ -1114,6 +1131,19 @@ def const_setupEntropyPid():
             f.write(str(pid))
             f.flush()
             f.close()
+
+            try:
+                const_chmod_entropy_pid()
+            except OSError:
+                pass
+
+
+def const_chmod_entropy_pid():
+    try:
+        mygid = const_get_entropy_gid()
+    except KeyError:
+        mygid = 0
+    const_setup_file(etpConst['pidfile'], mygid, 0664)
 
 def const_createWorkingDirectories():
 
@@ -1223,7 +1253,7 @@ def const_readReagentSettings():
                 feed = line.split("rss-feed|")[1]
                 if feed in ("enable","enabled","true","1"):
                     etpConst['rss-feed'] = True
-                elif feed in ("disable","disabled","false","0"):
+                elif feed in ("disable","disabled","false","0","no",):
                     etpConst['rss-feed'] = False
             elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
                 feedname = line.split("rss-name|")[1].strip()
@@ -1380,14 +1410,17 @@ def const_setup_perms(mydir, gid):
         for item in files:
             item = os.path.join(currentdir,item)
             try:
-                cur_gid = os.stat(item)[stat.ST_GID]
-                if cur_gid != gid:
-                    os.chown(item,-1,gid)
-                cur_mod = const_get_chmod(item)
-                if cur_mod != oct(0664):
-                    os.chmod(item,0664)
+                const_setup_file(item, gid, 0664)
             except OSError:
                 pass
+
+def const_setup_file(myfile, gid, chmod):
+    cur_gid = os.stat(myfile)[stat.ST_GID]
+    if cur_gid != gid:
+        os.chown(myfile,-1,gid)
+    cur_mod = const_get_chmod(myfile)
+    if cur_mod != oct(chmod):
+        os.chmod(myfile,chmod)
 
 # you need to convert to int
 def const_get_chmod(item):

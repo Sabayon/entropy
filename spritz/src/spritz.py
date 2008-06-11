@@ -504,10 +504,185 @@ class SpritzController(Controller):
         self.clipboard.clear()
         self.clipboard.set_text(''.join(self.output.text_written))
 
+    def on_Preferences_toggled(self, widget, toggle = True):
+        self.ui.preferencesSaveButton.set_sensitive(toggle)
+        self.ui.preferencesRestoreButton.set_sensitive(toggle)
+
+    def on_preferencesSaveButton_clicked(self, widget):
+        sure = questionDialog(self.ui.main, _("Are you sure ?"))
+        if not sure:
+            return
+        for config_file in self.Preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+                if mytype == list:
+                    savefunc(config_file, name, setting, mytype, wgwrite, wgread)
+                else:
+                    data = wgread()
+                    result = savefunc(config_file, name, setting, mytype, data)
+                    if not result:
+                        errorMessage(
+                            self.ui.main,
+                            cleanMarkupString("%s: %s") % (_("Error saving parameter"),name,),
+                            _("An issue occured while saving a preference"),
+                            "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
+                        )
+        initConfig_entropyConstants(etpConst['systemroot'])
+        # re-read configprotect
+        self.Equo.parse_masking_settings()
+        self.Equo.reloadRepositoriesConfigProtect()
+        self.setupPreferences()
+
+    def on_preferencesRestoreButton_clicked(self, widget):
+        self.setupPreferences()
+
+    def on_configProtectNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectModel.append([data])
+
+    def on_configProtectMaskNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectMaskModel.append([data])
+
+    def on_configProtectSkipNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectSkipModel.append([data])
+
+    def on_configProtectDelete_clicked(self, widget):
+        model, myiter = self.configProtectView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectMaskDelete_clicked(self, widget):
+        model, myiter = self.configProtectMaskView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectSkipDelete_clicked(self, widget):
+        model, myiter = self.configProtectSkipView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectEdit_clicked(self, widget):
+        model, myiter = self.configProtectView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectModel.append([data])
+
+    def on_configProtectMaskEdit_clicked(self, widget):
+        model, myiter = self.configProtectMaskView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectMaskModel.append([data])
+
+    def on_configProtectSkipEdit_clicked(self, widget):
+        model, myiter = self.configProtectSkipView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectSkipModel.append([data])
+
+    def on_installPackageItem_activate(self, widget = None, fn = None):
+
+        if not fn:
+            mypattern = '*'+etpConst['packagesext']
+            fn = FileChooser(pattern = mypattern)
+        if not fn:
+            return
+        elif not os.access(fn,os.R_OK):
+            return
+
+        msg = "%s: %s. %s" % (
+            _("You have chosen to install this package"),
+            os.path.basename(fn),
+            _("Are you supa sure?"),
+        )
+        rc = questionDialog(self.ui.main, msg)
+        if not rc:
+            return
+
+        self.pkgView.store.clear()
+
+        newrepo = os.path.basename(fn)
+        # we have it !
+        status, atomsfound = self.Equo.add_tbz2_to_repos(fn)
+        if status != 0:
+            errtxt = _("is not a valid Entropy package")
+            if status == -3:
+                errtxt = _("is not compiled with the same architecture of the system")
+            mytxt = "%s %s. %s." % (
+                os.path.basename(fn),
+                errtxt,
+                _("Cannot install"),
+            )
+            okDialog(self.ui.main, mytxt)
+            return
+
+        def clean_n_quit(newrepo):
+            self.etpbase.clearPackages()
+            self.etpbase.clearCache()
+            self.Equo.removeRepository(newrepo)
+            self.Equo.closeAllRepositoryDatabases()
+            self.Equo.reopenClientDbconn()
+            # regenerate packages information
+            self.setupSpritz()
+
+        if not atomsfound:
+            clean_n_quit(newrepo)
+            return
+
+        pkgs = []
+        for idpackage, atom in atomsfound:
+            yp, new = self.etpbase.getPackageItem((idpackage,newrepo,),True)
+            yp.action = 'i'
+            yp.queued = 'i'
+            pkgs.append(yp)
+        # welcome to our world, now process !
+
+        busyCursor(self.ui.main)
+        status, myaction = self.queue.add(pkgs)
+        if status != 0:
+            for obj in pkgs:
+                obj.queued = None
+            clean_n_quit(newrepo)
+            normalCursor(self.ui.main)
+            return
+
+        normalCursor(self.ui.main)
+        self.setPage('output')
+
+        rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+        self.resetQueueProgressBars()
+        if rc:
+            self.queue.clear()
+            self.queueView.refresh()
+            return True
+        else: # not done
+            clean_n_quit(newrepo)
+            return False
+
+
     def on_PageButton_pressed( self, widget, page ):
         pass
 
     def on_PageButton_changed( self, widget, page ):
+
         ''' Left Side Toolbar Handler'''
         # do not put here actions for 'packages' and 'output' but use on_PageButton_pressed
         if page == "filesconf":
@@ -523,11 +698,14 @@ class SpritzController(Controller):
             self.lastPkgPB = action
             # Only show add/remove all when showing updates
             if action == 'updates':
-                self.ui.pkgSelect.show()
-                self.ui.pkgDeSelect.show()
+                self.ui.updatesButtonbox.show()
             else:
-                self.ui.pkgSelect.hide()
-                self.ui.pkgDeSelect.hide()
+                self.ui.updatesButtonbox.hide()
+            if action == "masked":
+                self.setupMaskedPackagesWarningBox()
+                self.ui.maskedWarningBox.show()
+            else:
+                self.ui.maskedWarningBox.hide()
 
             self.addPackages()
             rb.grab_remove()
@@ -575,24 +753,13 @@ class SpritzController(Controller):
             return
 
         rc = self.processPackageQueue(self.queue.packages)
+        self.resetQueueProgressBars()
         if rc:
             self.queue.clear()       # Clear package queue
             self.queueView.refresh() # Refresh Package Queue
 
     def on_queueSave_clicked( self, widget ):
-        dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                                  buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
-        homedir = os.getenv('HOME')
-        if not homedir:
-            homedir = "/tmp"
-        dialog.set_current_folder(homedir)
-        dialog.set_current_name('queue.spritz')
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            fn = dialog.get_filename()
-        elif response == gtk.RESPONSE_CANCEL:
-            fn = None
-        dialog.destroy()
+        fn = FileChooser()
         if fn:
             self.logger.info("Saving queue to %s" % fn)
             pkgdata = self.queue.get()
@@ -603,18 +770,7 @@ class SpritzController(Controller):
             self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
 
     def on_queueOpen_clicked( self, widget ):
-        dialog = gtk.FileChooserDialog(title=None,action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                                  buttons=(gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK))
-        homedir = os.getenv('HOME')
-        if not homedir:
-            homedir = "/tmp"
-        dialog.set_current_folder(homedir)
-        response = dialog.run()
-        if response == gtk.RESPONSE_OK:
-            fn = dialog.get_filename()
-        elif response == gtk.RESPONSE_CANCEL:
-            fn = None
-        dialog.destroy()
+        fn = FileChooser()
         if fn:
             self.logger.info("Loading queue from %s" % fn)
             try:
@@ -914,6 +1070,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger = logging.getLogger("yumex.main")
 
         # init flags
+        self.Preferences = None
         self.skipMirrorNow = False
         self.abortQueueNow = False
         self.doProgress = False
@@ -943,6 +1100,215 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.resetProgressText()
         self.pkgProperties_selected = None
         self.setupAdvPropertiesView()
+        self.setupPreferences()
+
+        packages_install = os.getenv("SPRITZ_PACKAGES")
+        if packages_install:
+            packages_install = [x for x in packages_install.split(";") if os.path.isfile(x)]
+        for arg in sys.argv:
+            if arg.endswith(etpConst['packagesext']) and os.path.isfile(arg):
+                arg = os.path.realpath(arg)
+                packages_install.append(arg)
+        if packages_install:
+            time.sleep(1)
+            fn = packages_install[0]
+            self.on_installPackageItem_activate(None,fn)
+
+
+    def setupPreferences(self):
+
+        # config protect
+        self.configProtectView = self.ui.configProtectView
+        for mycol in self.configProtectView.get_columns(): self.configProtectView.remove_column(mycol)
+        self.configProtectModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectView.append_column( column )
+        self.configProtectView.set_model( self.configProtectModel )
+
+        # config protect mask
+        self.configProtectMaskView = self.ui.configProtectMaskView
+        for mycol in self.configProtectMaskView.get_columns(): self.configProtectMaskView.remove_column(mycol)
+        self.configProtectMaskModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectMaskView.append_column( column )
+        self.configProtectMaskView.set_model( self.configProtectMaskModel )
+
+        # config protect skip
+        self.configProtectSkipView = self.ui.configProtectSkipView
+        for mycol in self.configProtectSkipView.get_columns(): self.configProtectSkipView.remove_column(mycol)
+        self.configProtectSkipModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectSkipView.append_column( column )
+        self.configProtectSkipView.set_model( self.configProtectSkipModel )
+
+        # prepare generic config to allow filling of data
+        def fillSettingView(model, view, data):
+            model.clear()
+            view.set_model(model)
+            view.set_property('headers-visible',False)
+            for item in data:
+                model.append([item])
+            view.expand_all()
+
+        def fillSetting(name, mytype, wgwrite, data):
+            if type(data) != mytype:
+                if data == None: # empty parameter
+                    return
+                errorMessage(
+                    self.ui.main,
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    _("An issue occured while loading a preference"),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                )
+                return
+            wgwrite(data)
+
+        def saveSettingView(config_file, name, setting, mytype, model, view):
+
+            data = []
+            iterator = model.get_iter_first()
+            while iterator != None:
+                item = model.get_value( iterator, 0 )
+                if item:
+                    data.append(item)
+                iterator = model.iter_next( iterator )
+
+            return saveSetting(config_file, name, setting, mytype, data)
+
+
+        def saveSetting(config_file, name, myvariable, mytype, data):
+            # saving setting
+            writedata = ''
+            if (not isinstance(data,mytype)) and (data != None):
+                errorMessage(
+                    self.ui.main,
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    _("An issue occured while saving a preference"),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                )
+                return False
+
+            if isinstance(data,int):
+                writedata = str(data)
+            elif isinstance(data,list):
+                writedata = ' '.join(data)
+            elif isinstance(data,bool):
+                writedata = "disable"
+                if data: writedata = "enable"
+            return saveParameter(config_file, name, writedata)
+
+        def saveParameter(config_file, name, data):
+            return entropyTools.writeParameterToFile(config_file,name,data)
+
+        self.Preferences = {
+            etpConst['entropyconf']: [
+                (
+                    'ftp-proxy',
+                    etpConst['proxy']['ftp'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.ftpProxyEntry.set_text,
+                    self.ui.ftpProxyEntry.get_text,
+                ),
+                (
+                    'http-proxy',
+                    etpConst['proxy']['http'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.httpProxyEntry.set_text,
+                    self.ui.httpProxyEntry.get_text,
+                ),
+                (
+                    'nice-level',
+                    etpConst['current_nice'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.niceSpinSelect.set_value,
+                    self.ui.niceSpinSelect.get_value_as_int,
+                )
+            ],
+            etpConst['equoconf']: [
+                (
+                    'collisionprotect',
+                    etpConst['collisionprotect'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.collisionProtectionCombo.set_active,
+                    self.ui.collisionProtectionCombo.get_active,
+                ),
+                (
+                    'configprotect',
+                    etpConst['configprotect'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectModel,
+                    self.configProtectView,
+                ),
+                (
+                    'configprotectmask',
+                    etpConst['configprotectmask'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectMaskModel,
+                    self.configProtectMaskView,
+                ),
+                (
+                    'configprotectskip',
+                    etpConst['configprotectskip'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectSkipModel,
+                    self.configProtectSkipView,
+                ),
+                (
+                    'filesbackup',
+                    etpConst['filesbackup'],
+                    bool,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.filesBackupCheckbutton.set_active,
+                    self.ui.filesBackupCheckbutton.get_active,
+                )
+            ],
+            etpConst['repositoriesconf']: [
+                (
+                    'downloadspeedlimit',
+                    etpConst['downloadspeedlimit'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.speedLimitSpin.set_value,
+                    self.ui.speedLimitSpin.get_value_as_int,
+                )
+            ],
+        }
+
+        # load data
+        for config_file in self.Preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+                if mytype == list:
+                    fillfunc(wgwrite,wgread,setting)
+                else:
+                    fillfunc(name, mytype, wgwrite, setting)
+
+        self.on_Preferences_toggled(None,False)
+
+    def setupMaskedPackagesWarningBox(self):
+        mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
+            _("Attention"),
+            _("These packages are masked either by default or due to your choice. Please be careful, at least."),
+        )
+        self.ui.maskedWarningLabel.set_markup(mytxt)
 
     def setupAdvisories(self):
         self.Advisories = self.Equo.Security()
@@ -1131,6 +1497,10 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.progress.set_subLabel(_('Really, don\'t waste your time here. This is just a placeholder'))
         self.progress.set_extraLabel(_('I am still alive and kickin\''))
 
+    def resetQueueProgressBars(self):
+        self.progress.reset_progress()
+        self.progress.total.clear()
+
     def setupRepoView(self):
         self.repoView.populate()
 
@@ -1152,6 +1522,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setBusy()
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
+            bootstrap = True
+            self.setPage('output')
+        elif (self.Equo.get_available_packages_cache() == None) and ('available' in masks):
             bootstrap = True
             self.setPage('output')
         self.progress.total.hide()
@@ -1197,8 +1570,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.unsetBusy()
         # reset labels
         self.resetProgressText()
+        self.resetQueueProgressBars()
 
-    def processPackageQueue(self, pkgs):
+    def processPackageQueue(self, pkgs, remove_repos = []):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
@@ -1243,6 +1617,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.reset_progress()
             self.etpbase.clearPackages()
             self.etpbase.clearCache()
+            for myrepo in remove_repos:
+                self.Equo.removeRepository(myrepo)
             self.Equo.closeAllRepositoryDatabases()
             self.Equo.reopenClientDbconn()
             # regenerate packages information

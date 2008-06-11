@@ -985,6 +985,8 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
 
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)
+    if pkgatom == None:
+        return # doesn't exist
     if (etpUi['quiet']):
         repoinfo = ''
         desc = ''

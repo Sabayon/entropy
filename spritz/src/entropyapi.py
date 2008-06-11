@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from spritz_setup import const
-from dialogs import questionDialog,LicenseDialog
+from dialogs import questionDialog, LicenseDialog, okDialog
 
 # Entropy Imports
 from entropyConstants import *
@@ -51,6 +51,16 @@ class QueueExecutor:
             return 0,licenses
 
     def run(self, install_queue, removal_queue, do_purge_cache = []):
+
+        # unmask packages
+        for match in self.Spritz.etpbase.unmaskingPackages:
+            result = self.Entropy.unmask_match(match)
+            if not result or self.Entropy.is_match_masked(match):
+                dbconn = self.Entropy.openRepositoryDatabase(match[1])
+                atom = dbconn.retrieveAtom(match[0])
+                okDialog( self.Spritz.ui.main, "%s: %s" % (_("Error enabling masked package"),atom) )
+                return -2,1
+
         removalQueue = []
         runQueue = []
         conflicts_queue = []
@@ -92,16 +102,17 @@ class QueueExecutor:
             metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
             Package.prepare(packageInfo,"fetch",metaopts)
             self.Entropy.updateProgress(
-                                            "Fetching: "+Package.infoDict['atom'],
-                                            importance = 2,
-                                            count = (fetchqueue,totalqueue)
-                                        )
+                "Fetching: "+Package.infoDict['atom'],
+                importance = 2,
+                count = (fetchqueue,totalqueue)
+            )
             rc = Package.run()
             if rc != 0:
                 return -1,rc
             Package.kill()
             del Package
             self.Entropy.cycleDone()
+
         self.Spritz.ui.skipMirror.hide()
 
         # then removalQueue
@@ -124,10 +135,10 @@ class QueueExecutor:
 
             if not Package.infoDict.has_key('remove_installed_vanished'):
                 self.Entropy.updateProgress(
-                                                "Removing: "+Package.infoDict['removeatom'],
-                                                importance = 2,
-                                                count = (currentremovalqueue,totalremovalqueue)
-                                            )
+                    "Removing: "+Package.infoDict['removeatom'],
+                    importance = 2,
+                    count = (currentremovalqueue,totalremovalqueue)
+                )
 
                 rc = Package.run()
                 if rc != 0:
@@ -155,10 +166,10 @@ class QueueExecutor:
             Package.prepare(packageInfo,"install", metaopts)
 
             self.Entropy.updateProgress(
-                                            "Installing: "+Package.infoDict['atom'],
-                                            importance = 2,
-                                            count = (currentqueue,totalqueue)
-                                        )
+                "Installing: "+Package.infoDict['atom'],
+                importance = 2,
+                count = (currentqueue,totalqueue)
+            )
 
             rc = Package.run()
             if rc != 0:

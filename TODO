@@ -1,4 +1,6 @@
 TODO list
+  - community repos: add repository handling on dependencies to avoid library breakages
+  - EAPI=3 make timeout configurable
   - server-side: write a ncurses interface to manage entropy database + spm interface + GLSA
   - make.profile support (saving profile information into the db)
   - database backup tools
@@ -14,14 +16,10 @@ TODO list
   - find a way to better handle real smartapps deps (need split PDEPEND?)
 
   Spritz:
-    - configuration menu (equo.conf + others interface)
-    - package masking menu
-    - install tbz2
     - Popularity feature / Your Ego service
     - Category <-> Image dictionary (for the properties menu)
-    - Skip Mirror buttons
-    - button to stop the queue
-    - show the number of packages found in a list
+    - Spritz related preferences
+    - allow package remasking?
 
 Notes:
 - when supporting more than one ":" in atoms, remember to fix treeupdates functions accordingly

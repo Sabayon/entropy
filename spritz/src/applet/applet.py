@@ -15,6 +15,7 @@ sys.path.insert(0,'../../../client')
 sys.path.insert(0,'../../../libraries')
 sys.path.insert(0,'/usr/lib/entropy/spritz')
 sys.path.insert(0,'../')
+sys.argv.append('--no-pid-handling')
 
 try:
     os.nice(10)

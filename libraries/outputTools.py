@@ -26,6 +26,7 @@ import sys, os
 import curses
 import readline
 from entropyConstants import etpUi
+from entropy_i18n import _
 stuff = {}
 stuff['cols'] = 30
 try:
@@ -166,14 +167,17 @@ codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
 def xtermTitle(mystr, raw=False):
-        if dotitles and "TERM" in os.environ and sys.stderr.isatty():
-                myt=os.environ["TERM"]
-                legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
-                if myt in legal_terms:
-                        if not raw:
-                                mystr = "\x1b]0;%s\x07" % mystr
-                        sys.stderr.write(mystr)
-                        sys.stderr.flush()
+    if dotitles and "TERM" in os.environ and sys.stderr.isatty():
+        myt=os.environ["TERM"]
+        legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
+        if myt in legal_terms:
+            if not raw:
+                mystr = "\x1b]0;%s\x07" % mystr
+            try:
+                sys.stderr.write(mystr)
+            except UnicodeEncodeError:
+                sys.stderr.write(mystr.encode('utf-8'))
+            sys.stderr.flush()
 
 default_xterm_title = None
 
@@ -276,60 +280,99 @@ def print_menu(data):
             elif n_ident == 3:
                 myfunc = darkblue
                 myfunc_desc = purple
-            writechar(myfunc(name))
+            try:
+                print myfunc(name),
+            except UnicodeEncodeError:
+                print myfunc(name.encode('utf-8')),
 
             # write desc
             if desc:
                 while n_d_ident > 0:
                     n_d_ident -= 1
                     writechar("\t")
-                writechar(myfunc_desc(desc))
+                try:
+                    print myfunc_desc(desc),
+                except UnicodeEncodeError:
+                    print myfunc_desc(desc.encode('utf-8')),
             writechar("\n")
 
 def reset_cursor():
     sys.stdout.write(stuff['ESC'] + '[2K')
+    flush_stdouterr()
 
-def print_error(msg, back = False):
+def flush_stdouterr():
+    sys.stdout.flush()
+    sys.stderr.flush()
+
+def print_error(msg, back = False, flush = True):
     if etpUi['mute']:
         return
-    if (back):
-        reset_cursor()
-        writechar("\r"+red(">>")+" "+msg)
-        return
-    setcols()
+    if not back:
+        setcols()
     reset_cursor()
     writechar("\r")
-    print darkred(">>")+" "+msg
-
-def print_info(msg, back = False):
-    if etpUi['mute']:
-        return
     if back:
-        reset_cursor()
-        writechar("\r"+green(">>")+" "+msg)
-        return
-    setcols()
-    reset_cursor()
-    writechar("\r")
-    print green(">>")+" "+msg
+        try:
+            print darkred(">>"),msg,
+        except UnicodeEncodeError:
+            print darkred(">>"),msg.encode('utf-8'),
+    else:
+        try:
+            print darkred(">>"),msg
+        except UnicodeEncodeError:
+            print darkred(">>"),msg.encode('utf-8')
+    if flush:
+        flush_stdouterr()
 
-def print_warning(msg, back = False):
+def print_info(msg, back = False, flush = True):
     if etpUi['mute']:
         return
-    if back:
-        reset_cursor()
-        writechar("\r"+red(">>")+" "+msg)
-        return
-    setcols()
+    if not back:
+        setcols()
     reset_cursor()
     writechar("\r")
-    print red(">>")+" "+msg
+    if back:
+        try:
+            print darkgreen(">>"),msg,
+        except UnicodeEncodeError:
+            print darkgreen(">>"),msg.encode('utf-8'),
+    else:
+        try:
+            print darkgreen(">>"),msg
+        except UnicodeEncodeError:
+            print darkgreen(">>"),msg.encode('utf-8')
+    if flush:
+        flush_stdouterr()
+
+def print_warning(msg, back = False, flush = True):
+    if etpUi['mute']:
+        return
+    if not back:
+        setcols()
+    reset_cursor()
+    writechar("\r")
+    if back:
+        try:
+            print red(">>"),msg,
+        except UnicodeEncodeError:
+            print red(">>"),msg.encode('utf-8'),
+    else:
+        try:
+            print red(">>"),msg
+        except UnicodeEncodeError:
+            print red(">>"),msg.encode('utf-8')
+    if flush:
+        flush_stdouterr()
 
 def print_generic(msg): # here we'll wrap any nice formatting
     if etpUi['mute']:
         return
     writechar("\r")
-    print msg
+    try:
+        print msg
+    except UnicodeEncodeError:
+        print msg.encode('utf-8')
+    flush_stdouterr()
 
 def writechar(char):
     if etpUi['mute']:
@@ -343,8 +386,13 @@ def writechar(char):
         raise
 
 def readtext(request):
-    xtermTitle("Entropy needs your attention")
-    text = raw_input(request) # using readline module
+    xtermTitle(_("Entropy needs your attention"))
+    try:
+        print request,
+    except UnicodeEncodeError:
+        print request.encode('utf-8'),
+    flush_stdouterr()
+    text = raw_input() # using readline module
     return text
 
 class TextInterface:
@@ -396,8 +444,7 @@ class TextInterface:
     # in this case, we run a separate thread
     def __TextInterface_updateText(self, data):
 
-        sys.stdout.flush()
-        sys.stderr.flush()
+        flush_stdouterr()
 
         myfunc = print_info
         if data['type'] == "warning":
@@ -413,14 +460,13 @@ class TextInterface:
                 else:
                     count_str = " (%s/%s) " % (red(str(data['count'][0])),blue(str(data['count'][1])),)
         if data['importance'] == 0:
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
         elif data['importance'] == 1:
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
         elif data['importance'] in (2,3):
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'])
+            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
 
-        sys.stdout.flush()
-        sys.stderr.flush()
+        flush_stdouterr()
 
     # @input question: question to do
     #
@@ -433,26 +479,35 @@ class TextInterface:
     #
     # feel free to reimplement this
     def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+
         colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
         if len(responses) > len(colours):
             import exceptionTools
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: maximum responses length = %s" % (len(colours),))
-        print darkgreen(question),
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
+        try:
+            print darkgreen(question),
+        except UnicodeEncodeError:
+            print darkgreen(question.encode('utf-8')),
         try:
             while True:
-                xtermTitle("Entropy got a question for you")
+                xtermTitle(_("Entropy got a question for you"))
                 response = raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
                 for key in responses:
                     # An empty response will match the first value in responses.
                     if response.upper()==key[:len(response)].upper():
                         xtermTitleReset()
                         return key
-                        print "I cannot understand '%s'" % response,
+                    try:
+                        print "%s '%s'" % (_("I cannot understand"),response,),
+                    except UnicodeEncodeError:
+                        print "%s '%s'" % (_("I cannot understand"),response.encode('utf-8'),),
+                    flush_stdouterr()
         except (EOFError, KeyboardInterrupt):
-            print "Interrupted."
+            print "%s." % (_("Interrupted"),)
             xtermTitleReset()
             sys.exit(100)
         xtermTitleReset()
+        flush_stdouterr()
 
     # useful for reimplementation
     # in this wait you can send a signal to a widget (total progress bar?)

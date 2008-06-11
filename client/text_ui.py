@@ -340,7 +340,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     if status == 0:
                         foundAtoms += atomsfound[:]
                         del atomsfound
-                    elif status in (-1,-2,-3,):
+                    elif status in (-1,-2,-3,-4,):
                         errtxt = _("is not a valid Entropy package")
                         if status == -3:
                             errtxt = _("is not compiled with the same architecture of the system")
@@ -642,7 +642,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info(red(" @@ ")+mytxt)
                 mytxt = "%s: %s" % (
                     red(_("Packages needing to be downgraded")),
-                    red(str(pkgsToUpdate)),
+                    red(str(pkgsToDowngrade)),
                 )
                 print_info(red(" @@ ")+mytxt)
 
@@ -1017,7 +1017,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
             elif rc == "Yes" and human:
                 doSelectiveRemoval = True
             elif rc == "No" and human:
-                rc = Equo.askQuestion("     %s") % (_("Would you like to skip this step then ?"),)
+                rc = Equo.askQuestion("     %s" % (_("Would you like to skip this step then ?"),))
                 if rc == "Yes":
                     return 0,0
         elif deps:

@@ -1,12 +1,10 @@
 [Desktop Entry]
+Encoding=UTF-8
 Name=Spritz Package Manager
-Name[zh_TW]=Spritz
 Comment=Entropy Graphical Package Manager
-Comment[zh_TW]=Spritz
-Categories=Application;System;
+Categories=Application;System
 Icon=/usr/share/pixmaps/spritz/spritz-icon.png
-Exec=/usr/bin/spritz
+Exec=spritz %U
 Type=Application
 Terminal=false
-Encoding=UTF-8
-X-Desktop-File-Install-Version=0.10
+MimeType=application/x-tar;application/x-tgz;application/x-tbz;application/x-tbz2;application/x-tarz

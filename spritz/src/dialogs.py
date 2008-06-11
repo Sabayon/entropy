@@ -22,11 +22,12 @@ import gobject
 import pango
 from etpgui.widgets import UI
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities
-from entropy_i18n import _
+from entropy_i18n import _,_LOCALE
+import packages
+from entropyConstants import *
 
 class PkgInfoMenu:
 
-    import entropyConstants
     def __init__(self, Entropy, pkg, window):
         self.pkg = pkg
         self.window = window
@@ -227,7 +228,7 @@ class PkgInfoMenu:
         if repo == 0:
             self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
         else:
-            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(self.entropyConstants.etpRepositories[repo]['description']),))
+            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(etpRepositories[repo]['description']),))
 
         self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
         tag = pkg.tag
@@ -266,7 +267,7 @@ class PkgInfoMenu:
         masked = 'False'
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
         if idpackage_masked == -1:
-            masked = 'True, %s' % (self.entropyConstants.etpConst['packagemaskingreasons'][idmasking_reason],)
+            masked = 'True, %s' % (etpConst['packagemaskingreasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
 
         # sources view
@@ -352,10 +353,211 @@ class PkgInfoMenu:
 
         self.pkginfo_ui.pkgInfo.show()
 
+class MaskedPackagesDialog:
+
+    def __init__( self, Entropy, etpbase, parent, pkgs, top_text = None, sub_text = None ):
+        self.Entropy = Entropy
+        self.etpbase = etpbase
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'maskdialog', domain="entropy" )
+        self.dialog = self.xml.get_widget( "maskdialog" )
+        self.dialog.set_transient_for( parent )
+        self.action = self.xml.get_widget( "maskAction" )
+        self.subaction = self.xml.get_widget( "maskSubtext" )
+        self.cancelbutton = self.xml.get_widget( "cancelbutton" )
+        self.okbutton = self.xml.get_widget( "okbutton" )
+        self.enableButton = self.xml.get_widget( "enableButton" )
+        self.enableButton.connect("clicked", self.enablePackage)
+        self.enableAllButton = self.xml.get_widget( "enableAllButton" )
+        self.enableAllButton.connect("clicked", self.enableAllPackages)
+        self.propertiesButton = self.xml.get_widget( "propertiesButton" )
+        self.propertiesButton.connect("clicked", self.openPackageProperties)
+        self.docancel = True
+
+        # setup text
+        if top_text == None:
+            top_text = _("These are the packages that must be enabled to satisfy your request")
+
+        tit = "<b><span foreground='#0087C1' size='large'>%s</span></b>\n" % (_("Some packages are masked"),)
+        tit += top_text
+        self.action.set_markup( tit )
+        if sub_text != None: self.subaction.set_markup( sub_text )
+
+        self.pkgs = pkgs
+        self.pkg = self.xml.get_widget( "maskPkg" )
+        # fill
+        self.model = self.setup_view( self.pkg )
+        self.show_data( self.model, self.pkgs )
+        self.pkg.expand_all()
+        self.pkgcount = 0
+        self.maxcount = len(self.pkgs)
+
+    def get_obj(self):
+        model, myiter = self.pkg.get_selection().get_selected()
+        if myiter:
+            return model.get_value( myiter, 0 )
+        return None
+
+    def openPackageProperties(self, widget):
+        obj = self.get_obj()
+        if not obj:
+            return
+        mymenu = PkgInfoMenu(self.Entropy, obj, self.dialog)
+        mymenu.load()
+
+    def enablePackage(self, widget, obj = None, do_refresh = True):
+        if not obj:
+            obj = self.get_obj()
+        if not obj:
+            return
+        result = self.Entropy.unmask_match(obj.matched_atom, dry_run = True)
+        if result:
+            self.etpbase.unmaskingPackages.add(obj.matched_atom)
+            self.pkgcount += 1
+            if do_refresh:
+                self.refresh()
+        return result
+
+    def enableAllPackages(self, widget):
+
+        for parent in self.model:
+            for child in parent.iterchildren():
+                for obj in child:
+                    if not obj:
+                        continue
+                    if obj.dummy_type != None:
+                        continue
+                    self.enablePackage(None,obj,False)
+        self.refresh()
+
+    def refresh(self):
+        self.pkg.queue_draw()
+        self.pkg.expand_all()
+
+    def run( self ):
+        self.dialog.show_all()
+        self.okbutton.set_sensitive(False)
+        return self.dialog.run()
+
+    def setup_view( self, view ):
+
+        model = gtk.TreeStore( gobject.TYPE_PYOBJECT )
+        view.set_model( model )
+
+        cell1 = gtk.CellRendererText()
+        column1 = gtk.TreeViewColumn( _( "Masked package" ), cell1 )
+        column1.set_cell_data_func( cell1, self.show_pkg )
+        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column1.set_fixed_width( 420 )
+        column1.set_resizable( False )
+        view.append_column( column1 )
+
+        cell2 = gtk.CellRendererPixbuf()
+        column2 = gtk.TreeViewColumn( _("Enabled"), cell2 )
+        column2.set_cell_data_func( cell2, self.new_pixbuf )
+        column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column2.set_fixed_width( 60 )
+        column2.set_sort_column_id( -1 )
+        view.append_column( column2 )
+        column2.set_clickable( False )
+
+        return model
+
+
+    def set_pixbuf_to_cell(self, cell, do):
+        if do:
+            cell.set_property( 'stock-id', 'gtk-apply' )
+        elif do == False:
+            cell.set_property( 'stock-id', 'gtk-cancel' )
+        else:
+            cell.set_property( 'stock-id', None )
+
+    def new_pixbuf( self, column, cell, model, iterator ):
+
+        if self.pkgcount >= self.maxcount:
+            self.okbutton.set_sensitive(True)
+
+        obj = model.get_value( iterator, 0 )
+        if obj.matched_atom in self.etpbase.unmaskingPackages:
+            self.set_pixbuf_to_cell(cell, True)
+        elif obj.dummy_type:
+            self.set_pixbuf_to_cell(cell, None)
+        else:
+            self.set_pixbuf_to_cell(cell, False)
+        self.set_line_status(obj, cell, stype = "cell-background")
+
+    def show_pkg( self, column, cell, model, iterator ):
+        obj = model.get_value( iterator, 0 )
+        mydata = getattr( obj, 'namedesc' )
+        cell.set_property('markup', mydata )
+        self.set_line_status(obj, cell)
+
+    def set_line_status(self, obj, cell, stype = "cell-background"):
+        if obj.queued == "r":
+            cell.set_property(stype,'#FFE2A3')
+        elif obj.queued == "u":
+            cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "i":
+            cell.set_property(stype,'#D895FF')
+        elif obj.queued == "rr":
+            cell.set_property(stype,'#B7BEFF')
+        elif not obj.queued:
+            cell.set_property(stype,None)
+
+    def show_data( self, model, pkgs ):
+
+        model.clear()
+        self.pkg.set_model(None)
+        self.pkg.set_model(model)
+
+        desc_len = 80
+        search_col = 0
+        categories = {}
+
+        for po in pkgs:
+            mycat = po.cat
+            if not categories.has_key(mycat):
+                categories[mycat] = []
+            categories[mycat].append(po)
+
+        cats = categories.keys()
+        cats.sort()
+        for category in cats:
+            cat_desc = _("No description")
+            cat_desc_data = self.Entropy.get_category_description_data(category)
+            if cat_desc_data.has_key(_LOCALE):
+                cat_desc = cat_desc_data[_LOCALE]
+            elif cat_desc_data.has_key('en'):
+                cat_desc = cat_desc_data['en']
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
+            mydummy = packages.DummyEntropyPackage(
+                    namedesc = cat_text,
+                    dummy_type = SpritzConf.dummy_category,
+                    onlyname = category
+            )
+            mydummy.color = '#9C7234'
+            parent = model.append( None, (mydummy,) )
+            for po in categories[category]:
+                model.append( parent, (po,) )
+
+        self.pkg.set_search_column( search_col )
+        self.pkg.set_search_equal_func(self.atom_search)
+        self.pkg.set_property('headers-visible',True)
+        self.pkg.set_property('enable-search',True)
+
+    def atom_search(self, model, column, key, iterator):
+        obj = model.get_value( iterator, 0 )
+        if obj:
+            return not obj.onlyname.startswith(key)
+        return True
+
+    def destroy( self ):
+        return self.dialog.destroy()
+
 class ConfirmationDialog:
+
     def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False, simpleDict = False ):
 
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation',domain="entropy" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'confirmation', domain="entropy" )
         self.dialog = self.xml.get_widget( "confirmation" )
         self.dialog.set_transient_for( parent )
         self.action = self.xml.get_widget( "confAction" )
@@ -606,7 +808,7 @@ class infoDialog:
         return self.dialog.run()
 
     def destroy( self ):
-        return self.dialog.destroy() 
+        return self.dialog.destroy()
 
 
 class EntryDialog:
@@ -731,6 +933,30 @@ def inputBox( parent, title, text, input_text = None):
     rc = dlg.run()
     dlg.destroy()
     return rc
+
+def FileChooser(basedir = None, pattern = None):
+    # open file selector
+    dialog = gtk.FileChooserDialog(
+        title = None,
+        action = gtk.FILE_CHOOSER_ACTION_OPEN,
+        buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK)
+    )
+    if not basedir:
+        basedir = os.getenv('HOME')
+        if not basedir:
+            basedir = "/tmp"
+
+    fn = None
+    dialog.set_current_folder(basedir)
+    if pattern:
+        myfilter = gtk.FileFilter()
+        myfilter.add_pattern(pattern)
+        dialog.set_filter(myfilter)
+    response = dialog.run()
+    if response == gtk.RESPONSE_OK:
+        fn = dialog.get_filename()
+    dialog.destroy()
+    return fn
 
 def errorMessage( parent, title, text, longtext=None, modal= True, showreport = False ):
      dlg = ErrorDialog( parent, title, text, longtext, modal )

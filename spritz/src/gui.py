@@ -131,7 +131,8 @@ class SpritzProgress:
 
     def reset_progress( self ):
         self.lastFrac = -1
-        self.set_progress(0.0)
+        self.ui.progressBar.set_fraction( 0 )
+        self.ui.progressBar.set_text(" ")
 
     def hide( self, clean=False ):
         self.ui.progressBox.hide()
@@ -172,7 +173,7 @@ class SpritzProgress:
         self.ui.progressBar.set_text( text )
 
     def set_mainLabel( self, text ):
-        self.ui.progressMainLabel.set_markup( "<span size=\"large\"><b>%s</b></span>" % text )
+        self.ui.progressMainLabel.set_markup( "<b>%s</b>" % text )
         self.ui.progressSubLabel.set_text( "" )
         self.ui.progressExtraLabel.set_text( "" )
 
@@ -241,6 +242,10 @@ class SpritzGUI:
         self.setupPkgFilter()
         self.setupAdvisoriesFilter()
 
+        self.setupImages()
+        self.setupLabels()
+
+
     def on_console_click(self, widget, event):
         self.console_menu.popup( None, None, None, event.button, event.time )
         return True
@@ -269,6 +274,7 @@ class SpritzGUI:
         self.setupPkgRadio(self.ui.rbUpdates,"updates",_('Show Package Updates'))
         self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
         self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
+        self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
 
     def setupPkgRadio(self, widget, tag, tip):
         widget.connect('toggled',self.on_pkgFilter_toggled,tag)
@@ -283,6 +289,8 @@ class SpritzGUI:
                 pix = self.ui.rbAvailableImage
             elif tag == "installed":
                 pix = self.ui.rbInstalledImage
+            elif tag == "masked":
+                pix = self.ui.rbMaskedImage
             pix.set_from_pixbuf( p )
             pix.show()
         except gobject.GError:
@@ -295,10 +303,11 @@ class SpritzGUI:
         # Setup Vertical Toolbar
         self.createButton( _( "Packages" ), "button-packages.png", 'packages',True )
         self.createButton( _( "Package Categories" ), "button-group.png", 'group')
-        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
+        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
         self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
-        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
+        self.createButton( _( "Preferences" ), "preferences.png", 'preferences' )
+        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
 
     def createButton( self, text, icon, page,first = None ):
@@ -308,7 +317,7 @@ class SpritzGUI:
         else:
             button = gtk.RadioButton( self.firstButton )
         button.connect( "clicked", self.on_PageButton_changed, page )
-        button.connect( "pressed", self.on_PageButton_pressed, page )
+        #button.connect( "pressed", self.on_PageButton_pressed, page )
 
         button.set_relief( gtk.RELIEF_NONE )
         button.set_mode( False )
@@ -330,6 +339,27 @@ class SpritzGUI:
         button.show()
         self.ui.content.pack_start( button, False )
         self.pageButtons[page] = button
+
+    def setupImages(self):
+        """ setup misc application images """
+
+        # progressImage
+        iconpath = os.path.join(const.PIXMAPS_PATH,"sabayon.png")
+        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                self.ui.progressImage.set_from_pixbuf(p)
+            except gobject.GError:
+                pass
+
+    def setupLabels(self):
+        """ setup misc application labels """
+
+        mytxt = "<span size='x-large' foreground='#8A381B'>%s</span>" % (_("Preferences"),)
+        self.ui.preferencesTitleLabel.set_markup(mytxt)
+        mytxt = "<span foreground='#084670'>%s</span>" % (_("Some configuration options are critical for the health of your System. Be careful."),)
+        self.ui.preferencesLabel.set_markup(mytxt)
+
 
     def setPage( self, page ):
         self.activePage = page

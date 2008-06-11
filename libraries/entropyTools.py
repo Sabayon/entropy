@@ -76,10 +76,10 @@ class TimeScheduled(threading.Thread):
                 self.function(self.data)
             else:
                 self.function()
-	    try:
+            try:
                 time.sleep(self.delay)
-	    except:
-		pass
+            except:
+                pass
     def kill(self):
         self.alive = 0
 
@@ -149,8 +149,13 @@ def get_remote_data(url):
     socket.setdefaulttimeout(60)
     # now pray the server
     try:
-        if etpConst['proxy']:
-            proxy_support = urllib2.ProxyHandler(etpConst['proxy'])
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            proxy_support = urllib2.ProxyHandler(mydict)
             opener = urllib2.build_opener(proxy_support)
             urllib2.install_opener(opener)
         item = urllib2.urlopen(url)
@@ -205,9 +210,15 @@ def getRandomNumber():
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
         if back:
-            sys.stdout.write(red(">> ")+what)
+            try:
+                print red(">>"), what,
+            except UnicodeEncodeError:
+                print red(">>"),what.encode('utf-8'),
         else:
-            print what
+            try:
+                print what
+            except UnicodeEncodeError:
+                print what.encode('utf-8')
         for i in range(secs)[::-1]:
             sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
@@ -1656,11 +1667,12 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
 
         if not disable and not enable: # so it's a add
 
-            line = "repository|%s|%s|%s|%s#%s" % (   repodata['repoid'],
+            line = "repository|%s|%s|%s|%s#%s#%s" % (   repodata['repoid'],
                                                     repodata['description'],
                                                     ' '.join(repodata['plain_packages']),
                                                     repodata['plain_database'],
                                                     repodata['dbcformat'],
+                                                    repodata['service_port'],
                                                 )
 
             # seek in repolines_data for a disabled entry and remove
@@ -1700,33 +1712,44 @@ def _saveRepositoriesContent(content):
     f.flush()
     f.close()
 
-def writeNewBranch(branch):
+def writeParameterToFile(config_file, name, data):
 
-    content = read_repositories_conf()
+    # check write perms
+    if not os.access(os.path.dirname(config_file),os.W_OK):
+        return False
 
-    found = False
-    new_content = []
-    for line in content:
-        if line.strip().startswith("branch|"):
-            line = line.replace(line.strip(),"branch|"+str(branch))
-            found = True
-        new_content.append(line)
-    if found:
-        f = open(etpConst['repositoriesconf'],"w")
-        f.writelines(new_content)
-        f.flush()
+    import shutil
+    content = []
+    if os.path.isfile(config_file):
+        f = open(config_file,"r")
+        content = [x.strip() for x in f.readlines()]
         f.close()
-    elif not new_content:
-        f = open(etpConst['repositoriesconf'],"w")
-        f.write("branch|"+str(branch)+"\n")
-        f.flush()
-        f.close()
+
+    # write new
+    config_file_tmp = config_file+".tmp"
+    f = open(config_file_tmp,"w")
+    param_found = False
+    if data:
+        proposed_line = "%s|%s" % (name,data,)
+        myreg = re.compile('^(%s)?[|].*$' % (name,))
     else:
-        f = open(etpConst['repositoriesconf'],"aw")
-        f.seek(0,2)
-        f.write("\nbranch|"+str(branch)+"\n")
-        f.flush()
-        f.close()
+        proposed_line = "# %s|" % (name,)
+        myreg = re.compile('^#([ \t]+?)?(%s)?[|].*$' % (name,))
+    for line in content:
+        if myreg.match(line):
+            param_found = True
+            line = proposed_line
+        f.write(line+"\n")
+    if not param_found:
+        f.write(proposed_line+"\n")
+    f.flush()
+    f.close()
+    shutil.move(config_file_tmp,config_file)
+    return True
+
+def writeNewBranch(branch):
+    return writeParameterToFile(etpConst['repositoriesconf'],"branch",branch)
+
 
 def isEntropyTbz2(tbz2file):
     import tarfile
@@ -1751,6 +1774,13 @@ def is_valid_string(string):
         if ord(char) not in range(32,127):
             return False
     return True
+
+def open_buffer():
+    try:
+        import cStringIO as stringio
+    except ImportError:
+        import StringIO as stringio
+    return stringio.StringIO()
 
 def read_elf_class(elf_file):
     import struct
