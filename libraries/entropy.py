@@ -12813,7 +12813,10 @@ class SocketHostInterface:
             if session != None:
                 self.HostInterface.update_session_time(session)
                 self.HostInterface.unset_session_running(session)
-            self.handle_end_answer(cmd, whoops, valid_cmd)
+            try:
+                self.handle_end_answer(cmd, whoops, valid_cmd)
+            except (self.socket.error, self.socket.timeout):
+                return "close"
 
         def transmit(self, data):
             self.HostInterface.transmit(self.channel, data)
