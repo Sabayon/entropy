@@ -19413,9 +19413,9 @@ class EntropyDatabaseInterface:
                         self.databaseStructureUpdates()
                 else:
                     self.databaseStructureUpdates()
-                # set cache size
-                self.setCacheSize(6000)
-                self.setDefaultCacheSize(6000)
+                    # set cache size
+                    self.setCacheSize(6000)
+                    self.setDefaultCacheSize(6000)
 
         # now we can set this to False
         self.dbclosed = False
