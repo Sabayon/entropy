@@ -2348,11 +2348,11 @@ class EquoInterface(TextInterface):
                 pass
         return available
 
-    def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None):
+    def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
         if self.xcache:
             if db_digest == None:
                 db_digest = self.all_repositories_checksum()
-            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch)
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
             disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
             if disk_cache != None:
                 try:
@@ -2360,22 +2360,29 @@ class EquoInterface(TextInterface):
                 except (KeyError, TypeError):
                     return None
 
-    def get_world_update_cache_hash(self, db_digest, empty_deps, branch):
+    def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
         c_hash = str(hash(db_digest)) + \
                     str(hash(empty_deps)) + \
                     str(hash(tuple(self.validRepositories))) + \
                     str(hash(tuple(etpRepositoriesOrder))) + \
-                    str(hash(branch))
+                    str(hash(branch)) + \
+                    str(hash(ignore_spm_downgrades))
         return str(hash(c_hash))
 
-    def calculate_world_updates(self, empty_deps = False, branch = etpConst['branch'], use_cache = True):
+    def calculate_world_updates(
+            self,
+            empty_deps = False,
+            branch = etpConst['branch'],
+            ignore_spm_downgrades = etpConst['spm']['ignore-spm-downgrades'],
+            use_cache = True
+        ):
 
         # clear masking reasons
         maskingReasonsStorage.clear()
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
-            cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest)
+            cached = self.get_world_update_cache(empty_deps = empty_deps, branch = branch, db_digest = db_digest, ignore_spm_downgrades = ignore_spm_downgrades)
             if cached != None:
                 return cached
 
@@ -2421,24 +2428,31 @@ class EquoInterface(TextInterface):
             # tag: mystrictdata[3]
             # revision: mystrictdata[4]
             if (match[0][0] != -1):
-                # version: match[0][1]
-                # tag: match[0][2]
-                # revision: match[0][3]
+                idpackage = match[0][0]
+                repoid = match[1]
+                version = match[0][1]
+                tag = match[0][2]
+                revision = match[0][3]
                 if empty_deps:
-                    update.append((match[0][0],match[1]))
+                    update.append((idpackage,repoid))
                     continue
-                elif (mystrictdata[2] != match[0][1]):
+                elif (mystrictdata[2] != version):
                     # different versions
-                    update.append((match[0][0],match[1]))
+                    update.append((idpackage,repoid))
                     continue
-                elif (mystrictdata[3] != match[0][2]):
+                elif (mystrictdata[3] != tag):
                     # different tags
-                    update.append((match[0][0],match[1]))
+                    update.append((idpackage,repoid))
                     continue
-                elif (mystrictdata[4] != match[0][3]):
+                elif (mystrictdata[4] != revision):
                     # different revision
-                    update.append((match[0][0],match[1]))
-                    continue
+                    if mystrictdata[4] == 9999 and ignore_spm_downgrades:
+                        # no difference, we're ignoring revision 9999
+                        fine.append(mystrictdata[5])
+                        continue
+                    else:
+                        update.append((idpackage,repoid))
+                        continue
                 else:
                     # no difference
                     fine.append(mystrictdata[5])
@@ -2454,7 +2468,7 @@ class EquoInterface(TextInterface):
                     update.append(matchresults)
 
         if self.xcache:
-            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch)
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
             data = {}
             data['r'] = (update, remove, fine,)
             data['empty_deps'] = empty_deps
@@ -9355,7 +9369,7 @@ class TriggerInterface:
             self.Entropy.updateProgress(
                 brown("Ebuild: pkg_postinst()"),
                 importance = 0,
-                header = red("   ##")
+                header = red("   ## ")
             )
             try:
 
@@ -19480,9 +19494,7 @@ class EntropyDatabaseInterface:
                         self.databaseStructureUpdates()
                 else:
                     self.databaseStructureUpdates()
-                    # set cache size
-                    self.setCacheSize(6000)
-                    self.setDefaultCacheSize(6000)
+
 
         # now we can set this to False
         self.dbclosed = False
@@ -19673,6 +19685,9 @@ class EntropyDatabaseInterface:
         self.cursor.executescript(etpConst['sql_destroy'])
         self.cursor.executescript(etpConst['sql_init'])
         self.databaseStructureUpdates()
+        # set cache size
+        self.setCacheSize(6000)
+        self.setDefaultCacheSize(6000)
         self.commitChanges()
 
     def checkReadOnly(self):

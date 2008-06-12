@@ -710,6 +710,7 @@ def const_defaultSettings(rootdir):
                 "app-admin/equo", # our package manager (client)
                 "sys-apps/entropy" # our package manager (server+client)
             ],
+            'ignore-spm-downgrades': False,
         },
 
         'downloadspeedlimit': None, # equo packages download speed limit (in kb/sec)
@@ -1064,6 +1065,11 @@ def const_readEquoSettings():
                 compatopt = line.split("|")[1].strip()
                 if compatopt.lower() in ("disable","disabled","false","0","no"):
                     etpConst['filesbackup'] = False
+
+            elif line.startswith("ignore-spm-downgrades|") and (len(line.split("|")) == 2):
+                compatopt = line.split("|")[1].strip()
+                if compatopt.lower() in ("enable","enabled","true","1","yes"):
+                    etpConst['spm']['ignore-spm-downgrades'] = True
 
             elif line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
                 collopt = line.split("|")[1].strip()
