@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Linux Entropy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-06-03 17:40+0200\n"
-"PO-Revision-Date: 2008-06-11 21:31-0000\n"
+"PO-Revision-Date: 2008-06-12 21:46-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: NL <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -152,21 +152,21 @@ msgstr "Middelen ontsloten, laten we gaan!"
 #: ../../libraries/entropy.py:253
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
-msgstr ""
+msgstr "Middelen nog steeds geblokkeerd na %s minuten, Ik geef het op!"
 
 #: ../../libraries/entropy.py:261
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
-msgstr ""
+msgstr "Middelen geblokkeerd, slapend voor %s seconden, check #%s/%s"
 
 #: ../../libraries/entropy.py:311
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
-msgstr ""
+msgstr "Niets te backuppen in etpConst met sleutel %s"
 
 #: ../../libraries/entropy.py:385
 msgid "System database not found or corrupted"
-msgstr ""
+msgstr "Systeem database niet gevonden of corrupt"
 
 #: ../../libraries/entropy.py:422
 #: ../../libraries/entropy.py:453
@@ -276,7 +276,7 @@ msgstr "Scannen van 'libraries'"
 
 #: ../../libraries/entropy.py:916
 msgid "Matching broken libraries/executables"
-msgstr ""
+msgstr "vergelijken van gebroken libraries/opstartbare bestanden"
 
 #: ../../libraries/entropy.py:1178
 msgid "server_repos needs serverInstance"
@@ -382,7 +382,7 @@ msgstr "Uitpakken van bestand is compleet"
 #: ../../libraries/entropy.py:5581
 #: ../../libraries/entropy.py:10092
 msgid "A valid Equo instance or subclass is needed"
-msgstr ""
+msgstr "Een geldige Equo instantie of subklasse is nodig"
 
 #: ../../libraries/entropy.py:3608
 msgid "Already prepared"
@@ -407,15 +407,15 @@ msgstr "Pakket controlesom komt overeen."
 #: ../../libraries/entropy.py:3647
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
-msgstr ""
+msgstr "Controlesom van Pakket komt niet overeen. Opnieuw downloaden... poging #%s"
 
 #: ../../libraries/entropy.py:3661
 msgid "Cannot properly fetch package! Quitting."
-msgstr ""
+msgstr "Kan pakket niet juist binnenhalen! Afsluiten."
 
 #: ../../libraries/entropy.py:3670
 msgid "Cannot properly fetch package or checksum does not match. Try download latest repositories."
-msgstr ""
+msgstr "Kan pakket niet juist binnenhalen of controlesom komt niet overeen. Probeer de laatste repositories te downloaden."
 
 #: ../../libraries/entropy.py:3791
 msgid "Removing from Entropy"
@@ -423,9 +423,8 @@ msgstr "Verwijderen van Entropy"
 
 #. in this way we filter out directories
 #: ../../libraries/entropy.py:3826
-#, fuzzy
 msgid "Collision found during removal of"
-msgstr "Gevonden tijdens FTP-doorzoeken"
+msgstr "Aanvaring gevonden tijdens verwijderen van"
 
 #: ../../libraries/entropy.py:3827
 #: ../../libraries/entropy.py:4621
@@ -445,7 +444,7 @@ msgstr "Beschermen van configuratie bestand"
 
 #: ../../libraries/entropy.py:3887
 msgid "This package contains a badly encoded file !!!"
-msgstr ""
+msgstr "Dit pakket bevat een slecht gecodeerd bestand !!!"
 
 #. inject into database
 #: ../../libraries/entropy.py:4155
@@ -459,7 +458,7 @@ msgstr "Oude pakket bestanden opruimen..."
 #: ../../libraries/entropy.py:4295
 #, python-format
 msgid "Cannot update Gentoo counter, destination %s does not exist."
-msgstr ""
+msgstr "Kan Gentoo teller niet updaten, locatie %s bestaat niet."
 
 #: ../../libraries/entropy.py:4418
 #, python-format
@@ -477,7 +476,7 @@ msgstr "Bestand installatie overslaan"
 
 #: ../../libraries/entropy.py:4606
 msgid "Cannot check CONFIG PROTECTION. Error"
-msgstr ""
+msgstr "Kan CONFIG PROTECTIE niet checken. Fout"
 
 #: ../../libraries/entropy.py:4620
 msgid "Collision found during install for"
@@ -630,12 +629,11 @@ msgstr "Kan niet verbinden met %s "
 
 #: ../../libraries/entropy.py:5669
 msgid "Repository is not listed in self.reponames"
-msgstr ""
+msgstr "Repository staat niet in de lijst in self.reponames"
 
 #: ../../libraries/entropy.py:5678
-#, fuzzy
 msgid "Wrong database compression method"
-msgstr "Compressiemethode voor archief:"
+msgstr "Verkeerde database compressie methode"
 
 #: ../../libraries/entropy.py:5703
 #, python-format
@@ -652,7 +650,7 @@ msgstr "Voor %s, cmethode kan geen 'None' zijn"
 #: ../../libraries/entropy.py:5807
 #: ../../libraries/entropy.py:5838
 msgid "self.dbformat_eapi must be in (1,2)"
-msgstr ""
+msgstr "self.dbformat_eapi moet zijn in (1,2)"
 
 #. verify checksum
 #: ../../libraries/entropy.py:5924
@@ -719,23 +717,20 @@ msgid "EAPI3 Service"
 msgstr "EAPI3 Service"
 
 #: ../../libraries/entropy.py:6101
-#, fuzzy
 msgid "skipping differential sync"
-msgstr "Flits synchronisatiesnelheid"
+msgstr "overslaan van differentiële sync"
 
 #: ../../libraries/entropy.py:6102
 msgid "threshold"
 msgstr "drempelwaarde"
 
 #: ../../libraries/entropy.py:6123
-#, fuzzy
 msgid "treeupdates data not available"
-msgstr "%s: transliteratiegegevens van locale '%s' zijn niet beschikbaar"
+msgstr "boomupdates data niet beschikbaar"
 
 #: ../../libraries/entropy.py:6143
-#, fuzzy
 msgid "cannot update treeupdates data"
-msgstr "Kan weerinformatie niet verversen"
+msgstr "Kan boomupdates data niet updaten"
 
 #: ../../libraries/entropy.py:6173
 msgid "Fetching segments"
@@ -751,7 +746,7 @@ msgstr "Service status"
 
 #: ../../libraries/entropy.py:6249
 msgid "Fetch error on segment while adding"
-msgstr ""
+msgstr "Ophaal fout in segment tijdens toevoegen"
 
 #: ../../libraries/entropy.py:6263
 msgid "Injecting package"
@@ -771,7 +766,7 @@ msgstr "Pakket verwijdering compleet"
 
 #: ../../libraries/entropy.py:6321
 msgid "Database checksum doesn't match remote."
-msgstr ""
+msgstr "Database controlesom komt niet overeen met externe."
 
 #: ../../libraries/entropy.py:6322
 #: ../../libraries/entropy.py:15257
@@ -795,18 +790,16 @@ msgid "a new release is available"
 msgstr "Een nieuwere versie is beschikbaar."
 
 #: ../../libraries/entropy.py:6580
-#, fuzzy
 msgid "Mind to install it before any other package"
-msgstr "Installeer geselecteerd pakket"
+msgstr "Vergeet ze niet te installeren vóór enig ander pakket"
 
 #: ../../libraries/entropy.py:6594
 msgid "Unpacking database to"
 msgstr "Uitpakken van database naar"
 
 #: ../../libraries/entropy.py:6604
-#, fuzzy
 msgid "Cannot unpack compressed package"
-msgstr "Kan ingepakte archieven niet samenvoegen"
+msgstr "Kan gecomprimeerd pakket niet uitpakken"
 
 #: ../../libraries/entropy.py:6604
 msgid "Skipping repository"
@@ -822,22 +815,20 @@ msgstr "Kan controlesom niet binnenhalen"
 
 #: ../../libraries/entropy.py:6664
 msgid "Current repository got suddenly locked. Download aborted."
-msgstr ""
+msgstr "Huidige repository blijkt opeens geblokkeerd. Download afgebroken."
 
 #: ../../libraries/entropy.py:6670
 msgid "remote database got suddenly locked"
-msgstr ""
+msgstr "externe database blijkt opeens geblokkeerd"
 
 #. starting to download
 #: ../../libraries/entropy.py:6679
-#, fuzzy
 msgid "Downloading repository database"
-msgstr "Magnatune.com-database downloaden"
+msgstr "Downloaden van repository database"
 
 #: ../../libraries/entropy.py:6707
-#, fuzzy
 msgid "database does not exist online"
-msgstr "Gegevensbank voor tabel bestaat niet"
+msgstr "database bestaat niet online"
 
 #: ../../libraries/entropy.py:6722
 msgid "database is already up to date"
@@ -852,9 +843,8 @@ msgid "Try again in a few minutes"
 msgstr "Probeer opnieuw in een paar minuten"
 
 #: ../../libraries/entropy.py:6771
-#, fuzzy
 msgid "Injecting downloaded dump"
-msgstr "Crash dump directory"
+msgstr "Injecteren van gedownloade dump"
 
 #: ../../libraries/entropy.py:6773
 #: ../../libraries/entropy.py:22636
@@ -867,39 +857,36 @@ msgid "Advisories fetch error"
 msgstr "'Advisories' ophaal fout"
 
 #: ../../libraries/entropy.py:6811
-#, fuzzy
 msgid "Downloading package mask"
-msgstr " Ongeldig doelmasker "
+msgstr "Downloaden van pakket masker"
 
 #: ../../libraries/entropy.py:6821
-#, fuzzy
 msgid "Downloading license whitelist"
-msgstr "Software licentie-afspraak"
+msgstr "Downloaden van licenties wittelijst"
 
 #: ../../libraries/entropy.py:6831
 msgid "Downloading revision"
 msgstr "Download herziening"
 
 #: ../../libraries/entropy.py:6841
-#, fuzzy
 msgid "Downloading SPM global configuration"
-msgstr "Globale opr&uiminstellingen gebruiken"
+msgstr "Downloaden van globale SPM configuratie"
 
 #: ../../libraries/entropy.py:6851
 msgid "Downloading SPM package masking configuration"
-msgstr ""
+msgstr "Downloaden van SPM pakket afscherming configuratie"
 
 #: ../../libraries/entropy.py:6861
 msgid "Downloading SPM package unmasking configuration"
-msgstr ""
+msgstr "Downloaden van SPM pakket demaskeer configuratie"
 
 #: ../../libraries/entropy.py:6871
 msgid "Downloading SPM package keywording configuration"
-msgstr ""
+msgstr "Downloaden van SPM pakket sleutelwoord configuratie"
 
 #: ../../libraries/entropy.py:6881
 msgid "Downloading SPM package USE flags configuration"
-msgstr ""
+msgstr "Downloaden van SPM pakket USE vlaggen configuratie"
 
 #: ../../libraries/entropy.py:6900
 msgid "not available, it's ok"
@@ -919,9 +906,8 @@ msgid "Repository revision"
 msgstr "Repostitory herziening"
 
 #: ../../libraries/entropy.py:6930
-#, fuzzy
 msgid "Indexing Repository metadata"
-msgstr "Blok #%B (%b) overlapt metadata van bestandssysteem in inode %i.  "
+msgstr "Indexeren van Repository metadata"
 
 #. let's dance!
 #: ../../libraries/entropy.py:6957
@@ -932,21 +918,19 @@ msgstr "<b>Repositories synchronisatie</b>"
 #: ../../libraries/entropy.py:16097
 #: ../../libraries/entropy.py:16355
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
-msgstr ""
+msgstr "Een geldige EquoInterface/ServerInterface gebaseerde instantie is nodig"
 
 #: ../../libraries/entropy.py:7005
 msgid "Now searching for broken depends"
-msgstr ""
+msgstr "Aan het zoeken naar gebroken afhankelijkheden"
 
 #: ../../libraries/entropy.py:7023
-#, fuzzy
 msgid "scanning for broken depends"
-msgstr "Scannen voor veranderde berichten"
+msgstr "Scannen voor gebroken afhankelijken"
 
 #: ../../libraries/entropy.py:7062
-#, fuzzy
 msgid "broken libraries detected"
-msgstr "<i>Geen printers gevonden</i>"
+msgstr "gebroken 'libraries' gevonden"
 
 #: ../../libraries/entropy.py:7073
 msgid "needs"
@@ -954,17 +938,15 @@ msgstr "benodigdheden"
 
 #: ../../libraries/entropy.py:7094
 msgid "Now searching for missing RDEPENDs"
-msgstr ""
+msgstr "Aan het zoeken naar missende RDEPENDs"
 
 #: ../../libraries/entropy.py:7104
-#, fuzzy
 msgid "scanning for missing RDEPENDs"
-msgstr "Protocolplugin voor %s niet gevonden"
+msgstr "scannen voor missende RDEPENDs"
 
 #: ../../libraries/entropy.py:7130
-#, fuzzy
 msgid "is missing the following dependencies"
-msgstr "<p>Het volgende profiel is ongeldig:</p><p><b>"
+msgstr "mist de volgende afhankelijkheden"
 
 #: ../../libraries/entropy.py:7152
 msgid "Do you want to add them?"
@@ -979,15 +961,14 @@ msgid "Want to add?"
 msgstr "Toevoegen?"
 
 #: ../../libraries/entropy.py:7181
-#, fuzzy
 msgid "missing dependencies added"
-msgstr "Handmatig toegevoegde servers"
+msgstr "missende afhankelijkheden toegevoegd"
 
 #: ../../libraries/entropy.py:7363
 #: ../../libraries/entropy.py:11179
 #: ../../libraries/entropy.py:11241
 msgid "A valid TextInterface based instance is needed"
-msgstr ""
+msgstr "Een geldige TextInterface gebaseerde instantie is nodig"
 
 #: ../../libraries/entropy.py:7419
 msgid "connecting with user"
@@ -1039,11 +1020,11 @@ msgstr "oneindig"
 
 #: ../../libraries/entropy.py:8208
 msgid "A valid Entropy Instance is needed"
-msgstr ""
+msgstr "Een geldige Entropy Instantie is nodig"
 
 #: ../../libraries/entropy.py:8233
 msgid "Portage interface can't be loaded"
-msgstr ""
+msgstr "Portage interface kan niet worden geladen"
 
 #: ../../libraries/entropy.py:8236
 msgid "please fix"
@@ -1084,32 +1065,27 @@ msgstr "Bijwerken van iconen cache"
 
 #: ../../libraries/entropy.py:8656
 msgid "Updating shared mime info database"
-msgstr ""
+msgstr "Updaten van gedeelde mime info database"
 
 #: ../../libraries/entropy.py:8670
-#, fuzzy
 msgid "Updating desktop mime database"
-msgstr "Repositories succesvol geupdate"
+msgstr "Updaten van bureaublad mime database"
 
 #: ../../libraries/entropy.py:8684
-#, fuzzy
 msgid "Updating scrollkeeper database"
-msgstr "Bijwerken van de F-spot database"
+msgstr "Updaten van scrollkeeper database"
 
 #: ../../libraries/entropy.py:8698
-#, fuzzy
 msgid "Reloading gconf2 database"
-msgstr "met termcap database"
+msgstr "Herladen van gconf2 database"
 
 #: ../../libraries/entropy.py:8712
-#, fuzzy
 msgid "Configuring Binutils Profile"
-msgstr "Wijzigingen in profiel %s"
+msgstr "Configureren van Binutils Profiel"
 
 #: ../../libraries/entropy.py:8732
-#, fuzzy
 msgid "Updating moduledb"
-msgstr "Collectie wordt bijgewerkt"
+msgstr "Updaten van moduledb"
 
 #: ../../libraries/entropy.py:8740
 msgid "Running depmod"
@@ -1165,7 +1141,7 @@ msgstr "Kan /boot niet automatisch aankoppelen !!"
 #: ../../libraries/entropy.py:9029
 #: ../../libraries/entropy.py:9057
 msgid "Running kbuildsycoca to build global KDE database"
-msgstr ""
+msgstr "Starten van kbuildsycoca om globale KDE database te bouwen"
 
 #: ../../libraries/entropy.py:9082
 msgid "Installing gconf2 schemas"
@@ -1268,7 +1244,7 @@ msgstr "Kan grub.conf niet juist configureren"
 
 #: ../../libraries/entropy.py:10050
 msgid "cannot match grub device with a Linux one"
-msgstr ""
+msgstr "Kan grub apparaat niet herkennen als een van Linux"
 
 #: ../../libraries/entropy.py:10063
 msgid "cannot find generated device.map"
@@ -1284,7 +1260,7 @@ msgstr "Nog niet voorbereid"
 
 #: ../../libraries/entropy.py:10521
 msgid "A valid EquoInterface instance or subclass is needed"
-msgstr ""
+msgstr "Een geldige EquoInterface instantie of subklasse is nodig"
 
 #: ../../libraries/entropy.py:10722
 msgid "Warning"
@@ -1390,24 +1366,20 @@ msgid "Error calculating dependencies"
 msgstr "Fout tijdens het calculeren van afhankelijkheden"
 
 #: ../../libraries/entropy.py:11631
-#, fuzzy
 msgid "missing right parenthesis"
-msgstr ") (&#041;) Haakje sluiten"
+msgstr "de juiste haakjes ontbreken"
 
 #: ../../libraries/entropy.py:11697
-#, fuzzy
 msgid "missing atom list in"
-msgstr "netname2user: ontbrekende groeps-ID-lijst in '%s'"
+msgstr "ontbrekende atoom lijst in"
 
 #: ../../libraries/entropy.py:11700
-#, fuzzy
 msgid "Conditional without target in"
-msgstr "Al in map van bestemmings: %s"
+msgstr "Voorwaardelijke zonder doel in"
 
 #: ../../libraries/entropy.py:11730
-#, fuzzy
 msgid "Conditional with no target"
-msgstr "doelpatroon bevat geen '%%'"
+msgstr "Voorwaardelijke zonder doel"
 
 #: ../../libraries/entropy.py:11735
 msgid "Empty target in string"
@@ -1419,19 +1391,16 @@ msgid "Deprecated"
 msgstr "Achterhaald"
 
 #: ../../libraries/entropy.py:11744
-#, fuzzy
 msgid "Nested use flags without parenthesis"
-msgstr "Ingebedde 'use-flags' zonder haakjes"
+msgstr "Ingebedde 'use' vlaggen zonder haakjes"
 
 #: ../../libraries/entropy.py:11784
-#, fuzzy
 msgid "Conditional without flag"
-msgstr "Onbekende stijl instelling"
+msgstr "Voorwaardelijke zonder vlag"
 
 #: ../../libraries/entropy.py:11800
-#, fuzzy
 msgid "Conditional without parenthesis"
-msgstr "Foutieve haakjes"
+msgstr "Voorwaardelijke zonder haakjes"
 
 #: ../../libraries/entropy.py:12392
 msgid "Cannot bind the service"
@@ -1455,9 +1424,8 @@ msgid "Your default repository is not initialized"
 msgstr "Je standaard repository is niet geïnitialiseerd"
 
 #: ../../libraries/entropy.py:13654
-#, fuzzy
 msgid "Do you want to initialize your default repository ?"
-msgstr "Wilt u dat Evolution uw standaard mailprogramma wordt?"
+msgstr "Wilt u de standaard repository initialiseren ?"
 
 #: ../../libraries/entropy.py:13656
 msgid "You have taken the risk to continue with an uninitialized repository"
@@ -1473,20 +1441,19 @@ msgstr "communiteit repository"
 
 #: ../../libraries/entropy.py:13679
 msgid "Entropy Server Interface Instance on repository"
-msgstr ""
+msgstr "Entropy Server Interface Instantie op de repository"
 
 #: ../../libraries/entropy.py:13684
 msgid "type"
 msgstr "type"
 
 #: ../../libraries/entropy.py:13693
-#, fuzzy
 msgid "Currently configured repositories"
-msgstr "Ingestelde filters"
+msgstr "Huidig geconfigureerde repositories"
 
 #: ../../libraries/entropy.py:13852
 msgid "Entropy database is probably empty. If you don't agree with what I'm saying, "
-msgstr ""
+msgstr "Entropy database is waarschijnlijk leeg. Als je het niet met mij eens bent,"
 
 #: ../../libraries/entropy.py:13865
 msgid "database"
@@ -1501,15 +1468,13 @@ msgid "Checking"
 msgstr "Controleren"
 
 #: ../../libraries/entropy.py:13925
-#, fuzzy
 msgid "Running dependencies test"
-msgstr "_Testpagina afdrukken"
+msgstr "Uitvoeren van afhankelijkheden test"
 
 #: ../../libraries/entropy.py:13953
 #: ../../client/text_ui.py:1144
-#, fuzzy
 msgid "These are the dependencies not found"
-msgstr "Deze lijnen zijn niet loodrecht."
+msgstr "Deze afhankelijkheden zijn niet gevonden"
 
 #: ../../libraries/entropy.py:13960
 #: ../../client/text_ui.py:1148
@@ -1522,7 +1487,7 @@ msgstr "bij repo"
 
 #: ../../libraries/entropy.py:13984
 msgid "Every dependency is satisfied. It's all fine."
-msgstr ""
+msgstr "Alle afhankelijkheden zijn voldaan. Alles zit goed."
 
 #: ../../libraries/entropy.py:14006
 #: ../../client/text_ui.py:1194
@@ -1530,18 +1495,16 @@ msgid "System is healthy"
 msgstr "Systeem is gezond"
 
 #: ../../libraries/entropy.py:14015
-#, fuzzy
 msgid "Matching libraries with Spm"
-msgstr "Met dynamische bibliotheken linken"
+msgstr "Vergelijken van libraries met Spm"
 
 #: ../../libraries/entropy.py:14024
 msgid "Scanning"
 msgstr "Scannen"
 
 #: ../../libraries/entropy.py:14036
-#, fuzzy
 msgid "These are the matched packages"
-msgstr "LEUGENS! HET ZIJN ALLEMAAL LEUGENS!"
+msgstr "Dit zijn de overeenkomende pakketten"
 
 #: ../../libraries/entropy.py:14052
 msgid "No matched packages"
@@ -1549,7 +1512,7 @@ msgstr "Geen overeenkomende pakketten"
 
 #: ../../libraries/entropy.py:14074
 msgid "Initializing an empty database file with Entropy structure"
-msgstr ""
+msgstr "Initialiseren van een leeg database bestand met Entropy structuur"
 
 #: ../../libraries/entropy.py:14086
 msgid "Entropy database file"
@@ -1573,7 +1536,7 @@ msgstr "Notitie"
 
 #: ../../libraries/entropy.py:14130
 msgid "all the old packages with conflicting scope will"
-msgstr ""
+msgstr "alle oude pakketten met conflicterende scope worden"
 
 #. ask to continue
 #: ../../libraries/entropy.py:14155
@@ -1592,25 +1555,23 @@ msgstr "Veranderen"
 
 #: ../../libraries/entropy.py:14189
 msgid "cannot switch, package not found, skipping"
-msgstr ""
+msgstr "Kan niet wisselen, pakket niet gevonden, overslaan"
 
 #: ../../libraries/entropy.py:14215
 msgid "moving file"
 msgstr "Bestand verplaatsen"
 
 #: ../../libraries/entropy.py:14231
-#, fuzzy
 msgid "loading data from source database"
-msgstr "Beschadigde gegevens in configuratiebron-databank"
+msgstr "laden van data vanaf source database"
 
 #: ../../libraries/entropy.py:14248
 msgid "injecting data to destination database"
-msgstr ""
+msgstr "injecteren van data naar locatie van database"
 
 #: ../../libraries/entropy.py:14265
-#, fuzzy
 msgid "removing entry from source database"
-msgstr "Kon gebruiker %1 niet verwijderen uit de Samba-gebruikersdatabase"
+msgstr "verwijderen van ingang van de source database"
 
 #: ../../libraries/entropy.py:14283
 msgid "successfully moved atom"
@@ -1632,12 +1593,11 @@ msgstr "rev"
 
 #: ../../libraries/entropy.py:14424
 msgid "Exception caught, running injection and RDEPEND check before raising"
-msgstr ""
+msgstr "Exceptie gevonden, uitvoeren van injectie en RDEPEND check voor de opkomst"
 
 #: ../../libraries/entropy.py:14485
-#, fuzzy
 msgid "Injecting entropy metadata into built packages"
-msgstr "opschonen van yum metadata"
+msgstr "Injecteren van entropy metadata in de gebouwde pakketten"
 
 #: ../../libraries/entropy.py:14500
 msgid "injecting entropy metadata"
@@ -1689,15 +1649,15 @@ msgstr "Huidige revisies in bestand opslaan"
 
 #: ../../libraries/entropy.py:14878
 msgid "Dumping current 'treeupdates' actions to file"
-msgstr ""
+msgstr "Dumpen van huidige 'boomupdates' acties naar bestand"
 
 #: ../../libraries/entropy.py:14890
 msgid "Would you like to sync packages first (important if you don't have them synced) ?"
-msgstr ""
+msgstr "Wil je de pakketten eerst synchroniseren (belangrijk als je ze nog niet hebt gesynchroniseerd) ?"
 
 #: ../../libraries/entropy.py:14914
 msgid "Reinitializing Entropy database for branch"
-msgstr ""
+msgstr "Herinitialiseer Entropy database voor branche"
 
 #: ../../libraries/entropy.py:14916
 msgid "using Packages in the repository"
@@ -1715,7 +1675,7 @@ msgstr "Herziening"
 
 #: ../../libraries/entropy.py:15002
 msgid "cannot match"
-msgstr ""
+msgstr "Kan niet overeenkomen"
 
 #: ../../libraries/entropy.py:15051
 #: ../../libraries/entropy.py:15258
@@ -1838,9 +1798,8 @@ msgid "Number of failed downloads"
 msgstr "Aantal gefaalde downloads"
 
 #: ../../libraries/entropy.py:15542
-#, fuzzy
 msgid "Switching selected packages"
-msgstr "Geen pakketten geselecteerd"
+msgstr "Wisselen van geselecteerde pakketten"
 
 #: ../../libraries/entropy.py:15565
 msgid "Ignoring"
@@ -1851,14 +1810,12 @@ msgid "already in branch"
 msgstr "Al reeds in branche"
 
 #: ../../libraries/entropy.py:15586
-#, fuzzy
 msgid "cannot switch, package not found!"
-msgstr "fsck: kan %s niet controleren: fsck.%s niet gevonden\n"
+msgstr "kan niet wisselen, pakket niet gevonden!"
 
 #: ../../libraries/entropy.py:15595
-#, fuzzy
 msgid "configuring package information"
-msgstr "Geen node-informatie"
+msgstr "configureren van pakket informatie"
 
 #: ../../libraries/entropy.py:15611
 msgid "moving file locally"
@@ -1882,16 +1839,15 @@ msgstr "migratie loop compleet"
 
 #: ../../libraries/entropy.py:15971
 msgid "database does not exist. Locking services for it"
-msgstr ""
+msgstr "database bestaat niet. Blokkeren van services voor hem"
 
 #: ../../libraries/entropy.py:15988
 msgid "database got locked. Locking services for it"
-msgstr ""
+msgstr "Database is geblokkeerd. Blokkeren van services voor hem"
 
 #: ../../libraries/entropy.py:16002
-#, fuzzy
 msgid "unlocking and indexing database"
-msgstr "Bron van gebruiker en groepdatabase"
+msgstr "deblokkeren en indexeren van database"
 
 #: ../../libraries/entropy.py:16003
 msgid "hash"
@@ -1899,16 +1855,15 @@ msgstr "hash"
 
 #: ../../libraries/entropy.py:16102
 msgid "A valid RepositorySocketClientInterface based instance is needed"
-msgstr ""
+msgstr "Een geldige RepositorySocketClientInterface gebaseerde instantie is nodig"
 
 #: ../../libraries/entropy.py:16112
 msgid "hello world!"
 msgstr "hallo wereld!"
 
 #: ../../libraries/entropy.py:16122
-#, fuzzy
 msgid "feature not supported remotely"
-msgstr "Het uitschakelen van bestandssysteemfunctie '%s' is niet mogelijk.\n"
+msgstr "functie niet ondersteund op afstand"
 
 #: ../../libraries/entropy.py:16125
 #: ../../libraries/entropy.py:16142
@@ -1932,9 +1887,8 @@ msgid "product"
 msgstr "product"
 
 #: ../../libraries/entropy.py:16139
-#, fuzzy
 msgid "service temporarily not available"
-msgstr "exec/tcp: service is niet beschikbaar"
+msgstr "service is tijdelijk niet beschikbaar"
 
 #: ../../libraries/entropy.py:16156
 msgid "received wrong answer"
@@ -1942,24 +1896,23 @@ msgstr "verkeerd antwoord ontvangen"
 
 #: ../../libraries/entropy.py:16192
 msgid "cannot convert stream into object"
-msgstr ""
+msgstr "Kan stroom niet converteren naar object"
 
 #: ../../libraries/entropy.py:16359
 msgid "A valid EntropySocketClientCommands based class is needed"
-msgstr ""
+msgstr "Een geldige EntropySocketClientCommands gebaseerde klasse is nodig"
 
 #: ../../libraries/entropy.py:16437
 msgid "malformed EOS. receive aborted"
-msgstr ""
+msgstr "misvormde EOS. ontvangst afgebroken"
 
 #: ../../libraries/entropy.py:16468
-#, fuzzy
 msgid "malformed data. receive aborted"
-msgstr "Ontvangen van data mislukt"
+msgstr "misvormde data. ontvangst afgebroken"
 
 #: ../../libraries/entropy.py:16483
 msgid "connection timed out while receiving data"
-msgstr ""
+msgstr "verbinding time-out tijdens het ontvangen van data"
 
 #: ../../libraries/entropy.py:16503
 msgid "Reconnecting to socket"
@@ -1987,7 +1940,7 @@ msgstr "Verbinding succesvol verbroken met de host"
 
 #: ../../libraries/entropy.py:16572
 msgid "A valid ServerInterface based instance is needed"
-msgstr ""
+msgstr "Een geldige ServerInterface gebaseerde instantie is nodig"
 
 #: ../../libraries/entropy.py:16579
 msgid "Entropy Server Mirrors Interface loaded"
@@ -2048,9 +2001,8 @@ msgid "mirror successfully unlocked"
 msgstr "mirror succesvol vrijgemaakt"
 
 #: ../../libraries/entropy.py:16836
-#, fuzzy
 msgid "unlock error"
-msgstr "%s: Schrijffout"
+msgstr "deblokkeer fout"
 
 #: ../../libraries/entropy.py:16838
 msgid "mirror not unlocked"
@@ -2065,14 +2017,12 @@ msgid "downloading package"
 msgstr "pakket wordt gedownload"
 
 #: ../../libraries/entropy.py:16960
-#, fuzzy
 msgid "is not listed in the current repository database!!"
-msgstr "Repositories succesvol geupdate"
+msgstr "staat niet in de lijst van de huidige repository database!!"
 
 #: ../../libraries/entropy.py:16975
-#, fuzzy
 msgid "verifying checksum of package"
-msgstr "Toon Pakket Updates"
+msgstr "verifieren van controlesom van het pakket"
 
 #: ../../libraries/entropy.py:16994
 msgid "downloaded successfully"
@@ -2084,11 +2034,11 @@ msgstr "controlesom komt niet overeen. opnieuw downloaden..."
 
 #: ../../libraries/entropy.py:17028
 msgid "seems broken. Consider to re-package it. Giving up!"
-msgstr ""
+msgstr "blijkt gebroken. Denk er aan om het opnieuw in te pakken. Ik geef het op!"
 
 #: ../../libraries/entropy.py:17054
 msgid "mirror doesn't have a valid directory structure"
-msgstr ""
+msgstr "mirror heeft geen geldige mappen structuur"
 
 #: ../../libraries/entropy.py:17065
 msgid "Wrong database compression method passed"
@@ -2096,16 +2046,15 @@ msgstr "Verkeerde database compressie methode gepasseerd"
 
 #: ../../libraries/entropy.py:17086
 msgid "mirror doesn't have a valid database revision file"
-msgstr ""
+msgstr "mirror heeft geen geldige database revisie bestand"
 
 #: ../../libraries/entropy.py:17302
-#, fuzzy
 msgid "uris must be a list instance"
-msgstr "Lijst-index mag niet negatief zijn.\n"
+msgstr "uris moeten een lijst instantie zijn"
 
 #: ../../libraries/entropy.py:17305
 msgid "files_to_upload must be a list or dict instance"
-msgstr ""
+msgstr "files_to_upload moet een lijst of 'dict' instantie zijn"
 
 #: ../../libraries/entropy.py:17346
 msgid "verifying upload (if supported)"
@@ -2161,7 +2110,7 @@ msgstr "verder gaan"
 
 #: ../../libraries/entropy.py:17604
 msgid "preparing uncompressed database for the upload"
-msgstr ""
+msgstr "voorbereiden van gedecomprimeerde database voor de upload"
 
 #: ../../libraries/entropy.py:17611
 #: ../../libraries/entropy.py:17635
@@ -2204,21 +2153,19 @@ msgstr "Kan geen mirror map aanmaken"
 
 #: ../../libraries/entropy.py:17735
 msgid "waiting up to 2 minutes before giving up"
-msgstr ""
+msgstr "wacht nog 2 minuten voor opgeven"
 
 #: ../../libraries/entropy.py:17754
 msgid "mirror unlocked"
 msgstr "mirror vrijgemaakt"
 
 #: ../../libraries/entropy.py:17805
-#, fuzzy
 msgid "Troubles with treeupdates"
-msgstr "Duits (met deadkeys)"
+msgstr "Problemen met boomupdates"
 
 #: ../../libraries/entropy.py:17808
-#, fuzzy
 msgid "Bumping old data back"
-msgstr "De oude gegevens echt verwijderen?"
+msgstr "Terug zetten van de oude gegevens"
 
 #: ../../libraries/entropy.py:17846
 #: ../../libraries/entropy.py:17987
@@ -2241,7 +2188,7 @@ msgstr "fouten"
 
 #: ../../libraries/entropy.py:17929
 msgid "failed to upload to mirror, not unlocking and continuing"
-msgstr ""
+msgstr "upload naar mirror gefaald, niet deblokkeren en doorgaan"
 
 #: ../../libraries/entropy.py:17938
 #: ../../libraries/entropy.py:18052
@@ -2265,7 +2212,7 @@ msgstr "download vanaf mirror gefaald"
 
 #: ../../libraries/entropy.py:18132
 msgid "Mirrors are not locked remotely but the local database is"
-msgstr ""
+msgstr "Mirrors zijn niet geblokkeerd maar de lokale database wel"
 
 #: ../../libraries/entropy.py:18133
 msgid "It is a nonsense"
@@ -2277,7 +2224,7 @@ msgstr "Verwijder a.u.b. het slot bestand"
 
 #: ../../libraries/entropy.py:18141
 msgid "At the moment, mirrors are locked, someone is working on their databases"
-msgstr ""
+msgstr "Op dit moment, mirrors zijn geblokkeerd, iemand is bezig in de databases"
 
 #: ../../libraries/entropy.py:18142
 msgid "try again later"
@@ -2328,9 +2275,8 @@ msgid "upload issues"
 msgstr "upload problemen"
 
 #: ../../libraries/entropy.py:18218
-#, fuzzy
 msgid "database sync completed successfully"
-msgstr "Registratie met succes voltooid."
+msgstr "database sync met succes voltooid"
 
 #: ../../libraries/entropy.py:18262
 msgid "Local statistics"
@@ -2398,9 +2344,8 @@ msgid "removing package+hash"
 msgstr "pakket+hash worden verwijderd"
 
 #: ../../libraries/entropy.py:18697
-#, fuzzy
 msgid "copying file+hash to repository"
-msgstr "<b>Bestand toevoegen aan repository</b><p>Voegt een nieuw bestand toe aan de repository."
+msgstr "kopiëren van bestand+hash naar repository"
 
 #: ../../libraries/entropy.py:18751
 msgid "upload errors"
@@ -2431,9 +2376,8 @@ msgid "nothing to do on"
 msgstr "Niets te doen voor"
 
 #: ../../libraries/entropy.py:18908
-#, fuzzy
 msgid "Expanding queues"
-msgstr "Uitdijende wachtrijen"
+msgstr "Uitbreidende wachtrijen"
 
 #: ../../libraries/entropy.py:18932
 msgid "nothing to sync for"
@@ -2453,7 +2397,7 @@ msgstr "exceptie opgevangen"
 
 #: ../../libraries/entropy.py:19021
 msgid "at least one mirror has been sync'd properly, hooray!"
-msgstr ""
+msgstr "op z'n minst een mirror is juist gesynced, Hoera! "
 
 #: ../../libraries/entropy.py:19097
 msgid "tidy"
@@ -2492,19 +2436,17 @@ msgid "removing"
 msgstr "verwijderen"
 
 #: ../../libraries/entropy.py:19281
-#, fuzzy
 msgid "valid database path needed"
-msgstr "Gelieve een geldig pad in te voeren."
+msgstr "geldig database pad is nodig"
 
 #: ../../libraries/entropy.py:19370
 msgid "Entropy database is already locked by you :-)"
-msgstr ""
+msgstr "Entropy database is reeds geblokkeerd door jouw :-)"
 
 #. check if the database is locked REMOTELY
 #: ../../libraries/entropy.py:19377
-#, fuzzy
 msgid "Locking and Syncing Entropy database"
-msgstr "Bezig met uitvoeren van taken"
+msgstr "Blokkeren en Synchroniseren van Entropy database"
 
 #: ../../libraries/entropy.py:19389
 #: ../../server/server_activator.py:180
@@ -2531,7 +2473,7 @@ msgstr "kan mirror niet blokkeren"
 
 #: ../../libraries/entropy.py:19449
 msgid "Mirrors have not been unlocked. Remember to sync them."
-msgstr ""
+msgstr "Mirrors zijn niet gedeblokkeerd. Vergeet ze niet te synchroniseren."
 
 #: ../../libraries/entropy.py:19533
 msgid "can't do that on a readonly database"
@@ -2553,22 +2495,20 @@ msgid "ATTENTION"
 msgstr "ATTENTIE"
 
 #: ../../libraries/entropy.py:19611
-#, fuzzy
 msgid "forcing package updates"
-msgstr "Toon Pakket Updates"
+msgstr "forceren van pakket updates"
 
 #: ../../libraries/entropy.py:19612
 msgid "Syncing with"
 msgstr "Synchroniseren met"
 
 #: ../../libraries/entropy.py:19680
-#, fuzzy
 msgid "forcing packages metadata update"
-msgstr "<b>Pakketten voor Update</b>"
+msgstr "forceren van pakketten metadata update"
 
 #: ../../libraries/entropy.py:19681
 msgid "Updating system database using repository id"
-msgstr ""
+msgstr "Updaten van systeem database middels repository id"
 
 #: ../../libraries/entropy.py:19769
 #: ../../libraries/entropy.py:20108
@@ -2576,9 +2516,8 @@ msgid "SPM"
 msgstr "SPM"
 
 #: ../../libraries/entropy.py:19770
-#, fuzzy
 msgid "Running fixpackages"
-msgstr "Bezig met uitvoeren van taken"
+msgstr "Uitvoeren van fixpackages"
 
 #: ../../libraries/entropy.py:19771
 msgid "it could take a while"
@@ -2594,7 +2533,7 @@ msgstr "actie"
 
 #: ../../libraries/entropy.py:19817
 msgid "Cannot complete quickpkg for atoms"
-msgstr ""
+msgstr "Kan quickpkg voor atomen niet afronden"
 
 #: ../../libraries/entropy.py:19819
 #: ../../libraries/entropy.py:20057
@@ -2618,34 +2557,29 @@ msgstr "is ingevoerd"
 #: ../../libraries/entropy.py:19889
 #: ../../libraries/entropy.py:19962
 msgid "You need to quickpkg it manually to update the embedded database"
-msgstr ""
+msgstr "Je moet handmatig quickpkg doen om de embedded database bij te werken"
 
 #: ../../libraries/entropy.py:19890
 #: ../../libraries/entropy.py:19963
-#, fuzzy
 msgid "Repository database will be updated anyway"
-msgstr "Repositories succesvol geupdate"
+msgstr "Repository database zal toch worden geüpdate"
 
 #: ../../libraries/entropy.py:19999
-#, fuzzy
 msgid "Would you like to continue with the default branch"
-msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
+msgstr "Wil je doorgaan met de standaard branche"
 
 #: ../../libraries/entropy.py:20006
-#, fuzzy
 msgid "Type your branch"
-msgstr "Toets uw antwoord in."
+msgstr "Toets uw branche in"
 
 #: ../../libraries/entropy.py:20010
-#, fuzzy
 msgid "the specified branch does not exist"
-msgstr "Het opgegeven bestand bestaat niet"
+msgstr "de opgegeven branche bestaat niet"
 
 #. ask to confirm
 #: ../../libraries/entropy.py:20021
-#, fuzzy
 msgid "Do you confirm"
-msgstr "Ik, barbaar!"
+msgstr "Wilt u bevestigen"
 
 #: ../../libraries/entropy.py:20039
 msgid "repackaging"
@@ -2653,21 +2587,19 @@ msgstr "opnieuw verpakken"
 
 #: ../../libraries/entropy.py:20055
 msgid "Cannot complete quickpkg for atom"
-msgstr ""
+msgstr "Kan quickpkg voor atoom niet afronden"
 
 #: ../../libraries/entropy.py:20074
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
-msgstr ""
+msgstr "runTreeUpdatesQuickpkgAction is niet juist uitgevoerd"
 
 #: ../../libraries/entropy.py:20075
-#, fuzzy
 msgid "Please update packages manually"
-msgstr "Aanmeldproblemen. Probeer uzelf handmatig aan te melden"
+msgstr "update de pakketten handmatig a.u.b."
 
 #: ../../libraries/entropy.py:20109
-#, fuzzy
 msgid "Moving old entry"
-msgstr "Een externe menuoptie toevoegen"
+msgstr "Verplaatsen van oude ingang"
 
 #: ../../libraries/entropy.py:20111
 #: ../../client/text_configuration.py:113
@@ -2682,18 +2614,16 @@ msgid "Entropy database"
 msgstr "Entropy database"
 
 #: ../../libraries/entropy.py:22470
-#, fuzzy
 msgid "regenerating indexes after migration"
-msgstr "Hergenereer Cache"
+msgstr "Hergenereren van indexen na migratie"
 
 #: ../../libraries/entropy.py:22501
-#, fuzzy
 msgid "migrating table"
-msgstr "GSUB tabel\n"
+msgstr "tabel migreren"
 
 #: ../../libraries/entropy.py:22535
 msgid "fixing KDE dep strings on"
-msgstr ""
+msgstr "repareren van KDE dep reeksen in"
 
 #: ../../libraries/entropy.py:22537
 #: ../../client/text_rescue.py:277
@@ -2709,38 +2639,32 @@ msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr "extrainfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
 #: ../../libraries/entropy.py:22636
-#, fuzzy
 msgid "Syncing current database"
-msgstr "met termcap database"
+msgstr "Synchroniseren van huidige database"
 
 #: ../../libraries/entropy.py:22648
-#, fuzzy
 msgid "Removing entry"
-msgstr "%s: fout bij het verwijderen van de groepingang\n"
+msgstr "Verwijderen van ingang"
 
 #: ../../libraries/entropy.py:22663
-#, fuzzy
 msgid "Adding entry"
-msgstr "Bezig met toevoegen van nieuwe ingang..."
+msgstr "Toevoegen van ingang"
 
 #: ../../libraries/entropy.py:22701
 msgid "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as possible !"
 msgstr "Repository EAPI > Entropy EAPI. update Equo/Entropy zo snel mogelijk !"
 
 #: ../../libraries/entropy.py:22720
-#, fuzzy
 msgid "Exporting database table"
-msgstr "Interne opzoek-tabel"
+msgstr "Database tabel exporteren"
 
 #: ../../libraries/entropy.py:22759
-#, fuzzy
 msgid "Database Export completed."
-msgstr "Export met succes voltooid"
+msgstr "Database Export voltooid."
 
 #: ../../libraries/entropy.py:23136
-#, fuzzy
 msgid "cannot open Spm counter file for"
-msgstr "Kan bestand voor PostScript-afdrukken niet openen!"
+msgstr "kan Spm teller bestand niet openen voor"
 
 #: ../../libraries/entropy.py:23155
 msgid "counter for atom is duplicated, ignoring"
@@ -2768,14 +2692,12 @@ msgid "from atom"
 msgstr "van atoom"
 
 #: ../../libraries/outputTools.py:377
-#, fuzzy
 msgid "Entropy needs your attention"
-msgstr "%s vraagt om uw aandacht!"
+msgstr "Entropy vraagt om uw aandacht"
 
 #: ../../libraries/outputTools.py:474
-#, fuzzy
 msgid "maximum responses length"
-msgstr "Maximale lengte van tekstveld"
+msgstr "maximale lengte van reacties"
 
 #: ../../libraries/outputTools.py:481
 msgid "Entropy got a question for you"
@@ -2783,9 +2705,8 @@ msgstr "Entropy heeft een vraag voor u"
 
 #: ../../libraries/outputTools.py:489
 #: ../../libraries/outputTools.py:491
-#, fuzzy
 msgid "I cannot understand"
-msgstr "'%1' wordt niet begrepen"
+msgstr "ik kan het niet begrijpen"
 
 #: ../../libraries/outputTools.py:493
 msgid "Interrupted"
@@ -2800,9 +2721,8 @@ msgstr "Basis Opties"
 #: ../../client/equo.py:43
 #: ../../server/activator.py:41
 #: ../../server/reagent.py:42
-#, fuzzy
 msgid "this output"
-msgstr "--help  Deze hulp weergeven."
+msgstr "deze uitvoer"
 
 #: ../../client/equo.py:44
 #: ../../server/activator.py:42
@@ -2831,9 +2751,8 @@ msgid "force sync regardless repositories status"
 msgstr "forceer sync ongeacht de status van de repositories"
 
 #: ../../client/equo.py:51
-#, fuzzy
 msgid "show repositories information"
-msgstr "Aanmeldinformatie Weergeven"
+msgstr "repositories informatie weergeven"
 
 #: ../../client/equo.py:52
 msgid "show make.conf for the chosen repositories"
@@ -2877,7 +2796,7 @@ msgstr "geef alle mogelijke gelijkenissen weer"
 
 #: ../../client/equo.py:63
 msgid "return matches from every repository"
-msgstr ""
+msgstr "geef overeenkomsten van alle repositories"
 
 #: ../../client/equo.py:64
 msgid "print repository information (w/--quiet)"
@@ -2885,11 +2804,11 @@ msgstr "print repository informatie (incl. --quiet)"
 
 #: ../../client/equo.py:65
 msgid "print description too (w/--quiet)"
-msgstr ""
+msgstr "print ook de beschrijving (met --quiet)"
 
 #: ../../client/equo.py:67
 msgid "update system with the latest available packages"
-msgstr ""
+msgstr "update systeem met de laatst beschikbare pakketten"
 
 #: ../../client/equo.py:68
 #: ../../client/equo.py:86
@@ -2942,19 +2861,16 @@ msgstr "upgrade je distributie naar the gespecificeerde uitgave"
 
 #: ../../client/equo.py:77
 #: ../../client/equo.py:103
-#, fuzzy
 msgid "disable package integrity check"
-msgstr "Geen impliciete compilering van packages"
+msgstr "schakel pakket integriteit check uit"
 
 #: ../../client/equo.py:79
-#, fuzzy
 msgid "security infrastructure functions"
-msgstr "Speciale apparaatfuncties"
+msgstr "beveiliging infrastructuur functies"
 
 #: ../../client/equo.py:80
-#, fuzzy
 msgid "download the latest Security Advisories"
-msgstr "Het is mislukt om de nieuwste versie van FileZilla te downloaden"
+msgstr "download de laatste Beveiliging Advisoren"
 
 #: ../../client/equo.py:81
 msgid "list all the available Security Advisories"
@@ -2969,13 +2885,12 @@ msgid "list only unaffected"
 msgstr "laat alleen desinfecteerde zien"
 
 #: ../../client/equo.py:84
-#, fuzzy
 msgid "show information about provided advisories identifiers"
-msgstr "geef informatie over gegeven 'advisory identifiers'"
+msgstr "geef informatie over gegeven advisory identifiers"
 
 #: ../../client/equo.py:85
 msgid "automatically install all the available security updates"
-msgstr ""
+msgstr "installeer alle beschikbare beveiliging updates automatisch"
 
 #: ../../client/equo.py:88
 #: ../../client/equo.py:93
@@ -2992,18 +2907,16 @@ msgid "show less details (useful for scripting)"
 msgstr "laat minder details zien (handig voor scripts)"
 
 #: ../../client/equo.py:91
-#, fuzzy
 msgid "install atoms or .tbz2 packages"
-msgstr "Herinstalleer geselecteerd pakket"
+msgstr "installeer atomen of .tbz2 pakketten"
 
 #: ../../client/equo.py:94
 msgid "just download packages without doing the install"
 msgstr "download de pakketten zonder ze te installeren"
 
 #: ../../client/equo.py:95
-#, fuzzy
 msgid "do not pull in any dependency"
-msgstr "Er staan geen bestanden in de wachtrij."
+msgstr "voeg geen afhankelijkheden toe"
 
 #: ../../client/equo.py:97
 msgid "used with --resume, makes the first package in queue to be skipped"
@@ -3015,9 +2928,8 @@ msgstr "verwijder gedownload pakket nadat deze is gebruikt"
 
 #: ../../client/equo.py:99
 #: ../../client/equo.py:147
-#, fuzzy
 msgid "pull all the dependencies in, regardless their state"
-msgstr "voeg alle afhankelijkheden toe"
+msgstr "voeg alle afhankelijkheden toe, ongeacht hun status"
 
 #: ../../client/equo.py:100
 msgid "makes dependency rules stricter"
@@ -3028,39 +2940,34 @@ msgid "makes old configuration files to be removed"
 msgstr "zorgt ervoor dat oude configuratie bestanden worden verwijderd"
 
 #: ../../client/equo.py:105
-#, fuzzy
 msgid "remove one or more packages"
-msgstr "Herhalingen, één of meerdere malen"
+msgstr "verwijder één of meerdere pakketten"
 
 #: ../../client/equo.py:106
 msgid "also pull unused dependencies where depends list is empty"
-msgstr ""
+msgstr "neem ook ongebruikte afhankelijkheden mee waar afhankelijken lijst leeg is"
 
 #: ../../client/equo.py:107
 msgid "makes configuration files to be removed"
-msgstr ""
+msgstr "zorgt voor verwijdering van configuratie bestanden"
 
 #: ../../client/equo.py:110
 #: ../../server/reagent.py:97
-#, fuzzy
 msgid "look for unsatisfied dependencies"
-msgstr "Term om naar te zoeken"
+msgstr "zoek naar onbevredigde afhankelijkheden"
 
 #: ../../client/equo.py:115
 #: ../../server/reagent.py:98
-#, fuzzy
 msgid "look for missing libraries"
-msgstr "Protocolplugin voor %s niet gevonden"
+msgstr "zoek naar ontbrekende 'libraries'"
 
 #: ../../client/equo.py:116
-#, fuzzy
 msgid "print broken files to stdout"
-msgstr "DOM-boomstructuur afdrukken naar STDOUT"
+msgstr "print gebroken bestand naar stdout"
 
 #: ../../client/equo.py:121
-#, fuzzy
 msgid "configuration files update tool"
-msgstr "Bestanden in archief ‘%s’ bijwerken?"
+msgstr "configuratie bestanden update gereedschap"
 
 #: ../../client/equo.py:122
 msgid "show configuration files to be updated"
@@ -3068,59 +2975,59 @@ msgstr "geef configuratie bestanden voor update weer"
 
 #: ../../client/equo.py:123
 msgid "run the configuration files update function"
-msgstr ""
+msgstr "voer de configuratie bestanden update functie uit"
 
 #: ../../client/equo.py:125
 msgid "do misc queries on repository and local databases"
-msgstr ""
+msgstr "doe diverse queries op repository en lokale databases"
 
 #: ../../client/equo.py:126
 msgid "search a package into the local database"
-msgstr ""
+msgstr "zoek naar een pakket in de lokale database"
 
 #: ../../client/equo.py:127
 msgid "search from what package a file belongs"
-msgstr ""
+msgstr "zoek naar welk pakket een bestand behoort"
 
 #: ../../client/equo.py:128
 msgid "search what packages depend on the provided atoms"
-msgstr ""
+msgstr "zoek naar welke pakketten afhangen van de gegeven atomen"
 
 #: ../../client/equo.py:129
 #: ../../client/equo.py:225
 #: ../../server/reagent.py:59
 msgid "show runtime libraries needed by the provided atoms"
-msgstr ""
+msgstr "geef 'runtime libraries' weer die nodig zijn voor de gegeven atomen"
 
 #: ../../client/equo.py:130
 msgid "show atoms needing the provided libraries"
-msgstr ""
+msgstr "geef atomen weer die nodig zijn voor de gegeven libraries"
 
 #: ../../client/equo.py:131
 #: ../../client/equo.py:228
 #: ../../server/reagent.py:62
 msgid "show files owned by the provided atoms"
-msgstr ""
+msgstr "geef bestanden weer behorend aan de gegeven atomen"
 
 #: ../../client/equo.py:132
 msgid "show the removal tree for the specified atoms"
-msgstr ""
+msgstr "Geef de verwijderings boom-lijst voor de gespecificeerde atomen"
 
 #: ../../client/equo.py:133
 msgid "show packages owning the provided tags"
-msgstr ""
+msgstr "geef pakketten weer behorend aan de gegeven tags"
 
 #: ../../client/equo.py:134
 msgid "show packages owning the provided slot"
-msgstr ""
+msgstr "geef pakketten weer behorend aan het gegeven slot"
 
 #: ../../client/equo.py:135
 msgid "show packages owning the provided licenses"
-msgstr ""
+msgstr "geef pakketten weer behorende bij de gegeven licenties"
 
 #: ../../client/equo.py:136
 msgid "list packages based on the chosen parameter below"
-msgstr ""
+msgstr "som pakketten gebaseerd op de gekozen parameter hieronder op"
 
 #: ../../client/equo.py:137
 msgid "list installed packages"
@@ -3128,14 +3035,13 @@ msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../client/equo.py:138
 msgid "search files that do not belong to any package"
-msgstr ""
+msgstr "zoek naar bestanden die niet behoren tot een enkel pakket"
 
 #: ../../client/equo.py:139
 #: ../../client/equo.py:230
 #: ../../server/reagent.py:64
-#, fuzzy
 msgid "search packages by description"
-msgstr "uitvoeren/lezen door eigen groep"
+msgstr "zoek pakketten op beschrijving"
 
 #: ../../client/equo.py:140
 #: ../../client/equo.py:233
@@ -3149,99 +3055,95 @@ msgstr "meer details tonen"
 #: ../../client/equo.py:244
 #: ../../server/reagent.py:68
 msgid "print results in a scriptable way"
-msgstr ""
+msgstr "print resultaten in een scriptbare manier"
 
 #: ../../client/equo.py:143
 msgid "Extended Options"
 msgstr "Uitgebreide Opties"
 
 #: ../../client/equo.py:145
-#, fuzzy
 msgid "handles extended functionalities"
-msgstr "Latijns uitgebreid bijkomend"
+msgstr "behandelt uitgebreide functionaliteiten"
 
 #: ../../client/equo.py:146
 msgid "make a smart application for the provided atoms (experimental)"
-msgstr ""
+msgstr "maak een 'smart' applicatie voor de gegeven atomen (experimenteel)"
 
 #: ../../client/equo.py:148
 msgid "make a smart package for the provided atoms (multiple packages into one file)"
-msgstr ""
+msgstr "maak een 'smart' pakket voor de gegeven atomen (meerdere pakketten in een bestand)"
 
 #: ../../client/equo.py:149
 msgid "recreate an Entropy package from your System"
-msgstr ""
+msgstr "her-creëer een Entropy pakket vanaf jouw Systeem"
 
 #: ../../client/equo.py:150
 #: ../../client/equo.py:152
 #: ../../client/equo.py:154
 msgid "save new packages into the specified directory"
-msgstr ""
+msgstr "sla nieuwe pakketten op in de gespecificeerde map"
 
 #: ../../client/equo.py:151
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
-msgstr ""
+msgstr "converteer gegeven Gentoo .tbz2's naar Entropy pakketten (Portage nodig)"
 
 #: ../../client/equo.py:153
 msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
-msgstr ""
+msgstr "converteer gegeven Entropy pakketten naar die van Gentoo (Portage nodig)"
 
 #: ../../client/equo.py:155
 msgid "extract Entropy metadata from provided .tbz2 packages"
-msgstr ""
+msgstr "pak Entropy metadata uit van gegeven .tbz2 pakketten"
 
 #: ../../client/equo.py:156
 msgid "save new metadata into the specified directory"
-msgstr ""
+msgstr "sla nieuwe metadata op naar de gespecificeerde map"
 
 #: ../../client/equo.py:158
-#, fuzzy
 msgid "handles installed packages database"
-msgstr "Bezig met doorzoeken van BSD-database op geïnstalleerde pakketten"
+msgstr "behandelt geïnstalleerde pakketten database"
 
 #: ../../client/equo.py:159
 msgid "check System Database for errors"
-msgstr ""
+msgstr "check Systeem Database voor fouten"
 
 #. (2,'generate',2,'generate installed packages database using Portage database (Portage needed)'),
 #: ../../client/equo.py:161
 msgid "generate installed packages database using files on the system [last hope]"
-msgstr ""
+msgstr "genereer geïnstalleerde pakketten database door middel van bestanden op het systeem [laatste hoop]"
 
 #: ../../client/equo.py:162
 msgid "regenerate depends caching table"
-msgstr ""
+msgstr "hergenereer afhankelijken caching tabel"
 
 #: ../../client/equo.py:163
 msgid "update/generate counters table (Portage <-> Entropy packages table)"
-msgstr ""
+msgstr "update/genereer verschillen tabel (Portage <-> Entropy pakketten tabel)"
 
 #: ../../client/equo.py:164
 msgid "makes Entropy aware of your Portage-updated packages"
-msgstr ""
+msgstr "maakt Entropy bewust van jouw Portage-bijgewerkte pakketten"
 
 #: ../../client/equo.py:166
-#, fuzzy
 msgid "handles packages helper applications"
-msgstr "Externe hulpprogramma's opstarten"
+msgstr "behandelt pakketten helper applicaties"
 
 #: ../../client/equo.py:167
 msgid "migrate all Python modules to the latest installed version"
-msgstr ""
+msgstr "migreer alle Python modules naar de laatste versie geïnstalleerd"
 
 #: ../../client/equo.py:171
 msgid "handles community-side features"
-msgstr ""
+msgstr "handelt communitie-zijde middelen"
 
 #: ../../client/equo.py:173
-#, fuzzy
 msgid "community repositories management functions"
-msgstr "Repositories succesvol geupdate"
+msgstr "communitie repositories beheer functies"
 
 #: ../../client/equo.py:174
 #: ../../server/reagent.py:48
 msgid "scan the System looking for newly compiled packages"
-msgstr ""
+msgstr "scan het Systeem op nieuw gecompileerde pakketten"
 
 #: ../../client/equo.py:175
 #: ../../client/equo.py:180
@@ -3254,12 +3156,12 @@ msgstr ""
 #: ../../server/reagent.py:77
 #: ../../server/reagent.py:79
 msgid "choose on what branch operating"
-msgstr ""
+msgstr "kies in welke branche er wordt gewerkt"
 
 #: ../../client/equo.py:176
 #: ../../server/reagent.py:50
 msgid "analyze the Entropy Store directory directly"
-msgstr ""
+msgstr "analizeer de Entropy Opslag map meteen"
 
 #: ../../client/equo.py:177
 #: ../../server/reagent.py:51
@@ -3312,27 +3214,23 @@ msgstr "sync de huidige repository database over de primaire mirrors"
 
 #: ../../client/equo.py:193
 #: ../../server/activator.py:63
-#, fuzzy
 msgid "lock the current repository database (server-side)"
-msgstr "Repositories succesvol geupdate"
+msgstr "blokkeer de huidige repository database (server-kant)"
 
 #: ../../client/equo.py:194
 #: ../../server/activator.py:64
-#, fuzzy
 msgid "unlock the current repository database (server-side)"
-msgstr "Repositories succesvol geupdate"
+msgstr "deblokkeer de huidige repository database (server-kant)"
 
 #: ../../client/equo.py:195
 #: ../../server/activator.py:65
-#, fuzzy
 msgid "lock the current repository database (client-side)"
-msgstr "Repositories succesvol geupdate"
+msgstr "blokkeer de huidige repository database (cliënt-kant)"
 
 #: ../../client/equo.py:196
 #: ../../server/activator.py:66
-#, fuzzy
 msgid "unlock the current repository database (client-side)"
-msgstr "Repositories succesvol geupdate"
+msgstr "deblokkeer de huidige repository database (cliënt-kant)"
 
 #: ../../client/equo.py:197
 #: ../../server/activator.py:67
@@ -3341,20 +3239,17 @@ msgstr "geef huidige vergrendel status"
 
 #: ../../client/equo.py:198
 #: ../../server/activator.py:52
-#, fuzzy
 msgid "remove binary packages not in repositories and expired"
-msgstr "Fouten tijdens het updaten van de repositories"
+msgstr "verwijder binaire pakketten niet in de repositories en verlopen"
 
 #: ../../client/equo.py:201
-#, fuzzy
 msgid "community repositories database functions"
-msgstr "Repositories succesvol geupdate"
+msgstr "communitie repositories database functies"
 
 #: ../../client/equo.py:202
 #: ../../server/reagent.py:71
-#, fuzzy
 msgid "(re)initialize the current repository database"
-msgstr "Hermaak de lettertypes voor de huidige taal. "
+msgstr "(her)initialiseren van de huidige repository database"
 
 #: ../../client/equo.py:203
 #: ../../server/reagent.py:72
@@ -3384,27 +3279,27 @@ msgstr "verwijder de gegeven atomen van de huidige repository database"
 #: ../../client/equo.py:209
 #: ../../server/reagent.py:78
 msgid "remove the provided injected atoms (all if no atom specified)"
-msgstr ""
+msgstr "verwijder de gegeven geinjecteerde atomen (alles als geen atoom is gespecificeerd)"
 
 #: ../../client/equo.py:211
 #: ../../server/reagent.py:80
 msgid "create an empty repository database in the provided path"
-msgstr ""
+msgstr "creëer een lege repository database in het gegeven pad"
 
 #: ../../client/equo.py:212
 #: ../../server/reagent.py:81
 msgid "switch to the specified branch the provided atoms (or world)"
-msgstr ""
+msgstr "wissel de gegeven atomen (of wereld) naar de gespecificeerde branche"
 
 #: ../../client/equo.py:213
 #: ../../server/reagent.py:82
 msgid "verify integrity of the provided atoms (or world)"
-msgstr ""
+msgstr "verifieer integriteit van de gegeven atomen (of wereld)"
 
 #: ../../client/equo.py:214
 #: ../../server/reagent.py:83
 msgid "verify remote integrity of the provided atoms (or world)"
-msgstr ""
+msgstr "verifieer externe integriteit van de gegeven atomen (of wereld)"
 
 #: ../../client/equo.py:216
 #: ../../server/reagent.py:85
@@ -3424,13 +3319,12 @@ msgstr "gespecificeerde repository uitzetten"
 #: ../../client/equo.py:219
 #: ../../server/reagent.py:88
 msgid "show the current Server Interface status"
-msgstr ""
+msgstr "geef de huidige Server Interface status weer"
 
 #: ../../client/equo.py:220
 #: ../../server/reagent.py:89
-#, fuzzy
 msgid "move packages from a repository to another"
-msgstr "Fouten tijdens het updaten van de repositories"
+msgstr "verplaats pakketten van de ene repository naar een ander"
 
 #: ../../client/equo.py:221
 #: ../../server/reagent.py:90
@@ -3438,47 +3332,42 @@ msgid "set the default repository"
 msgstr "standaard repository instellen"
 
 #: ../../client/equo.py:223
-#, fuzzy
 msgid "do some searches into community repository databases"
-msgstr "Repositories succesvol geupdate"
+msgstr "doe een zoek actie in de communitie repository databases"
 
 #: ../../client/equo.py:224
 #: ../../server/reagent.py:58
-#, fuzzy
 msgid "search packages inside the default repository database"
-msgstr "Fouten tijdens het updaten van de repositories"
+msgstr "zoek pakketten binnen de standaard repository database"
 
 #: ../../client/equo.py:226
 #: ../../server/reagent.py:60
 msgid "show what packages depend on the provided atoms"
-msgstr ""
+msgstr "geef weer welke pakketten afhangen van de gegeven atomen"
 
 #: ../../client/equo.py:227
 #: ../../server/reagent.py:61
-#, fuzzy
 msgid "show packages owning the specified tags"
-msgstr "Geen pakketten geselecteerd"
+msgstr "Geef pakketten weer die de gespecificeerde tags bezitten"
 
 #: ../../client/equo.py:229
 #: ../../server/reagent.py:63
 msgid "show from what package the provided files belong"
-msgstr ""
+msgstr "geef weer bij welk pakket de gegeven bestanden horen"
 
 #: ../../client/equo.py:231
 #: ../../server/reagent.py:65
-#, fuzzy
 msgid "search packages using the provided eclasses"
-msgstr "Fouten tijdens het updaten van de repositories"
+msgstr "zoek pakketten gebruik makend van gegeven eclassen"
 
 #: ../../client/equo.py:232
 #: ../../server/reagent.py:66
-#, fuzzy
 msgid "list all the packages in the default repository"
-msgstr "Fouten tijdens het updaten van de repositories"
+msgstr "som alle pakketten in de standaard repository op"
 
 #: ../../client/equo.py:236
 msgid "look for unsatisfied dependencies across community repositories"
-msgstr ""
+msgstr "zoek naar onbevredigde afhankelijkheden op communitie repositories"
 
 #: ../../client/equo.py:237
 #: ../../server/reagent.py:99
@@ -3711,9 +3600,8 @@ msgid "showing differencies"
 msgstr "verschillen worden weergegeven"
 
 #: ../../client/text_configuration.py:254
-#, fuzzy
 msgid "Please choose a file to update by typing its identification number."
-msgstr "Kies een bestand voor de update door zijn identificatie nummer in te voeren."
+msgstr "Kies a.u.b. een bestand voor update door zijn identificatie nummer te typen."
 
 #: ../../client/text_configuration.py:255
 msgid "Other options are:"
@@ -3726,19 +3614,19 @@ msgstr "Afsluiten"
 
 #: ../../client/text_configuration.py:257
 msgid "Automerge all the files asking you one by one"
-msgstr ""
+msgstr "Automatisch samenvoegen val alle bestanden na een voor een te vragen"
 
 #: ../../client/text_configuration.py:258
 msgid "Automerge all the files without questioning"
-msgstr ""
+msgstr "Automatisch samenvoegen van alle bestanden zonder te vragen"
 
 #: ../../client/text_configuration.py:259
 msgid "Discard all the files asking you one by one"
-msgstr ""
+msgstr "Wijs alle bestanden af na een voor een te vragen"
 
 #: ../../client/text_configuration.py:260
 msgid "Discard all the files without questioning"
-msgstr ""
+msgstr "Wijs alle bestanden af zonder te vragen"
 
 #. wait user interaction
 #: ../../client/text_configuration.py:262
@@ -3771,9 +3659,8 @@ msgid "Show differences again"
 msgstr "bekijk verschillen opnieuw"
 
 #: ../../client/text_configuration.py:315
-#, fuzzy
 msgid "These are the files that would be updated:"
-msgstr "Volgende pakketten zullen worden geïnstalleerd/geupdate"
+msgstr "De volgende bestanden zullen worden geüpdate:"
 
 #: ../../client/text_configuration.py:321
 msgid "Unique files that would be update"
@@ -3827,19 +3714,16 @@ msgstr "Gevonden"
 #: ../../client/text_query.py:912
 #: ../../client/text_query.py:972
 #: ../../server/server_query.py:97
-#, fuzzy
 msgid "entries"
-msgstr "stuks"
+msgstr "ingangen"
 
 #: ../../client/text_query.py:155
-#, fuzzy
 msgid "Belong Search"
-msgstr "zoek_opdracht"
+msgstr "Zoeken op bijbehorenden"
 
 #: ../../client/text_query.py:211
-#, fuzzy
 msgid "Depends Search"
-msgstr "zoek_opdracht"
+msgstr "Zoeken op afhankelijken"
 
 #: ../../client/text_query.py:258
 #: ../../client/text_ui.py:1205
@@ -3900,7 +3784,6 @@ msgid "files"
 msgstr "bestanden"
 
 #: ../../client/text_query.py:465
-#, fuzzy
 msgid "Orphans Search"
 msgstr "Zoeken op Wezen"
 
@@ -3917,38 +3800,32 @@ msgid "Masked directories"
 msgstr "Afgeschermde mappen"
 
 #: ../../client/text_query.py:503
-#, fuzzy
 msgid "Number of files collected on the filesystem"
-msgstr "Het bestand (of een aantal bestanden) om mee te werken."
+msgstr "Aantal bestanden gevonden op het bestandssysteem"
 
 #: ../../client/text_query.py:504
-#, fuzzy
 msgid "Now looking into Installed Packages database"
-msgstr "Toon geïnstalleerde pakketten"
+msgstr "Nu zoeken in Geïnstalleerde Pakketten database"
 
 #: ../../client/text_query.py:516
-#, fuzzy
 msgid "Intersecting with content of the package"
-msgstr "Starten met de buglijst voor <package>"
+msgstr "Kruisend met de inhoud van het pakket"
 
 #: ../../client/text_query.py:532
 msgid "Intersection completed. Showing statistics"
-msgstr ""
+msgstr "Kruising afgesloten. Weergeven van statistieken"
 
 #: ../../client/text_query.py:533
-#, fuzzy
 msgid "Number of total files"
-msgstr "Totaal Bestanden: %llu"
+msgstr "totaal aantal bestanden"
 
 #: ../../client/text_query.py:534
-#, fuzzy
 msgid "Number of matching files"
-msgstr "Aantal Gedeelde Bestanden: %s"
+msgstr "Aantal overeenkomende bestanden"
 
 #: ../../client/text_query.py:535
-#, fuzzy
 msgid "Number of orphaned files"
-msgstr "Aantal Gedeelde Bestanden: %s"
+msgstr "Aantal wees bestanden"
 
 #: ../../client/text_query.py:540
 msgid "Writing file to disk"
@@ -3973,7 +3850,7 @@ msgstr "Geen pakketten gevonden"
 
 #: ../../client/text_query.py:604
 msgid "Calculating removal dependencies, please wait"
-msgstr ""
+msgstr "Calculeren van verwijdering van afhankelijkheden, even geduld a.u.b."
 
 #: ../../client/text_query.py:615
 msgid "These are the packages that would added to the removal queue"
@@ -4242,7 +4119,7 @@ msgstr "Niet afgehandelde exceptie"
 #: ../../client/text_rescue.py:42
 #: ../../client/text_smart.py:138
 msgid "Source Package Manager backend not available"
-msgstr ""
+msgstr "Source Pakket Beheerder back-end niet beschikbaar"
 
 #: ../../client/text_rescue.py:50
 msgid "Installed packages database not available"
@@ -4250,11 +4127,11 @@ msgstr "Geinstalleerde pakketten database niet beschikbaar"
 
 #: ../../client/text_rescue.py:73
 msgid "The installed package database will be generated again using Gentoo one"
-msgstr ""
+msgstr "De geinstalleerd pakket database zal opnieuw worden gegenereerd middels die van Gentoo"
 
 #: ../../client/text_rescue.py:76
 msgid "If you dont know what you're doing just, don't do this. Really. I'm not joking."
-msgstr ""
+msgstr "Als je niet weet waar je mee bezig bent, doe het dan niet. Serieus. Ik maak geen grap."
 
 #: ../../client/text_rescue.py:77
 msgid "Understood ?"
@@ -4297,9 +4174,8 @@ msgstr "Database herinitialisatie correct op"
 
 #. now collect packages in the system
 #: ../../client/text_rescue.py:123
-#, fuzzy
 msgid "Transductingactioningintactering databases"
-msgstr "Beschikbare _databases"
+msgstr "Transductingactioningintactering databases"
 
 #: ../../client/text_rescue.py:155
 #: ../../client/text_rescue.py:200
@@ -4427,26 +4303,23 @@ msgstr "Database succesvol herrezen"
 
 #: ../../client/text_rescue.py:371
 msgid "Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."
-msgstr ""
+msgstr "Onthoud dat virtual/meta pakketten niet konden worden vergeleken. Ze bezitten geen enkel bestand."
 
 #: ../../client/text_rescue.py:380
-#, fuzzy
 msgid "Regenerating depends caching table"
-msgstr "Hergenereren van 'depends' caching tabellen"
+msgstr "Hergenereren van afhankelijken caching tabellen"
 
 #: ../../client/text_rescue.py:382
-#, fuzzy
 msgid "Depends caching table regenerated successfully"
-msgstr "Repositories succesvol geupdate"
+msgstr "Afhankelijken caching tabel met succes her gegenereerd"
 
 #: ../../client/text_rescue.py:395
-#, fuzzy
 msgid "Regenerating counters table"
-msgstr "Interne opzoek-tabel"
+msgstr "Hergenereren van verschillen tabel"
 
 #: ../../client/text_rescue.py:397
 msgid "Counters table regenerated. Look above for errors."
-msgstr ""
+msgstr "Verschillen tabel her gegenereerd. Kijk hierboven voor fouten."
 
 #: ../../client/text_rescue.py:410
 msgid "Scanning Portage and Entropy databases for differences"
@@ -4454,36 +4327,31 @@ msgstr "Scannen van Portage en Entropy databases voor verschillen"
 
 #: ../../client/text_rescue.py:422
 msgid "has never been in sync with Portage. So, you can't run this unless you run first"
-msgstr ""
+msgstr "is nooit synchroon geweest met Portage. Dus, je kan dit niet uitvoeren tenzij je eerst %s start"
 
 #: ../../client/text_rescue.py:424
 msgid "Sorry"
 msgstr "Helaas"
 
 #: ../../client/text_rescue.py:430
-#, fuzzy
 msgid "Collecting Portage counters"
-msgstr "Herstel-informatie verzamelen..."
+msgstr "Verzamelen van Portage verschillen"
 
 #: ../../client/text_rescue.py:432
-#, fuzzy
 msgid "Collecting Entropy packages"
-msgstr "Geen pakketten geselecteerd"
+msgstr "Verzamelen van Entropy pakketten"
 
 #: ../../client/text_rescue.py:437
-#, fuzzy
 msgid "Differential Scan"
-msgstr "Scaninterval..."
+msgstr "Differentiële Scan"
 
 #: ../../client/text_rescue.py:472
-#, fuzzy
 msgid "Databases already synced"
-msgstr "Al bezig internetaanbieder te bellen."
+msgstr "Databases reeds gesynchroniseerd"
 
 #: ../../client/text_rescue.py:479
-#, fuzzy
 msgid "Entropy locked, giving up"
-msgstr "onvoldoende geheugen beschikbaar -- gestopt\n"
+msgstr "Entropy geblokkeerd, ik geef op"
 
 #: ../../client/text_rescue.py:486
 msgid "Someone removed these packages"
@@ -4607,9 +4475,8 @@ msgid "References"
 msgstr "Referenties"
 
 #: ../../client/text_security.py:156
-#, fuzzy
 msgid "Upstream bugs"
-msgstr "Probeer fouten te omzeilen"
+msgstr "Opwaartse bugs"
 
 #: ../../client/text_security.py:162
 msgid "Affected"
@@ -4661,15 +4528,13 @@ msgstr "Kan `%s' niet vinden."
 #: ../../client/text_smart.py:94
 #: ../../client/text_smart.py:244
 #: ../../client/text_smart.py:377
-#, fuzzy
 msgid "No valid packages specified"
-msgstr "Geen koppeltype opgegeven"
+msgstr "Geen geldige pakketten opgegeven"
 
 #. print the list
 #: ../../client/text_smart.py:98
-#, fuzzy
 msgid "This is the list of the packages that would be quickpkg'd"
-msgstr "Volgende pakketten worden verwijderd"
+msgstr "De volgende pakketten zullen worden ge-quickpkgt"
 
 #: ../../client/text_smart.py:106
 #: ../../spritz/src/applet/etp_applet.py:891
@@ -4677,18 +4542,16 @@ msgid "installed"
 msgstr "Geïnstalleerd"
 
 #: ../../client/text_smart.py:109
-#, fuzzy
 msgid "Would you like to recompose the selected packages ?"
-msgstr "Verwijder geselecteerd pakket"
+msgstr "Wil je de geselecteerde pakketten her-composeren ?"
 
 #: ../../client/text_smart.py:114
 msgid "Compressing"
 msgstr "Comprimeren"
 
 #: ../../client/text_smart.py:119
-#, fuzzy
 msgid "Error while creating package for"
-msgstr "Fout bij aanmaken persoonlijke map (home) voor %s: %s\n"
+msgstr "Fout bij aanmaken van pakket voor"
 
 #: ../../client/text_smart.py:123
 msgid "Saved in"
@@ -4709,19 +4572,16 @@ msgid "Using branch"
 msgstr "Gebruiken van Branche"
 
 #: ../../client/text_smart.py:198
-#, fuzzy
 msgid "Inflated package"
-msgstr "Pakket Categorieën"
+msgstr "Geïnfleerd pakket"
 
 #: ../../client/text_smart.py:206
-#, fuzzy
 msgid "Deflating"
-msgstr "Bestemming"
+msgstr "Deflatie"
 
 #: ../../client/text_smart.py:211
-#, fuzzy
 msgid "Deflated package"
-msgstr "Pakket Categorieën"
+msgstr "Gedefleerd pakket"
 
 #: ../../client/text_smart.py:219
 msgid "Extracting Entropy metadata from"
@@ -4850,7 +4710,7 @@ msgstr "Niets te updaten"
 
 #: ../../client/text_ui.py:222
 msgid "On the system there are packages that are not available anymore in the online repositories"
-msgstr ""
+msgstr "Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op de online repositories"
 
 #: ../../client/text_ui.py:226
 msgid "Even if they are usually harmless, it is suggested to remove them."
@@ -5211,7 +5071,7 @@ msgstr "pakket repositories handeling functies"
 
 #: ../../server/activator.py:55
 msgid "sync package repositories across primary mirrors"
-msgstr ""
+msgstr "synchroniseer pakket repositories over primaire mirrors"
 
 #: ../../server/activator.py:61
 msgid "database handling functions"
@@ -5235,7 +5095,7 @@ msgstr "compilatie functie"
 
 #: ../../server/reagent.py:94
 msgid "compile packages belonging to the provided categories"
-msgstr ""
+msgstr "compileer pakketten behorende tot de gegeven categorieën"
 
 #: ../../server/reagent.py:95
 msgid "just list packages"
@@ -5243,11 +5103,11 @@ msgstr "som lijst op met pakketten"
 
 #: ../../server/reagent.py:101
 msgid "remove downloaded packages and clean temp. directories)"
-msgstr ""
+msgstr "verwijder gedownloade pakketten en leeg temp. mappen)"
 
 #: ../../server/server_activator.py:44
 msgid "Starting to sync data across mirrors (packages/database)"
-msgstr ""
+msgstr "Starten met synchroniseren van data over mirrors (pakketten/database)"
 
 #: ../../server/server_activator.py:69
 msgid "Please insert a commit message"
@@ -5263,7 +5123,7 @@ msgstr "Afbreken !"
 
 #: ../../server/server_activator.py:140
 msgid "Starting to lock mirrors databases"
-msgstr ""
+msgstr "Starten met blokkeren van mirrors databases"
 
 #: ../../server/server_activator.py:143
 #: ../../server/server_activator.py:153
@@ -5278,7 +5138,7 @@ msgstr "Databases blokkeren compleet"
 
 #: ../../server/server_activator.py:150
 msgid "Starting to unlock mirrors databases"
-msgstr ""
+msgstr "Starten met deblokkeren van mirrors databases"
 
 #: ../../server/server_activator.py:155
 msgid "Databases unlock complete"
@@ -5286,7 +5146,7 @@ msgstr "Databases deblokkeren compleet"
 
 #: ../../server/server_activator.py:160
 msgid "Starting to lock download mirrors databases"
-msgstr ""
+msgstr "Starten met blokkeren van download mirrors databases"
 
 #: ../../server/server_activator.py:165
 msgid "Download mirrors lock complete"
@@ -5294,7 +5154,7 @@ msgstr "Download mirrors blokkering compleet"
 
 #: ../../server/server_activator.py:170
 msgid "Starting to unlock download mirrors databases"
-msgstr ""
+msgstr "Starten met deblokkeren van download mirrors databases"
 
 #: ../../server/server_activator.py:175
 msgid "Download mirrors unlock complete"
@@ -5443,7 +5303,7 @@ msgstr "Pakketten comprimeren"
 
 #: ../../server/server_reagent.py:256
 msgid "Ignoring broken Spm entry, please recompile it"
-msgstr ""
+msgstr "Negeren van gebroken Spm ingang, hercompileer a.u.b."
 
 #: ../../server/server_reagent.py:267
 msgid "Nothing to do, check later."
