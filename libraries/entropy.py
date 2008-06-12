@@ -13367,6 +13367,7 @@ class SocketHostInterface:
             repoConn = Entropy.Repositories(*myargs, **mykwargs)
             return repoConn.sync()
 
+    import gc
     def __init__(self, service_interface, *args, **kwds):
 
         self.args = args
@@ -13393,6 +13394,7 @@ class SocketHostInterface:
         self.answers = etpConst['socket_service']['answers']
         self.Server = None
         self.Gc = None
+        self.PythonGarbageCollector = None
         self.__output = None
         self.SSL = {}
         self.SSL_exceptions = {}
@@ -13417,6 +13419,7 @@ class SocketHostInterface:
         self.disable_commands()
         self.start_session_garbage_collector()
         self.setup_ssl()
+        self.start_python_garbage_collector()
 
     def append_eos(self, data):
         return str(len(data)) + \
@@ -13522,10 +13525,20 @@ class SocketHostInterface:
             # initialize authenticator
         self.Authenticator = auth_inst[0](*auth_inst[1], **auth_inst[2])
 
+    def start_python_garbage_collector(self):
+        self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600.0 )
+        self.PythonGarbageCollector.setName("Garbage_Collector::"+str(random.random()))
+        self.PythonGarbageCollector.start()
+
     def start_session_garbage_collector(self):
         self.Gc = self.entropyTools.TimeScheduled( self.gc_clean, 5 )
         self.Gc.setName("Socket_GC::"+str(random.random()))
         self.Gc.start()
+
+    def python_garbage_collect(self):
+        self.gc.collect()
+        self.gc.collect()
+        self.gc.collect()
 
     def gc_clean(self):
         if not self.sessions:
@@ -16081,7 +16094,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.expand_repositories()
         # start timed lock file scanning
         self.start_repository_lock_scanner()
-
 
     def start_repository_lock_scanner(self):
         self.LockScanner = self.entropyTools.TimeScheduled( self.lock_scan, 0.5 )
