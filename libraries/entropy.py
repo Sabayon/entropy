@@ -13000,6 +13000,7 @@ class SocketHostInterface:
     class BuiltInCommands:
 
         import dumpTools
+        import zlib
 
         def __str__(self):
             return self.inst_name
@@ -13158,6 +13159,9 @@ class SocketHostInterface:
 
             if option == "compression":
                 docomp = True
+                do_zlib = False
+                if "zlib" in myopts:
+                    do_zlib = True
                 if myopts:
                     if isinstance(myopts[0],bool):
                         docomp = myopts[0]
@@ -13166,6 +13170,12 @@ class SocketHostInterface:
                             docomp = eval(myopts[0])
                         except (NameError, TypeError,):
                             pass
+                if docomp and do_zlib:
+                    docomp = "zlib"
+                elif docomp and not do_zlib:
+                    docomp = "gzip"
+                else:
+                    docomp = None
                 self.HostInterface.sessions[session]['compression'] = docomp
                 return True,"compression now: %s" % (docomp,)
             else:
@@ -13318,14 +13328,16 @@ class SocketHostInterface:
         def docmd_rc(self, transmitter, session):
             rc = self.HostInterface.get_rc(session)
             comp = self.HostInterface.sessions[session]['compression']
-            if comp:
+            myserialized = self.dumpTools.serialize_string(rc)
+            if comp == "zlib": # new shiny zlib
+                myserialized = self.zlib.compress(myserialized, 7) # compression level 1-9
+            elif comp == "gzip": # old and burried
                 import gzip
                 try:
                     import cStringIO as stringio
                 except ImportError:
                     import StringIO as stringio
                 f = stringio.StringIO()
-
                 self.dumpTools.serialize(rc, f)
                 myf = stringio.StringIO()
                 mygz = gzip.GzipFile(
@@ -13339,18 +13351,12 @@ class SocketHostInterface:
                     chunk = f.read(8192)
                 mygz.flush()
                 mygz.close()
-                transmitter(myf.getvalue())
+                myserialized = myf.getvalue()
                 f.close()
                 myf.close()
-            else:
-                try:
-                    import cStringIO as stringio
-                except ImportError:
-                    import StringIO as stringio
-                f = stringio.StringIO()
-                self.dumpTools.serialize(rc, f)
-                transmitter(f.getvalue())
-                f.close()
+
+
+            transmitter(myserialized)
 
             return rc
 
@@ -13563,7 +13569,7 @@ class SocketHostInterface:
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
-        self.sessions[rng]['compression'] = False
+        self.sessions[rng]['compression'] = None
         self.sessions[rng]['t'] = time.time()
         return rng
 
@@ -16487,10 +16493,9 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                     raise
 
 
-
     def set_gzip_compression_on_rc(self, session, do):
         self.Service.check_socket_connection()
-        cmd = "%s %s %s %s" % (session, 'session_config', 'compression', do,)
+        cmd = "%s %s %s %s zlib" % (session, 'session_config', 'compression', do,)
         self.Service.transmit(cmd)
         data = self.Service.receive()
         if data == self.Service.answers['ok']:
@@ -16502,10 +16507,7 @@ class RepositorySocketClientInterface:
     import socket
     import dumpTools
     import entropyTools
-    try:
-        import cStringIO as stringio
-    except ImportError:
-        import StringIO as stringio
+    import zlib
     def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = ''):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
@@ -16534,21 +16536,8 @@ class RepositorySocketClientInterface:
     def stream_to_object(self, data, gzipped):
 
         if gzipped:
-            import gzip
-            myio = self.stringio.StringIO(data)
-            myio.seek(0)
-            f = gzip.GzipFile(
-                filename = 'gzipped_data',
-                mode = 'rb',
-                fileobj = myio
-            )
-            obj = self.dumpTools.unserialize(f)
-            f.close()
-            myio.close()
-        else:
-            f = self.stringio.StringIO(data)
-            obj = self.dumpTools.unserialize(f)
-            f.close()
+            data = self.zlib.decompress(data)
+        obj = self.dumpTools.unserialize_string(data)
 
         return obj
 
