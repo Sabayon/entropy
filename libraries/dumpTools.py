@@ -84,7 +84,7 @@ def unserialize(f):
    @output: object
 '''
 def unserialize_string(mystring):
-    x = pickle.loads(f)
+    x = pickle.loads(mystring)
     return x
 
 '''
