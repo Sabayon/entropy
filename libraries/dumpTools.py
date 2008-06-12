@@ -62,8 +62,8 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
    @input: object, file object
    @output: file object, pointer to the beginning
 '''
-def serialize(object, f, do_seek = True):
-    pickle.dump(object,f)
+def serialize(myobj, f, do_seek = True):
+    pickle.dump(myobj,f)
     f.flush()
     if do_seek:
         f.seek(0)
@@ -77,6 +77,23 @@ def serialize(object, f, do_seek = True):
 def unserialize(f):
     x = pickle.load(f)
     return x
+
+'''
+   @description: unserialize pickle string to object
+   @input: string
+   @output: object
+'''
+def unserialize_string(mystring):
+    x = pickle.loads(f)
+    return x
+
+'''
+   @description: serialize object to string
+   @input: object, file object
+   @output: file object, pointer to the beginning
+'''
+def serialize_string(myobj):
+    return pickle.dumps(myobj)
 
 '''
    @description: load object from a file
