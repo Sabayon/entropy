@@ -1207,20 +1207,31 @@ class EquoInterface(TextInterface):
 
             # search
             dbconn = open_db(repo)
-            query = dbconn.atomMatch(   atom,
-                                        caseSensitive = caseSensitive,
-                                        matchSlot = matchSlot,
-                                        matchBranches = matchBranches,
-                                        packagesFilter = packagesFilter,
-                                        matchRevision = matchRevision,
-                                        extendedResults = extendedResults
-            )
-            if query[1] == 0:
-                # package found, add to our dictionary
-                if extendedResults:
-                    repoResults[repo] = (query[0][0],query[0][2],query[0][3],query[0][4])
-                else:
-                    repoResults[repo] = query[0]
+            use_cache = True
+            while 1:
+                try:
+                    query = dbconn.atomMatch(
+                        atom,
+                        caseSensitive = caseSensitive,
+                        matchSlot = matchSlot,
+                        matchBranches = matchBranches,
+                        packagesFilter = packagesFilter,
+                        matchRevision = matchRevision,
+                        extendedResults = extendedResults,
+                        useCache = use_cache
+                    )
+                    if query[1] == 0:
+                        # package found, add to our dictionary
+                        if extendedResults:
+                            repoResults[repo] = (query[0][0],query[0][2],query[0][3],query[0][4])
+                        else:
+                            repoResults[repo] = query[0]
+                except TypeError:
+                    if not use_cache:
+                        raise
+                    use_cache = False
+                    continue
+                break
 
         if extendedResults:
             dbpkginfo = ((-1,None,None,None),1)
@@ -2415,11 +2426,12 @@ class EquoInterface(TextInterface):
             if mystrictdata == None:
                 continue
             try:
-                match = self.atomMatch(     mystrictdata[0],
-                                            matchSlot = mystrictdata[1],
-                                            matchBranches = (branch,),
-                                            extendedResults = True
-                                    )
+                match = self.atomMatch(
+                    mystrictdata[0],
+                    matchSlot = mystrictdata[1],
+                    matchBranches = (branch,),
+                    extendedResults = True
+                )
             except dbapi2.OperationalError:
                 # ouch, but don't crash here
                 continue
@@ -23777,24 +23789,25 @@ class EntropyDatabaseInterface:
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None, extendedResults = False):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None, extendedResults = False, useCache = True):
 
         if not atom:
             return -1,1
 
-        cached = self.atomMatchFetchCache(
-            atom,
-            caseSensitive,
-            matchSlot,
-            multiMatch,
-            matchBranches,
-            matchTag,
-            packagesFilter,
-            matchRevision,
-            extendedResults
-        )
-        if cached != None:
-            return cached
+        if useCache:
+            cached = self.atomMatchFetchCache(
+                atom,
+                caseSensitive,
+                matchSlot,
+                multiMatch,
+                matchBranches,
+                matchTag,
+                packagesFilter,
+                matchRevision,
+                extendedResults
+            )
+            if cached != None:
+                return cached
 
         atomTag = self.entropyTools.dep_gettag(atom)
         atomSlot = self.entropyTools.dep_getslot(atom)
@@ -24133,9 +24146,9 @@ class EntropyDatabaseInterface:
                     packagesFilter,
                     matchRevision,
                     extendedResults,
-                    result = x
+                    result = (x,1)
                 )
-                return x
+                return x,1
             else:
                 self.atomMatchStoreCache(
                     atom,
@@ -24153,7 +24166,7 @@ class EntropyDatabaseInterface:
 
         if multiMatch:
             if extendedResults:
-                x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo]),0
+                x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo])
                 self.atomMatchStoreCache(
                     atom,
                     caseSensitive,
@@ -24164,9 +24177,9 @@ class EntropyDatabaseInterface:
                     packagesFilter,
                     matchRevision,
                     extendedResults,
-                    result = x
+                    result = (x,0)
                 )
-                return x
+                return x,0
             else:
                 x = set([x[0] for x in dbpkginfo])
                 self.atomMatchStoreCache(
@@ -24186,7 +24199,7 @@ class EntropyDatabaseInterface:
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
             if extendedResults:
-                x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])),0
+                x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
                 self.atomMatchStoreCache(
                     atom,
                     caseSensitive,
@@ -24197,9 +24210,9 @@ class EntropyDatabaseInterface:
                     packagesFilter,
                     matchRevision,
                     extendedResults,
-                    result = x
+                    result = (x,0)
                 )
-                return x
+                return x,0
             else:
                 self.atomMatchStoreCache(
                     atom,
@@ -24225,7 +24238,7 @@ class EntropyDatabaseInterface:
         newer = self.entropyTools.getEntropyNewerVersion(list(versions))[0]
         x = pkgdata[newer]
         if extendedResults:
-            x = (x,0,newer[0],newer[1],newer[2]),0
+            x = (x,0,newer[0],newer[1],newer[2])
             self.atomMatchStoreCache(
                 atom,
                 caseSensitive,
@@ -24236,9 +24249,9 @@ class EntropyDatabaseInterface:
                 packagesFilter,
                 matchRevision,
                 extendedResults,
-                result = x
+                result = (x,0)
             )
-            return x
+            return x,0
         else:
             self.atomMatchStoreCache(
                 atom,
