@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Sabayon Linux Entropy\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-06-03 17:40+0200\n"
-"PO-Revision-Date: 2008-06-12 21:46-0000\n"
+"PO-Revision-Date: 2008-06-13 20:02-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: NL <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -492,7 +492,7 @@ msgstr "Pakket kan niet worden binnengehaald. Probeer de repositories up-te-date
 
 #: ../../libraries/entropy.py:4670
 msgid "Installed package in queue vanished, skipping."
-msgstr "Geïnstalleerde pakket in queue verdwenen, wordt overgeslagen."
+msgstr "Geïnstalleerde pakket in wachtrij verdwenen, wordt overgeslagen."
 
 #: ../../libraries/entropy.py:4686
 msgid "Unpacking package"
@@ -903,7 +903,7 @@ msgstr "Beschikbaar, w00t!"
 #: ../../libraries/entropy.py:6914
 #: ../../client/text_repositories.py:147
 msgid "Repository revision"
-msgstr "Repostitory herziening"
+msgstr "Repository herziening"
 
 #: ../../libraries/entropy.py:6930
 msgid "Indexing Repository metadata"
@@ -1004,7 +1004,7 @@ msgstr "Download Status"
 #: ../../libraries/entropy.py:7939
 #: ../../libraries/entropy.py:13501
 msgid "Fetch"
-msgstr "Binnen halen"
+msgstr "Ophalen"
 
 #: ../../libraries/entropy.py:7940
 msgid "ETA"
@@ -2804,7 +2804,7 @@ msgstr "print repository informatie (incl. --quiet)"
 
 #: ../../client/equo.py:65
 msgid "print description too (w/--quiet)"
-msgstr "print ook de beschrijving (met --quiet)"
+msgstr "print ook de beschrijving (incl. --quiet)"
 
 #: ../../client/equo.py:67
 msgid "update system with the latest available packages"
@@ -2857,7 +2857,7 @@ msgstr "in combinatie met --resume, wordt het eerste pakket overgeslagen"
 
 #: ../../client/equo.py:76
 msgid "upgrade your distribution to the specified release"
-msgstr "upgrade je distributie naar the gespecificeerde uitgave"
+msgstr "upgrade je distributie naar de gespecificeerde uitgave"
 
 #: ../../client/equo.py:77
 #: ../../client/equo.py:103
@@ -3161,7 +3161,7 @@ msgstr "kies in welke branche er wordt gewerkt"
 #: ../../client/equo.py:176
 #: ../../server/reagent.py:50
 msgid "analyze the Entropy Store directory directly"
-msgstr "analizeer de Entropy Opslag map meteen"
+msgstr "analizeer de Entropy Winkel map meteen"
 
 #: ../../client/equo.py:177
 #: ../../server/reagent.py:51
@@ -3187,7 +3187,7 @@ msgstr "community repositories mirrors management functies"
 #: ../../client/equo.py:182
 #: ../../server/activator.py:47
 msgid "sync packages, database and also do some tidy"
-msgstr "sync pakketten, database en die wat ordening"
+msgstr "sync pakketten, database en doe wat ordening"
 
 #: ../../client/equo.py:185
 #: ../../client/equo.py:189
@@ -3614,7 +3614,7 @@ msgstr "Afsluiten"
 
 #: ../../client/text_configuration.py:257
 msgid "Automerge all the files asking you one by one"
-msgstr "Automatisch samenvoegen val alle bestanden na een voor een te vragen"
+msgstr "Automatisch samenvoegen van alle bestanden na een voor een te vragen"
 
 #: ../../client/text_configuration.py:258
 msgid "Automerge all the files without questioning"
@@ -4913,7 +4913,7 @@ msgstr "Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in
 
 #: ../../client/text_ui.py:694
 msgid "Would you like to execute the queue ?"
-msgstr "Wilt u de queue uitvoeren ?"
+msgstr "Wilt u de wachtrij uitvoeren ?"
 
 #: ../../client/text_ui.py:734
 #: ../../client/text_ui.py:1055
@@ -4963,7 +4963,7 @@ msgstr "Licentie opgeslagen in"
 
 #: ../../client/text_ui.py:823
 msgid "fetch"
-msgstr "Ophalen"
+msgstr "ophalen"
 
 #: ../../client/text_ui.py:836
 msgid "Download completed"
@@ -5506,7 +5506,7 @@ msgstr "Pakket Categorieën"
 #: ../../spritz/src/gui.py:306
 #: ../../spritz/src/packages.py:205
 msgid "Repository Selection"
-msgstr "Repostitory Selectie"
+msgstr "Repository SelectieDyingMuppet dyingmuppet # equo help>> Probeer eens equo --helpDyingMuppet dyingmuppet # equo help>> Heb je equo --help al eens geprobeerd?DyingMuppet dyingmuppet # equo help>> Nog steeds equo --help niet gelezen??DyingMuppet dyingmuppet # equo help>> Ik geef het op. doe equo --help !!!!!!!DyingMuppet dyingmuppet # equo help>> O MIJN GOD. DOE NOU equo --heeeeeeeeeeeeeelpDyingMuppet dyingmuppet # equo help>> Analfabetisme is een groot probleem in deze wereldDyingMuppet dyingmuppet # equo help>> Ok, ik geef op. Jij bent hopeloosDyingMuppet dyingmuppet # equo help>> STERF!DyingMuppet dyingmuppet # "
 
 #: ../../spritz/src/gui.py:307
 msgid "Configuration Files"
@@ -5519,7 +5519,7 @@ msgstr "Voorkeuren"
 
 #: ../../spritz/src/gui.py:309
 msgid "Package Queue"
-msgstr "Pakket Queue"
+msgstr "Pakket Wachtrij"
 
 #: ../../spritz/src/gui.py:310
 msgid "Output"
@@ -5603,15 +5603,15 @@ msgstr "Pakketten niet gevonden in de repositories, probeer het later opnieuw."
 
 #: ../../spritz/src/spritz.py:259
 msgid "Branch switching"
-msgstr "Veranderen van Branch"
+msgstr "Veranderen van Branche"
 
 #: ../../spritz/src/spritz.py:259
 msgid "Enter a valid branch you want to switch to"
-msgstr "Voor een geldige Branch in"
+msgstr "Voor een geldige Branche in"
 
 #: ../../spritz/src/spritz.py:262
 msgid "The selected branch is not available."
-msgstr "Geselecteerde branch is niet beschikbaar"
+msgstr "Geselecteerde branche is niet beschikbaar"
 
 #: ../../spritz/src/spritz.py:265
 msgid "New branch is"
@@ -5790,7 +5790,7 @@ msgstr "Onaangetast"
 
 #: ../../spritz/src/spritz.py:1004
 msgid "You have chosen to interrupt the queue processing. Doing so could be risky and you should let Entropy to close all its tasks. Are you sure you want it?"
-msgstr "Je hebt ervoor gekozen het queue proces stop te zetten. Dit is risicovol, zorg ervoor dat Entropy al zijn taken kan afronden. Weet je het heel zeker?"
+msgstr "Je hebt ervoor gekozen de wachtrij opbouw stop te zetten. Dit is risicovol, zorg ervoor dat Entropy al zijn taken kan afronden. Weet je het heel zeker?"
 
 #: ../../spritz/src/spritz.py:1012
 msgid "Aborting queue tasks."
@@ -6465,7 +6465,7 @@ msgstr "Beschermde bestanden en mappen"
 
 #: ../../spritz/src/spritz.glade.h:68
 msgid "Protected files and directories mask"
-msgstr "Beschermde bestanden en mappen maskeer"
+msgstr "Beschermde bestanden en mappen gemaskeerd"
 
 #: ../../spritz/src/spritz.glade.h:69
 msgid "Purge"
@@ -6473,7 +6473,7 @@ msgstr "Volledig verwijderen"
 
 #: ../../spritz/src/spritz.glade.h:70
 msgid "Q_ueue packages in selected Advisory"
-msgstr "_Queue pakketten in geselecteerde Advisory"
+msgstr "_Zet geselecteerde Advisory pakketten in de wachtrij"
 
 #: ../../spritz/src/spritz.glade.h:71
 msgid "R_egenerate Cache"
@@ -6633,7 +6633,7 @@ msgstr "Je volledige naam"
 
 #: ../../spritz/src/spritz.glade.h:119
 msgid "_Abort queue"
-msgstr "_Breekaf queue"
+msgstr "_Breek wachtrij af"
 
 #: ../../spritz/src/spritz.glade.h:120
 msgid "_Accept License"
@@ -6661,7 +6661,7 @@ msgstr "_Bestand"
 
 #: ../../spritz/src/spritz.glade.h:126
 msgid "_Force repositories update"
-msgstr "_Vorseer repositories update"
+msgstr "_Forseer repositories update"
 
 #: ../../spritz/src/spritz.glade.h:127
 msgid "_Help"
@@ -6689,7 +6689,7 @@ msgstr "_Eigenschappen"
 
 #: ../../spritz/src/spritz.glade.h:133
 msgid "_Queue all vulnerable packages"
-msgstr "_Queue alle kwetsbare pakketten"
+msgstr "_Som alle kwetsbare pakketten op"
 
 #: ../../spritz/src/spritz.glade.h:134
 msgid "_Read License"
