@@ -81,7 +81,7 @@ class EntropyPackage:
         return True
 
     def getNameDesc(self):
-        t = cleanMarkupString('/'.join(self.getName().split("/")[1:]))
+        t = '/'.join(self.getName().split("/")[1:])
         if self.masked:
             t +=  " <small>[<span foreground='#016AA3'>%s</span>]</small>" % (etpConst['packagemaskingreasons'][self.masked],)
 

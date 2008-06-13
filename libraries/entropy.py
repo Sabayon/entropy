@@ -14012,9 +14012,7 @@ class ServerInterface(TextInterface):
             if valid:
                 conn.serverUpdatePackagesData()
             elif warnings:
-                mytxt = _( "Entropy database is probably empty. If you don't agree with what I'm saying, " + \
-                           "then it's probably corrupted! I won't stop you here btw..."
-                )
+                mytxt = _( "Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw...")
                 self.updateProgress(
                     darkred(mytxt),
                     importance = 1,
@@ -14290,8 +14288,7 @@ class ServerInterface(TextInterface):
         self.updateProgress(
             "%s: %s" % (
                     bold(_("Note")),
-                    red(_("all the old packages with conflicting scope will" + \
-                    " be removed from the destination repo unless injected")),
+                    red(_("all the old packages with conflicting scope will be removed from the destination repo unless injected")),
             ),
             importance = 1,
             type = "info",
