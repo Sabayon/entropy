@@ -1329,10 +1329,10 @@ def spawnFunction(f, *args, **kwds):
 # tar* uncompress function...
 def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 
-    if extractPath is None:
+    if extractPath == None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
-        raise exceptionTools.FileNotFound('archive does not exist')
+        raise exceptionTools.FileNotFound('FileNotFound: archive does not exist')
 
     _tarfile = True
     try:

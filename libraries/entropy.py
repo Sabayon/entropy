@@ -7476,7 +7476,10 @@ class FtpInterface:
                 type = "info",
                 header = darkgreen(" * ")
             )
-        self.ftpconn.login(self.ftpuser,self.ftppassword)
+        try:
+            self.ftpconn.login(self.ftpuser,self.ftppassword)
+        except self.ftplib.error_perm, e:
+            raise exceptionTools.FtpError('FtpError: %s' % (e,))
         if self.verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
@@ -12599,7 +12602,12 @@ class SocketHostInterface:
                 if not self.buffered_data:
                     return True
 
-                cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
+                cmd = self.entropyTools.spawnFunction(
+                    self.server.processor.process,
+                    self.buffered_data,
+                    self.request,
+                    self.client_address
+                )
                 if cmd == 'close':
                     return True
                 self.buffered_data = ''
@@ -16028,14 +16036,17 @@ class RepositorySocketServerInterface(SocketHostInterface):
             if not valid:
                 return valid
 
-            cached = self.HostInterface.get_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), repository)
+            cached = self.HostInterface.get_dcache(
+                (repository, arch, product, idpackages, 'docmd_pkginfo'),
+                repository
+            )
             if cached != None:
                 return cached
 
             dbpath = self.get_database_path(repository, arch, product)
             dbconn = self.HostInterface.open_db(dbpath, docache = False)
-            result = {}
 
+            result = {}
             for idpackage in idpackages:
                 try:
                     mydata = dbconn.getPackageData(
@@ -16046,14 +16057,16 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 except:
                     self.entropyTools.printTraceback()
                     self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    dbconn.closeDB()
                     return None
                 result[idpackage] = mydata.copy()
 
-            if result:
-                self.HostInterface.set_dcache((repository, arch, product, idpackages, 'docmd_pkginfo'), result, repository)
-
+            self.HostInterface.set_dcache(
+                (repository, arch, product, idpackages, 'docmd_pkginfo'),
+                result,
+                repository
+            )
             dbconn.closeDB()
-
             return result
 
         def get_database_path(self, repository, arch, product):

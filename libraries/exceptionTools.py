@@ -71,6 +71,9 @@ class RepositoryError(EntropyException):
 class ConnectionError(EntropyException):
         """Cannot connect to service"""
 
+class FtpError(EntropyException):
+        """FTP errors"""
+
 class SystemDatabaseError(EntropyException):
         """Cannot open system database"""
 
