@@ -12602,18 +12602,16 @@ class SocketHostInterface:
                 if not self.buffered_data:
                     return True
 
-                cmd = self.entropyTools.spawnFunction(
-                    self.server.processor.process,
-                    self.buffered_data,
-                    self.request,
-                    self.client_address
-                )
+                cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
                 if cmd == 'close':
                     return True
                 self.buffered_data = ''
                 return False
 
         def handle(self):
+            self.entropyTools.spawnFunction(self.do_handle)
+
+        def do_handle(self):
 
             self.default_timeout = self.server.processor.HostInterface.timeout
             self.ssl = self.server.processor.HostInterface.SSL
