@@ -561,11 +561,13 @@ except exceptionTools.SystemDatabaseError:
     print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
     sys.exit(101)
 except exceptionTools.OnlineMirrorError, e:
-    reset_cache()
     print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.RepositoryError, e:
     reset_cache()
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    sys.exit(101)
+except exceptionTools.FtpError, e:
     print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.PermissionDenied, e:

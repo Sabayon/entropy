@@ -88,7 +88,7 @@ class const:
 
            (_("Translation:"),
             (
-                "Joost Ruis (Dutch)",
+                "Andre Parhan (Dutch)",
                 "Fabio Erculiani (Italian)",
                 "Roger Calvò (Catalan)",
                 "Daniel Halens (Spanish)",
