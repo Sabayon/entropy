@@ -2328,16 +2328,17 @@ class EquoInterface(TextInterface):
             maxlen = len(idpackages)
             for idpackage in idpackages:
                 count += 1
-                self.updateProgress(
-                    avail_dep_text + " %s" % (repo,),
-                    importance = 0,
-                    type = "info",
-                    back = True,
-                    header = "::",
-                    count = (count,maxlen),
-                    percent = True,
-                    footer = " ::"
-                )
+                if (count % 10 == 0) or (count == 1) or (count == maxlen):
+                    self.updateProgress(
+                        avail_dep_text + " %s" % (repo,),
+                        importance = 0,
+                        type = "info",
+                        back = True,
+                        header = "::",
+                        count = (count,maxlen),
+                        percent = True,
+                        footer = " ::"
+                    )
                 # ignore masked packages
                 idpackage, idreason = dbconn.idpackageValidator(idpackage)
                 if idpackage == -1:
