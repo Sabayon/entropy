@@ -182,7 +182,7 @@ class SpritzQueue:
             mydepends = set(self.Entropy.retrieveRemovalQueue([x.matched_atom[0] for x in pkgs]))
             mydependencies = set()
             for pkg in pkgs:
-                mydeps = self.Entropy.get_deep_dependency_list(self.Entropy.clientDbconn, pkg.matched_atom[0])
+                mydeps = self.Entropy._get_deep_dependency_list(self.Entropy.clientDbconn, pkg.matched_atom[0])
                 mydependencies |= set([x for x in mydeps if x in xlist])
             # what are in queue?
             mylist = set(xlist)

@@ -5924,7 +5924,6 @@ class RepoInterface:
             return -1
 
     def get_online_eapi3_lock(self, repo):
-
         self.__validate_repository_id(repo)
         url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabaseeapi3lockfile']
         data = self.entropyTools.get_remote_data(url)
