@@ -566,6 +566,7 @@ def const_defaultSettings(rootdir):
         'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",
         'etpdatabasedumphashfilegzip': ETP_DBFILE+".dump.gz.md5",
         'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
+        'etpdatabaseeapi3lockfile': ETP_DBFILE+".eapi3_lock", # the remote database lock file
         'etpdatabasedownloadlockfile': ETP_DBFILE+".download.lock", # the remote database download lock file
         'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
         'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"

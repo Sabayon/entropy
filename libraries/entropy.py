@@ -5923,6 +5923,19 @@ class RepoInterface:
         else:
             return -1
 
+    def get_online_eapi3_lock(self, repo):
+
+        self.__validate_repository_id(repo)
+        url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabaseeapi3lockfile']
+        data = self.entropyTools.get_remote_data(url)
+        if not data:
+            return False
+        return True
+
+    def is_repository_eapi3_locked(self, repo):
+        self.__validate_repository_id(repo)
+        return self.get_online_eapi3_lock(repo)
+
     def is_repository_updatable(self, repo):
 
         self.__validate_repository_id(repo)
@@ -5932,7 +5945,7 @@ class RepoInterface:
             localstatus = self.Entropy.get_repository_revision(repo)
             if (localstatus == onlinestatus) and (not self.forceUpdate):
                 return False
-        else: # if == -1, means no repo found online
+        else: # if == -1 => HTTP 404
             return False
         return True
 
@@ -6793,6 +6806,18 @@ class RepoInterface:
                 header = "\t"
             )
             return True
+        # also check for eapi3 lock
+        if self.dbformat_eapi == 3:
+            locked = self.is_repository_eapi3_locked(repo)
+            if locked:
+                mytxt = "%s: %s." % (bold(_("Attention")),red(_("database will be ready soon")),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = "\t"
+                )
+                return True
         return False
 
     def handle_repository_lock(self, repo):
@@ -16143,7 +16168,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
         return True
 
     def lock_scan(self):
-        do_lock = set()
+        do_unlock = set()
+        do_clear = set()
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
             self.set_repository_db_availability(x)
@@ -16160,14 +16186,15 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     importance = 1,
                     type = "info"
                 )
-                do_lock.add(repository)
+                do_clear.add(repository)
                 continue
             if os.path.isfile(self.repositories[x]['download_lock']) and \
                 not self.repositories[x]['locked']:
                     self.repositories[x]['locked'] = True
                     mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
                     self.close_db(mydbpath)
-                    do_lock.add(repository)
+                    self.eapi3_lock_repo(*x)
+                    do_clear.add(repository)
                     mytxt = blue("%s.") % (_("database got locked. Locking services for it"),)
                     self.updateProgress(
                         "[%s] %s" % (
@@ -16195,10 +16222,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 )
                 # woohoo, got unlocked eventually
                 mydb = self.open_db(mydbpath, docache = False)
-                mydb.setCacheSize(6000)
-                mydb.setDefaultCacheSize(6000)
                 mydb.createAllIndexes()
-                mydb.commitChanges()
                 self.updateProgress(
                     str(mydb.database_checksum(do_order = True, strict = False, strings = True)),
                     importance = 1,
@@ -16207,8 +16231,23 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 mydb.closeDB()
                 self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repository+"/")
                 self.repositories[x]['locked'] = False
-        for repo in do_lock:
+                self.eapi3_unlock_repo(*x)
+
+        for repo in do_clear:
             self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repo+"/")
+
+    def eapi3_lock_repo(self, repository, arch, product):
+        lock_file = os.path.join(self.repositories[(repository, arch, product,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
+        if not os.path.lexists(lock_file):
+            f = open(lock_file,"w")
+            f.write("this repository is EAPI3 locked")
+            f.flush()
+            f.close()
+
+    def eapi3_unlock_repo(self, repository, arch, product):
+        lock_file = os.path.join(self.repositories[(repository, arch, product,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
+        if os.path.isfile(lock_file):
+            os.remove(lock_file)
 
     def get_dcache(self, item, repo = '_norepo_'):
         return self.dumpTools.loadobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)))
