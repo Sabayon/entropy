@@ -1162,6 +1162,9 @@ class EquoInterface(TextInterface):
                 u_hash = hash(tuple(matchRepo))
             else:
                 u_hash = hash(matchRepo)
+            z_hash = "0"
+            if extendedResults:
+                z_hash = "1"
             c_hash =    str(hash(atom)) + \
                         str(hash(matchSlot)) + \
                         str(hash(tuple(matchBranches))) + \
@@ -1172,7 +1175,7 @@ class EquoInterface(TextInterface):
                         str(hash(multiRepo)) + \
                         str(hash(caseSensitive)) + \
                         str(hash(matchRevision)) + \
-                        str(hash(extendedResults))+ \
+                        z_hash + \
                         str(u_hash)
             c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
@@ -24023,18 +24026,13 @@ class EntropyDatabaseInterface:
         ### END FILTERING
         ### END FILTERING
 
-        if not foundIDs:
-            # package not found
-            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (-1,1))
-            return -1,1
-
         ### FILLING dbpkginfo
         ### FILLING dbpkginfo
         ### FILLING dbpkginfo
 
         dbpkginfo = set()
         # now we have to handle direction
-        if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
+        if ((direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*"))) and foundIDs:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \
