@@ -7581,6 +7581,12 @@ class FtpInterface:
         return pwd
 
     def setCWD(self, mydir, dodir = False):
+        try:
+            return self._setCWD(mydir, dodir)
+        except self.ftplib.error_perm, e:
+            raise exceptionTools.FtpError('FtpError: %s' % (e,))
+
+    def _setCWD(self, mydir, dodir = False):
         if self.verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
