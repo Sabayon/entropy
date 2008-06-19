@@ -14310,7 +14310,7 @@ class ServerInterface(TextInterface):
             header = darkgreen(" * ")
         )
 
-    def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True):
+    def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True, do_copy = False):
 
         switched = set()
 
@@ -14334,9 +14334,12 @@ class ServerInterface(TextInterface):
                     dbconn.listAllIdpackages(branch = branch, branch_operator = "<=")]
             )
 
+        mytxt = _("Preparing to move selected packages to")
+        if do_copy:
+            mytxt = _("Preparing to copy selected packages to")
         self.updateProgress(
             "%s %s:" % (
-                    blue(_("Preparing to move selected packages to")),
+                    blue(mytxt),
                     red(to_repo),
             ),
             importance = 2,
@@ -14475,30 +14478,31 @@ class ServerInterface(TextInterface):
             del data
             todbconn.commitChanges()
 
+            if not do_copy:
+                self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue(_("removing entry from source database")),
+                            darkgreen(repo),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
+                )
+
+                # remove package from old db
+                dbconn.removePackage(idpackage)
+                dbconn.commitChanges()
+
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
                         brown(branch),
-                        blue(_("removing entry from source database")),
-                        darkgreen(repo),
-                ),
-                importance = 0,
-                type = "info",
-                header = red(" @@ "),
-                back = True
-            )
-
-            # remove package from old db
-            dbconn.removePackage(idpackage)
-            dbconn.commitChanges()
-
-            self.updateProgress(
-                "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(_("successfully moved atom")),
+                        blue(_("successfully handled atom")),
                         darkgreen(match_atom),
                 ),
                 importance = 0,

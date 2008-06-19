@@ -233,6 +233,7 @@ myopts = [
             (3,'disable <repo>',3,_('disable the specified repository')),
             (3,'status <repo>',3,_('show the current Server Interface status')),
             (3,'move <from> <to> [atoms]',1,_('move packages from a repository to another')),
+            (3,'copy <from> <to> [atoms]',1,_('copy packages from a repository to another')),
             (3,'default <repo_id>',2,_('set the default repository')),
 
         (2,'query',2,_('do some searches into community repository databases')),
