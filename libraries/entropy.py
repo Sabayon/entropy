@@ -7895,10 +7895,12 @@ class urlFetcher:
         if etpConst['proxy']['http']:
             mydict['http'] = etpConst['proxy']['http']
         if mydict:
-            proxy_support = urllib2.ProxyHandler(mydict)
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
-        #FIXME else: unset opener??
+            mydict['username'] = etpConst['proxy']['username']
+            mydict['password'] = etpConst['proxy']['password']
+            self.entropyTools.add_proxy_opener(urllib2, mydict)
+        else:
+            # unset
+            urllib2._opener = None
 
     def encodeUrl(self, url):
         import urllib
@@ -10558,6 +10560,7 @@ class MultipartPostHandler(urllib2.BaseHandler):
 
 class ErrorReportInterface:
 
+    import entropyTools
     def __init__(self, post_url = etpConst['handlers']['errorsend']):
         self.url = post_url
         self.opener = urllib2.build_opener(MultipartPostHandler)
@@ -10570,9 +10573,12 @@ class ErrorReportInterface:
         if etpConst['proxy']['http']:
             mydict['http'] = etpConst['proxy']['http']
         if mydict:
-            proxy_support = urllib2.ProxyHandler(mydict)
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
+            mydict['username'] = etpConst['proxy']['username']
+            mydict['password'] = etpConst['proxy']['password']
+            self.entropyTools.add_proxy_opener(urllib2,mydict)
+        else:
+            # unset
+            urllib2._opener = None
 
     def prepare(self, tb_text, name, email, report_data = "", description = ""):
         self.params['arch'] = etpConst['currentarch']
@@ -15241,9 +15247,12 @@ class ServerInterface(TextInterface):
             if etpConst['proxy']['http']:
                 mydict['http'] = etpConst['proxy']['http']
             if mydict:
-                proxy_support = urllib2.ProxyHandler(mydict)
-                opener = urllib2.build_opener(proxy_support)
-                urllib2.install_opener(opener)
+                mydict['username'] = etpConst['proxy']['username']
+                mydict['password'] = etpConst['proxy']['password']
+                self.entropyTools.add_proxy_opener(urllib2, mydict)
+            else:
+                # unset
+                urllib2._opener = None
             item = urllib2.urlopen(request)
             result = item.readline().strip()
             item.close()
@@ -16176,7 +16185,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
         return True
 
     def lock_scan(self):
-        do_unlock = set()
         do_clear = set()
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
