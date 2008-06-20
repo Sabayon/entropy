@@ -1104,9 +1104,9 @@ def const_readEquoSettings():
                 for x in configprotect.split():
                     etpConst['configprotectskip'].append(etpConst['systemroot']+x)
 
-def const_setupEntropyPid():
+def const_setupEntropyPid(just_read = False):
 
-    if "--no-pid-handling" in sys.argv:
+    if ("--no-pid-handling" in sys.argv) and (not just_read):
         return
 
     # PID creation
@@ -1120,7 +1120,7 @@ def const_setupEntropyPid():
             # is foundPid still running ?
             if os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],foundPid,)):
                 etpConst['applicationlock'] = True
-            else:
+            elif not just_read:
                 # if root, write new pid
                 #if etpConst['uid'] == 0:
                 if os.access(etpConst['pidfile'],os.W_OK):
@@ -1139,7 +1139,7 @@ def const_setupEntropyPid():
                     except OSError:
                         pass
 
-    else:
+    elif not just_read:
         #if etpConst['uid'] == 0:
         if os.access(os.path.dirname(etpConst['pidfile']),os.W_OK):
 

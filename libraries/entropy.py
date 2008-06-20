@@ -216,7 +216,7 @@ class EquoInterface(TextInterface):
     def application_lock_check(self, silent = False):
         # check if another instance is running
         etpConst['applicationlock'] = False
-        const_setupEntropyPid()
+        const_setupEntropyPid(just_read = True)
         locked = self.entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
         if locked:
             if not silent:
