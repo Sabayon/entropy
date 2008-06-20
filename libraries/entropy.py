@@ -7850,7 +7850,9 @@ class FtpInterface:
     def closeConnection(self):
         try:
             self.ftpconn.quit()
-        except EOFError:
+        except (EOFError,AttributeError,):
+            # AttributeError is raised when socket gets trashed
+            # EOFError is raised when the connection breaks
             pass
 
 
@@ -13991,14 +13993,90 @@ class ServerInterface(TextInterface):
 
 
     def is_repository_initialized(self, repo):
+
+        def do_validate(dbc):
+            try:
+                dbc.validateDatabase()
+                return True
+            except exceptionTools.SystemDatabaseError:
+                return False
+
         dbc = self.openServerDatabase(just_reading = True, repo = repo)
-        valid = True
-        try:
-            dbc.validateDatabase()
-        except exceptionTools.SystemDatabaseError:
-            valid = False
+        valid = do_validate(dbc)
         self.close_server_database(dbc)
+        if not valid: # check online?
+            dbc = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            valid = do_validate(dbc)
+            self.close_server_database(dbc)
+
         return valid
+
+    def doServerDatabaseSyncLock(self, repo, no_upload):
+
+        if repo == None:
+            repo = self.default_repository
+
+        # check if the database is locked locally
+        lock_file = self.MirrorsService.get_database_lockfile(repo)
+        if os.path.isfile(lock_file):
+            self.updateProgress(
+                red(_("Entropy database is already locked by you :-)")),
+                importance = 1,
+                type = "info",
+                header = red(" * ")
+            )
+        else:
+            # check if the database is locked REMOTELY
+            mytxt = "%s ..." % (_("Locking and Syncing Entropy database"),)
+            self.updateProgress(
+                red(mytxt),
+                importance = 1,
+                type = "info",
+                header = red(" * "),
+                back = True
+            )
+            for uri in self.get_remote_mirrors(repo):
+                given_up = self.MirrorsService.mirror_lock_check(uri, repo = repo)
+                if given_up:
+                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                    mytxt = "%s:" % (_("Mirrors status table"),)
+                    self.updateProgress(
+                        darkgreen(mytxt),
+                        importance = 1,
+                        type = "info",
+                        header = brown(" * ")
+                    )
+                    dbstatus = self.MirrorsService.get_mirrors_lock(repo = repo)
+                    for db in dbstatus:
+                        db[1] = green(_("Unlocked"))
+                        if (db[1]):
+                            db[1] = red(_("Locked"))
+                        db[2] = green(_("Unlocked"))
+                        if (db[2]):
+                            db[2] = red(_("Locked"))
+
+                        crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
+                        self.updateProgress(
+                            bold("%s: ") + red("[") + brown("DATABASE: %s") + red("] [") + \
+                            brown("DOWNLOAD: %s")+red("]") % (
+                                crippled_uri,
+                                db[1],
+                                db[2],
+                            ),
+                            importance = 1,
+                            type = "info",
+                            header = "\t"
+                        )
+
+                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s %s" % (
+                            _("cannot lock mirror"),
+                            crippled_uri,
+                        )
+                    )
+
+            # if we arrive here, it is because all the mirrors are unlocked
+            self.MirrorsService.lock_mirrors(True, repo = repo)
+            self.MirrorsService.sync_databases(no_upload, repo = repo)
 
     def openServerDatabase(
             self,
@@ -14038,6 +14116,9 @@ class ServerInterface(TextInterface):
 
         if not os.path.isdir(os.path.dirname(local_dbfile)):
             os.makedirs(os.path.dirname(local_dbfile))
+
+        if not read_only:
+            self.doServerDatabaseSyncLock(repo, no_upload)
 
         conn = EntropyDatabaseInterface(
             readOnly = read_only,
@@ -15923,6 +16004,13 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
+class RepositoryManager(ServerInterface):
+
+    def __init__(self, *myargs, **mykwargs):
+        ServerInterface.__init__(self, *myargs, **mykwargs)
+
+
+
 class RepositorySocketServerInterface(SocketHostInterface):
 
     class RepositoryCommands:
@@ -17451,7 +17539,8 @@ class ServerMirrorsInterface:
         database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
         if os.path.isfile(database_package_mask_file) or download:
             data['database_package_mask_file'] = database_package_mask_file
-            critical.append(data['database_package_mask_file'])
+            if not download:
+                critical.append(data['database_package_mask_file'])
 
         database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
         if os.path.isfile(database_license_whitelist_file) or download:
@@ -18244,7 +18333,7 @@ class ServerMirrorsInterface:
             files_to_sync.sort()
             for myfile in files_to_sync:
                 self.Entropy.updateProgress(
-                    blue("%s: %s" % (_("download path"),myfile,)),
+                    "%s: %s" % (blue(_("download path")),brown(download_data[myfile]),),
                     importance = 0,
                     type = "info",
                     header = brown("    # ")
@@ -18395,7 +18484,7 @@ class ServerMirrorsInterface:
 
         if download_latest:
             download_uri = download_latest[0]
-            download_errors, fine_uris, broken_uris = self.download_database(download_uri, repo = repo)
+            download_errors, fine_uris, broken_uris = self.download_database([download_uri], repo = repo)
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
@@ -19553,11 +19642,6 @@ class EntropyDatabaseInterface:
         self.connection = self.dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
-        if not self.clientDatabase and not self.readOnly:
-            # server side is calling
-            # lock mirror remotely and ensure to have latest database revision
-            self.doServerDatabaseSyncLock(self.noUpload)
-
         if not self.skipChecks:
             if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
                 if self.entropyTools.islive():
@@ -19591,71 +19675,6 @@ class EntropyDatabaseInterface:
         if os.path.isfile(taint_file):
             etpDbStatus[self.dbFile]['tainted'] = True
             etpDbStatus[self.dbFile]['bumped'] = True
-
-    def doServerDatabaseSyncLock(self, noUpload):
-
-        # check if the database is locked locally
-        # self.server_repo
-        lock_file = self.ServiceInterface.MirrorsService.get_database_lockfile(self.server_repo)
-        if os.path.isfile(lock_file):
-            self.updateProgress(
-                red(_("Entropy database is already locked by you :-)")),
-                importance = 1,
-                type = "info",
-                header = red(" * ")
-            )
-        else:
-            # check if the database is locked REMOTELY
-            mytxt = "%s ..." % (_("Locking and Syncing Entropy database"),)
-            self.updateProgress(
-                red(mytxt),
-                importance = 1,
-                type = "info",
-                header = red(" * "),
-                back = True
-            )
-            for uri in self.ServiceInterface.get_remote_mirrors(self.server_repo):
-                given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri, repo = self.server_repo)
-                if given_up:
-                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-                    mytxt = "%s:" % (_("Mirrors status table"),)
-                    self.updateProgress(
-                        darkgreen(mytxt),
-                        importance = 1,
-                        type = "info",
-                        header = brown(" * ")
-                    )
-                    dbstatus = self.ServiceInterface.MirrorsService.get_mirrors_lock(repo = self.server_repo)
-                    for db in dbstatus:
-                        db[1] = green(_("Unlocked"))
-                        if (db[1]):
-                            db[1] = red(_("Locked"))
-                        db[2] = green(_("Unlocked"))
-                        if (db[2]):
-                            db[2] = red(_("Locked"))
-
-                        crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
-                        self.updateProgress(
-                            bold("%s: ") + red("[") + brown("DATABASE: %s") + red("] [") + \
-                            brown("DOWNLOAD: %s")+red("]") % (
-                                crippled_uri,
-                                db[1],
-                                db[2],
-                            ),
-                            importance = 1,
-                            type = "info",
-                            header = "\t"
-                        )
-
-                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s %s" % (
-                            _("cannot lock mirror"),
-                            crippled_uri,
-                        )
-                    )
-
-            # if we arrive here, it is because all the mirrors are unlocked
-            self.ServiceInterface.MirrorsService.lock_mirrors(True, repo = self.server_repo)
-            self.ServiceInterface.MirrorsService.sync_databases(noUpload, repo = self.server_repo)
 
     def closeDB(self):
 
@@ -19854,7 +19873,7 @@ class EntropyDatabaseInterface:
                     header = brown(" * ")
                 )
                 # lock database
-                self.doServerDatabaseSyncLock(self.noUpload)
+                self.ServiceInterface.doServerDatabaseSyncLock(self.server_repo, self.noUpload)
                 # now run queue
                 try:
                     self.runTreeUpdatesActions(update_actions)
