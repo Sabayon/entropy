@@ -12343,9 +12343,12 @@ class LogFile:
     def __call__(self, format, *args):
         self.handler (format % args)
 
-    def default_handler (self, string):
-        self.logFile.write ("* %s\n" % (string))
-        self.logFile.flush ()
+    def default_handler (self, mystr):
+        try:
+            self.logFile.write ("* %s\n" % (mystr))
+        except UnicodeEncodeError:
+            self.logFile.write ("* %s\n" % (mystr.encode('utf-8'),))
+        self.logFile.flush()
 
     def set_loglevel(self, level):
         self.level = level
