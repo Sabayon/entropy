@@ -12197,16 +12197,7 @@ class PortageInterface:
     def _portage_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
         # tree = "bintree"
-        # tree = "bintree"
         # cpv = atom
-        '''
-            # This is a demonstration that Sabayon team love Gentoo so much
-            [01:46] <zmedico> if you want something to stay in mysettings
-            [01:46] <zmedico> do mysettings.backup_changes("CFLAGS") for example
-            [01:46] <zmedico> otherwise your change can get lost inside doebuild()
-            [01:47] <zmedico> because it calls mysettings.reset()
-            # ^^^ this is DA MAN!
-        '''
         # mydbapi = portage.fakedbapi(settings=portage.settings)
         # vartree = portage.vartree(root=myroot)
 

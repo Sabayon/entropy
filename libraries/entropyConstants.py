@@ -477,8 +477,7 @@ def initConfig_entropyConstants(rootdir):
     const_defaultSettings(rootdir)
     const_readEntropyRelease()
     const_createWorkingDirectories()
-    if not "--no-pid-handling" in sys.argv:
-        const_setupEntropyPid()
+    const_setupEntropyPid()
     const_readEntropySettings()
     const_readRepositoriesSettings()
     const_readSocketSettings()
@@ -1106,6 +1105,10 @@ def const_readEquoSettings():
                     etpConst['configprotectskip'].append(etpConst['systemroot']+x)
 
 def const_setupEntropyPid():
+
+    if "--no-pid-handling" in sys.argv:
+        return
+
     # PID creation
     pid = os.getpid()
     if os.path.isfile(etpConst['pidfile']):
