@@ -9,6 +9,7 @@ TODO list
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - handle multiple versions within the same slot
+  - use expiration as a base to have and handle multiple packages in repo?
   - implement notice board
   - implement configuration files snapshot tool
   - allow interactivity for games requiring CDs/DVDs
