@@ -1154,7 +1154,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             view.expand_all()
 
         def fillSetting(name, mytype, wgwrite, data):
-            if type(data) != mytype:
+            if not isinstance(data,mytype):
                 if data == None: # empty parameter
                     return
                 errorMessage(
@@ -1198,6 +1198,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
             elif isinstance(data,bool):
                 writedata = "disable"
                 if data: writedata = "enable"
+            elif isinstance(data,basestring):
+                writedata = data
             return saveParameter(config_file, name, writedata)
 
         def saveParameter(config_file, name, data):
@@ -1222,6 +1224,24 @@ class SpritzApplication(SpritzController,SpritzGUI):
                     saveSetting,
                     self.ui.httpProxyEntry.set_text,
                     self.ui.httpProxyEntry.get_text,
+                ),
+                (
+                    'proxy-username',
+                    etpConst['proxy']['username'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.usernameProxyEntry.set_text,
+                    self.ui.usernameProxyEntry.get_text,
+                ),
+                (
+                    'proxy-password',
+                    etpConst['proxy']['password'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.passwordProxyEntry.set_text,
+                    self.ui.passwordProxyEntry.get_text,
                 ),
                 (
                     'nice-level',

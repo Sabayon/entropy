@@ -3,11 +3,13 @@ TODO list
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
   - EAPI=3 make client/server using SSL, make the repository server to listen on both
+  - EAPI=3 upload w/o indexes, generate them repo-side
   - make.profile support (saving profile information into the db)
   - database backup tools
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - handle multiple versions within the same slot
+  - use expiration as a base to have and handle multiple packages in repo?
   - implement notice board
   - implement configuration files snapshot tool
   - allow interactivity for games requiring CDs/DVDs

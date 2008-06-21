@@ -149,7 +149,7 @@ class PkgInfoMenu:
         self.neededView.set_model( self.neededModel )
 
         # protect view
-        self.configProtectView = self.pkginfo_ui.configProtectView
+        self.configProtectView = self.pkginfo_ui.configProtectView1
         self.configProtectModel = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( _( "Protected item" ), cell, markup = 0 )
@@ -1019,7 +1019,7 @@ class LicenseDialog:
         self.readLicense = self.xml.get_widget( "readLicense" )
         self.readLicense.connect( "clicked", self.read_selected_license )
 
-        self.view = self.xml.get_widget( "licenseView" )
+        self.view = self.xml.get_widget( "licenseView1" )
         self.model = self.setup_view()
         self.show_data( licenses )
         self.view.expand_all()

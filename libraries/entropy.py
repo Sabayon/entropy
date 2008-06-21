@@ -216,7 +216,7 @@ class EquoInterface(TextInterface):
     def application_lock_check(self, silent = False):
         # check if another instance is running
         etpConst['applicationlock'] = False
-        const_setupEntropyPid()
+        const_setupEntropyPid(just_read = True)
         locked = self.entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
         if locked:
             if not silent:
@@ -1162,6 +1162,9 @@ class EquoInterface(TextInterface):
                 u_hash = hash(tuple(matchRepo))
             else:
                 u_hash = hash(matchRepo)
+            z_hash = "0"
+            if extendedResults:
+                z_hash = "1"
             c_hash =    str(hash(atom)) + \
                         str(hash(matchSlot)) + \
                         str(hash(tuple(matchBranches))) + \
@@ -1172,7 +1175,7 @@ class EquoInterface(TextInterface):
                         str(hash(multiRepo)) + \
                         str(hash(caseSensitive)) + \
                         str(hash(matchRevision)) + \
-                        str(hash(extendedResults))+ \
+                        z_hash + \
                         str(u_hash)
             c_hash = str(hash(c_hash))
             cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
@@ -3874,26 +3877,9 @@ class PackageInterface:
 
             protected = False
             if (not self.infoDict['removeconfig']) and (not self.infoDict['diffremoval']):
-                try:
-                    # -- CONFIGURATION FILE PROTECTION --
-                    if os.access(etpConst['systemroot']+item,os.R_OK):
-                        for x in protect:
-                            if etpConst['systemroot']+item.startswith(x):
-                                protected = True
-                                break
-                        if (protected):
-                            for x in mask:
-                                if etpConst['systemroot']+item.startswith(x):
-                                    protected = False
-                                    break
-                        if (protected) and os.path.isfile(etpConst['systemroot']+item):
-                            protected = self.Entropy.entropyTools.istextfile(etpConst['systemroot']+item)
-                        else:
-                            protected = False # it's not a file
-                    # -- CONFIGURATION FILE PROTECTION --
-                except:
-                    pass # some filenames are buggy encoded
-
+                protected_item_test = etpConst['systemroot']+item
+                protected, x, do_continue = self._handle_config_protect(protect, mask, None, protected_item_test, do_allocation_check = False)
+                if do_continue: protected = True
 
             if protected:
                 self.Entropy.clientLog.log(
@@ -4594,19 +4580,27 @@ class PackageInterface:
 
         return 0
 
-    def _handle_config_protect(self, protect, mask, fromfile, tofile):
+    def _handle_config_protect(self, protect, mask, fromfile, tofile, do_allocation_check = True):
 
         protected = False
         tofile_before_protect = tofile
         do_continue = False
 
         try:
-
-            for x in protect:
-                x = x.encode('raw_unicode_escape')
-                if tofile.startswith(x):
-                    protected = True
-                    break
+            encoded_protect = [x.encode('raw_unicode_escape') for x in protect]
+            if tofile in encoded_protect:
+                protected = True
+            elif os.path.dirname(tofile) in encoded_protect:
+                protected = True
+            else:
+                tofile_testdir = os.path.dirname(tofile)
+                old_tofile_testdir = None
+                while tofile_testdir != old_tofile_testdir:
+                    if tofile_testdir in encoded_protect:
+                        protected = True
+                        break
+                    old_tofile_testdir = tofile_testdir
+                    tofile_testdir = os.path.dirname(tofile_testdir)
 
             if protected: # check if perhaps, file is masked, so unprotected
                 newmask = [x.encode('raw_unicode_escape') for x in mask]
@@ -4627,7 +4621,9 @@ class PackageInterface:
             # request new tofile then
             if protected:
                 if tofile not in etpConst['configprotectskip']:
-                    tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
+                    prot_status = True
+                    if do_allocation_check:
+                        tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
                     if not prot_status:
                         protected = False
                     else:
@@ -4650,9 +4646,9 @@ class PackageInterface:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "Skipping config file installation, as stated in equo.conf: %s" % (tofile,)
+                        "Skipping config file installation/removal, as stated in equo.conf: %s" % (tofile,)
                     )
-                    mytxt = "%s: %s" % (_("Skipping file installation"),tofile,)
+                    mytxt = "%s: %s" % (_("Skipping file installation/removal"),tofile,)
                     self.Entropy.updateProgress(
                         mytxt,
                         importance = 1,
@@ -7578,6 +7574,12 @@ class FtpInterface:
         return pwd
 
     def setCWD(self, mydir, dodir = False):
+        try:
+            return self._setCWD(mydir, dodir)
+        except self.ftplib.error_perm, e:
+            raise exceptionTools.FtpError('FtpError: %s' % (e,))
+
+    def _setCWD(self, mydir, dodir = False):
         if self.verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
@@ -7841,7 +7843,9 @@ class FtpInterface:
     def closeConnection(self):
         try:
             self.ftpconn.quit()
-        except EOFError:
+        except (EOFError,AttributeError,):
+            # AttributeError is raised when socket gets trashed
+            # EOFError is raised when the connection breaks
             pass
 
 
@@ -7886,10 +7890,12 @@ class urlFetcher:
         if etpConst['proxy']['http']:
             mydict['http'] = etpConst['proxy']['http']
         if mydict:
-            proxy_support = urllib2.ProxyHandler(mydict)
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
-        #FIXME else: unset opener??
+            mydict['username'] = etpConst['proxy']['username']
+            mydict['password'] = etpConst['proxy']['password']
+            self.entropyTools.add_proxy_opener(urllib2, mydict)
+        else:
+            # unset
+            urllib2._opener = None
 
     def encodeUrl(self, url):
         import urllib
@@ -10549,6 +10555,7 @@ class MultipartPostHandler(urllib2.BaseHandler):
 
 class ErrorReportInterface:
 
+    import entropyTools
     def __init__(self, post_url = etpConst['handlers']['errorsend']):
         self.url = post_url
         self.opener = urllib2.build_opener(MultipartPostHandler)
@@ -10561,9 +10568,12 @@ class ErrorReportInterface:
         if etpConst['proxy']['http']:
             mydict['http'] = etpConst['proxy']['http']
         if mydict:
-            proxy_support = urllib2.ProxyHandler(mydict)
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
+            mydict['username'] = etpConst['proxy']['username']
+            mydict['password'] = etpConst['proxy']['password']
+            self.entropyTools.add_proxy_opener(urllib2,mydict)
+        else:
+            # unset
+            urllib2._opener = None
 
     def prepare(self, tb_text, name, email, report_data = "", description = ""):
         self.params['arch'] = etpConst['currentarch']
@@ -12182,16 +12192,7 @@ class PortageInterface:
     def _portage_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
         # tree = "bintree"
-        # tree = "bintree"
         # cpv = atom
-        '''
-            # This is a demonstration that Sabayon team love Gentoo so much
-            [01:46] <zmedico> if you want something to stay in mysettings
-            [01:46] <zmedico> do mysettings.backup_changes("CFLAGS") for example
-            [01:46] <zmedico> otherwise your change can get lost inside doebuild()
-            [01:47] <zmedico> because it calls mysettings.reset()
-            # ^^^ this is DA MAN!
-        '''
         # mydbapi = portage.fakedbapi(settings=portage.settings)
         # vartree = portage.vartree(root=myroot)
 
@@ -12335,9 +12336,12 @@ class LogFile:
     def __call__(self, format, *args):
         self.handler (format % args)
 
-    def default_handler (self, string):
-        self.logFile.write ("* %s\n" % (string))
-        self.logFile.flush ()
+    def default_handler (self, mystr):
+        try:
+            self.logFile.write ("* %s\n" % (mystr))
+        except UnicodeEncodeError:
+            self.logFile.write ("* %s\n" % (mystr.encode('utf-8'),))
+        self.logFile.flush()
 
     def set_loglevel(self, level):
         self.level = level
@@ -13985,14 +13989,90 @@ class ServerInterface(TextInterface):
 
 
     def is_repository_initialized(self, repo):
+
+        def do_validate(dbc):
+            try:
+                dbc.validateDatabase()
+                return True
+            except exceptionTools.SystemDatabaseError:
+                return False
+
         dbc = self.openServerDatabase(just_reading = True, repo = repo)
-        valid = True
-        try:
-            dbc.validateDatabase()
-        except exceptionTools.SystemDatabaseError:
-            valid = False
+        valid = do_validate(dbc)
         self.close_server_database(dbc)
+        if not valid: # check online?
+            dbc = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            valid = do_validate(dbc)
+            self.close_server_database(dbc)
+
         return valid
+
+    def doServerDatabaseSyncLock(self, repo, no_upload):
+
+        if repo == None:
+            repo = self.default_repository
+
+        # check if the database is locked locally
+        lock_file = self.MirrorsService.get_database_lockfile(repo)
+        if os.path.isfile(lock_file):
+            self.updateProgress(
+                red(_("Entropy database is already locked by you :-)")),
+                importance = 1,
+                type = "info",
+                header = red(" * ")
+            )
+        else:
+            # check if the database is locked REMOTELY
+            mytxt = "%s ..." % (_("Locking and Syncing Entropy database"),)
+            self.updateProgress(
+                red(mytxt),
+                importance = 1,
+                type = "info",
+                header = red(" * "),
+                back = True
+            )
+            for uri in self.get_remote_mirrors(repo):
+                given_up = self.MirrorsService.mirror_lock_check(uri, repo = repo)
+                if given_up:
+                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                    mytxt = "%s:" % (_("Mirrors status table"),)
+                    self.updateProgress(
+                        darkgreen(mytxt),
+                        importance = 1,
+                        type = "info",
+                        header = brown(" * ")
+                    )
+                    dbstatus = self.MirrorsService.get_mirrors_lock(repo = repo)
+                    for db in dbstatus:
+                        db[1] = green(_("Unlocked"))
+                        if (db[1]):
+                            db[1] = red(_("Locked"))
+                        db[2] = green(_("Unlocked"))
+                        if (db[2]):
+                            db[2] = red(_("Locked"))
+
+                        crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
+                        self.updateProgress(
+                            bold("%s: ") + red("[") + brown("DATABASE: %s") + red("] [") + \
+                            brown("DOWNLOAD: %s")+red("]") % (
+                                crippled_uri,
+                                db[1],
+                                db[2],
+                            ),
+                            importance = 1,
+                            type = "info",
+                            header = "\t"
+                        )
+
+                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s %s" % (
+                            _("cannot lock mirror"),
+                            crippled_uri,
+                        )
+                    )
+
+            # if we arrive here, it is because all the mirrors are unlocked
+            self.MirrorsService.lock_mirrors(True, repo = repo)
+            self.MirrorsService.sync_databases(no_upload, repo = repo)
 
     def openServerDatabase(
             self,
@@ -14032,6 +14112,9 @@ class ServerInterface(TextInterface):
 
         if not os.path.isdir(os.path.dirname(local_dbfile)):
             os.makedirs(os.path.dirname(local_dbfile))
+
+        if not read_only:
+            self.doServerDatabaseSyncLock(repo, no_upload)
 
         conn = EntropyDatabaseInterface(
             readOnly = read_only,
@@ -14295,7 +14378,7 @@ class ServerInterface(TextInterface):
             header = darkgreen(" * ")
         )
 
-    def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True):
+    def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True, do_copy = False):
 
         switched = set()
 
@@ -14319,9 +14402,12 @@ class ServerInterface(TextInterface):
                     dbconn.listAllIdpackages(branch = branch, branch_operator = "<=")]
             )
 
+        mytxt = _("Preparing to move selected packages to")
+        if do_copy:
+            mytxt = _("Preparing to copy selected packages to")
         self.updateProgress(
             "%s %s:" % (
-                    blue(_("Preparing to move selected packages to")),
+                    blue(mytxt),
                     red(to_repo),
             ),
             importance = 2,
@@ -14460,30 +14546,31 @@ class ServerInterface(TextInterface):
             del data
             todbconn.commitChanges()
 
+            if not do_copy:
+                self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue(_("removing entry from source database")),
+                            darkgreen(repo),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
+                )
+
+                # remove package from old db
+                dbconn.removePackage(idpackage)
+                dbconn.commitChanges()
+
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
                         brown(branch),
-                        blue(_("removing entry from source database")),
-                        darkgreen(repo),
-                ),
-                importance = 0,
-                type = "info",
-                header = red(" @@ "),
-                back = True
-            )
-
-            # remove package from old db
-            dbconn.removePackage(idpackage)
-            dbconn.commitChanges()
-
-            self.updateProgress(
-                "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(_("successfully moved atom")),
+                        blue(_("successfully handled atom")),
                         darkgreen(match_atom),
                 ),
                 importance = 0,
@@ -15232,9 +15319,12 @@ class ServerInterface(TextInterface):
             if etpConst['proxy']['http']:
                 mydict['http'] = etpConst['proxy']['http']
             if mydict:
-                proxy_support = urllib2.ProxyHandler(mydict)
-                opener = urllib2.build_opener(proxy_support)
-                urllib2.install_opener(opener)
+                mydict['username'] = etpConst['proxy']['username']
+                mydict['password'] = etpConst['proxy']['password']
+                self.entropyTools.add_proxy_opener(urllib2, mydict)
+            else:
+                # unset
+                urllib2._opener = None
             item = urllib2.urlopen(request)
             result = item.readline().strip()
             item.close()
@@ -15910,6 +16000,13 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
+class RepositoryManager(ServerInterface):
+
+    def __init__(self, *myargs, **mykwargs):
+        ServerInterface.__init__(self, *myargs, **mykwargs)
+
+
+
 class RepositorySocketServerInterface(SocketHostInterface):
 
     class RepositoryCommands:
@@ -16167,7 +16264,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
         return True
 
     def lock_scan(self):
-        do_unlock = set()
         do_clear = set()
         for repository,arch,product in self.repositories:
             x = (repository,arch,product)
@@ -17439,7 +17535,8 @@ class ServerMirrorsInterface:
         database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
         if os.path.isfile(database_package_mask_file) or download:
             data['database_package_mask_file'] = database_package_mask_file
-            critical.append(data['database_package_mask_file'])
+            if not download:
+                critical.append(data['database_package_mask_file'])
 
         database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
         if os.path.isfile(database_license_whitelist_file) or download:
@@ -18232,7 +18329,7 @@ class ServerMirrorsInterface:
             files_to_sync.sort()
             for myfile in files_to_sync:
                 self.Entropy.updateProgress(
-                    blue("%s: %s" % (_("download path"),myfile,)),
+                    "%s: %s" % (blue(_("download path")),brown(download_data[myfile]),),
                     importance = 0,
                     type = "info",
                     header = brown("    # ")
@@ -18383,7 +18480,7 @@ class ServerMirrorsInterface:
 
         if download_latest:
             download_uri = download_latest[0]
-            download_errors, fine_uris, broken_uris = self.download_database(download_uri, repo = repo)
+            download_errors, fine_uris, broken_uris = self.download_database([download_uri], repo = repo)
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
@@ -19541,11 +19638,6 @@ class EntropyDatabaseInterface:
         self.connection = self.dbapi2.connect(dbFile,timeout=300.0)
         self.cursor = self.connection.cursor()
 
-        if not self.clientDatabase and not self.readOnly:
-            # server side is calling
-            # lock mirror remotely and ensure to have latest database revision
-            self.doServerDatabaseSyncLock(self.noUpload)
-
         if not self.skipChecks:
             if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
                 if self.entropyTools.islive():
@@ -19579,71 +19671,6 @@ class EntropyDatabaseInterface:
         if os.path.isfile(taint_file):
             etpDbStatus[self.dbFile]['tainted'] = True
             etpDbStatus[self.dbFile]['bumped'] = True
-
-    def doServerDatabaseSyncLock(self, noUpload):
-
-        # check if the database is locked locally
-        # self.server_repo
-        lock_file = self.ServiceInterface.MirrorsService.get_database_lockfile(self.server_repo)
-        if os.path.isfile(lock_file):
-            self.updateProgress(
-                red(_("Entropy database is already locked by you :-)")),
-                importance = 1,
-                type = "info",
-                header = red(" * ")
-            )
-        else:
-            # check if the database is locked REMOTELY
-            mytxt = "%s ..." % (_("Locking and Syncing Entropy database"),)
-            self.updateProgress(
-                red(mytxt),
-                importance = 1,
-                type = "info",
-                header = red(" * "),
-                back = True
-            )
-            for uri in self.ServiceInterface.get_remote_mirrors(self.server_repo):
-                given_up = self.ServiceInterface.MirrorsService.mirror_lock_check(uri, repo = self.server_repo)
-                if given_up:
-                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-                    mytxt = "%s:" % (_("Mirrors status table"),)
-                    self.updateProgress(
-                        darkgreen(mytxt),
-                        importance = 1,
-                        type = "info",
-                        header = brown(" * ")
-                    )
-                    dbstatus = self.ServiceInterface.MirrorsService.get_mirrors_lock(repo = self.server_repo)
-                    for db in dbstatus:
-                        db[1] = green(_("Unlocked"))
-                        if (db[1]):
-                            db[1] = red(_("Locked"))
-                        db[2] = green(_("Unlocked"))
-                        if (db[2]):
-                            db[2] = red(_("Locked"))
-
-                        crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
-                        self.updateProgress(
-                            bold("%s: ") + red("[") + brown("DATABASE: %s") + red("] [") + \
-                            brown("DOWNLOAD: %s")+red("]") % (
-                                crippled_uri,
-                                db[1],
-                                db[2],
-                            ),
-                            importance = 1,
-                            type = "info",
-                            header = "\t"
-                        )
-
-                    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s %s" % (
-                            _("cannot lock mirror"),
-                            crippled_uri,
-                        )
-                    )
-
-            # if we arrive here, it is because all the mirrors are unlocked
-            self.ServiceInterface.MirrorsService.lock_mirrors(True, repo = self.server_repo)
-            self.ServiceInterface.MirrorsService.sync_databases(noUpload, repo = self.server_repo)
 
     def closeDB(self):
 
@@ -19842,7 +19869,7 @@ class EntropyDatabaseInterface:
                     header = brown(" * ")
                 )
                 # lock database
-                self.doServerDatabaseSyncLock(self.noUpload)
+                self.ServiceInterface.doServerDatabaseSyncLock(self.server_repo, self.noUpload)
                 # now run queue
                 try:
                     self.runTreeUpdatesActions(update_actions)
@@ -24023,18 +24050,13 @@ class EntropyDatabaseInterface:
         ### END FILTERING
         ### END FILTERING
 
-        if not foundIDs:
-            # package not found
-            self.atomMatchStoreCache(atom, caseSensitive, matchSlot, multiMatch, matchBranches, matchTag, packagesFilter, matchRevision, extendedResults, result = (-1,1))
-            return -1,1
-
         ### FILLING dbpkginfo
         ### FILLING dbpkginfo
         ### FILLING dbpkginfo
 
         dbpkginfo = set()
         # now we have to handle direction
-        if (direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*")):
+        if ((direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*"))) and foundIDs:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \

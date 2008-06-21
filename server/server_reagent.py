@@ -59,7 +59,7 @@ def repositories(options):
     for opt in options[1:]:
         if cmd in ["enable","disable"]:
             repoid = opt
-        elif cmd == "move":
+        elif cmd in ["move","copy"]:
             if repoid == None:
                 repoid = opt
             elif repoid_dest == None:
@@ -74,7 +74,7 @@ def repositories(options):
         else:
             myopts.append(opt)
 
-    if cmd in ["enable","disable","move","default"] and not repoid:
+    if cmd in ["enable","disable","copy","move","default"] and not repoid:
         print_error(darkred(" !!! ")+red(_("No valid repositories specified.")))
         return 2
 
@@ -106,7 +106,7 @@ def repositories(options):
         Entropy.switch_default_repository(repoid, save = True)
     elif cmd == "status":
         return 0
-    elif cmd == "move":
+    elif cmd in ["move","copy"]:
         matches = []
         # from repo: repoid
         # to repo: repoid_dest
@@ -124,7 +124,10 @@ def repositories(options):
                                  )
             if not matches:
                 return 1
-        rc = Entropy.move_packages(matches, repoid_dest, repoid)
+        if cmd == "move":
+            rc = Entropy.move_packages(matches, repoid_dest, repoid)
+        elif cmd == "copy":
+            rc = Entropy.move_packages(matches, repoid_dest, repoid, do_copy = True)
         if rc:
             return 0
         return 1

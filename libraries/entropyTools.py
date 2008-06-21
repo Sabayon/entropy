@@ -27,9 +27,6 @@ import re
 import threading
 import time
 
-def getDebug():
-    return __etp_debug
-
 def isRoot():
     if (etpConst['uid'] == 0):
         return True
@@ -155,9 +152,12 @@ def get_remote_data(url):
         if etpConst['proxy']['http']:
             mydict['http'] = etpConst['proxy']['http']
         if mydict:
-            proxy_support = urllib2.ProxyHandler(mydict)
-            opener = urllib2.build_opener(proxy_support)
-            urllib2.install_opener(opener)
+            mydict['username'] = etpConst['proxy']['username']
+            mydict['password'] = etpConst['proxy']['password']
+            add_proxy_opener(urllib2, mydict)
+        else:
+            # unset
+            urllib2._opener = None
         item = urllib2.urlopen(url)
         result = item.readlines()
         item.close()
@@ -170,6 +170,38 @@ def get_remote_data(url):
     except:
         socket.setdefaulttimeout(2)
         return False
+
+def add_proxy_opener(module, data):
+    import types
+    if type(module) != types.ModuleType: # FIXME: check if it's urllib2
+        raise exceptionTools.InvalidDataType("InvalidDataType: not a module")
+    if not data:
+        return
+
+    username = None
+    password = None
+    authinfo = None
+    if data.has_key('password'):
+        username = data.pop('username')
+    if data.has_key('password'):
+        username = data.pop('password')
+    if username == None or password == None:
+        username = None
+        password = None
+    else:
+        passmgr = module.HTTPPasswordMgrWithDefaultRealm()
+        if data['http']:
+            passmgr.add_password(None, data['http'], username, password)
+        if data['ftp']:
+            passmgr.add_password(None, data['ftp'], username, password)
+        authinfo = module.ProxyBasicAuthHandler(passmgr)
+
+    proxy_support = module.ProxyHandler(data)
+    if authinfo:
+        opener = module.build_opener(proxy_support, authinfo)
+    else:
+        opener = module.build_opener(proxy_support)
+    module.install_opener(opener)
 
 def islive():
     return const_islive()
@@ -1734,7 +1766,15 @@ def writeParameterToFile(config_file, name, data):
         myreg = re.compile('^(%s)?[|].*$' % (name,))
     else:
         proposed_line = "# %s|" % (name,)
+        myreg_rem = re.compile('^(%s)?[|].*$' % (name,))
         myreg = re.compile('^#([ \t]+?)?(%s)?[|].*$' % (name,))
+        new_content = []
+        for line in content:
+            if myreg_rem.match(line):
+                continue
+            new_content.append(line)
+        content = new_content
+
     for line in content:
         if myreg.match(line):
             param_found = True

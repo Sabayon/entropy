@@ -477,8 +477,7 @@ def initConfig_entropyConstants(rootdir):
     const_defaultSettings(rootdir)
     const_readEntropyRelease()
     const_createWorkingDirectories()
-    if not "--no-pid-handling" in sys.argv:
-        const_setupEntropyPid()
+    const_setupEntropyPid()
     const_readEntropySettings()
     const_readRepositoriesSettings()
     const_readSocketSettings()
@@ -599,6 +598,8 @@ def const_defaultSettings(rootdir):
         'proxy': {
             'ftp': None,
             'http': None,
+            'username': None,
+            'password': None
         }, # proxy configuration information, used system wide
 
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
@@ -997,6 +998,9 @@ def const_readSocketSettings():
 def const_readEntropySettings():
     # entropy section
     if os.path.isfile(etpConst['entropyconf']):
+
+        const_secure_config_file(etpConst['entropyconf'])
+
         f = open(etpConst['entropyconf'],"r")
         entropyconf = f.readlines()
         f.close()
@@ -1018,6 +1022,14 @@ def const_readEntropySettings():
                 httpproxy = line.split("|")[1].strip().split()
                 if httpproxy:
                     etpConst['proxy']['http'] = httpproxy[-1]
+            elif line.startswith("proxy-username|") and (len(line.split("|")) == 2):
+                httpproxy = line.split("|")[1].strip().split()
+                if httpproxy:
+                    etpConst['proxy']['username'] = httpproxy[-1]
+            elif line.startswith("proxy-password|") and (len(line.split("|")) == 2):
+                httpproxy = line.split("|")[1].strip().split()
+                if httpproxy:
+                    etpConst['proxy']['password'] = httpproxy[-1]
             elif line.startswith("system-name|") and (len(line.split("|")) == 2):
                 etpConst['systemname'] = line.split("|")[1].strip()
             elif line.startswith("nice-level|") and (len(line.split("|")) == 2):
@@ -1092,7 +1104,11 @@ def const_readEquoSettings():
                 for x in configprotect.split():
                     etpConst['configprotectskip'].append(etpConst['systemroot']+x)
 
-def const_setupEntropyPid():
+def const_setupEntropyPid(just_read = False):
+
+    if ("--no-pid-handling" in sys.argv) and (not just_read):
+        return
+
     # PID creation
     pid = os.getpid()
     if os.path.isfile(etpConst['pidfile']):
@@ -1104,7 +1120,7 @@ def const_setupEntropyPid():
             # is foundPid still running ?
             if os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],foundPid,)):
                 etpConst['applicationlock'] = True
-            else:
+            elif not just_read:
                 # if root, write new pid
                 #if etpConst['uid'] == 0:
                 if os.access(etpConst['pidfile'],os.W_OK):
@@ -1123,7 +1139,7 @@ def const_setupEntropyPid():
                     except OSError:
                         pass
 
-    else:
+    elif not just_read:
         #if etpConst['uid'] == 0:
         if os.access(os.path.dirname(etpConst['pidfile']),os.W_OK):
 
@@ -1144,6 +1160,15 @@ def const_setupEntropyPid():
             except OSError:
                 pass
 
+def const_secure_config_file(config_file):
+    try:
+        mygid = const_get_entropy_gid()
+    except KeyError:
+        mygid = 0
+    try:
+        const_setup_file(config_file, mygid, 0660)
+    except (OSError, IOError,):
+        pass
 
 def const_chmod_entropy_pid():
     try:
