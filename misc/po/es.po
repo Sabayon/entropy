@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-06-19 20:04+0000\n"
-"PO-Revision-Date: 2008-06-18 16:40+0000\n"
+"POT-Creation-Date: 2008-06-21 16:41+0000\n"
+"PO-Revision-Date: 2008-06-21 13:47+0000\n"
 "Last-Translator: Daniel Halens Rodriguez <DanielHalens@gmail.com>\n"
 "Language-Team:  <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -48,55 +48,55 @@ msgstr "Me rindo, no tienes remedio"
 msgid "Go to hell."
 msgstr "Vete al infierno."
 
-#: ../../libraries/entropyConstants.py:732
+#: ../../libraries/entropyConstants.py:731
 msgid "reason not available"
 msgstr "no disponible"
 
-#: ../../libraries/entropyConstants.py:733
+#: ../../libraries/entropyConstants.py:732
 msgid "user package.mask"
 msgstr "package.mask del usuario"
 
-#: ../../libraries/entropyConstants.py:734
+#: ../../libraries/entropyConstants.py:733
 msgid "system keywords"
 msgstr "palabras clave del sistema"
 
-#: ../../libraries/entropyConstants.py:735
+#: ../../libraries/entropyConstants.py:734
 msgid "user package.unmask"
 msgstr "package.unmask del usuario"
 
-#: ../../libraries/entropyConstants.py:736
+#: ../../libraries/entropyConstants.py:735
 msgid "user repo package.keywords (all packages)"
 msgstr "package.keywords del repositorio del usuario (todos los paquetes)"
 
-#: ../../libraries/entropyConstants.py:737
+#: ../../libraries/entropyConstants.py:736
 msgid "user repo package.keywords"
 msgstr "package.keywords del repositorio del usuario"
 
-#: ../../libraries/entropyConstants.py:738
+#: ../../libraries/entropyConstants.py:737
 msgid "user package.keywords"
 msgstr "package.keywords del usuario"
 
-#: ../../libraries/entropyConstants.py:739
+#: ../../libraries/entropyConstants.py:738
 msgid "completely masked"
 msgstr "completamente enmascarado"
 
-#: ../../libraries/entropyConstants.py:740
+#: ../../libraries/entropyConstants.py:739
 msgid "repository general packages.db.mask"
 msgstr "packages.db.mask general del repositorio"
 
-#: ../../libraries/entropyConstants.py:741
+#: ../../libraries/entropyConstants.py:740
 msgid "repository in branch packages.db.mask"
 msgstr "repositorio en la rama packages.db.mask"
 
-#: ../../libraries/entropyConstants.py:742
+#: ../../libraries/entropyConstants.py:741
 msgid "user license.mask"
 msgstr "license.mask del usuario"
 
-#: ../../libraries/entropyConstants.py:743
+#: ../../libraries/entropyConstants.py:742
 msgid "user live unmask"
 msgstr "desenmascaramiento en vivo del usuario"
 
-#: ../../libraries/entropyConstants.py:744
+#: ../../libraries/entropyConstants.py:743
 msgid "user live mask"
 msgstr "enmascaramiento en vivo del usuario"
 
@@ -109,7 +109,7 @@ msgstr "Entropy necesita sqlite+pysqlite o Python compilado con soporte sqlite"
 #: ../../libraries/entropy.py:44 ../../libraries/entropy.py:4721
 #: ../../libraries/entropy.py:4772 ../../libraries/entropy.py:4778
 #: ../../libraries/entropy.py:4803 ../../libraries/entropy.py:4828
-#: ../../libraries/entropy.py:8343 ../../libraries/entropy.py:10856
+#: ../../libraries/entropy.py:8345 ../../libraries/entropy.py:10858
 #: ../../spritz/src/spritz.glade.h:36
 msgid "Error"
 msgstr "Error"
@@ -242,12 +242,12 @@ msgstr "Recopilando los ejecutables rotos"
 #: ../../libraries/entropy.py:868 ../../libraries/entropy.py:6751
 #: ../../libraries/entropy.py:6788 ../../libraries/entropy.py:6803
 #: ../../libraries/entropy.py:6815 ../../libraries/entropy.py:6830
-#: ../../libraries/entropy.py:9398 ../../libraries/entropy.py:15224
+#: ../../libraries/entropy.py:9400 ../../libraries/entropy.py:15299
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../client/text_ui.py:690 ../../client/text_ui.py:691
 #: ../../spritz/src/dialogs.py:993 ../../spritz/src/misc.py:91
-#: ../../spritz/src/misc.py:301 ../../spritz/src/spritz.py:1328
+#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:1328
 msgid "Attention"
 msgstr "Atención"
 
@@ -293,7 +293,7 @@ msgstr "Calculando los paquetes en world"
 msgid "not a valid method"
 msgstr "no es un método válido"
 
-#: ../../libraries/entropy.py:2864 ../../libraries/entropy.py:15418
+#: ../../libraries/entropy.py:2864 ../../libraries/entropy.py:15493
 msgid "Mirror"
 msgstr "Mirror"
 
@@ -341,8 +341,8 @@ msgstr "razón desconocida"
 msgid "Extracting package metadata"
 msgstr "Extrayendo metadatos del paquete"
 
-#: ../../libraries/entropy.py:3258 ../../libraries/entropy.py:15366
-#: ../../libraries/entropy.py:17612
+#: ../../libraries/entropy.py:3258 ../../libraries/entropy.py:15441
+#: ../../libraries/entropy.py:17695
 msgid "not supported"
 msgstr "no soportado"
 
@@ -363,7 +363,7 @@ msgid "Package extraction complete"
 msgstr "Extracción del paquete completada"
 
 #: ../../libraries/entropy.py:3625 ../../libraries/entropy.py:5368
-#: ../../libraries/entropy.py:5646 ../../libraries/entropy.py:10225
+#: ../../libraries/entropy.py:5646 ../../libraries/entropy.py:10227
 msgid "A valid Equo instance or subclass is needed"
 msgstr "Se necesita una instancia o subclase válida de Equo"
 
@@ -418,8 +418,8 @@ msgstr "Se encontró una colisión durante la eliminación de"
 msgid "cannot overwrite"
 msgstr "no se puede sobrescribir"
 
-#: ../../libraries/entropy.py:3908 ../../libraries/entropy.py:18584
-#: ../../libraries/entropy.py:19406
+#: ../../libraries/entropy.py:3908 ../../libraries/entropy.py:18667
+#: ../../libraries/entropy.py:19489
 msgid "remove"
 msgstr "eliminar"
 
@@ -608,7 +608,7 @@ msgstr "Número de archivo de configuración inválido"
 msgid "No repositories specified in %s"
 msgstr "No se han especificado repositorios en %s"
 
-#: ../../libraries/entropy.py:5673 ../../libraries/entropy.py:11143
+#: ../../libraries/entropy.py:5673 ../../libraries/entropy.py:11145
 #, python-format
 msgid "Cannot connect to %s"
 msgstr "No se puede conectar a %s"
@@ -748,7 +748,7 @@ msgstr "Eliminación de paquetes completada"
 msgid "Database checksum doesn't match remote."
 msgstr "La comprobación de suma de la base de datos no coincide con la remota."
 
-#: ../../libraries/entropy.py:6401 ../../libraries/entropy.py:15482
+#: ../../libraries/entropy.py:6401 ../../libraries/entropy.py:15557
 msgid "local"
 msgstr "local"
 
@@ -829,7 +829,7 @@ msgstr "Inténtalo de nuevo en unos minutos"
 msgid "Injecting downloaded dump"
 msgstr "Inyectando los elementos descargados"
 
-#: ../../libraries/entropy.py:6866 ../../libraries/entropy.py:22881
+#: ../../libraries/entropy.py:6866 ../../libraries/entropy.py:22894
 #: ../../spritz/src/spritz.glade.h:143
 msgid "please wait"
 msgstr "espera por favor"
@@ -904,8 +904,8 @@ msgstr "Indexando metadatos del repositorio"
 msgid "Repositories synchronization"
 msgstr "Sincronización de los repositorios"
 
-#: ../../libraries/entropy.py:7092 ../../libraries/entropy.py:16339
-#: ../../libraries/entropy.py:16607
+#: ../../libraries/entropy.py:7092 ../../libraries/entropy.py:16421
+#: ../../libraries/entropy.py:16689
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
 msgstr ""
 "Se requiere una instancia válida basada en EquoInterface/ServerInterface"
@@ -954,8 +954,8 @@ msgstr "¿Quieres añadirla?"
 msgid "missing dependencies added"
 msgstr "dependencias perdidas añadidas"
 
-#: ../../libraries/entropy.py:7456 ../../libraries/entropy.py:11316
-#: ../../libraries/entropy.py:11378
+#: ../../libraries/entropy.py:7456 ../../libraries/entropy.py:11318
+#: ../../libraries/entropy.py:11380
 msgid "A valid TextInterface based instance is needed"
 msgstr "Se necesita una instancia válida basada en TextInterface"
 
@@ -989,429 +989,456 @@ msgstr "reintentando"
 msgid "Download status"
 msgstr "Estado de la descarga"
 
-#: ../../libraries/entropy.py:8048 ../../libraries/entropy.py:13722
+#: ../../libraries/entropy.py:8050 ../../libraries/entropy.py:13718
 msgid "Fetch"
 msgstr "Descargando"
 
-#: ../../libraries/entropy.py:8049
+#: ../../libraries/entropy.py:8051
 msgid "ETA"
 msgstr "Tiempo Estimado"
 
-#: ../../libraries/entropy.py:8050
+#: ../../libraries/entropy.py:8052
 msgid "sec"
 msgstr "seg"
 
-#: ../../libraries/entropy.py:8103
+#: ../../libraries/entropy.py:8105
 msgid "infinite"
 msgstr "infinito"
 
-#: ../../libraries/entropy.py:8317
+#: ../../libraries/entropy.py:8319
 msgid "A valid Entropy Instance is needed"
 msgstr "Se necesita una instancia válida de Entropy"
 
-#: ../../libraries/entropy.py:8342
+#: ../../libraries/entropy.py:8344
 msgid "Portage interface can't be loaded"
 msgstr "La se pudo cargar la interfaz de Portage"
 
-#: ../../libraries/entropy.py:8345
+#: ../../libraries/entropy.py:8347
 msgid "please fix"
 msgstr "arréglalo por favor"
 
-#: ../../libraries/entropy.py:8360
+#: ../../libraries/entropy.py:8362
 msgid "Valid phases"
 msgstr "Fases válidas"
 
-#: ../../libraries/entropy.py:8625 ../../libraries/entropy.py:9472
-#: ../../libraries/entropy.py:9544 ../../libraries/entropy.py:9618
-#: ../../libraries/entropy.py:9682 ../../libraries/entropy.py:10079
-#: ../../libraries/entropy.py:10093 ../../libraries/entropy.py:10135
-#: ../../libraries/entropy.py:10153 ../../libraries/entropy.py:10182
-#: ../../libraries/entropy.py:10195 ../../libraries/entropy.py:10208
+#: ../../libraries/entropy.py:8627 ../../libraries/entropy.py:9474
+#: ../../libraries/entropy.py:9546 ../../libraries/entropy.py:9620
+#: ../../libraries/entropy.py:9684 ../../libraries/entropy.py:10081
+#: ../../libraries/entropy.py:10095 ../../libraries/entropy.py:10137
+#: ../../libraries/entropy.py:10155 ../../libraries/entropy.py:10184
+#: ../../libraries/entropy.py:10197 ../../libraries/entropy.py:10210
 msgid "QA"
 msgstr "Control de calidad"
 
-#: ../../libraries/entropy.py:8626
+#: ../../libraries/entropy.py:8628
 msgid "Cannot run External trigger for"
 msgstr "No se pudo ejecutar el activador externo para"
 
-#: ../../libraries/entropy.py:8628 ../../libraries/entropy.py:9475
-#: ../../libraries/entropy.py:9547 ../../libraries/entropy.py:9621
-#: ../../libraries/entropy.py:9685
+#: ../../libraries/entropy.py:8630 ../../libraries/entropy.py:9477
+#: ../../libraries/entropy.py:9549 ../../libraries/entropy.py:9623
+#: ../../libraries/entropy.py:9687
 msgid "Please report it"
 msgstr "Por favor, reporta el error"
 
-#: ../../libraries/entropy.py:8678 ../../libraries/entropy.py:9330
+#: ../../libraries/entropy.py:8680 ../../libraries/entropy.py:9332
 msgid "Regenerating"
 msgstr "Regenerando"
 
-#: ../../libraries/entropy.py:8704
+#: ../../libraries/entropy.py:8706
 msgid "Please remember"
 msgstr "Recuerda"
 
-#: ../../libraries/entropy.py:8704
+#: ../../libraries/entropy.py:8706
 msgid "It is always better to leave Entropy updates isolated"
 msgstr ""
 "siempre es mejor realizar las actualizaciones de Entropy de forma aislada"
 
-#: ../../libraries/entropy.py:8710
+#: ../../libraries/entropy.py:8712
 msgid "Purging Entropy cache"
 msgstr "Purgando la caché de Entropy"
 
-#: ../../libraries/entropy.py:8735
+#: ../../libraries/entropy.py:8737
 msgid "Configuring fonts directories"
 msgstr "Configurando los directorios de fuentes"
 
-#: ../../libraries/entropy.py:8752
+#: ../../libraries/entropy.py:8754
 msgid "Configuring GCC Profile"
 msgstr "Configurando el perfil de GCC"
 
-#: ../../libraries/entropy.py:8771
+#: ../../libraries/entropy.py:8773
 msgid "Updating icons cache"
 msgstr "Actualizando la caché de iconos"
 
-#: ../../libraries/entropy.py:8789
+#: ../../libraries/entropy.py:8791
 msgid "Updating shared mime info database"
 msgstr "Actualizando la base de datos de información mime compartida"
 
-#: ../../libraries/entropy.py:8803
+#: ../../libraries/entropy.py:8805
 msgid "Updating desktop mime database"
 msgstr "Actualizando la base de datos mime del escritorio"
 
-#: ../../libraries/entropy.py:8817
+#: ../../libraries/entropy.py:8819
 msgid "Updating scrollkeeper database"
 msgstr "Actualizando la base de datos de scrollkeeper"
 
-#: ../../libraries/entropy.py:8831
+#: ../../libraries/entropy.py:8833
 msgid "Reloading gconf2 database"
 msgstr "Recargando la base de datos gconf2"
 
-#: ../../libraries/entropy.py:8845
+#: ../../libraries/entropy.py:8847
 msgid "Configuring Binutils Profile"
 msgstr "Configurando el perfil de Binutils"
 
-#: ../../libraries/entropy.py:8865
+#: ../../libraries/entropy.py:8867
 msgid "Updating moduledb"
 msgstr "Actualizando moduledb"
 
-#: ../../libraries/entropy.py:8873
+#: ../../libraries/entropy.py:8875
 msgid "Running depmod"
 msgstr "Ejecutando depmod"
 
-#: ../../libraries/entropy.py:8896
+#: ../../libraries/entropy.py:8898
 msgid "Configuring Python"
 msgstr "Configurando Python"
 
-#: ../../libraries/entropy.py:8910
+#: ../../libraries/entropy.py:8912
 msgid "Configuring SQLite"
 msgstr "Configurando SQLite"
 
-#: ../../libraries/entropy.py:8940
+#: ../../libraries/entropy.py:8942
 msgid "A new service will be installed"
 msgstr "Se instalará un nuevo servicio"
 
-#: ../../libraries/entropy.py:8956
+#: ../../libraries/entropy.py:8958
 msgid "Removing boot service"
 msgstr "Eliminando servicio de arranque"
 
-#: ../../libraries/entropy.py:8985 ../../libraries/entropy.py:9018
+#: ../../libraries/entropy.py:8987 ../../libraries/entropy.py:9020
 msgid "Reconfiguring OpenGL"
 msgstr "Reconfigurando OpenGL"
 
-#: ../../libraries/entropy.py:9003 ../../libraries/entropy.py:9036
+#: ../../libraries/entropy.py:9005 ../../libraries/entropy.py:9038
 msgid "Eselect NOT found, cannot run OpenGL trigger"
 msgstr "NO se encontró Eselect: no se puede ejecutar el activador de OpenGL"
 
-#: ../../libraries/entropy.py:9066 ../../libraries/entropy.py:9090
+#: ../../libraries/entropy.py:9068 ../../libraries/entropy.py:9092
 msgid "Configuring GRUB bootloader"
 msgstr "Configurando el cargador de arranque GRUB"
 
-#: ../../libraries/entropy.py:9067
+#: ../../libraries/entropy.py:9069
 msgid "Adding the new kernel"
 msgstr "Añadiendo el nuevo kernel"
 
-#: ../../libraries/entropy.py:9091
+#: ../../libraries/entropy.py:9093
 msgid "Removing the selected kernel"
 msgstr "Eliminando el kernel seleccionado"
 
-#: ../../libraries/entropy.py:9123
+#: ../../libraries/entropy.py:9125
 msgid "Mounted /boot successfully"
 msgstr "/boot se montó correctamente"
 
-#: ../../libraries/entropy.py:9134
+#: ../../libraries/entropy.py:9136
 msgid "Cannot mount /boot automatically !!"
 msgstr "¡¡ No se pudo montar /boot automáticamente !!"
 
-#: ../../libraries/entropy.py:9162 ../../libraries/entropy.py:9190
+#: ../../libraries/entropy.py:9164 ../../libraries/entropy.py:9192
 msgid "Running kbuildsycoca to build global KDE database"
 msgstr "Ejecutando kbuildsycoca para construir la base de datos global de KDE"
 
-#: ../../libraries/entropy.py:9215
+#: ../../libraries/entropy.py:9217
 msgid "Installing gconf2 schemas"
 msgstr "Instalando los esquemas gconf2"
 
-#: ../../libraries/entropy.py:9296
+#: ../../libraries/entropy.py:9298
 msgid "Creating kernel symlink"
 msgstr "Creando un symlink para el kernel"
 
-#: ../../libraries/entropy.py:9298
+#: ../../libraries/entropy.py:9300
 msgid "for"
 msgstr "para"
 
-#: ../../libraries/entropy.py:9347
+#: ../../libraries/entropy.py:9349
 msgid "Updating environment"
 msgstr "Actualizando el entorno"
 
-#: ../../libraries/entropy.py:9378
+#: ../../libraries/entropy.py:9380
 msgid "Setting system VM to"
 msgstr "Fijando la Máquina Virtual del sistema a"
 
-#: ../../libraries/entropy.py:9400 ../../libraries/entropy.py:17184
+#: ../../libraries/entropy.py:9402 ../../libraries/entropy.py:17266
 #: ../../client/text_security.py:73 ../../client/text_smart.py:82
 msgid "does not exist"
 msgstr "no existe"
 
-#: ../../libraries/entropy.py:9473 ../../libraries/entropy.py:9545
-#: ../../libraries/entropy.py:9619 ../../libraries/entropy.py:9683
+#: ../../libraries/entropy.py:9475 ../../libraries/entropy.py:9547
+#: ../../libraries/entropy.py:9621 ../../libraries/entropy.py:9685
 msgid "Cannot run Portage trigger for"
 msgstr "No se puede ejecutar el activador de Portage para"
 
-#: ../../libraries/entropy.py:10080
+#: ../../libraries/entropy.py:10082
 msgid "Cannot find df"
 msgstr "No se pudo encontrar el comando df"
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy.py:10081 ../../libraries/entropy.py:10095
-#: ../../libraries/entropy.py:10139 ../../libraries/entropy.py:10184
-#: ../../libraries/entropy.py:10197 ../../libraries/entropy.py:10210
+#: ../../libraries/entropy.py:10083 ../../libraries/entropy.py:10097
+#: ../../libraries/entropy.py:10141 ../../libraries/entropy.py:10186
+#: ../../libraries/entropy.py:10199 ../../libraries/entropy.py:10212
 msgid "Cannot properly configure the kernel"
 msgstr "No se pudo configurar el kernel correctamente"
 
-#: ../../libraries/entropy.py:10082 ../../libraries/entropy.py:10096
-#: ../../libraries/entropy.py:10140 ../../libraries/entropy.py:10157
-#: ../../libraries/entropy.py:10185 ../../libraries/entropy.py:10198
-#: ../../libraries/entropy.py:10211
+#: ../../libraries/entropy.py:10084 ../../libraries/entropy.py:10098
+#: ../../libraries/entropy.py:10142 ../../libraries/entropy.py:10159
+#: ../../libraries/entropy.py:10187 ../../libraries/entropy.py:10200
+#: ../../libraries/entropy.py:10213
 msgid "Defaulting to"
 msgstr "Poniendo por defecto"
 
-#: ../../libraries/entropy.py:10094
+#: ../../libraries/entropy.py:10096
 msgid "Cannot find grub"
 msgstr "No se pudo encontrar grub"
 
-#: ../../libraries/entropy.py:10136
+#: ../../libraries/entropy.py:10138
 msgid "cannot match device"
 msgstr "no se puede hacer coincidir el dispositivo"
 
-#: ../../libraries/entropy.py:10138
+#: ../../libraries/entropy.py:10140
 msgid "with a grub one"
 msgstr "con uno de grub"
 
-#: ../../libraries/entropy.py:10154
+#: ../../libraries/entropy.py:10156
 msgid "grub translation not supported for"
 msgstr "la traducción de grub no está soportada para"
 
-#: ../../libraries/entropy.py:10156
+#: ../../libraries/entropy.py:10158
 msgid "Cannot properly configure grub.conf"
 msgstr "No se pudo configurar grub.conf apropiadamente"
 
-#: ../../libraries/entropy.py:10183
+#: ../../libraries/entropy.py:10185
 msgid "cannot match grub device with a Linux one"
 msgstr "no se puede hacer coincidir un dispositivo de grub con uno de linux"
 
-#: ../../libraries/entropy.py:10196
+#: ../../libraries/entropy.py:10198
 msgid "cannot find generated device.map"
 msgstr "no se puede encontrar el archivo device.map generado"
 
-#: ../../libraries/entropy.py:10209
+#: ../../libraries/entropy.py:10211
 msgid "cannot run df /boot"
 msgstr "no se puede ejecutar df /boot"
 
-#: ../../libraries/entropy.py:10633
+#: ../../libraries/entropy.py:10635
 msgid "Not prepared yet"
 msgstr "Aún no está preparado"
 
-#: ../../libraries/entropy.py:10658
+#: ../../libraries/entropy.py:10660
 msgid "A valid EquoInterface instance or subclass is needed"
 msgstr "Se necesita una instancia o subclase de EquoInterface válida"
 
-#: ../../libraries/entropy.py:10859
+#: ../../libraries/entropy.py:10861
 msgid "Warning"
 msgstr "Atención"
 
-#: ../../libraries/entropy.py:10861
+#: ../../libraries/entropy.py:10863
 msgid "advisory broken"
 msgstr "Aviso roto"
 
-#: ../../libraries/entropy.py:11131 ../../libraries/entropy.py:11146
-#: ../../libraries/entropy.py:11175 ../../libraries/entropy.py:11177
-#: ../../libraries/entropy.py:11196 ../../libraries/entropy.py:11206
-#: ../../libraries/entropy.py:11218 ../../libraries/entropy.py:11232
-#: ../../libraries/entropy.py:11242 ../../libraries/entropy.py:11252
-#: ../../libraries/entropy.py:11262 ../../libraries/entropy.py:11283
-#: ../../libraries/entropy.py:11293 ../../spritz/src/gui.py:306
+#: ../../libraries/entropy.py:11133 ../../libraries/entropy.py:11148
+#: ../../libraries/entropy.py:11177 ../../libraries/entropy.py:11179
+#: ../../libraries/entropy.py:11198 ../../libraries/entropy.py:11208
+#: ../../libraries/entropy.py:11220 ../../libraries/entropy.py:11234
+#: ../../libraries/entropy.py:11244 ../../libraries/entropy.py:11254
+#: ../../libraries/entropy.py:11264 ../../libraries/entropy.py:11285
+#: ../../libraries/entropy.py:11295 ../../spritz/src/gui.py:306
 msgid "Security Advisories"
 msgstr "Avisos de seguridad"
 
-#: ../../libraries/entropy.py:11131
+#: ../../libraries/entropy.py:11133
 msgid "testing service connection"
 msgstr "comprobando conexión al servicio"
 
-#: ../../libraries/entropy.py:11146
+#: ../../libraries/entropy.py:11148
 msgid "getting latest GLSAs"
 msgstr "adquiriendo los últimos GLSAs"
 
-#: ../../libraries/entropy.py:11175
+#: ../../libraries/entropy.py:11177
 msgid "updated successfully"
 msgstr "actualizados correctamente"
 
-#: ../../libraries/entropy.py:11177
+#: ../../libraries/entropy.py:11179
 msgid "already up to date"
 msgstr "ya estaban actualizados"
 
-#: ../../libraries/entropy.py:11196
+#: ../../libraries/entropy.py:11198
 msgid "unable to download the package, sorry"
 msgstr "no se ha podido descargar el paquete"
 
-#: ../../libraries/entropy.py:11206
+#: ../../libraries/entropy.py:11208
 msgid "Verifying checksum"
 msgstr "Verificando la comprobación de suma"
 
-#: ../../libraries/entropy.py:11218
+#: ../../libraries/entropy.py:11220
 msgid "cannot download the checksum, sorry"
 msgstr "no se pudo descargar la comprobación de suma"
 
-#: ../../libraries/entropy.py:11232
+#: ../../libraries/entropy.py:11234
 msgid "cannot open packages, sorry"
 msgstr "no se pudieron abrir los paquetes"
 
-#: ../../libraries/entropy.py:11242
+#: ../../libraries/entropy.py:11244
 msgid "cannot read the checksum, sorry"
 msgstr "no se pudo leer la comprobación de suma"
 
-#: ../../libraries/entropy.py:11252
+#: ../../libraries/entropy.py:11254
 msgid "digest verification failed, sorry"
 msgstr "ha fallado la verificación de la firma"
 
-#: ../../libraries/entropy.py:11262
+#: ../../libraries/entropy.py:11264
 msgid "verification Successful"
 msgstr "verificación correcta"
 
-#: ../../libraries/entropy.py:11270
+#: ../../libraries/entropy.py:11272
 msgid "Return status not valid"
 msgstr "Estado de retorno no válido"
 
-#: ../../libraries/entropy.py:11283
+#: ../../libraries/entropy.py:11285
 msgid "digest verification failed, try again later"
 msgstr "la verificación de firma ha fallado, inténtalo mas tarde"
 
-#: ../../libraries/entropy.py:11293
+#: ../../libraries/entropy.py:11295
 msgid "installing"
 msgstr "instalando"
 
-#: ../../libraries/entropy.py:11324
+#: ../../libraries/entropy.py:11326
 msgid "Invalid backend"
 msgstr "Backend inválido"
 
-#: ../../libraries/entropy.py:11645 ../../libraries/entropy.py:17804
-#: ../../libraries/entropy.py:17955 ../../libraries/entropy.py:18049
-#: ../../libraries/entropy.py:19241
+#: ../../libraries/entropy.py:11647 ../../libraries/entropy.py:17887
+#: ../../libraries/entropy.py:18038 ../../libraries/entropy.py:18132
+#: ../../libraries/entropy.py:19324
 msgid "error"
 msgstr "error"
 
-#: ../../libraries/entropy.py:11647 ../../server/server_reagent.py:91
+#: ../../libraries/entropy.py:11649 ../../server/server_reagent.py:91
 #: ../../server/server_reagent.py:103
 msgid "not found"
 msgstr "no encontrado"
 
-#: ../../libraries/entropy.py:11719
+#: ../../libraries/entropy.py:11721
 msgid "Error calculating dependencies"
 msgstr "Error calculando las dependencias"
 
-#: ../../libraries/entropy.py:11771
+#: ../../libraries/entropy.py:11773
 msgid "missing right parenthesis"
 msgstr "falta el paréntesis derecho"
 
-#: ../../libraries/entropy.py:11837
+#: ../../libraries/entropy.py:11839
 msgid "missing atom list in"
 msgstr "se ha perdido la lista de atoms en"
 
-#: ../../libraries/entropy.py:11840
+#: ../../libraries/entropy.py:11842
 msgid "Conditional without target in"
 msgstr "Condicional sin objetivo en"
 
-#: ../../libraries/entropy.py:11870
+#: ../../libraries/entropy.py:11872
 msgid "Conditional with no target"
 msgstr "Condicional sin objetivo"
 
-#: ../../libraries/entropy.py:11875
+#: ../../libraries/entropy.py:11877
 msgid "Empty target in string"
 msgstr "El objetivo de la cadena está vacío"
 
-#: ../../libraries/entropy.py:11875 ../../libraries/entropy.py:11884
+#: ../../libraries/entropy.py:11877 ../../libraries/entropy.py:11886
 msgid "Deprecated"
 msgstr "Depreciado"
 
-#: ../../libraries/entropy.py:11884
+#: ../../libraries/entropy.py:11886
 msgid "Nested use flags without parenthesis"
 msgstr "Banderas USE anidadas sin paréntesis"
 
-#: ../../libraries/entropy.py:11924
+#: ../../libraries/entropy.py:11926
 msgid "Conditional without flag"
 msgstr "Condición sin bandera"
 
-#: ../../libraries/entropy.py:11940
+#: ../../libraries/entropy.py:11942
 msgid "Conditional without parenthesis"
 msgstr "Condición sin paréntesis"
 
-#: ../../libraries/entropy.py:12532
+#: ../../libraries/entropy.py:12528
 msgid "Cannot bind the service"
 msgstr "No se pudo establecer el servicio"
 
-#: ../../libraries/entropy.py:13731
+#: ../../libraries/entropy.py:13727
 msgid "Entropy ServerInterface must be run as root"
 msgstr "ServerInterface de Entropy debe ejecutarse como root"
 
-#: ../../libraries/entropy.py:13759 ../../libraries/entropy.py:13842
+#: ../../libraries/entropy.py:13755 ../../libraries/entropy.py:13838
 msgid "repository not configured"
 msgstr "no es un repositorio configurado"
 
-#: ../../libraries/entropy.py:13765
+#: ../../libraries/entropy.py:13761
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr "no se puede usar como id porque es una id de repositorio protegida"
 
-#: ../../libraries/entropy.py:13864
+#: ../../libraries/entropy.py:13860
 msgid "Your default repository is not initialized"
 msgstr "Tu repositorio por defecto no está inicializado"
 
-#: ../../libraries/entropy.py:13875
+#: ../../libraries/entropy.py:13871
 msgid "Do you want to initialize your default repository ?"
 msgstr "¿ Quieres inicializar tu repositorio por defecto ?"
 
-#: ../../libraries/entropy.py:13877
+#: ../../libraries/entropy.py:13873
 msgid "You have taken the risk to continue with an uninitialized repository"
 msgstr ""
 "Has decidido asumir el riesgo de continuar con un repositorio no inicializado"
 
-#: ../../libraries/entropy.py:13897
+#: ../../libraries/entropy.py:13893
 msgid "server-side repository"
 msgstr "repositorio del servidor"
 
-#: ../../libraries/entropy.py:13899
+#: ../../libraries/entropy.py:13895
 msgid "community repository"
 msgstr "repositorio community"
 
-#: ../../libraries/entropy.py:13900
+#: ../../libraries/entropy.py:13896
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Instancia de la Interfaz del Servidor de Entropy en el repositorio"
 
-#: ../../libraries/entropy.py:13905
+#: ../../libraries/entropy.py:13901
 msgid "type"
 msgstr "tipo"
 
-#: ../../libraries/entropy.py:13914
+#: ../../libraries/entropy.py:13910
 msgid "Currently configured repositories"
 msgstr "Repositorios configurados actualmente"
 
-#: ../../libraries/entropy.py:14073
+#: ../../libraries/entropy.py:14026
+msgid "Entropy database is already locked by you :-)"
+msgstr "La base de datos de Entropy ya estaba bloqueada por ti :-)"
+
+#. check if the database is locked REMOTELY
+#: ../../libraries/entropy.py:14033
+msgid "Locking and Syncing Entropy database"
+msgstr "Bloqueando y sincronizando la base de datos de Entropy"
+
+#: ../../libraries/entropy.py:14045 ../../server/server_activator.py:180
+msgid "Mirrors status table"
+msgstr "Tabla de estado de los mirrors"
+
+#: ../../libraries/entropy.py:14054 ../../libraries/entropy.py:14057
+#: ../../server/server_activator.py:186 ../../server/server_activator.py:190
+msgid "Unlocked"
+msgstr "Desbloqueado"
+
+#: ../../libraries/entropy.py:14056 ../../libraries/entropy.py:14059
+#: ../../server/server_activator.py:184 ../../server/server_activator.py:188
+msgid "Locked"
+msgstr "Bloqueado"
+
+#: ../../libraries/entropy.py:14075
+msgid "cannot lock mirror"
+msgstr "no se pudo bloquear el mirror"
+
+#: ../../libraries/entropy.py:14148
 msgid ""
 "Entropy database is probably empty. If you don't agree with what I'm saying, "
 "then it's probably corrupted! I won't stop you here btw..."
@@ -1419,89 +1446,88 @@ msgstr ""
 "La base de datos de Entropy probablemente está vacía. Si crees que no lo "
 "está, probablemente esté corrupta. De todas formas, no voy a pararte aquí..."
 
-#: ../../libraries/entropy.py:14084
+#: ../../libraries/entropy.py:14159
 msgid "database"
 msgstr "base de datos"
 
-#: ../../libraries/entropy.py:14085
+#: ../../libraries/entropy.py:14160
 msgid "indexing database"
 msgstr "indexando la base de datos"
 
-#: ../../libraries/entropy.py:14118
+#: ../../libraries/entropy.py:14193
 msgid "Checking"
 msgstr "Comprobando"
 
-#: ../../libraries/entropy.py:14144
+#: ../../libraries/entropy.py:14219
 msgid "Running dependencies test"
 msgstr "Ejecutando test de dependencias"
 
-#: ../../libraries/entropy.py:14172 ../../client/text_ui.py:1144
+#: ../../libraries/entropy.py:14247 ../../client/text_ui.py:1144
 msgid "These are the dependencies not found"
 msgstr "Estas son las dependencias no encontradas"
 
-#: ../../libraries/entropy.py:14179 ../../client/text_ui.py:1148
+#: ../../libraries/entropy.py:14254 ../../client/text_ui.py:1148
 msgid "Needed by"
 msgstr "Requeridas por"
 
-#: ../../libraries/entropy.py:14196
+#: ../../libraries/entropy.py:14271
 msgid "by repo"
 msgstr "por el repositorio"
 
-#: ../../libraries/entropy.py:14203
+#: ../../libraries/entropy.py:14278
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "Todas las dependencias están satisfechas. Todo está bien."
 
-#: ../../libraries/entropy.py:14225 ../../client/text_ui.py:1194
+#: ../../libraries/entropy.py:14300 ../../client/text_ui.py:1194
 msgid "System is healthy"
 msgstr "El sistema está en buen estado"
 
-#: ../../libraries/entropy.py:14234
+#: ../../libraries/entropy.py:14309
 msgid "Matching libraries with Spm"
 msgstr "Haciendo coincidir librerías con el Administrador de Paquetes Fuente"
 
-#: ../../libraries/entropy.py:14243
+#: ../../libraries/entropy.py:14318
 msgid "Scanning"
 msgstr "Escaneando"
 
-#: ../../libraries/entropy.py:14255
+#: ../../libraries/entropy.py:14330
 msgid "These are the matched packages"
 msgstr "Estos son los paquetes que coinciden"
 
-#: ../../libraries/entropy.py:14271
+#: ../../libraries/entropy.py:14346
 msgid "No matched packages"
 msgstr "No coincide ningún paquete"
 
-#: ../../libraries/entropy.py:14293
+#: ../../libraries/entropy.py:14368
 msgid "Initializing an empty database file with Entropy structure"
 msgstr ""
 "Inicializando un archivo de base de datos vacío con la estructura de Entropy"
 
-#: ../../libraries/entropy.py:14305
+#: ../../libraries/entropy.py:14380
 msgid "Entropy database file"
 msgstr "El archivo con la base de datos de Entropy en"
 
-#: ../../libraries/entropy.py:14305
+#: ../../libraries/entropy.py:14380
 msgid "successfully initialized"
 msgstr "ha sido inicializado correctamente"
 
-#: ../../libraries/entropy.py:14321
+#: ../../libraries/entropy.py:14396
 msgid "You cannot switch packages from/to your system database"
 msgstr "No puedes conmutar paquetes desde/hacia la base de datos del sistema"
 
-#: ../../libraries/entropy.py:14337
+#: ../../libraries/entropy.py:14412
 msgid "Preparing to move selected packages to"
 msgstr "Preparándose para mover los paquetes seleccionados a"
 
-#: ../../libraries/entropy.py:14339
-#, fuzzy
+#: ../../libraries/entropy.py:14414
 msgid "Preparing to copy selected packages to"
-msgstr "Preparándose para mover los paquetes seleccionados a"
+msgstr "Preparándose para copiar los paquetes seleccionados a"
 
-#: ../../libraries/entropy.py:14351
+#: ../../libraries/entropy.py:14426
 msgid "Note"
 msgstr "Nota"
 
-#: ../../libraries/entropy.py:14352
+#: ../../libraries/entropy.py:14427
 msgid ""
 "all the old packages with conflicting scope will be removed from the "
 "destination repo unless injected"
@@ -1510,114 +1536,113 @@ msgstr ""
 "de destino hasta que sean inyectados"
 
 #. ask to continue
-#: ../../libraries/entropy.py:14376 ../../libraries/entropy.py:15313
-#: ../../libraries/entropy.py:15552 ../../libraries/entropy.py:19418
+#: ../../libraries/entropy.py:14451 ../../libraries/entropy.py:15388
+#: ../../libraries/entropy.py:15627 ../../libraries/entropy.py:19501
 #: ../../server/server_reagent.py:362 ../../server/server_reagent.py:409
 #: ../../server/server_reagent.py:459
 msgid "Would you like to continue ?"
 msgstr "¿ Desea continuar ?"
 
-#: ../../libraries/entropy.py:14392
+#: ../../libraries/entropy.py:14467
 msgid "switching"
 msgstr "cambiando"
 
-#: ../../libraries/entropy.py:14410
+#: ../../libraries/entropy.py:14485
 msgid "cannot switch, package not found, skipping"
 msgstr "no se puede cambiar. Paquete no encontrado, omitiendo"
 
-#: ../../libraries/entropy.py:14436
+#: ../../libraries/entropy.py:14511
 msgid "moving file"
 msgstr "moviendo el archivo"
 
-#: ../../libraries/entropy.py:14452
+#: ../../libraries/entropy.py:14527
 msgid "loading data from source database"
 msgstr "cargando datos desde la base de datos fuente"
 
-#: ../../libraries/entropy.py:14469
+#: ../../libraries/entropy.py:14544
 msgid "injecting data to destination database"
 msgstr "inyectando datos en la base de datos de destino"
 
-#: ../../libraries/entropy.py:14487
+#: ../../libraries/entropy.py:14562
 msgid "removing entry from source database"
 msgstr "eliminando entrada de la base de datos fuente"
 
-#: ../../libraries/entropy.py:14505
-#, fuzzy
+#: ../../libraries/entropy.py:14580
 msgid "successfully handled atom"
-msgstr "atom movido correctamente"
+msgstr "correctamente manejado el atom"
 
-#: ../../libraries/entropy.py:14530 ../../libraries/entropy.py:14624
+#: ../../libraries/entropy.py:14605 ../../libraries/entropy.py:14699
 msgid "adding package"
 msgstr "añadiendo paquete"
 
-#: ../../libraries/entropy.py:14568 ../../libraries/entropy.py:15188
+#: ../../libraries/entropy.py:14643 ../../libraries/entropy.py:15263
 msgid "added package"
 msgstr "paquete añadido"
 
-#: ../../libraries/entropy.py:14570
+#: ../../libraries/entropy.py:14645
 msgid "rev"
 msgstr "revisión"
 
-#: ../../libraries/entropy.py:14646
+#: ../../libraries/entropy.py:14721
 msgid "Exception caught, running injection and RDEPEND check before raising"
 msgstr ""
 "Excepción capturada. Ejecutando inyección y comprobación RDEPEND antes de "
 "alcanzarla"
 
-#: ../../libraries/entropy.py:14707
+#: ../../libraries/entropy.py:14782
 msgid "Injecting entropy metadata into built packages"
 msgstr "Inyectando metadatos de Entropy en los paquetes creados"
 
-#: ../../libraries/entropy.py:14722
+#: ../../libraries/entropy.py:14797
 msgid "injecting entropy metadata"
 msgstr "inyectando metadatos de Entropy"
 
-#: ../../libraries/entropy.py:14742
+#: ../../libraries/entropy.py:14817
 msgid "injection complete"
 msgstr "inyección completada"
 
-#: ../../libraries/entropy.py:14766
+#: ../../libraries/entropy.py:14841
 msgid "removing package"
 msgstr "eliminando paquete"
 
-#: ../../libraries/entropy.py:14778 ../../libraries/entropy.py:18915
+#: ../../libraries/entropy.py:14853 ../../libraries/entropy.py:18998
 msgid "removal complete"
 msgstr "eliminación completada"
 
-#: ../../libraries/entropy.py:14882
+#: ../../libraries/entropy.py:14957
 msgid "invalid database revision"
 msgstr "revisión de la base de datos inválida"
 
-#: ../../libraries/entropy.py:14884
+#: ../../libraries/entropy.py:14959
 msgid "defaulting to 0"
 msgstr "dejando por defecto 0"
 
-#: ../../libraries/entropy.py:15022
+#: ../../libraries/entropy.py:15097
 msgid "Initializing Entropy database"
 msgstr "Inicializando la base de datos de Entropy"
 
-#: ../../libraries/entropy.py:15055 ../../libraries/entropy.py:20061
-#: ../../libraries/entropy.py:20079 ../../libraries/entropy.py:20299
+#: ../../libraries/entropy.py:15130 ../../libraries/entropy.py:20074
+#: ../../libraries/entropy.py:20092 ../../libraries/entropy.py:20312
 msgid "WARNING"
 msgstr "CUIDADO"
 
-#: ../../libraries/entropy.py:15056
+#: ../../libraries/entropy.py:15131
 msgid "database already exists"
 msgstr "la base de datos ya existe"
 
-#: ../../libraries/entropy.py:15066
+#: ../../libraries/entropy.py:15141
 msgid "Do you want to continue ?"
 msgstr "¿ Quieres continuar ?"
 
-#: ../../libraries/entropy.py:15083
+#: ../../libraries/entropy.py:15158
 msgid "Dumping current revisions to file"
 msgstr "Volcando las revisiones actuales al archivo"
 
-#: ../../libraries/entropy.py:15100
+#: ../../libraries/entropy.py:15175
 msgid "Dumping current 'treeupdates' actions to file"
 msgstr "Volcando las acciones actuales de 'treeupdates' al archivo"
 
-#: ../../libraries/entropy.py:15112
+#: ../../libraries/entropy.py:15187
 msgid ""
 "Would you like to sync packages first (important if you don't have them "
 "synced) ?"
@@ -1625,952 +1650,925 @@ msgstr ""
 "¿ Quieres sincronizar los paquetes primero? (Es importante si no los tienes "
 "actualizados)"
 
-#: ../../libraries/entropy.py:15136
+#: ../../libraries/entropy.py:15211
 msgid "Reinitializing Entropy database for branch"
 msgstr "Reinicializando la base de datos de Entropy para la rama"
 
-#: ../../libraries/entropy.py:15138
+#: ../../libraries/entropy.py:15213
 msgid "using Packages in the repository"
 msgstr "usando Paquetes en el repositorio"
 
-#: ../../libraries/entropy.py:15155
+#: ../../libraries/entropy.py:15230
 msgid "analyzing"
 msgstr "analizando"
 
-#: ../../libraries/entropy.py:15190 ../../client/text_query.py:1057
+#: ../../libraries/entropy.py:15265 ../../client/text_query.py:1057
 #: ../../client/text_query.py:1059
 msgid "revision"
 msgstr "revisión"
 
-#: ../../libraries/entropy.py:15224
+#: ../../libraries/entropy.py:15299
 msgid "cannot match"
 msgstr "no se pudo hacer coincidir"
 
-#: ../../libraries/entropy.py:15276 ../../libraries/entropy.py:15483
+#: ../../libraries/entropy.py:15351 ../../libraries/entropy.py:15558
 msgid "Integrity verification of the selected packages"
 msgstr "Verificación de integridad de los paquetes seleccionados"
 
-#: ../../libraries/entropy.py:15288 ../../libraries/entropy.py:15495
+#: ../../libraries/entropy.py:15363 ../../libraries/entropy.py:15570
 msgid "All the packages in the Entropy Packages repository will be checked."
 msgstr ""
 "Todos los paquetes en el Repositorio de Paquetes de Entropy serán comprobados"
 
-#: ../../libraries/entropy.py:15294
+#: ../../libraries/entropy.py:15369
 msgid "This is the list of the packages that would be checked"
 msgstr "Esta es la lista de paquetes que serán comprobados"
 
-#: ../../libraries/entropy.py:15327
+#: ../../libraries/entropy.py:15402
 msgid "Working on mirror"
 msgstr "Trabajando en el mirror"
 
-#: ../../libraries/entropy.py:15348
+#: ../../libraries/entropy.py:15423
 msgid "checking hash"
 msgstr "comprobando el hash"
 
-#: ../../libraries/entropy.py:15364 ../../libraries/entropy.py:15379
+#: ../../libraries/entropy.py:15439 ../../libraries/entropy.py:15454
 msgid "digest verification of"
 msgstr "verificación de la firma de"
 
-#: ../../libraries/entropy.py:15381
+#: ../../libraries/entropy.py:15456
 msgid "failed for unknown reasons"
 msgstr "fallida por razones desconocidas"
 
-#: ../../libraries/entropy.py:15396 ../../libraries/entropy.py:15660
-#: ../../libraries/entropy.py:17182 ../../libraries/entropy.py:17201
-#: ../../libraries/entropy.py:17235 ../../libraries/entropy.py:17250
-#: ../../libraries/entropy.py:17269
+#: ../../libraries/entropy.py:15471 ../../libraries/entropy.py:15735
+#: ../../libraries/entropy.py:17264 ../../libraries/entropy.py:17283
+#: ../../libraries/entropy.py:17317 ../../libraries/entropy.py:17332
+#: ../../libraries/entropy.py:17351
 msgid "package"
 msgstr "paquete"
 
-#: ../../libraries/entropy.py:15398
+#: ../../libraries/entropy.py:15473
 msgid "NOT healthy"
 msgstr "NO está en buen estado"
 
-#: ../../libraries/entropy.py:15410 ../../libraries/entropy.py:15672
+#: ../../libraries/entropy.py:15485 ../../libraries/entropy.py:15747
 msgid "This is the list of broken packages"
 msgstr "Esta es la lista de paquetes rotos"
 
-#: ../../libraries/entropy.py:15435 ../../server/server_reagent.py:282
+#: ../../libraries/entropy.py:15510 ../../server/server_reagent.py:282
 msgid "Statistics"
 msgstr "Estadísticas"
 
-#: ../../libraries/entropy.py:15444 ../../libraries/entropy.py:15698
+#: ../../libraries/entropy.py:15519 ../../libraries/entropy.py:15773
 msgid "Number of checked packages"
 msgstr "Número de paquetes comprobados"
 
-#: ../../libraries/entropy.py:15454 ../../libraries/entropy.py:15708
+#: ../../libraries/entropy.py:15529 ../../libraries/entropy.py:15783
 msgid "Number of healthy packages"
 msgstr "Número de paquetes en buen estado"
 
-#: ../../libraries/entropy.py:15464 ../../libraries/entropy.py:15718
+#: ../../libraries/entropy.py:15539 ../../libraries/entropy.py:15793
 msgid "Number of broken packages"
 msgstr "Número de paquetes rotos"
 
-#: ../../libraries/entropy.py:15517
+#: ../../libraries/entropy.py:15592
 msgid "available"
 msgstr "disponible"
 
-#: ../../libraries/entropy.py:15530
+#: ../../libraries/entropy.py:15605
 msgid "upload/ignored"
 msgstr "subido/ignorado"
 
-#: ../../libraries/entropy.py:15541 ../../libraries/entropy.py:18245
-#: ../../libraries/entropy.py:18556
+#: ../../libraries/entropy.py:15616 ../../libraries/entropy.py:18328
+#: ../../libraries/entropy.py:18639
 msgid "download"
 msgstr "descargado"
 
-#: ../../libraries/entropy.py:15565
+#: ../../libraries/entropy.py:15640
 msgid "Starting to download missing files"
 msgstr "Comenzando a descargar los archivos desaparecidos"
 
-#: ../../libraries/entropy.py:15575
+#: ../../libraries/entropy.py:15650
 msgid "Trying to search missing or broken files on another mirror"
 msgstr "Intentando buscar los paquetes desaparecidos o rotos en otro mirror"
 
-#: ../../libraries/entropy.py:15597
+#: ../../libraries/entropy.py:15672
 msgid "All the binary packages have been downloaded successfully."
 msgstr "Todos los paquetes binarios han sido descargados correctamente."
 
-#: ../../libraries/entropy.py:15605
+#: ../../libraries/entropy.py:15680
 msgid "These are the packages that cannot be found online"
 msgstr "Estos son los paquetes que no se pudieron encontrar online"
 
-#: ../../libraries/entropy.py:15621
+#: ../../libraries/entropy.py:15696
 msgid "They won't be checked"
 msgstr "No serán comprobados"
 
-#: ../../libraries/entropy.py:15640
+#: ../../libraries/entropy.py:15715
 msgid "checking hash of"
 msgstr "comprobando el hash de"
 
-#: ../../libraries/entropy.py:15662
+#: ../../libraries/entropy.py:15737
 msgid "is corrupted, stored checksum"
 msgstr "está corrupto. Se ha almacenado la suma de verificación"
 
-#: ../../libraries/entropy.py:15728
+#: ../../libraries/entropy.py:15803
 msgid "Number of downloaded packages"
 msgstr "Número de paquetes descargados"
 
-#: ../../libraries/entropy.py:15738
+#: ../../libraries/entropy.py:15813
 msgid "Number of failed downloads"
 msgstr "Número de descargas fallidas"
 
-#: ../../libraries/entropy.py:15767
+#: ../../libraries/entropy.py:15842
 msgid "Switching selected packages"
 msgstr "Conmutando los paquetes seleccionados"
 
-#: ../../libraries/entropy.py:15790
+#: ../../libraries/entropy.py:15865
 msgid "Ignoring"
 msgstr "Ignorando"
 
-#: ../../libraries/entropy.py:15792
+#: ../../libraries/entropy.py:15867
 msgid "already in branch"
 msgstr "ya estaba en la rama"
 
-#: ../../libraries/entropy.py:15811
+#: ../../libraries/entropy.py:15886
 msgid "cannot switch, package not found!"
 msgstr "no se puede conmutar porque el paquete no se encontró"
 
-#: ../../libraries/entropy.py:15820
+#: ../../libraries/entropy.py:15895
 msgid "configuring package information"
 msgstr "configurando la información del paquete"
 
-#: ../../libraries/entropy.py:15836
+#: ../../libraries/entropy.py:15911
 msgid "moving file locally"
 msgstr "moviendo el archivo localmente"
 
-#: ../../libraries/entropy.py:15865
+#: ../../libraries/entropy.py:15940
 msgid "cannot find checksum to migrate!"
 msgstr "no se pudo encontrar la verificación de suma para migrar"
 
-#: ../../libraries/entropy.py:15873
+#: ../../libraries/entropy.py:15948
 msgid "moving file remotely"
 msgstr "moviendo el archivo remotamente"
 
-#: ../../libraries/entropy.py:15896
+#: ../../libraries/entropy.py:15971
 msgid "moving file remotely on"
 msgstr "moviendo el archivo remotamente en"
 
-#: ../../libraries/entropy.py:15921
+#: ../../libraries/entropy.py:15996
 msgid "migration loop completed"
 msgstr "ciclo de migración completado"
 
-#: ../../libraries/entropy.py:16200
+#: ../../libraries/entropy.py:16282
 msgid "database does not exist. Locking services for it"
 msgstr "base de datos no existe. Bloqueando sus servicios"
 
-#: ../../libraries/entropy.py:16218
+#: ../../libraries/entropy.py:16300
 msgid "database got locked. Locking services for it"
 msgstr "base de datos se bloqueó. Bloqueando sus servicios"
 
-#: ../../libraries/entropy.py:16232
+#: ../../libraries/entropy.py:16314
 msgid "unlocking and indexing database"
 msgstr "desbloqueando e indexando la base de datos"
 
-#: ../../libraries/entropy.py:16233
+#: ../../libraries/entropy.py:16315
 msgid "hash"
 msgstr "hash"
 
-#: ../../libraries/entropy.py:16344
+#: ../../libraries/entropy.py:16426
 msgid "A valid RepositorySocketClientInterface based instance is needed"
 msgstr ""
 "Se necesita una instancia válida basada en RepositorySocketClientInterface"
 
-#: ../../libraries/entropy.py:16354
+#: ../../libraries/entropy.py:16436
 msgid "hello world!"
 msgstr "¡Hola mundo!"
 
-#: ../../libraries/entropy.py:16364
+#: ../../libraries/entropy.py:16446
 msgid "feature not supported remotely"
 msgstr "característica no soportada remotamente"
 
-#: ../../libraries/entropy.py:16367 ../../libraries/entropy.py:16384
-#: ../../libraries/entropy.py:16401 ../../libraries/entropy.py:16438
+#: ../../libraries/entropy.py:16449 ../../libraries/entropy.py:16466
+#: ../../libraries/entropy.py:16483 ../../libraries/entropy.py:16520
 msgid "repo"
 msgstr "repositorio"
 
-#: ../../libraries/entropy.py:16369 ../../libraries/entropy.py:16386
-#: ../../libraries/entropy.py:16403 ../../libraries/entropy.py:16440
+#: ../../libraries/entropy.py:16451 ../../libraries/entropy.py:16468
+#: ../../libraries/entropy.py:16485 ../../libraries/entropy.py:16522
 msgid "arch"
 msgstr "arquitectura"
 
-#: ../../libraries/entropy.py:16371 ../../libraries/entropy.py:16388
-#: ../../libraries/entropy.py:16405 ../../libraries/entropy.py:16442
+#: ../../libraries/entropy.py:16453 ../../libraries/entropy.py:16470
+#: ../../libraries/entropy.py:16487 ../../libraries/entropy.py:16524
 msgid "product"
 msgstr "producto"
 
-#: ../../libraries/entropy.py:16381
+#: ../../libraries/entropy.py:16463
 msgid "service temporarily not available"
 msgstr "servicio no disponible temporalmente"
 
-#: ../../libraries/entropy.py:16398
+#: ../../libraries/entropy.py:16480
 msgid "received wrong answer"
 msgstr "respuesta incorrecta recibida"
 
-#: ../../libraries/entropy.py:16435
+#: ../../libraries/entropy.py:16517
 msgid "cannot convert stream into object"
 msgstr "no se pudo convertir el flujo en un objeto"
 
-#: ../../libraries/entropy.py:16611
+#: ../../libraries/entropy.py:16693
 msgid "A valid EntropySocketClientCommands based class is needed"
 msgstr "Se necesita una clase válida basada en EntropySocketClientCommands"
 
-#: ../../libraries/entropy.py:16679
+#: ../../libraries/entropy.py:16761
 msgid "malformed EOS. receive aborted"
 msgstr "final del flujo corrupto. Recepción cancelada"
 
-#: ../../libraries/entropy.py:16710
+#: ../../libraries/entropy.py:16792
 msgid "malformed data. receive aborted"
 msgstr "datos corruptos. Recepción cancelada"
 
-#: ../../libraries/entropy.py:16725
+#: ../../libraries/entropy.py:16807
 msgid "connection timed out while receiving data"
 msgstr "tiempo de conexión excedido mientras se recibían los datos"
 
-#: ../../libraries/entropy.py:16745
+#: ../../libraries/entropy.py:16827
 msgid "Reconnecting to socket"
 msgstr "Reconectando al socket"
 
-#: ../../libraries/entropy.py:16760
+#: ../../libraries/entropy.py:16842
 msgid "Not connected to host"
 msgstr "No conectado al host"
 
-#: ../../libraries/entropy.py:16769
+#: ../../libraries/entropy.py:16851
 msgid "Cannot connect to"
 msgstr "No se pudo conectar a"
 
-#: ../../libraries/entropy.py:16769
+#: ../../libraries/entropy.py:16851
 msgid "on port"
 msgstr "por el puerto"
 
-#: ../../libraries/entropy.py:16776
+#: ../../libraries/entropy.py:16858
 msgid "Successfully connected to host"
 msgstr "Correctamente conectado al host"
 
-#: ../../libraries/entropy.py:16793
+#: ../../libraries/entropy.py:16875
 msgid "Successfully disconnected from host"
 msgstr "Correctamente desconectado del host"
 
-#: ../../libraries/entropy.py:16815
+#: ../../libraries/entropy.py:16897
 msgid "A valid ServerInterface based instance is needed"
 msgstr "Se necesita una instancia válida basada en ServerInterface"
 
-#: ../../libraries/entropy.py:16822
+#: ../../libraries/entropy.py:16904
 msgid "Entropy Server Mirrors Interface loaded"
 msgstr "Interfaz de Servidores Mirror de Entropy cargada"
 
-#: ../../libraries/entropy.py:16829 ../../libraries/entropy.py:16860
+#: ../../libraries/entropy.py:16911 ../../libraries/entropy.py:16942
 msgid "mirror"
 msgstr "mirror"
 
-#: ../../libraries/entropy.py:16853 ../../libraries/entropy.py:16928
+#: ../../libraries/entropy.py:16935 ../../libraries/entropy.py:17010
 msgid "unlocking"
 msgstr "desbloqueando"
 
-#: ../../libraries/entropy.py:16854 ../../libraries/entropy.py:16929
-#: ../../libraries/entropy.py:17976 ../../libraries/entropy.py:17996
+#: ../../libraries/entropy.py:16936 ../../libraries/entropy.py:17011
+#: ../../libraries/entropy.py:18059 ../../libraries/entropy.py:18079
 msgid "locking"
 msgstr "bloqueando"
 
-#: ../../libraries/entropy.py:16876 ../../libraries/entropy.py:17977
+#: ../../libraries/entropy.py:16958 ../../libraries/entropy.py:18060
 msgid "mirror already locked"
 msgstr "mirror ya estaba bloqueado"
 
-#: ../../libraries/entropy.py:16889
+#: ../../libraries/entropy.py:16971
 msgid "mirror already unlocked"
 msgstr "mirror ya estaba desbloqueado"
 
-#: ../../libraries/entropy.py:16935
+#: ../../libraries/entropy.py:17017
 msgid "mirror for download"
 msgstr "mirror para la descarga"
 
-#: ../../libraries/entropy.py:16951
+#: ../../libraries/entropy.py:17033
 msgid "mirror already locked for download"
 msgstr "mirror ya bloqueado para la descarga"
 
-#: ../../libraries/entropy.py:16964
+#: ../../libraries/entropy.py:17046
 msgid "mirror already unlocked for download"
 msgstr "mirror ya desbloqueado para la descarga"
 
-#: ../../libraries/entropy.py:17002
+#: ../../libraries/entropy.py:17084
 msgid "for download"
 msgstr "para descargar"
 
-#: ../../libraries/entropy.py:17012
+#: ../../libraries/entropy.py:17094
 msgid "mirror successfully locked"
 msgstr "mirror bloqueado correctamente"
 
-#: ../../libraries/entropy.py:17026
+#: ../../libraries/entropy.py:17108
 msgid "mirror not locked"
 msgstr "mirror no bloqueado"
 
-#: ../../libraries/entropy.py:17064
+#: ../../libraries/entropy.py:17146
 msgid "mirror successfully unlocked"
 msgstr "mirror desbloqueado correctamente"
 
-#: ../../libraries/entropy.py:17079
+#: ../../libraries/entropy.py:17161
 msgid "unlock error"
 msgstr "error desbloqueando"
 
-#: ../../libraries/entropy.py:17081
+#: ../../libraries/entropy.py:17163
 msgid "mirror not unlocked"
 msgstr "mirror no desbloqueado"
 
-#: ../../libraries/entropy.py:17148
+#: ../../libraries/entropy.py:17230
 msgid "connecting to download package"
 msgstr "conectando para desargar el paquete"
 
-#: ../../libraries/entropy.py:17166
+#: ../../libraries/entropy.py:17248
 msgid "downloading package"
 msgstr "descargando el paquete"
 
-#: ../../libraries/entropy.py:17203
+#: ../../libraries/entropy.py:17285
 msgid "is not listed in the current repository database!!"
 msgstr "no está en la base de datos actual del repositorio"
 
-#: ../../libraries/entropy.py:17218
+#: ../../libraries/entropy.py:17300
 msgid "verifying checksum of package"
 msgstr "verificando la comprobación de suma del paquete"
 
-#: ../../libraries/entropy.py:17237
+#: ../../libraries/entropy.py:17319
 msgid "downloaded successfully"
 msgstr "descargado correctamente"
 
-#: ../../libraries/entropy.py:17252
+#: ../../libraries/entropy.py:17334
 msgid "checksum does not match. re-downloading..."
 msgstr "su comprobación de suma no coincide. Volviendo a descargar"
 
-#: ../../libraries/entropy.py:17271
+#: ../../libraries/entropy.py:17353
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr "parece roto. Considera la opción de reempaquetarlo. Abandonando."
 
-#: ../../libraries/entropy.py:17297
+#: ../../libraries/entropy.py:17379
 msgid "mirror doesn't have a valid directory structure"
 msgstr "mirror no tiene una estructura de directorios válida"
 
-#: ../../libraries/entropy.py:17308
+#: ../../libraries/entropy.py:17390
 msgid "Wrong database compression method passed"
 msgstr "Método de descompresión pasado de la base de datos incorrecto"
 
-#: ../../libraries/entropy.py:17329
+#: ../../libraries/entropy.py:17411
 msgid "mirror doesn't have a valid database revision file"
 msgstr "mirror no tiene un archivo de revisión de la base de datos válido"
 
-#: ../../libraries/entropy.py:17545
+#: ../../libraries/entropy.py:17628
 msgid "uris must be a list instance"
 msgstr "las uris deben de ser una instancia de lista"
 
-#: ../../libraries/entropy.py:17548
+#: ../../libraries/entropy.py:17631
 msgid "files_to_upload must be a list or dict instance"
 msgstr "files_to_upload debe ser una lista o una instancia dict"
 
-#: ../../libraries/entropy.py:17589
+#: ../../libraries/entropy.py:17672
 msgid "verifying upload (if supported)"
 msgstr "verificando la subida (si está soportado)"
 
-#: ../../libraries/entropy.py:17610 ../../libraries/entropy.py:17626
-#: ../../libraries/entropy.py:17645 ../../libraries/entropy.py:17661
-#: ../../libraries/entropy.py:17677
+#: ../../libraries/entropy.py:17693 ../../libraries/entropy.py:17709
+#: ../../libraries/entropy.py:17728 ../../libraries/entropy.py:17744
+#: ../../libraries/entropy.py:17760
 msgid "digest verification"
 msgstr "verificación de firma"
 
-#: ../../libraries/entropy.py:17628
+#: ../../libraries/entropy.py:17711
 msgid "file not found"
 msgstr "archivo no encontrado"
 
-#: ../../libraries/entropy.py:17647
+#: ../../libraries/entropy.py:17730
 msgid "so far, so good!"
 msgstr "¡hasta ahora todo bien!"
 
-#: ../../libraries/entropy.py:17663
+#: ../../libraries/entropy.py:17746
 msgid "invalid checksum"
 msgstr "comprobación de suma inválida"
 
-#: ../../libraries/entropy.py:17679
+#: ../../libraries/entropy.py:17762
 msgid "unknown data returned"
 msgstr "datos devueltos desconocidos"
 
-#: ../../libraries/entropy.py:17705
+#: ../../libraries/entropy.py:17788
 msgid "connecting to mirror"
 msgstr "conectado al mirror"
 
-#: ../../libraries/entropy.py:17716
+#: ../../libraries/entropy.py:17799
 msgid "changing directory to"
 msgstr "cambiando el directorio a"
 
-#: ../../libraries/entropy.py:17767
+#: ../../libraries/entropy.py:17850
 msgid "successful"
 msgstr "correctamente"
 
-#: ../../libraries/entropy.py:17784
+#: ../../libraries/entropy.py:17867
 msgid "failed, retrying"
 msgstr "fallido, reintentando"
 
-#: ../../libraries/entropy.py:17818
+#: ../../libraries/entropy.py:17901
 msgid "not critical"
 msgstr "no crítico"
 
-#: ../../libraries/entropy.py:17820
+#: ../../libraries/entropy.py:17903
 msgid "continuing"
 msgstr "continuando"
 
-#: ../../libraries/entropy.py:17847
+#: ../../libraries/entropy.py:17930
 msgid "preparing uncompressed database for the upload"
 msgstr "preparando la base de datos descomprimida para la subida"
 
-#: ../../libraries/entropy.py:17854 ../../libraries/entropy.py:17878
-#: ../../libraries/entropy.py:17918
+#: ../../libraries/entropy.py:17937 ../../libraries/entropy.py:17961
+#: ../../libraries/entropy.py:18001
 msgid "database path"
 msgstr "ruta de la base de datos"
 
-#: ../../libraries/entropy.py:17871
+#: ../../libraries/entropy.py:17954
 msgid "creating compressed database dump + checksum"
 msgstr ""
 "creando el volcado de la base de datos comprimida + comprobación de suma"
 
-#: ../../libraries/entropy.py:17884
+#: ../../libraries/entropy.py:17967
 msgid "dump"
 msgstr "volcado"
 
-#: ../../libraries/entropy.py:17890
+#: ../../libraries/entropy.py:17973
 msgid "dump checksum"
 msgstr "volcado de la comprobación de suma"
 
-#: ../../libraries/entropy.py:17896 ../../libraries/entropy.py:17936
+#: ../../libraries/entropy.py:17979 ../../libraries/entropy.py:18019
 msgid "opener"
 msgstr "abridor"
 
-#: ../../libraries/entropy.py:17910
+#: ../../libraries/entropy.py:17993
 msgid "compressing database + checksum"
 msgstr "comprimiendo la base de datos + comprobación de suma"
 
-#: ../../libraries/entropy.py:17924
+#: ../../libraries/entropy.py:18007
 msgid "compressed database path"
 msgstr "ruta de la base de datos comprimida"
 
-#: ../../libraries/entropy.py:17930
+#: ../../libraries/entropy.py:18013
 msgid "compressed checksum"
 msgstr "comprobación de suma comprimida"
 
-#: ../../libraries/entropy.py:17953
+#: ../../libraries/entropy.py:18036
 msgid "cannot create mirror directory"
 msgstr "no se pudo crear un directorio para el mirror"
 
-#: ../../libraries/entropy.py:17978
+#: ../../libraries/entropy.py:18061
 msgid "waiting up to 2 minutes before giving up"
 msgstr "esperando hasta 2 minutos antes de abandonar"
 
-#: ../../libraries/entropy.py:17997
+#: ../../libraries/entropy.py:18080
 msgid "mirror unlocked"
 msgstr "mirror desbloqueado"
 
-#: ../../libraries/entropy.py:18048
+#: ../../libraries/entropy.py:18131
 msgid "Troubles with treeupdates"
 msgstr "Problemas con las treeupdates"
 
-#: ../../libraries/entropy.py:18051
+#: ../../libraries/entropy.py:18134
 msgid "Bumping old data back"
 msgstr "Metiendo los datos viejos de nuevo"
 
-#: ../../libraries/entropy.py:18089 ../../libraries/entropy.py:18230
+#: ../../libraries/entropy.py:18172 ../../libraries/entropy.py:18313
 msgid "wrong database compression method passed"
 msgstr "el método de compresión de la base de datos pasado es incorrecto"
 
-#: ../../libraries/entropy.py:18110 ../../libraries/entropy.py:18542
+#: ../../libraries/entropy.py:18193 ../../libraries/entropy.py:18625
 msgid "upload"
 msgstr "subida"
 
-#: ../../libraries/entropy.py:18111
+#: ../../libraries/entropy.py:18194
 msgid "preparing to upload database to mirror"
 msgstr "preparándose para subir la base de datos al mirror"
 
-#: ../../libraries/entropy.py:18171 ../../libraries/entropy.py:18285
+#: ../../libraries/entropy.py:18254 ../../libraries/entropy.py:18368
 msgid "errors"
 msgstr "errores"
 
-#: ../../libraries/entropy.py:18172
+#: ../../libraries/entropy.py:18255
 msgid "failed to upload to mirror, not unlocking and continuing"
 msgstr "no se pudo subir al mirror. No se desbloqueará ni continuará"
 
-#: ../../libraries/entropy.py:18181 ../../libraries/entropy.py:18295
-#: ../../libraries/entropy.py:18996 ../../libraries/entropy.py:19057
-#: ../../libraries/entropy.py:19459
+#: ../../libraries/entropy.py:18264 ../../libraries/entropy.py:18378
+#: ../../libraries/entropy.py:19079 ../../libraries/entropy.py:19140
+#: ../../libraries/entropy.py:19542
 msgid "reason"
 msgstr "razón"
 
-#: ../../libraries/entropy.py:18246
+#: ../../libraries/entropy.py:18329
 msgid "preparing to download database from mirror"
 msgstr "preparándose para descargar la base de datos desde el mirror"
 
-#: ../../libraries/entropy.py:18256
+#: ../../libraries/entropy.py:18339
 msgid "download path"
 msgstr "ruta de descarga"
 
-#: ../../libraries/entropy.py:18286
+#: ../../libraries/entropy.py:18369
 msgid "failed to download from mirror"
 msgstr "no se pudo descargar desde el mirror"
 
-#: ../../libraries/entropy.py:18375
+#: ../../libraries/entropy.py:18458
 msgid "Mirrors are not locked remotely but the local database is"
 msgstr ""
 "Los mirrors no están bloqueados remotamente pero la base de datos local sí"
 
-#: ../../libraries/entropy.py:18376
+#: ../../libraries/entropy.py:18459
 msgid "It is a nonsense"
 msgstr "Es un sinsentido"
 
-#: ../../libraries/entropy.py:18377
+#: ../../libraries/entropy.py:18460
 msgid "Please remove the lock file"
 msgstr "Elimina el archivo bloqueado"
 
-#: ../../libraries/entropy.py:18384
+#: ../../libraries/entropy.py:18467
 msgid ""
 "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 "En este momento los mirrors están bloqueados; alguien está trabajando en las "
 "bases de datos"
 
-#: ../../libraries/entropy.py:18385
+#: ../../libraries/entropy.py:18468
 msgid "try again later"
 msgstr "inténtalo de nuevo mas tarde"
 
-#: ../../libraries/entropy.py:18396 ../../libraries/entropy.py:18412
-#: ../../libraries/entropy.py:18430 ../../libraries/entropy.py:18446
-#: ../../libraries/entropy.py:18460 ../../libraries/entropy.py:18913
-#: ../../libraries/entropy.py:19053 ../../libraries/entropy.py:19069
-#: ../../libraries/entropy.py:19089 ../../libraries/entropy.py:19116
-#: ../../libraries/entropy.py:19137 ../../libraries/entropy.py:19173
-#: ../../libraries/entropy.py:19220 ../../libraries/entropy.py:19237
-#: ../../libraries/entropy.py:19262
+#: ../../libraries/entropy.py:18479 ../../libraries/entropy.py:18495
+#: ../../libraries/entropy.py:18513 ../../libraries/entropy.py:18529
+#: ../../libraries/entropy.py:18543 ../../libraries/entropy.py:18996
+#: ../../libraries/entropy.py:19136 ../../libraries/entropy.py:19152
+#: ../../libraries/entropy.py:19172 ../../libraries/entropy.py:19199
+#: ../../libraries/entropy.py:19220 ../../libraries/entropy.py:19256
+#: ../../libraries/entropy.py:19303 ../../libraries/entropy.py:19320
+#: ../../libraries/entropy.py:19345
 msgid "sync"
 msgstr "sincronización"
 
 #. something short please
-#: ../../libraries/entropy.py:18397
+#: ../../libraries/entropy.py:18480
 msgid "database already in sync"
 msgstr "la base de datos ya estaba sincronizada"
 
-#: ../../libraries/entropy.py:18413 ../../libraries/entropy.py:18447
+#: ../../libraries/entropy.py:18496 ../../libraries/entropy.py:18530
 msgid "database sync failed"
 msgstr "la sincronización de la base de datos falló"
 
-#: ../../libraries/entropy.py:18414
+#: ../../libraries/entropy.py:18497
 msgid "download issues"
 msgstr "problemas con la descarga"
 
-#: ../../libraries/entropy.py:18431
+#: ../../libraries/entropy.py:18514
 msgid "database sync forbidden"
 msgstr "la sincronización con la base de datos está prohibida"
 
-#: ../../libraries/entropy.py:18432
+#: ../../libraries/entropy.py:18515
 msgid "dependencies_test() reported errors"
 msgstr "dependencies_test() devolvió errores"
 
-#: ../../libraries/entropy.py:18448
+#: ../../libraries/entropy.py:18531
 msgid "upload issues"
 msgstr "problemas con la subida"
 
-#: ../../libraries/entropy.py:18461
+#: ../../libraries/entropy.py:18544
 msgid "database sync completed successfully"
 msgstr "sincronización de la base de datos completada correctamente"
 
-#: ../../libraries/entropy.py:18505
+#: ../../libraries/entropy.py:18588
 msgid "Local statistics"
 msgstr "Estadísticas locales"
 
-#: ../../libraries/entropy.py:18512
+#: ../../libraries/entropy.py:18595
 msgid "upload directory"
 msgstr "directorio de subida"
 
-#: ../../libraries/entropy.py:18514 ../../libraries/entropy.py:18525
+#: ../../libraries/entropy.py:18597 ../../libraries/entropy.py:18608
 msgid "files ready"
 msgstr "archivos listos"
 
-#: ../../libraries/entropy.py:18523
+#: ../../libraries/entropy.py:18606
 msgid "packages directory"
 msgstr "directorio de paquetes"
 
-#: ../../libraries/entropy.py:18570
+#: ../../libraries/entropy.py:18653
 msgid "copy"
 msgstr "copia"
 
-#: ../../libraries/entropy.py:18595
+#: ../../libraries/entropy.py:18678
 msgid "Packages to be removed"
 msgstr "Paquetes que serán eliminados"
 
-#: ../../libraries/entropy.py:18604
+#: ../../libraries/entropy.py:18687
 msgid "Packages to be moved locally"
 msgstr "Paquetes que serán movido localmente"
 
-#: ../../libraries/entropy.py:18613
+#: ../../libraries/entropy.py:18696
 msgid "Packages to be uploaded"
 msgstr "Paquetes que serán subidos"
 
-#: ../../libraries/entropy.py:18623
+#: ../../libraries/entropy.py:18706
 msgid "Total removal size"
 msgstr "Tamaño total de lo que será eliminado"
 
-#: ../../libraries/entropy.py:18633
+#: ../../libraries/entropy.py:18716
 msgid "Total upload size"
 msgstr "Tamaño total de la subida"
 
-#: ../../libraries/entropy.py:18642
+#: ../../libraries/entropy.py:18725
 msgid "Total download size"
 msgstr "Tamaño total de la descarga"
 
-#: ../../libraries/entropy.py:18693
+#: ../../libraries/entropy.py:18776
 msgid "Remote statistics for"
 msgstr "Estadísticas remotas para"
 
-#: ../../libraries/entropy.py:18705
+#: ../../libraries/entropy.py:18788
 msgid "remote packages"
 msgstr "paquetes remotos"
 
-#: ../../libraries/entropy.py:18707
+#: ../../libraries/entropy.py:18790
 msgid "files stored"
 msgstr "archivos guardados"
 
-#: ../../libraries/entropy.py:18714
+#: ../../libraries/entropy.py:18797
 msgid "Calculating queues"
 msgstr "Calculando colas"
 
-#: ../../libraries/entropy.py:18896
+#: ../../libraries/entropy.py:18979
 msgid "removing package+hash"
 msgstr "eliminando paquete+hash"
 
-#: ../../libraries/entropy.py:18940
+#: ../../libraries/entropy.py:19023
 msgid "copying file+hash to repository"
 msgstr "copiando archivo+hash al repositorio"
 
-#: ../../libraries/entropy.py:18994
+#: ../../libraries/entropy.py:19077
 msgid "upload errors"
 msgstr "errores en la subida"
 
-#: ../../libraries/entropy.py:19008
+#: ../../libraries/entropy.py:19091
 msgid "upload completed successfully"
 msgstr "subida completada correctamente"
 
-#: ../../libraries/entropy.py:19055
+#: ../../libraries/entropy.py:19138
 msgid "download errors"
 msgstr "errores en la descarga"
 
-#: ../../libraries/entropy.py:19071
+#: ../../libraries/entropy.py:19154
 msgid "download completed successfully"
 msgstr "descarga completada correctamente"
 
-#: ../../libraries/entropy.py:19090
+#: ../../libraries/entropy.py:19173
 msgid "starting packages sync"
 msgstr "comenzando la sincronización de paquetes"
 
-#: ../../libraries/entropy.py:19118
+#: ../../libraries/entropy.py:19201
 msgid "packages sync"
 msgstr "sincronización de paquetes"
 
-#: ../../libraries/entropy.py:19139
+#: ../../libraries/entropy.py:19222
 msgid "nothing to do on"
 msgstr "nada que hacer en"
 
-#: ../../libraries/entropy.py:19151
+#: ../../libraries/entropy.py:19234
 msgid "Expanding queues"
 msgstr "Expandiendo colas"
 
-#: ../../libraries/entropy.py:19175
+#: ../../libraries/entropy.py:19258
 msgid "nothing to sync for"
 msgstr "nada que sincronizar en"
 
-#: ../../libraries/entropy.py:19193
+#: ../../libraries/entropy.py:19276
 msgid "Would you like to run the steps above ?"
 msgstr "¿ Quieres ejecutar los pasos descritos ?"
 
-#: ../../libraries/entropy.py:19222
+#: ../../libraries/entropy.py:19305
 msgid "keyboard interrupt !"
 msgstr "¡ interrupción del teclado !"
 
-#: ../../libraries/entropy.py:19239
+#: ../../libraries/entropy.py:19322
 msgid "exception caught"
 msgstr "excepción capturada"
 
-#: ../../libraries/entropy.py:19264
+#: ../../libraries/entropy.py:19347
 msgid "at least one mirror has been sync'd properly, hooray!"
 msgstr "al menos un mirror ha sido sincronizado correctamente, ¡bien!"
 
-#: ../../libraries/entropy.py:19340
+#: ../../libraries/entropy.py:19423
 msgid "tidy"
 msgstr "ordenado"
 
-#: ../../libraries/entropy.py:19342
+#: ../../libraries/entropy.py:19425
 msgid "collecting expired packages"
 msgstr "recopilando los paquetes que han expirado"
 
-#: ../../libraries/entropy.py:19360
+#: ../../libraries/entropy.py:19443
 msgid "collecting expired packages in the selected branches"
 msgstr "recopilando los paquetes que han expirado en las ramas seleccionadas"
 
-#: ../../libraries/entropy.py:19385
+#: ../../libraries/entropy.py:19468
 msgid "nothing to remove on this branch"
 msgstr "nada que eliminar en esta rama"
 
-#: ../../libraries/entropy.py:19396
+#: ../../libraries/entropy.py:19479
 msgid "these are the expired packages"
 msgstr "estos son los paquetes que han expirado"
 
-#: ../../libraries/entropy.py:19432
+#: ../../libraries/entropy.py:19515
 msgid "removing packages remotely"
 msgstr "eliminando los paquetes remotamente"
 
-#: ../../libraries/entropy.py:19457
+#: ../../libraries/entropy.py:19540
 msgid "remove errors"
 msgstr "errores al eliminar"
 
-#: ../../libraries/entropy.py:19472
+#: ../../libraries/entropy.py:19555
 msgid "removing packages locally"
 msgstr "eliminando paquetes localmente"
 
-#: ../../libraries/entropy.py:19489
+#: ../../libraries/entropy.py:19572
 msgid "removing"
 msgstr "eliminando"
 
-#: ../../libraries/entropy.py:19524
+#: ../../libraries/entropy.py:19607
 msgid "valid database path needed"
 msgstr "se necesita una ruta válida para la base de datos"
 
-#: ../../libraries/entropy.py:19611
-msgid "Entropy database is already locked by you :-)"
-msgstr "La base de datos de Entropy ya estaba bloqueada por ti :-)"
-
-#. check if the database is locked REMOTELY
-#: ../../libraries/entropy.py:19618
-msgid "Locking and Syncing Entropy database"
-msgstr "Bloqueando y sincronizando la base de datos de Entropy"
-
-#: ../../libraries/entropy.py:19630 ../../server/server_activator.py:180
-msgid "Mirrors status table"
-msgstr "Tabla de estado de los mirrors"
-
-#: ../../libraries/entropy.py:19639 ../../libraries/entropy.py:19642
-#: ../../server/server_activator.py:186 ../../server/server_activator.py:190
-msgid "Unlocked"
-msgstr "Desbloqueado"
-
-#: ../../libraries/entropy.py:19641 ../../libraries/entropy.py:19644
-#: ../../server/server_activator.py:184 ../../server/server_activator.py:188
-msgid "Locked"
-msgstr "Bloqueado"
-
-#: ../../libraries/entropy.py:19660
-msgid "cannot lock mirror"
-msgstr "no se pudo bloquear el mirror"
-
-#: ../../libraries/entropy.py:19690
+#: ../../libraries/entropy.py:19703
 msgid "Mirrors have not been unlocked. Remember to sync them."
 msgstr "Los mirrors no han sido desbloqueados. Recuerda sincronizarlos."
 
-#: ../../libraries/entropy.py:19777
+#: ../../libraries/entropy.py:19790
 msgid "can't do that on a readonly database"
 msgstr "no se puede hacer eso en una base de datos de solo lectura"
 
-#: ../../libraries/entropy.py:19854 ../../libraries/entropy.py:19923
-#: ../../libraries/entropy.py:20254 ../../libraries/entropy.py:20318
-#: ../../libraries/entropy.py:23380 ../../libraries/entropy.py:23399
+#: ../../libraries/entropy.py:19867 ../../libraries/entropy.py:19936
+#: ../../libraries/entropy.py:20267 ../../libraries/entropy.py:20331
+#: ../../libraries/entropy.py:23393 ../../libraries/entropy.py:23412
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
 #: ../../client/text_ui.py:348 ../../client/text_ui.py:908
 msgid "ATTENTION"
 msgstr "ATENCIÓN"
 
-#: ../../libraries/entropy.py:19855
+#: ../../libraries/entropy.py:19868
 msgid "forcing package updates"
 msgstr "forzando actualizaciones de paquetes"
 
-#: ../../libraries/entropy.py:19856
+#: ../../libraries/entropy.py:19869
 msgid "Syncing with"
 msgstr "Sincronizando con"
 
-#: ../../libraries/entropy.py:19924
+#: ../../libraries/entropy.py:19937
 msgid "forcing packages metadata update"
 msgstr "forzando la actualización de los metadatos de los paquetes"
 
-#: ../../libraries/entropy.py:19925
+#: ../../libraries/entropy.py:19938
 msgid "Updating system database using repository id"
 msgstr "Actualizando la base de datos del sistema usando la id del repositorio"
 
-#: ../../libraries/entropy.py:20014 ../../libraries/entropy.py:20353
+#: ../../libraries/entropy.py:20027 ../../libraries/entropy.py:20366
 msgid "SPM"
 msgstr "Administrador de Paquetes Fuente"
 
-#: ../../libraries/entropy.py:20015
+#: ../../libraries/entropy.py:20028
 msgid "Running fixpackages"
 msgstr "Ejecutando fixpackages"
 
-#: ../../libraries/entropy.py:20016
+#: ../../libraries/entropy.py:20029
 msgid "it could take a while"
 msgstr "puede tardar un tiempo"
 
-#: ../../libraries/entropy.py:20038
+#: ../../libraries/entropy.py:20051
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy.py:20039
+#: ../../libraries/entropy.py:20052
 msgid "action"
 msgstr "acción"
 
-#: ../../libraries/entropy.py:20062
+#: ../../libraries/entropy.py:20075
 msgid "Cannot complete quickpkg for atoms"
 msgstr "No se pudo completar quickpkg para los siguientes atoms:"
 
-#: ../../libraries/entropy.py:20064 ../../libraries/entropy.py:20302
+#: ../../libraries/entropy.py:20077 ../../libraries/entropy.py:20315
 msgid "do it manually"
 msgstr "hazlo manualmente"
 
-#: ../../libraries/entropy.py:20080
+#: ../../libraries/entropy.py:20093
 msgid "Cannot run SPM cleanup, error"
 msgstr "No se pudo ejecutar la limpieza del Administrador de Paquetes Fuente"
 
-#: ../../libraries/entropy.py:20131 ../../libraries/entropy.py:20204
+#: ../../libraries/entropy.py:20144 ../../libraries/entropy.py:20217
 msgid "INJECT"
 msgstr "INYECCIÓN"
 
-#: ../../libraries/entropy.py:20133 ../../libraries/entropy.py:20206
+#: ../../libraries/entropy.py:20146 ../../libraries/entropy.py:20219
 msgid "has been injected"
 msgstr "ha sido inyectado"
 
-#: ../../libraries/entropy.py:20134 ../../libraries/entropy.py:20207
+#: ../../libraries/entropy.py:20147 ../../libraries/entropy.py:20220
 msgid "You need to quickpkg it manually to update the embedded database"
 msgstr ""
 "Debes hacerle un quickpkg manualmente para actualizar la base de datos "
 "incrustada"
 
-#: ../../libraries/entropy.py:20135 ../../libraries/entropy.py:20208
+#: ../../libraries/entropy.py:20148 ../../libraries/entropy.py:20221
 msgid "Repository database will be updated anyway"
 msgstr "La base de datos del repositorio será actualizada en cualquier caso"
 
-#: ../../libraries/entropy.py:20244
+#: ../../libraries/entropy.py:20257
 msgid "Would you like to continue with the default branch"
 msgstr "¿ Quieres con la rama por defecto"
 
-#: ../../libraries/entropy.py:20251
+#: ../../libraries/entropy.py:20264
 msgid "Type your branch"
 msgstr "Escribe la nueva rama"
 
-#: ../../libraries/entropy.py:20255
+#: ../../libraries/entropy.py:20268
 msgid "the specified branch does not exist"
 msgstr "la rama especificada no existe"
 
 #. ask to confirm
-#: ../../libraries/entropy.py:20266
+#: ../../libraries/entropy.py:20279
 msgid "Do you confirm"
 msgstr "¿ Confirmas la rama"
 
-#: ../../libraries/entropy.py:20284
+#: ../../libraries/entropy.py:20297
 msgid "repackaging"
 msgstr "reempaquetando"
 
-#: ../../libraries/entropy.py:20300
+#: ../../libraries/entropy.py:20313
 msgid "Cannot complete quickpkg for atom"
 msgstr "No se pudo completar quickpkg para el atom"
 
-#: ../../libraries/entropy.py:20319
+#: ../../libraries/entropy.py:20332
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr "runTreeUpdatesQuickpkgAction no se ejecutó correctamente"
 
-#: ../../libraries/entropy.py:20320
+#: ../../libraries/entropy.py:20333
 msgid "Please update packages manually"
 msgstr "Por favor, actualiza los paquetes manualmente"
 
-#: ../../libraries/entropy.py:20354
+#: ../../libraries/entropy.py:20367
 msgid "Moving old entry"
 msgstr "Moviendo la entrada antigua"
 
-#: ../../libraries/entropy.py:20356 ../../client/text_configuration.py:113
+#: ../../libraries/entropy.py:20369 ../../client/text_configuration.py:113
 msgid "to"
 msgstr "a"
 
-#: ../../libraries/entropy.py:22715 ../../libraries/entropy.py:22746
-#: ../../libraries/entropy.py:22779 ../../client/text_rescue.py:421
+#: ../../libraries/entropy.py:22728 ../../libraries/entropy.py:22759
+#: ../../libraries/entropy.py:22792 ../../client/text_rescue.py:421
 msgid "Entropy database"
 msgstr "Base de datos de Entropy"
 
-#: ../../libraries/entropy.py:22715
+#: ../../libraries/entropy.py:22728
 msgid "regenerating indexes after migration"
 msgstr "regenerando índices después de la migración"
 
-#: ../../libraries/entropy.py:22746
+#: ../../libraries/entropy.py:22759
 msgid "migrating table"
 msgstr "migrando tabla"
 
-#: ../../libraries/entropy.py:22780
+#: ../../libraries/entropy.py:22793
 msgid "fixing KDE dep strings on"
 msgstr "arreglando las cadenas de dependencias de KDE en"
 
-#: ../../libraries/entropy.py:22782 ../../client/text_rescue.py:277
+#: ../../libraries/entropy.py:22795 ../../client/text_rescue.py:277
 msgid "Please wait"
 msgstr "Espera por favor"
 
-#: ../../libraries/entropy.py:22850
+#: ../../libraries/entropy.py:22863
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 "no se ha encontrado la tabla baseinfo. Puede que no exista o que esté "
 "corrupta."
 
-#: ../../libraries/entropy.py:22855
+#: ../../libraries/entropy.py:22868
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 "no se ha encontrado la tabla extrainfo. Puede que no exista o que esté "
 "corrupta."
 
-#: ../../libraries/entropy.py:22881
+#: ../../libraries/entropy.py:22894
 msgid "Syncing current database"
 msgstr "Sincronizando la base de datos actual"
 
-#: ../../libraries/entropy.py:22893
+#: ../../libraries/entropy.py:22906
 msgid "Removing entry"
 msgstr "Eliminando entrada"
 
-#: ../../libraries/entropy.py:22908
+#: ../../libraries/entropy.py:22921
 msgid "Adding entry"
 msgstr "Añadiendo entrada"
 
-#: ../../libraries/entropy.py:22946
+#: ../../libraries/entropy.py:22959
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
@@ -2578,39 +2576,39 @@ msgstr ""
 "La EAPI del repositorio es mayor que la EAPI de Entropy. ¡ Actualiza Equo y "
 "Entropy lo antes posible !"
 
-#: ../../libraries/entropy.py:22965
+#: ../../libraries/entropy.py:22978
 msgid "Exporting database table"
 msgstr "Exportando la tabla de la base de datos"
 
-#: ../../libraries/entropy.py:23004
+#: ../../libraries/entropy.py:23017
 msgid "Database Export completed."
 msgstr "Exportación de la base de datos completada."
 
-#: ../../libraries/entropy.py:23381
+#: ../../libraries/entropy.py:23394
 msgid "cannot open Spm counter file for"
 msgstr "no se pudo abrir el contador del administrador de paquetes fuente para"
 
-#: ../../libraries/entropy.py:23400
+#: ../../libraries/entropy.py:23413
 msgid "counter for atom is duplicated, ignoring"
 msgstr "el contador para el atom está duplicado, ignorando"
 
-#: ../../libraries/entropy.py:24122
+#: ../../libraries/entropy.py:24135
 msgid "comparison between"
 msgstr "la comparación entre"
 
-#: ../../libraries/entropy.py:24124
+#: ../../libraries/entropy.py:24137
 msgid "and"
 msgstr "y"
 
-#: ../../libraries/entropy.py:24126 ../../libraries/entropy.py:24138
+#: ../../libraries/entropy.py:24139 ../../libraries/entropy.py:24151
 msgid "failed"
 msgstr "falló"
 
-#: ../../libraries/entropy.py:24127
+#: ../../libraries/entropy.py:24140
 msgid "Wrong syntax for"
 msgstr "Sintaxis incorrecta para"
 
-#: ../../libraries/entropy.py:24135
+#: ../../libraries/entropy.py:24148
 msgid "from atom"
 msgstr "del atom"
 
@@ -3206,9 +3204,8 @@ msgid "move packages from a repository to another"
 msgstr "mueve paquetes de un repositorio a otro"
 
 #: ../../client/equo.py:236 ../../server/reagent.py:90
-#, fuzzy
 msgid "copy packages from a repository to another"
-msgstr "mueve paquetes de un repositorio a otro"
+msgstr "copia paquetes de un repositorio a otro"
 
 #: ../../client/equo.py:237 ../../server/reagent.py:91
 msgid "set the default repository"
@@ -4741,7 +4738,7 @@ msgstr "Tamaño de la descarga"
 msgid "Used disk space"
 msgstr "Espacio en disco usado"
 
-#: ../../client/text_ui.py:662 ../../spritz/src/misc.py:365
+#: ../../client/text_ui.py:662 ../../spritz/src/misc.py:366
 msgid "Freed disk space"
 msgstr "Espacio liberado en disco"
 
@@ -5387,7 +5384,7 @@ msgstr ""
 "Estos paquetes deben ser eliminados de la cola de eliminación porque "
 "dependen de tu última elección. ¿Estás de acuerdo?"
 
-#: ../../spritz/src/misc.py:302
+#: ../../spritz/src/misc.py:303
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
@@ -5395,23 +5392,23 @@ msgstr ""
 "No se pudieron encontrar algunas dependencias. Puede deberse a que están "
 "enmascaradas o a que no están en ningún repositorio activo."
 
-#: ../../spritz/src/misc.py:362
+#: ../../spritz/src/misc.py:363
 msgid "Needed disk space"
 msgstr "Espacio en disco requerido"
 
-#: ../../spritz/src/misc.py:369
+#: ../../spritz/src/misc.py:370
 msgid "These are the packages that would be installed/updated"
 msgstr "Los siguientes paquetes serán instalados o actualizados"
 
-#: ../../spritz/src/misc.py:424
+#: ../../spritz/src/misc.py:425
 msgid "Freed space"
 msgstr "Espacio liberado"
 
-#: ../../spritz/src/misc.py:427
+#: ../../spritz/src/misc.py:428
 msgid "Needed space"
 msgstr "Espacio requerido"
 
-#: ../../spritz/src/misc.py:432
+#: ../../spritz/src/misc.py:433
 msgid "These are the packages that would be removed"
 msgstr "Paquetes que serán eliminados"
 
@@ -6335,11 +6332,11 @@ msgstr "Archivos y máscara de directorios protegidos"
 
 #: ../../spritz/src/spritz.glade.h:69
 msgid "Proxy Password"
-msgstr ""
+msgstr "Contraseña del proxy"
 
 #: ../../spritz/src/spritz.glade.h:70
 msgid "Proxy Username"
-msgstr ""
+msgstr "Nombre de usuario del proxy"
 
 #: ../../spritz/src/spritz.glade.h:71
 msgid "Purge"
@@ -6595,12 +6592,11 @@ msgstr "kb/seg"
 
 #: ../../spritz/src/spritz.glade.h:144
 msgid "type your password here"
-msgstr ""
+msgstr "ecribe tu contraseña aquí"
 
 #: ../../spritz/src/spritz.glade.h:145
-#, fuzzy
 msgid "type your username here"
-msgstr "Escribe la nueva rama"
+msgstr "escribe tu nombre de usuario aquí"
 
 #: ../../spritz/src/applet/etp_applet.glade.h:1
 msgid "Available Updates"
