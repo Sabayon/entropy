@@ -149,7 +149,7 @@ class PkgInfoMenu:
         self.neededView.set_model( self.neededModel )
 
         # protect view
-        self.configProtectView = self.pkginfo_ui.configProtectView
+        self.configProtectView = self.pkginfo_ui.configProtectView1
         self.configProtectModel = gtk.TreeStore( gobject.TYPE_STRING, gobject.TYPE_STRING )
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( _( "Protected item" ), cell, markup = 0 )
