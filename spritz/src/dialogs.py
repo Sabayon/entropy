@@ -1019,7 +1019,7 @@ class LicenseDialog:
         self.readLicense = self.xml.get_widget( "readLicense" )
         self.readLicense.connect( "clicked", self.read_selected_license )
 
-        self.view = self.xml.get_widget( "licenseView" )
+        self.view = self.xml.get_widget( "licenseView1" )
         self.model = self.setup_view()
         self.show_data( licenses )
         self.view.expand_all()
