@@ -3877,26 +3877,9 @@ class PackageInterface:
 
             protected = False
             if (not self.infoDict['removeconfig']) and (not self.infoDict['diffremoval']):
-                try:
-                    # -- CONFIGURATION FILE PROTECTION --
-                    if os.access(etpConst['systemroot']+item,os.R_OK):
-                        for x in protect:
-                            if etpConst['systemroot']+item.startswith(x):
-                                protected = True
-                                break
-                        if (protected):
-                            for x in mask:
-                                if etpConst['systemroot']+item.startswith(x):
-                                    protected = False
-                                    break
-                        if (protected) and os.path.isfile(etpConst['systemroot']+item):
-                            protected = self.Entropy.entropyTools.istextfile(etpConst['systemroot']+item)
-                        else:
-                            protected = False # it's not a file
-                    # -- CONFIGURATION FILE PROTECTION --
-                except:
-                    pass # some filenames are buggy encoded
-
+                protected_item_test = etpConst['systemroot']+item
+                protected, x, do_continue = self._handle_config_protect(protect, mask, None, protected_item_test, do_allocation_check = False)
+                if do_continue: protected = True
 
             if protected:
                 self.Entropy.clientLog.log(
@@ -4597,19 +4580,27 @@ class PackageInterface:
 
         return 0
 
-    def _handle_config_protect(self, protect, mask, fromfile, tofile):
+    def _handle_config_protect(self, protect, mask, fromfile, tofile, do_allocation_check = True):
 
         protected = False
         tofile_before_protect = tofile
         do_continue = False
 
         try:
-
-            for x in protect:
-                x = x.encode('raw_unicode_escape')
-                if tofile.startswith(x):
-                    protected = True
-                    break
+            encoded_protect = [x.encode('raw_unicode_escape') for x in protect]
+            if tofile in encoded_protect:
+                protected = True
+            elif os.path.dirname(tofile) in encoded_protect:
+                protected = True
+            else:
+                tofile_testdir = os.path.dirname(tofile)
+                old_tofile_testdir = None
+                while tofile_testdir != old_tofile_testdir:
+                    if tofile_testdir in encoded_protect:
+                        protected = True
+                        break
+                    old_tofile_testdir = tofile_testdir
+                    tofile_testdir = os.path.dirname(tofile_testdir)
 
             if protected: # check if perhaps, file is masked, so unprotected
                 newmask = [x.encode('raw_unicode_escape') for x in mask]
@@ -4630,7 +4621,9 @@ class PackageInterface:
             # request new tofile then
             if protected:
                 if tofile not in etpConst['configprotectskip']:
-                    tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
+                    prot_status = True
+                    if do_allocation_check:
+                        tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
                     if not prot_status:
                         protected = False
                     else:
@@ -4653,9 +4646,9 @@ class PackageInterface:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "Skipping config file installation, as stated in equo.conf: %s" % (tofile,)
+                        "Skipping config file installation/removal, as stated in equo.conf: %s" % (tofile,)
                     )
-                    mytxt = "%s: %s" % (_("Skipping file installation"),tofile,)
+                    mytxt = "%s: %s" % (_("Skipping file installation/removal"),tofile,)
                     self.Entropy.updateProgress(
                         mytxt,
                         importance = 1,
