@@ -80,25 +80,36 @@ class TimeScheduled(threading.Thread):
     def kill(self):
         self.alive = 0
 
+    def nuke(self):
+        raise SystemExit
+
 class parallelTask(threading.Thread):
-    def __init__(self, function, dictData = {}):
+    def __init__(self, *args, **kwargs):
         threading.Thread.__init__(self)
-        self.function = function
-        self.data = dictData.copy()
+        self.function = args[0]
+        self.args = args[1:][:]
+        self.kwargs = kwargs.copy()
 
     def parallel_wait(self):
         while len(threading.enumerate()) > etpSys['maxthreads']:
             time.sleep(0.001)
 
     def run(self):
-        if self.data:
-            self.function(self.data)
-        else:
-            self.function()
+        self.function(*self.args,**self.kwargs)
+
+    def nuke(self):
+        raise SystemExit
 
 def printTraceback(f = None):
     import traceback
     traceback.print_exc(file = f)
+
+def getTraceback():
+    import traceback
+    from cStringIO import StringIO
+    buf = StringIO()
+    traceback.print_exc(file = buf)
+    return buf.getvalue()
 
 def printException(returndata = False):
     import traceback
@@ -292,6 +303,80 @@ def md5sum_directory(directory, get_obj = False):
         return m
     else:
         return m.hexdigest()
+
+# kindly stolen from Anaconda
+# Copyright 1999-2008 Red Hat, Inc. <iutil.py>
+def getfd(filespec, readOnly = 0):
+    import types
+    if type(filespec) == types.IntType:
+        return filespec
+    if filespec == None:
+        filespec = "/dev/null"
+
+    flags = os.O_RDWR | os.O_CREAT
+    if (readOnly):
+        flags = os.O_RDONLY
+    return os.open(filespec, flags)
+
+def execWithRedirect(argv, stdin = 0, stdout = 1, stderr = 2, root = '/', newPgrp = 0, ignoreTermSigs = 0):
+
+    childpid = os.fork()
+    etpSys['killpids'].add(childpid)
+    if (not childpid):
+        if (root and root != '/'):
+            os.chroot (root)
+            os.chdir("/")
+
+        if ignoreTermSigs:
+            signal.signal(signal.SIGTSTP, signal.SIG_IGN)
+            signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+        stdin = getfd(stdin)
+        if stdout == stderr:
+            stdout = getfd(stdout)
+            stderr = stdout
+        else:
+            stdout = getfd(stdout)
+            stderr = getfd(stderr)
+
+        if stdin != 0:
+            os.dup2(stdin, 0)
+            os.close(stdin)
+        if stdout != 1:
+            os.dup2(stdout, 1)
+            if stdout != stderr:
+                os.close(stdout)
+        if stderr != 2:
+            os.dup2(stderr, 2)
+            os.close(stderr)
+
+        try:
+            os.execvp(argv[0], argv)
+        except OSError:
+            # let the caller deal with the exit code of 1.
+            pass
+
+        os._exit(1)
+
+    if newPgrp:
+        os.setpgid(childpid, childpid)
+        oldPgrp = os.tcgetpgrp(0)
+        os.tcsetpgrp(0, childpid)
+
+    status = -1
+    try:
+        (pid, status) = os.waitpid(childpid, 0)
+    except OSError, (errno, msg):
+        print __name__, "waitpid:", msg
+    except KeyboardInterrupt:
+        return None
+
+    if newPgrp:
+        os.tcsetpgrp(0, oldPgrp)
+
+    if childpid in etpSys['killpids']:
+        etpSys['killpids'].remove(childpid)
+    return status
 
 def uncompress_file(file_path, destination_path, opener):
     f_out = open(destination_path,"wb")

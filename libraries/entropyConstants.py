@@ -357,6 +357,7 @@ etpSys = {
     'maxthreads': 100,
     'dirstoclean': set(),
     'serverside': False,
+    'killpids': set()
 }
 
 etpUi = {
@@ -604,6 +605,7 @@ def const_defaultSettings(rootdir):
 
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'socketloglevel': 2, # # Entropy Socket Interface log level
+        'enzymeloglevel': 2, # # Entropy Socket Interface log level
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
 
@@ -611,6 +613,7 @@ def const_defaultSettings(rootdir):
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
         'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
         'socketlogfile': ETP_SYSLOG_DIR+"socket.log", # Activator operations log file
+        'enzymelogfile': ETP_SYSLOG_DIR+"enzyme.log", # Activator operations log file
 
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file

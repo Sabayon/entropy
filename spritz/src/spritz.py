@@ -105,15 +105,14 @@ class SpritzController(Controller):
 
     def runEditor(self, filename, delete = False):
         cmd = ' '.join([self.fileEditor,filename])
-        task = entropyTools.parallelTask(self.__runEditor, {'cmd': cmd, 'delete': delete,'file': filename})
+        task = entropyTools.parallelTask(self.__runEditor, cmd, delete, filename)
         task.start()
 
-    def __runEditor(self, data):
-        os.system(data['cmd']+"&> /dev/null")
-        delete = data['delete']
-        if delete and os.path.isfile(data['file']):
+    def __runEditor(self, cmd, delete, filename):
+        os.system(cmd+"&> /dev/null")
+        if delete and os.path.isfile(filename) and os.access(filename,os.W_OK):
             try:
-                os.remove(data['file'])
+                os.remove(filename)
             except OSError:
                 pass
 

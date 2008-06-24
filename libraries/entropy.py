@@ -28,7 +28,7 @@ from entropyConstants import *
 from outputTools import TextInterface, \
     print_info, print_warning, print_error, \
     red, brown, blue, green, purple, darkgreen, \
-    darkred, bold, darkblue, readtext
+    darkred, bold, darkblue, readtext, nocolor
 import exceptionTools
 from entropy_i18n import _
 
@@ -4024,11 +4024,11 @@ class PackageInterface:
     @description: function that runs at the end of the package installation process, just removes data left by other steps
     @output: 0 = all fine, >0 = error!
     '''
-    def __cleanup_package(self, data):
+    def __cleanup_package(self, unpack_dir):
         # remove unpack dir
-        shutil.rmtree(data['unpackdir'],True)
+        shutil.rmtree(unpack_dir,True)
         try:
-            os.rmdir(data['unpackdir'])
+            os.rmdir(unpack_dir)
         except OSError:
             pass
         return 0
@@ -4838,9 +4838,7 @@ class PackageInterface:
             type = "info",
             header = red("   ## ")
         )
-        tdict = {}
-        tdict['unpackdir'] = self.infoDict['unpackdir']
-        task = self.Entropy.entropyTools.parallelTask(self.__cleanup_package, tdict)
+        task = self.Entropy.entropyTools.parallelTask(self.__cleanup_package, self.infoDict['unpackdir'])
         task.parallel_wait()
         task.start()
         # we don't care if cleanupPackage fails since it's not critical
@@ -13778,6 +13776,7 @@ class ServerInterface(TextInterface):
             repo_validation = False,
             noclientdb = 1
         )
+        self.ClientService.updateProgress = self.updateProgress
         self.ClientService.FtpInterface = self.FtpInterface
         self.validRepositories = self.ClientService.validRepositories
         self.entropyTools = self.ClientService.entropyTools
@@ -16002,9 +16001,379 @@ class ServerInterface(TextInterface):
 
 class RepositoryManager(ServerInterface):
 
+    class ManagerCallbacks:
+
+        def __init__(self, Interface):
+            self.Interface = Interface
+
+        def show_application_menu(self):
+            pass
+
+        def show_system_menu(self):
+            pass
+
+        def show_repository_menu(self):
+            pass
+
+
+    import urwid.curses_display, urwid, pty, signal, enzymelib
     def __init__(self, *myargs, **mykwargs):
+        self.OutputPrinter = None
+        self.PtyReader = None
+        nocolor()
+        self.enzymeLog = LogFile(
+            level = etpConst['enzymeloglevel'],
+            filename = etpConst['enzymelogfile'],
+            header = "[Enzyme]"
+        )
+        self.PtyOut = self.pty.openpty()
+        self.PtyIn = self.pty.openpty()
+        self.Manager = self.enzymelib.ManagerSettings()
+        self.Callbacks = self.ManagerCallbacks(self)
         ServerInterface.__init__(self, *myargs, **mykwargs)
 
+
+    def __del__(self):
+        self.killall()
+
+    def create_body(self):
+        self.Manager.programWidget = self.urwid.AttrWrap(self.urwid.Filler(self.urwid.Text("Program Widget")), 'bg')
+        self.Manager.output = self.urwid.Edit()
+        self.Manager.outputWidget = self.urwid.Filler(self.Manager.output, valign = 'top')
+        return self.urwid.Pile([self.Manager.programWidget,self.Manager.outputWidget], 1)
+
+    def create_statusbar(self):
+        return self.urwid.AttrWrap(self.urwid.Text(self.Manager.welcome_text), 'menu')
+
+    def fill_menu(self, palette = 'menu_e', palette_h = 'menu_eh'):
+        menu_text = [
+            (palette_h, "A"), (palette, "pplication   "),
+            (palette_h, "S"), (palette, "ystem   "),
+            (palette_h, "R"), (palette, "epository   ")
+        ]
+        self.Manager.menu_keys_calls["A"] = self.Callbacks.show_application_menu
+        self.Manager.menu_keys_calls["S"] = self.Callbacks.show_system_menu
+        self.Manager.menu_keys_calls["R"] = self.Callbacks.show_repository_menu
+        txt = self.urwid.Text(menu_text)
+        self.Manager.menuBar.set_w(txt)
+        self.Manager.menuBar.set_attr(palette)
+
+    def toggle_focus(self):
+        new = self.Manager.inFocus+1
+        if new not in self.Manager.focusOptions:
+            new = self.Manager.focusOptions[0]
+        self.Manager.mainBody.set_focus(new)
+        self.Manager.inFocus = new
+        self.Manager.statusBar.set_text("Focus on %s" % (self.Manager.focusInfo.get(new),))
+
+    def initialize_screen(self):
+        self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
+        self.Manager.mainBody = self.create_body()
+        self.Manager.statusBar = self.create_statusbar()
+        self.Manager.menuBar = self.urwid.AttrWrap(self.urwid.Text(''),'menu_e')
+        self.fill_menu()
+        self.Manager.mainFrame = self.urwid.Frame(self.Manager.mainBody, self.Manager.menuBar, self.Manager.statusBar)
+        self.Manager.mainBody.set_focus(self.Manager.inFocus)
+        self.Manager.Widgets = self.enzymelib.SimpleWidgets(self)
+        self.start_output_printer()
+        self.start_pty_reader()
+        # setup an exception hook
+        sys.excepthook = self.raise_exception
+
+    def killall(self):
+        sys.excepthook = sys.__excepthook__
+        if self.OutputPrinter != None:
+            self.stop_output_printer()
+        if self.PtyReader != None:
+            self.stop_pty_reader()
+        for mypid in etpSys['killpids']:
+            try:
+                os.kill(mypid,self.signal.SIGKILL)
+            except OSError:
+                pass
+        threads = self.entropyTools.threading.enumerate()
+        for thread in threads:
+            if thread.getName() in ["output_printer","spawn_process","pty_reader"]:
+                thread.nuke()
+
+    def raise_exception(self, mytype, value, tb):
+        mytb = self.entropyTools.getTraceback()
+        self.askQuestion("Exception caught (and logged): %s: %s" % (mytype,value,), responses = ["Ok"])
+        self.killall()
+        sys.__excepthook__(mytype, value, tb)
+
+    def log_data(self, data, pri = ETP_LOGLEVEL_NORMAL):
+        if etpUi['debug']:
+            self.enzymeLog.log(ETP_LOGPRI_INFO,pri,data.strip())
+
+    def start_pty_reader(self):
+        self.PtyReader = self.entropyTools.TimeScheduled( self.read_and_push_pty, 0.05 )
+        self.PtyReader.setName('pty_reader')
+        self.PtyReader.start()
+
+    def stop_pty_reader(self):
+        self.PtyReader.kill()
+
+    def start_output_printer(self):
+        self.OutputPrinter = self.entropyTools.TimeScheduled( self.flush_from_pty, 0.05 )
+        self.OutputPrinter.setName('output_printer')
+        self.OutputPrinter.start()
+
+    def stop_output_printer(self):
+        self.OutputPrinter.kill()
+
+    def read_and_push_pty(self, n = 1024):
+        data = os.read(self.PtyOut[0],n)
+        self.Manager.output_buffer += data
+
+    def flush_from_pty(self):
+        if not self.Manager.output_buffer:
+            return
+        mybuf = self.Manager.output_buffer
+        self.flushProgress(mybuf)
+        self.Manager.output_buffer = self.Manager.output_buffer[len(mybuf):]
+
+    def write_to_pty_in(self, data):
+        os.write(self.PtyIn[0],data)
+        self.updateProgress(data, raw = True)
+
+    def handle_non_printable(self, msg):
+        mymsg = ''
+        for x in msg:
+            if x == "\r" and mymsg:
+                mymsg = ''
+                continue
+            mymsg += x
+        return mymsg
+
+    def handle_backspace(self):
+        cur_txt = self.Manager.output.get_edit_text()[:-1]
+        self.Manager.output.set_edit_text(cur_txt)
+
+    def flushProgress(self, data, raw = False):
+        # tail :-)
+        cur_txt = self.Manager.output.get_edit_text().split("\n")
+        if len(cur_txt) > 30:
+            self.Manager.output.set_edit_text('\n'.join(cur_txt[-25:]))
+        newdata = ''
+        for mychr in data:
+            if not self.Manager.output.valid_char(mychr) and mychr not in ["\n"]:
+                continue
+            if ord(mychr) == 127:
+                self.handle_backspace()
+            else:
+                newdata += mychr
+        self.Manager.output.insert_text(newdata)
+        self.screen_redraw()
+
+    def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+
+        myq = self.Manager.Widgets.Dialog(question, responses)
+        keys_pressed = True
+        while 1:
+
+            if keys_pressed:
+                self.screen_redraw(widget = myq)
+
+            try:
+                keys_pressed, raw_keycodes = self.Manager.screen.get_input(raw_keys=True)
+            except KeyboardInterrupt:
+                return responses[-1]
+
+            handled, dobreak = self.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
+            if handled:
+                continue
+            if "esc" in keys_pressed:
+                return responses[-1]
+
+            dim = self.get_screen_dim()
+            for k in keys_pressed:
+                myq.keypress(dim, k)
+
+            if myq.b_pressed in responses:
+                return myq.b_pressed
+
+
+    def updateProgress(self, *args, **kwargs):
+
+        message = args[0]
+        back = False
+        if kwargs.has_key('back'):
+            back = kwargs['back']
+        raw = False
+        if kwargs.has_key('raw'):
+            raw = kwargs['raw']
+        if not back and not raw: message += "\n"
+        if raw:
+            valid_raw_range = range(32,256) + [10,8]
+            newmessage = ''
+            for mychr in message:
+                if ord(mychr) in valid_raw_range:
+                    newmessage += mychr
+            message = newmessage
+        header = ''
+        footer = ''
+        count = []
+        percent = False
+        if kwargs.has_key('header'):
+            header = kwargs['header']
+        if kwargs.has_key('footer'):
+            footer = kwargs['footer']
+        if kwargs.has_key('count'):
+            count = kwargs['count']
+        if kwargs.has_key('percent'):
+            percent = kwargs['percent']
+
+        count_str = ""
+        if count:
+            if len(count) > 1:
+                if percent:
+                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
+                else:
+                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+
+        message = header+count_str+message+footer
+        message = self.handle_non_printable(message)
+
+        # get textbox width
+        self.Manager.output_buffer += message
+
+    def get_screen_dim(self):
+        self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
+        return self.Manager.max_x, self.Manager.max_y
+
+    def screen_redraw(self, widget = None):
+        if widget == None:
+            widget = self.Manager.mainFrame
+        dim = self.get_screen_dim()
+        self.Manager.screen.draw_screen(dim, widget.render(dim, True))
+
+    def start(self):
+        self.Manager.screen = self.urwid.curses_display.Screen()
+        self.Manager.screen.register_palette(
+            [
+                ('menu', 'white', 'dark red', 'standout'),
+                ('menuh', 'yellow', 'dark red', ('standout', 'bold')),
+                ('menu_e', 'white', 'dark blue', 'standout'),
+                ('menu_eh', 'yellow', 'dark blue', ('standout', 'bold')),
+                ('menuf', 'black', 'light gray'),
+                ('bg', 'white', 'dark blue'),
+                ('bgf', 'white', 'dark red', 'standout')
+            ]
+        )
+        try:
+            self.Manager.screen.run_wrapper(self.main)
+        except:
+            self.entropyTools.printTraceback(f = self.enzymeLog)
+            self.killall()
+            raise
+
+    def toggle_application_menu(self):
+        do = not self.Manager.menu_enabled
+        if do:
+            # enable
+            self.fill_menu(palette = 'menu', palette_h = 'menuh')
+        else:
+            # disable
+
+            self.fill_menu()
+        self.Manager.menu_enabled = do
+
+    def handle_standard_keyboard_commands(self, keys_pressed, raw_keycodes):
+
+        handled = False
+        dobreak = False
+
+        if "window resize" in keys_pressed:
+            self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
+            handled = True
+
+        return handled, dobreak
+
+    def main(self):
+
+        self.initialize_screen()
+
+        keys = True
+        # start the application loop now
+        while 1:
+
+            if keys:
+                self.screen_redraw()
+
+            try:
+                keys_pressed, raw_keycodes = self.Manager.screen.get_input(raw_keys=True)
+            except KeyboardInterrupt:
+                break
+
+            if not keys_pressed:
+                continue
+
+            self.log_data(repr((keys_pressed,raw_keycodes,)))
+
+            handled, dobreak = self.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
+            if dobreak:
+                break
+            if handled:
+                continue
+
+            elif ["ctrl x"] == keys_pressed:
+                rc = self.askQuestion("Do you really want to quit?")
+                if rc == "Yes":
+                    break
+
+            elif ["ctrl e"] == keys_pressed:
+                self.toggle_application_menu()
+
+            elif ["tab"] == keys_pressed:
+                self.toggle_focus()
+
+            # focus on terminal
+            elif (self.Manager.inFocus == 1) and (not self.Manager.menu_enabled):
+
+                if ["d"] == keys_pressed:
+                    self.spawn_process(["emerge","-av","zlib","--color=n"])
+                else:
+                    mykeys = ''
+                    for myord in raw_keycodes:
+                        if myord in range(32,256)+[10]:
+                            mykeys += chr(myord)
+                    if mykeys:
+                        self.write_to_pty_in(mykeys)
+
+        self.killall()
+
+    def spawn_process(self, argv, null_stderr = True, parallel = True):
+        if self.Manager.process_spawned:
+            return
+        self.Manager.process_spawned = True
+        null = self.PtyOut[1]
+        if null_stderr:
+            null = self.entropyTools.getfd("/dev/null")
+        if not parallel:
+            self.last_rc = self.entropyTools.execWithRedirect(
+                argv,
+                stdin = self.PtyIn[1],
+                stdout = self.PtyOut[1],
+                stderr = null
+            )
+        else:
+            task = self.entropyTools.parallelTask(
+                self.do_spawn_parallel,
+                self.entropyTools.execWithRedirect,
+                argv,
+                stdin = self.PtyIn[1],
+                stdout = self.PtyOut[1],
+                stderr = null
+            )
+            task.setName('spawn_process')
+            task.start()
+
+    def do_spawn_parallel(self, *args, **kwargs):
+        function = args[0]
+        args = args[1:]
+        self.last_rc = function(*args,**kwargs)
+        self.Manager.process_spawned = False
 
 
 class RepositorySocketServerInterface(SocketHostInterface):

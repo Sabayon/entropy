@@ -24,7 +24,6 @@
 
 import sys, os
 import curses
-import readline
 from entropyConstants import etpUi
 from entropy_i18n import _
 stuff = {}
@@ -206,8 +205,13 @@ def notitles():
 
 def nocolor():
     "turn off colorization"
+    os.environ['ETP_NO_COLOR'] = "1"
     global havecolor
     havecolor=0
+
+nc = os.getenv("ETP_NO_COLOR")
+if nc:
+    nocolor()
 
 def resetColor():
     return codes["reset"]
@@ -297,7 +301,8 @@ def print_menu(data):
             writechar("\n")
 
 def reset_cursor():
-    sys.stdout.write(stuff['ESC'] + '[2K')
+    if havecolor:
+        sys.stdout.write(stuff['ESC'] + '[2K')
     flush_stdouterr()
 
 def flush_stdouterr():
@@ -386,6 +391,7 @@ def writechar(char):
         raise
 
 def readtext(request):
+    import readline
     xtermTitle(_("Entropy needs your attention"))
     try:
         print request,
@@ -424,47 +430,27 @@ class TextInterface:
         if (etpUi['quiet']) or (etpUi['mute']):
             return
 
-        data = {}
-        data['text'] = text
-        data['header'] = header
-        data['footer'] = footer
-        data['back'] = back
-        data['importance'] = importance
-        data['type'] = type
-        data['count'] = count[:]
-        data['percent'] = percent
-        #task = self.entropyTools.parallelTask(self.__TextInterface_updateText, data)
-        #task.parallel_wait()
-        #task.start()
-        self.__TextInterface_updateText(data)
-
-        del data
-
-
-    # in this case, we run a separate thread
-    def __TextInterface_updateText(self, data):
-
         flush_stdouterr()
 
         myfunc = print_info
-        if data['type'] == "warning":
+        if type == "warning":
             myfunc = print_warning
-        elif data['type'] == "error":
+        elif type == "error":
             myfunc = print_error
 
         count_str = ""
-        if data['count']:
-            if len(data['count']) > 1:
-                if data['percent']:
-                    count_str = " ("+str(round((float(data['count'][0])/data['count'][1])*100,1))+"%) "
+        if count:
+            if len(count) > 1:
+                if percent:
+                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
                 else:
-                    count_str = " (%s/%s) " % (red(str(data['count'][0])),blue(str(data['count'][1])),)
-        if data['importance'] == 0:
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
-        elif data['importance'] == 1:
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
-        elif data['importance'] in (2,3):
-            myfunc(data['header']+count_str+data['text']+data['footer'], back = data['back'], flush = False)
+                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+        if importance == 0:
+            myfunc(header+count_str+text+footer, back = back, flush = False)
+        elif importance == 1:
+            myfunc(header+count_str+text+footer, back = back, flush = False)
+        elif importance in (2,3):
+            myfunc(header+count_str+text+footer, back = back, flush = False)
 
         flush_stdouterr()
 
