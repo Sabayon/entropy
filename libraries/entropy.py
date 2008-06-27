@@ -2252,19 +2252,20 @@ class EquoInterface(TextInterface):
             pkg_matches.update(set([(x[1],repo) for x in catsdata]))
         return pkg_matches
 
-    def get_category_description_data(self, category, repo = etpConst['officialrepositoryid']):
-        dbconn = self.openRepositoryDatabase(repo)
+    def get_category_description_data(self, category):
+
         data = {}
-        try:
-            data = dbconn.retrieveCategoryDescription(category)
-        except dbapi2.OperationalError:
-            pass
-        if not data:
-            for repo in self.validRepositories:
+        for repo in self.validRepositories:
+            try:
                 dbconn = self.openRepositoryDatabase(repo)
+            except exceptionTools.RepositoryError:
+                continue
+            try:
                 data = dbconn.retrieveCategoryDescription(category)
-                if data:
-                    break
+            except (dbapi2.OperationalError, dbapi2.IntegrityError,):
+                continue
+            if data: break
+
         return data
 
     def list_installed_packages_in_category(self, category):
@@ -16006,18 +16007,67 @@ class RepositoryManager(ServerInterface):
         def __init__(self, Interface):
             self.Interface = Interface
 
+        def emerge_sync(self):
+            self.Interface.spawn_process(["emerge","--sync","--color=n"])
+
+        def do_exit(self):
+            rc = self.Interface.askQuestion("Do you really want to quit?")
+            if rc == "Yes":
+                raise SystemExit
+
         def show_application_menu(self):
-            pass
+            menu_data = {
+                'Exit': self.do_exit
+            }
+            pos = (0,1)
+            return self.show_generic_menu(menu_data,pos)
 
         def show_system_menu(self):
-            pass
+            menu_data = {
+                'Sync Portage': self.emerge_sync
+            }
+            pos = (14,1)
+            return self.show_generic_menu(menu_data,pos)
 
         def show_repository_menu(self):
             pass
 
+        def show_generic_menu(self, menu_data, pos):
 
-    import urwid.curses_display, urwid, pty, signal, enzymelib
+            menu = self.Interface.Manager.Widgets.Menu(menu_data.keys(), pos)
+            keys_pressed = True
+            while 1:
+
+                if keys_pressed:
+                    self.Interface.screen_redraw(widget = menu)
+
+                try:
+                    keys_pressed, raw_keycodes = self.Interface.Manager.screen.get_input(raw_keys=True)
+                except KeyboardInterrupt:
+                    return responses[-1]
+
+                handled, dobreak = self.Interface.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
+                if handled: continue
+                if dobreak: break
+
+                if "esc" in keys_pressed:
+                    return
+
+                dim = self.Interface.get_screen_dim()
+                for k in keys_pressed:
+                    menu.keypress(dim, k)
+
+                if menu.selected in menu_data:
+                    return menu_data[menu.selected]()
+
+
     def __init__(self, *myargs, **mykwargs):
+        import urwid.curses_display, urwid, pty, signal, enzymelib
+        self.urwid_curses_display = urwid.curses_display
+        self.urwid = urwid
+        self.pty = pty
+        self.signal = signal
+        self.enzymelib = enzymelib
         self.OutputPrinter = None
         self.PtyReader = None
         nocolor()
@@ -16049,7 +16099,7 @@ class RepositoryManager(ServerInterface):
         menu_text = [
             (palette_h, "A"), (palette, "pplication   "),
             (palette_h, "S"), (palette, "ystem   "),
-            (palette_h, "R"), (palette, "epository   ")
+            (palette_h, "R"), (palette, "epository"),
         ]
         self.Manager.menu_keys_calls["A"] = self.Callbacks.show_application_menu
         self.Manager.menu_keys_calls["S"] = self.Callbacks.show_system_menu
@@ -16249,7 +16299,7 @@ class RepositoryManager(ServerInterface):
         self.Manager.screen.draw_screen(dim, widget.render(dim, True))
 
     def start(self):
-        self.Manager.screen = self.urwid.curses_display.Screen()
+        self.Manager.screen = self.urwid_curses_display.Screen()
         self.Manager.screen.register_palette(
             [
                 ('menu', 'white', 'dark red', 'standout'),
@@ -16263,6 +16313,8 @@ class RepositoryManager(ServerInterface):
         )
         try:
             self.Manager.screen.run_wrapper(self.main)
+        except SystemExit:
+            self.killall()
         except:
             self.entropyTools.printTraceback(f = self.enzymeLog)
             self.killall()
@@ -16271,11 +16323,8 @@ class RepositoryManager(ServerInterface):
     def toggle_application_menu(self):
         do = not self.Manager.menu_enabled
         if do:
-            # enable
             self.fill_menu(palette = 'menu', palette_h = 'menuh')
         else:
-            # disable
-
             self.fill_menu()
         self.Manager.menu_enabled = do
 
@@ -16328,35 +16377,39 @@ class RepositoryManager(ServerInterface):
             elif ["tab"] == keys_pressed:
                 self.toggle_focus()
 
+            elif self.Manager.menu_enabled and keys_pressed[0].upper() in self.Manager.menu_keys_calls:
+                self.Manager.menu_keys_calls[keys_pressed[0].upper()]()
+
             # focus on terminal
             elif (self.Manager.inFocus == 1) and (not self.Manager.menu_enabled):
 
-                if ["d"] == keys_pressed:
-                    self.spawn_process(["emerge","-av","zlib","--color=n"])
-                else:
-                    mykeys = ''
-                    for myord in raw_keycodes:
-                        if myord in range(32,256)+[10]:
-                            mykeys += chr(myord)
-                    if mykeys:
-                        self.write_to_pty_in(mykeys)
+                mykeys = ''
+                for myord in raw_keycodes:
+                    if myord in range(32,256)+[10]:
+                        mykeys += chr(myord)
+                if mykeys:
+                    self.write_to_pty_in(mykeys)
 
         self.killall()
 
     def spawn_process(self, argv, null_stderr = True, parallel = True):
         if self.Manager.process_spawned:
             return
+
         self.Manager.process_spawned = True
         null = self.PtyOut[1]
         if null_stderr:
             null = self.entropyTools.getfd("/dev/null")
         if not parallel:
+            old_text = self.Manager.statusBar.get_text()[0]
+            self.Manager.statusBar.set_text("Launched: %s" % (' '.join(argv),))
             self.last_rc = self.entropyTools.execWithRedirect(
                 argv,
                 stdin = self.PtyIn[1],
                 stdout = self.PtyOut[1],
                 stderr = null
             )
+            self.Manager.statusBar.set_text(old_text)
         else:
             task = self.entropyTools.parallelTask(
                 self.do_spawn_parallel,
@@ -16372,7 +16425,10 @@ class RepositoryManager(ServerInterface):
     def do_spawn_parallel(self, *args, **kwargs):
         function = args[0]
         args = args[1:]
+        old_text = self.Manager.statusBar.get_text()[0]
+        self.Manager.statusBar.set_text("Launched: %s" % (' '.join(args),))
         self.last_rc = function(*args,**kwargs)
+        self.Manager.statusBar.set_text(old_text)
         self.Manager.process_spawned = False
 
 

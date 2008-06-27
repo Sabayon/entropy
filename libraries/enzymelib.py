@@ -40,7 +40,7 @@ class ManagerSettings:
         self.output = None
         self.output_row = 1
         self.max_x, self.max_y = 0,0
-        self.welcome_text = _("%s Repository Manager %s") % (etpConst['systemname'],etpConst['entropyversion'],)
+        self.welcome_text = _("%s Repository Manager %s (CTRL+E Menu | CTRL+X Exit)") % (etpConst['systemname'],etpConst['entropyversion'],)
         self.inFocus = 0
         self.focusOptions = [0,1]
         self.focusInfo = {
@@ -112,9 +112,80 @@ class SimpleWidgets:
             if self._edit_widget:
                 self.edit_text = self._edit_widget.get_edit_text()
 
+    class MenuWidget(urwid.WidgetWrap):
+
+        class SelText(urwid.Text):
+            """
+            A selectable text widget. See urwid.Text.
+            """
+
+            def selectable(self):
+                return True
+
+            def keypress(self, size, key):
+                """
+                Don't handle any keys.
+                """
+                return key
+
+        """
+        Creates a popup menu on top of another BoxWidget.
+
+        Attributes:
+
+        selected -- Contains the item the user has selected by pressing <RETURN>,
+                    or None if nothing has been selected.
+        """
+
+        selected = None
+
+        def __init__(self, menu_list, attr, pos, body):
+            """
+            menu_list -- a list of strings with the menu entries
+            attr -- a tuple (background, active_item) of attributes
+            pos -- a tuple (x, y), position of the menu widget
+            body -- widget displayed beneath the message widget
+            """
+
+            content = [urwid.AttrWrap(self.SelText(" " + w), None, attr[1])
+                    for w in menu_list]
+
+            #Calculate width and height of the menu widget:
+            height = len(menu_list)
+            width = 0
+            for entry in menu_list:
+                if len(entry) > width:
+                    width = len(entry)
+
+            #Create the ListBox widget and put it on top of body:
+            self._listbox = urwid.AttrWrap(urwid.ListBox(content), attr[0])
+            overlay = urwid.Overlay(self._listbox, body, ('fixed left', pos[0]),
+                                    width + 2, ('fixed top', pos[1]), height)
+
+            urwid.WidgetWrap.__init__(self, overlay)
+
+
+        def keypress(self, size, key):
+            """
+            <RETURN> key selects an item, other keys will be passed to
+            the ListBox widget.
+            """
+
+            if key == "enter":
+                (widget, foo) = self._listbox.get_focus()
+                (text, foo) = widget.get_text()
+                self.selected = text[1:] #Get rid of the leading space...
+            else:
+                return self._listbox.keypress(size, key)
+
+
     def __init__(self, interface):
         self.Manager = interface.Manager
         self.Interface = interface
 
     def Dialog(self, message, options):
         return self.QuestionWidget(message, options,('menu', 'bg', 'bgf'), 30, 5, self.Manager.mainFrame)
+
+    def Menu(self, options, position):
+        return self.MenuWidget(options, ('menu', 'menuf'), position, self.Manager.mainFrame)
+
