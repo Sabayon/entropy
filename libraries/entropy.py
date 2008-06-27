@@ -536,6 +536,10 @@ class EquoInterface(TextInterface):
             except (dbapi2.OperationalError, dbapi2.DatabaseError):
                 pass
             if updated:
+                self.clear_dump_cache(etpCache['world_update'])
+                self.clear_dump_cache(etpCache['world'])
+                self.clear_dump_cache(etpCache['install'])
+                self.clear_dump_cache(etpCache['remove'])
                 self.calculate_world_updates(use_cache = False)
         return conn
 
