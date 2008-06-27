@@ -341,7 +341,7 @@ def database(options):
                         break
 
         mytxt = red("  %s. %s...") % (
-            _("Found %s packages") % (bold(len(pkgsfound)),),
+            _("Found %s packages") % (bold(str(len(pkgsfound))),),
             _("Filling database"),
         )
         print_info(mytxt)
