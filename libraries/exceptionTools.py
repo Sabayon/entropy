@@ -71,6 +71,9 @@ class RepositoryError(EntropyException):
 class ConnectionError(EntropyException):
         """Cannot connect to service"""
 
+class NotImplementedError(EntropyException):
+        """Feature not implemented"""
+
 class FtpError(EntropyException):
         """FTP errors"""
 
@@ -104,6 +107,9 @@ class ReadOnlyFileSystem(EntropyException):
 
 class CommandNotFound(EntropyException):
         """A required binary was not available or executable"""
+
+class LibraryNotFound(EntropyException):
+        """A required library was not available or executable"""
 
 class EntropyPackageException(EntropyException):
         """Malformed or missing package data"""

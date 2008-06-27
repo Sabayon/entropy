@@ -3,6 +3,7 @@ TODO list
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
   - EAPI=3 make client/server using SSL, make the repository server to listen on both
+  - split entropy.py into entropy package
   - make.profile support (saving profile information into the db)
   - database backup tools
   - implement pdepend support in dependencies sorting

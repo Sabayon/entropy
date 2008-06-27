@@ -66,9 +66,12 @@ class matchContainer:
 '''
 class EquoInterface(TextInterface):
 
-    import dumpTools
-    import entropyTools
     def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
+
+        # modules import
+        import dumpTools, entropyTools
+        self.dumpTools = dumpTools
+        self.entropyTools = entropyTools
 
         self.dbapi2 = dbapi2 # export for third parties
         self.MaskingParser = None
@@ -536,6 +539,10 @@ class EquoInterface(TextInterface):
             except (dbapi2.OperationalError, dbapi2.DatabaseError):
                 pass
             if updated:
+                self.clear_dump_cache(etpCache['world_update'])
+                self.clear_dump_cache(etpCache['world'])
+                self.clear_dump_cache(etpCache['install'])
+                self.clear_dump_cache(etpCache['remove'])
                 self.calculate_world_updates(use_cache = False)
         return conn
 
@@ -16000,6 +16007,367 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
+class DistributionAuthInterface:
+    """just a reference class, methods must be reimplemented"""
+
+    def __init__(self):
+        self.dbconn = None
+        self.cursor = None
+        # used by self.connect()
+        self.connection_data = {}
+        # used by self.login()
+        self.login_data = {}
+        self.logged_in = False
+
+    def check_connection(self):
+        if self.dbconn == None:
+            raise exceptionTools.ConnectionError('ConnectionError: %s' % (_("not connected to database"),))
+
+    def check_login(self):
+        if not self.logged_in:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
+
+    def __raise_not_implemented_error(self):
+        raise exceptionTools.NotImplementedError('NotImplementedError: %s' % (_('method not implemented'),))
+
+    def set_connection_data(self, data):
+        self.connection_data = data.copy()
+
+    def check_connection_data(self):
+        if not self.connection_data:
+            raise exceptionTools.PermissionDenied('ConnectionError: %s' % (_("no connection data"),))
+
+    def set_login_data(self, data):
+        self.login_data = data.copy()
+
+    def check_login_data(self):
+        if not self.login_data:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("no login data"),))
+
+    def check_logged_in(self):
+        if not self.is_logged_in():
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
+
+    def connect(self):
+        self.__raise_not_implemented_error()
+        return True
+
+    def disconnect(self):
+        if self.is_logged_in():
+            self.logout()
+        self.check_connection()
+        self.__raise_not_implemented_error()
+        return True
+
+    def login(self):
+        self.check_connection()
+        self.check_login_data()
+        self.__raise_not_implemented_error()
+        self.logged_in = True
+        return True
+
+    def logout(self):
+        self.check_connection()
+        self.check_login_data()
+        self.__raise_not_implemented_error()
+        return True
+
+    def is_developer(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return True
+
+    def is_administrator(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return True
+
+    def is_moderator(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return True
+
+    def is_user(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return True
+
+    def is_in_group(self, group):
+        mygroup = group
+        del mygroup
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return True
+
+    def get_user_groups(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return []
+
+    def get_user_group(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return ""
+
+    def is_logged_in(self):
+        return self.logged_in
+
+    def get_permissions(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return {}
+
+    def set_permissions(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return {}
+
+    def get_user_data(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return {}
+
+    def set_user_data(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return {}
+
+class phpBB3AuthInterface(DistributionAuthInterface):
+
+    def __init__(self):
+        DistributionAuthInterface.__init__(self)
+        try:
+            import MySQLdb, _mysql_exceptions
+        except ImportError:
+            raise exceptionTools.LibraryNotFound('LibraryNotFound: dev-python/mysql-python not found')
+        self.mysql = MySQLdb
+        self.mysql_exceptions = _mysql_exceptions
+        self.php_ver = 5
+        self.itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+    def connect(self):
+        kwargs = {}
+        keys = [
+            ('host',"hostname"),
+            ('user',"username"),
+            ('passwd',"password"),
+            ('db',"dbname"),
+            ('port',"port")
+        ]
+        for ckey, dkey in keys:
+            if not self.connection_data.has_key(dkey):
+                continue
+            kwargs[ckey] = self.connection_data.get(dkey)
+
+        try:
+            self.dbconn = self.mysql.connect(**kwargs)
+        except self.mysql_exceptions.OperationalError, e:
+            raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
+        #self.cursor = self.dbconn.cursor()
+        self.cursor = self.mysql.cursors.DictCursor(self.dbconn)
+        return True
+
+    def disconnect(self):
+        if self.is_logged_in():
+            self.logout()
+        self.check_connection()
+        self.dbconn.cursor.close()
+        self.dbconn.close()
+        self.dbconn = None
+        self.cursor = None
+        return True
+
+    def login(self):
+        self.check_connection()
+        self.check_login_data()
+
+        self.cursor.execute('SELECT * FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        data = self.cursor.fetchone()
+        if not data:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user not found'),))
+        valid = self.phpbb3_check_hash(self.login_data['password'], data['user_password'])
+        if not valid:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('wrong password'),))
+
+        self.logged_in = True
+        return self.logged_in
+
+    def logout(self):
+        self.check_connection()
+        self.check_login_data()
+        return True
+
+    def _get_unique_id(self):
+        import md5, random
+        m = md5.new()
+        rnd = str(random.random())
+        m.update(rnd)
+        x = m.hexdigest()[:-16]
+        del m
+        return x
+
+    def get_random_number(self):
+        import random
+        return int(random.uniform(100000,999999))
+
+    def _get_password_hash(self, password):
+
+        random_state = self._get_unique_id()
+        myrandom = str(self.get_random_number())
+        count = 6
+
+        myhash = self._hash_crypt_private(password, self._hash_gensalt_private(myrandom))
+
+        if len(myhash) == 34:
+            return myhash
+
+        import md5
+        m = md5.new()
+        m.update(myhash)
+        return m.hexdigest()
+
+
+    def _hash_gensalt_private(self, myinput, iteration_count_log2 = 6):
+
+        if (iteration_count_log2 < 4) or (iteration_count_log2 > 31):
+            iteration_count_log2 = 8
+
+        php_ver_num = 3
+        if self.php_ver >= 5:
+            php_ver_num = 5
+        myoutput = '$H$'
+        myoutput += self.itoa64[min(iteration_count_log2 + php_ver_num,30)]
+        myoutput += self._hash_encode64(myinput, 6)
+
+        return myoutput
+
+    def _hash_crypt_private(self, password, setting):
+
+        myoutput = '*'
+        # Check for correct hash
+        if setting[:3] != '$H$':
+            return myoutput
+
+        count_log2 = self.itoa64.find(setting[3])
+
+        if (count_log2 < 7) or (count_log2 > 30):
+            return myoutput
+
+        count = 1 << count_log2
+        salt = setting[4:12]
+
+        if len(salt) != 8:
+            return myoutput
+
+        import md5
+        '''
+        * We're kind of forced to use MD5 here since it's the only
+        * cryptographic primitive available in all versions of PHP
+        * currently in use.  To implement our own low-level crypto
+        * in PHP would result in much worse performance and
+        * consequently in lower iteration counts and hashes that are
+        * quicker to crack (by non-PHP code).
+        *
+        * ROTFLMAO !
+        '''
+        m = md5.new()
+        if self.php_ver >= 5:
+            m.update(salt+password)
+            myhash = m.digest()
+            while count:
+                m.update(myhash+password)
+                myhash = m.digest()
+                count -= 1
+        else:
+            import struct
+            m.update(salt+password)
+            mymd5 = m.hexdigest()
+            myhash = struct.pack('H*',mymd5)
+            while count:
+                m.update(myhash+password)
+                mymd5 = m.hexdigest()
+                myhash = struct.pack('H*',mymd5)
+                count -= 1
+
+        myoutput = setting[:12]
+        myoutput += self._hash_encode64(myhash, 16)
+
+        return myoutput
+
+    def _hash_encode64(self, myinput, count):
+
+        output = ''
+        i = 0
+        while i < count:
+
+            value = ord(myinput[i])
+            i += 1
+            output += self.itoa64[value & 0x3f]
+            if i < count:
+                value |= ord(myinput[i]) << 8
+
+            output += self.itoa64[(value >> 6) & 0x3f]
+
+            if i >= count:
+                break
+            i += 1
+
+            if i < count:
+                value |= ord(myinput[i]) << 16
+
+            output += self.itoa64[(value >> 12) & 0x3f]
+
+            if (i >= count):
+                break
+            i += 1
+
+            output += self.itoa64[(value >> 18) & 0x3f]
+
+        return output
+
+    def phpbb3_check_hash(self, password, myhash):
+
+        if len(myhash) == 34:
+            mycrypt = self._hash_crypt_private(password, myhash)
+            print "mycrypt",repr(mycrypt)
+            print "myhash",repr(myhash)
+            return mycrypt == myhash
+
+        import md5
+        m = md5.new()
+        m.update(password)
+        rhash = m.hexdigest()
+        return rhash == myhash
+
+    def get_user_data(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.cursor.execute('SELECT * FROM phpbb_users WHERE username = %s', (self.login_data['username'],))
+        return self.cursor.fetchone()
+
 class RepositoryManager(ServerInterface):
 
     class ManagerCallbacks:
@@ -16062,12 +16430,12 @@ class RepositoryManager(ServerInterface):
 
 
     def __init__(self, *myargs, **mykwargs):
-        import urwid.curses_display, urwid, pty, signal, enzymelib
+        import urwid.curses_display, urwid, pty, signal, managerTools
         self.urwid_curses_display = urwid.curses_display
         self.urwid = urwid
         self.pty = pty
         self.signal = signal
-        self.enzymelib = enzymelib
+        self.managerTools = managerTools
         self.OutputPrinter = None
         self.PtyReader = None
         nocolor()
@@ -16078,7 +16446,7 @@ class RepositoryManager(ServerInterface):
         )
         self.PtyOut = self.pty.openpty()
         self.PtyIn = self.pty.openpty()
-        self.Manager = self.enzymelib.ManagerSettings()
+        self.Manager = self.managerTools.ManagerSettings()
         self.Callbacks = self.ManagerCallbacks(self)
         ServerInterface.__init__(self, *myargs, **mykwargs)
 
@@ -16124,7 +16492,7 @@ class RepositoryManager(ServerInterface):
         self.fill_menu()
         self.Manager.mainFrame = self.urwid.Frame(self.Manager.mainBody, self.Manager.menuBar, self.Manager.statusBar)
         self.Manager.mainBody.set_focus(self.Manager.inFocus)
-        self.Manager.Widgets = self.enzymelib.SimpleWidgets(self)
+        self.Manager.Widgets = self.managerTools.SimpleWidgets(self)
         self.start_output_printer()
         self.start_pty_reader()
         # setup an exception hook
@@ -16200,7 +16568,7 @@ class RepositoryManager(ServerInterface):
         cur_txt = self.Manager.output.get_edit_text()[:-1]
         self.Manager.output.set_edit_text(cur_txt)
 
-    def flushProgress(self, data, raw = False):
+    def flushProgress(self, data):
         # tail :-)
         cur_txt = self.Manager.output.get_edit_text().split("\n")
         if len(cur_txt) > 30:
