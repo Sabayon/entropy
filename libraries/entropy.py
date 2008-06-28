@@ -16164,7 +16164,6 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             raise exceptionTools.LibraryNotFound('LibraryNotFound: dev-python/mysql-python not found')
         self.mysql = MySQLdb
         self.mysql_exceptions = _mysql_exceptions
-        self.php_ver = 5
         self.itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
 
     def connect(self):
@@ -16185,7 +16184,6 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             self.dbconn = self.mysql.connect(**kwargs)
         except self.mysql_exceptions.OperationalError, e:
             raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
-        #self.cursor = self.dbconn.cursor()
         self.cursor = self.mysql.cursors.DictCursor(self.dbconn)
         return True
 
@@ -16197,6 +16195,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.dbconn.close()
         self.dbconn = None
         self.cursor = None
+        self.connection_data.clear()
         return True
 
     def login(self):
@@ -16207,7 +16206,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         data = self.cursor.fetchone()
         if not data:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user not found'),))
-        valid = self.phpbb3_check_hash(self.login_data['password'], data['user_password'])
+        valid = self._phpbb3_check_hash(self.login_data['password'], data['user_password'])
         if not valid:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('wrong password'),))
 
@@ -16217,6 +16216,39 @@ class phpBB3AuthInterface(DistributionAuthInterface):
     def logout(self):
         self.check_connection()
         self.check_login_data()
+        self.logged_in = False
+        self.login_data.clear()
+        return True
+
+    def get_user_data(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.cursor.execute('SELECT * FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        return self.cursor.fetchone()
+
+    def is_developer(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        return True
+
+    def is_administrator(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        return True
+
+    def is_moderator(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        return True
+
+    def is_user(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
         return True
 
     def _get_unique_id(self):
@@ -16228,14 +16260,14 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         del m
         return x
 
-    def get_random_number(self):
+    def _get_random_number(self):
         import random
         return int(random.uniform(100000,999999))
 
     def _get_password_hash(self, password):
 
         random_state = self._get_unique_id()
-        myrandom = str(self.get_random_number())
+        myrandom = str(self._get_random_number())
         count = 6
 
         myhash = self._hash_crypt_private(password, self._hash_gensalt_private(myrandom))
@@ -16254,11 +16286,8 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         if (iteration_count_log2 < 4) or (iteration_count_log2 > 31):
             iteration_count_log2 = 8
 
-        php_ver_num = 3
-        if self.php_ver >= 5:
-            php_ver_num = 5
         myoutput = '$H$'
-        myoutput += self.itoa64[min(iteration_count_log2 + php_ver_num,30)]
+        myoutput += self.itoa64[min(iteration_count_log2 + 5,30)]
         myoutput += self._hash_encode64(myinput, 6)
 
         return myoutput
@@ -16271,6 +16300,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             return myoutput
 
         count_log2 = self.itoa64.find(setting[3])
+        if count_log2 == -1: count_log2 = 0
 
         if (count_log2 < 7) or (count_log2 > 30):
             return myoutput
@@ -16282,34 +16312,14 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             return myoutput
 
         import md5
-        '''
-        * We're kind of forced to use MD5 here since it's the only
-        * cryptographic primitive available in all versions of PHP
-        * currently in use.  To implement our own low-level crypto
-        * in PHP would result in much worse performance and
-        * consequently in lower iteration counts and hashes that are
-        * quicker to crack (by non-PHP code).
-        *
-        * ROTFLMAO !
-        '''
         m = md5.new()
-        if self.php_ver >= 5:
-            m.update(salt+password)
+        m.update(salt+password)
+        myhash = m.digest()
+        while count:
+            m = md5.new()
+            m.update(myhash+password)
             myhash = m.digest()
-            while count:
-                m.update(myhash+password)
-                myhash = m.digest()
-                count -= 1
-        else:
-            import struct
-            m.update(salt+password)
-            mymd5 = m.hexdigest()
-            myhash = struct.pack('H*',mymd5)
-            while count:
-                m.update(myhash+password)
-                mymd5 = m.hexdigest()
-                myhash = struct.pack('H*',mymd5)
-                count -= 1
+            count -= 1
 
         myoutput = setting[:12]
         myoutput += self._hash_encode64(myhash, 16)
@@ -16347,26 +16357,16 @@ class phpBB3AuthInterface(DistributionAuthInterface):
 
         return output
 
-    def phpbb3_check_hash(self, password, myhash):
+    def _phpbb3_check_hash(self, password, myhash):
 
         if len(myhash) == 34:
-            mycrypt = self._hash_crypt_private(password, myhash)
-            print "mycrypt",repr(mycrypt)
-            print "myhash",repr(myhash)
-            return mycrypt == myhash
+            return self._hash_crypt_private(password, myhash) == myhash
 
         import md5
         m = md5.new()
         m.update(password)
         rhash = m.hexdigest()
         return rhash == myhash
-
-    def get_user_data(self):
-        self.check_connection()
-        self.check_login_data()
-        self.check_logged_in()
-        self.cursor.execute('SELECT * FROM phpbb_users WHERE username = %s', (self.login_data['username'],))
-        return self.cursor.fetchone()
 
 class RepositoryManager(ServerInterface):
 
