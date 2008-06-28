@@ -16165,6 +16165,10 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.mysql = MySQLdb
         self.mysql_exceptions = _mysql_exceptions
         self.itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+        self.USER_NORMAL = 0
+        self.USER_INACTIVE = 1
+        self.USER_IGNORE = 2
+        self.USER_FOUNDER = 3
 
     def connect(self):
         kwargs = {}
@@ -16202,13 +16206,37 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
 
+        if not self.login_data.has_key('username'):
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('no username specified'),))
+        elif not self.login_data.has_key('password'):
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('no password specified'),))
+
+        if not self.login_data['password']:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('empty password'),))
+        elif not self.login_data['username']:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('empty username'),))
+
         self.cursor.execute('SELECT * FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if not data:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user not found'),))
+
+        if data['user_pass_convert']:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (
+                    _('you need to login on the website to update your password format'),
+                )
+            )
+
         valid = self._phpbb3_check_hash(self.login_data['password'], data['user_password'])
         if not valid:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('wrong password'),))
+
+        user_type = data['user_type']
+        if (user_type == self.USER_INACTIVE) or (user_type == self.USER_IGNORE):
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user inactive'),))
+
+        if not data['user_permissions']:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user banned'),))
 
         self.logged_in = True
         return self.logged_in
@@ -16237,7 +16265,15 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        return True
+
+        self.cursor.execute('SELECT user_type FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        data = self.cursor.fetchone()
+        if not data:
+            return False
+        if data['user_type'] == self.USER_FOUNDER:
+            return True
+
+        return False
 
     def is_moderator(self):
         self.check_connection()
@@ -16249,7 +16285,15 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        return True
+
+        self.cursor.execute('SELECT user_type FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        data = self.cursor.fetchone()
+        if not data:
+            return False
+        if data['user_type'] == self.USER_NORMAL:
+            return True
+
+        return False
 
     def _get_unique_id(self):
         import md5, random
