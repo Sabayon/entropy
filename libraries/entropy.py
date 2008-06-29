@@ -16119,26 +16119,19 @@ class DistributionAuthInterface:
         self.check_login_data()
         self.check_logged_in()
         self.__raise_not_implemented_error()
-        return []
+        return {}
 
     def get_user_group(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
         self.__raise_not_implemented_error()
-        return ""
+        return -1
 
     def is_logged_in(self):
         return self.logged_in
 
-    def get_permissions(self):
-        self.check_connection()
-        self.check_login_data()
-        self.check_logged_in()
-        self.__raise_not_implemented_error()
-        return {}
-
-    def set_permissions(self):
+    def get_permission_data(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
@@ -16152,12 +16145,6 @@ class DistributionAuthInterface:
         self.__raise_not_implemented_error()
         return {}
 
-    def set_user_data(self):
-        self.check_connection()
-        self.check_login_data()
-        self.check_logged_in()
-        self.__raise_not_implemented_error()
-        return {}
 
 class phpBB3AuthInterface(DistributionAuthInterface):
 
@@ -16174,9 +16161,9 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.USER_INACTIVE = 1
         self.USER_IGNORE = 2
         self.USER_FOUNDER = 3
-        self.ADMIN_GROUPS = []
-        self.MODERATOR_GROUPS = []
-        self.DEVELOPER_GROUPS = []
+        self.ADMIN_GROUPS = [7893, 7898]
+        self.MODERATOR_GROUPS = [484]
+        self.DEVELOPER_GROUPS = [7900]
 
     def connect(self):
         kwargs = {}
@@ -16269,41 +16256,63 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        return True
+
+        # search into phpbb_groups
+        groups = self.get_user_groups()
+        for group in groups:
+            if group in self.DEVELOPER_GROUPS:
+                return True
+
+        return False
 
     def is_administrator(self):
-        # sabayon phpbb_groups, group_id: 7893, 7898
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
 
         self.cursor.execute('SELECT user_type FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
-        if not data:
-            return False
-        if data['user_type'] == self.USER_FOUNDER:
+        if data:
+            if data['user_type'] == self.USER_FOUNDER:
+                return True
+
+        # search into phpbb_groups
+        group = self.get_user_group()
+        if group in self.ADMIN_GROUPS:
             return True
 
         return False
 
     def is_moderator(self):
-        # global moderator - phpbb_groups: group_name = Moderators
-        # sabayon group_id = 484
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        return True
+
+        # search into phpbb_groups
+        groups = self.get_user_groups()
+        for group in groups:
+            if group in self.MODERATOR_GROUPS:
+                return True
+
+        return False
 
     def is_user(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT user_type FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        if self.is_moderator():
+            return False
+        elif self.is_administrator():
+            return False
+
+        self.cursor.execute('SELECT user_type,user_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if not data:
             return False
-        if data['user_type'] == self.USER_NORMAL:
+        if self.is_user_banned(data['user_id']):
+            return False
+        elif data['user_type'] in [self.USER_NORMAL]:
             return True
 
         return False
@@ -16316,6 +16325,55 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         if data:
             return True
         return False
+
+    def is_in_group(self, group):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        groups = self.get_user_groups()
+        if isinstance(group,int):
+            if group in groups:
+                return True
+        elif isinstance(group,basestring):
+            self.cursor.execute('SELECT group_id FROM phpbb_groups WHERE group_name = %s', (group,))
+            data = self.cursor.fetchone()
+            if not data:
+                return False
+            elif data['group_id'] in groups:
+                return True
+
+        return False
+
+    def get_user_groups(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        self.cursor.execute('SELECT phpbb_user_group.group_id,phpbb_groups.group_name FROM phpbb_user_group,phpbb_users,phpbb_groups WHERE phpbb_users.username_clean = %s and phpbb_users.user_id = phpbb_user_group.user_id and phpbb_user_group.group_id = phpbb_groups.group_id', (self.login_data['username'],))
+        data = self.cursor.fetchall()
+        mydata = {}
+        for mydict in data:
+            mydata[mydict['group_id']] = mydict['group_name']
+
+        return mydata
+
+    def get_user_group(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        self.cursor.execute('SELECT group_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        if data.has_key('group_id'):
+            return data['group_id']
+
+        return -1
+
+    def get_permission_data(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.cursor.execute('SELECT user_permissions FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        return self.cursor.fetchone()
 
     def _get_unique_id(self):
         import md5, random
