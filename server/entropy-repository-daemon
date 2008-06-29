@@ -1,5 +1,5 @@
 #!/usr/bin/python
-import sys
+import sys, time
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -12,7 +12,14 @@ if "--ssl" in sys.argv:
     do_ssl = True
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
-from entropy import RepositorySocketServerInterface
+
+import time
+import entropyTools
+from entropy import RepositorySocketServerInterface, phpBB3AuthInterface
+
+#class phpbb3Authenticator(phpBB3AuthInterface):
+#    import entropyTools
+#    
 
 # configure my repositories
 repositories = {
@@ -21,12 +28,40 @@ repositories = {
         'cmethod': 'bz2',
     },
 }
-srv = RepositorySocketServerInterface(do_ssl = do_ssl, repositories = repositories, stdout_logging = do_stdout_logging)
-try:
-    srv.go()
-except KeyboardInterrupt:
-    srv.Gc.kill()
-    if srv.LockScanner != None:
-        srv.LockScanner.kill()
-    sys.exit(1)
 
+def run_srv(s):
+    try:
+        s.go()
+    except (KeyboardInterrupt, SystemExit,):
+        s.killall()
+
+srv_ssl = None
+srv = RepositorySocketServerInterface(do_ssl = False, repositories = repositories, stdout_logging = do_stdout_logging)
+if do_ssl:
+    srv_ssl = RepositorySocketServerInterface(do_ssl = True, repositories = repositories, stdout_logging = do_stdout_logging)
+
+task = entropyTools.parallelTask(run_srv, srv)
+task.setName('repodaemon')
+task.start()
+if srv_ssl != None:
+    task = entropyTools.parallelTask(run_srv, srv_ssl)
+    task.setName('repodaemon_ssl')
+    task.start()
+
+while 1:
+    try:
+        time.sleep(1)
+        found = False
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if thread.getName() in ["repodaemon","repodaemon_ssl"]:
+                found = True
+                break
+        if not found:
+            break
+    except (KeyboardInterrupt, SystemExit,):
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if thread.getName() in ["repodaemon","repodaemon_ssl"]:
+                thread.args[0].killall()
+        raise SystemExit

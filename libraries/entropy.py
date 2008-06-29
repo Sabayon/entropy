@@ -13474,6 +13474,11 @@ class SocketHostInterface:
         self.setup_ssl()
         self.start_python_garbage_collector()
 
+    def killall(self):
+        self.Gc.kill()
+        if self.LockScanner != None:
+            self.LockScanner.kill()
+
     def append_eos(self, data):
         return str(len(data)) + \
             self.answers['eos'] + \
@@ -17317,9 +17322,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             )
 
 class EntropySocketClientCommands:
-
-    def __init__(self):
-        pass
+    """ this is just a placeholder """
 
 class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 

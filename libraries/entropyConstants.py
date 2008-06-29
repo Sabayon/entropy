@@ -777,7 +777,7 @@ def const_defaultSettings(rootdir):
             'ip_blacklist': set(),
             'ssl_key': ETP_CONF_DIR+"/socket_server.key",
             'ssl_cert': ETP_CONF_DIR+"/socket_server.crt",
-            'ssl_port': 998,
+            'ssl_port': 1027,
             'answers': {
                 'ok': chr(0)+"OK"+chr(0), # command run
                 'er': chr(0)+"ER"+chr(1), # execution error
