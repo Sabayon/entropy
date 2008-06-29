@@ -16100,6 +16100,11 @@ class DistributionAuthInterface:
         self.__raise_not_implemented_error()
         return True
 
+    def is_user_banned(self, user):
+        self.check_connection()
+        self.__raise_not_implemented_error()
+        return False
+
     def is_in_group(self, group):
         mygroup = group
         del mygroup
@@ -16169,6 +16174,9 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.USER_INACTIVE = 1
         self.USER_IGNORE = 2
         self.USER_FOUNDER = 3
+        self.ADMIN_GROUPS = []
+        self.MODERATOR_GROUPS = []
+        self.DEVELOPER_GROUPS = []
 
     def connect(self):
         kwargs = {}
@@ -16235,7 +16243,8 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         if (user_type == self.USER_INACTIVE) or (user_type == self.USER_IGNORE):
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user inactive'),))
 
-        if not data['user_permissions']:
+        banned = self.is_user_banned(data['user_id'])
+        if banned:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user banned'),))
 
         self.logged_in = True
@@ -16256,12 +16265,14 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         return self.cursor.fetchone()
 
     def is_developer(self):
+        # sabayon, add this group id
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
         return True
 
     def is_administrator(self):
+        # sabayon phpbb_groups, group_id: 7893, 7898
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
@@ -16276,6 +16287,8 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         return False
 
     def is_moderator(self):
+        # global moderator - phpbb_groups: group_name = Moderators
+        # sabayon group_id = 484
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
@@ -16293,6 +16306,15 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         if data['user_type'] == self.USER_NORMAL:
             return True
 
+        return False
+
+    # user == user_id
+    def is_user_banned(self, user):
+        self.check_connection()
+        self.cursor.execute('SELECT ban_userid FROM phpbb_banlist WHERE ban_userid = %s', (user,))
+        data = self.cursor.fetchone()
+        if data:
+            return True
         return False
 
     def _get_unique_id(self):
