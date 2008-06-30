@@ -16472,7 +16472,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
     def _update_session_table(self, user_id, ip_address):
 
         time_now = int(time.time())
-        self.cursor.execute('SELECT config_value AS autologin, FROM '+self.TABLE_PREFIX+'config WHERE config_name = "allow_autologin"')
+        self.cursor.execute('SELECT config_value AS autologin FROM '+self.TABLE_PREFIX+'config WHERE config_name = "allow_autologin"')
         myconfig = self.cursor.fetchone()
         self.cursor.execute('SELECT user_allow_viewonline FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (user_id,))
         myuserprefs = self.cursor.fetchone()
