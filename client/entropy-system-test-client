@@ -1,111 +1,18 @@
-#!/usr/bin/python
-serverHost = "localhost"
-serverPort = 999
-
-import sys, os
-import socket
-socket.setdefaulttimeout(300)
-sys.path.insert(0,'/usr/lib/entropy/libraries')
-sys.path.insert(0,'/usr/lib/entropy/client')
+import sys
 sys.path.insert(0,'../libraries')
-sys.path.insert(0,'../client')
+from entropy import RepositorySocketClientInterface, EntropyRepositorySocketClientCommands, EquoInterface
 from entropyConstants import *
+repository = 'sabayonlinux.org'
+Entropy = EquoInterface()
+dburl = etpRepositories[repository]['plain_database'].split("/")[2]
+port = etpRepositories[repository]['service_port']
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-try:
-    import cStringIO as stringio
-except ImportError:
-    import StringIO as stringio
-import dumpTools
+eapi3_socket = RepositorySocketClientInterface(Entropy, EntropyRepositorySocketClientCommands)
+eapi3_socket.connect(dburl, port)
 
-s = None
-
-def connect():
-    global s
-    # connect
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.connect((serverHost, serverPort))
-    except socket.error, e:
-        if e[0] == 111:
-            print "no daemon running"
-            sys.exit(1)
-        else:
-            raise
-
-def spawn(cmd, silent = False, getobj = False):
-
-    # send command
-    s.sendall(cmd)
-
-    data = ''
-    end_of_tmt = False
-    while 1:
-        try:
-            x = s.recv(8192)
-        except socket.timeout, e:
-            print 'interrupted, reason: %s' % (e,)
-            sys.exit(3)
-
-        if not x:
-            break
-
-        data += x
-        eot = etpConst['socket_service']['answers']['eot']
-        if data.endswith(eot*2):     # if we have two eot it means it's
-            data = data[:-len(eot)]  # been duplicated to avoid to be confused
-        elif data.endswith(eot):
-            end_of_tmt = True
-            data = data[:-len(eot)]
-
-        if not silent:
-            sys.stdout.write(x)
-            sys.stdout.flush()
-
-        if end_of_tmt:
-            break
-
-    if getobj and data:
-        f = stringio.StringIO(data)
-        data = dumpTools.unserialize(f)
-        f.close()
-
-    return data
-
-connect()
-# 1st step, get session
-session = spawn("begin", silent = True)
-if session == "0":
-    print "maximum number of sessions reached, server full"
-    sys.exit(4)
-else:
-    print "session is:",session
-
-# 2nd step, run the command
-#spawn_result = spawn("%s match 'x11-libs/qt'" % (session,), silent = True)
-spawn_result = spawn("%s reposync reponames=['sabayonlinux.org'] forceUpdate=True" % (session,))#, silent = True)
-#print "spawn result is:",repr(result)
-
-if spawn_result in [
-                        etpConst['socket_service']['answers']['er'],
-                        etpConst['socket_service']['answers']['no'],
-                        etpConst['socket_service']['answers']['cl']
-    ]:
-        rc = spawn("%s rc" % (session,), silent = True, getobj = True)
-        print "cannot continue, error code:",repr(spawn_result),"error message:",rc
-        s.close()
-        sys.exit(2)
-
-# 3rd step, get rc
-rc = spawn("%s rc" % (session,), silent = True, getobj = True)
-print "REAL returned data:",repr(rc)
-
-# 4th step, end session
-rc = spawn("%s end" % (session,), silent = True)
-print "END session result",repr(rc)
-
-s.close()
-sys.exit(0)
+username = 'lxnay'
+password = 'password'
+session_id = eapi3_socket.open_session()
+print "logged in?",eapi3_socket.CmdInterface.service_login(username, password, session_id)
+print "logging out...",eapi3_socket.CmdInterface.service_logout(username, session_id)
+eapi3_socket.close_session(session_id)
