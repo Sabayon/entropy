@@ -14,12 +14,71 @@ if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
 import time
-import entropyTools
+import entropyTools, exceptionTools
 from entropy import RepositorySocketServerInterface, phpBB3AuthInterface
 
-#class phpbb3Authenticator(phpBB3AuthInterface):
-#    import entropyTools
-#    
+connection_data = {
+    'hostname': 'localhost',
+    'port': 3306,
+    'username': 'phpbb_user',
+    'password': 'mypassword',
+    'dbname': 'phpbb_db'
+}
+
+class phpbb3Authenticator(phpBB3AuthInterface):
+    import entropyTools
+
+    def __init__(self, connection_data):
+        phpBB3AuthInterface.__init__(self)
+        self.set_connection_data(connection_data)
+        self.connect()
+
+    def docmd_login(self, arguments):
+
+        # filter n00bs
+        if not arguments or (len(arguments) != 2):
+            return False,None,None,'wrong arguments'
+
+        user = arguments[0]
+        login_data = {'username': user, 'password': arguments[1]}
+        self.set_login_data(login_data)
+        rc = False
+        try:
+            rc = self.login()
+        except exceptionTools.PermissionDenied, e:
+            return rc,user,None,e.value
+
+        if rc:
+            return True,user,None,"ok"
+        return rc,user,None,"login failed"
+
+    def docmd_logout(self, myargs):
+
+        # filter n00bs
+        if (len(myargs) < 1) or (len(myargs) > 1):
+            return False,None,None,'wrong arguments'
+
+        user = myargs[0]
+        # filter n00bs
+        if not user or (type(user) is not basestring):
+            return False,None,None,"wrong user"
+
+        rc = False
+        try:
+            rc = self.logout()
+        except (exceptionTools.ConnectionError,exceptionTools.PermissionDenied,), e:
+            return rc,user,e.value
+
+        return rc,user,"ok"
+
+    def set_exc_permissions(self, *args, **kwargs):
+        pass
+
+    def hide_login_data(self, args):
+        myargs = args[:]
+        myargs[-1] = 'hidden'
+        return myargs
+
 
 # configure my repositories
 repositories = {
@@ -35,10 +94,11 @@ def run_srv(s):
     except (KeyboardInterrupt, SystemExit,):
         s.killall()
 
+sock_auth = (phpbb3Authenticator,connection_data,{})
 srv_ssl = None
-srv = RepositorySocketServerInterface(do_ssl = False, repositories = repositories, stdout_logging = do_stdout_logging)
+srv = RepositorySocketServerInterface(do_ssl = False, repositories = repositories, stdout_logging = do_stdout_logging, sock_auth = sock_auth)
 if do_ssl:
-    srv_ssl = RepositorySocketServerInterface(do_ssl = True, repositories = repositories, stdout_logging = do_stdout_logging)
+    srv_ssl = RepositorySocketServerInterface(do_ssl = True, repositories = repositories, stdout_logging = do_stdout_logging, sock_auth = sock_auth)
 
 task = entropyTools.parallelTask(run_srv, srv)
 task.setName('repodaemon')
