@@ -12393,18 +12393,21 @@ class SocketHostInterface:
 
         import entropyTools
 
-        def __init__(self):
+        def __init__(self, HostInterface):
             self.valid_auth_types = [ "plain", "shadow", "md5" ]
+            self.HostInterface = HostInterface
 
         def docmd_login(self, arguments):
 
             # filter n00bs
-            if not arguments or (len(arguments) != 3):
+            if not arguments or (len(arguments) != 5):
                 return False,None,None,'wrong arguments'
 
-            user = arguments[0]
-            auth_type = arguments[1]
-            auth_string = arguments[2]
+            #session = arguments[0]
+            #ip_address = arguments[1]
+            user = arguments[2]
+            auth_type = arguments[3]
+            auth_string = arguments[4]
 
             # check auth type validity
             if auth_type not in self.valid_auth_types:
@@ -12468,10 +12471,11 @@ class SocketHostInterface:
         def docmd_logout(self, myargs):
 
             # filter n00bs
-            if (len(myargs) < 1) or (len(myargs) > 1):
+            if (len(myargs) < 2) or (len(myargs) > 2):
                 return False,None,None,'wrong arguments'
 
-            user = myargs[0]
+            #session = myargs[0]
+            user = myargs[1]
             # filter n00bs
             if not user or (type(user) is not basestring):
                 return False,None,None,"wrong user"
@@ -13271,7 +13275,7 @@ class SocketHostInterface:
             if auth_uid != None:
                 return False,"already authenticated"
 
-            status, user, uid, reason = authenticator.docmd_login(myargs)
+            status, user, uid, reason = authenticator.docmd_login([session,client_address]+myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged in successfully, session: %s' % (
@@ -13306,7 +13310,7 @@ class SocketHostInterface:
                 return False,reason
 
         def docmd_logout(self, transmitter, authenticator, session, myargs):
-            status, user, reason = authenticator.docmd_logout(myargs)
+            status, user, reason = authenticator.docmd_logout([session]+myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged out successfully, session: %s, args: %s ' % (
@@ -13611,7 +13615,7 @@ class SocketHostInterface:
 
     def setup_authenticator(self):
 
-        auth_inst = (self.BasicPamAuthenticator, [], {}) # authentication class, args, keywords
+        auth_inst = (self.BasicPamAuthenticator, [self], {}) # authentication class, args, keywords
         # external authenticator
         if self.kwds.has_key('sock_auth'):
             authIntf = self.kwds.pop('sock_auth')
@@ -13623,7 +13627,7 @@ class SocketHostInterface:
             else:
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: wront authentication interface specified")
             # initialize authenticator
-        self.AuthenticatorInst = (auth_inst[0],auth_inst[1],auth_inst[2],)
+        self.AuthenticatorInst = (auth_inst[0],[self]+auth_inst[1],auth_inst[2],)
 
     def start_python_garbage_collector(self):
         self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600 )
