@@ -16527,7 +16527,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             sql += 'UPDATE %s SET ' % (self.dbconn.escape_string(table),)
             keys_data = []
             for key in keys:
-                keys_data.append("'%s'='%s'" % (
+                keys_data.append("%s = '%s'" % (
                         self.dbconn.escape_string(key),
                         self.dbconn.escape_string(unicode(data[key]))
                     )
@@ -16538,7 +16538,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
                 self.dbconn.escape_string(table),
                 ', '.join([self.dbconn.escape_string(x) for x in keys]),
-                ', '.join(["'"+unicode(self.dbconn.escape_string(data[x]))+"'" for x in keys])
+                ', '.join(["'"+self.dbconn.escape_string(unicode(data[x]))+"'" for x in keys])
             )
         return sql
 
