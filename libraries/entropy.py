@@ -12478,7 +12478,7 @@ class SocketHostInterface:
 
             user = myargs[0]
             # filter n00bs
-            if not user or (type(user) is not basestring):
+            if not user or not isinstance(user,basestring):
                 return False,None,"wrong user"
 
             return True,user,"ok"
