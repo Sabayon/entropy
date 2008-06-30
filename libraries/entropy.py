@@ -12474,12 +12474,12 @@ class SocketHostInterface:
 
             # filter n00bs
             if (len(myargs) < 1) or (len(myargs) > 1):
-                return False,None,None,'wrong arguments'
+                return False,None,'wrong arguments'
 
             user = myargs[0]
             # filter n00bs
             if not user or (type(user) is not basestring):
-                return False,None,None,"wrong user"
+                return False,None,"wrong user"
 
             return True,user,"ok"
 
@@ -17497,6 +17497,23 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 header = self.output_header
             )
             do_skip = True
+        elif data == self.Service.answers['no']:
+            # command failed
+            mytxt = _("command failed")
+            self.Entropy.updateProgress(
+                "[%s:%s|%s:%s|%s:%s] %s" % (
+                        darkblue(_("repo")),
+                        bold(str(repository)),
+                        darkred(_("arch")),
+                        bold(str(arch)),
+                        darkgreen(_("product")),
+                        bold(str(product)),
+                        blue(mytxt),
+                ),
+                importance = 1,
+                type = "error",
+                header = self.output_header
+            )
         elif data != self.Service.answers['ok']:
             mytxt = _("received wrong answer")
             self.Entropy.updateProgress(
