@@ -13200,7 +13200,7 @@ class SocketHostInterface:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_logout,
-                                'args': ["self.transmit", "authenticator", "session", "myargs"],
+                                'args': ["self.transmit", "authenticator", "session", "self.client_address", "myargs"],
                                 'as_user': False,
                                 'desc': "logout on the running server",
                                 'syntax': "<SESSION_ID> logout <USER>",
@@ -13315,12 +13315,12 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_logout(self, transmitter, authenticator, session, myargs):
+        def docmd_logout(self, transmitter, authenticator, session, client_address, myargs):
             status, user, reason = authenticator.docmd_logout(myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged out successfully, session: %s, args: %s ' % (
-                        self.client_address,
+                        client_address,
                         user,
                         session,
                         myargs,
@@ -13332,7 +13332,7 @@ class SocketHostInterface:
             elif user == None:
                 self.HostInterface.updateProgress(
                     '[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (
-                        self.client_address,
+                        client_address,
                         session,
                         myargs,
                         reason,
@@ -13343,7 +13343,7 @@ class SocketHostInterface:
             else:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (
-                        self.client_address,
+                        client_address,
                         user,
                         session,
                         myargs,
