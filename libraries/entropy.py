@@ -13190,17 +13190,17 @@ class SocketHostInterface:
                                 'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_login,
-                                'args': ["self.transmit", "authenticator", "self.client_address", "myargs"],
+                                'args': ["self.transmit", "authenticator", "session", "self.client_address", "myargs"],
                                 'as_user': False,
                                 'desc': "login on the running server (allows running extra commands)",
-                                'syntax': "<SESSION_ID> login <USER> <AUTH_TYPE: plain,shadow,md5> <PASSWORD>",
+                                'syntax': "<SESSION_ID> login <authenticator parameters, default: <user> <auth_type> <password> >",
                                 'from': str(self),
                             },
                 'logout':   {
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_logout,
-                                'args': ["self.transmit", "authenticator", "myargs"],
+                                'args': ["self.transmit", "authenticator", "session", "myargs"],
                                 'as_user': False,
                                 'desc': "logout on the running server",
                                 'syntax': "<SESSION_ID> logout <USER>",
@@ -13274,7 +13274,7 @@ class SocketHostInterface:
                 return False,"invalid config option"
 
 
-        def docmd_login(self, transmitter, authenticator, client_address, myargs):
+        def docmd_login(self, transmitter, authenticator, session, client_address, myargs):
 
             # is already auth'd?
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
@@ -13315,7 +13315,7 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_logout(self, transmitter, authenticator, myargs):
+        def docmd_logout(self, transmitter, authenticator, session, myargs):
             status, user, reason = authenticator.docmd_logout(myargs)
             if status:
                 self.HostInterface.updateProgress(
@@ -17468,11 +17468,11 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
-                        bold(repository),
+                        bold(str(repository)),
                         darkred(_("arch")),
-                        bold(arch),
+                        bold(str(arch)),
                         darkgreen(_("product")),
-                        bold(product),
+                        bold(str(product)),
                         blue(mytxt),
                 ),
                 importance = 1,
@@ -17485,11 +17485,11 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
-                        bold(repository),
+                        bold(str(repository)),
                         darkred(_("arch")),
-                        bold(arch),
+                        bold(str(arch)),
                         darkgreen(_("product")),
-                        bold(product),
+                        bold(str(product)),
                         blue(mytxt),
                 ),
                 importance = 1,
@@ -17502,11 +17502,11 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s: %s" % (
                         darkblue(_("repo")),
-                        bold(repository),
+                        bold(str(repository)),
                         darkred(_("arch")),
-                        bold(arch),
+                        bold(str(arch)),
                         darkgreen(_("product")),
-                        bold(product),
+                        bold(str(product)),
                         blue(mytxt),
                         repr(data),
                 ),
@@ -17564,13 +17564,13 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         myidlist = ' '.join([str(x) for x in idpackages])
         cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
 
-        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
+        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
 
         if close_session:
             self.Service.close_session(session_id)
         return data
 
-    def retrieve_command_answer(self, cmd, repository, arch, product, compression, session_id):
+    def retrieve_command_answer(self, cmd, session_id, repository = None, arch = None, product = None, compression = False):
 
         tries = 3
         lasterr = None
@@ -17618,7 +17618,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             ' '.join([str(x) for x in idpackages]),
         )
 
-        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
+        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
         if close_session:
             self.Service.close_session(session_id)
         return data
@@ -17639,7 +17639,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             product,
         )
 
-        data = self.retrieve_command_answer(cmd, repository, arch, product, compression, session_id)
+        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
         if close_session:
             self.Service.close_session(session_id)
         return data
@@ -17687,6 +17687,53 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 if tries == 0:
                     raise
 
+    def service_login(self, username, password, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.service_login_handler(username, password, session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def service_login_handler(self, username, password, session_id):
+
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'login',
+            username,
+            password,
+        )
+
+        return self.retrieve_command_answer(cmd, session_id)
+
+    def service_logout(self, username, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.service_logout_handler(username, session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def service_logout_handler(self, username, session_id):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'logout',
+            username,
+        )
+        return self.retrieve_command_answer(cmd, session_id)
 
     def set_gzip_compression_on_rc(self, session, do):
         self.Service.check_socket_connection()
