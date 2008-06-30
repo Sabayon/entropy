@@ -12465,8 +12465,13 @@ class SocketHostInterface:
                 return True
             return False
 
-        def docmd_logout(self, user):
+        def docmd_logout(self, myargs):
 
+            # filter n00bs
+            if (len(myargs) < 1) or (len(myargs) > 1):
+                return False,None,None,'wrong arguments'
+
+            user = myargs[0]
             # filter n00bs
             if not user or (type(user) is not basestring):
                 return False,None,None,"wrong user"
@@ -16302,7 +16307,6 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         return self.cursor.fetchone()
 
     def is_developer(self):
-        # sabayon, add this group id
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
