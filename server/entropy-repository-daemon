@@ -39,24 +39,31 @@ class phpbb3Authenticator(phpBB3AuthInterface):
         session_data = self.HostInterface.sessions.get(self.session)
         if not session_data:
             return
-        authed = session_data['auth_uid']
-        if authed:
+        auth_id = session_data['auth_uid']
+        if auth_id:
             self.logged_in = True
             # fill login_data with fake information
             self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password'}
+            ip_address = session_data.get('ip_address')
+            if ip_address:
+                self._update_session_table(auth_id, ip_address)
 
     def docmd_login(self, arguments):
 
         # filter n00bs
-        if not arguments or (len(arguments) != 3):
+        if not arguments or (len(arguments) != 2):
             return False,None,None,'wrong arguments'
 
-        ip_address = arguments[0][0]
+        ip_address = None
+        session_data = self.HostInterface.sessions.get(self.session)
+        if session_data:
+            ip_address = session_data.get('ip_address')
         user = arguments[1]
         password = arguments[2]
 
-        if self._is_ip_banned(ip_address):
-            return False,user,None,"banned IP"
+        if ip_address:
+            if self._is_ip_banned(ip_address):
+                return False,user,None,"banned IP"
 
         login_data = {'username': user, 'password': password}
         self.set_login_data(login_data)
@@ -68,20 +75,21 @@ class phpbb3Authenticator(phpBB3AuthInterface):
 
         if rc:
             uid = self.get_user_id()
+            if ip_address and uid:
+                self._update_session_table(uid, ip_address)
             return True,user,uid,"ok"
         return rc,user,None,"login failed"
 
     def docmd_logout(self, myargs):
 
         # filter n00bs
-        if (len(myargs) < 2) or (len(myargs) > 2):
-            return False,None,None,'wrong arguments'
+        if (len(myargs) < 1) or (len(myargs) > 1):
+            return False,None,'wrong arguments'
 
-        session = myargs[0]
-        user = myargs[1]
+        user = myargs[0]
         # filter n00bs
-        if not user or (type(user) is not basestring):
-            return False,None,None,"wrong user"
+        if not user or not isinstance(user,basestring):
+            return False,None,"wrong user"
 
         if not self.is_logged_in():
             return False,user,"already logged out"

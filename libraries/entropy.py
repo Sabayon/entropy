@@ -12403,7 +12403,7 @@ class SocketHostInterface:
         def docmd_login(self, arguments):
 
             # filter n00bs
-            if not arguments or (len(arguments) != 4):
+            if not arguments or (len(arguments) != 3):
                 return False,None,None,'wrong arguments'
 
             #ip_address = arguments[0]
@@ -13108,7 +13108,7 @@ class SocketHostInterface:
                                 'auth': False, # does it need authentication ?
                                 'built_in': True, # is it built-in ?
                                 'cb': self.docmd_begin, # function to call
-                                'args': ["self.transmit"], # arguments to be passed before *args and **kwards
+                                'args': ["self.transmit", "self.client_address"], # arguments to be passed before *args and **kwards
                                 'as_user': False, # do I have to fork the process and run it as logged user?
                                                   # needs auth = True
                                 'desc': "instantiate a session", # description
@@ -13281,7 +13281,7 @@ class SocketHostInterface:
             if auth_uid != None:
                 return False,"already authenticated"
 
-            status, user, uid, reason = authenticator.docmd_login([client_address]+myargs)
+            status, user, uid, reason = authenticator.docmd_login(myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged in successfully, session: %s' % (
@@ -13412,8 +13412,8 @@ class SocketHostInterface:
             transmitter(cmd)
             return rc
 
-        def docmd_begin(self, transmitter):
-            session = self.HostInterface.get_new_session()
+        def docmd_begin(self, transmitter, client_address):
+            session = self.HostInterface.get_new_session(client_address[0])
             transmitter(session)
             return session
 
@@ -13685,7 +13685,7 @@ class SocketHostInterface:
         mysock = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
         return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
-    def get_new_session(self):
+    def get_new_session(self, ip_address = None):
         if len(self.sessions) > self.threads:
             # fuck!
             return "0"
@@ -13697,6 +13697,7 @@ class SocketHostInterface:
         self.sessions[rng]['auth_uid'] = None
         self.sessions[rng]['compression'] = None
         self.sessions[rng]['t'] = time.time()
+        self.sessions[rng]['ip_address'] = ip_address
         return rng
 
     def update_session_time(self, session):
@@ -16232,6 +16233,15 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.MODERATOR_GROUPS = [484]
         self.DEVELOPER_GROUPS = [7900]
         self.FAKE_USERNAME = 'already_authed'
+        self.USER_AGENT = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
+                                        etpConst['entropyversion'],
+                                        "Entropy",
+                                        "UGC",
+                                        os.uname()[0],
+                                        os.uname()[4],
+                                        os.uname()[2],
+        )
+        self.TABLE_PREFIX = 'phpbb_'
 
     def check_connection(self):
         DistributionAuthInterface.check_connection(self)
@@ -16283,7 +16293,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         elif not self.login_data['username']:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('empty username'),))
 
-        self.cursor.execute('SELECT * FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if not data:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user not found'),))
@@ -16321,7 +16331,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT * FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         return self.cursor.fetchone()
 
     def is_developer(self):
@@ -16342,7 +16352,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT user_type FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_type FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if data:
             if data['user_type'] == self.USER_FOUNDER:
@@ -16378,7 +16388,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         elif self.is_administrator():
             return False
 
-        self.cursor.execute('SELECT user_type,user_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_type,user_id FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if not data:
             return False
@@ -16392,7 +16402,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
     # user == user_id
     def is_user_banned(self, user):
         self.check_connection()
-        self.cursor.execute('SELECT ban_userid FROM phpbb_banlist WHERE ban_userid = %s', (user,))
+        self.cursor.execute('SELECT ban_userid FROM '+self.TABLE_PREFIX+'banlist WHERE ban_userid = %s', (user,))
         data = self.cursor.fetchone()
         if data:
             return True
@@ -16407,7 +16417,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             if group in groups:
                 return True
         elif isinstance(group,basestring):
-            self.cursor.execute('SELECT group_id FROM phpbb_groups WHERE group_name = %s', (group,))
+            self.cursor.execute('SELECT group_id FROM '+self.TABLE_PREFIX+'groups WHERE group_name = %s', (group,))
             data = self.cursor.fetchone()
             if not data:
                 return False
@@ -16421,7 +16431,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT phpbb_user_group.group_id,phpbb_groups.group_name FROM phpbb_user_group,phpbb_users,phpbb_groups WHERE phpbb_users.username_clean = %s and phpbb_users.user_id = phpbb_user_group.user_id and phpbb_user_group.group_id = phpbb_groups.group_id', (self.login_data['username'],))
+        self.cursor.execute('SELECT '+self.TABLE_PREFIX+'user_group.group_id,'+self.TABLE_PREFIX+'groups.group_name FROM '+self.TABLE_PREFIX+'user_group,'+self.TABLE_PREFIX+'users,'+self.TABLE_PREFIX+'groups WHERE '+self.TABLE_PREFIX+'users.username_clean = %s and '+self.TABLE_PREFIX+'users.user_id = '+self.TABLE_PREFIX+'user_group.user_id and '+self.TABLE_PREFIX+'user_group.group_id = '+self.TABLE_PREFIX+'groups.group_id', (self.login_data['username'],))
         data = self.cursor.fetchall()
         mydata = {}
         for mydict in data:
@@ -16434,7 +16444,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT group_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT group_id FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if data.has_key('group_id'):
             return data['group_id']
@@ -16446,7 +16456,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT user_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if data.has_key('user_id'):
             return data['user_id']
@@ -16457,12 +16467,86 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.cursor.execute('SELECT user_permissions FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_permissions FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
         return self.cursor.fetchone()
+
+    def _update_session_table(self, user_id, ip_address):
+
+        time_now = int(time.time())
+        self.cursor.execute('SELECT config_value AS autologin, FROM '+self.TABLE_PREFIX+'config WHERE config_name = "allow_autologin"')
+        myconfig = self.cursor.fetchone()
+        self.cursor.execute('SELECT user_allow_viewonline FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (user_id,))
+        myuserprefs = self.cursor.fetchone()
+        session_admin = 0
+        session_data = {
+            'session_id': None
+            'session_user_id': user_id,
+            'session_last_visit': time_now,
+            'session_start': time_now,
+            'session_time': time_now,
+            'session_ip': ip_address,
+            'session_browser': self.USER_AGENT,
+            'session_forwarded_for': '',
+            'session_page': 'index.php',
+            'session_viewonline': myuserprefs['user_allow_viewonline'],
+            'session_autologin': myconfig['autologin'],
+            'session_admin': session_admin,
+            'session_forum_id': 0,
+        }
+        import md5
+        m = md5.new()
+        m.update(str(user_id)+str(time_now)+str(self.USER_AGENT)+str(ip_address)+str(myconfig['autologin'])+str(myuserprefs['user_allow_viewonline']))
+        session_data['session_id'] = m.hexdigest()
+
+        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'sessions WHERE session_user_id = %s', (user_id,))
+        mydata = self.cursor.fetchone()
+        do_update = False
+        if mydata:
+            do_update = True
+            # update
+            session_data['session_id'] = mydata['session_id']
+            session_data['session_viewonline'] = mydata['session_viewonline']
+            session_data['session_autologin'] = mydata['session_autologin']
+            session_data['session_forwarded_for'] = mydata['session_forwarded_for']
+            session_data['session_forum_id'] = mydata['session_forum_id']
+            session_data['session_page'] = mydata['session_page']
+
+        if do_update:
+            where = "session_id = '%s'" % (session_data['session_id'],)
+            del session_data['session_id']
+            sql = self._generate_sql('update', self.TABLE_PREFIX+'sessions', session_data, where)
+        else:
+            sql = self._generate_sql('insert', self.TABLE_PREFIX+'sessions', session_data)
+        if sql:
+            self.cursor.execute(sql)
+            self.dbconn.commit()
+
+    def _generate_sql(self, action, table, data, where = ''):
+        sql = ''
+        keys = sorted(data.keys())
+        if action == "update":
+            sql += 'UPDATE %s SET ' % (self.dbconn.escape_string(table),)
+            keys_data = []
+            for key in keys:
+                keys_data.append("'%s'='%s'" % (
+                        self.dbconn.escape_string(key),
+                        self.dbconn.escape_string(data[key])
+                    )
+                )
+            sql += ', '.join(keys_data)
+            sql += ' WHERE %s' % (where,)
+        elif action == "insert":
+            sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
+                self.dbconn.escape_string(table),
+                ', '.join([self.dbconn.escape_string(x) for x in keys]),
+                ', '.join(["'"+unicode(self.dbconn.escape_string(data[x]))+"'" for x in keys])
+            )
+        return sql
+
 
     def _is_ip_banned(self, ip):
         self.check_connection()
-        self.cursor.execute('SELECT ban_ip FROM phpbb_banlist WHERE ban_ip = %s', (ip,))
+        self.cursor.execute('SELECT ban_ip FROM '+self.TABLE_PREFIX+'banlist WHERE ban_ip = %s', (ip,))
         data = self.cursor.fetchone()
         if data:
             return True
@@ -17727,7 +17811,10 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             password,
         )
 
-        return self.retrieve_command_answer(cmd, session_id)
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
 
     def service_logout(self, username, session_id):
 
@@ -17750,7 +17837,10 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             'logout',
             username,
         )
-        return self.retrieve_command_answer(cmd, session_id)
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
 
     def set_gzip_compression_on_rc(self, session, do):
         self.Service.check_socket_connection()
