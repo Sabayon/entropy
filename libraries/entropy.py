@@ -16529,7 +16529,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             for key in keys:
                 keys_data.append("'%s'='%s'" % (
                         self.dbconn.escape_string(key),
-                        self.dbconn.escape_string("'"+unicode(data[key])+"'")
+                        self.dbconn.escape_string(unicode(data[key]))
                     )
                 )
             sql += ', '.join(keys_data)
