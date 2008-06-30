@@ -12484,6 +12484,9 @@ class SocketHostInterface:
             myargs[-1] = 'hidden'
             return myargs
 
+        def terminate_instance(self):
+            pass
+
     class HostServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
         class ConnWrapper:
@@ -12498,7 +12501,8 @@ class SocketHostInterface:
             def __getattr__(self, function) :
                 return getattr(self.connection, function)
 
-        import socket
+        import socket as socket_mod
+        import select
         import SocketServer
         # This means the main server will not do the equivalent of a
         # pthread_join() on the new threads.  With this set, Ctrl-C will
@@ -12513,12 +12517,13 @@ class SocketHostInterface:
 
         def __init__(self, server_address, RequestHandlerClass, processor, HostInterface):
 
+            self.alive = True
+            self.socket = self.socket_mod
             self.processor = processor
             self.server_address = server_address
             self.HostInterface = HostInterface
             self.SSL = self.HostInterface.SSL
             self.real_sock = None
-            self.alive = True
 
             if self.SSL:
                 self.SocketServer.BaseServer.__init__(self, server_address, RequestHandlerClass)
@@ -12527,7 +12532,7 @@ class SocketHostInterface:
             else:
                 try:
                     self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
-                except self.socket.error, e:
+                except self.socket_mod.error, e:
                     if e[0] == 13:
                         raise exceptionTools.ConnectionError('ConnectionError: %s' % (_("Cannot bind the service"),))
                     raise
@@ -12545,7 +12550,7 @@ class SocketHostInterface:
                                 ))
 
         def make_ssl_connection_alive(self):
-            self.real_sock = self.socket.socket(self.address_family, self.socket_type)
+            self.real_sock = self.socket_mod.socket(self.address_family, self.socket_type)
             self.socket = self.ConnWrapper(self.SSL['m'].Connection(self.context, self.real_sock))
 
             self.server_bind()
@@ -12558,6 +12563,8 @@ class SocketHostInterface:
 
         def serve_forever(self):
             while self.alive:
+                #r,w,e = self.select.select([self.socket], [], [], 1)
+                #if r:
                 self.handle_request()
 
 
@@ -12781,7 +12788,6 @@ class SocketHostInterface:
 
         def __init__(self, HostInterface):
             self.HostInterface = HostInterface
-            self.Authenticator = self.HostInterface.Authenticator
             self.channel = None
             self.lastoutput = None
 
@@ -12848,6 +12854,10 @@ class SocketHostInterface:
 
             return True,"all good"
 
+        def load_authenticator(self):
+            f, args, kwargs = self.HostInterface.AuthenticatorInst
+            return f(*args,**kwargs)
+
         def load_service_interface(self, session):
 
             uid = None
@@ -12871,12 +12881,13 @@ class SocketHostInterface:
 
             self.channel = channel
             self.client_address = client_address
+            authenticator = self.load_authenticator()
 
             if data.strip():
                 self.HostInterface.updateProgress("----")
                 mycommand = data.strip().split()
                 if mycommand[0] in self.HostInterface.login_pass_commands:
-                    mycommand = self.Authenticator.hide_login_data(mycommand)
+                    mycommand = authenticator.hide_login_data(mycommand)
                 #self.HostInterface.updateProgress("[from: %s] call: %s" % (
                 #                self.client_address,
                 #                repr(' '.join(mycommand)),
@@ -12892,7 +12903,7 @@ class SocketHostInterface:
 
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
-                p_args = self.Authenticator.hide_login_data(p_args)
+                p_args = authenticator.hide_login_data(p_args)
             self.HostInterface.updateProgress(
                 '[from: %s] command validation :: called %s: length: %s, args: %s, session: %s, valid: %s, reason: %s' % (
                     self.client_address,
@@ -12909,7 +12920,7 @@ class SocketHostInterface:
             if valid_cmd:
                 Entropy = self.load_service_interface(session)
                 try:
-                    self.run_task(cmd, args, session, Entropy)
+                    self.run_task(cmd, args, session, Entropy, authenticator)
                 except self.socket.timeout:
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: timeout, closing connection' % (
@@ -12946,10 +12957,14 @@ class SocketHostInterface:
             if session != None:
                 self.HostInterface.update_session_time(session)
                 self.HostInterface.unset_session_running(session)
+            rcmd = None
             try:
                 self.handle_end_answer(cmd, whoops, valid_cmd)
             except (self.socket.error, self.socket.timeout):
-                return "close"
+                rcmd = "close"
+
+            authenticator.terminate_instance()
+            return rcmd
 
         def transmit(self, data):
             self.HostInterface.transmit(self.channel, data)
@@ -12972,11 +12987,11 @@ class SocketHostInterface:
                     self.transmit(text)
                 self.lastoutput = text
 
-        def run_task(self, cmd, args, session, Entropy):
+        def run_task(self, cmd, args, session, Entropy, authenticator):
 
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
-                p_args = self.Authenticator.hide_login_data(p_args)
+                p_args = authenticator.hide_login_data(p_args)
             self.HostInterface.updateProgress(
                 '[from: %s] run_task :: called %s: args: %s, session: %s' % (
                     self.client_address,
@@ -12988,7 +13003,7 @@ class SocketHostInterface:
 
             myargs, mykwargs = self._get_args_kwargs(args)
 
-            rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy)
+            rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy, authenticator)
             if session != None and self.HostInterface.sessions.has_key(session):
                 self.HostInterface.store_rc(rc, session)
             return rc
@@ -13011,11 +13026,11 @@ class SocketHostInterface:
                         pass
             return myargs, mykwargs
 
-        def spawn_function(self, cmd, myargs, mykwargs, session, Entropy):
+        def spawn_function(self, cmd, myargs, mykwargs, session, Entropy, authenticator):
 
             p_args = myargs
             if cmd in self.HostInterface.login_pass_commands:
-                p_args = self.Authenticator.hide_login_data(p_args)
+                p_args = authenticator.hide_login_data(p_args)
             self.HostInterface.updateProgress(
                 '[from: %s] called %s: args: %s, kwargs: %s' % (
                     self.client_address,
@@ -13024,9 +13039,9 @@ class SocketHostInterface:
                     mykwargs,
                 )
             )
-            return self.do_spawn(cmd, myargs, mykwargs, session, Entropy)
+            return self.do_spawn(cmd, myargs, mykwargs, session, Entropy, authenticator)
 
-        def do_spawn(self, cmd, myargs, mykwargs, session, Entropy):
+        def do_spawn(self, cmd, myargs, mykwargs, session, Entropy, authenticator):
 
             cmd_data = self.HostInterface.valid_commands.get(cmd)
             do_fork = cmd_data['as_user']
@@ -13041,11 +13056,11 @@ class SocketHostInterface:
             if do_fork:
                 myfargs = func_args[:]
                 myfargs.extend(myargs)
-                return self.fork_task(f, session, *myfargs, **mykwargs)
+                return self.fork_task(f, session, authenticator, *myfargs, **mykwargs)
             else:
                 return f(*func_args)
 
-        def fork_task(self, f, session, *args, **kwargs):
+        def fork_task(self, f, session, authenticator, *args, **kwargs):
             gid = None
             uid = None
             if session != None:
@@ -13053,10 +13068,10 @@ class SocketHostInterface:
                 if logged_in != None:
                     uid = logged_in
                     gid = etpConst['entropygid']
-            return self.entropyTools.spawnFunction(self._do_fork, f, uid, gid, *args, **kwargs)
+            return self.entropyTools.spawnFunction(self._do_fork, authenticator, f, uid, gid, *args, **kwargs)
 
-        def _do_fork(self, f, uid, gid, *args, **kwargs):
-            self.Authenticator.set_exc_permissions(uid,gid)
+        def _do_fork(self, f, authenticator, uid, gid, *args, **kwargs):
+            authenticator.set_exc_permissions(uid,gid)
             rc = f(*args,**kwargs)
             return rc
 
@@ -13071,7 +13086,6 @@ class SocketHostInterface:
         def __init__(self, HostInterface, Authenticator):
 
             self.HostInterface = HostInterface
-            self.Authenticator = Authenticator
             self.inst_name = "builtin"
 
             self.valid_commands = {
@@ -13161,7 +13175,7 @@ class SocketHostInterface:
                                 'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_login,
-                                'args': ["self.transmit", "session", "self.client_address", "myargs"],
+                                'args': ["self.transmit", "authenticator", "session", "self.client_address", "myargs"],
                                 'as_user': False,
                                 'desc': "login on the running server (allows running extra commands)",
                                 'syntax': "<SESSION_ID> login <USER> <AUTH_TYPE: plain,shadow,md5> <PASSWORD>",
@@ -13171,7 +13185,7 @@ class SocketHostInterface:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_logout,
-                                'args': ["self.transmit","session", "myargs"],
+                                'args': ["self.transmit", "authenticator", "session", "myargs"],
                                 'as_user': False,
                                 'desc': "logout on the running server",
                                 'syntax': "<SESSION_ID> logout <USER>",
@@ -13245,14 +13259,14 @@ class SocketHostInterface:
                 return False,"invalid config option"
 
 
-        def docmd_login(self, transmitter, session, client_address, myargs):
+        def docmd_login(self, transmitter, authenticator, session, client_address, myargs):
 
             # is already auth'd?
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
             if auth_uid != None:
                 return False,"already authenticated"
 
-            status, user, uid, reason = self.Authenticator.docmd_login(myargs)
+            status, user, uid, reason = authenticator.docmd_login(myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged in successfully, session: %s' % (
@@ -13286,8 +13300,8 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_logout(self, transmitter, session, myargs):
-            status, user, reason = self.Authenticator.docmd_logout(myargs)
+        def docmd_logout(self, transmitter, authenticator, session, myargs):
+            status, user, reason = authenticator.docmd_logout(myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged out successfully, session: %s, args: %s ' % (
@@ -13436,6 +13450,7 @@ class SocketHostInterface:
         self.Server = None
         self.Gc = None
         self.PythonGarbageCollector = None
+        self.AuthenticatorInst = None
 
         self.args = args
         self.kwds = kwds
@@ -13477,7 +13492,7 @@ class SocketHostInterface:
 
         self.setup_external_command_classes()
         self.start_local_output_interface()
-        self.start_authenticator()
+        self.setup_authenticator()
         self.setup_hostname()
         self.setup_commands()
         self.disable_commands()
@@ -13549,7 +13564,7 @@ class SocketHostInterface:
 
         identifiers = set()
         for myclass in self.command_classes:
-            myinst = myclass(self,self.Authenticator)
+            myinst = myclass(self)
             if str(myinst) in identifiers:
                 raise exceptionTools.PermissionDenied("PermissionDenied: another command instance is owning this name")
             identifiers.add(str(myinst))
@@ -13589,7 +13604,7 @@ class SocketHostInterface:
             outputIntf = self.kwds.pop('sock_output')
             self.__output = outputIntf
 
-    def start_authenticator(self):
+    def setup_authenticator(self):
 
         auth_inst = (self.BasicPamAuthenticator, [], {}) # authentication class, args, keywords
         # external authenticator
@@ -13603,7 +13618,7 @@ class SocketHostInterface:
             else:
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: wront authentication interface specified")
             # initialize authenticator
-        self.Authenticator = auth_inst[0](*auth_inst[1], **auth_inst[2])
+        self.AuthenticatorInst = (auth_inst[0],auth_inst[1],auth_inst[2],)
 
     def start_python_garbage_collector(self):
         self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600 )
@@ -16195,6 +16210,10 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.MODERATOR_GROUPS = [484]
         self.DEVELOPER_GROUPS = [7900]
 
+    def check_connection(self):
+        DistributionAuthInterface.check_connection(self)
+        self._check_needed_reconnect()
+
     def connect(self):
         kwargs = {}
         keys = [
@@ -16278,6 +16297,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
+
         self.cursor.execute('SELECT * FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
         return self.cursor.fetchone()
 
@@ -16393,6 +16413,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_logged_in()
 
         self.cursor.execute('SELECT group_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        data = self.cursor.fetchone()
         if data.has_key('group_id'):
             return data['group_id']
 
@@ -16404,6 +16425,19 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_logged_in()
         self.cursor.execute('SELECT user_permissions FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
         return self.cursor.fetchone()
+
+    def _check_needed_reconnect(self):
+        if self.dbconn == None:
+            return
+        try:
+            self.dbconn.ping()
+        except self.mysql_exceptions.OperationalError, e:
+            if e[0] != 2006:
+                raise
+            else:
+               self.connect()
+               return True
+        return False
 
     def _get_unique_id(self):
         import md5, random
@@ -16963,10 +16997,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
         def __str__(self):
             return self.inst_name
 
-        def __init__(self, HostInterface, Authenticator):
+        def __init__(self, HostInterface):
 
             self.HostInterface = HostInterface
-            self.Authenticator = Authenticator
             self.inst_name = "repository-server"
             self.no_acked_commands = []
             self.termination_commands = []
@@ -17353,6 +17386,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
 class EntropySocketClientCommands:
     """ this is just a placeholder """
+    def __init__(self):
+        pass
 
 class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
