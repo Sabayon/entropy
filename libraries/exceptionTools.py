@@ -28,7 +28,7 @@ class EntropyException(Exception):
     """General superclass for Entropy exceptions"""
     def __init__(self,value):
         self.value = value[:]
-        
+
     def __str__(self):
         if isinstance(self.value, basestring):
             return self.value
@@ -73,6 +73,9 @@ class ConnectionError(EntropyException):
 
 class NotImplementedError(EntropyException):
         """Feature not implemented"""
+
+class InterruptError(EntropyException):
+        """Raised to interrupt a thread or process"""
 
 class FtpError(EntropyException):
         """FTP errors"""

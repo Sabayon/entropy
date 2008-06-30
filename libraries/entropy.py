@@ -3462,6 +3462,10 @@ class EquoInterface(TextInterface):
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
         for x in use.split():
+            if x.startswith("+"):
+                x = x[1:]
+            elif x.startswith("-"):
+                x = x[1:]
             if x in portage_metadata['USE']:
                 data['useflags'].append(x)
             else:
@@ -12514,6 +12518,7 @@ class SocketHostInterface:
             self.HostInterface = HostInterface
             self.SSL = self.HostInterface.SSL
             self.real_sock = None
+            self.alive = True
 
             if self.SSL:
                 self.SocketServer.BaseServer.__init__(self, server_address, RequestHandlerClass)
@@ -12550,6 +12555,11 @@ class SocketHostInterface:
         # the client is who they say they are.
         def verify_ssl_cb(self, conn, cert, errnum, depth, ok) :
             return ok
+
+        def serve_forever(self):
+            while self.alive:
+                self.handle_request()
+
 
     class RequestHandler(SocketServer.BaseRequestHandler):
 
@@ -13423,6 +13433,10 @@ class SocketHostInterface:
     import gc
     def __init__(self, service_interface, *args, **kwds):
 
+        self.Server = None
+        self.Gc = None
+        self.PythonGarbageCollector = None
+
         self.args = args
         self.kwds = kwds
         self.socketLog = LogFile(
@@ -13445,9 +13459,6 @@ class SocketHostInterface:
         self.connections = 0
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']
-        self.Server = None
-        self.Gc = None
-        self.PythonGarbageCollector = None
         self.__output = None
         self.SSL = {}
         self.SSL_exceptions = {}
@@ -13475,9 +13486,20 @@ class SocketHostInterface:
         self.start_python_garbage_collector()
 
     def killall(self):
-        self.Gc.kill()
-        if self.LockScanner != None:
-            self.LockScanner.kill()
+        if self.Server != None:
+            self.Server.alive = False
+        if self.Gc != None:
+            self.Gc.kill()
+            try:
+                self.Gc.nuke()
+            except exceptionTools.InterruptError:
+                pass
+        if self.PythonGarbageCollector != None:
+            self.PythonGarbageCollector.kill()
+            try:
+                self.PythonGarbageCollector.nuke()
+            except exceptionTools.InterruptError:
+                pass
 
     def append_eos(self, data):
         return str(len(data)) + \
@@ -13584,13 +13606,16 @@ class SocketHostInterface:
         self.Authenticator = auth_inst[0](*auth_inst[1], **auth_inst[2])
 
     def start_python_garbage_collector(self):
-        self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600.0 )
+        self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600 )
         self.PythonGarbageCollector.setName("Garbage_Collector::"+str(random.random()))
+        self.PythonGarbageCollector.exc = exceptionTools.InterruptError('InterruptError: interrupted')
+        self.PythonGarbageCollector.accurate = False
         self.PythonGarbageCollector.start()
 
     def start_session_garbage_collector(self):
         self.Gc = self.entropyTools.TimeScheduled( self.gc_clean, 5 )
         self.Gc.setName("Socket_GC::"+str(random.random()))
+        self.Gc.exc = exceptionTools.InterruptError('InterruptError: interrupted')
         self.Gc.start()
 
     def python_garbage_collect(self):
@@ -17158,6 +17183,11 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.expand_repositories()
         # start timed lock file scanning
         self.start_repository_lock_scanner()
+
+    def killall(self):
+        SocketHostInterface.killall(self)
+        if self.LockScanner != None:
+            self.LockScanner.kill()
 
     def start_repository_lock_scanner(self):
         self.LockScanner = self.entropyTools.TimeScheduled( self.lock_scan, 0.5 )

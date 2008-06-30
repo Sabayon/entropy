@@ -65,7 +65,9 @@ class TimeScheduled(threading.Thread):
         threading.Thread.__init__(self)
         self.function = function
         self.delay = delay
+        self.exc = SystemExit
         self.data = dictData
+        self.accurate = True
     def run(self):
         self.alive = 1
         while self.alive:
@@ -74,14 +76,25 @@ class TimeScheduled(threading.Thread):
             else:
                 self.function()
             try:
-                time.sleep(self.delay)
+                if (self.delay > 5) and not self.accurate:
+                    mydelay = int(self.delay)
+                    broke = False
+                    while mydelay:
+                        if not self.alive:
+                            broke = True
+                            break
+                        time.sleep(1)
+                        mydelay -= 1
+                    if broke: break
+                else:
+                    time.sleep(self.delay)
             except:
                 pass
     def kill(self):
         self.alive = 0
 
     def nuke(self):
-        raise SystemExit
+        raise self.exc
 
 class parallelTask(threading.Thread):
     def __init__(self, *args, **kwargs):
