@@ -51,9 +51,12 @@ class phpbb3Authenticator(phpBB3AuthInterface):
         if not arguments or (len(arguments) != 3):
             return False,None,None,'wrong arguments'
 
-        ip_address = arguments[0]
+        ip_address = arguments[0][0]
         user = arguments[1]
         password = arguments[2]
+
+        if self._is_ip_banned(ip_address):
+            return False,user,None,"banned IP"
 
         login_data = {'username': user, 'password': password}
         self.set_login_data(login_data)

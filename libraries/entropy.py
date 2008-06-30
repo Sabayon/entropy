@@ -16461,6 +16461,14 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.cursor.execute('SELECT user_permissions FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
         return self.cursor.fetchone()
 
+    def _is_ip_banned(self, ip):
+        self.check_connection()
+        self.cursor.execute('SELECT ban_ip FROM phpbb_banlist WHERE ban_ip = %s', (ip,))
+        data = self.cursor.fetchone()
+        if data:
+            return True
+        return False
+
     def _check_needed_reconnect(self):
         if self.dbconn == None:
             return
