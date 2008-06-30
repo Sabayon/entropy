@@ -58,8 +58,8 @@ class phpbb3Authenticator(phpBB3AuthInterface):
         session_data = self.HostInterface.sessions.get(self.session)
         if session_data:
             ip_address = session_data.get('ip_address')
-        user = arguments[1]
-        password = arguments[2]
+        user = arguments[0]
+        password = arguments[1]
 
         if ip_address:
             if self._is_ip_banned(ip_address):

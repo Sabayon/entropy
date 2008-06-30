@@ -12406,10 +12406,9 @@ class SocketHostInterface:
             if not arguments or (len(arguments) != 3):
                 return False,None,None,'wrong arguments'
 
-            #ip_address = arguments[0]
-            user = arguments[1]
-            auth_type = arguments[2]
-            auth_string = arguments[3]
+            user = arguments[0]
+            auth_type = arguments[1]
+            auth_string = arguments[2]
 
             # check auth type validity
             if auth_type not in self.valid_auth_types:
