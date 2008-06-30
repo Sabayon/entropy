@@ -13,7 +13,6 @@ if "--ssl" in sys.argv:
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
-import time
 import entropyTools, exceptionTools
 from entropy import RepositorySocketServerInterface, phpBB3AuthInterface
 
@@ -28,19 +27,35 @@ connection_data = {
 class phpbb3Authenticator(phpBB3AuthInterface):
     import entropyTools
 
-    def __init__(self, connection_data):
+    def __init__(self, HostInterface, *args, **kwargs):
+        self.HostInterface = HostInterface
         phpBB3AuthInterface.__init__(self)
-        self.set_connection_data(connection_data)
+        self.set_connection_data(kwargs)
         self.connect()
+        self.session = None
+
+    def set_session(self, session):
+        self.session = session
+        session_data = self.HostInterface.sessions.get(self.session)
+        if not session_data:
+            return
+        authed = session_data['auth_uid']
+        if authed:
+            self.logged_in = True
+            # fill login_data with fake information
+            self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password'}
 
     def docmd_login(self, arguments):
 
         # filter n00bs
-        if not arguments or (len(arguments) != 2):
+        if not arguments or (len(arguments) != 3):
             return False,None,None,'wrong arguments'
 
-        user = arguments[0]
-        login_data = {'username': user, 'password': arguments[1]}
+        ip_address = arguments[0]
+        user = arguments[1]
+        password = arguments[2]
+
+        login_data = {'username': user, 'password': password}
         self.set_login_data(login_data)
         rc = False
         try:
@@ -49,27 +64,26 @@ class phpbb3Authenticator(phpBB3AuthInterface):
             return rc,user,None,e.value
 
         if rc:
-            return True,user,None,"ok"
+            uid = self.get_user_id()
+            return True,user,uid,"ok"
         return rc,user,None,"login failed"
 
     def docmd_logout(self, myargs):
 
         # filter n00bs
-        if (len(myargs) < 1) or (len(myargs) > 1):
+        if (len(myargs) < 2) or (len(myargs) > 2):
             return False,None,None,'wrong arguments'
 
-        user = myargs[0]
+        session = myargs[0]
+        user = myargs[1]
         # filter n00bs
         if not user or (type(user) is not basestring):
             return False,None,None,"wrong user"
 
-        rc = False
-        try:
-            rc = self.logout()
-        except (exceptionTools.ConnectionError,exceptionTools.PermissionDenied,), e:
-            return rc,user,e.value
+        if not self.is_logged_in():
+            return False,user,"already logged out"
 
-        return rc,user,"ok"
+        return True,user,"ok"
 
     def set_exc_permissions(self, *args, **kwargs):
         pass
@@ -79,6 +93,8 @@ class phpbb3Authenticator(phpBB3AuthInterface):
         myargs[-1] = 'hidden'
         return myargs
 
+    def terminate_instance(self):
+        self.disconnect()
 
 # configure my repositories
 repositories = {
@@ -94,7 +110,7 @@ def run_srv(s):
     except (KeyboardInterrupt, SystemExit,):
         s.killall()
 
-sock_auth = (phpbb3Authenticator,connection_data,{})
+sock_auth = (phpbb3Authenticator,[],connection_data)
 srv_ssl = None
 srv = RepositorySocketServerInterface(do_ssl = False, repositories = repositories, stdout_logging = do_stdout_logging, sock_auth = sock_auth)
 if do_ssl:
