@@ -16248,7 +16248,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         if self.is_logged_in():
             self.logout()
         self.check_connection()
-        self.dbconn.cursor.close()
+        self.cursor.close()
         self.dbconn.close()
         self.dbconn = None
         self.cursor = None
