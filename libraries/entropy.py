@@ -12396,18 +12396,21 @@ class SocketHostInterface:
         def __init__(self, HostInterface):
             self.valid_auth_types = [ "plain", "shadow", "md5" ]
             self.HostInterface = HostInterface
+            self.session = None
+
+        def set_session(self, session):
+            self.session = session
 
         def docmd_login(self, arguments):
 
             # filter n00bs
-            if not arguments or (len(arguments) != 5):
+            if not arguments or (len(arguments) != 4):
                 return False,None,None,'wrong arguments'
 
-            #session = arguments[0]
-            #ip_address = arguments[1]
-            user = arguments[2]
-            auth_type = arguments[3]
-            auth_string = arguments[4]
+            #ip_address = arguments[0]
+            user = arguments[1]
+            auth_type = arguments[2]
+            auth_string = arguments[3]
 
             # check auth type validity
             if auth_type not in self.valid_auth_types:
@@ -12471,11 +12474,10 @@ class SocketHostInterface:
         def docmd_logout(self, myargs):
 
             # filter n00bs
-            if (len(myargs) < 2) or (len(myargs) > 2):
+            if (len(myargs) < 1) or (len(myargs) > 1):
                 return False,None,None,'wrong arguments'
 
-            #session = myargs[0]
-            user = myargs[1]
+            user = myargs[0]
             # filter n00bs
             if not user or (type(user) is not basestring):
                 return False,None,None,"wrong user"
@@ -12865,7 +12867,8 @@ class SocketHostInterface:
 
         def load_authenticator(self):
             f, args, kwargs = self.HostInterface.AuthenticatorInst
-            return f(*args,**kwargs)
+            myinst = f(*args,**kwargs)
+            return myinst
 
         def load_service_interface(self, session):
 
@@ -12927,6 +12930,10 @@ class SocketHostInterface:
 
             whoops = False
             if valid_cmd:
+
+                # now set session
+                authenticator.set_session(session)
+
                 Entropy = self.load_service_interface(session)
                 try:
                     self.run_task(cmd, args, session, Entropy, authenticator)
@@ -13184,7 +13191,7 @@ class SocketHostInterface:
                                 'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_login,
-                                'args': ["self.transmit", "authenticator", "session", "self.client_address", "myargs"],
+                                'args': ["self.transmit", "authenticator", "self.client_address", "myargs"],
                                 'as_user': False,
                                 'desc': "login on the running server (allows running extra commands)",
                                 'syntax': "<SESSION_ID> login <USER> <AUTH_TYPE: plain,shadow,md5> <PASSWORD>",
@@ -13194,7 +13201,7 @@ class SocketHostInterface:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_logout,
-                                'args': ["self.transmit", "authenticator", "session", "myargs"],
+                                'args': ["self.transmit", "authenticator", "myargs"],
                                 'as_user': False,
                                 'desc': "logout on the running server",
                                 'syntax': "<SESSION_ID> logout <USER>",
@@ -13268,14 +13275,14 @@ class SocketHostInterface:
                 return False,"invalid config option"
 
 
-        def docmd_login(self, transmitter, authenticator, session, client_address, myargs):
+        def docmd_login(self, transmitter, authenticator, client_address, myargs):
 
             # is already auth'd?
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
             if auth_uid != None:
                 return False,"already authenticated"
 
-            status, user, uid, reason = authenticator.docmd_login([session,client_address]+myargs)
+            status, user, uid, reason = authenticator.docmd_login([client_address]+myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged in successfully, session: %s' % (
@@ -13309,8 +13316,8 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_logout(self, transmitter, authenticator, session, myargs):
-            status, user, reason = authenticator.docmd_logout([session]+myargs)
+        def docmd_logout(self, transmitter, authenticator, myargs):
+            status, user, reason = authenticator.docmd_logout(myargs)
             if status:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logged out successfully, session: %s, args: %s ' % (
@@ -16182,6 +16189,13 @@ class DistributionAuthInterface:
         self.__raise_not_implemented_error()
         return -1
 
+    def get_user_id(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.__raise_not_implemented_error()
+        return -1
+
     def is_logged_in(self):
         return self.logged_in
 
@@ -16218,6 +16232,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.ADMIN_GROUPS = [7893, 7898]
         self.MODERATOR_GROUPS = [484]
         self.DEVELOPER_GROUPS = [7900]
+        self.FAKE_USERNAME = 'already_authed'
 
     def check_connection(self):
         DistributionAuthInterface.check_connection(self)
@@ -16424,6 +16439,18 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         data = self.cursor.fetchone()
         if data.has_key('group_id'):
             return data['group_id']
+
+        return -1
+
+    def get_user_id(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        self.cursor.execute('SELECT user_id FROM phpbb_users WHERE username_clean = %s', (self.login_data['username'],))
+        data = self.cursor.fetchone()
+        if data.has_key('user_id'):
+            return data['user_id']
 
         return -1
 
