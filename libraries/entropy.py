@@ -16479,7 +16479,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         myuserprefs = self.cursor.fetchone()
         session_admin = 0
         session_data = {
-            'session_id': None
+            'session_id': None,
             'session_user_id': user_id,
             'session_last_visit': time_now,
             'session_start': time_now,
