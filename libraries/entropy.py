@@ -17196,7 +17196,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             pass
 
     import entropyTools, dumpTools
-    def __init__(self, repositories, do_ssl = False, stdout_logging = True):
+    def __init__(self, repositories, do_ssl = False, stdout_logging = True, **kwargs):
         self.Entropy = EquoInterface(noclientdb = 2)
         self.do_ssl = do_ssl
         self.LockScanner = None
@@ -17213,7 +17213,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
             noclientdb = 2,
             sock_output = self.Entropy,
             ssl = do_ssl,
-            external_cmd_classes = [self.RepositoryCommands]
+            external_cmd_classes = [self.RepositoryCommands],
+            **kwargs
         )
         self.stdout_logging = stdout_logging
         self.repositories = repositories
