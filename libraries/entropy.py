@@ -13088,7 +13088,7 @@ class SocketHostInterface:
         def __str__(self):
             return self.inst_name
 
-        def __init__(self, HostInterface, Authenticator):
+        def __init__(self, HostInterface):
 
             self.HostInterface = HostInterface
             self.inst_name = "builtin"
