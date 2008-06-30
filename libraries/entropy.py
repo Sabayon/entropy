@@ -5694,7 +5694,6 @@ class RepoInterface:
         except IndexError:
             return False
 
-        #XXX dburl = '127.0.0.1'
         port = etpRepositories[repository]['service_port']
 
         try:
@@ -13564,9 +13563,9 @@ class SocketHostInterface:
         if not os.path.isfile(self.SSL['cert']):
             raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['cert'],))
         os.chmod(self.SSL['key'],0600)
-        os.chown(self.SSL['key'],0,0)
+        os.chown(self.SSL['key'],-1,0)
         os.chmod(self.SSL['cert'],0644)
-        os.chown(self.SSL['cert'],0,0)
+        os.chown(self.SSL['cert'],-1,0)
 
     def setup_external_command_classes(self):
 
