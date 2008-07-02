@@ -568,6 +568,7 @@ def const_defaultSettings(rootdir):
         'etpdatabaselockfile': ETP_DBFILE+".lock", # the remote database lock file
         'etpdatabaseeapi3lockfile': ETP_DBFILE+".eapi3_lock", # the remote database lock file
         'etpdatabasedownloadlockfile': ETP_DBFILE+".download.lock", # the remote database download lock file
+        'etpdatabasecacertfile': "ca.cert",
         'etpdatabasetaintfile': ETP_DBFILE+".tainted", # when this file exists, the database is not synced anymore with the online one
         'etpdatabasefile': ETP_DBFILE, # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
         'etpdatabasefilegzip': ETP_DBFILE+".gz", # Entropy sqlite database file (gzipped)
@@ -768,6 +769,7 @@ def const_defaultSettings(rootdir):
         'socket_service': {
             'hostname': "localhost",
             'port': 1026,
+            'ssl_port': 1027, # above + 1
             'timeout': 200,
             'threads': 5,
             'session_ttl': 120,
@@ -777,7 +779,8 @@ def const_defaultSettings(rootdir):
             'ip_blacklist': set(),
             'ssl_key': ETP_CONF_DIR+"/socket_server.key",
             'ssl_cert': ETP_CONF_DIR+"/socket_server.crt",
-            'ssl_port': 1027,
+            'ssl_ca_cert': ETP_CONF_DIR+"/socket_server.CA.crt",
+            'ssl_ca_pkey': ETP_CONF_DIR+"/socket_server.CA.key",
             'answers': {
                 'ok': chr(0)+"OK"+chr(0), # command run
                 'er': chr(0)+"ER"+chr(1), # execution error
@@ -850,15 +853,21 @@ def const_readRepositoriesSettings():
                 repodatabase = line.split("|")[4]
 
                 eapi3_port = None
+                eapi3_ssl_port = None
                 eapi3_formatcolon = repodatabase.rfind("#")
                 if eapi3_formatcolon != -1:
                     try:
-                        eapi3_port = int(repodatabase[eapi3_formatcolon+1:])
+                        ports = repodatabase[eapi3_formatcolon+1:].split(",")
+                        eapi3_port = int(ports[0])
+                        if len(ports) > 1:
+                            eapi3_ssl_port = int(ports[1])
                         repodatabase = repodatabase[:eapi3_formatcolon]
                     except (ValueError, IndexError,):
                         eapi3_port = int(etpConst['socket_service']['port'])
+                        eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
                 else:
                     eapi3_port = int(etpConst['socket_service']['port'])
+                    eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
 
                 dbformat = etpConst['etpdatabasefileformat']
                 dbformatcolon = repodatabase.rfind("#")
@@ -877,6 +886,7 @@ def const_readRepositoriesSettings():
                     if not myRepodata.has_key(reponame):
                         myRepodata[reponame] = {}
                         myRepodata[reponame]['service_port'] = eapi3_port
+                        myRepodata[reponame]['ssl_service_port'] = eapi3_ssl_port
                         myRepodata[reponame]['description'] = repodesc
                         myRepodata[reponame]['packages'] = []
                         myRepodata[reponame]['plain_packages'] = []

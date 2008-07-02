@@ -1797,12 +1797,13 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
 
         if not disable and not enable: # so it's a add
 
-            line = "repository|%s|%s|%s|%s#%s#%s" % (   repodata['repoid'],
+            line = "repository|%s|%s|%s|%s#%s#%s,%s" % (   repodata['repoid'],
                                                     repodata['description'],
                                                     ' '.join(repodata['plain_packages']),
                                                     repodata['plain_database'],
                                                     repodata['dbcformat'],
                                                     repodata['service_port'],
+                                                    repodata['ssl_service_port'],
                                                 )
 
             # seek in repolines_data for a disabled entry and remove
