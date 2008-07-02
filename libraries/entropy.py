@@ -12569,6 +12569,7 @@ class SocketHostInterface:
             self.context.use_privatekey_file(self.SSL['key'])
             self.context.use_certificate_file(self.SSL['cert'])
             self.context.load_verify_locations(self.SSL['ca_cert'])
+            self.context.load_client_ca(self.SSL['ca_cert'])
             self.HostInterface.updateProgress('SSL context loaded, key: %s - cert: %s, CA cert: %s, CA pkey: %s' % (
                     self.SSL['key'],
                     self.SSL['cert'],
@@ -12680,8 +12681,10 @@ class SocketHostInterface:
                         )
                     )
                     return True
-                except self.ssl_exceptions['WantReadError']:
+                except (self.ssl_exceptions['WantReadError'], self.ssl_exceptions['WantX509LookupError'],):
                     return False
+                except self.ssl_exceptions['ZeroReturnError']:
+                    return True
                 except self.ssl_exceptions['Error'], e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: SSL Error, reason: %s - from client: %s' % (
@@ -13511,6 +13514,9 @@ class SocketHostInterface:
         self.SSL = {}
         self.SSL_exceptions = {}
         self.SSL_exceptions['WantReadError'] = None
+        self.SSL_exceptions['WantWriteError'] = None
+        self.SSL_exceptions['WantX509LookupError'] = None
+        self.SSL_exceptions['ZeroReturnError'] = None
         self.SSL_exceptions['Error'] = []
         self.last_print = ''
         self.valid_commands = {}
@@ -13570,6 +13576,9 @@ class SocketHostInterface:
             return
         self.SSL_exceptions['WantReadError'] = SSL.WantReadError
         self.SSL_exceptions['Error'] = SSL.Error
+        self.SSL_exceptions['WantWriteError'] = SSL.WantWriteError
+        self.SSL_exceptions['WantX509LookupError'] = SSL.WantX509LookupError
+        self.SSL_exceptions['ZeroReturnError'] = SSL.ZeroReturnError
         self.SSL['m'] = SSL
         self.SSL['crypto'] = crypto
         self.SSL['key'] = etpConst['socket_service']['ssl_key']
@@ -17999,45 +18008,7 @@ class RepositorySocketClientInterface:
             mytxt = _("A valid EntropySocketClientCommands based class is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass,mytxt,))
 
-        # SSL Support
-        self.SSL = {}
-        self.SSL_exceptions = {
-            'WantReadError': None,
-            'Error': None
-        }
-        self.ssl = ssl
-        self.server_cert = server_cert
-        self.ssl_pkey = None
-        self.ssl_cert = None
-        self.context = None
-        self.ssl_CN = 'Entropy Repository Service Client'
-        self.ssl_digest = 'md5'
-        self.ssl_serial = 1
-        self.ssl_not_before = 0
-        self.ssl_not_after = 60*60*24*1 # 1 day
-        if self.ssl and self.server_cert:
-            if not (os.path.isfile(self.server_cert) and os.access(self.server_cert,os.R_OK)):
-                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),self.server_cert,))
-            try:
-                from OpenSSL import SSL, crypto
-            except ImportError, e:
-                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),e,))
-            self.SSL_exceptions['WantReadError'] = SSL.WantReadError
-            self.SSL_exceptions['Error'] = SSL.Error
-            self.SSL['m'] = SSL
-            self.SSL['crypto'] = crypto
-
-            # setup an SSL context.
-            self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
-            self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
-            # load up certificate stuff.
-            self.ssl_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
-            self.ssl_cert = self.create_ssl_certificate(self.ssl_pkey)
-            self.context.use_privatekey(self.ssl_pkey)
-            self.context.use_certificate(self.ssl_cert)
-            self.context.load_verify_locations(self.server_cert)
-        else:
-            self.ssl = False
+        self.setup_ssl(ssl, server_cert)
 
         self.answers = etpConst['socket_service']['answers']
         self.Entropy = EntropyInterface
@@ -18055,18 +18026,90 @@ class RepositorySocketClientInterface:
         self.socket.setdefaulttimeout(self.socket_timeout)
 
 
+    def setup_ssl(self, ssl, server_cert):
+        # SSL Support
+        self.SSL = {}
+        self.SSL_exceptions = {
+            'WantReadError': None,
+            'WantWriteError': None,
+            'WantX509LookupError': None,
+            'ZeroReturnError': None,
+            'Error': None
+        }
+        self.ssl = ssl
+        self.pyopenssl = True
+        self.server_cert = server_cert
+        self.context = None
+
+        self.ssl_pkey = None
+        self.ssl_cert = None
+        self.ssl_CN = 'Entropy Repository Service Client'
+        self.ssl_digest = 'md5'
+        self.ssl_serial = 1
+        self.ssl_not_before = 0
+        self.ssl_not_after = 60*60*24*1 # 1 day
+
+        if self.ssl and self.server_cert:
+
+            try:
+                from OpenSSL import SSL, crypto
+            except ImportError, e:
+                self.pyopenssl = False
+
+            if not (os.path.isfile(self.server_cert) and os.access(self.server_cert,os.R_OK)) and self.pyopenssl:
+                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),self.server_cert,))
+
+            if self.pyopenssl:
+
+                self.SSL_exceptions['WantReadError'] = SSL.WantReadError
+                self.SSL_exceptions['WantWriteError'] = SSL.WantWriteError
+                self.SSL_exceptions['WantX509LookupError'] = SSL.WantX509LookupError
+                self.SSL_exceptions['ZeroReturnError'] = SSL.ZeroReturnError
+                self.SSL_exceptions['Error'] = SSL.Error
+                self.SSL['m'] = SSL
+                self.SSL['crypto'] = crypto
+
+                # setup an SSL context.
+                self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
+                self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
+
+                # load up certificate stuff.
+                self.ssl_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+                self.ssl_cert = self.create_ssl_certificate(self.ssl_pkey)
+                self.context.use_privatekey(self.ssl_pkey)
+                self.context.use_certificate(self.ssl_cert)
+                self.context.load_client_ca(self.server_cert)
+                self.context.load_verify_locations(self.server_cert)
+
+        else:
+            self.ssl = False
+            self.pyopenssl = False
+
+
+    def check_pyopenssl(self):
+        if not self.pyopenssl:
+            raise exceptionTools.SSLError('SSLError: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),))
+
     # this function should do the authentication checking to see that
     # the client is who they say they are.
     def verify_ssl_cb(self, conn, cert, errnum, depth, ok):
+        self.check_pyopenssl()
         print 'Got certificate: %s' % cert.get_subject()
-        return ok
+        # load our certificate
+        self.server_cert
+        
+        print repr(ok),repr(cert),repr(errnum),repr(depth)
+        return 1
 
     def create_ssl_key_pair(self, keytype, bits):
+        if not self.pyopenssl:
+            raise exceptionTools.SSLError('SSLError: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),))
         pkey = self.SSL['crypto'].PKey()
         pkey.generate_key(keytype, bits)
         return pkey
 
     def create_ssl_certificate(self, pkey):
+        self.check_pyopenssl()
         myreq = self.create_ssl_certificate_request(pkey, CN = self.ssl_CN)
         cert = self.SSL['crypto'].X509()
         cert.set_serial_number(self.ssl_serial)
@@ -18079,7 +18122,7 @@ class RepositorySocketClientInterface:
         return cert
 
     def create_ssl_certificate_request(self, pkey, **name):
-
+        self.check_pyopenssl()
         req = self.SSL['crypto'].X509Req()
         subj = req.get_subject()
         for (key,value) in name.items():
@@ -18105,7 +18148,10 @@ class RepositorySocketClientInterface:
         self.check_socket_connection()
         data = self.append_eos(data)
         try:
-            self.sock_conn.sendall(data)
+            if self.ssl and not self.pyopenssl:
+                self.sock_conn.write(data)
+            else:
+                self.sock_conn.sendall(data)
         except self.SSL_exceptions['Error'], e:
             raise exceptionTools.SSLError('SSLError: %s' % (e,))
 
@@ -18136,12 +18182,19 @@ class RepositorySocketClientInterface:
 
     def receive(self):
 
+        def do_receive():
+            if self.ssl and not self.pyopenssl:
+                data = self.sock_conn.read(1024)
+            else:
+                data = self.sock_conn.recv(1024)
+            return data
+
         myeos = self.answers['eos']
         while 1:
 
             try:
 
-                data = self.sock_conn.recv(1024)
+                data = do_receive()
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -18169,7 +18222,7 @@ class RepositorySocketClientInterface:
                     self.buffered_data = data
 
                 while self.buffer_length > 0:
-                    x = self.sock_conn.recv(1024)
+                    x = do_receive()
                     self.buffer_length -= len(x)
                     self.buffered_data += x
                 self.buffer_length = None
@@ -18220,6 +18273,10 @@ class RepositorySocketClientInterface:
                         header = self.output_header
                     )
                 return None
+            except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],):
+                continue
+            except self.SSL_exceptions['ZeroReturnError']:
+                break
 
         return self.buffered_data
 
@@ -18247,13 +18304,47 @@ class RepositorySocketClientInterface:
         if self.ssl:
             self.real_sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
             self.real_sock_conn.settimeout(self.socket_timeout)
-            self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
+            if self.pyopenssl:
+                self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
+            else:
+                self.sock_conn = self.real_sock_conn
         else:
             self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
             self.sock_conn.settimeout(self.socket_timeout)
             self.real_sock_conn = self.sock_conn
+
+        self.hostname = host
+        self.hostport = port
+
         try:
-            self.sock_conn.connect((host, port))
+            self.sock_conn.connect((self.hostname, self.hostport))
+            if self.ssl and not self.pyopenssl:
+                self.sock_conn = self.socket.ssl(self.real_sock_conn)
+                # inform about certificate verification
+                if not self.quiet:
+                    mytxt = _("Warning: you are using an emergency SSL interface, SSL certificate can't be verified. Please install dev-python/pyopenssl")
+                    self.Entropy.updateProgress(
+                        "[%s:%s] %s" % (
+                                brown(str(self.hostname)),
+                                bold(str(self.hostport)),
+                                blue(mytxt),
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = self.output_header
+                    )
+                    mytxt = _("Service issuer")
+                    self.Entropy.updateProgress(
+                        "[%s:%s] %s: %s" % (
+                                brown(str(self.hostname)),
+                                bold(str(self.hostport)),
+                                blue(mytxt),
+                                self.sock_conn.issuer()
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = self.output_header
+                    )
         except self.socket.error, e:
             if e[0] == 111:
                 mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"),host,_("on port"),port,)
@@ -18261,8 +18352,6 @@ class RepositorySocketClientInterface:
             else:
                 raise
 
-        self.hostname = host
-        self.hostport = port
         if not self.quiet:
             mytxt = _("Successfully connected to host")
             self.Entropy.updateProgress(
@@ -18279,6 +18368,11 @@ class RepositorySocketClientInterface:
     def disconnect(self):
         if not self.real_sock_conn:
             return True
+        if self.ssl and self.pyopenssl:
+            self.sock_conn.shutdown()
+            self.sock_conn.close()
+        elif self.ssl and not self.pyopenssl:
+            self.real_sock_conn.shutdown(self.socket.SHUT_RDWR)
         del self.sock_conn
         self.sock_conn = None
         self.real_sock_conn.close()
