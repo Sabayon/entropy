@@ -13596,9 +13596,15 @@ class SocketHostInterface:
                 self.SSL['ca_cert']
             )
             os.chmod(self.SSL['ca_cert'],0644)
-            os.chown(self.SSL['ca_cert'],-1,0)
+            try:
+                os.chown(self.SSL['ca_cert'],-1,0)
+            except OSError:
+                pass
             os.chmod(self.SSL['ca_pkey'],0600)
-            os.chown(self.SSL['ca_pkey'],-1,0)
+            try:
+                os.chown(self.SSL['ca_pkey'],-1,0)
+            except OSError:
+                pass
 
         os.chmod(self.SSL['key'],0600)
         os.chown(self.SSL['key'],-1,0)
