@@ -114,6 +114,9 @@ class CommandNotFound(EntropyException):
 class LibraryNotFound(EntropyException):
         """A required library was not available or executable"""
 
+class SSLError(EntropyException):
+        """SSL support is not available"""
+
 class EntropyPackageException(EntropyException):
         """Malformed or missing package data"""
 
