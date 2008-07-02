@@ -13582,27 +13582,30 @@ class SocketHostInterface:
         self.SSL['serial'] = 0
         self.SSL['digest'] = 'md5'
 
-        if not (os.path.isfile(self.SSL['ca_cert']) and os.path.isfile(self.SSL['ca_pkey']) and os.path.isfile(self.SSL['key']) and os.path.isfile(self.SSL['cert'])):
-            self.create_ca_server_certs(
-                self.SSL['serial'],
-                self.SSL['digest'],
-                self.SSL['not_before'],
-                self.SSL['not_after'],
-                self.SSL['ca_pkey'],
-                self.SSL['ca_cert'],
-                self.SSL['key'],
-                self.SSL['cert']
-            )
-            os.chmod(self.SSL['ca_cert'],0644)
-            try:
-                os.chown(self.SSL['ca_cert'],-1,0)
-            except OSError:
-                pass
-            os.chmod(self.SSL['ca_pkey'],0600)
-            try:
-                os.chown(self.SSL['ca_pkey'],-1,0)
-            except OSError:
-                pass
+        if not (os.path.isfile(self.SSL['ca_cert']) and \
+            os.path.isfile(self.SSL['ca_pkey']) and \
+            os.path.isfile(self.SSL['key']) and \
+            os.path.isfile(self.SSL['cert'])):
+                self.create_ca_server_certs(
+                    self.SSL['serial'],
+                    self.SSL['digest'],
+                    self.SSL['not_before'],
+                    self.SSL['not_after'],
+                    self.SSL['ca_pkey'],
+                    self.SSL['ca_cert'],
+                    self.SSL['key'],
+                    self.SSL['cert']
+                )
+                os.chmod(self.SSL['ca_cert'],0644)
+                try:
+                    os.chown(self.SSL['ca_cert'],-1,0)
+                except OSError:
+                    pass
+                os.chmod(self.SSL['ca_pkey'],0600)
+                try:
+                    os.chown(self.SSL['ca_pkey'],-1,0)
+                except OSError:
+                    pass
 
         os.chmod(self.SSL['key'],0600)
         os.chown(self.SSL['key'],-1,0)
@@ -13635,20 +13638,28 @@ class SocketHostInterface:
         s_cert.sign(cakey, digest)
 
         # write CA
+        if os.path.isfile(ca_pkey_dest):
+            shutil.move(ca_pkey_dest,ca_pkey_dest+".moved")
         f = open(ca_pkey_dest,"w")
         f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, cakey))
         f.flush()
         f.close()
+        if os.path.isfile(ca_cert_dest):
+            shutil.move(ca_cert_dest,ca_cert_dest+".moved")
         f = open(ca_cert_dest,"w")
         f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, cert))
         f.flush()
         f.close()
 
+        if os.path.isfile(server_key):
+            shutil.move(server_key,server_key+".moved")
         # write server
         f = open(server_key,"w")
         f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, s_pkey))
         f.flush()
         f.close()
+        if os.path.isfile(server_cert):
+            shutil.move(server_cert,server_cert+".moved")
         f = open(server_cert,"w")
         f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, s_cert))
         f.flush()
