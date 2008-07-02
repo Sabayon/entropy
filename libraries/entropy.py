@@ -1474,7 +1474,10 @@ class EquoInterface(TextInterface):
                 etpRepositoriesOrder.append(repodata['repoid'])
             if not repodata.has_key("service_port"):
                 repodata['service_port'] = int(etpConst['socket_service']['port'])
+            if not repodata.has_key("ssl_service_port"):
+                repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
             etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
+            etpRepositories[repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
             self.repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
@@ -6899,6 +6902,16 @@ class RepoInterface:
 
         download_items = [
             (
+                "ssl.crt",
+                etpConst['etpdatabasecacertfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SSL certificate")),
+                    darkgreen(etpConst['etpdatabasecacertfile']),
+                    red("..."),
+                )
+            ),
+            (
                 "mask",
                 etpConst['etpdatabasemaskfile'],
                 True,
@@ -6977,7 +6990,7 @@ class RepoInterface:
                     darkgreen(os.path.basename(etpConst['spm']['global_package_use'])),
                     red("..."),
                 )
-            ),
+            )
         ]
 
         for item, myfile, ignorable, mytxt in download_items:
@@ -12549,14 +12562,19 @@ class SocketHostInterface:
         def load_ssl_context(self):
             # setup an SSL context.
             self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
-            self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
+            self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb) # ask for a certificate
+            self.context.set_options(self.SSL['m'].OP_NO_SSLv2)
             # load up certificate stuff.
             self.context.use_privatekey_file(self.SSL['key'])
             self.context.use_certificate_file(self.SSL['cert'])
-            self.HostInterface.updateProgress('SSL context loaded, key: %s - cert: %s' % (
-                                        self.SSL['key'],
-                                        self.SSL['cert'],
-                                ))
+            self.context.load_verify_locations(self.SSL['ca_cert'])
+            self.HostInterface.updateProgress('SSL context loaded, key: %s - cert: %s, CA cert: %s, CA pkey: %s' % (
+                    self.SSL['key'],
+                    self.SSL['cert'],
+                    self.SSL['ca_cert'],
+                    self.SSL['ca_pkey']
+                )
+            )
 
         def make_ssl_connection_alive(self):
             self.real_sock = self.socket_mod.socket(self.address_family, self.socket_type)
@@ -13545,26 +13563,80 @@ class SocketHostInterface:
             return
 
         try:
-            from OpenSSL import SSL
+            from OpenSSL import SSL, crypto
         except ImportError, e:
             self.updateProgress('Unable to load OpenSSL, error: %s' % (repr(e),))
             return
         self.SSL_exceptions['WantReadError'] = SSL.WantReadError
         self.SSL_exceptions['Error'] = SSL.Error
         self.SSL['m'] = SSL
-        self.SSL['key'] = etpConst['socket_service']['ssl_key'] # openssl genrsa -out filename.key 1024
-        self.SSL['cert'] = etpConst['socket_service']['ssl_cert'] # openssl req -new -days 365 -key filename.key -x509 -out filename.cert
+        self.SSL['crypto'] = crypto
+        self.SSL['key'] = etpConst['socket_service']['ssl_key']
+        self.SSL['cert'] = etpConst['socket_service']['ssl_cert']
+        self.SSL['ca_cert'] = etpConst['socket_service']['ssl_ca_cert']
+        self.SSL['ca_pkey'] = etpConst['socket_service']['ssl_ca_pkey']
         # change port
         self.port = etpConst['socket_service']['ssl_port']
+        self.SSL['not_before'] = 0
+        self.SSL['not_after'] = 60*60*24*365*5 # 5 years
+        self.SSL['serial'] = 0
+        self.SSL['digest'] = 'md5'
 
         if not os.path.isfile(self.SSL['key']):
             raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['key'],))
         if not os.path.isfile(self.SSL['cert']):
             raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['cert'],))
+        if not (os.path.isfile(self.SSL['ca_cert']) and os.path.isfile(self.SSL['ca_pkey'])):
+            self.create_ca_certs(
+                self.SSL['serial'],
+                self.SSL['digest'],
+                self.SSL['not_before'],
+                self.SSL['not_after'],
+                self.SSL['ca_pkey'],
+                self.SSL['ca_cert']
+            )
+            os.chmod(self.SSL['ca_cert'],0644)
+            os.chown(self.SSL['ca_cert'],-1,0)
+            os.chmod(self.SSL['ca_pkey'],0600)
+            os.chown(self.SSL['ca_pkey'],-1,0)
+
         os.chmod(self.SSL['key'],0600)
         os.chown(self.SSL['key'],-1,0)
         os.chmod(self.SSL['cert'],0644)
         os.chown(self.SSL['cert'],-1,0)
+
+    def create_ca_certs(self, serial, digest, not_before, not_after, ca_pkey_dest, ca_cert_dest):
+        cakey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+        cert = self.SSL['crypto'].X509()
+        cert.set_serial_number(serial)
+        cert.gmtime_adj_notBefore(not_before)
+        cert.gmtime_adj_notAfter(not_after)
+        cert.set_issuer(careq.get_subject())
+        cert.set_subject(careq.get_subject())
+        cert.sign(cakey, digest)
+        # write CA pkey
+        f = open(ca_pkey_dest,"w")
+        f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, cakey))
+        f.flush()
+        f.close()
+        f = open(ca_cert_dest,"w")
+        f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, cert))
+        f.flush()
+        f.close()
+
+    def create_ssl_key_pair(self, keytype, bits):
+        pkey = self.SSL['crypto'].PKey()
+        pkey.generate_key(keytype, bits)
+        return pkey
+
+    def create_ssl_certificate_request(self, pkey, digest, **name):
+        req = self.SSL['crypto'].X509Req()
+        subj = req.get_subject()
+        for (key,value) in name.items():
+            setattr(subj, key, value)
+        req.set_pubkey(pkey)
+        req.sign(pkey, digest)
+        return req
 
     def setup_external_command_classes(self):
 
@@ -14967,6 +15039,11 @@ class ServerInterface(TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaserevisionfile'])
+
+    def get_local_database_ca_cert_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasecacertfile'])
 
     def get_local_database_mask_file(self, repo = None):
         if repo == None:
@@ -16509,6 +16586,8 @@ class phpBB3AuthInterface(DistributionAuthInterface):
             session_data['session_forwarded_for'] = mydata['session_forwarded_for']
             session_data['session_forum_id'] = mydata['session_forum_id']
             session_data['session_page'] = mydata['session_page']
+            session_data['session_browser'] = mydata['session_browser']
+            session_data['session_admin'] = mydata['session_admin']
 
         if do_update:
             where = "session_id = '%s'" % (session_data['session_id'],)
@@ -17856,7 +17935,7 @@ class RepositorySocketClientInterface:
     import dumpTools
     import entropyTools
     import zlib
-    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = ''):
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = '', ssl = False, server_cert = None):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
@@ -17867,9 +17946,50 @@ class RepositorySocketClientInterface:
             mytxt = _("A valid EntropySocketClientCommands based class is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass,mytxt,))
 
+        # SSL Support
+        self.SSL = {}
+        self.SSL_exceptions = {
+            'WantReadError': None,
+            'Error': None
+        }
+        self.ssl = ssl
+        self.server_cert = server_cert
+        self.ssl_pkey = None
+        self.ssl_cert = None
+        self.context = None
+        self.ssl_CN = 'Certificate Authority'
+        self.ssl_digest = 'md5'
+        self.ssl_serial = 0
+        self.ssl_not_before = 0
+        self.ssl_not_after = 60*60*24*1 # 1 day
+        if self.ssl and self.server_cert:
+            if not (os.path.isfile(self.server_cert) and os.access(self.server_cert,os.R_OK)):
+                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),self.server_cert,))
+            try:
+                from OpenSSL import SSL, crypto
+            except ImportError, e:
+                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),e,))
+            self.SSL_exceptions['WantReadError'] = SSL.WantReadError
+            self.SSL_exceptions['Error'] = SSL.Error
+            self.SSL['m'] = SSL
+            self.SSL['crypto'] = crypto
+
+            # setup an SSL context.
+            self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
+            self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
+            # load up certificate stuff.
+            self.ssl_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+            self.ssl_cert = self.create_ssl_certificate(self.ssl_pkey)
+            self.context.use_privatekey(self.ssl_pkey)
+            self.context.use_certificate(self.ssl_cert)
+            self.context.load_verify_locations(self.server_cert)
+        else:
+            self.ssl = False
+
         self.answers = etpConst['socket_service']['answers']
         self.Entropy = EntropyInterface
         self.sock_conn = None
+        self.real_sock_conn = None
         self.hostname = None
         self.hostport = None
         self.buffered_data = ''
@@ -17880,6 +18000,42 @@ class RepositorySocketClientInterface:
         self.CmdInterface.output_header = self.output_header
         self.socket_timeout = 25
         self.socket.setdefaulttimeout(self.socket_timeout)
+
+
+    # this function should do the authentication checking to see that
+    # the client is who they say they are.
+    def verify_ssl_cb(self, conn, cert, errnum, depth, ok):
+        print 'Got certificate: %s' % cert.get_subject()
+        return ok
+
+    def create_ssl_key_pair(self, keytype, bits):
+        pkey = self.SSL['crypto'].PKey()
+        pkey.generate_key(keytype, bits)
+        return pkey
+
+    def create_ssl_certificate(self, pkey):
+        myreq = self.create_ssl_certificate_request(pkey, CN = self.ssl_CN)
+        cert = self.SSL['crypto'].X509()
+        cert.set_serial_number(self.ssl_serial)
+        cert.gmtime_adj_notBefore(self.ssl_not_before)
+        cert.gmtime_adj_notAfter(self.ssl_not_after)
+        cert.set_issuer(myreq.get_subject())
+        cert.set_subject(myreq.get_subject())
+        cert.set_pubkey(myreq.get_pubkey())
+        cert.sign(pkey, self.ssl_digest)
+        return cert
+
+    def create_ssl_certificate_request(self, pkey, **name):
+
+        req = self.SSL['crypto'].X509Req()
+        subj = req.get_subject()
+        for (key,value) in name.items():
+            setattr(subj, key, value)
+        req.set_pubkey(pkey)
+        req.sign(pkey, self.ssl_digest)
+
+        return req
+
 
     def stream_to_object(self, data, gzipped):
 
@@ -17895,7 +18051,10 @@ class RepositorySocketClientInterface:
     def transmit(self, data):
         self.check_socket_connection()
         data = self.append_eos(data)
-        self.sock_conn.sendall(data)
+        try:
+            self.sock_conn.sendall(data)
+        except self.SSL_exceptions['Error'], e:
+            raise exceptionTools.SSLError('SSLError: %s' % (e,))
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -17910,6 +18069,8 @@ class RepositorySocketClientInterface:
                 pdb.set_trace()
             if e[0] == 32: # broken pipe
                 return None
+            raise
+        except exceptionTools.SSLError:
             raise
         return data
 
@@ -17991,8 +18152,21 @@ class RepositorySocketClientInterface:
                         header = self.output_header
                     )
                 return None
-            except:
-                raise
+            except self.socket.error, e:
+                if not self.quiet:
+                    mytxt = _("connection error while receiving data")
+                    self.Entropy.updateProgress(
+                        "[%s:%s] %s: %s" % (
+                                brown(self.hostname),
+                                bold(str(self.hostport)),
+                                blue(mytxt),
+                                e,
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = self.output_header
+                    )
+                return None
 
         return self.buffered_data
 
@@ -18016,8 +18190,17 @@ class RepositorySocketClientInterface:
             raise exceptionTools.ConnectionError("ConnectionError: %s" % (_("Not connected to host"),))
 
     def connect(self, host, port):
-        self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
-        self.sock_conn.settimeout(self.socket_timeout)
+
+        if self.ssl:
+            self.real_sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
+            self.real_sock_conn.settimeout(self.socket_timeout)
+            self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
+            # client mode
+            self.sock_conn.set_connect_state()
+        else:
+            self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
+            self.sock_conn.settimeout(self.socket_timeout)
+            self.real_sock_conn = self.sock_conn
         try:
             self.sock_conn.connect((host, port))
         except self.socket.error, e:
@@ -18026,6 +18209,7 @@ class RepositorySocketClientInterface:
                 raise exceptionTools.ConnectionError("ConnectionError: %s" % (mytxt,))
             else:
                 raise
+
         self.hostname = host
         self.hostport = port
         if not self.quiet:
@@ -18042,9 +18226,11 @@ class RepositorySocketClientInterface:
             )
 
     def disconnect(self):
-        if not self.sock_conn:
+        if not self.real_sock_conn:
             return True
-        self.sock_conn.close()
+        del self.sock_conn
+        self.sock_conn = None
+        self.real_sock_conn.close()
         if not self.quiet:
             mytxt = _("Successfully disconnected from host")
             self.Entropy.updateProgress(
@@ -18057,7 +18243,7 @@ class RepositorySocketClientInterface:
                 type = "info",
                 header = self.output_header
             )
-        self.sock_conn = None
+        self.real_sock_conn = None
         self.hostname = None
         self.hostport = None
 
@@ -18752,6 +18938,13 @@ class ServerMirrorsInterface:
             self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasehashfile']
         )
         critical.append(data['compressed_database_path_digest'])
+
+        # SSL cert file, just for reference
+        ssl_cert = self.Entropy.get_local_database_ca_cert_file()
+        if os.path.isfile(ssl_cert):
+            data['ssl_cert_file'] = ssl_cert
+            if not download:
+                critical.append(ssl_cert)
 
         # Some information regarding how packages are built
         spm_files = [
