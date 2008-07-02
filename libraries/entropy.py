@@ -12562,8 +12562,8 @@ class SocketHostInterface:
         def load_ssl_context(self):
             # setup an SSL context.
             self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
-            self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb) # ask for a certificate
-            self.context.set_options(self.SSL['m'].OP_NO_SSLv2)
+            #self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb) # ask for a certificate
+            #self.context.set_options(self.SSL['m'].OP_NO_SSLv2)
             # load up certificate stuff.
             self.context.use_privatekey_file(self.SSL['key'])
             self.context.use_certificate_file(self.SSL['cert'])
@@ -18009,9 +18009,9 @@ class RepositorySocketClientInterface:
         self.ssl_pkey = None
         self.ssl_cert = None
         self.context = None
-        self.ssl_CN = 'Certificate Authority'
+        self.ssl_CN = 'Entropy Repository Service Client'
         self.ssl_digest = 'md5'
-        self.ssl_serial = 0
+        self.ssl_serial = 1
         self.ssl_not_before = 0
         self.ssl_not_after = 60*60*24*1 # 1 day
         if self.ssl and self.server_cert:
