@@ -5769,7 +5769,7 @@ class RepoInterface:
             "lock","mask","dbdump",
             "dbdumpck","lic_whitelist","make.conf",
             "package.mask","package.unmask","package.keywords",
-            "package.use",
+            "package.use","server.cert","ca.cert",
         )
         if item not in supported_items:
             mytxt = _("Supported items: %s") % (supported_items,)
@@ -6902,12 +6902,22 @@ class RepoInterface:
 
         download_items = [
             (
-                "ssl.crt",
+                "ca.cert",
                 etpConst['etpdatabasecacertfile'],
                 True,
                 "%s %s %s" % (
-                    red(_("Downloading SSL certificate")),
+                    red(_("Downloading SSL CA certificate")),
                     darkgreen(etpConst['etpdatabasecacertfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "server.cert",
+                etpConst['etpdatabaseservercertfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SSL Server certificate")),
+                    darkgreen(etpConst['etpdatabaseservercertfile']),
                     red("..."),
                 )
             ),
@@ -17997,7 +18007,7 @@ class RepositorySocketClientInterface:
     import dumpTools
     import entropyTools
     import zlib
-    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = '', ssl = False, server_cert = None):
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = '', ssl = False): #, server_ca_cert = None, server_cert = None):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
@@ -18008,7 +18018,7 @@ class RepositorySocketClientInterface:
             mytxt = _("A valid EntropySocketClientCommands based class is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass,mytxt,))
 
-        self.setup_ssl(ssl, server_cert)
+        self.setup_ssl(ssl) #, server_ca_cert, server_cert)
 
         self.answers = etpConst['socket_service']['answers']
         self.Entropy = EntropyInterface
@@ -18026,7 +18036,7 @@ class RepositorySocketClientInterface:
         self.socket.setdefaulttimeout(self.socket_timeout)
 
 
-    def setup_ssl(self, ssl, server_cert):
+    def setup_ssl(self, ssl): # , server_ca_cert, server_cert):
         # SSL Support
         self.SSL = {}
         self.SSL_exceptions = {
@@ -18038,26 +18048,36 @@ class RepositorySocketClientInterface:
         }
         self.ssl = ssl
         self.pyopenssl = True
-        self.server_cert = server_cert
         self.context = None
 
-        self.ssl_pkey = None
-        self.ssl_cert = None
-        self.ssl_CN = 'Entropy Repository Service Client'
-        self.ssl_digest = 'md5'
-        self.ssl_serial = 1
-        self.ssl_not_before = 0
-        self.ssl_not_after = 60*60*24*1 # 1 day
+        '''
+            self.server_cert = server_cert
+            self.server_ca_cert = server_ca_cert
+            self.ssl_pkey = None
+            self.ssl_cert = None
+            self.ssl_CN = 'Entropy Repository Service Client'
+            self.ssl_digest = 'md5'
+            self.ssl_serial = 1
+            self.ssl_not_before = 0
+            self.ssl_not_after = 60*60*24*1 # 1 day
+        '''
 
-        if self.ssl and self.server_cert:
+        if self.ssl:
 
             try:
                 from OpenSSL import SSL, crypto
             except ImportError, e:
                 self.pyopenssl = False
 
-            if not (os.path.isfile(self.server_cert) and os.access(self.server_cert,os.R_OK)) and self.pyopenssl:
-                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),self.server_cert,))
+            '''
+            if not (self.server_cert and self.server_ca_cert):
+                raise exceptionTools.SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),)
+            if not (os.path.isfile(self.server_cert) and \
+                    os.access(self.server_cert,os.R_OK) and \
+                    os.path.isfile(self.server_ca_cert) and \
+                    os.access(self.server_ca_cert,os.R_OK)) and self.pyopenssl:
+                        raise exceptionTools.SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),self.server_cert,))
+            '''
 
             if self.pyopenssl:
 
@@ -18071,15 +18091,21 @@ class RepositorySocketClientInterface:
 
                 # setup an SSL context.
                 self.context = self.SSL['m'].Context(self.SSL['m'].SSLv23_METHOD)
-                self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
+                #self.context.set_verify(self.SSL['m'].VERIFY_PEER, self.verify_ssl_cb)
 
                 # load up certificate stuff.
-                self.ssl_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
-                self.ssl_cert = self.create_ssl_certificate(self.ssl_pkey)
-                self.context.use_privatekey(self.ssl_pkey)
-                self.context.use_certificate(self.ssl_cert)
-                self.context.load_client_ca(self.server_cert)
-                self.context.load_verify_locations(self.server_cert)
+                '''
+                    self.ssl_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+                    self.context.use_privatekey(self.ssl_pkey)
+                    self.context.use_certificate_file(self.server_cert)
+                    self.context.load_verify_locations(self.server_ca_cert)
+                    self.context.load_client_ca(self.server_cert)
+                    self.ssl_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+                    self.ssl_cert = self.create_ssl_certificate(self.ssl_pkey)
+                    self.context.use_privatekey(self.ssl_pkey)
+                    self.context.use_certificate(self.ssl_cert)
+                    self.context.load_client_ca(self.server_cert)
+                '''
 
         else:
             self.ssl = False
@@ -18094,12 +18120,9 @@ class RepositorySocketClientInterface:
     # the client is who they say they are.
     def verify_ssl_cb(self, conn, cert, errnum, depth, ok):
         self.check_pyopenssl()
-        print 'Got certificate: %s' % cert.get_subject()
-        # load our certificate
-        self.server_cert
-        
-        print repr(ok),repr(cert),repr(errnum),repr(depth)
-        return 1
+        #print 'Got certificate: %s' % cert.get_subject()
+        #print repr(ok),repr(cert),repr(errnum),repr(depth)
+        return ok
 
     def create_ssl_key_pair(self, keytype, bits):
         if not self.pyopenssl:
