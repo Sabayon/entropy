@@ -13607,6 +13607,7 @@ class SocketHostInterface:
 
     def create_ca_certs(self, serial, digest, not_before, not_after, ca_pkey_dest, ca_cert_dest):
         cakey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+        careq = self.create_ssl_certificate_request(cakey, digest, CN = 'Entropy Repository Service')
         cert = self.SSL['crypto'].X509()
         cert.set_serial_number(serial)
         cert.gmtime_adj_notBefore(not_before)
