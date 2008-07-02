@@ -13587,13 +13587,15 @@ class SocketHostInterface:
         if not os.path.isfile(self.SSL['cert']):
             raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['cert'],))
         if not (os.path.isfile(self.SSL['ca_cert']) and os.path.isfile(self.SSL['ca_pkey'])):
-            self.create_ca_certs(
+            self.create_ca_server_certs(
                 self.SSL['serial'],
                 self.SSL['digest'],
                 self.SSL['not_before'],
                 self.SSL['not_after'],
                 self.SSL['ca_pkey'],
-                self.SSL['ca_cert']
+                self.SSL['ca_cert'],
+                self.SSL['key'],
+                self.SSL['cert']
             )
             os.chmod(self.SSL['ca_cert'],0644)
             try:
@@ -13611,9 +13613,11 @@ class SocketHostInterface:
         os.chmod(self.SSL['cert'],0644)
         os.chown(self.SSL['cert'],-1,0)
 
-    def create_ca_certs(self, serial, digest, not_before, not_after, ca_pkey_dest, ca_cert_dest):
+    def create_ca_server_certs(self, serial, digest, not_before, not_after, ca_pkey_dest, ca_cert_dest, server_key, server_cert):
+
+        mycn = 'Entropy Repository Service'
         cakey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
-        careq = self.create_ssl_certificate_request(cakey, digest, CN = 'Entropy Repository Service')
+        careq = self.create_ssl_certificate_request(cakey, digest, CN = mycn)
         cert = self.SSL['crypto'].X509()
         cert.set_serial_number(serial)
         cert.gmtime_adj_notBefore(not_before)
@@ -13621,13 +13625,36 @@ class SocketHostInterface:
         cert.set_issuer(careq.get_subject())
         cert.set_subject(careq.get_subject())
         cert.sign(cakey, digest)
-        # write CA pkey
+
+        # now create server key + cert
+        s_pkey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
+        s_req = self.create_ssl_certificate_request(s_pkey, digest, CN = mycn)
+        s_cert = self.SSL['crypto'].X509()
+        s_cert.set_serial_number(serial+1)
+        s_cert.gmtime_adj_notBefore(not_before)
+        s_cert.gmtime_adj_notAfter(not_after)
+        s_cert.set_issuer(cert.get_subject())
+        s_cert.set_subject(s_req.get_subject())
+        s_cert.set_pubkey(s_req.get_pubkey())
+        s_cert.sign(cakey, digest)
+
+        # write CA
         f = open(ca_pkey_dest,"w")
         f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, cakey))
         f.flush()
         f.close()
         f = open(ca_cert_dest,"w")
         f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, cert))
+        f.flush()
+        f.close()
+
+        # write server
+        f = open(server_key,"w")
+        f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, s_pkey))
+        f.flush()
+        f.close()
+        f = open(server_cert,"w")
+        f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, s_cert))
         f.flush()
         f.close()
 
@@ -15051,6 +15078,11 @@ class ServerInterface(TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasecacertfile'])
+
+    def get_local_database_server_cert_file(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaseservercertfile'])
 
     def get_local_database_mask_file(self, repo = None):
         if repo == None:
@@ -18202,8 +18234,6 @@ class RepositorySocketClientInterface:
             self.real_sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
             self.real_sock_conn.settimeout(self.socket_timeout)
             self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
-            # client mode
-            self.sock_conn.set_connect_state()
         else:
             self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
             self.sock_conn.settimeout(self.socket_timeout)
@@ -18947,11 +18977,16 @@ class ServerMirrorsInterface:
         critical.append(data['compressed_database_path_digest'])
 
         # SSL cert file, just for reference
-        ssl_cert = self.Entropy.get_local_database_ca_cert_file()
-        if os.path.isfile(ssl_cert):
-            data['ssl_cert_file'] = ssl_cert
+        ssl_ca_cert = self.Entropy.get_local_database_ca_cert_file()
+        if os.path.isfile(ssl_ca_cert):
+            data['ssl_ca_cert_file'] = ssl_ca_cert
             if not download:
-                critical.append(ssl_cert)
+                critical.append(ssl_ca_cert)
+        ssl_server_cert = self.Entropy.get_local_database_server_cert_file()
+        if os.path.isfile(ssl_server_cert):
+            data['ssl_server_cert_file'] = ssl_server_cert
+            if not download:
+                critical.append(ssl_server_cert)
 
         # Some information regarding how packages are built
         spm_files = [
