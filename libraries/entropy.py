@@ -12567,7 +12567,7 @@ class SocketHostInterface:
             # load up certificate stuff.
             self.context.use_privatekey_file(self.SSL['key'])
             self.context.use_certificate_file(self.SSL['cert'])
-            self.context.load_verify_locations(self.SSL['ca_cert'])
+            #self.context.load_verify_locations(self.SSL['ca_cert'])
             self.HostInterface.updateProgress('SSL context loaded, key: %s - cert: %s, CA cert: %s, CA pkey: %s' % (
                     self.SSL['key'],
                     self.SSL['cert'],
