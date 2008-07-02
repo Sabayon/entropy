@@ -13582,11 +13582,7 @@ class SocketHostInterface:
         self.SSL['serial'] = 0
         self.SSL['digest'] = 'md5'
 
-        if not os.path.isfile(self.SSL['key']):
-            raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['key'],))
-        if not os.path.isfile(self.SSL['cert']):
-            raise exceptionTools.FileNotFound('FileNotFound: no %s found' % (self.SSL['cert'],))
-        if not (os.path.isfile(self.SSL['ca_cert']) and os.path.isfile(self.SSL['ca_pkey'])):
+        if not (os.path.isfile(self.SSL['ca_cert']) and os.path.isfile(self.SSL['ca_pkey']) and os.path.isfile(self.SSL['key']) and os.path.isfile(self.SSL['cert'])):
             self.create_ca_server_certs(
                 self.SSL['serial'],
                 self.SSL['digest'],
