@@ -5827,6 +5827,12 @@ class RepoInterface:
         elif item == "lock":
             url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile']
             filepath = "/dev/null"
+        elif item == "server.cert":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasecacertfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasecacertfile']
+        elif item == "ca.cert":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaseservercertfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaseservercertfile']
 
         return url, filepath
 
