@@ -3,6 +3,7 @@
 ../libraries/entropy_i18n.py
 ../libraries/entropy.py
 ../libraries/entropyTools.py
+../libraries/managerTools.py
 ../libraries/etpXpak.py
 ../libraries/exceptionTools.py
 ../libraries/outputTools.py
