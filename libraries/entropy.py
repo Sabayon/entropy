@@ -4329,7 +4329,7 @@ class PackageInterface:
                     # update counter inside clientDatabase
                     self.Entropy.clientDbconn.insertCounter(newidpackage,counter)
                 else:
-                    mytxt = brown(_("Cannot update Gentoo counter, destination %s does not exist.") % (destination,))
+                    mytxt = brown(_("Cannot update Portage counter, destination %s does not exist.") % (destination,))
                     self.Entropy.updateProgress(
                         red("QA: ")+mytxt,
                         importance = 1,
@@ -4348,20 +4348,41 @@ class PackageInterface:
                 f = open(world_file,"r")
                 world_atoms = set([x.strip() for x in f.readlines() if x.strip()])
                 f.close()
+            else:
+                mytxt = brown(_("Cannot update Portage world file, destination %s does not exist.") % (world_file,))
+                self.Entropy.updateProgress(
+                    red("QA: ")+mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+                return 0
 
-            if keyslot not in world_atoms and os.access(os.path.dirname(world_file),os.W_OK):
-                if key in world_atoms:
-                    world_atoms.remove(key)
-                world_atoms.add(keyslot)
-                world_atoms = list(world_atoms)
-                world_atoms.sort()
-                world_file_tmp = world_file+".entropy_inst"
-                f = open(world_file_tmp,"w")
-                for item in world_atoms:
-                    f.write(item+"\n")
-                f.flush()
-                f.close()
-                shutil.move(world_file_tmp,world_file)
+            try:
+                if keyslot not in world_atoms and \
+                    os.access(os.path.dirname(world_file),os.W_OK) and \
+                    self.Entropy.entropyTools.istextfile(world_file):
+                        if key in world_atoms:
+                            world_atoms.remove(key)
+                        world_atoms.add(keyslot)
+                        world_atoms = list(world_atoms)
+                        world_atoms.sort()
+                        world_file_tmp = world_file+".entropy_inst"
+                        f = open(world_file_tmp,"w")
+                        for item in world_atoms:
+                            f.write(item+"\n")
+                        f.flush()
+                        f.close()
+                        shutil.move(world_file_tmp,world_file)
+            except (UnicodeDecodeError,UnicodeEncodeError), e:
+                self.entropyTools.printTraceback(f = self.Entropy.clientLog)
+                mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
+                self.Entropy.updateProgress(
+                    red("QA: ")+mytxt+": "+unicode(e),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
 
         return 0
 
