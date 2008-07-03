@@ -25,9 +25,9 @@ officialserverrepositoryid|sabayonlinux.org
 #
 #    repository: server-side repositories configuration
 #    note: default repository setting is in repositories.conf (officialrepositoryid)
-#|   repository|repository_id|repository description|<ftp upload URI 1> <2>|<http handlers uri>
+#|   repository|repository_id|repository description|<ftp upload URI 1> <2>|<http handlers uri>|<remote server hostname>#<service port>,<ssl service port>
 #
 #    example:
-#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|ftp://user:pass@111.111.111.111/|http://svn.sabayonlinux.org/entropy
+#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|ftp://user:pass@111.111.111.111/|http://svn.sabayonlinux.org/entropy|svn.sabayonlinux.org#1026,1027
 #
 # repository|
