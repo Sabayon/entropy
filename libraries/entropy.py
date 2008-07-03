@@ -4375,7 +4375,7 @@ class PackageInterface:
                         f.close()
                         shutil.move(world_file_tmp,world_file)
             except (UnicodeDecodeError,UnicodeEncodeError), e:
-                self.entropyTools.printTraceback(f = self.Entropy.clientLog)
+                self.Entropy.entropyTools.printTraceback(f = self.Entropy.clientLog)
                 mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
                 self.Entropy.updateProgress(
                     red("QA: ")+mytxt+": "+unicode(e),
