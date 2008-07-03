@@ -19311,7 +19311,7 @@ class ServerMirrorsInterface:
                     type = "warning",
                     header = brown(" @@ ")
                 )
-                return False
+                return True
 
         def go(self):
 
