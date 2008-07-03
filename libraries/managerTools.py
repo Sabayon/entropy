@@ -4,6 +4,8 @@
     # enzyme helper classes
 
     Copyright (C) http://excess.org/urwid
+    Thanks to Urwid developers, stuff taken from here too:
+        http://excess.org/urwid/browser/urwid/trunk/dialog.py?format=txt
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +23,7 @@
 '''
 import urwid
 from entropyConstants import *
+from entropy_i18n import _
 
 class ManagerSettings:
 
@@ -47,7 +50,35 @@ class ManagerSettings:
             0: "Application",
             1: "Terminal"
         }
+        self.auth_data = {}
         self.menu_keys_calls = {}
+
+
+class PasswordEdit(urwid.Edit):
+
+    def __init__(self, *args, **kwargs):
+        urwid.Edit.__init__(self, *args, **kwargs)
+        self._clean_edit_text = ''
+
+    def set_edit_text(self, text):
+        """Set the edit text for this widget."""
+        self.highlight = None
+        self._clean_edit_text = text
+        text = '*'*len(text)
+        self.edit_text = text
+        if self.edit_pos > len(text):
+            self.edit_pos = len(text)
+        self._invalidate()
+
+    def insert_text(self, text):
+        """Insert text at the cursor position and update cursor."""
+        p = self.edit_pos
+        self.set_edit_text( self._clean_edit_text[:p] + text + 
+                self._clean_edit_text[p:] )
+        self.set_edit_pos( self.edit_pos + len(text))
+
+    def get_edit_text(self):
+        return self._clean_edit_text
 
 class SimpleWidgets:
 
@@ -178,13 +209,92 @@ class SimpleWidgets:
             else:
                 return self._listbox.keypress(size, key)
 
+    class InputDialogWidget(urwid.WidgetWrap):
+
+        b_pressed = None
+        def __init__(self, title, input_parameters, attr, width, body, cancel = True):
+
+            self.labels = {
+                _('Ok'): 'ok',
+                _('Cancel'): 'cancel',
+            }
+            height = 6
+            self.button_values = ['ok','cancel']
+            self.input_text_is_valid = False
+            self.input_data = {}
+            self.edit_widgets = []
+            self.input_parameters = input_parameters[:]
+            self.identifiers = {}
+            self.passworded = {}
+            self.do_cancel = cancel
+            for identifier,widget_text,callback, password in self.input_parameters:
+                if password:
+                    myw = PasswordEdit(caption = widget_text+": ")
+                else:
+                    myw = urwid.Edit(caption = widget_text+": ")
+                self.identifiers[identifier] = (myw,callback,widget_text,)
+                self.edit_widgets.append(myw)
+                if password:
+                    self.passworded[myw] = ''
+                height += 1
+
+            # blank line
+            self._blank = urwid.Text("")
+            self._title = urwid.Text(title)
+            # buttons
+            button_widgets = []
+            button_widgets.append(urwid.AttrWrap(urwid.Button(_('Ok'), self._action), attr[1], attr[2]))
+            if self.do_cancel:
+                button_widgets.append(urwid.AttrWrap(urwid.Button(_('Cancel'), self._action), attr[1], attr[2]))
+            # button grid
+            button_grid = urwid.GridFlow(button_widgets, 12, 2, 1, 'center')
+
+            #Combine message widget and button widget:
+            widget_list = [self._title,self._blank]
+            widget_list += self.edit_widgets
+            widget_list += [self._blank, button_grid]
+
+            self._combined = urwid.AttrWrap(urwid.Filler(urwid.Pile(widget_list, 2)), attr[0])
+
+            #Place the dialog widget on top of body:
+            overlay = urwid.Overlay(self._combined, body, 'center', width, 'middle', height)
+            urwid.WidgetWrap.__init__(self, overlay)
+
+        def _action(self, button):
+            """
+            Function called when a button is pressed.
+            Should not be called manually.
+            """
+
+            got_valid = True
+            b_pressed = button.get_label()
+            self.b_pressed = None
+            # update input_data
+            for identifier in self.identifiers:
+                self.input_data[identifier] = None
+                myw, cb, widget_text = self.identifiers[identifier]
+                if myw in self.passworded:
+                    result = myw.get_edit_text()
+                    valid = cb(result)
+                else:
+                    result = myw.get_edit_text()
+                    valid = cb(result)
+                if valid:
+                    self.input_data[identifier] = result
+                else:
+                    got_valid = False
+            self.input_text_is_valid = got_valid
+            self.b_pressed = self.labels.get(b_pressed)
 
     def __init__(self, interface):
         self.Manager = interface.Manager
         self.Interface = interface
 
     def Dialog(self, message, options):
-        return self.QuestionWidget(message, options,('menu', 'bg', 'bgf'), 30, 5, self.Manager.mainFrame)
+        return self.QuestionWidget(message, options, ('menu', 'bg', 'bgf'), 30, 5, self.Manager.mainFrame)
+
+    def InputDialog(self, title, input_parameters, show_cancel = True):
+        return self.InputDialogWidget(title, input_parameters, ('menu', 'bg', 'bgf'), 40, self.Manager.mainFrame, cancel = show_cancel)
 
     def Menu(self, options, position):
         return self.MenuWidget(options, ('menu', 'menuf'), position, self.Manager.mainFrame)

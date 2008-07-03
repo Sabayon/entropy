@@ -390,15 +390,22 @@ def writechar(char):
             return
         raise
 
-def readtext(request):
-    import readline
+def readtext(request, password = False):
     xtermTitle(_("Entropy needs your attention"))
-    try:
-        print request,
-    except UnicodeEncodeError:
-        print request.encode('utf-8'),
-    flush_stdouterr()
-    text = raw_input() # using readline module
+    if password:
+        from getpass import getpass
+        try:
+            text = getpass(prompt)
+        except UnicodeEncodeError:
+            text = getpass(prompt.encode('utf-8'))
+    else:
+        import readline
+        try:
+            print request,
+        except UnicodeEncodeError:
+            print request.encode('utf-8'),
+        flush_stdouterr()
+        text = raw_input() # using readline module
     return text
 
 class TextInterface:
@@ -496,6 +503,34 @@ class TextInterface:
             sys.exit(100)
         xtermTitleReset()
         flush_stdouterr()
+
+    # @ title: title of the input box
+    # @ input_parameters: [('identifier 1','input text 1',input_verification_callback,False), ('password','Password',input_verification_callback,True)]
+    # @ cancel_button: show cancel button ?
+    # @ output: dictionary as follows:
+    #   {'identifier 1': result, 'identifier 2': result}
+    def inputBox(self, title, input_parameters, cancel_button = True):
+        results = {}
+
+        try:
+            print title
+        except UnicodeEncodeError:
+            print title.encode('utf-8')
+        flush_stdouterr()
+
+        for identifier, input_text, callback, password in input_parameters:
+            while 1:
+                try:
+                    myresult = readtext(input_text+":", password = password)
+                except KeyboardInterrupt:
+                    if not cancel_button: # use with care
+                        continue
+                    return None
+                valid = callback(myresult)
+                if valid:
+                    results[identifier] = myresult
+                    break
+        return results
 
     # useful for reimplementation
     # in this wait you can send a signal to a widget (total progress bar?)

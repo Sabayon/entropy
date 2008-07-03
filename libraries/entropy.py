@@ -16930,10 +16930,10 @@ class RepositoryManager(ServerInterface):
         self.OutputPrinter = None
         self.PtyReader = None
         nocolor()
-        self.enzymeLog = LogFile(
-            level = etpConst['enzymeloglevel'],
-            filename = etpConst['enzymelogfile'],
-            header = "[Enzyme]"
+        self.electronLog = LogFile(
+            level = etpConst['electronloglevel'],
+            filename = etpConst['electronlogfile'],
+            header = "[Electron]"
         )
         self.PtyOut = self.pty.openpty()
         self.PtyIn = self.pty.openpty()
@@ -17013,7 +17013,7 @@ class RepositoryManager(ServerInterface):
 
     def log_data(self, data, pri = ETP_LOGLEVEL_NORMAL):
         if etpUi['debug']:
-            self.enzymeLog.log(ETP_LOGPRI_INFO,pri,data.strip())
+            self.electronLog.log(ETP_LOGPRI_INFO,pri,data.strip())
 
     def start_pty_reader(self):
         self.PtyReader = self.entropyTools.TimeScheduled( self.read_and_push_pty, 0.05 )
@@ -17074,6 +17074,43 @@ class RepositoryManager(ServerInterface):
                 newdata += mychr
         self.Manager.output.insert_text(newdata)
         self.screen_redraw()
+
+    def inputBox(self, title, input_parameters, cancel_button = True):
+
+        while 1:
+
+            keys_pressed = True
+            myw = self.Manager.Widgets.InputDialog(title, input_parameters, show_cancel = cancel_button)
+            while 1:
+
+                self.screen_redraw(widget = myw)
+
+                try:
+                    keys_pressed, raw_keycodes = self.Manager.screen.get_input(raw_keys=True)
+                except KeyboardInterrupt:
+                    return None
+
+                handled, dobreak = self.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
+                if handled:
+                    continue
+
+                if "esc" in keys_pressed:
+                    if cancel_button:
+                        return None
+                    continue
+
+                dim = self.get_screen_dim()
+                for k in keys_pressed:
+                    myw.keypress(dim, k)
+
+                if myw.b_pressed == 'ok':
+                    if not myw.input_text_is_valid:
+                        self.askQuestion("Data submitted is invalid. Try again.", responses = ["Ok"])
+                        break
+                    return myw.input_data
+                elif myw.b_pressed == 'cancel':
+                    return None
+
 
     def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
 
@@ -17175,7 +17212,7 @@ class RepositoryManager(ServerInterface):
         except SystemExit:
             self.killall()
         except:
-            self.entropyTools.printTraceback(f = self.enzymeLog)
+            self.entropyTools.printTraceback(f = self.electronLog)
             self.killall()
             raise
 
@@ -17198,13 +17235,68 @@ class RepositoryManager(ServerInterface):
 
         return handled, dobreak
 
+    def do_repository_authentication(self, repo):
+
+        if not self.Manager.auth_data.has_key(repo) and etpConst['server_repositories'][repo]['service_url']:
+
+            def validate_txt(s):
+                return s
+
+            import socket
+            client = RepositorySocketClientInterface(self, EntropyRepositorySocketClientCommands, ssl = True)
+            # connect
+            client.connect(
+                etpConst['server_repositories'][repo]['service_url'],
+                etpConst['server_repositories'][repo]['ssl_service_port']
+            )
+
+            tries = 3
+            while tries:
+
+                self.screen_redraw()
+                auth_data = self.inputBox(
+                    "%s: %s" % (_("Authentication on repository"),repo,),
+                    [
+                        ('username',_("Username"),validate_txt,False,),
+                        ('password',_("Password"),validate_txt,True,),
+                    ],
+                    cancel_button = True
+                )
+                if auth_data == None:
+                    return False
+                elif not auth_data:
+                    tries -= 1
+                    continue
+
+                session_id = client.open_session()
+                # do login
+                logged, error = client.CmdInterface.service_login(auth_data['username'], auth_data['password'], session_id)
+                if logged:
+                    # now check if we are developers
+                    client.CmdInterface.service_logout(auth_data['username'], session_id)
+                    client.close_session(session_id)
+                    client.disconnect()
+                    self.Manager.auth_data[repo] = auth_data.copy()
+                    return True
+                else:
+                    # make it larger
+                    self.askQuestion("%s: %s" % (_("Login failed"),error,), responses = ["Ok"])
+                    tries -= 1
+
+            return False
+
+        return True
+
     def main(self):
 
         self.initialize_screen()
+        self.screen_redraw()
+
+        valid = self.do_repository_authentication(repo = self.default_repository)
 
         keys = True
         # start the application loop now
-        while 1:
+        while valid:
 
             if keys:
                 self.screen_redraw()

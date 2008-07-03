@@ -607,7 +607,7 @@ def const_defaultSettings(rootdir):
 
         'entropyloglevel': 1, # # Entropy log level (default: 1 - see entropy.conf for more info)
         'socketloglevel': 2, # # Entropy Socket Interface log level
-        'enzymeloglevel': 2, # # Entropy Socket Interface log level
+        'electronloglevel': 2, # # Entropy Socket Interface log level
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
 
@@ -615,7 +615,7 @@ def const_defaultSettings(rootdir):
         'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
         'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
         'socketlogfile': ETP_SYSLOG_DIR+"socket.log", # Activator operations log file
-        'enzymelogfile': ETP_SYSLOG_DIR+"enzyme.log", # Activator operations log file
+        'electronlogfile': ETP_SYSLOG_DIR+"electron.log", # Activator operations log file
 
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
@@ -1349,12 +1349,30 @@ def const_readServerSettings():
         elif (line.find("officialserverrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
             etpConst['officialserverrepositoryid'] = line.split("|")[1].strip()
 
-        elif line.startswith("repository|") and (len(line.split("|")) == 5):
+        elif line.startswith("repository|") and (len(line.split("|")) in [5,6]):
 
             repoid = line.split("|")[1].strip()
             repodesc = line.split("|")[2].strip()
             repouris = line.split("|")[3].strip()
             repohandlers = line.split("|")[4].strip()
+            service_url = None
+            eapi3_port = int(etpConst['socket_service']['port'])
+            eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+            if len(line.split("|")) > 5:
+                service_url = line.split("|")[5].strip()
+
+                eapi3_formatcolon = service_url.rfind("#")
+                if eapi3_formatcolon != -1:
+                    try:
+                        ports = service_url[eapi3_formatcolon+1:].split(",")
+                        eapi3_port = int(ports[0])
+                        if len(ports) > 1:
+                            eapi3_ssl_port = int(ports[1])
+                        service_url = service_url[:eapi3_formatcolon]
+                    except (ValueError, IndexError,):
+                        eapi3_port = int(etpConst['socket_service']['port'])
+                        eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+
 
             if repouris.startswith("ftp://"):
 
@@ -1363,6 +1381,9 @@ def const_readServerSettings():
                     etpConst['server_repositories'][repoid]['description'] = repodesc
                     etpConst['server_repositories'][repoid]['mirrors'] = []
                     etpConst['server_repositories'][repoid]['community'] = False
+                    etpConst['server_repositories'][repoid]['service_url'] = service_url
+                    etpConst['server_repositories'][repoid]['service_port'] = eapi3_port
+                    etpConst['server_repositories'][repoid]['ssl_service_port'] = eapi3_ssl_port
                     if repohandlers:
                         repohandlers = os.path.join(repohandlers,etpConst['product'],repoid,"handlers")
                         etpConst['server_repositories'][repoid]['handler'] = repohandlers
