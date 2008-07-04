@@ -395,9 +395,9 @@ def readtext(request, password = False):
     if password:
         from getpass import getpass
         try:
-            text = getpass(prompt)
+            text = getpass(request)
         except UnicodeEncodeError:
-            text = getpass(prompt.encode('utf-8'))
+            text = getpass(request.encode('utf-8'))
     else:
         import readline
         try:
