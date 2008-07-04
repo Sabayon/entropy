@@ -30,7 +30,7 @@ try:
     if _LOCALE_FULL == None:
         _LOCALE_FULL = os.getenv('LANG')
     if _LOCALE_FULL == None:
-        _LOCALE_FULL = os.getenv('LANGUANGE')
+        _LOCALE_FULL = os.getenv('LANGUAGE')
 
     if _LOCALE_FULL:
         _LOCALE = _LOCALE_FULL.split('.')[0]
