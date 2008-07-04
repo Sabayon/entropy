@@ -12464,11 +12464,8 @@ class SocketHostInterface:
             if auth_type not in self.valid_auth_types:
                 return False,user,None,'invalid auth type'
 
-            import pwd
-            # check user validty
-            try:
-                udata = pwd.getpwnam(user)
-            except KeyError:
+            udata = self.__get_uid(user)
+            if udata == None:
                 return False,user,None,'invalid user'
 
             uid = udata[2]
@@ -12482,6 +12479,32 @@ class SocketHostInterface:
                 return False,user,uid,'auth failed'
 
             return True,user,uid,"ok"
+
+        # it we get here is because user is logged in
+        def docmd_userdata(self, arguments):
+            # filter n00bs
+            if not arguments:
+                return False,None,'wrong arguments'
+            udata = self.__get_uid(user)
+            mydata = {
+                'username': arguments[0]
+            }
+            if udata:
+                mydata['uid'] = udata[2]
+                mydata['gid'] = udata[3]
+                mydata['references'] = udata[4]
+                mydata['home'] = udata[5]
+                mydata['shell'] = udata[6]
+            return True,mydata,'ok'
+
+        def __get_uid(self, user):
+            import pwd
+            # check user validty
+            try:
+                udata = pwd.getpwnam(user)
+            except KeyError:
+                return None
+            return udata
 
         def __validate_auth(self, user, auth_type, auth_string):
             valid = False
@@ -13254,6 +13277,16 @@ class SocketHostInterface:
                                 'syntax': "<SESSION_ID> login <authenticator parameters, default: <user> <auth_type> <password> >",
                                 'from': str(self),
                             },
+                'user_data':    {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_userdata,
+                                'args': ["self.transmit", "authenticator", "session", "myargs"],
+                                'as_user': False,
+                                'desc': "get general user information, user must be logged in",
+                                'syntax': "<SESSION_ID> user_data <username>",
+                                'from': str(self),
+                            },
                 'logout':   {
                                 'auth': True,
                                 'built_in': True,
@@ -13372,6 +13405,14 @@ class SocketHostInterface:
                 )
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
+
+        def docmd_userdata(self, transmitter, authenticator, session, myargs):
+
+            auth_uid = self.HostInterface.sessions[session]['auth_uid']
+            if auth_uid == None:
+                return False,None,"not authenticated"
+
+            return authenticator.docmd_userdata(myargs)
 
         def docmd_logout(self, transmitter, authenticator, session, client_address, myargs):
             status, user, reason = authenticator.docmd_logout(myargs)
@@ -16859,6 +16900,99 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         rhash = m.hexdigest()
         return rhash == myhash
 
+# Authenticator that can be used by SocketHostInterface based instances
+class phpbb3Authenticator(phpBB3AuthInterface):
+    import entropyTools
+
+    def __init__(self, HostInterface, *args, **kwargs):
+        self.HostInterface = HostInterface
+        phpBB3AuthInterface.__init__(self)
+        self.set_connection_data(kwargs)
+        self.connect()
+        self.session = None
+
+    def set_session(self, session):
+        self.session = session
+        session_data = self.HostInterface.sessions.get(self.session)
+        if not session_data:
+            return
+        auth_id = session_data['auth_uid']
+        if auth_id:
+            self.logged_in = True
+            # fill login_data with fake information
+            self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password'}
+            ip_address = session_data.get('ip_address')
+            if ip_address:
+                self._update_session_table(auth_id, ip_address)
+
+    def docmd_login(self, arguments):
+
+        # filter n00bs
+        if not arguments or (len(arguments) != 2):
+            return False,None,None,'wrong arguments'
+
+        ip_address = None
+        session_data = self.HostInterface.sessions.get(self.session)
+        if session_data:
+            ip_address = session_data.get('ip_address')
+        user = arguments[0]
+        password = arguments[1]
+
+        if ip_address:
+            if self._is_ip_banned(ip_address):
+                return False,user,None,"banned IP"
+
+        login_data = {'username': user, 'password': password}
+        self.set_login_data(login_data)
+        rc = False
+        try:
+            rc = self.login()
+        except exceptionTools.PermissionDenied, e:
+            return rc,user,None,e.value
+
+        if rc:
+            uid = self.get_user_id()
+            if ip_address and uid:
+                self._update_session_table(uid, ip_address)
+            return True,user,uid,"ok"
+        return rc,user,None,"login failed"
+
+    # if we get here it means we are logged in
+    def docmd_userdata(self, arguments):
+        if not arguments:
+            return False,None,'wrong arguments'
+        user = arguments[0]
+        data = self.get_user_data()
+        return True, data, 'ok'
+
+    def docmd_logout(self, myargs):
+
+        # filter n00bs
+        if (len(myargs) < 1) or (len(myargs) > 1):
+            return False,None,'wrong arguments'
+
+        user = myargs[0]
+        # filter n00bs
+        if not user or not isinstance(user,basestring):
+            return False,None,"wrong user"
+
+        if not self.is_logged_in():
+            return False,user,"already logged out"
+
+        return True,user,"ok"
+
+    def set_exc_permissions(self, *args, **kwargs):
+        pass
+
+    def hide_login_data(self, args):
+        myargs = args[:]
+        myargs[-1] = 'hidden'
+        return myargs
+
+    def terminate_instance(self):
+        self.disconnect()
+
+
 class RepositoryManager(ServerInterface):
 
     class ManagerCallbacks:
@@ -17099,6 +17233,11 @@ class RepositoryManager(ServerInterface):
                         return None
                     continue
 
+                if "tab" in keys_pressed:
+                    keys_pressed = ['down']
+                elif "shift tab" in keys_pressed:
+                    keys_pressed = ['up']
+
                 dim = self.get_screen_dim()
                 for k in keys_pressed:
                     myw.keypress(dim, k)
@@ -17253,7 +17392,7 @@ class RepositoryManager(ServerInterface):
             tries = 3
             while tries:
 
-                self.screen_redraw()
+                #self.screen_redraw()
                 auth_data = self.inputBox(
                     "%s: %s" % (_("Authentication on repository"),repo,),
                     [
@@ -17273,6 +17412,9 @@ class RepositoryManager(ServerInterface):
                 logged, error = client.CmdInterface.service_login(auth_data['username'], auth_data['password'], session_id)
                 if logged:
                     # now check if we are developers
+                    w_txt = self.Manager.welcome_text
+                    #w_txt += " %s" % (_(),)
+                    #self.Manager.statusBar
                     client.CmdInterface.service_logout(auth_data['username'], session_id)
                     client.close_session(session_id)
                     client.disconnect()
@@ -17381,6 +17523,7 @@ class RepositoryManager(ServerInterface):
         self.last_rc = function(*args,**kwargs)
         self.Manager.statusBar.set_text(old_text)
         self.Manager.process_spawned = False
+
 
 
 class RepositorySocketServerInterface(SocketHostInterface):
@@ -18104,6 +18247,32 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         cmd = "%s %s %s" % (
             session_id,
             'logout',
+            username,
+        )
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
+
+    def get_logged_user_data(self, username, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.get_logged_user_data_handler(username, session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def get_logged_user_data_handler(self, username, session_id):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'user_data',
             username,
         )
         result = self.retrieve_command_answer(cmd, session_id)
