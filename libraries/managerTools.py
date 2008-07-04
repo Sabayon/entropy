@@ -43,7 +43,7 @@ class ManagerSettings:
         self.output = None
         self.output_row = 1
         self.max_x, self.max_y = 0,0
-        self.welcome_text = _("%s Repository Manager %s (CTRL+E Menu | CTRL+X Exit)") % (etpConst['systemname'],etpConst['entropyversion'],)
+        self.welcome_text = _("(CTRL+E Menu | CTRL+X Exit)")
         self.inFocus = 0
         self.focusOptions = [0,1]
         self.focusInfo = {
@@ -225,7 +225,6 @@ class SimpleWidgets:
             self.edit_widgets = []
             self.input_parameters = input_parameters[:]
             self.identifiers = {}
-            self.passworded = {}
             self.do_cancel = cancel
             for identifier,widget_text,callback, password in self.input_parameters:
                 if password:
@@ -234,8 +233,6 @@ class SimpleWidgets:
                     myw = urwid.Edit(caption = widget_text+": ")
                 self.identifiers[identifier] = (myw,callback,widget_text,)
                 self.edit_widgets.append(myw)
-                if password:
-                    self.passworded[myw] = ''
                 height += 1
 
             # blank line
@@ -254,10 +251,12 @@ class SimpleWidgets:
             widget_list += self.edit_widgets
             widget_list += [self._blank, button_grid]
 
-            self._combined = urwid.AttrWrap(urwid.Filler(urwid.Pile(widget_list, 2)), attr[0])
+            self._combined = urwid.Filler(urwid.Pile(widget_list, 2))
+            self._combined = urwid.Padding(self._combined, 'center', width - 4)
+            self._combined = urwid.AttrWrap(self._combined, attr[0])
 
             #Place the dialog widget on top of body:
-            overlay = urwid.Overlay(self._combined, body, 'center', width, 'middle', height)
+            overlay = urwid.Overlay(self._combined, body, 'center', width+4, 'middle', height+1)
             urwid.WidgetWrap.__init__(self, overlay)
 
         def _action(self, button):
@@ -273,12 +272,8 @@ class SimpleWidgets:
             for identifier in self.identifiers:
                 self.input_data[identifier] = None
                 myw, cb, widget_text = self.identifiers[identifier]
-                if myw in self.passworded:
-                    result = myw.get_edit_text()
-                    valid = cb(result)
-                else:
-                    result = myw.get_edit_text()
-                    valid = cb(result)
+                result = myw.get_edit_text()
+                valid = cb(result)
                 if valid:
                     self.input_data[identifier] = result
                 else:
