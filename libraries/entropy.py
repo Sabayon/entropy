@@ -16583,6 +16583,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         if banned:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user banned'),))
 
+        self.login_data.update(data)
         self.logged_in = True
         return self.logged_in
 
@@ -16598,7 +16599,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         return self.cursor.fetchone()
 
     def is_developer(self):
@@ -16619,7 +16620,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT user_type FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_type FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         data = self.cursor.fetchone()
         if data:
             if data['user_type'] == self.USER_FOUNDER:
@@ -16655,7 +16656,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         elif self.is_administrator():
             return False
 
-        self.cursor.execute('SELECT user_type,user_id FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_type,user_id FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         data = self.cursor.fetchone()
         if not data:
             return False
@@ -16698,7 +16699,7 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT '+self.TABLE_PREFIX+'user_group.group_id,'+self.TABLE_PREFIX+'groups.group_name FROM '+self.TABLE_PREFIX+'user_group,'+self.TABLE_PREFIX+'users,'+self.TABLE_PREFIX+'groups WHERE '+self.TABLE_PREFIX+'users.username_clean = %s and '+self.TABLE_PREFIX+'users.user_id = '+self.TABLE_PREFIX+'user_group.user_id and '+self.TABLE_PREFIX+'user_group.group_id = '+self.TABLE_PREFIX+'groups.group_id', (self.login_data['username'],))
+        self.cursor.execute('SELECT '+self.TABLE_PREFIX+'user_group.group_id,'+self.TABLE_PREFIX+'groups.group_name FROM '+self.TABLE_PREFIX+'user_group,'+self.TABLE_PREFIX+'users,'+self.TABLE_PREFIX+'groups WHERE '+self.TABLE_PREFIX+'users.user_id = %s and '+self.TABLE_PREFIX+'users.user_id = '+self.TABLE_PREFIX+'user_group.user_id and '+self.TABLE_PREFIX+'user_group.group_id = '+self.TABLE_PREFIX+'groups.group_id', (self.login_data['user_id'],))
         data = self.cursor.fetchall()
         mydata = {}
         for mydict in data:
@@ -16711,10 +16712,11 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_login_data()
         self.check_logged_in()
 
-        self.cursor.execute('SELECT group_id FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT group_id FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         data = self.cursor.fetchone()
-        if data.has_key('group_id'):
-            return data['group_id']
+        if data:
+            if data.has_key('group_id'):
+                return data['group_id']
 
         return -1
 
@@ -16722,19 +16724,13 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-
-        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
-        data = self.cursor.fetchone()
-        if data.has_key('user_id'):
-            return data['user_id']
-
-        return -1
+        return self.login_data['user_id']
 
     def get_permission_data(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.cursor.execute('SELECT user_permissions FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT user_permissions FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         return self.cursor.fetchone()
 
     def _update_session_table(self, user_id, ip_address):
@@ -16971,7 +16967,7 @@ class phpbb3Authenticator(phpBB3AuthInterface):
         if auth_id:
             self.logged_in = True
             # fill login_data with fake information
-            self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password'}
+            self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password', 'user_id': auth_id}
             ip_address = session_data.get('ip_address')
             if ip_address:
                 self._update_session_table(auth_id, ip_address)
