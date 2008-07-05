@@ -5675,6 +5675,7 @@ class RepoInterface:
 
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
+        self.dbapi2 = dbapi2
         self.reponames = reponames
         self.forceUpdate = forceUpdate
         self.syncErrors = False
@@ -5987,7 +5988,7 @@ class RepoInterface:
 
         self.__validate_repository_id(repo)
 
-        rc = self.download_item("lock", repo)
+        rc = self.download_item("lock", repo, disallow_redirect = True)
         if rc: # cannot download database
             self.syncErrors = True
             return False
@@ -6001,7 +6002,7 @@ class RepoInterface:
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo+"/")
 
     # this function can be reimplemented
-    def download_item(self, item, repo, cmethod = None, lock_status_func = None):
+    def download_item(self, item, repo, cmethod = None, lock_status_func = None, disallow_redirect = True):
 
         self.__validate_repository_id(repo)
         url, filepath = self.__construct_paths(item, repo, cmethod)
@@ -6017,6 +6018,7 @@ class RepoInterface:
             filepath,
             resume = False,
             abort_check_func = lock_status_func
+            disallow_redirect = disallow_redirect
         )
         fetchConn.progress = self.Entropy.progress
 
@@ -6165,7 +6167,11 @@ class RepoInterface:
     def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1500, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
-        mydbconn = self.get_eapi3_local_database(repo)
+        mydbconn = None
+        try:
+            mydbconn = self.get_eapi3_local_database(repo)
+        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            pass
         if mydbconn == None:
             self.eapi3_socket.close_session(session)
             return False
@@ -6742,7 +6748,7 @@ class RepoInterface:
             header = "\t"
         )
 
-        db_down_status = self.download_item(downitem, repo, cmethod)
+        db_down_status = self.download_item(downitem, repo, cmethod, disallow_redirect = True)
         if not db_down_status:
             mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),red(_("Cannot verify database integrity")),)
             self.Entropy.updateProgress(
@@ -6801,7 +6807,7 @@ class RepoInterface:
         if self.dbformat_eapi == 2:
             # start a check in background
             self.load_background_repository_lock_check(repo)
-            down_status = self.download_item("dbdump", repo, cmethod, lock_status_func = self.repository_lock_scanner_status)
+            down_status = self.download_item("dbdump", repo, cmethod, lock_status_func = self.repository_lock_scanner_status, disallow_redirect = True)
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
@@ -6810,7 +6816,7 @@ class RepoInterface:
             # start a check in background
             self.load_background_repository_lock_check(repo)
             self.dbformat_eapi = 1
-            down_status = self.download_item("db", repo, cmethod, lock_status_func = self.repository_lock_scanner_status)
+            down_status = self.download_item("db", repo, cmethod, lock_status_func = self.repository_lock_scanner_status, disallow_redirect = True)
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
@@ -7038,7 +7044,7 @@ class RepoInterface:
                 header = "\t",
                 back = True
             )
-            mystatus = self.download_item(item, repo)
+            mystatus = self.download_item(item, repo, disallow_redirect = True)
             mytype = 'info'
             if not mystatus:
                 if ignorable:
@@ -7912,7 +7918,7 @@ class urlFetcher:
 
     import entropyTools
     import socket
-    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None):
+    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
 
         self.url = url
         self.resume = resume
@@ -7923,6 +7929,7 @@ class urlFetcher:
         self.initVars()
         self.progress = None
         self.abort_check_func = abort_check_func
+        self.disallow_redirect = disallow_redirect
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
                                         etpConst['entropyversion'],
                                         "Entropy",
@@ -7998,16 +8005,29 @@ class urlFetcher:
         else:
             req = self.url
 
-        # get file size if available
-        try:
-            self.remotefile = urllib2.urlopen(req)
-        except KeyboardInterrupt:
-            self.close()
-            raise
-        except:
-            self.close()
-            self.status = "-3"
-            return self.status
+        u_agent_error = False
+        while 1:
+            # get file size if available
+            try:
+                self.remotefile = urllib2.urlopen(req)
+            except KeyboardInterrupt:
+                self.close()
+                raise
+            except urllib2.HTTPError, e:
+                if (e.code == 405) and not u_agent_error:
+                    # server doesn't like our user agent
+                    req = self.url
+                    u_agent_error = True
+                    continue
+                self.close()
+                self.status = "-3"
+                return self.status
+            except:
+                self.close()
+                self.status = "-3"
+                return self.status
+            break
+
 
         try:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
@@ -8049,6 +8069,11 @@ class urlFetcher:
 
         if self.remotesize > 0:
             self.remotesize = float(int(self.remotesize))/1024
+
+        if self.disallow_redirect and (self.url != self.remotefile.geturl()):
+            self.close()
+            self.status = "-3"
+            return self.status
 
         rsx = "x"
         while rsx != '':
@@ -12431,6 +12456,33 @@ class LogFile:
         if self.level >= level:
             self.handler("-+ %s \t%s" % (file, message))
 
+class SocketCommandsSkel:
+
+    def __init__(self, HostInterface):
+        self.HostInterface = HostInterface
+        self.inst_name = 'command-skel'
+        self.no_acked_commands = []
+        self.termination_commands = []
+        self.initialization_commands = []
+        self.login_pass_commands = []
+        self.no_session_commands = []
+
+    def register(
+            self,
+            valid_commands,
+            no_acked_commands,
+            termination_commands,
+            initialization_commands,
+            login_pass_commads,
+            no_session_commands
+        ):
+        valid_commands.update(self.valid_commands)
+        no_acked_commands.extend(self.no_acked_commands)
+        termination_commands.extend(self.termination_commands)
+        initialization_commands.extend(self.initialization_commands)
+        login_pass_commads.extend(self.login_pass_commands)
+        no_session_commands.extend(self.no_session_commands)
+
 class SocketHostInterface:
 
     import socket
@@ -12464,7 +12516,7 @@ class SocketHostInterface:
             if auth_type not in self.valid_auth_types:
                 return False,user,None,'invalid auth type'
 
-            udata = self.__get_uid(user)
+            udata = self.__get_user_data(user)
             if udata == None:
                 return False,user,None,'invalid user'
 
@@ -12478,18 +12530,20 @@ class SocketHostInterface:
             if not valid:
                 return False,user,uid,'auth failed'
 
+            if not uid:
+                self.HostInterface.sessions[self.session]['admin'] = True
+            else:
+                self.HostInterface.sessions[self.session]['user'] = True
             return True,user,uid,"ok"
 
         # it we get here is because user is logged in
-        def docmd_userdata(self, arguments):
-            # filter n00bs
-            if not arguments:
-                return False,None,'wrong arguments'
-            udata = self.__get_uid(user)
-            mydata = {
-                'username': arguments[0]
-            }
+        def docmd_userdata(self):
+
+            auth_uid = self.HostInterface.sessions[self.session]['auth_uid']
+            mydata = {}
+            udata = self.__get_uid_data(auth_uid)
             if udata:
+                mydata['username'] = udata[0]
                 mydata['uid'] = udata[2]
                 mydata['gid'] = udata[3]
                 mydata['references'] = udata[4]
@@ -12497,7 +12551,16 @@ class SocketHostInterface:
                 mydata['shell'] = udata[6]
             return True,mydata,'ok'
 
-        def __get_uid(self, user):
+        def __get_uid_data(self, user_id):
+            import pwd
+            # check user validty
+            try:
+                udata = pwd.getpwuid(user_id)
+            except KeyError:
+                return None
+            return udata
+
+        def __get_user_data(self, user):
             import pwd
             # check user validty
             try:
@@ -13171,7 +13234,7 @@ class SocketHostInterface:
             rc = f(*args,**kwargs)
             return rc
 
-    class BuiltInCommands:
+    class BuiltInCommands(SocketCommandsSkel):
 
         import dumpTools
         import zlib
@@ -13181,7 +13244,7 @@ class SocketHostInterface:
 
         def __init__(self, HostInterface):
 
-            self.HostInterface = HostInterface
+            SocketCommandsSkel.__init__(self, HostInterface)
             self.inst_name = "builtin"
 
             self.valid_commands = {
@@ -13281,10 +13344,10 @@ class SocketHostInterface:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_userdata,
-                                'args': ["self.transmit", "authenticator", "session", "myargs"],
+                                'args': ["self.transmit", "authenticator", "session"],
                                 'as_user': False,
                                 'desc': "get general user information, user must be logged in",
-                                'syntax': "<SESSION_ID> user_data <username>",
+                                'syntax': "<SESSION_ID> user_data",
                                 'from': str(self),
                             },
                 'logout':   {
@@ -13315,22 +13378,6 @@ class SocketHostInterface:
             self.initialization_commands = ["begin"]
             self.login_pass_commands = ["login"]
             self.no_session_commands = ["begin","hello","alive","help"]
-
-        def register(
-                self,
-                valid_commands,
-                no_acked_commands,
-                termination_commands,
-                initialization_commands,
-                login_pass_commads,
-                no_session_commands
-            ):
-            valid_commands.update(self.valid_commands)
-            no_acked_commands.extend(self.no_acked_commands)
-            termination_commands.extend(self.termination_commands)
-            initialization_commands.extend(self.initialization_commands)
-            login_pass_commads.extend(self.login_pass_commands)
-            no_session_commands.extend(self.no_session_commands)
 
         def docmd_session_config(self, session, myargs):
 
@@ -13406,13 +13453,13 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_userdata(self, transmitter, authenticator, session, myargs):
+        def docmd_userdata(self, transmitter, authenticator, session):
 
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
             if auth_uid == None:
                 return False,None,"not authenticated"
 
-            return authenticator.docmd_userdata(myargs)
+            return authenticator.docmd_userdata()
 
         def docmd_logout(self, transmitter, authenticator, session, client_address, myargs):
             status, user, reason = authenticator.docmd_logout(myargs)
@@ -13901,6 +13948,10 @@ class SocketHostInterface:
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
+        self.sessions[rng]['admin'] = False
+        self.sessions[rng]['moderator'] = False
+        self.sessions[rng]['user'] = False
+        self.sessions[rng]['developer'] = False
         self.sessions[rng]['compression'] = None
         self.sessions[rng]['t'] = time.time()
         self.sessions[rng]['ip_address'] = ip_address
@@ -15535,8 +15586,8 @@ class ServerInterface(TextInterface):
                         "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
                                     repo,
                                     brown(mybranch),
-                                    darkgreen(counter),
-                                    blue(maxcount),
+                                    darkgreen(str(counter)),
+                                    blue(str(maxcount)),
                                     red(_("added package")),
                                     darkgreen(pkg),
                                     red(_("revision")),
@@ -16952,16 +17003,21 @@ class phpbb3Authenticator(phpBB3AuthInterface):
 
         if rc:
             uid = self.get_user_id()
+            is_admin = self.is_administrator()
+            is_dev = self.is_developer()
+            is_mod = self.is_moderator()
+            is_user = self.is_user()
+            self.HostInterface.sessions[self.session]['admin'] = is_admin
+            self.HostInterface.sessions[self.session]['developer'] = is_dev
+            self.HostInterface.sessions[self.session]['moderator'] = is_mod
+            self.HostInterface.sessions[self.session]['user'] = is_user
             if ip_address and uid:
                 self._update_session_table(uid, ip_address)
             return True,user,uid,"ok"
         return rc,user,None,"login failed"
 
     # if we get here it means we are logged in
-    def docmd_userdata(self, arguments):
-        if not arguments:
-            return False,None,'wrong arguments'
-        user = arguments[0]
+    def docmd_userdata(self):
         data = self.get_user_data()
         return True, data, 'ok'
 
@@ -16992,6 +17048,73 @@ class phpbb3Authenticator(phpBB3AuthInterface):
     def terminate_instance(self):
         self.disconnect()
 
+# commands that can be used by SocketHostInterface based instances, with phpbb3Authenticator
+class phpbb3Commands(SocketCommandsSkel):
+
+    import dumpTools
+    import entropyTools
+    def __str__(self):
+        return self.inst_name
+
+    def __init__(self, HostInterface):
+
+        SocketCommandsSkel.__init__(self, HostInterface)
+        self.inst_name = "phpbb3-commands"
+
+        self.valid_commands = {
+            'is_user':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_is_user,
+                'args': ["authenticator"],
+                'as_user': False,
+                'desc': "returns whether the username linked with the session belongs to a simple user",
+                'syntax': "<SESSION_ID> is_user",
+                'from': str(self), # from what class
+            },
+            'is_developer':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_is_developer,
+                'args': ["authenticator"],
+                'as_user': False,
+                'desc': "returns whether the username linked with the session belongs to a developer",
+                'syntax': "<SESSION_ID> is_developer",
+                'from': str(self), # from what class
+            },
+            'is_moderator':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_is_moderator,
+                'args': ["authenticator"],
+                'as_user': False,
+                'desc': "returns whether the username linked with the session belongs to a moderator",
+                'syntax': "<SESSION_ID> is_moderator",
+                'from': str(self), # from what class
+            },
+            'is_administrator':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_is_administrator,
+                'args': ["authenticator"],
+                'as_user': False,
+                'desc': "returns whether the username linked with the session belongs to an administrator",
+                'syntax': "<SESSION_ID> is_administrator",
+                'from': str(self), # from what class
+            },
+        }
+
+    def docmd_is_user(self, authenticator):
+        return authenticator.is_user(),'ok'
+
+    def docmd_is_developer(self, authenticator):
+        return authenticator.is_developer(),'ok'
+
+    def docmd_is_administrator(self, authenticator):
+        return authenticator.is_administrator(),'ok'
+
+    def docmd_is_moderator(self, authenticator):
+        return authenticator.is_moderator(),'ok'
 
 class RepositoryManager(ServerInterface):
 
@@ -17411,10 +17534,15 @@ class RepositoryManager(ServerInterface):
                 # do login
                 logged, error = client.CmdInterface.service_login(auth_data['username'], auth_data['password'], session_id)
                 if logged:
-                    # now check if we are developers
+                    # are we admin?
+                    logged = client.CmdInterface.is_administrator(session_id)
+                    if not logged:
+                        # developers?
+                        logged = client.CmdInterface.is_developer(session_id)
+                if logged:
                     w_txt = self.Manager.welcome_text
-                    #w_txt += " %s" % (_(),)
-                    #self.Manager.statusBar
+                    w_txt += " %s: %s" % (_('logged in as'),auth_data['username'])
+                    self.Manager.statusBar.set_text(w_txt)
                     client.CmdInterface.service_logout(auth_data['username'], session_id)
                     client.close_session(session_id)
                     client.disconnect()
@@ -17528,7 +17656,7 @@ class RepositoryManager(ServerInterface):
 
 class RepositorySocketServerInterface(SocketHostInterface):
 
-    class RepositoryCommands:
+    class RepositoryCommands(SocketCommandsSkel):
 
         import dumpTools
         import entropyTools
@@ -17537,13 +17665,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
         def __init__(self, HostInterface):
 
-            self.HostInterface = HostInterface
+            SocketCommandsSkel.__init__(self, HostInterface)
             self.inst_name = "repository-server"
-            self.no_acked_commands = []
-            self.termination_commands = []
-            self.initialization_commands = []
-            self.login_pass_commands = []
-            self.no_session_commands = []
 
             self.valid_commands = {
                 'dbdiff':    {
@@ -17577,22 +17700,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'from': str(self), # from what class
                 },
             }
-
-        def register(
-                self,
-                valid_commands,
-                no_acked_commands,
-                termination_commands,
-                initialization_commands,
-                login_pass_commads,
-                no_session_commands
-            ):
-            valid_commands.update(self.valid_commands)
-            no_acked_commands.extend(self.no_acked_commands)
-            termination_commands.extend(self.termination_commands)
-            initialization_commands.extend(self.initialization_commands)
-            login_pass_commads.extend(self.login_pass_commands)
-            no_session_commands.extend(self.no_session_commands)
 
         def trash_old_databases(self):
             for db in self.HostInterface.syscache['db_trashed']:
@@ -17741,13 +17848,15 @@ class RepositorySocketServerInterface(SocketHostInterface):
         }
         etpConst['socket_service']['max_connections'] = 5000
         etpConst['socketloglevel'] = 1
+        if not kwargs.has_key('external_cmd_classes'):
+            kwargs['external_cmd_classes'] = []
+        kwargs['external_cmd_classes'].insert(0,self.RepositoryCommands)
         SocketHostInterface.__init__(
             self,
             self.ServiceInterface,
             noclientdb = 2,
             sock_output = self.Entropy,
             ssl = do_ssl,
-            external_cmd_classes = [self.RepositoryCommands],
             **kwargs
         )
         self.stdout_logging = stdout_logging
@@ -18254,26 +18363,125 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             return False,'command not supported' # untranslated on purpose
         return result
 
-    def get_logged_user_data(self, username, session_id):
+    def get_logged_user_data(self, session_id):
 
         self.Service.check_socket_connection()
 
         tries = 10
         while 1:
             try:
-                return self.get_logged_user_data_handler(username, session_id)
+                return self.get_logged_user_data_handler(session_id)
             except (self.socket.error,self.struct.error,):
                 self.Service.reconnect_socket()
                 tries -= 1
                 if tries == 0:
                     raise
 
-    def get_logged_user_data_handler(self, username, session_id):
+    def get_logged_user_data_handler(self, session_id):
 
-        cmd = "%s %s %s" % (
+        cmd = "%s %s" % (
             session_id,
             'user_data',
-            username,
+        )
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
+
+    def is_user(self, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.is_user_handler(session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def is_user_handler(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_user',
+        )
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
+
+    def is_developer(self, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.is_developer_handler(session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def is_developer_handler(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_developer',
+        )
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
+
+    def is_moderator(self, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.is_moderator_handler(session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def is_moderator_handler(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_moderator',
+        )
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
+
+    def is_administrator(self, session_id):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.is_administrator_handler(session_id)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def is_administrator_handler(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_administrator',
         )
         result = self.retrieve_command_answer(cmd, session_id)
         if result == None:
@@ -18354,7 +18562,7 @@ class RepositorySocketClientInterface:
 
             try:
                 from OpenSSL import SSL, crypto
-            except ImportError, e:
+            except ImportError:
                 self.pyopenssl = False
 
             '''
@@ -18404,6 +18612,7 @@ class RepositorySocketClientInterface:
         if not self.pyopenssl:
             raise exceptionTools.SSLError('SSLError: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),))
 
+    '''
     # this function should do the authentication checking to see that
     # the client is who they say they are.
     def verify_ssl_cb(self, conn, cert, errnum, depth, ok):
@@ -18411,6 +18620,7 @@ class RepositorySocketClientInterface:
         #print 'Got certificate: %s' % cert.get_subject()
         #print repr(ok),repr(cert),repr(errnum),repr(depth)
         return ok
+
 
     def create_ssl_key_pair(self, keytype, bits):
         if not self.pyopenssl:
@@ -18442,6 +18652,7 @@ class RepositorySocketClientInterface:
         req.sign(pkey, self.ssl_digest)
 
         return req
+    '''
 
 
     def stream_to_object(self, data, gzipped):
