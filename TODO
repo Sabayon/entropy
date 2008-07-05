@@ -17,6 +17,7 @@ TODO list
   - documentation + man page
   - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - find a way to better handle real smartapps deps (need split PDEPEND?)
+  - server-side: packages upload through ssh?
 
   Spritz:
     - Popularity feature / Your Ego service
