@@ -6017,7 +6017,7 @@ class RepoInterface:
             url,
             filepath,
             resume = False,
-            abort_check_func = lock_status_func
+            abort_check_func = lock_status_func,
             disallow_redirect = disallow_redirect
         )
         fetchConn.progress = self.Entropy.progress
