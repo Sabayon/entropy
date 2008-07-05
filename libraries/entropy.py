@@ -5645,6 +5645,7 @@ class RepoInterface:
 
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
+        self.dbapi2 = dbapi2
         self.reponames = reponames
         self.forceUpdate = forceUpdate
         self.syncErrors = False
@@ -5952,7 +5953,7 @@ class RepoInterface:
 
         self.__validate_repository_id(repo)
 
-        rc = self.download_item("lock", repo)
+        rc = self.download_item("lock", repo, disallow_redirect = True)
         if rc: # cannot download database
             self.syncErrors = True
             return False
@@ -5966,7 +5967,7 @@ class RepoInterface:
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+repo+"/")
 
     # this function can be reimplemented
-    def download_item(self, item, repo, cmethod = None, lock_status_func = None):
+    def download_item(self, item, repo, cmethod = None, lock_status_func = None, disallow_redirect = False):
 
         self.__validate_repository_id(repo)
         url, filepath = self.__construct_paths(item, repo, cmethod)
@@ -5981,7 +5982,8 @@ class RepoInterface:
             url,
             filepath,
             resume = False,
-            abort_check_func = lock_status_func
+            abort_check_func = lock_status_func,
+            disallow_redirect = disallow_redirect
         )
         fetchConn.progress = self.Entropy.progress
 
@@ -6130,7 +6132,11 @@ class RepoInterface:
     def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1500, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
-        mydbconn = self.get_eapi3_local_database(repo)
+        mydbconn = None
+        try:
+            mydbconn = self.get_eapi3_local_database(repo)
+        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            pass
         if mydbconn == None:
             self.eapi3_socket.close_session(session)
             return False
@@ -6707,7 +6713,7 @@ class RepoInterface:
             header = "\t"
         )
 
-        db_down_status = self.download_item(downitem, repo, cmethod)
+        db_down_status = self.download_item(downitem, repo, cmethod, disallow_redirect = True)
         if not db_down_status:
             mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),red(_("Cannot verify database integrity")),)
             self.Entropy.updateProgress(
@@ -6766,7 +6772,7 @@ class RepoInterface:
         if self.dbformat_eapi == 2:
             # start a check in background
             self.load_background_repository_lock_check(repo)
-            down_status = self.download_item("dbdump", repo, cmethod, lock_status_func = self.repository_lock_scanner_status)
+            down_status = self.download_item("dbdump", repo, cmethod, lock_status_func = self.repository_lock_scanner_status, disallow_redirect = True)
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
@@ -6775,7 +6781,7 @@ class RepoInterface:
             # start a check in background
             self.load_background_repository_lock_check(repo)
             self.dbformat_eapi = 1
-            down_status = self.download_item("db", repo, cmethod, lock_status_func = self.repository_lock_scanner_status)
+            down_status = self.download_item("db", repo, cmethod, lock_status_func = self.repository_lock_scanner_status, disallow_redirect = True)
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
@@ -6983,7 +6989,7 @@ class RepoInterface:
                 header = "\t",
                 back = True
             )
-            mystatus = self.download_item(item, repo)
+            mystatus = self.download_item(item, repo, disallow_redirect = True)
             mytype = 'info'
             if not mystatus:
                 if ignorable:
@@ -7857,7 +7863,7 @@ class urlFetcher:
 
     import entropyTools
     import socket
-    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None):
+    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
 
         self.url = url
         self.resume = resume
@@ -7868,6 +7874,7 @@ class urlFetcher:
         self.initVars()
         self.progress = None
         self.abort_check_func = abort_check_func
+        self.disallow_redirect = disallow_redirect
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
                                         etpConst['entropyversion'],
                                         "Entropy",
@@ -7943,16 +7950,28 @@ class urlFetcher:
         else:
             req = self.url
 
-        # get file size if available
-        try:
-            self.remotefile = urllib2.urlopen(req)
-        except KeyboardInterrupt:
-            self.close()
-            raise
-        except:
-            self.close()
-            self.status = "-3"
-            return self.status
+        u_agent_error = False
+        while 1:
+            # get file size if available
+            try:
+                self.remotefile = urllib2.urlopen(req)
+            except KeyboardInterrupt:
+                self.close()
+                raise
+            except urllib2.HTTPError, e:
+                if (e.code == 405) and not u_agent_error:
+                    # server doesn't like our user agent
+                    req = self.url
+                    u_agent_error = True
+                    continue
+                self.close()
+                self.status = "-3"
+                return self.status
+            except:
+                self.close()
+                self.status = "-3"
+                return self.status
+            break
 
         try:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
@@ -7971,7 +7990,7 @@ class urlFetcher:
                     request = urllib2.Request(
                         self.url,
                         headers = {
-                            "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize) 
+                            "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize)
                         }
                     )
                 except KeyboardInterrupt:
@@ -7994,6 +8013,11 @@ class urlFetcher:
 
         if self.remotesize > 0:
             self.remotesize = float(int(self.remotesize))/1024
+
+        if self.disallow_redirect and (self.url != self.remotefile.geturl()):
+            self.close()
+            self.status = "-3"
+            return self.status
 
         rsx = "x"
         while rsx != '':
@@ -15255,8 +15279,8 @@ class ServerInterface(TextInterface):
                         "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
                                     repo,
                                     brown(mybranch),
-                                    darkgreen(counter),
-                                    blue(maxcount),
+                                    darkgreen(str(counter)),
+                                    blue(str(maxcount)),
                                     red(_("added package")),
                                     darkgreen(pkg),
                                     red(_("revision")),
@@ -17762,7 +17786,7 @@ class ServerMirrorsInterface:
                     type = "warning",
                     header = brown(" @@ ")
                 )
-                return False
+                return True
 
         def go(self):
 

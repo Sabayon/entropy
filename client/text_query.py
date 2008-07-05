@@ -487,7 +487,7 @@ def searchOrphans(EquoConnection = None):
                 mask = [x for x in etpConst['filesystemdirsmask'] if filename.startswith(x)]
                 if not mask:
                     if not etpUi['quiet']:
-                        print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),))+bold(filename[:50]+"..."), back = True)
+                        print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),))+bold(unicode(filename[:50],'raw_unicode_escape')+"..."), back = True)
                     foundFiles[filename] = "obj"
             if foundFiles:
                 tdbconn.insertContent(1,foundFiles)
