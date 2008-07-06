@@ -347,6 +347,7 @@ class SpritzController(Controller):
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
         self.addrepo_ui.repodbPort.set_text(str(repodata['service_port']))
+        self.addrepo_ui.repodbPortSSL.set_text(str(repodata['ssl_service_port']))
         self.repoMirrorsView.store.clear()
         for x in repodata['plain_packages']:
             self.repoMirrorsView.add(x)
@@ -399,6 +400,14 @@ class SpritzController(Controller):
                 repodata['service_port'] = int(repodata['service_port'])
             except (ValueError,):
                 errors.append(_("Repository Services Port not valid"))
+
+        if not repodata['ssl_service_port']:
+            repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
+        else:
+            try:
+                repodata['ssl_service_port'] = int(repodata['ssl_service_port'])
+            except (ValueError,):
+                errors.append(_("Secure Services Port not valid"))
         return errors
 
     def __getRepodata(self):
@@ -409,6 +418,7 @@ class SpritzController(Controller):
         repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
         repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
         repodata['service_port'] = self.addrepo_ui.repodbPort.get_text()
+        repodata['ssl_service_port'] = self.addrepo_ui.repodbPortSSL.get_text()
         return repodata
 
     def on_repoSubmit_clicked( self, widget ):
@@ -435,33 +445,7 @@ class SpritzController(Controller):
         text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                # filling dict
-                textdata = text.split("|")
-                repodata = {}
-                repodata['repoid'] = textdata[1]
-                repodata['description'] = textdata[2]
-                repodata['packages'] = textdata[3].split()
-                repodata['database'] = textdata[4].split("#")[0]
-                repodatabase = textdata[4]
-
-                eapi3_port = None
-                eapi3_formatcolon = repodatabase.rfind("#")
-                if eapi3_formatcolon != -1:
-                    try:
-                        eapi3_port = int(repodatabase[eapi3_formatcolon+1:])
-                        repodatabase = repodatabase[:eapi3_formatcolon]
-                    except (ValueError, IndexError,):
-                        eapi3_port = int(etpConst['socket_service']['port'])
-                else:
-                    eapi3_port = int(etpConst['socket_service']['port'])
-
-                repodata['service_port'] = eapi3_port
-                dbcformat = repodatabase.split("#")[-1]
-                if dbcformat in etpConst['etpdatabasesupportedcformats']:
-                    repodata['dbcformat'] = dbcformat
-                else:
-                    repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
-                # fill window
+                repoid, repodata = const_extractClientRepositoryParameters(text)
                 self.__loadRepodata(repodata)
             else:
                 okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
