@@ -819,6 +819,66 @@ def const_setNiceLevel(low = 0):
         pass
     return current_nice
 
+def const_extractClientRepositoryParameters(repostring):
+
+    reponame = repostring.split("|")[1].strip()
+    repodesc = repostring.split("|")[2].strip()
+    repopackages = repostring.split("|")[3].strip()
+    repodatabase = repostring.split("|")[4].strip()
+
+    eapi3_port = int(etpConst['socket_service']['port'])
+    eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+    eapi3_formatcolon = repodatabase.rfind("#")
+    if eapi3_formatcolon != -1:
+        try:
+            ports = repodatabase[eapi3_formatcolon+1:].split(",")
+            eapi3_port = int(ports[0])
+            if len(ports) > 1:
+                eapi3_ssl_port = int(ports[1])
+            repodatabase = repodatabase[:eapi3_formatcolon]
+        except (ValueError, IndexError,):
+            eapi3_port = int(etpConst['socket_service']['port'])
+            eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+
+    dbformat = etpConst['etpdatabasefileformat']
+    dbformatcolon = repodatabase.rfind("#")
+    if dbformatcolon != -1:
+        if dbformat in etpConst['etpdatabasesupportedcformats']:
+            try:
+                dbformat = repodatabase[dbformatcolon+1:]
+            except:
+                pass
+        repodatabase = repodatabase[:dbformatcolon]
+
+    mydata = {}
+    mydata['repoid'] = reponame
+    mydata['service_port'] = eapi3_port
+    mydata['ssl_service_port'] = eapi3_ssl_port
+    mydata['description'] = repodesc
+    mydata['packages'] = []
+    mydata['plain_packages'] = []
+    mydata['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
+    mydata['dbcformat'] = dbformat
+    mydata['plain_database'] = repodatabase
+    mydata['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
+    mydata['dbrevision'] = "0"
+    dbrevision_file = os.path.join(mydata['dbpath'],etpConst['etpdatabaserevisionfile'])
+    if os.path.isfile(dbrevision_file) and os.access(dbrevision_file,os.R_OK):
+        f = open(dbrevision_file,"r")
+        mydata['dbrevision'] = f.readline().strip()
+        f.close()
+    # initialize CONFIG_PROTECT - will be filled the first time the db will be opened
+    mydata['configprotect'] = None
+    mydata['configprotectmask'] = None
+    repopackages = [x.strip() for x in repopackages.split() if x.strip()]
+    repopackages = [x for x in repopackages if (x.startswith('http://') or x.startswith('ftp://') or x.startswith('file://'))]
+    for x in repopackages:
+        mydata['plain_packages'].append(x)
+        mydata['packages'].append(x+"/"+etpConst['product']+"/"+reponame)
+
+    return reponame, mydata
+
+
 def const_readRepositoriesSettings():
 
     etpRepositories.clear()
@@ -835,6 +895,7 @@ def const_readRepositoriesSettings():
                 etpConst['product'] = line.strip().split("|")[1]
 
         for line in repositoriesconf:
+
             line = line.strip()
             # populate etpRepositories
             if (line.find("repository|") != -1) and (len(line.split("|")) == 5):
@@ -848,72 +909,19 @@ def const_readRepositoriesSettings():
                     myRepodata = etpRepositoriesExcluded
                     line = line[1:]
 
-                reponame = line.split("|")[1]
-                repodesc = line.split("|")[2]
-                repopackages = line.split("|")[3]
-                repodatabase = line.split("|")[4]
-
-                eapi3_port = None
-                eapi3_ssl_port = None
-                eapi3_formatcolon = repodatabase.rfind("#")
-                if eapi3_formatcolon != -1:
-                    try:
-                        ports = repodatabase[eapi3_formatcolon+1:].split(",")
-                        eapi3_port = int(ports[0])
-                        if len(ports) > 1:
-                            eapi3_ssl_port = int(ports[1])
-                        repodatabase = repodatabase[:eapi3_formatcolon]
-                    except (ValueError, IndexError,):
-                        eapi3_port = int(etpConst['socket_service']['port'])
-                        eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+                reponame, repodata = const_extractClientRepositoryParameters(line)
+                if myRepodata.has_key(reponame):
+                    myRepodata[reponame]['plain_packages'].extend(repodata['plain_packages'])
+                    myRepodata[reponame]['packages'].extend(repodata['packages'])
+                    if (not myRepodata[reponame]['plain_database']) and repodata['plain_database']:
+                        myRepodata[reponame]['plain_database'] = repodata['plain_database']
+                        myRepodata[reponame]['database'] = repodata['database']
+                        myRepodata[reponame]['dbrevision'] = repodata['dbrevision']
+                        myRepodata[reponame]['dbcformat'] = repodata['dbcformat']
                 else:
-                    eapi3_port = int(etpConst['socket_service']['port'])
-                    eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
-
-                dbformat = etpConst['etpdatabasefileformat']
-                dbformatcolon = repodatabase.rfind("#")
-                if dbformatcolon != -1:
-                    if dbformat in etpConst['etpdatabasesupportedcformats']:
-                        try:
-                            dbformat = repodatabase[dbformatcolon+1:]
-                        except:
-                            pass
-                    repodatabase = repodatabase[:dbformatcolon]
-
-                if ((repopackages.startswith("http://") or repopackages.startswith("ftp://") or repopackages.startswith("file://")) and \
-                        (repodatabase.startswith("http://") or repodatabase.startswith("ftp://") or repodatabase.startswith("file://"))) or \
-                         ((not repodatabase) and (myRepodata.has_key(reponame))):
-
-                    if not myRepodata.has_key(reponame):
-                        myRepodata[reponame] = {}
-                        myRepodata[reponame]['service_port'] = eapi3_port
-                        myRepodata[reponame]['ssl_service_port'] = eapi3_ssl_port
-                        myRepodata[reponame]['description'] = repodesc
-                        myRepodata[reponame]['packages'] = []
-                        myRepodata[reponame]['plain_packages'] = []
-                        myRepodata[reponame]['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
-                        myRepodata[reponame]['dbcformat'] = dbformat
-                        myRepodata[reponame]['plain_database'] = repodatabase
-                        myRepodata[reponame]['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
-
-                        myRepodata[reponame]['dbrevision'] = "0"
-                        dbrevision_file = os.path.join(myRepodata[reponame]['dbpath'],etpConst['etpdatabaserevisionfile'])
-                        if os.path.isfile(dbrevision_file):
-                            rev_file = open(dbrevision_file,"r")
-                            myRepodata[reponame]['dbrevision'] = rev_file.readline().strip()
-                            rev_file.close()
-                            del rev_file
-
-                        # initialize CONFIG_PROTECT - will be filled the first time the db will be opened
-                        myRepodata[reponame]['configprotect'] = None
-                        myRepodata[reponame]['configprotectmask'] = None
-
-                        if not excluded:
-                            etpRepositoriesOrder.append(reponame)
-
-                    for x in repopackages.split():
-                        myRepodata[reponame]['plain_packages'].append(x)
-                        myRepodata[reponame]['packages'].append(x+"/"+etpConst['product']+"/"+reponame)
+                    myRepodata[reponame] = repodata.copy()
+                    if not excluded:
+                        etpRepositoriesOrder.append(reponame)
 
             elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 branch = line.split("|")[1]
@@ -1351,48 +1359,56 @@ def const_readServerSettings():
 
         elif line.startswith("repository|") and (len(line.split("|")) in [5,6]):
 
-            repoid = line.split("|")[1].strip()
-            repodesc = line.split("|")[2].strip()
-            repouris = line.split("|")[3].strip()
-            repohandlers = line.split("|")[4].strip()
-            service_url = None
-            eapi3_port = int(etpConst['socket_service']['port'])
-            eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
-            if len(line.split("|")) > 5:
-                service_url = line.split("|")[5].strip()
-
-                eapi3_formatcolon = service_url.rfind("#")
-                if eapi3_formatcolon != -1:
-                    try:
-                        ports = service_url[eapi3_formatcolon+1:].split(",")
-                        eapi3_port = int(ports[0])
-                        if len(ports) > 1:
-                            eapi3_ssl_port = int(ports[1])
-                        service_url = service_url[:eapi3_formatcolon]
-                    except (ValueError, IndexError,):
-                        eapi3_port = int(etpConst['socket_service']['port'])
-                        eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
-
-
-            if repouris.startswith("ftp://"):
-
-                if not etpConst['server_repositories'].has_key(repoid):
-                    etpConst['server_repositories'][repoid] = {}
-                    etpConst['server_repositories'][repoid]['description'] = repodesc
-                    etpConst['server_repositories'][repoid]['mirrors'] = []
-                    etpConst['server_repositories'][repoid]['community'] = False
-                    etpConst['server_repositories'][repoid]['service_url'] = service_url
-                    etpConst['server_repositories'][repoid]['service_port'] = eapi3_port
-                    etpConst['server_repositories'][repoid]['ssl_service_port'] = eapi3_ssl_port
-                    if repohandlers:
-                        repohandlers = os.path.join(repohandlers,etpConst['product'],repoid,"handlers")
-                        etpConst['server_repositories'][repoid]['handler'] = repohandlers
-
-                uris = repouris.split()
-                for uri in uris:
-                    etpConst['server_repositories'][repoid]['mirrors'].append(uri)
+            repoid, repodata = const_extractServerRepositoryParameters(line)
+            if repoid in etpConst['server_repositories']:
+                # just update mirrors
+                etpConst['server_repositories'][repoid]['mirrors'].extend(repodata['mirrors'])
+            else:
+                etpConst['server_repositories'][repoid] = repodata.copy()
 
     const_configureServerRepoPaths()
+
+def const_extractServerRepositoryParameters(repostring):
+
+    mydata = {}
+    repoid = repostring.split("|")[1].strip()
+    repodesc = repostring.split("|")[2].strip()
+    repouris = repostring.split("|")[3].strip()
+    repohandlers = repostring.split("|")[4].strip()
+
+    service_url = None
+    eapi3_port = int(etpConst['socket_service']['port'])
+    eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+    if len(repostring.split("|")) > 5:
+        service_url = repostring.split("|")[5].strip()
+
+        eapi3_formatcolon = service_url.rfind("#")
+        if eapi3_formatcolon != -1:
+            try:
+                ports = service_url[eapi3_formatcolon+1:].split(",")
+                eapi3_port = int(ports[0])
+                if len(ports) > 1:
+                    eapi3_ssl_port = int(ports[1])
+                service_url = service_url[:eapi3_formatcolon]
+            except (ValueError, IndexError,):
+                eapi3_port = int(etpConst['socket_service']['port'])
+                eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+
+    mydata = {}
+    mydata['description'] = repodesc
+    mydata['mirrors'] = []
+    mydata['community'] = False
+    mydata['service_url'] = service_url
+    mydata['service_port'] = eapi3_port
+    mydata['ssl_service_port'] = eapi3_ssl_port
+    if repohandlers:
+        repohandlers = os.path.join(repohandlers,etpConst['product'],repoid,"handlers")
+        mydata['handler'] = repohandlers
+    uris = repouris.split()
+    for uri in uris:
+        mydata['mirrors'].append(uri)
+
+    return repoid, mydata
 
 def const_configureServerRepoPaths():
 
