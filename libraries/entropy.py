@@ -12749,7 +12749,11 @@ class SocketHostInterface:
             if self.timed_out:
                 return True
             self.timed_out = True
-            ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
+            try:
+                ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
+            except KeyboardInterrupt:
+                self.timed_out = True
+                return True
 
             if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
