@@ -1742,10 +1742,6 @@ def getRepositorySettings(repoid):
         if not etpRepositoriesExcluded.has_key(repoid):
             raise
         repodata = etpRepositoriesExcluded[repoid].copy()
-    repodata['repoid'] = repoid
-    # remove extra paths from database and packages
-    repodata['packages'] = [x[:-len("/"+etpConst['product'])] for x in repodata['packages']]
-    repodata['database'] = repodata['database'][:-len("/"+etpConst['product']+"/database/"+etpConst['currentarch'])]
     return repodata
 
 def writeOrderedRepositoriesEntries():
