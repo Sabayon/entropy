@@ -27,7 +27,7 @@ install:
 	mkdir -p $(DESTDIR)/etc
 	install -m644 COPYING $(DESTDIR)/usr/lib/entropy/spritz/applet/.
 	install -m755 $(MISCDIR)/etp-applet-gui $(DESTDIR)/usr/bin/.
-	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/spritz/applet/.
+	install -m644 $(PIXDIR)/applet/*.png $(DESTDIR)/usr/share/pixmaps/spritz/applet/.
 	install -m644 $(PIXDIR)/entropy-applet.png $(DESTDIR)/usr/share/pixmaps/.
 	chmod +x $(DESTDIR)/usr/bin/etp-applet-gui
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.
