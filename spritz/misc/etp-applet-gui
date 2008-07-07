@@ -1,2 +1,0 @@
-#!/bin/bash
-python /usr/lib/entropy/spritz/applet/applet.py "$@"
