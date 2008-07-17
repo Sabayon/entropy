@@ -3,9 +3,9 @@
 ../libraries/entropy_i18n.py
 ../libraries/entropy.py
 ../libraries/entropyTools.py
-../libraries/managerTools.py
 ../libraries/etpXpak.py
 ../libraries/exceptionTools.py
+../libraries/managerTools.py
 ../libraries/outputTools.py
 ../client/equo.py
 ../client/text_cache.py
@@ -17,6 +17,7 @@
 ../client/text_smart.py
 ../client/text_ui.py
 ../server/activator.py
+../server/electron.py
 ../server/reagent.py
 ../server/server_activator.py
 ../server/server_query.py
@@ -34,10 +35,9 @@
 ../spritz/src/etpgui/__init__.py
 ../spritz/src/etpgui/packages.py
 ../spritz/src/etpgui/widgets.py
-../spritz/src/applet/applet.py
-../spritz/src/applet/etp_applet_animation.py
-../spritz/src/applet/etp_applet_config.py
-../spritz/src/applet/etp_applet_dialogs.py
-../spritz/src/applet/etp_applet.py
+../entropy-notification-applet/src/applet.py
+../entropy-notification-applet/src/etp_applet_animation.py
+../entropy-notification-applet/src/etp_applet_config.py
+../entropy-notification-applet/src/etp_applet_dialogs.py
+../entropy-notification-applet/src/etp_applet.py
 ../spritz/src/spritz.glade
-../spritz/src/applet/etp_applet.glade
