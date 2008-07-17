@@ -45,7 +45,10 @@ def smart(options):
             savedir = True
         else:
             if savedir:
-                smartRequestSavedir = opt
+                try:
+                    smartRequestSavedir = os.path.realpath(opt)
+                except OSError:
+                    smartRequestSavedir = None
                 savedir = False
             else:
                 newopts.append(opt)
