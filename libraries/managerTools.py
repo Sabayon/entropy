@@ -40,10 +40,12 @@ class ManagerSettings:
         self.statusBar = None
         self.programWidget = None
         self.outputWidget = None
+        self.pinboardWidget = None
         self.output = None
         self.output_row = 1
         self.max_x, self.max_y = 0,0
         self.welcome_text = _("(CTRL+E Menu | CTRL+X Exit)")
+        self.header_txt = ''
         self.inFocus = 0
         self.focusOptions = [0,1]
         self.focusInfo = {
