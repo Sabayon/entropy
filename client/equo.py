@@ -340,8 +340,11 @@ def reset_cache():
         pass
 
 def load_conf_cache():
+    try:
+        import text_configuration
+    except exceptionTools.FileNotFound:
+        return
     if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
-    import text_configuration
     try:
         oldquiet = etpUi['quiet']
         etpUi['quiet'] = True
@@ -572,6 +575,9 @@ except exceptionTools.FtpError, e:
     print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.PermissionDenied, e:
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    sys.exit(1)
+except exceptionTools.FileNotFound, e:
     print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
 except dbapi2Exceptions['OperationalError'], e:
