@@ -5980,8 +5980,6 @@ class RepoInterface:
             localstatus = self.Entropy.get_repository_revision(repo)
             if (localstatus == onlinestatus) and (not self.forceUpdate):
                 return False
-        else: # if == -1 => HTTP 404
-            return False
         return True
 
     def is_repository_unlocked(self, repo):
@@ -6608,11 +6606,8 @@ class RepoInterface:
                         self.__remove_repository_files(repo, cmethod)
                         self.syncErrors = True
                         self.Entropy.cycleDone()
-                        if do_db_update_transfer:
-                            try:
-                                os.remove(dbfile_old)
-                            except OSError:
-                                pass
+                        if os.path.isfile(dbfile_old):
+                            os.remove(dbfile_old)
                         continue
 
                 # re-validate
@@ -6635,6 +6630,8 @@ class RepoInterface:
                 self.__remove_repository_files(repo, cmethod)
                 self.syncErrors = True
                 self.Entropy.cycleDone()
+                if os.path.isfile(dbfile_old):
+                    os.remove(dbfile_old)
                 continue
 
             if os.path.isfile(dbfile) and os.access(dbfile,os.W_OK):
@@ -6651,6 +6648,10 @@ class RepoInterface:
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
             self.Entropy.cycleDone()
+
+            # remove garbage
+            if os.path.isfile(dbfile_old):
+                os.remove(dbfile_old)
 
         # keep them closed
         self.Entropy.closeAllRepositoryDatabases()
@@ -16339,27 +16340,25 @@ class ServerInterface(TextInterface):
 
         return switched, already_switched, ignored, not_found, no_checksum
 
-class DistributionAuthInterface:
-    """just a reference class, methods must be reimplemented"""
+class RemoteDbSkelInterface:
 
     def __init__(self):
         self.dbconn = None
         self.cursor = None
-        # used by self.connect()
+        self.plain_cursor = None
         self.connection_data = {}
-        # used by self.login()
-        self.login_data = {}
-        self.logged_in = False
+        try:
+            import MySQLdb, _mysql_exceptions
+        except ImportError:
+            raise exceptionTools.LibraryNotFound('LibraryNotFound: dev-python/mysql-python not found')
+        self.mysql = MySQLdb
+        self.mysql_exceptions = _mysql_exceptions
 
     def check_connection(self):
         if self.dbconn == None:
             raise exceptionTools.ConnectionError('ConnectionError: %s' % (_("not connected to database"),))
 
-    def check_login(self):
-        if not self.logged_in:
-            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
-
-    def __raise_not_implemented_error(self):
+    def _raise_not_implemented_error(self):
         raise exceptionTools.NotImplementedError('NotImplementedError: %s' % (_('method not implemented'),))
 
     def set_connection_data(self, data):
@@ -16368,6 +16367,374 @@ class DistributionAuthInterface:
     def check_connection_data(self):
         if not self.connection_data:
             raise exceptionTools.PermissionDenied('ConnectionError: %s' % (_("no connection data"),))
+
+    def connect(self):
+        kwargs = {}
+        keys = [
+            ('host',"hostname"),
+            ('user',"username"),
+            ('passwd',"password"),
+            ('db',"dbname"),
+            ('port',"port")
+        ]
+        for ckey, dkey in keys:
+            if not self.connection_data.has_key(dkey):
+                continue
+            kwargs[ckey] = self.connection_data.get(dkey)
+
+        try:
+            self.dbconn = self.mysql.connect(**kwargs)
+        except self.mysql_exceptions.OperationalError, e:
+            raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
+        self.plain_cursor = self.dbconn.cursor()
+        self.cursor = self.mysql.cursors.DictCursor(self.dbconn)
+        return True
+
+    def disconnect(self):
+        if self.is_logged_in():
+            self.logout()
+        self.check_connection()
+        self.cursor.close()
+        self.dbconn.close()
+        self.dbconn = None
+        self.cursor = None
+        self.plain_cursor = None
+        self.connection_data.clear()
+        return True
+
+    def fetchall2set(self, item):
+        mycontent = set()
+        for x in item:
+            mycontent |= set(x)
+        return mycontent
+
+    def fetchall2list(self, item):
+        content = []
+        for x in item:
+            content += list(x)
+        return content
+
+    def fetchone2list(self, item):
+        return list(item)
+
+    def fetchone2set(self, item):
+        return set(item)
+
+    def commit(self):
+        self.check_connection()
+        return self.dbconn.commit()
+
+    def execute_script(self, myscript):
+        pty = None
+        for line in myscript.split(";"):
+            line = line.strip()
+            if not line:
+                continue
+            pty = self.cursor.execute(line)
+        return pty
+
+    def execute_query(self, *args):
+        return self.cursor.execute(*args)
+
+    def execute_many(self, query, myiter):
+        return self.cursor.executemany(query, myiter)
+
+    def fetchone(self):
+        return self.cursor.fetchone()
+
+    def fetchall(self):
+        return self.cursor.fetchall()
+
+    def fetchmany(self, *args, **kwargs):
+        return self.cursor.fetchmany(*args,**kwargs)
+
+    def lastrowid(self):
+        return self.cursor.lastrowid
+
+    def table_exists(self, table):
+        self.check_connection()
+        self.cursor.execute("show tables like %s", (table,))
+        rslt = self.cursor.fetchone()
+        if rslt:
+            return True
+        return False
+
+    def column_in_table_exists(self, table, column):
+        t_ex = self.table_exists(table)
+        if not t_ex:
+            return False
+        self.cursor.execute("show columns from "+table)
+        data = self.cursor.fetchall()
+        for row in data:
+            if row['Field'] == column:
+                return True
+        return False
+
+class DistributionUGCInterface(RemoteDbSkelInterface):
+
+    SQL_TABLES = {
+        'entropy_base': """
+            CREATE TABLE `entropy_base` (
+            `idkey` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `key` VARCHAR( 255 ) NOT NULL
+            );
+            ALTER TABLE `entropy_base` ADD INDEX ( `key` );
+        """,
+        'entropy_votes': """
+            CREATE TABLE `entropy_votes` (
+            `idvote` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `idkey` INT UNSIGNED NOT NULL,
+            `vdate` DATE NOT NULL,
+            `vote` TINYINT NOT NULL
+            );
+        """,
+        'entropy_downloads': """
+            CREATE TABLE `entropy_downloads` (
+            `iddownload` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `idkey` INT UNSIGNED NOT NULL,
+            `ddate` DATE NOT NULL,
+            `count` INT UNSIGNED NULL DEFAULT '0'
+            );
+        """,
+        'entropy_docs': """
+            CREATE TABLE `entropy_docs` (
+            `iddoc` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `idkey` INT UNSIGNED NOT NULL,
+            `userid` INT UNSIGNED NOT NULL,
+            `iddoctype` TINYINT NOT NULL,
+            `ddata` TEXT NOT NULL
+            );
+            ALTER TABLE `entropy_docs` ADD INDEX ( `idkey` );
+            ALTER TABLE `entropy_docs` ADD INDEX ( `userid` );
+            ALTER TABLE `entropy_docs` ADD INDEX ( `idkey` , `userid`, `iddoctype` );
+        """,
+        'entropy_doctypes': """
+            CREATE TABLE `entropy_doctypes` (
+            `iddoctype` TINYINT NOT NULL PRIMARY KEY,
+            `description` TEXT NOT NULL
+            );
+        """,
+    }
+    DOC_TYPES = {
+        'comments': 1,
+        'bbcode_doc': 2,
+    }
+    VOTE_RANGE = range(1,6) # [1, 2, 3, 4, 5]
+
+    def __init__(self, connection_data):
+        RemoteDbSkelInterface.__init__(self)
+        self.set_connection_data(connection_data)
+        self.connect()
+        self.initialize_tables()
+        self.initialize_doctypes()
+
+    def initialize_tables(self):
+        notable = False
+        for table in self.SQL_TABLES:
+            if self.table_exists(table):
+                continue
+            notable = True
+            self.execute_script(self.SQL_TABLES[table])
+        if notable:
+            self.commit()
+
+    def initialize_doctypes(self):
+        for mydoctype in self.DOC_TYPES:
+            if self.is_iddoctype_available(self.DOC_TYPES[mydoctype]):
+                continue
+            self.insert_iddoctype(self.DOC_TYPES[mydoctype],mydoctype)
+
+    def is_iddoctype_available(self, iddoctype):
+        self.check_connection()
+        rows = self.execute_query('SELECT `iddoctype` FROM entropy_doctypes WHERE `iddoctype` = %s', (iddoctype,))
+        if rows:
+            return True
+        return False
+
+    def is_pkgkey_available(self, key):
+        self.check_connection()
+        rows = self.execute_query('SELECT `idkey` FROM entropy_base WHERE `key` = %s', (key,))
+        if rows:
+            return True
+        return False
+
+    def is_iddoc_available(self, iddoc):
+        self.check_connection()
+        rows = self.execute_query('SELECT `iddoc` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
+        if rows:
+            return True
+        return False
+
+    def insert_iddoctype(self, iddoctype, description, do_commit = False):
+        self.check_connection()
+        self.execute_query('INSERT INTO entropy_doctypes VALUES (%s,%s)', (iddoctype,description,))
+        if do_commit: self.commit()
+
+    def insert_pkgkey(self, key, do_commit = False):
+        self.check_connection()
+        self.execute_query('INSERT INTO entropy_base VALUES (%s,%s)', (None,key,))
+        myid = self.lastrowid()
+        if do_commit: self.commit()
+        return myid
+
+    def insert_download(self, key, ddate, count = 0, do_commit = False):
+        self.check_connection()
+        idkey = self.handle_pkgkey(key)
+        self.execute_query('INSERT INTO entropy_downloads VALUES (%s,%s,%s,%s)', (None,idkey,ddate,count))
+        myid = self.lastrowid()
+        if do_commit: self.commit()
+        return myid
+
+    def update_download(self, iddownload, key, ddate, incr, do_commit = False):
+        self.check_connection()
+        self.execute_query('SELECT `count` FROM entropy_downloads WHERE `iddownload` = %s', (iddownload,))
+        data = self.fetchone()
+        if not data: # !?!?
+            return self.insert_download(key, ddate, count = 1)
+        count = data['count']+incr
+        # now update
+        self.execute_query('UPDATE entropy_downloads SET `count` = %s WHERE `iddownload` = %s', (count,iddownload,))
+        if do_commit: self.commit()
+        return iddownload
+
+    def get_date(self):
+        mytime = time.time()
+        from datetime import datetime
+        mydate = datetime.fromtimestamp(mytime)
+        mydate = datetime(mydate.year,mydate.month,mydate.day)
+        return mydate
+
+    def get_iddownload(self, key, ddate):
+        self.check_connection()
+        idkey = self.handle_pkgkey(key)
+        self.execute_query('SELECT `iddownload` FROM entropy_downloads WHERE `idkey` = %s AND `ddate` = %s', (key,ddate,))
+        data = self.fetchone()
+        if data:
+            return data['iddownload']
+        return -1
+
+    def get_idkey(self, key):
+        self.check_connection()
+        self.execute_query('SELECT `idkey` FROM entropy_base WHERE `key` = %s', (key,))
+        data = self.fetchone()
+        if data:
+            return data['idkey']
+        return -1
+
+    def handle_pkgkey(self, key):
+        if not self.is_pkgkey_available(key):
+            return self.insert_pkgkey(key, do_commit = True)
+        else:
+            return self.get_idkey(key)
+
+    def insert_generic_doc(self, idkey, userid, doc_type, data, do_commit = False):
+        self.check_connection()
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s)',(
+                None,
+                idkey,
+                userid,
+                doc_type,
+                data,
+            )
+        )
+        if do_commit: self.commit()
+
+    def insert_comment(self, pkgkey, userid, comment, do_commit = False):
+        self.check_connection()
+        idkey = self.handle_pkgkey(pkgkey)
+        self.insert_generic_doc(idkey, userid, self.DOC_TYPES['comments'], comment)
+        if do_commit: self.commit()
+
+    def edit_comment(self, iddoc, new_comment, do_commit = False):
+        self.check_connection()
+        if not self.is_iddoc_available(iddoc):
+            return False
+        self.execute_query('UPDATE entropy_docs SET `ddata` = %s WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                new_comment,
+                iddoc,
+                self.DOC_TYPES['comments'],
+            )
+        )
+        if do_commit: self.commit()
+        return True
+
+    def remove_comment(self, iddoc):
+        self.check_connection()
+        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                iddoc,
+                self.DOC_TYPES['comments'],
+            )
+        )
+        return True
+
+    # give a vote to an app
+    def do_vote(self, pkgkey, vote, do_commit = False):
+        self.check_connection()
+        idkey = self.handle_pkgkey(pkgkey)
+        vote = int(vote)
+        if vote not in self.VOTE_RANGE: # weird
+            vote = 3 # avg?
+        mydate = self.get_date()
+        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s)',(
+                None,
+                idkey,
+                mydate,
+                vote,
+            )
+        )
+        if do_commit: self.commit()
+        return True
+
+    # increment +1 the number of downloads
+    def do_download(self, pkgkey, do_commit = False):
+        self.check_connection()
+        mydate = self.get_date()
+        iddownload = self.get_iddownload(pkgkey, mydate)
+        if iddownload == -1:
+            self.insert_download(pkgkey, mydate, count = 1)
+        else:
+            self.update_download(iddownload, pkgkey, mydate, 1)
+        if do_commit: self.commit()
+        return True
+
+    def insert_document(self, pkgkey, text, doc_type = None, do_commit = False):
+        self.check_connection()
+        if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
+        self.insert_generic_doc(idkey, userid, doc_type, text)
+        if do_commit: self.commit()
+        return True
+
+    def insert_image(self, pkgkey, blob_data):
+        self.check_connection()
+        self._raise_not_implemented_error()
+        return True
+
+    def insert_video(self, pkgkey, blob_data):
+        self.check_connection()
+        self._raise_not_implemented_error()
+        return True
+
+    def insert_traceback(self, pkgkey, tb_link):
+        self.check_connection()
+        self._raise_not_implemented_error()
+        return True
+
+    def insert_file(self, pkgkey, blob_data):
+        self.check_connection()
+        self._raise_not_implemented_error()
+        return True
+
+
+class DistributionAuthInterface:
+    """just a reference class, methods must be reimplemented"""
+
+    def __init__(self):
+        self.login_data = {}
+        self.logged_in = False
+
+    def check_login(self):
+        if not self.logged_in:
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
 
     def set_login_data(self, data):
         self.login_data = data.copy()
@@ -16380,61 +16747,53 @@ class DistributionAuthInterface:
         if not self.is_logged_in():
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
 
-    def connect(self):
-        self.__raise_not_implemented_error()
-        return True
-
-    def disconnect(self):
-        if self.is_logged_in():
-            self.logout()
-        self.check_connection()
-        self.__raise_not_implemented_error()
-        return True
+    def check_connection(self):
+        pass
 
     def login(self):
         self.check_connection()
         self.check_login_data()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         self.logged_in = True
         return True
 
     def logout(self):
         self.check_connection()
         self.check_login_data()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return True
 
     def is_developer(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return True
 
     def is_administrator(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return True
 
     def is_moderator(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return True
 
     def is_user(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return True
 
     def is_user_banned(self, user):
         self.check_connection()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return False
 
     def is_in_group(self, group):
@@ -16443,28 +16802,28 @@ class DistributionAuthInterface:
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return True
 
     def get_user_groups(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return {}
 
     def get_user_group(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return -1
 
     def get_user_id(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return -1
 
     def is_logged_in(self):
@@ -16474,27 +16833,22 @@ class DistributionAuthInterface:
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return {}
 
     def get_user_data(self):
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
-        self.__raise_not_implemented_error()
+        self._raise_not_implemented_error()
         return {}
 
 
-class phpBB3AuthInterface(DistributionAuthInterface):
+class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
     def __init__(self):
         DistributionAuthInterface.__init__(self)
-        try:
-            import MySQLdb, _mysql_exceptions
-        except ImportError:
-            raise exceptionTools.LibraryNotFound('LibraryNotFound: dev-python/mysql-python not found')
-        self.mysql = MySQLdb
-        self.mysql_exceptions = _mysql_exceptions
+        RemoteDbSkelInterface.__init__(self)
         self.itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
         self.USER_NORMAL = 0
         self.USER_INACTIVE = 1
@@ -16515,40 +16869,8 @@ class phpBB3AuthInterface(DistributionAuthInterface):
         self.TABLE_PREFIX = 'phpbb_'
 
     def check_connection(self):
-        DistributionAuthInterface.check_connection(self)
+        RemoteDbSkelInterface.check_connection(self)
         self._check_needed_reconnect()
-
-    def connect(self):
-        kwargs = {}
-        keys = [
-            ('host',"hostname"),
-            ('user',"username"),
-            ('passwd',"password"),
-            ('db',"dbname"),
-            ('port',"port")
-        ]
-        for ckey, dkey in keys:
-            if not self.connection_data.has_key(dkey):
-                continue
-            kwargs[ckey] = self.connection_data.get(dkey)
-
-        try:
-            self.dbconn = self.mysql.connect(**kwargs)
-        except self.mysql_exceptions.OperationalError, e:
-            raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
-        self.cursor = self.mysql.cursors.DictCursor(self.dbconn)
-        return True
-
-    def disconnect(self):
-        if self.is_logged_in():
-            self.logout()
-        self.check_connection()
-        self.cursor.close()
-        self.dbconn.close()
-        self.dbconn = None
-        self.cursor = None
-        self.connection_data.clear()
-        return True
 
     def login(self):
         self.check_connection()
@@ -17203,7 +17525,7 @@ class RepositoryManager(ServerInterface):
         self.killall()
 
     def create_body(self):
-        self.Manager.programWidget = self.urwid.AttrWrap(self.urwid.Filler(self.urwid.Text("Program Widget")), 'bg')
+        self.Manager.programWidget = self.urwid.AttrWrap(self.urwid.Filler(self.urwid.Text("")), 'bg')
         self.Manager.output = self.urwid.Edit()
         self.Manager.outputWidget = self.urwid.Filler(self.Manager.output, valign = 'top')
         return self.urwid.Pile([self.Manager.programWidget,self.Manager.outputWidget], 1)
@@ -17230,7 +17552,7 @@ class RepositoryManager(ServerInterface):
             new = self.Manager.focusOptions[0]
         self.Manager.mainBody.set_focus(new)
         self.Manager.inFocus = new
-        self.Manager.statusBar.set_text("Focus on %s" % (self.Manager.focusInfo.get(new),))
+        self.Manager.statusBar.set_text(self.Manager.header_txt+"Focus on %s" % (self.Manager.focusInfo.get(new),))
 
     def initialize_screen(self):
         self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
@@ -17245,6 +17567,13 @@ class RepositoryManager(ServerInterface):
         self.start_pty_reader()
         # setup an exception hook
         sys.excepthook = self.raise_exception
+
+    def load_widget_in_programSpace(self, widget, redraw_to_widget = None):
+        self.Manager.programWidget = widget
+        # recreate pile
+        self.Manager.mainBody = self.urwid.Pile([self.Manager.programWidget,self.Manager.outputWidget], 1)
+        self.Manager.mainFrame = self.urwid.Frame(self.Manager.mainBody, self.Manager.menuBar, self.Manager.statusBar)
+        self.screen_redraw(redraw_to_widget)
 
     def killall(self):
         sys.excepthook = sys.__excepthook__
@@ -17446,6 +17775,73 @@ class RepositoryManager(ServerInterface):
         # get textbox width
         self.Manager.output_buffer += message
 
+    def load_pinboard(self):
+        if self.Manager.pinboardWidget == None:
+            self.Manager.pinboardWidget = self.urwid.AttrWrap(self.urwid.Filler(self.urwid.Text("hello world")), 'bg')
+        self.load_widget_in_programSpace(self.Manager.pinboardWidget)
+
+    def do_repository_authentication(self, repo):
+
+        if etpConst['server_repositories'][repo]['service_url']:
+
+            def validate_txt(s):
+                return s
+
+            import socket
+            client = RepositorySocketClientInterface(self, EntropyRepositorySocketClientCommands, ssl = True)
+            # connect
+            client.connect(
+                etpConst['server_repositories'][repo]['service_url'],
+                etpConst['server_repositories'][repo]['ssl_service_port']
+            )
+
+            tries = 3
+            while tries:
+
+                if not self.Manager.auth_data.has_key(repo):
+                    #self.screen_redraw()
+                    auth_data = self.inputBox(
+                        "%s: %s" % (_("Authentication on repository"),repo,),
+                        [
+                            ('username',_("Username"),validate_txt,False,),
+                            ('password',_("Password"),validate_txt,True,),
+                        ],
+                        cancel_button = True
+                    )
+                    if auth_data == None:
+                        return False
+                    elif not auth_data:
+                        tries -= 1
+                        continue
+                else:
+                    auth_data = self.Manager.auth_data[repo]
+
+                session_id = client.open_session()
+                # do login
+                logged, error = client.CmdInterface.service_login(auth_data['username'], auth_data['password'], session_id)
+                if logged:
+                    # are we admin?
+                    logged = client.CmdInterface.is_administrator(session_id)
+                    if not logged:
+                        # developers?
+                        logged = client.CmdInterface.is_developer(session_id)
+                if logged:
+                    self.set_statusBar_header("[%s:%s|%s] " % (_('logged'),auth_data['username'],repo,))
+                    client.CmdInterface.service_logout(auth_data['username'], session_id)
+                    client.close_session(session_id)
+                    client.disconnect()
+                    self.Manager.auth_data[repo] = auth_data.copy()
+                    return True
+                else:
+                    # make it larger
+                    self.askQuestion("%s: %s" % (_("Access denied. Login failed"),error,), responses = ["Ok"])
+                    tries -= 1
+
+            return False
+
+        return True
+
+
     def get_screen_dim(self):
         self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
         return self.Manager.max_x, self.Manager.max_y
@@ -17497,65 +17893,11 @@ class RepositoryManager(ServerInterface):
 
         return handled, dobreak
 
-    def do_repository_authentication(self, repo):
-
-        if not self.Manager.auth_data.has_key(repo) and etpConst['server_repositories'][repo]['service_url']:
-
-            def validate_txt(s):
-                return s
-
-            import socket
-            client = RepositorySocketClientInterface(self, EntropyRepositorySocketClientCommands, ssl = True)
-            # connect
-            client.connect(
-                etpConst['server_repositories'][repo]['service_url'],
-                etpConst['server_repositories'][repo]['ssl_service_port']
-            )
-
-            tries = 3
-            while tries:
-
-                #self.screen_redraw()
-                auth_data = self.inputBox(
-                    "%s: %s" % (_("Authentication on repository"),repo,),
-                    [
-                        ('username',_("Username"),validate_txt,False,),
-                        ('password',_("Password"),validate_txt,True,),
-                    ],
-                    cancel_button = True
-                )
-                if auth_data == None:
-                    return False
-                elif not auth_data:
-                    tries -= 1
-                    continue
-
-                session_id = client.open_session()
-                # do login
-                logged, error = client.CmdInterface.service_login(auth_data['username'], auth_data['password'], session_id)
-                if logged:
-                    # are we admin?
-                    logged = client.CmdInterface.is_administrator(session_id)
-                    if not logged:
-                        # developers?
-                        logged = client.CmdInterface.is_developer(session_id)
-                if logged:
-                    w_txt = self.Manager.welcome_text
-                    w_txt += " %s: %s" % (_('logged in as'),auth_data['username'])
-                    self.Manager.statusBar.set_text(w_txt)
-                    client.CmdInterface.service_logout(auth_data['username'], session_id)
-                    client.close_session(session_id)
-                    client.disconnect()
-                    self.Manager.auth_data[repo] = auth_data.copy()
-                    return True
-                else:
-                    # make it larger
-                    self.askQuestion("%s: %s" % (_("Login failed"),error,), responses = ["Ok"])
-                    tries -= 1
-
-            return False
-
-        return True
+    def set_statusBar_header(self, header):
+        cur_txt = self.Manager.statusBar.get_text()[0]
+        cur_txt = cur_txt[len(self.Manager.header_txt):]
+        self.Manager.header_txt = header
+        self.Manager.statusBar.set_text(header+cur_txt)
 
     def main(self):
 
@@ -17592,6 +17934,9 @@ class RepositoryManager(ServerInterface):
                 if rc == "Yes":
                     break
 
+            elif ["ctrl d"] == keys_pressed:
+                self.load_pinboard()
+
             elif ["ctrl e"] == keys_pressed:
                 self.toggle_application_menu()
 
@@ -17623,7 +17968,7 @@ class RepositoryManager(ServerInterface):
             null = self.entropyTools.getfd("/dev/null")
         if not parallel:
             old_text = self.Manager.statusBar.get_text()[0]
-            self.Manager.statusBar.set_text("Launched: %s" % (' '.join(argv),))
+            self.Manager.statusBar.set_text(self.Manager.header_txt+"Launched: %s" % (' '.join(argv),))
             self.last_rc = self.entropyTools.execWithRedirect(
                 argv,
                 stdin = self.PtyIn[1],
@@ -17647,7 +17992,7 @@ class RepositoryManager(ServerInterface):
         function = args[0]
         args = args[1:]
         old_text = self.Manager.statusBar.get_text()[0]
-        self.Manager.statusBar.set_text("Launched: %s" % (' '.join(args),))
+        self.Manager.statusBar.set_text(self.Manager.header_txt+"Launched: %s" % (' '.join(args),))
         self.last_rc = function(*args,**kwargs)
         self.Manager.statusBar.set_text(old_text)
         self.Manager.process_spawned = False
@@ -18917,7 +19262,7 @@ class RepositorySocketClientInterface:
 
 class ServerMirrorsInterface:
 
-    import entropyTools, dumpTools
+    import entropyTools, dumpTools, socket
     def __init__(self,  ServerInstance, repo = None):
 
         if not isinstance(ServerInstance,ServerInterface):
@@ -21245,12 +21590,29 @@ class ServerMirrorsInterface:
                     header = red(" @@ ")
                 )
 
-                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(
-                    uri,
-                    mybranch,
-                    repo
-                )
-                del fineQueue
+                try:
+                    uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(
+                        uri,
+                        mybranch,
+                        repo
+                    )
+                    del fineQueue
+                except self.socket.error, e:
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
+                            repo,
+                            red(_("sync")),
+                            mybranch,
+                            darkred(_("socket error")),
+                            e,
+                            darkred(_("on")),
+                            crippled_uri,
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkgreen(" * ")
+                    )
+                    continue
 
                 if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
                     self.Entropy.updateProgress(
@@ -23622,6 +23984,7 @@ class EntropyDatabaseInterface:
     # mainly used to restore a previous table, used by reagent in --initialize
     def bumpTreeUpdatesActions(self, updates):
         self.checkReadOnly()
+        self.cursor.execute('DELETE FROM treeupdatesactions')
         for update in updates:
             self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', update)
         self.commitChanges()
@@ -24618,12 +24981,19 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))
         return self.cursor.fetchall()
 
-    def listAllFiles(self, clean = False):
-        self.cursor.execute('SELECT file FROM content')
-        if clean:
-            return self.fetchall2set(self.cursor.fetchall())
+    def listAllFiles(self, clean = False, count = False):
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        if count:
+            self.cursor.execute('SELECT count(file) FROM content')
         else:
-            return self.fetchall2list(self.cursor.fetchall())
+            self.cursor.execute('SELECT file FROM content')
+        if count:
+            return self.cursor.fetchone()[0]
+        else:
+            if clean:
+                return self.fetchall2set(self.cursor.fetchall())
+            else:
+                return self.fetchall2list(self.cursor.fetchall())
 
     def listAllCategories(self):
         self.cursor.execute('SELECT idcategory,category FROM categories')
