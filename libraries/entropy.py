@@ -11466,9 +11466,9 @@ class PortageInterface:
         import portage
         self.portage = portage
         try:
-            import portage_const
-        except ImportError:
             import portage.const as portage_const
+        except ImportError:
+            import portage_const
         self.portage_const = portage_const
 
     def run_fixpackages(self, myroot = None):
@@ -12346,7 +12346,16 @@ class PortageInterface:
         # cached vartree class
         vartree = self._get_portage_vartree(mypath)
 
-        rc = self.portage.doebuild(myebuild = str(myebuild), mydo = str(mydo), myroot = mypath, tree = tree, mysettings = mysettings, mydbapi = mydbapi, vartree = vartree, use_cache = 0)
+        rc = self.portage.doebuild(
+            myebuild = str(myebuild),
+            mydo = str(mydo),
+            myroot = mypath,
+            tree = tree,
+            mysettings = mysettings,
+            mydbapi = mydbapi,
+            vartree = vartree,
+            use_cache = 0
+        )
 
         # if mute, restore old stdout/stderr
         if domute:
@@ -14520,6 +14529,8 @@ class ServerInterface(TextInterface):
             repo = pkgdata[1]
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
             atom = dbconn.retrieveAtom(idpackage)
+            if atom == None:
+                continue
             self.updateProgress(
                 darkgreen(mytxt)+" "+bold(atom),
                 importance = 0,
@@ -15388,8 +15399,11 @@ class ServerInterface(TextInterface):
                 trashed = self.is_counter_trashed(x[0])
                 if trashed:
                     # search into portage then
-                    key, slot = dbconn.retrieveKeySlot(x[1])
-                    trashed = self.SpmService.get_installed_atom(key+":"+slot)
+                    try:
+                        key, slot = dbconn.retrieveKeySlot(x[1])
+                        trashed = self.SpmService.get_installed_atom(key+":"+slot)
+                    except TypeError: # referred to retrieveKeySlot
+                        trashed = True
                 if not trashed:
                     dbtag = dbconn.retrieveVersionTag(x[1])
                     if dbtag != '':
@@ -16402,24 +16416,6 @@ class RemoteDbSkelInterface:
         self.connection_data.clear()
         return True
 
-    def fetchall2set(self, item):
-        mycontent = set()
-        for x in item:
-            mycontent |= set(x)
-        return mycontent
-
-    def fetchall2list(self, item):
-        content = []
-        for x in item:
-            content += list(x)
-        return content
-
-    def fetchone2list(self, item):
-        return list(item)
-
-    def fetchone2set(self, item):
-        return set(item)
-
     def commit(self):
         self.check_connection()
         return self.dbconn.commit()
@@ -16485,7 +16481,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `idvote` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `idkey` INT UNSIGNED NOT NULL,
             `vdate` DATE NOT NULL,
-            `vote` TINYINT NOT NULL
+            `vote` TINYINT NOT NULL,
+            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );
         """,
         'entropy_downloads': """
@@ -16502,7 +16499,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `idkey` INT UNSIGNED NOT NULL,
             `userid` INT UNSIGNED NOT NULL,
             `iddoctype` TINYINT NOT NULL,
-            `ddata` TEXT NOT NULL
+            `ddata` TEXT NOT NULL,
+            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             );
             ALTER TABLE `entropy_docs` ADD INDEX ( `idkey` );
             ALTER TABLE `entropy_docs` ADD INDEX ( `userid` );
@@ -16518,15 +16516,57 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     DOC_TYPES = {
         'comments': 1,
         'bbcode_doc': 2,
+        'image': 3,
+        'generic_file': 4,
+        'youtube_video': 5,
     }
     VOTE_RANGE = range(1,6) # [1, 2, 3, 4, 5]
+    VIRUS_CHECK_EXEC = '/usr/bin/clamscan'
+    VIRUS_CHECK_ARGS = []
+    pyclamav = None
+    gdata = None
+    YouTube = None
+    YouTubeService = None
 
-    def __init__(self, connection_data):
+    '''
+        dependencies:
+            dev-python/gdata
+            dev-python/pyclamav
+    '''
+    def __init__(self, connection_data, store_path):
         RemoteDbSkelInterface.__init__(self)
         self.set_connection_data(connection_data)
         self.connect()
         self.initialize_tables()
         self.initialize_doctypes()
+        self.setup_store_path(store_path)
+        try:
+            import pyclamav
+            self.pyclamav = pyclamav
+        except ImportError:
+            pass
+        try:
+            import gdata
+            import gdata.youtube
+            import gdata.youtube.service
+            self.gdata = gdata
+            self.YouTube = gdata.youtube
+            self.YouTubeService = gdata.youtube.service
+        except ImportError:
+            pass
+
+    def setup_store_path(self, path):
+        path = os.path.realpath(path)
+        if not os.path.isabs(path):
+            raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not a valid directory path"),))
+        if not os.path.isdir(path):
+            try:
+                os.makedirs(path)
+            except OSError, e:
+                raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (e,))
+            if etpConst['entropygid'] != None:
+                const_setup_perms(path,etpConst['entropygid'])
+        self.STORE_PATH = path
 
     def initialize_tables(self):
         notable = False
@@ -16629,12 +16669,13 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def insert_generic_doc(self, idkey, userid, doc_type, data, do_commit = False):
         self.check_connection()
-        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s)',(
                 None,
                 idkey,
                 userid,
                 doc_type,
                 data,
+                None,
             )
         )
         if do_commit: self.commit()
@@ -16675,11 +16716,12 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if vote not in self.VOTE_RANGE: # weird
             vote = 3 # avg?
         mydate = self.get_date()
-        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s,%s)',(
                 None,
                 idkey,
                 mydate,
                 vote,
+                None,
             )
         )
         if do_commit: self.commit()
@@ -16704,26 +16746,112 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if do_commit: self.commit()
         return True
 
-    def insert_image(self, pkgkey, blob_data):
+    def scan_for_viruses(self, filepath):
+
+        if not os.access(filepath,os.R_OK):
+            return False,None
+
+        if self.pyclamav != None:
+            try:
+                rc, virus_type = self.pyclamav.scanfile(filepath)
+                if rc == 0:
+                    return False,None
+                return True,virus_type
+            except self.pyclamav.error: # blah
+                return False,None
+            except (ValueError, TypeError):
+                pass # use manual scan?
+
+        import subprocess
+        args = [self.VIRUS_CHECK_EXEC]
+        args += self.VIRUS_CHECK_ARGS
+        args += [filepath]
+        rc = subprocess.call(args)
+        if rc == 1:
+            return True,None
+        return False,None
+
+    def insert_generic_file(self, pkgkey, userid, file_path, doc_type):
         self.check_connection()
-        self._raise_not_implemented_error()
+        image_path = os.path.realpath(image_path)
+        # do a virus check?
+        virus_found, virus_type = self.scan_for_viruses(image_path)
+        if virus_found:
+            os.remove(image_path)
+            return False
+        dest_path = os.path.join(self.STORE_PATH,os.path.basename(image_path))
+        if os.path.dirname(image_path) != self.STORE_PATH:
+            shutil.move(image_path,dest_path)
+        if etpConst['entropygid'] != None:
+            const_setup_file(dest_path, etpConst['entropygid'], 0664)
+        # now store in db
+        idkey = self.handle_pkgkey(pkgkey)
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s)',(
+                None,
+                idkey,
+                userid,
+                doc_type,
+                dest_path,
+                None,
+            )
+        )
         return True
 
-    def insert_video(self, pkgkey, blob_data):
-        self.check_connection()
-        self._raise_not_implemented_error()
-        return True
+    def insert_image(self, pkgkey, userid, image_path):
+        return self.insert_generic_file(pkgkey, userid, image_path, self.DOC_TYPES['image'])
 
-    def insert_traceback(self, pkgkey, tb_link):
-        self.check_connection()
-        self._raise_not_implemented_error()
-        return True
+    def insert_file(self, pkgkey, file_path):
+        return self.insert_generic_file(pkgkey, userid, file_path, self.DOC_TYPES['generic_file'])
 
-    def insert_file(self, pkgkey, blob_data):
+    def insert_youtube_video(self, pkgkey, video_path, title, description, keywords):
         self.check_connection()
-        self._raise_not_implemented_error()
-        return True
+        if not self.gdata:
+            return None
 
+        video_path = os.path.realpath(video_path)
+        if not (os.access(video_path,os.R_OK) and os.path.isfile(video_path)):
+            return None
+        virus_found, virus_type = self.scan_for_viruses(video_path)
+        if virus_found:
+            os.remove(video_path)
+            return None
+
+        yt_service = self.get_youtube_service()
+        if yt_service == None:
+            return None
+
+        my_media_group = self.gdata.media.Group(
+            title = self.gdata.media.Title(text = title),
+            description = self.gdata.media.Description(
+                description_type = 'plain',
+                text = description
+            ),
+            keywords = self.gdata.media.Keywords(text = keywords),
+            category = self.gdata.media.Category(
+                text = 'User Generated Content',
+                scheme = 'http://gdata.youtube.com/schemas/2007/categories.cat',
+                label = 'User Generated Content'
+            ),
+            player = None
+        )
+        where = self.gdata.geo.Where()
+        where.set_location((45.892876,10.776901)) # set proper location
+        video_entry = self.gdata.youtube.YouTubeVideoEntry(
+            media = my_media_group,
+            geo = where
+        )
+        new_entry = yt_service.InsertVideoEntry(video_entry, video_path)
+        return new_entry
+
+    def get_youtube_service(self):
+        self.check_connection()
+        if not self.gdata:
+            return None
+        keywords = ['youtube_email', 'youtube_password']
+        for keyword in keywords:
+            if not self.connection_data.has_key(keyword):
+                return None
+        return self.YouTubeService(email = self.connection_data['youtube_email'], password = self.connection_data['youtube_password'])
 
 class DistributionAuthInterface:
     """just a reference class, methods must be reimplemented"""
