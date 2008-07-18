@@ -12476,6 +12476,7 @@ class SocketCommandsSkel:
         self.initialization_commands = []
         self.login_pass_commands = []
         self.no_session_commands = []
+        self.valid_commands = set()
 
     def register(
             self,
@@ -16405,8 +16406,6 @@ class RemoteDbSkelInterface:
         return True
 
     def disconnect(self):
-        if self.is_logged_in():
-            self.logout()
         self.check_connection()
         self.cursor.close()
         self.dbconn.close()
@@ -16647,7 +16646,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_iddownload(self, key, ddate):
         self.check_connection()
         idkey = self.handle_pkgkey(key)
-        self.execute_query('SELECT `iddownload` FROM entropy_downloads WHERE `idkey` = %s AND `ddate` = %s', (key,ddate,))
+        self.execute_query('SELECT `iddownload` FROM entropy_downloads WHERE `idkey` = %s AND `ddate` = %s', (idkey,ddate,))
         data = self.fetchone()
         if data:
             return data['iddownload']
@@ -16739,8 +16738,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if do_commit: self.commit()
         return True
 
-    def insert_document(self, pkgkey, text, doc_type = None, do_commit = False):
+    def insert_document(self, pkgkey, userid, text, doc_type = None, do_commit = False):
         self.check_connection()
+        idkey = self.handle_pkgkey(pkgkey)
         if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
         self.insert_generic_doc(idkey, userid, doc_type, text)
         if do_commit: self.commit()
@@ -16773,15 +16773,15 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def insert_generic_file(self, pkgkey, userid, file_path, doc_type):
         self.check_connection()
-        image_path = os.path.realpath(image_path)
+        file_path = os.path.realpath(file_path)
         # do a virus check?
-        virus_found, virus_type = self.scan_for_viruses(image_path)
+        virus_found, virus_type = self.scan_for_viruses(file_path)
         if virus_found:
-            os.remove(image_path)
+            os.remove(file_path)
             return False
-        dest_path = os.path.join(self.STORE_PATH,os.path.basename(image_path))
-        if os.path.dirname(image_path) != self.STORE_PATH:
-            shutil.move(image_path,dest_path)
+        dest_path = os.path.join(self.STORE_PATH,os.path.basename(file_path))
+        if os.path.dirname(file_path) != self.STORE_PATH:
+            shutil.move(file_path,dest_path)
         if etpConst['entropygid'] != None:
             const_setup_file(dest_path, etpConst['entropygid'], 0664)
         # now store in db
@@ -16800,7 +16800,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def insert_image(self, pkgkey, userid, image_path):
         return self.insert_generic_file(pkgkey, userid, image_path, self.DOC_TYPES['image'])
 
-    def insert_file(self, pkgkey, file_path):
+    def insert_file(self, pkgkey, userid, file_path):
         return self.insert_generic_file(pkgkey, userid, file_path, self.DOC_TYPES['generic_file'])
 
     def insert_youtube_video(self, pkgkey, video_path, title, description, keywords):
@@ -16841,6 +16841,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             geo = where
         )
         new_entry = yt_service.InsertVideoEntry(video_entry, video_path)
+
+        # FIXME once done, insert a record
+
         return new_entry
 
     def get_youtube_service(self):
@@ -16874,6 +16877,9 @@ class DistributionAuthInterface:
     def check_logged_in(self):
         if not self.is_logged_in():
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
+
+    def _raise_not_implemented_error(self):
+        raise exceptionTools.NotImplementedError('NotImplementedError: %s' % (_('method not implemented'),))
 
     def check_connection(self):
         pass
@@ -17040,6 +17046,11 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.login_data.update(data)
         self.logged_in = True
         return self.logged_in
+
+    def disconnect(self):
+        if self.is_logged_in():
+            self.logout()
+        RemoteDbSkelInterface.disconnect(self)
 
     def logout(self):
         self.check_connection()
@@ -17299,9 +17310,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
     def _get_password_hash(self, password):
 
-        random_state = self._get_unique_id()
+        #random_state = self._get_unique_id()
         myrandom = str(self._get_random_number())
-        count = 6
 
         myhash = self._hash_crypt_private(password, self._hash_gensalt_private(myrandom))
 
@@ -17915,7 +17925,6 @@ class RepositoryManager(ServerInterface):
             def validate_txt(s):
                 return s
 
-            import socket
             client = RepositorySocketClientInterface(self, EntropyRepositorySocketClientCommands, ssl = True)
             # connect
             client.connect(
