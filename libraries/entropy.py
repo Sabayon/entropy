@@ -16803,22 +16803,23 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def insert_file(self, pkgkey, userid, file_path):
         return self.insert_generic_file(pkgkey, userid, file_path, self.DOC_TYPES['generic_file'])
 
-    def insert_youtube_video(self, pkgkey, video_path, title, description, keywords):
+    def insert_youtube_video(self, pkgkey, userid, video_path, title, description, keywords):
         self.check_connection()
         if not self.gdata:
-            return None
+            return False
 
+        idkey = self.handle_pkgkey(pkgkey)
         video_path = os.path.realpath(video_path)
         if not (os.access(video_path,os.R_OK) and os.path.isfile(video_path)):
-            return None
+            return False
         virus_found, virus_type = self.scan_for_viruses(video_path)
         if virus_found:
             os.remove(video_path)
-            return None
+            return False
 
         yt_service = self.get_youtube_service()
         if yt_service == None:
-            return None
+            return False
 
         my_media_group = self.gdata.media.Group(
             title = self.gdata.media.Title(text = title),
@@ -16841,10 +16842,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             geo = where
         )
         new_entry = yt_service.InsertVideoEntry(video_entry, video_path)
+        if not isinstance(new_entry,self.gdata.youtube.YouTubeVideoEntry):
+            return False
+        video_url = new_entry.GetSwfUrl()
 
-        # FIXME once done, insert a record
-
-        return new_entry
+        return self.insert_generic_doc(idkey, userid, self.DOC_TYPES['youtube_video'], video_url)
 
     def get_youtube_service(self):
         self.check_connection()
