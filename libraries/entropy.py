@@ -12507,6 +12507,15 @@ class SocketCommandsSkel:
         login_pass_commads.extend(self.login_pass_commands)
         no_session_commands.extend(self.no_session_commands)
 
+class SocketAuthenticatorSkel:
+
+    def __init__(self, HostInterface):
+        self.HostInterface = HostInterface
+        self.session = None
+
+    def set_session(self, session):
+        self.session = session
+
 class SocketHostInterface:
 
     import socket
@@ -12514,17 +12523,13 @@ class SocketHostInterface:
     import entropyTools
     from threading import Thread
 
-    class BasicPamAuthenticator:
+    class BasicPamAuthenticator(SocketAuthenticatorSkel):
 
         import entropyTools
 
         def __init__(self, HostInterface):
             self.valid_auth_types = [ "plain", "shadow", "md5" ]
-            self.HostInterface = HostInterface
-            self.session = None
-
-        def set_session(self, session):
-            self.session = session
+            SocketAuthenticatorSkel.__init__(self, HostInterface)
 
         def docmd_login(self, arguments):
 
@@ -17071,7 +17076,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
 
         self.valid_commands = {
-            'get_comments':    {
+            'ugc:get_comments':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_comments,
@@ -17081,7 +17086,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_comments app-foo/foo",
                 'from': str(self), # from what class
             },
-            'get_vote':    {
+            'ugc:get_vote':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_vote,
@@ -17091,7 +17096,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_vote app-foo/foo",
                 'from': str(self), # from what class
             },
-            'get_downloads':    {
+            'ugc:get_downloads':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_downloads,
@@ -17101,7 +17106,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_downloads app-foo/foo",
                 'from': str(self), # from what class
             },
-            'get_textdocs':    {
+            'ugc:get_textdocs':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_textdocs,
@@ -17111,7 +17116,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_textdocs app-foo/foo",
                 'from': str(self), # from what class
             },
-            'get_alldocs':    {
+            'ugc:get_alldocs':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_alldocs,
@@ -17121,7 +17126,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_alldocs app-foo/foo",
                 'from': str(self), # from what class
             },
-            'get_allvotes':    {
+            'ugc:get_allvotes':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_allvotes,
@@ -17131,7 +17136,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_allvotes",
                 'from': str(self), # from what class
             },
-            'get_alldownloads':    {
+            'ugc:get_alldownloads':    {
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_get_alldownloads,
@@ -17141,10 +17146,39 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_alldownloads",
                 'from': str(self), # from what class
             },
+            'ugc:do_vote':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_do_vote,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "vote the specified application (from 0 to 5)",
+                'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
+                'from': str(self), # from what class
+            },
         }
 
     def _load_ugc_interface(self):
         return DistributionUGCInterface(self.connection_data, self.store_path)
+
+    def docmd_do_vote(self, authenticator, myargs):
+
+        if len(myargs) < 2:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+        vote = myargs[1]
+
+        session_data = self.HostInterface.sessions.get(authenticator.session)
+        if not session_data:
+            return False,'no session data available'
+        userid = session_data['auth_uid']
+        if userid == None:
+            return False,'no session userid available'
+        ugc = self._load_ugc_interface()
+        voted = ugc.do_vote(pkgkey, userid, vote)
+        if not voted:
+            return voted,'already voted'
+        return voted,'ok'
 
     def _get_generic_doctypes(self, pkgkey, doctypes):
         ugc = self._load_ugc_interface()
@@ -17780,15 +17814,14 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         return rhash == myhash
 
 # Authenticator that can be used by SocketHostInterface based instances
-class phpbb3Authenticator(phpBB3AuthInterface):
+class phpbb3Authenticator(phpBB3AuthInterface,SocketAuthenticatorSkel):
     import entropyTools
 
     def __init__(self, HostInterface, *args, **kwargs):
-        self.HostInterface = HostInterface
+        SocketAuthenticatorSkel.__init__(self, HostInterface)
         phpBB3AuthInterface.__init__(self)
         self.set_connection_data(kwargs)
         self.connect()
-        self.session = None
 
     def set_session(self, session):
         self.session = session
