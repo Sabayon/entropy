@@ -13865,7 +13865,17 @@ class SocketHostInterface:
 
         identifiers = set()
         for myclass in self.command_classes:
-            myinst = myclass(self)
+
+            myargs = []
+            mykwargs = {}
+            if isinstance(myclass,tuple) or isinstance(myclass,list):
+                if len(myclass) > 2:
+                    mykwargs = myclass[2]
+                if len(myclass) > 1:
+                    myargs = myclass[1]
+                myclass = myclass[0]
+
+            myinst = myclass(self, *myargs, **mykwargs)
             if str(myinst) in identifiers:
                 raise exceptionTools.PermissionDenied("PermissionDenied: another command instance is owning this name")
             identifiers.add(str(myinst))
