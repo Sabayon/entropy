@@ -792,6 +792,14 @@ def const_defaultSettings(rootdir):
             },
         },
 
+        'ugc_doctypes': {
+            'comments': 1,
+            'bbcode_doc': 2,
+            'image': 3,
+            'generic_file': 4,
+            'youtube_video': 5,
+        },
+
         # handler settings
         'handlers': {
             'md5sum': "md5sum.php?arch="+etpSys['arch']+"&package=", # md5sum handler,
