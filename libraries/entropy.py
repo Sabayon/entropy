@@ -16534,7 +16534,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     VOTE_RANGE = range(1,6) # [1, 2, 3, 4, 5]
     VIRUS_CHECK_EXEC = '/usr/bin/clamscan'
     VIRUS_CHECK_ARGS = []
-    pyclamav = None
     gdata = None
     YouTube = None
     YouTubeService = None
@@ -16542,7 +16541,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     '''
         dependencies:
             dev-python/gdata
-            dev-python/pyclamav
     '''
     def __init__(self, connection_data, store_path):
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
@@ -16553,11 +16551,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.initialize_doctypes()
         self.setup_store_path(store_path)
         self.system_name = etpConst['systemname']
-        try:
-            import pyclamav
-            self.pyclamav = pyclamav
-        except ImportError:
-            pass
         try:
             import gdata
             import gdata.youtube
@@ -16881,17 +16874,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         if not os.access(filepath,os.R_OK):
             return False,None
-
-        if self.pyclamav != None:
-            try:
-                rc, virus_type = self.pyclamav.scanfile(filepath)
-                if rc == 0:
-                    return False,None
-                return True,virus_type
-            except self.pyclamav.error: # blah
-                return False,None
-            except (ValueError, TypeError):
-                pass # use manual scan?
 
         import subprocess
         args = [self.VIRUS_CHECK_EXEC]
