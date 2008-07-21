@@ -2340,7 +2340,11 @@ class EquoInterface(TextInterface):
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')
             count = 0
             maxlen = len(idpackages)
+            myavailable = []
+            do_break = False
             for idpackage in idpackages:
+                if do_break:
+                    break
                 count += 1
                 if (count % 10 == 0) or (count == 1) or (count == maxlen):
                     self.updateProgress(
@@ -2358,10 +2362,16 @@ class EquoInterface(TextInterface):
                 if idpackage == -1:
                     continue
                 # get key + slot
-                key, slot = dbconn.retrieveKeySlot(idpackage)
-                matches = self.clientDbconn.searchKeySlot(key, slot)
+                try:
+                    key, slot = dbconn.retrieveKeySlot(idpackage)
+                    matches = self.clientDbconn.searchKeySlot(key, slot)
+                except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+                    self.cycleDone()
+                    do_break = True
+                    continue
                 if not matches:
-                    available.append((idpackage,repo))
+                    myavailable.append((idpackage,repo))
+            available += myavailable[:]
             self.cycleDone()
 
         if self.xcache:
@@ -12468,9 +12478,12 @@ class LogFile:
 
 class SocketCommandsSkel:
 
+    def __str__(self):
+        return self.inst_name
+
+    inst_name = 'command-skel'
     def __init__(self, HostInterface):
         self.HostInterface = HostInterface
-        self.inst_name = 'command-skel'
         self.no_acked_commands = []
         self.termination_commands = []
         self.initialization_commands = []
@@ -16479,6 +16492,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             CREATE TABLE `entropy_votes` (
             `idvote` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `idkey` INT UNSIGNED NOT NULL,
+            `userid` INT UNSIGNED NOT NULL,
             `vdate` DATE NOT NULL,
             `vote` TINYINT NOT NULL,
             `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
@@ -16512,13 +16526,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             );
         """,
     }
-    DOC_TYPES = {
-        'comments': 1,
-        'bbcode_doc': 2,
-        'image': 3,
-        'generic_file': 4,
-        'youtube_video': 5,
-    }
     VOTE_RANGE = range(1,6) # [1, 2, 3, 4, 5]
     VIRUS_CHECK_EXEC = '/usr/bin/clamscan'
     VIRUS_CHECK_ARGS = []
@@ -16533,12 +16540,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             dev-python/pyclamav
     '''
     def __init__(self, connection_data, store_path):
+        self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
         RemoteDbSkelInterface.__init__(self)
         self.set_connection_data(connection_data)
         self.connect()
         self.initialize_tables()
         self.initialize_doctypes()
         self.setup_store_path(store_path)
+        self.system_name = etpConst['systemname']
         try:
             import pyclamav
             self.pyclamav = pyclamav
@@ -16660,6 +16669,76 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return data['idkey']
         return -1
 
+    def get_ugc_metadata(self, pkgkey):
+        self.check_connection()
+        idkey = self.get_idkey(pkgkey)
+        metadata = {}
+        if idkey == -1:
+            return metadata
+        self.execute_query('SELECT * FROM entropy_docs WHERE `idkey` = %s', (idkey,))
+        metadata['docs'] = self.fetchall()
+        metadata['vote'] = self.get_ugc_vote(pkgkey)
+        metadata['downloads'] = self.get_ugc_downloads(pkgkey)
+        return metadata
+
+    def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
+        self.check_connection()
+        idkey = self.get_idkey(pkgkey)
+        metadata = []
+        if idkey == -1:
+            return metadata
+        self.execute_query('SELECT * FROM entropy_docs WHERE `idkey` = %s AND `iddoctype` IN %s', (idkey,typeslist,))
+        metadata = self.fetchall()
+        return metadata
+
+    def get_ugc_vote(self, pkgkey):
+        self.check_connection()
+        idkey = self.get_idkey(pkgkey)
+        vote = 0.0
+        self.execute_query('SELECT avg(`vote`) as `avg_vote` FROM entropy_votes WHERE `idkey` = %s', (idkey,))
+        data = self.fetchone()
+        if data['avg_vote'] != None:
+            vote = float(data['avg_vote'])
+        return vote
+
+    def get_ugc_allvotes(self):
+        vote_data = {}
+        self.execute_query('SELECT `key`,`idkey` FROM entropy_base')
+        keys_data = self.fetchall()
+        if not keys_data: return vote_data
+        for d_dict in keys_data:
+            myvote = 0.0
+            self.execute_query('SELECT avg(`vote`) as `avg_vote` FROM entropy_votes WHERE `idkey` = %s', (d_dict['idkey'],))
+            data = self.fetchone()
+            if data['avg_vote'] != None:
+                myvote = float(data['avg_vote'])
+            vote_data[d_dict['key']] = myvote
+        return vote_data
+
+    def get_ugc_downloads(self, pkgkey):
+        self.check_connection()
+        idkey = self.get_idkey(pkgkey)
+        downloads = 0
+        self.execute_query('SELECT count(`count`) as `tot_downloads` FROM entropy_downloads WHERE `idkey` = %s', (idkey,))
+        data = self.fetchone()
+        if data['tot_downloads'] != None:
+            downloads = data['tot_downloads']
+        return downloads
+
+    def get_ugc_alldownloads(self):
+        down_data = {}
+        self.execute_query('SELECT `key`,`idkey` FROM entropy_base')
+        keys_data = self.fetchall()
+        if not keys_data: return down_data
+        for d_dict in keys_data:
+            downloads = 0
+            self.execute_query('SELECT count(`count`) as `tot_downloads` FROM entropy_downloads WHERE `idkey` = %s', (d_dict['idkey'],))
+            data = self.fetchone()
+            if data['tot_downloads'] != None:
+                downloads = data['tot_downloads']
+            down_data[d_dict['key']] = downloads
+        return down_data
+
     def handle_pkgkey(self, key):
         if not self.is_pkgkey_available(key):
             return self.insert_pkgkey(key, do_commit = True)
@@ -16678,12 +16757,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             )
         )
         if do_commit: self.commit()
+        return self.lastrowid()
 
     def insert_comment(self, pkgkey, userid, comment, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
-        self.insert_generic_doc(idkey, userid, self.DOC_TYPES['comments'], comment)
+        iddoc = self.insert_generic_doc(idkey, userid, self.DOC_TYPES['comments'], comment)
         if do_commit: self.commit()
+        return True, iddoc
 
     def edit_comment(self, iddoc, new_comment, do_commit = False):
         self.check_connection()
@@ -16696,7 +16777,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             )
         )
         if do_commit: self.commit()
-        return True
+        return True, iddoc
 
     def remove_comment(self, iddoc):
         self.check_connection()
@@ -16705,19 +16786,22 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 self.DOC_TYPES['comments'],
             )
         )
-        return True
+        return True, iddoc
 
     # give a vote to an app
-    def do_vote(self, pkgkey, vote, do_commit = False):
+    def do_vote(self, pkgkey, userid, vote, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
         vote = int(vote)
         if vote not in self.VOTE_RANGE: # weird
             vote = 3 # avg?
         mydate = self.get_date()
-        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s,%s)',(
+        if self.has_user_already_voted(pkgkey, userid):
+            return False
+        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s,%s,%s)',(
                 None,
                 idkey,
+                userid,
                 mydate,
                 vote,
                 None,
@@ -16725,6 +16809,15 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         )
         if do_commit: self.commit()
         return True
+
+    def has_user_already_voted(self, pkgkey, userid):
+        self.check_connection()
+        idkey = self.handle_pkgkey(pkgkey)
+        self.execute_query('SELECT `idvote` FROM entropy_votes WHERE `idkey` = %s AND `userid` = %s', (idkey,userid,))
+        data = self.fetchone()
+        if data:
+            return True
+        return False
 
     # increment +1 the number of downloads
     def do_download(self, pkgkey, do_commit = False):
@@ -16742,9 +16835,31 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
         if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
-        self.insert_generic_doc(idkey, userid, doc_type, text)
+        iddoc = self.insert_generic_doc(idkey, userid, doc_type, text)
         if do_commit: self.commit()
-        return True
+        return True, iddoc
+
+    def edit_document(self, iddoc, new_document, do_commit = False):
+        self.check_connection()
+        if not self.is_iddoc_available(iddoc):
+            return False
+        self.execute_query('UPDATE entropy_docs SET `ddata` = %s WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                new_document,
+                iddoc,
+                self.DOC_TYPES['bbcode_doc'],
+            )
+        )
+        if do_commit: self.commit()
+        return True, iddoc
+
+    def remove_document(self, iddoc):
+        self.check_connection()
+        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                iddoc,
+                self.DOC_TYPES['bbcode_doc'],
+            )
+        )
+        return True, iddoc
 
     def scan_for_viruses(self, filepath):
 
@@ -16774,16 +16889,25 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def insert_generic_file(self, pkgkey, userid, file_path, doc_type):
         self.check_connection()
         file_path = os.path.realpath(file_path)
+
         # do a virus check?
         virus_found, virus_type = self.scan_for_viruses(file_path)
         if virus_found:
             os.remove(file_path)
-            return False
+            return False, None
+
         dest_path = os.path.join(self.STORE_PATH,os.path.basename(file_path))
+        orig_dest_path = dest_path
+        dcount = 0
+        while os.path.isfile(dest_path):
+            dcount += 1
+            dest_path = "%s_%s" % (dcount,orig_dest_path,)
+
         if os.path.dirname(file_path) != self.STORE_PATH:
             shutil.move(file_path,dest_path)
         if etpConst['entropygid'] != None:
             const_setup_file(dest_path, etpConst['entropygid'], 0664)
+
         # now store in db
         idkey = self.handle_pkgkey(pkgkey)
         self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s)',(
@@ -16791,11 +16915,12 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 idkey,
                 userid,
                 doc_type,
-                dest_path,
+                os.path.basename(dest_path),
                 None,
             )
         )
-        return True
+        iddoc = self.lastrowid()
+        return True, iddoc
 
     def insert_image(self, pkgkey, userid, image_path):
         return self.insert_generic_file(pkgkey, userid, image_path, self.DOC_TYPES['image'])
@@ -16803,10 +16928,39 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def insert_file(self, pkgkey, userid, file_path):
         return self.insert_generic_file(pkgkey, userid, file_path, self.DOC_TYPES['generic_file'])
 
+    def delete_image(self, iddoc):
+        return self.delete_generic_file(iddoc, self.DOC_TYPES['image'])
+
+    def delete_file(self, iddoc):
+        return self.delete_generic_file(iddoc, self.DOC_TYPES['generic_file'])
+
+    def delete_generic_file(self, iddoc, doc_type):
+        self.check_connection()
+
+        self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                iddoc,
+                doc_type,
+            )
+        )
+        data = self.fetchone()
+        if data != None:
+            mypath = data.get('ddata')
+            if mypath != None:
+                if os.path.isfile(mypath) and os.access(mypath,os.W_OK):
+                    os.remove(mypath)
+
+        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                iddoc,
+                doc_type,
+            )
+        )
+
+        return True, iddoc
+
     def insert_youtube_video(self, pkgkey, userid, video_path, title, description, keywords):
         self.check_connection()
         if not self.gdata:
-            return False
+            return False, None
 
         idkey = self.handle_pkgkey(pkgkey)
         video_path = os.path.realpath(video_path)
@@ -16815,48 +16969,260 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         virus_found, virus_type = self.scan_for_viruses(video_path)
         if virus_found:
             os.remove(video_path)
-            return False
+            return False, None
 
         yt_service = self.get_youtube_service()
         if yt_service == None:
-            return False
+            return False, None
 
+        mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split() if (x.strip() and x.strip(","))])
+        mydescription = "%s: %s" % (pkgkey,description,)
+        mytitle = "%s %s: %s" % (self.system_name,'user generated content',title,)
         my_media_group = self.gdata.media.Group(
-            title = self.gdata.media.Title(text = title),
+            title = self.gdata.media.Title(text = mytitle),
             description = self.gdata.media.Description(
                 description_type = 'plain',
-                text = description
+                text = mydescription
             ),
-            keywords = self.gdata.media.Keywords(text = keywords),
+            keywords = self.gdata.media.Keywords(text = mykeywords),
             category = self.gdata.media.Category(
-                text = 'User Generated Content',
+                text = 'Tech',
                 scheme = 'http://gdata.youtube.com/schemas/2007/categories.cat',
-                label = 'User Generated Content'
+                label = 'Tech'
             ),
             player = None
         )
-        where = self.gdata.geo.Where()
-        where.set_location((45.892876,10.776901)) # set proper location
-        video_entry = self.gdata.youtube.YouTubeVideoEntry(
-            media = my_media_group,
-            geo = where
-        )
+        video_entry = self.gdata.youtube.YouTubeVideoEntry(media = my_media_group)
         new_entry = yt_service.InsertVideoEntry(video_entry, video_path)
         if not isinstance(new_entry,self.gdata.youtube.YouTubeVideoEntry):
-            return False
+            return False, None
         video_url = new_entry.GetSwfUrl()
+        video_id = os.path.basename(video_url)
 
-        return self.insert_generic_doc(idkey, userid, self.DOC_TYPES['youtube_video'], video_url)
+        iddoc = self.insert_generic_doc(idkey, userid, self.DOC_TYPES['youtube_video'], video_id)
+        return True, (iddoc, video_id,)
+
+    def remove_youtube_video(self, iddoc):
+        self.check_connection()
+        if not self.gdata:
+            return False, None
+        if not self.is_iddoc_available(iddoc):
+            return False, None
+
+        yt_service = self.get_youtube_service()
+        if yt_service == None:
+            return False, None
+
+        def do_remove():
+            self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                    iddoc,
+                    self.DOC_TYPES['youtube_video'],
+                )
+            )
+
+        self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+                iddoc,
+                self.DOC_TYPES['youtube_video'],
+            )
+        )
+        data = self.fetchone()
+        if data == None:
+            do_remove()
+            return False, None
+        elif not data.has_key('ddata'):
+            do_remove()
+            return False, None
+
+        video_id = data.get('ddata')
+        video_entry = yt_service.GetYouTubeVideoEntry(video_id = video_id)
+        deleted = yt_service.DeleteVideoEntry(video_entry)
+
+        if deleted:
+            do_remove()
+        return deleted, (iddoc, video_id,)
 
     def get_youtube_service(self):
         self.check_connection()
         if not self.gdata:
             return None
-        keywords = ['youtube_email', 'youtube_password']
+        keywords = ['google_email', 'google_password']
         for keyword in keywords:
             if not self.connection_data.has_key(keyword):
                 return None
-        return self.YouTubeService(email = self.connection_data['youtube_email'], password = self.connection_data['youtube_password'])
+        # note: your google account must be linked with the YouTube one
+        srv = self.YouTubeService.YouTubeService()
+        srv.email = self.connection_data['google_email']
+        srv.password = self.connection_data['google_password']
+        #srv.developer_key = self.connection_data['google_devkey']
+        #srv.client_id = self.connection_data['google_clientid']
+        srv.source = 'Entropy'
+        srv.ProgrammaticLogin()
+        return srv
+
+class DistributionUGCCommands(SocketCommandsSkel):
+
+    import dumpTools
+    def __init__(self, HostInterface, connection_data, store_path):
+
+        SocketCommandsSkel.__init__(self, HostInterface)
+        self.inst_name = "ugc-commands"
+        self.connection_data = connection_data.copy()
+        self.store_path = store_path
+        self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
+
+        self.valid_commands = {
+            'get_comments':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_comments,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the comments of the provided package key",
+                'syntax': "<SESSION_ID> get_comments app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'get_vote':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_vote,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the vote of the provided package key",
+                'syntax': "<SESSION_ID> get_vote app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'get_downloads':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_downloads,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the number of downloads of the provided package key",
+                'syntax': "<SESSION_ID> get_downloads app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'get_textdocs':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_textdocs,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the text documents belonging to the provided package key",
+                'syntax': "<SESSION_ID> get_textdocs app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'get_alldocs':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_alldocs,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the all the documents belonging to the provided package key",
+                'syntax': "<SESSION_ID> get_alldocs app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'get_allvotes':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_allvotes,
+                'args': [],
+                'as_user': False,
+                'desc': "get vote information for every available package key",
+                'syntax': "<SESSION_ID> get_allvotes",
+                'from': str(self), # from what class
+            },
+            'get_alldownloads':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_alldownloads,
+                'args': [],
+                'as_user': False,
+                'desc': "get download information for every available package key",
+                'syntax': "<SESSION_ID> get_alldownloads",
+                'from': str(self), # from what class
+            },
+        }
+
+    def _load_ugc_interface(self):
+        return DistributionUGCInterface(self.connection_data, self.store_path)
+
+    def _get_generic_doctypes(self, pkgkey, doctypes):
+        ugc = self._load_ugc_interface()
+        metadata = ugc.get_ugc_metadata_doctypes(pkgkey, doctypes)
+        if not metadata:
+            return None
+        return metadata
+
+    def docmd_get_comments(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+
+        metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES['comments']])
+        if metadata == None:
+            return None,'no metadata available'
+
+        return metadata,'ok'
+
+    def docmd_get_allvotes(self):
+        ugc = self._load_ugc_interface()
+        metadata = ugc.get_ugc_allvotes()
+        if not metadata:
+            return None,'no metadata available'
+        return metadata,'ok'
+
+    def docmd_get_alldownloads(self):
+        ugc = self._load_ugc_interface()
+        metadata = ugc.get_ugc_alldownloads()
+        if not metadata:
+            return None,'no metadata available'
+        return metadata,'ok'
+
+    def docmd_get_vote(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+
+        ugc = self._load_ugc_interface()
+        vote = ugc.get_ugc_vote(pkgkey)
+        return vote,'ok'
+
+    def docmd_get_downloads(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+
+        ugc = self._load_ugc_interface()
+        downloads = ugc.get_ugc_downloads(pkgkey)
+        return downloads,'ok'
+
+    def docmd_get_textdocs(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+
+        metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES['comments'],self.DOC_TYPES['bbcode_doc']])
+        if metadata == None:
+            return None,'no metadata available'
+
+        return metadata,'ok'
+
+    def docmd_get_alldocs(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+
+        metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES[x] for x in self.DOC_TYPES])
+        if metadata == None:
+            return None,'no metadata available'
+
+        return metadata,'ok'
+
 
 class DistributionAuthInterface:
     """just a reference class, methods must be reimplemented"""
@@ -17515,8 +17881,6 @@ class phpbb3Commands(SocketCommandsSkel):
 
     import dumpTools
     import entropyTools
-    def __str__(self):
-        return self.inst_name
 
     def __init__(self, HostInterface):
 
@@ -18144,8 +18508,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
         import dumpTools
         import entropyTools
-        def __str__(self):
-            return self.inst_name
 
         def __init__(self, HostInterface):
 
