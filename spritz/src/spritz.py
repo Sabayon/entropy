@@ -53,6 +53,8 @@ class SpritzController(Controller):
 
 
     def __init__( self ):
+
+        self.isBusy = False
         self.etpbase = EntropyPackages(EquoConnection)
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
@@ -582,6 +584,9 @@ class SpritzController(Controller):
             self.configProtectSkipModel.append([data])
 
     def on_installPackageItem_activate(self, widget = None, fn = None):
+
+        if self.isBusy:
+            return
 
         if not fn:
             mypattern = '*'+etpConst['packagesext']
@@ -1508,9 +1513,11 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.repoView.populate()
 
     def setBusy(self):
+        self.isBusy = True
         busyCursor(self.ui.main)
 
     def unsetBusy(self):
+        self.isBusy = False
         normalCursor(self.ui.main)
 
     def addPackages(self):

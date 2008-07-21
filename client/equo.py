@@ -312,6 +312,19 @@ elif (options[0] == "--info"):
     text_rescue.getinfo()
     sys.exit(0)
 
+def do_moo():
+    t = """ _____________
+< Entromoooo! >
+ -------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\\
+                ||----w |
+                ||     ||
+"""
+    sys.stdout.write(t)
+    sys.stdout.flush()
+
 def readerrorstatus():
     try:
         f = open(etpConst['errorstatus'],"r")
@@ -377,6 +390,9 @@ try:
     if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
         import text_repositories
         rc = text_repositories.repositories(options)
+
+    elif options[0] == "moo":
+        do_moo()
 
     elif options[0] in ["install","remove","world","deptest","libtest"]:
         import text_ui
