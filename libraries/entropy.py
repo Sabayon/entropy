@@ -16744,6 +16744,17 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             down_data[d_dict['key']] = downloads
         return down_data
 
+    def get_iddoc_userid(self, iddoc):
+        if not self.is_iddoc_available(iddoc):
+            return None
+        self.execute_query('SELECT `userid` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
+        data = self.fetchone()
+        if not data:
+            return None
+        elif not data.has_key('userid'):
+            return None
+        return data['userid']
+
     def handle_pkgkey(self, key):
         if not self.is_pkgkey_available(key):
             return self.insert_pkgkey(key, do_commit = True)
@@ -17156,10 +17167,140 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
                 'from': str(self), # from what class
             },
+            'ugc:do_download':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_do_download,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "inform the system of a downloaded application",
+                'syntax': "<SESSION_ID> ugc:do_download app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'ugc:add_comment':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_add_comment,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "insert a comment related to a package key",
+                'syntax': "<SESSION_ID> ugc:add_comment app-foo/foo <here is my comment ...>",
+                'from': str(self), # from what class
+            },
+            'ugc:remove_comment':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_remove_comment,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "remove a comment related to a package key (you need its iddoc and mod/admin privs)",
+                'syntax': "<SESSION_ID> ugc:remove_comment <iddoc>",
+                'from': str(self), # from what class
+            },
+            'ugc:edit_comment':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_edit_comment,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "edit a comment related to a package key (you need its iddoc, mod/admin privs or being the author)",
+                'syntax': "<SESSION_ID> ugc:edit_comment <iddoc> <here is my NEW comment ...>",
+                'from': str(self), # from what class
+            },
         }
 
     def _load_ugc_interface(self):
         return DistributionUGCInterface(self.connection_data, self.store_path)
+
+    def _get_userid(self, authenticator):
+        session_data = self.HostInterface.sessions.get(authenticator.session)
+        if not session_data:
+            return False
+        elif not session_data.has_key('auth_uid'):
+            return False
+        return session_data['auth_uid']
+
+    def docmd_add_comment(self, authenticator, myargs):
+
+        if len(myargs) < 2:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+        comment = ' '.join(myargs[1:])
+
+        userid = self._get_userid(authenticator)
+        if userid == None:
+            return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return False,'no session data available'
+
+        ugc = self._load_ugc_interface()
+        status, iddoc = ugc.insert_comment(pkgkey, userid, comment)
+        if not status:
+            return False,'unable to add comment'
+        return iddoc,'ok'
+
+    def docmd_remove_comment(self, authenticator, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        try:
+            iddoc = int(myargs[0])
+        except (ValueError,):
+            return False,'not a valid iddoc'
+
+        userid = self._get_userid(authenticator)
+        if userid == None:
+            return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return False,'no session data available'
+
+        ugc = self._load_ugc_interface()
+        iddoc_userid = ugc.get_iddoc_userid(iddoc)
+        if iddoc_userid == None:
+            return False,'document not available'
+
+        # check if admin/mod or author
+        if authenticator.is_user() and (userid != iddoc_userid):
+            return False,'permission denied'
+
+        ugc = self._load_ugc_interface()
+        status, iddoc = ugc.remove_comment(iddoc)
+        if not status:
+            return False,'document not removed or not available'
+
+        return iddoc,'ok'
+
+    def docmd_edit_comment(self, authenticator, myargs):
+
+        if len(myargs) < 2:
+            return None,'wrong arguments'
+        try:
+            iddoc = int(myargs[0])
+        except (ValueError,):
+            return False,'not a valid iddoc'
+
+        new_comment = ' '.join(myargs[1:])
+
+        userid = self._get_userid(authenticator)
+        if userid == None:
+            return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return False,'no session data available'
+
+        ugc = self._load_ugc_interface()
+        iddoc_userid = ugc.get_iddoc_userid(iddoc)
+        if iddoc_userid == None:
+            return False,'document not available'
+
+        # check if admin/mod or author
+        if authenticator.is_user() and (userid != iddoc_userid):
+            return False,'permission denied'
+
+        status, iddoc = ugc.edit_comment(iddoc, new_comment)
+        if not status:
+            return False,'document not removed or not available'
+
+        return iddoc,'ok'
 
     def docmd_do_vote(self, authenticator, myargs):
 
@@ -17168,17 +17309,29 @@ class DistributionUGCCommands(SocketCommandsSkel):
         pkgkey = myargs[0]
         vote = myargs[1]
 
-        session_data = self.HostInterface.sessions.get(authenticator.session)
-        if not session_data:
-            return False,'no session data available'
-        userid = session_data['auth_uid']
+        userid = self._get_userid(authenticator)
         if userid == None:
             return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return userid,'no session data available'
+
         ugc = self._load_ugc_interface()
         voted = ugc.do_vote(pkgkey, userid, vote)
         if not voted:
             return voted,'already voted'
         return voted,'ok'
+
+    def docmd_do_download(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+        pkgkey = myargs[0]
+
+        ugc = self._load_ugc_interface()
+        done = ugc.do_download(pkgkey)
+        if not done:
+            return done,'download not stored'
+        return done,'ok'
 
     def _get_generic_doctypes(self, pkgkey, doctypes):
         ugc = self._load_ugc_interface()
@@ -17521,6 +17674,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if self.is_moderator():
             return False
         elif self.is_administrator():
+            return False
+        elif self.is_developer():
             return False
 
         self.cursor.execute('SELECT user_type,user_id FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
