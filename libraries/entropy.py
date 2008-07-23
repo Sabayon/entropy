@@ -17069,6 +17069,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
 class DistributionUGCCommands(SocketCommandsSkel):
 
+    def __str__(self):
+        return self.inst_name
+
     import dumpTools
     def __init__(self, HostInterface, connection_data, store_path):
 
@@ -18061,6 +18064,9 @@ class phpbb3Commands(SocketCommandsSkel):
 
     import dumpTools
     import entropyTools
+
+    def __str__(self):
+        return self.inst_name
 
     def __init__(self, HostInterface):
 
