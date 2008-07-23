@@ -19243,13 +19243,33 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             if not error:
                 return objdata
 
-    def package_information_handler(self, idpackages, repository, arch, product, session_id, compression):
+    def get_repository_treeupdates(self, repository, arch, product, session_id = None, compression = False):
 
+        self.Service.check_socket_connection()
         close_session = False
         if session_id == None:
             close_session = True
             session_id = self.Service.open_session()
+        """<SESSION_ID> treeupdates <repository> <arch> <product>"""
+        cmd = "%s %s %s %s %s" % (
+            session_id,
+            'treeupdates',
+            repository,
+            arch,
+            product,
+        )
+        data = self.do_generic_handler(cmd, session_id, tries = 5, compression = compression)
+        if close_session:
+            self.Service.close_session(session_id)
+        return data
 
+    def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = False):
+
+        self.Service.check_socket_connection()
+        close_session = False
+        if session_id == None:
+            close_session = True
+            session_id = self.Service.open_session()
         cmd = "%s %s %s %s %s %s %s" % (
             session_id,
             'pkginfo',
@@ -19259,281 +19279,201 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             product,
             ' '.join([str(x) for x in idpackages]),
         )
-
-        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
+        data = self.do_generic_handler(cmd, session_id, compression = compression)
         if close_session:
             self.Service.close_session(session_id)
         return data
-
-    def repository_treeupdates_handler(self, repository, arch, product, session_id, compression):
-
-        close_session = False
-        if session_id == None:
-            close_session = True
-            session_id = self.Service.open_session()
-
-        """<SESSION_ID> treeupdates <repository> <arch> <product>"""
-        cmd = "%s %s %s %s %s" % (
-            session_id,
-            'treeupdates',
-            repository,
-            arch,
-            product,
-        )
-
-        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
-        if close_session:
-            self.Service.close_session(session_id)
-        return data
-
-    def get_repository_treeupdates(self, repository, arch, product, session_id = None, compression = False):
-
-        self.Service.check_socket_connection()
-        tries = 5
-        while 1:
-            try:
-                data = self.repository_treeupdates_handler(
-                    repository,
-                    arch,
-                    product,
-                    session_id = session_id,
-                    compression = compression
-                )
-                return data
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-
-    def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = False):
-
-        self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                data = self.package_information_handler(
-                    idpackages,
-                    repository,
-                    arch,
-                    product,
-                    session_id = session_id,
-                    compression = compression
-                )
-                return data
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
 
     def service_login(self, username, password, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.service_login_handler(username, password, session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def service_login_handler(self, username, password, session_id):
-
         cmd = "%s %s %s %s" % (
             session_id,
             'login',
             username,
             password,
         )
-
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def service_logout(self, username, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.service_logout_handler(username, session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def service_logout_handler(self, username, session_id):
-
         cmd = "%s %s %s" % (
             session_id,
             'logout',
             username,
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def get_logged_user_data(self, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.get_logged_user_data_handler(session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def get_logged_user_data_handler(self, session_id):
-
         cmd = "%s %s" % (
             session_id,
             'user_data',
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def is_user(self, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.is_user_handler(session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def is_user_handler(self, session_id):
-
         cmd = "%s %s" % (
             session_id,
             'is_user',
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def is_developer(self, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.is_developer_handler(session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def is_developer_handler(self, session_id):
-
         cmd = "%s %s" % (
             session_id,
             'is_developer',
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def is_moderator(self, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.is_moderator_handler(session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def is_moderator_handler(self, session_id):
-
         cmd = "%s %s" % (
             session_id,
             'is_moderator',
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def is_administrator(self, session_id):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.is_administrator_handler(session_id)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def is_administrator_handler(self, session_id):
-
         cmd = "%s %s" % (
             session_id,
             'is_administrator',
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
     def ugc_do_download(self, session_id, pkgkey):
 
         self.Service.check_socket_connection()
-
-        tries = 10
-        while 1:
-            try:
-                return self.ugc_do_download_handler(session_id, pkgkey)
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries == 0:
-                    raise
-
-    def ugc_do_download_handler(self, session_id, pkgkey):
-
         cmd = "%s %s %s" % (
             session_id,
             'ugc:do_download',
             pkgkey,
         )
-        result = self.retrieve_command_answer(cmd, session_id)
-        if result == None:
-            return False,'command not supported' # untranslated on purpose
-        return result
+        return self.do_generic_handler(cmd, session_id)
 
+    def ugc_get_downloads(self, session_id, pkgkey):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:get_downloads',
+            pkgkey,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_get_alldownloads(self, session_id):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s" % (
+            session_id,
+            'ugc:get_alldownloads',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_do_vote(self, session_id, pkgkey, vote):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'ugc:do_vote',
+            pkgkey,
+            vote,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_get_vote(self, session_id, pkgkey):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:get_vote',
+            pkgkey,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_get_allvotes(self, session_id):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s" % (
+            session_id,
+            'ugc:get_allvotes',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_add_comment(self, session_id, pkgkey, comment):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'ugc:add_comment',
+            pkgkey,
+            comment,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_edit_comment(self, session_id, iddoc, new_comment):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'ugc:edit_comment',
+            iddoc,
+            new_comment,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_remove_comment(self, session_id, iddoc):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:remove_comment',
+            iddoc,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_get_alldocs(self, session_id, pkgkey):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:get_alldocs',
+            pkgkey,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_get_textdocs(self, session_id, pkgkey):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:get_textdocs',
+            pkgkey,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def do_generic_handler(self, cmd, session_id, tries = 10, compression = False):
+
+        while 1:
+            try:
+                result = self.retrieve_command_answer(cmd, session_id, compression = compression)
+                if result == None:
+                    return False,'command not supported' # untranslated on purpose
+                return result
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries < 1:
+                    raise
 
     def set_gzip_compression_on_rc(self, session, do):
         self.Service.check_socket_connection()
@@ -19718,9 +19658,15 @@ class RepositorySocketClientInterface:
         data = self.append_eos(data)
         try:
             if self.ssl and not self.pyopenssl:
-                self.sock_conn.write(data)
+                try:
+                    self.sock_conn.write(data)
+                except UnicodeEncodeError:
+                    self.sock_conn.write(data.encode('utf-8'))
             else:
-                self.sock_conn.sendall(data)
+                try:
+                    self.sock_conn.sendall(data)
+                except UnicodeEncodeError:
+                    self.sock_conn.sendall(data.encode('utf-8'))
         except self.SSL_exceptions['Error'], e:
             raise exceptionTools.SSLError('SSLError: %s' % (e,))
 
