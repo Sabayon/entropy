@@ -12481,7 +12481,8 @@ class SocketCommandsSkel:
     def __str__(self):
         return self.inst_name
 
-    def __init__(self, HostInterface):
+    inst_name = 'command-skel'
+    def __init__(self, HostInterface, inst_name = 'command-skel'):
         self.HostInterface = HostInterface
         self.no_acked_commands = []
         self.termination_commands = []
@@ -12489,7 +12490,7 @@ class SocketCommandsSkel:
         self.login_pass_commands = []
         self.no_session_commands = []
         self.valid_commands = set()
-        self.inst_name = 'command-skel'
+        self.inst_name = inst_name
 
     def register(
             self,
@@ -13272,13 +13273,9 @@ class SocketHostInterface:
         import dumpTools
         import zlib
 
-        def __str__(self):
-            return self.inst_name
-
         def __init__(self, HostInterface):
 
-            SocketCommandsSkel.__init__(self, HostInterface)
-            self.inst_name = "builtin"
+            SocketCommandsSkel.__init__(self, HostInterface, inst_name = "builtin")
 
             self.valid_commands = {
                 'begin':    {
@@ -17069,14 +17066,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
 class DistributionUGCCommands(SocketCommandsSkel):
 
-    def __str__(self):
-        return self.inst_name
-
     import dumpTools
     def __init__(self, HostInterface, connection_data, store_path):
 
-        SocketCommandsSkel.__init__(self, HostInterface)
-        self.inst_name = "ugc-commands"
+        SocketCommandsSkel.__init__(self, HostInterface, inst_name = "ugc-commands")
         self.connection_data = connection_data.copy()
         self.store_path = store_path
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
@@ -18065,13 +18058,9 @@ class phpbb3Commands(SocketCommandsSkel):
     import dumpTools
     import entropyTools
 
-    def __str__(self):
-        return self.inst_name
-
     def __init__(self, HostInterface):
 
-        SocketCommandsSkel.__init__(self, HostInterface)
-        self.inst_name = "phpbb3-commands"
+        SocketCommandsSkel.__init__(self, HostInterface, inst_name = "phpbb3-commands")
 
         self.valid_commands = {
             'is_user':    {
@@ -18697,8 +18686,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
         def __init__(self, HostInterface):
 
-            SocketCommandsSkel.__init__(self, HostInterface)
-            self.inst_name = "repository-server"
+            SocketCommandsSkel.__init__(self, HostInterface, inst_name = "repository-server")
 
             self.valid_commands = {
                 'dbdiff':    {
