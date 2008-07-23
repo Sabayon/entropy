@@ -12481,7 +12481,6 @@ class SocketCommandsSkel:
     def __str__(self):
         return self.inst_name
 
-    inst_name = 'command-skel'
     def __init__(self, HostInterface):
         self.HostInterface = HostInterface
         self.no_acked_commands = []
@@ -12490,6 +12489,7 @@ class SocketCommandsSkel:
         self.login_pass_commands = []
         self.no_session_commands = []
         self.valid_commands = set()
+        self.inst_name = 'command-skel'
 
     def register(
             self,
@@ -13857,7 +13857,7 @@ class SocketHostInterface:
 
         if self.kwds.has_key('external_cmd_classes'):
             ext_commands = self.kwds.pop('external_cmd_classes')
-            if type(ext_commands) is not list:
+            if not isinstance(ext_commands,list):
                 raise exceptionTools.InvalidDataType("InvalidDataType: external_cmd_classes must be a list")
             self.command_classes += ext_commands
 
@@ -19513,6 +19513,33 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         if result == None:
             return False,'command not supported' # untranslated on purpose
         return result
+
+    def ugc_do_download(self, session_id, pkgkey):
+
+        self.Service.check_socket_connection()
+
+        tries = 10
+        while 1:
+            try:
+                return self.ugc_do_download_handler(session_id, pkgkey)
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries == 0:
+                    raise
+
+    def ugc_do_download_handler(self, session_id, pkgkey):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:do_download',
+            pkgkey,
+        )
+        result = self.retrieve_command_answer(cmd, session_id)
+        if result == None:
+            return False,'command not supported' # untranslated on purpose
+        return result
+
 
     def set_gzip_compression_on_rc(self, session, do):
         self.Service.check_socket_connection()
