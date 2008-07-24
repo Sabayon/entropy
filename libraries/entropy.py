@@ -13032,8 +13032,10 @@ class SocketHostInterface:
             if (session != None) and self.HostInterface.sessions.has_key(session):
                 stream_enabled = self.HostInterface.sessions[session].get('stream_mode')
 
-            if stream_enabled and cmd not in self.HostInterface.config_commands:
-                return cmd,[string],session
+            if stream_enabled and (cmd not in self.HostInterface.config_commands):
+                session_len = 0
+                if session: session_len = len(session)+1
+                return cmd,[string[session_len+len(cmd)+1:]],session
             else:
                 myargs = []
                 if len(args) > 1:
@@ -19599,7 +19601,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 'stream',
                 chunk,
             )
-            status, msg = self.do_generic_handler(cmd, session_id, compression = False) # False is right!
+            status, msg = self.do_generic_handler(cmd, session_id, compression = True) # False is right!
             if not status:
                 stream_status = status
                 stream_msg = msg
