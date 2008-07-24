@@ -14112,13 +14112,11 @@ class SocketHostInterface:
         if self.sessions.has_key(session):
             stream_path = self.sessions[session]['stream_path']
             del self.sessions[session]
-            '''
             if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
                 try:
                     os.remove(stream_path)
                 except OSError:
                     pass
-            '''
             return True
         return False
 
@@ -19593,7 +19591,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         stream_status = True
         stream_msg = 'ok'
         f = open(file_path,"rb")
-        chunk = f.read(4000)
+        chunk = f.read(8192)
         while chunk:
             chunk = zlib.compress(chunk, 7) # compression level 1-9
             cmd = "%s %s %s" % (
@@ -19601,12 +19599,12 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 'stream',
                 chunk,
             )
-            status, msg = self.do_generic_handler(cmd, session_id, compression = True) # False is right!
+            status, msg = self.do_generic_handler(cmd, session_id, compression = compression)
             if not status:
                 stream_status = status
                 stream_msg = msg
                 break
-            chunk = f.read(4000)
+            chunk = f.read(8192)
 
         f.close()
 
