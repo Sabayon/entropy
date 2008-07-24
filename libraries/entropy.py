@@ -19547,7 +19547,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def ugc_get_alldocs(self, session_id, pkgkey):
+    def ugc_get_docs(self, session_id, pkgkey):
 
         self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
@@ -20351,7 +20351,14 @@ class UGCClientInterface:
     def send_file(self, repository, file_path):
         return self.do_cmd(repository, True, "ugc_send_file", [file_path], {})
 
+    def get_downloads(self, repository, pkgkey):
+        return self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
 
+    def get_alldownloads(self, repository):
+        return self.do_cmd(repository, False, "ugc_get_alldownloads", [], {})
+
+    def get_docs(self, repository, pkgkey):
+        return self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
 
 class ServerMirrorsInterface:
 
