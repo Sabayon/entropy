@@ -20153,40 +20153,22 @@ class UGCClientInterface:
         return self.store.remove_login(repository)
 
     def get_comments(self, repository, pkgkey):
-        func = "ugc_get_textdocs"
-        args = [pkgkey]
-        kwargs = {}
-        return self.do_cmd(repository, False, func, args, kwargs)
+        return self.do_cmd(repository, False, "ugc_get_textdocs", [pkgkey], {})
 
     def add_comment(self, repository, pkgkey, comment):
-        func = "ugc_add_comment"
-        args = [pkgkey, comment]
-        kwargs = {}
-        return self.do_cmd(repository, True, func, args, kwargs)
+        return self.do_cmd(repository, True, "ugc_add_comment", [pkgkey, comment], {})
 
     def edit_comment(self, repository, iddoc, new_comment):
-        func = "ugc_edit_comment"
-        args = [iddoc, new_comment]
-        kwargs = {}
-        return self.do_cmd(repository, True, func, args, kwargs)
+        return self.do_cmd(repository, True, "ugc_edit_comment", [iddoc, new_comment], {})
 
     def remove_comment(self, repository, iddoc):
-        func = "ugc_remove_comment"
-        args = [iddoc]
-        kwargs = {}
-        return self.do_cmd(repository, True, func, args, kwargs)
+        return self.do_cmd(repository, True, "ugc_remove_comment", [iddoc], {})
 
     def add_vote(self, repository, pkgkey, vote):
-        func = "ugc_do_vote"
-        args = [pkgkey, vote]
-        kwargs = {}
-        return self.do_cmd(repository, True, func, args, kwargs)
+        return self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
 
     def add_download(self, repository, pkgkey):
-        func = "ugc_do_download"
-        args = [pkgkey]
-        kwargs = {}
-        return self.do_cmd(repository, False, func, args, kwargs)
+        return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
 
     # func must have session as first param
     def do_cmd(self, repository, login_required, func, args, kwargs):
@@ -20205,7 +20187,13 @@ class UGCClientInterface:
 
         if login_required:
             # login
-            username, password = self.read_login(repository)
+            login_data = self.read_login(repository)
+            if login_data == None:
+                status, msg = self.login(repository)
+                if not status: return status, msg
+                username, password = self.read_login(repository)
+            else:
+                username, password = login_data
             logged, error = srv.CmdInterface.service_login(username, password, session)
             if not logged:
                 srv.close_session(session)
