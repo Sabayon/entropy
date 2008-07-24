@@ -16749,7 +16749,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_downloads(self, pkgkey):
         self.check_connection()
         downloads = 0
-        self.execute_query('SELECT count(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_downloads.idkey', (pkgkey,))
+        self.execute_query('SELECT sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_downloads.idkey', (pkgkey,))
         data = self.fetchone()
         if data['tot_downloads'] != None:
             downloads = data['tot_downloads']
