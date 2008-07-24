@@ -66,7 +66,7 @@ class matchContainer:
 '''
 class EquoInterface(TextInterface):
 
-    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True):
+    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True, load_ugc = True):
 
         # modules import
         import dumpTools, entropyTools
@@ -129,6 +129,11 @@ class EquoInterface(TextInterface):
         self.validRepositories = []
         if self.repo_validation:
             self.validate_repositories()
+
+        # load User Generated Content Interface
+        self.UGC = None
+        if load_ugc:
+            self.UGC = UGCClientInterface(self)
 
 
     def __del__(self):
@@ -2858,7 +2863,7 @@ class EquoInterface(TextInterface):
         else:
             return item
 
-    def fetch_file_on_mirrors(self, repository, filename, digest = False, verified = False, fetch_abort_function = None):
+    def fetch_file_on_mirrors(self, repository, filename, digest = False, verified = False, fetch_abort_function = None, package_name = None):
 
         uris = etpRepositories[repository]['packages'][::-1]
         remaining = set(uris[:])
@@ -2936,6 +2941,16 @@ class EquoInterface(TextInterface):
                             type = "info",
                             header = red("   ## ")
                         )
+                        if (self.UGC != None) and (package_name != None):
+                            def register_download(repository, package_name):
+                                try:
+                                    self.UGC.add_download(repository, package_name)
+                                except:
+                                    raise
+                            task = self.entropyTools.parallelTask(register_download, repository, package_name)
+                            task.parallel_wait()
+                            task.start()
+
                         return 0
                     elif resumed:
                         do_resume = False
@@ -3712,11 +3727,15 @@ class PackageInterface:
                     header = red("   ## "),
                     back = True
                 )
+                pkgkey = None
+                if self.infoDict.has_key('atom'):
+                    pkgkey = self.Entropy.entropyTools.dep_getkey(self.infoDict['atom'])
                 fetch = self.Entropy.fetch_file_on_mirrors(
                             self.infoDict['repository'],
                             self.infoDict['download'],
                             self.infoDict['checksum'],
-                            fetch_abort_function = self.fetch_abort_function
+                            fetch_abort_function = self.fetch_abort_function,
+                            package_name = pkgkey
                         )
                 if fetch != 0:
                     self.Entropy.updateProgress(
@@ -4747,12 +4766,16 @@ class PackageInterface:
             type = "info",
             header = red("   ## ")
         )
+        pkgkey = None
+        if self.infoDict.has_key('atom'):
+            pkgkey = self.Entropy.entropyTools.dep_getkey(self.infoDict['atom'])
         rc = self.Entropy.fetch_file_on_mirrors(
             self.infoDict['repository'],
             self.infoDict['download'],
             self.infoDict['checksum'],
             self.infoDict['verified'],
-            fetch_abort_function = self.fetch_abort_function
+            fetch_abort_function = self.fetch_abort_function,
+            package_name = pkgkey
         )
         if rc != 0:
             mytxt = "%s. %s: %s" % (
@@ -16507,7 +16530,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `userid` INT UNSIGNED NOT NULL,
             `vdate` DATE NOT NULL,
             `vote` TINYINT NOT NULL,
-            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
         """,
         'entropy_downloads': """
@@ -16515,7 +16539,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `iddownload` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `idkey` INT UNSIGNED NOT NULL,
             `ddate` DATE NOT NULL,
-            `count` INT UNSIGNED NULL DEFAULT '0'
+            `count` INT UNSIGNED NULL DEFAULT '0',
+            FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
         """,
         'entropy_docs': """
@@ -16525,7 +16550,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `userid` INT UNSIGNED NOT NULL,
             `iddoctype` TINYINT NOT NULL,
             `ddata` TEXT NOT NULL,
-            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
             ALTER TABLE `entropy_docs` ADD INDEX ( `idkey` );
             ALTER TABLE `entropy_docs` ADD INDEX ( `userid` );
@@ -16722,9 +16748,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_ugc_downloads(self, pkgkey):
         self.check_connection()
-        idkey = self.get_idkey(pkgkey)
         downloads = 0
-        self.execute_query('SELECT count(`count`) as `tot_downloads` FROM entropy_downloads WHERE `idkey` = %s', (idkey,))
+        self.execute_query('SELECT count(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_downloads.idkey', (pkgkey,))
         data = self.fetchone()
         if data['tot_downloads'] != None:
             downloads = data['tot_downloads']
@@ -19952,9 +19977,10 @@ class UGCClientAuthStore:
             password = repository.getElementsByTagName("password")[0].firstChild.data.strip()
             self.store[repoid] = {'username': username, 'password': password}
 
-    def store_login(self, username, password, repository):
+    def store_login(self, username, password, repository, save = True):
         self.store[repository] = {'username': username, 'password': password}
-        self.save_store()
+        if save:
+            self.save_store()
 
     def save_store(self):
 
@@ -19985,10 +20011,11 @@ class UGCClientAuthStore:
         self.parse_document()
 
 
-    def remove_login(self, repository):
+    def remove_login(self, repository, save = True):
         if repository in self.store:
             del self.store[repository]
-            self.save_store()
+            if save:
+                self.save_store()
 
     def read_login(self, repository):
         if repository in self.store:
@@ -19996,26 +20023,134 @@ class UGCClientAuthStore:
 
 class UGCClientInterface:
 
+    ssl_connection = True
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid EquoInterface based instance is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
+        import socket
+        self.socket = socket
+        import struct
+        self.struct = struct
         self.Entropy = EquoInstance
         self.store = UGCClientAuthStore()
+        self.xcache = {}
+
+    def get_cache_item(self, repository, item):
+        if repository not in self.xcache:
+            return None
+        return self.xcache[repository].get(item)
+
+    def set_cache_item(self, repository, item, obj):
+        if repository not in self.xcache:
+            self.xcache[repository] = {}
+        if type(obj) in (list,tuple,):
+            my_obj = obj[:]
+        elif type(obj) in (set,frozenset,dict,):
+            my_obj = obj.copy()
+        else:
+            my_obj = obj
+        self.xcache[repository][item] = my_obj
+
+    def connect_to_service(self, repository):
+        if repository not in etpRepositories:
+            raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository is not available'),))
+
+        try:
+            url = etpRepositories[repository]['plain_database'].split("/")[2]
+            port = etpRepositories[repository]['ssl_service_port']
+        except (IndexError,KeyError,):
+            raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
+
+        srv = RepositorySocketClientInterface(self.Entropy, EntropyRepositorySocketClientCommands, ssl = self.ssl_connection, quiet = True)
+        srv.connect(url, port)
+        return srv
+
+    def get_service_connection(self, repository, check = True):
+        if check:
+            if not self.is_repository_eapi3_aware(repository):
+                return None
+        try:
+            srv = self.connect_to_service(repository)
+        except (exceptionTools.RepositoryError,exceptionTools.ConnectionError,):
+            return None
+        except (self.socket.error,self.struct.error,):
+            return None
+        return srv
 
     def is_repository_eapi3_aware(self, repository):
-        pass
+
+        aware = self.get_cache_item(repository, 'is_repository_eapi3_aware')
+        if aware != None:
+            return aware
+
+        srv = self.get_service_connection(repository, check = False)
+        if srv == None: aware = False
+
+        if aware == None:
+            srv.disconnect()
+            aware = True
+
+        self.set_cache_item(repository, 'is_repository_eapi3_aware', aware)
+        return aware
 
     def read_login(self, repository):
-        pass
+        return self.store.read_login(repository)
 
     def login(self, repository):
-        pass
+        login_data = self.read_login(repository)
+        if login_data != None:
+            return True,_('ok')
+
+        aware = self.is_repository_eapi3_aware(repository)
+        if not aware:
+            return False,_('repository does not support EAPI3')
+
+        def fake_callback(*args,**kwargs):
+            return True
+
+        attempts = 3
+        while attempts:
+
+            # use input box to read login
+            input_params = [
+                ('username',_('Username'),fake_callback,False),
+                ('password',_('Password'),fake_callback,True)
+            ]
+            login_data = self.Entropy.inputBox(
+                "%s %s %s" % (_('Please login against'),repository,_('repository'),),
+                input_params,
+                cancel_button = True
+            )
+            if not login_data:
+                return False,_('login abort')
+
+            # now verify
+            srv = self.get_service_connection(repository)
+            if srv == None:
+                return False,_('connection issues')
+            session = srv.open_session()
+            login_status, login_msg = srv.CmdInterface.service_login(login_data['username'], login_data['password'], session)
+            if not login_status:
+                srv.close_session(session)
+                srv.disconnect()
+                self.Entropy.askQuestion("%s: %s" % (_("Access denied. Login failed"),login_msg,), responses = ["Ok"])
+                attempts -= 1
+                continue
+
+            # login accepted, store it?
+            srv.close_session(session)
+            srv.disconnect()
+            rc = self.Entropy.askQuestion(_("Login successful. Do you want to save login information ?"))
+            save = False
+            if rc == "Yes": save = True
+            self.store.store_login(login_data['username'], login_data['password'], repository, save = save)
+            return True,_('ok')
 
     def logout(self, repository):
-        pass
+        return self.store.remove_login(repository)
 
     def get_comments(self, repository, pkgkey):
         pass
@@ -20033,7 +20168,16 @@ class UGCClientInterface:
         pass
 
     def add_download(self, repository, pkgkey):
-        pass
+        srv = self.get_service_connection(repository)
+        if srv == None:
+            return False,'no connection'
+        session = srv.open_session()
+        if session == None:
+            return False,'no session'
+        rslt = srv.CmdInterface.ugc_do_download(session,pkgkey)
+        srv.close_session(session)
+        srv.disconnect()
+        return rslt
 
 
 class ServerMirrorsInterface:
