@@ -12512,6 +12512,7 @@ class SocketCommandsSkel:
         self.initialization_commands = []
         self.login_pass_commands = []
         self.no_session_commands = []
+        self.raw_commands = []
         self.valid_commands = set()
         self.inst_name = inst_name
 
@@ -12522,7 +12523,8 @@ class SocketCommandsSkel:
             termination_commands,
             initialization_commands,
             login_pass_commads,
-            no_session_commands
+            no_session_commands,
+            raw_commands
         ):
         valid_commands.update(self.valid_commands)
         no_acked_commands.extend(self.no_acked_commands)
@@ -12530,6 +12532,7 @@ class SocketCommandsSkel:
         initialization_commands.extend(self.initialization_commands)
         login_pass_commads.extend(self.login_pass_commands)
         no_session_commands.extend(self.no_session_commands)
+        raw_commands.append(self.raw_commands)
 
 class SocketAuthenticatorSkel:
 
@@ -13224,7 +13227,10 @@ class SocketHostInterface:
                 )
             )
 
-            myargs, mykwargs = self._get_args_kwargs(args)
+            myargs = args
+            mykwargs = {}
+            if cmd not in self.HostInterface.raw_commands:
+                myargs, mykwargs = self._get_args_kwargs(args)
 
             rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy, authenticator)
             if session != None and self.HostInterface.sessions.has_key(session):
@@ -13239,7 +13245,7 @@ class SocketHostInterface:
                     x = arg.split("=")
                     a = x[0]
                     b = ''.join(x[1:])
-                    mykwargs[a] = eval(b)
+                        mykwargs[a] = eval(b)
                 else:
                     try:
                         myargs.append(eval(arg))
@@ -13447,6 +13453,7 @@ class SocketHostInterface:
             self.initialization_commands = ["begin"]
             self.login_pass_commands = ["login"]
             self.no_session_commands = ["begin","hello","alive","help"]
+            self.raw_commands = ["stream"]
 
         def docmd_session_config(self, session, myargs):
 
@@ -13749,6 +13756,7 @@ class SocketHostInterface:
         self.last_print = ''
         self.valid_commands = {}
         self.no_acked_commands = []
+        self.raw_commands = []
         self.termination_commands = []
         self.initialization_commands = []
         self.login_pass_commands = []
@@ -13956,7 +13964,8 @@ class SocketHostInterface:
                                 self.termination_commands,
                                 self.initialization_commands,
                                 self.login_pass_commands,
-                                self.no_session_commands
+                                self.no_session_commands,
+                                self.raw_commands
                             )
 
     def disable_commands(self):
@@ -13979,6 +13988,9 @@ class SocketHostInterface:
 
             if cmd in self.no_session_commands:
                 self.no_session_commands.remove(cmd)
+
+            if cmd in self.raw_commands:
+                self.raw_commands.remove(cmd)
 
     def start_local_output_interface(self):
         if self.kwds.has_key('sock_output'):
@@ -20327,6 +20339,8 @@ class UGCClientInterface:
     def add_download(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
 
+    def send_file(self, repository, file_path):
+        return self.do_cmd(repository, True, "ugc_send_file", [file_path], {})
 
 
 
