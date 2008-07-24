@@ -517,6 +517,7 @@ def const_defaultSettings(rootdir):
     ETP_SECURITYDIR = "/glsa/"
     ETP_LOG_DIR = ETP_DIR+"/"+"logs"
     ETP_CONF_DIR = rootdir+"/etc/entropy"
+    ETP_UGC_CONF_DIR = ETP_CONF_DIR+"/ugc"
     ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
     ETP_VAR_DIR = rootdir+"/var/tmp/entropy"
     edbCOUNTER = rootdir+"/var/cache/edb/counter"
@@ -799,6 +800,7 @@ def const_defaultSettings(rootdir):
             'generic_file': 4,
             'youtube_video': 5,
         },
+        'ugc_accessfile': ETP_UGC_CONF_DIR+"/access.xml",
 
         # handler settings
         'handlers': {

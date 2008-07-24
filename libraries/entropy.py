@@ -19907,6 +19907,134 @@ class RepositorySocketClientInterface:
         self.hostname = None
         self.hostport = None
 
+class UGCClientAuthStore:
+
+    access_file = etpConst['ugc_accessfile']
+    def __init__(self):
+
+        from xml.dom import minidom
+        from xml.parsers import expat
+        self.expat = expat
+        self.minidom = minidom
+        self.access_dir = os.path.dirname(self.access_file)
+        self.setup_permissions()
+        self.store = {}
+        try:
+            self.xmldoc = self.minidom.parse(self.access_file)
+        except self.expat.ExpatError:
+            self.xmldoc = None
+        if self.xmldoc != None:
+            try:
+                self.parse_document()
+            except self.expat.ExpatError:
+                self.xmldoc = None
+                self.store = {}
+
+    def setup_permissions(self):
+        if not os.path.isdir(self.access_dir):
+            os.makedirs(self.access_dir)
+        if not os.path.isfile(self.access_file):
+            f = open(self.access_file,"w")
+            f.close()
+        if etpConst['entropygid'] != None:
+            const_setup_perms(self.access_dir,etpConst['entropygid'])
+        if os.path.isfile(self.access_file):
+            const_secure_config_file(self.access_file)
+
+    def parse_document(self):
+        self.store.clear()
+        store = self.xmldoc.getElementsByTagName("store")[0]
+        repositories = store.getElementsByTagName("repository")
+        for repository in repositories:
+            repoid = repository.getAttribute("id")
+            if not repoid: continue
+            username = repository.getElementsByTagName("username")[0].firstChild.data.strip()
+            password = repository.getElementsByTagName("password")[0].firstChild.data.strip()
+            self.store[repoid] = {'username': username, 'password': password}
+
+    def store_login(self, username, password, repository):
+        self.store[repository] = {'username': username, 'password': password}
+        self.save_store()
+
+    def save_store(self):
+
+        self.xmldoc = self.minidom.Document()
+        store = self.xmldoc.createElement("store")
+
+        for repository in self.store:
+            repo = self.xmldoc.createElement("repository")
+            repo.setAttribute('id',repository)
+            # username
+            username = self.xmldoc.createElement("username")
+            username_value = self.xmldoc.createTextNode(self.store[repository]['username'])
+            username.appendChild(username_value)
+            repo.appendChild(username)
+            # password
+            password = self.xmldoc.createElement("password")
+            password_value = self.xmldoc.createTextNode(self.store[repository]['password'])
+            password.appendChild(password_value)
+            repo.appendChild(password)
+            store.appendChild(repo)
+
+        self.xmldoc.appendChild(store)
+        f = open(self.access_file,"w")
+        f.writelines(self.xmldoc.toprettyxml(indent="    "))
+        f.flush()
+        f.close()
+        self.setup_permissions()
+        self.parse_document()
+
+
+    def remove_login(self, repository):
+        if repository in self.store:
+            del self.store[repository]
+            self.save_store()
+
+    def read_login(self, repository):
+        if repository in self.store:
+            return self.store[repository]['username'],self.store[repository]['password']
+
+class UGCClientInterface:
+
+    def __init__(self, EquoInstance):
+
+        if not isinstance(EquoInstance,EquoInterface):
+            mytxt = _("A valid EquoInterface based instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+
+        self.Entropy = EquoInstance
+        self.store = UGCClientAuthStore()
+
+    def is_repository_eapi3_aware(self, repository):
+        pass
+
+    def read_login(self, repository):
+        pass
+
+    def login(self, repository):
+        pass
+
+    def logout(self, repository):
+        pass
+
+    def get_comments(self, repository, pkgkey):
+        pass
+
+    def add_comment(self, repository, pkgkey, comment):
+        pass
+
+    def edit_comment(self, repository, iddoc, new_comment):
+        pass
+
+    def remove_comment(self, repository, iddoc):
+        pass
+
+    def add_vote(self, repository, pkgkey, vote):
+        pass
+
+    def add_download(self, repository, pkgkey):
+        pass
+
 
 class ServerMirrorsInterface:
 
