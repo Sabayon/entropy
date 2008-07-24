@@ -14,7 +14,7 @@ if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
 import entropyTools, exceptionTools
-from entropy import RepositorySocketServerInterface, phpBB3AuthInterface, phpbb3Authenticator, phpbb3Commands
+from entropy import RepositorySocketServerInterface, phpBB3AuthInterface, phpbb3Authenticator, phpbb3Commands, DistributionUGCCommands
 
 
 connection_data = {
@@ -24,6 +24,16 @@ connection_data = {
     'password': 'mypassword',
     'dbname': 'phpbb_db'
 }
+ugc_connection_data = {
+  'hostname': 'localhost',
+  'username': 'entropy',
+  'password': 'password',
+  'dbname': 'entropy',
+  'google_email': 'your@gmail.com', # valid google account
+  'google_password': 'yourgmailpassword', # valid google e-mail
+}
+ugc_store_path = "/path/to/your/ugc/store"
+ugc_args = [ugc_connection_data,ugc_store_path]
 
 # configure my repositories
 repositories = {
@@ -46,7 +56,7 @@ srv = RepositorySocketServerInterface(
         repositories = repositories,
         stdout_logging = do_stdout_logging,
         sock_auth = sock_auth,
-        external_cmd_classes = [phpbb3Commands]
+        external_cmd_classes = [phpbb3Commands,(DistributionUGCCommands,ugc_args,)]
     )
 if do_ssl:
     srv_ssl = RepositorySocketServerInterface(
@@ -54,7 +64,7 @@ if do_ssl:
         repositories = repositories,
         stdout_logging = do_stdout_logging,
         sock_auth = sock_auth,
-        external_cmd_classes = [phpbb3Commands]
+        external_cmd_classes = [phpbb3Commands,(DistributionUGCCommands,ugc_args,)]
     )
 
 task = entropyTools.parallelTask(run_srv, srv)
