@@ -13245,7 +13245,7 @@ class SocketHostInterface:
                     x = arg.split("=")
                     a = x[0]
                     b = ''.join(x[1:])
-                        mykwargs[a] = eval(b)
+                    mykwargs[a] = eval(b)
                 else:
                     try:
                         myargs.append(eval(arg))
