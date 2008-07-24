@@ -13022,11 +13022,18 @@ class SocketHostInterface:
                 cmd = args[1]
                 args = args[1:] # remove session
 
-            myargs = []
-            if len(args) > 1:
-                myargs = args[1:]
+            stream_enabled = False
+            if (session != None) and self.HostInterface.sessions.has_key(session):
+                stream_enabled = self.HostInterface.sessions[session].get('stream_mode')
 
-            return cmd,myargs,session
+            if stream_enabled:
+                return cmd,[string],session
+            else:
+                myargs = []
+                if len(args) > 1:
+                    myargs = args[1:]
+
+                return cmd,myargs,session
 
         def handle_end_answer(self, cmd, whoops, valid_cmd):
             if not valid_cmd:
@@ -13423,7 +13430,16 @@ class SocketHostInterface:
                                 'syntax': "help",
                                 'from': str(self),
                             },
-
+                'stream':   {
+                                'auth': True,
+                                'built_in': True,
+                                'cb': self.docmd_stream,
+                                'args': ["session", "myargs"],
+                                'as_user': False,
+                                'desc': "send a chunk of data to be saved on the session temp file path (will be removed on session expiration)",
+                                'syntax': "<SESSION_ID> stream <chunk of byte-string to write to file>",
+                                'from': str(self),
+                            },
             }
 
             self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout","help"]
@@ -13461,9 +13477,39 @@ class SocketHostInterface:
                     docomp = None
                 self.HostInterface.sessions[session]['compression'] = docomp
                 return True,"compression now: %s" % (docomp,)
+            elif option == "stream":
+                dostream = True
+                if "off" in myopts:
+                    dostream = False
+                self.HostInterface.sessions[session]['stream_mode'] = dostream
+                return True,'stream mode: %s' % (dostream,)
             else:
                 return False,"invalid config option"
 
+        def docmd_stream(self, session, myargs):
+
+            if not self.HostInterface.sessions[session]['stream_mode']:
+                return False,'not in stream mode'
+            if not myargs:
+                return False,'no stream sent'
+
+            stream = myargs[0]
+            stream_path = self.HostInterface.sessions[session]['stream_path']
+            stream_dir = os.path.dirname(stream_path)
+            if not os.path.isdir(os.path.dirname(stream_path)):
+                try:
+                    os.makedirs(stream_dir)
+                    if etpConst['entropygid'] != None:
+                        const_setup_perms(stream_dir,etpConst['entropygid'])
+                except OSError:
+                    return False,'cannot initialize stream directory'
+
+            f = open(stream_path,'abw')
+            f.write(stream)
+            f.flush()
+            f.close()
+
+            return True,'ok'
 
         def docmd_login(self, transmitter, authenticator, session, client_address, myargs):
 
@@ -14016,6 +14062,8 @@ class SocketHostInterface:
         self.sessions[rng]['user'] = False
         self.sessions[rng]['developer'] = False
         self.sessions[rng]['compression'] = None
+        self.sessions[rng]['stream_mode'] = False
+        self.sessions[rng]['stream_path'] = self.entropyTools.getRandomTempFile()
         self.sessions[rng]['t'] = time.time()
         self.sessions[rng]['ip_address'] = ip_address
         return rng
@@ -14035,7 +14083,15 @@ class SocketHostInterface:
 
     def destroy_session(self, session):
         if self.sessions.has_key(session):
+            stream_path = self.sessions[session]['stream_path']
             del self.sessions[session]
+            '''
+            if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
+                try:
+                    os.remove(stream_path)
+                except OSError:
+                    pass
+            '''
             return True
         return False
 
@@ -20152,25 +20208,7 @@ class UGCClientInterface:
     def logout(self, repository):
         return self.store.remove_login(repository)
 
-    def get_comments(self, repository, pkgkey):
-        return self.do_cmd(repository, False, "ugc_get_textdocs", [pkgkey], {})
-
-    def add_comment(self, repository, pkgkey, comment):
-        return self.do_cmd(repository, True, "ugc_add_comment", [pkgkey, comment], {})
-
-    def edit_comment(self, repository, iddoc, new_comment):
-        return self.do_cmd(repository, True, "ugc_edit_comment", [iddoc, new_comment], {})
-
-    def remove_comment(self, repository, iddoc):
-        return self.do_cmd(repository, True, "ugc_remove_comment", [iddoc], {})
-
-    def add_vote(self, repository, pkgkey, vote):
-        return self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
-
-    def add_download(self, repository, pkgkey):
-        return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
-
-    # func must have session as first param
+    # eval(func) must have session as first param
     def do_cmd(self, repository, login_required, func, args, kwargs):
 
         status, err_msg = self.login(repository)
@@ -20204,6 +20242,26 @@ class UGCClientInterface:
         srv.close_session(session)
         srv.disconnect()
         return rslt
+
+    def get_comments(self, repository, pkgkey):
+        return self.do_cmd(repository, False, "ugc_get_textdocs", [pkgkey], {})
+
+    def add_comment(self, repository, pkgkey, comment):
+        return self.do_cmd(repository, True, "ugc_add_comment", [pkgkey, comment], {})
+
+    def edit_comment(self, repository, iddoc, new_comment):
+        return self.do_cmd(repository, True, "ugc_edit_comment", [iddoc, new_comment], {})
+
+    def remove_comment(self, repository, iddoc):
+        return self.do_cmd(repository, True, "ugc_remove_comment", [iddoc], {})
+
+    def add_vote(self, repository, pkgkey, vote):
+        return self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
+
+    def add_download(self, repository, pkgkey):
+        return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
+
+
 
 
 class ServerMirrorsInterface:
