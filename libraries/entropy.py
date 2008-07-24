@@ -6210,7 +6210,7 @@ class RepoInterface:
 
         # enable compression
         if compression:
-            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, True)
+            self.eapi3_socket.CmdInterface.set_gzip_compression(session, True)
 
         added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
             repo,
@@ -6381,7 +6381,7 @@ class RepoInterface:
 
         # disable compression
         if compression:
-            self.eapi3_socket.CmdInterface.set_gzip_compression_on_rc(session, False)
+            self.eapi3_socket.CmdInterface.set_gzip_compression(session, False)
 
         # I don't need you anymore
         self.eapi3_socket.close_session(session)
@@ -13493,6 +13493,8 @@ class SocketHostInterface:
             if not myargs:
                 return False,'no stream sent'
 
+            compression = self.HostInterface.sessions[session]['compression']
+
             stream = myargs[0]
             stream_path = self.HostInterface.sessions[session]['stream_path']
             stream_dir = os.path.dirname(stream_path)
@@ -13505,6 +13507,8 @@ class SocketHostInterface:
                     return False,'cannot initialize stream directory'
 
             f = open(stream_path,'abw')
+            if compression:
+                stream = self.zlib.decompress(stream)
             f.write(stream)
             f.flush()
             f.close()
@@ -19542,6 +19546,64 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
+    def ugc_send_file(self, session_id, file_path):
+
+        if not (os.path.isfile(file_path) and os.access(file_path,os.R_OK)):
+            return False,False,'cannot read file_path'
+
+        import zlib
+        self.Service.check_socket_connection()
+        # enable stream
+        cmd = "%s %s %s on" % (
+            session_id,
+            'session_config',
+            'stream',
+        )
+        status, msg = self.do_generic_handler(cmd, session_id)
+        if not status:
+            return False,status,msg
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
+        # start streamer
+        stream_status = True
+        stream_msg = 'ok'
+        f = open(file_path,"rb")
+        chunk = f.read(4000)
+        while chunk:
+            chunk = zlib.compress(chunk, 7) # compression level 1-9
+            cmd = "%s %s %s" % (
+                session_id,
+                'stream',
+                chunk,
+            )
+            status, msg = self.do_generic_handler(cmd, session_id, compression = compression)
+            if not status:
+                stream_status = status
+                stream_msg = msg
+                break
+            chunk = f.read(4000)
+
+        f.close()
+
+        # disable compression
+        disabled_compr = self.set_gzip_compression(session_id, False)
+        if disabled_compr: compression = False
+
+        # disable config
+        cmd = "%s %s %s off" % (
+            session_id,
+            'session_config',
+            'stream',
+        )
+        status, msg = self.do_generic_handler(cmd, session_id, compression = compression)
+        if not status:
+            return False,status,msg
+
+        return True,stream_status,stream_msg
+
+
     def do_generic_handler(self, cmd, session_id, tries = 10, compression = False):
 
         while 1:
@@ -19556,7 +19618,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
                 if tries < 1:
                     raise
 
-    def set_gzip_compression_on_rc(self, session, do):
+    def set_gzip_compression(self, session, do):
         self.Service.check_socket_connection()
         cmd = "%s %s %s %s zlib" % (session, 'session_config', 'compression', do,)
         self.Service.transmit(cmd)
@@ -20066,7 +20128,6 @@ class UGCClientAuthStore:
         self.setup_permissions()
         self.parse_document()
 
-
     def remove_login(self, repository, save = True):
         if repository in self.store:
             del self.store[repository]
@@ -20143,11 +20204,16 @@ class UGCClientInterface:
             return aware
 
         srv = self.get_service_connection(repository, check = False)
-        if srv == None: aware = False
-
-        if aware == None:
-            srv.disconnect()
-            aware = True
+        if srv == None:
+            aware = False
+        else:
+            session = srv.open_session()
+            if session != None:
+                srv.close_session(session)
+                srv.disconnect()
+                aware = True
+            else:
+                aware = False
 
         self.set_cache_item(repository, 'is_repository_eapi3_aware', aware)
         return aware
