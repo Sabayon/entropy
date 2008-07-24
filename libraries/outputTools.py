@@ -395,9 +395,9 @@ def readtext(request, password = False):
     if password:
         from getpass import getpass
         try:
-            text = getpass(request)
+            text = getpass(request+" ")
         except UnicodeEncodeError:
-            text = getpass(request.encode('utf-8'))
+            text = getpass(request.encode('utf-8')+" ")
     else:
         import readline
         try:
@@ -511,7 +511,6 @@ class TextInterface:
     #   {'identifier 1': result, 'identifier 2': result}
     def inputBox(self, title, input_parameters, cancel_button = True):
         results = {}
-
         try:
             print title
         except UnicodeEncodeError:
@@ -522,7 +521,7 @@ class TextInterface:
             while 1:
                 try:
                     myresult = readtext(input_text+":", password = password)
-                except KeyboardInterrupt:
+                except (KeyboardInterrupt,EOFError,):
                     if not cancel_button: # use with care
                         continue
                     return None
