@@ -12513,7 +12513,7 @@ class SocketCommandsSkel:
         self.login_pass_commands = []
         self.no_session_commands = []
         self.raw_commands = []
-        self.setup_commands = []
+        self.config_commands = []
         self.valid_commands = set()
         self.inst_name = inst_name
 
@@ -12526,7 +12526,7 @@ class SocketCommandsSkel:
             login_pass_commads,
             no_session_commands,
             raw_commands,
-            setup_commands
+            config_commands
         ):
         valid_commands.update(self.valid_commands)
         no_acked_commands.extend(self.no_acked_commands)
@@ -12535,7 +12535,7 @@ class SocketCommandsSkel:
         login_pass_commads.extend(self.login_pass_commands)
         no_session_commands.extend(self.no_session_commands)
         raw_commands.extend(self.raw_commands)
-        setup_commands.extend(self.setup_commands)
+        config_commands.extend(self.config_commands)
 
 class SocketAuthenticatorSkel:
 
@@ -13032,7 +13032,7 @@ class SocketHostInterface:
             if (session != None) and self.HostInterface.sessions.has_key(session):
                 stream_enabled = self.HostInterface.sessions[session].get('stream_mode')
 
-            if stream_enabled and cmd not in self.HostInterface.setup_commands:
+            if stream_enabled and cmd not in self.HostInterface.config_commands:
                 return cmd,[string],session
             else:
                 myargs = []
@@ -13457,7 +13457,7 @@ class SocketHostInterface:
             self.login_pass_commands = ["login"]
             self.no_session_commands = ["begin","hello","alive","help"]
             self.raw_commands = ["stream"]
-            self.setup_commands = ["session_config"]
+            self.config_commands = ["session_config"]
 
         def docmd_session_config(self, session, myargs):
 
@@ -13761,7 +13761,7 @@ class SocketHostInterface:
         self.valid_commands = {}
         self.no_acked_commands = []
         self.raw_commands = []
-        self.setup_commands = []
+        self.config_commands = []
         self.termination_commands = []
         self.initialization_commands = []
         self.login_pass_commands = []
@@ -13971,7 +13971,7 @@ class SocketHostInterface:
                                 self.login_pass_commands,
                                 self.no_session_commands,
                                 self.raw_commands,
-                                self.setup_commands
+                                self.config_commands
                             )
 
     def disable_commands(self):
@@ -13998,8 +13998,8 @@ class SocketHostInterface:
             if cmd in self.raw_commands:
                 self.raw_commands.remove(cmd)
 
-            if cmd in self.setup_commands:
-                self.setup_commands.remove(cmd)
+            if cmd in self.config_commands:
+                self.config_commands.remove(cmd)
 
     def start_local_output_interface(self):
         if self.kwds.has_key('sock_output'):
