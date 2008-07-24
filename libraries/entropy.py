@@ -12532,7 +12532,7 @@ class SocketCommandsSkel:
         initialization_commands.extend(self.initialization_commands)
         login_pass_commads.extend(self.login_pass_commands)
         no_session_commands.extend(self.no_session_commands)
-        raw_commands.append(self.raw_commands)
+        raw_commands.extend(self.raw_commands)
 
 class SocketAuthenticatorSkel:
 
