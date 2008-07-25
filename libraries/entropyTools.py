@@ -1980,8 +1980,8 @@ def xml_from_dict(dictionary):
     ugc = doc.createElement("entropy")
     for key, value in dictionary.items():
         item = doc.createElement('item')
-        item.setAttribute('value',unicode(key))
-        item_value = doc.createTextNode(unicode(value))
+        item.setAttribute('value',key)
+        item_value = doc.createTextNode(value)
         item.appendChild(item_value)
         ugc.appendChild(item)
     doc.appendChild(ugc)

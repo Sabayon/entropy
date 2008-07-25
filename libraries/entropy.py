@@ -17478,7 +17478,9 @@ class DistributionUGCCommands(SocketCommandsSkel):
         scount = -1
         while os.path.lexists(new_stream_path):
             scount += 1
-            new_stream_path = "%s.%s" % (scount,orig_stream_path,)
+            b_name = os.path.basename(orig_stream_path)
+            b_name = "%s.%s" % (scount,b_name,)
+            new_stream_path = os.path.join(os.path.dirname(orig_stream_path),b_name)
             if scount > 1000000:
                 return False,'while loop interrupted while looking for new_stream_path'
         shutil.move(stream_path,new_stream_path)
@@ -19866,7 +19868,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             return False,err_msg
 
         mydict = {
-            'doc_type': doc_type,
+            'doc_type': str(doc_type),
             'title': title,
             'description': description,
             'keywords': keywords,
