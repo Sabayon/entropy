@@ -13250,12 +13250,15 @@ class SocketHostInterface:
                     x = arg.split("=")
                     a = x[0]
                     b = ''.join(x[1:])
-                    mykwargs[a] = eval(b)
+                    try:
+                        mykwargs[a] = eval(b)
+                    except (NameError,SyntaxError,):
+                        myargs.append(arg)
                 else:
                     try:
                         myargs.append(eval(arg))
                     except (NameError, SyntaxError):
-                        myargs.append(str(arg))
+                        myargs.append(arg)
                     except TypeError:
                         pass
             return myargs, mykwargs
