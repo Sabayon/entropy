@@ -1974,6 +1974,36 @@ def read_elf_linker_paths(elf_file):
             mypaths.append(xpath)
     return mypaths
 
+def xml_from_dict(dictionary):
+    from xml.dom import minidom
+    doc = minidom.Document()
+    ugc = doc.createElement("entropy")
+    for key, value in dictionary.items():
+        item = doc.createElement('item')
+        item.setAttribute('value',unicode(key))
+        item_value = doc.createTextNode(unicode(value))
+        item.appendChild(item_value)
+        ugc.appendChild(item)
+    doc.appendChild(ugc)
+    return doc.toxml()
+
+def dict_from_xml(xml_string):
+    from xml.dom import minidom
+    doc = minidom.parseString(xml_string)
+    entropies = doc.getElementsByTagName("entropy")
+    if not entropies:
+        return {}
+    entropy = entropies[0]
+    items = entropy.getElementsByTagName('item')
+    mydict = {}
+    for item in items:
+        key = item.getAttribute('value')
+        if not key: continue
+        data = item.firstChild.data
+        mydict[key] = data
+    return mydict
+
+
 def collectLinkerPaths():
     if linkerPaths:
         return linkerPaths
