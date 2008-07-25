@@ -17272,6 +17272,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
             self.DOC_TYPES['generic_file'],
             self.DOC_TYPES['youtube_video'],
         ]
+        self.raw_commands = ['ugc:add_comment', 'ugc:edit_comment', 'ugc:register_stream']
 
         self.valid_commands = {
             'ugc:get_comments':    {
@@ -17430,6 +17431,8 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
     def docmd_register_stream(self, authenticator, myargs):
 
+        myargs = myargs.split()
+
         if len(myargs) < 3:
             return None,'wrong arguments'
         pkgkey = myargs[0]
@@ -17496,6 +17499,8 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
     def docmd_add_comment(self, authenticator, myargs):
 
+        myargs = myargs.split()
+
         if len(myargs) < 2:
             return None,'wrong arguments'
         pkgkey = myargs[0]
@@ -17554,6 +17559,8 @@ class DistributionUGCCommands(SocketCommandsSkel):
         return iddoc,'ok'
 
     def docmd_edit_comment(self, authenticator, myargs):
+
+        myargs = myargs.split()
 
         if len(myargs) < 2:
             return None,'wrong arguments'
