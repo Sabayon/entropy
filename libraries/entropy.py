@@ -17431,7 +17431,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
     def docmd_register_stream(self, authenticator, myargs):
 
-        myargs = myargs.split()
+        myargs = myargs[0].split()
 
         if len(myargs) < 3:
             return None,'wrong arguments'
@@ -17499,7 +17499,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
     def docmd_add_comment(self, authenticator, myargs):
 
-        myargs = myargs.split()
+        myargs = myargs[0].split()
 
         if len(myargs) < 2:
             return None,'wrong arguments'
@@ -17560,7 +17560,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
     def docmd_edit_comment(self, authenticator, myargs):
 
-        myargs = myargs.split()
+        myargs = myargs[0].split()
 
         if len(myargs) < 2:
             return None,'wrong arguments'
