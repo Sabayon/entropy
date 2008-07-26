@@ -333,6 +333,8 @@ def getfd(filespec, readOnly = 0):
 
 def execWithRedirect(argv, stdin = 0, stdout = 1, stderr = 2, root = '/', newPgrp = 0, ignoreTermSigs = 0):
 
+    import signal
+
     childpid = os.fork()
     etpSys['killpids'].add(childpid)
     if (not childpid):
@@ -1069,13 +1071,21 @@ def compareVersions(ver1, ver2):
     if ver1 == ver2:
         return 0
     #mykey=ver1+":"+ver2
-    match1 = ver_regexp.match(ver1)
-    match2 = ver_regexp.match(ver2)
+    match1 = None
+    match2 = None
+    if ver1:
+        match1 = ver_regexp.match(ver1)
+    if ver2:
+        match2 = ver_regexp.match(ver2)
 
     # checking that the versions are valid
-    if not match1 or not match1.groups():
+    if not match1:
         return None,0
-    if not match2 or not match2.groups():
+    elif not match1.groups():
+        return None,0
+    elif not match2:
+        return None,1
+    elif not match2.groups():
         return None,1
 
     # building lists of the version parts before the suffix
