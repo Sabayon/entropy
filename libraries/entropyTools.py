@@ -1050,12 +1050,15 @@ def removePackageOperators(atom):
     if not atom:
         return atom
 
-    if atom[0] in [">","<"]:
-        atom = atom[1:]
-    if atom[0] == "=":
-        atom = atom[1:]
-    if atom[0] == "~":
-        atom = atom[1:]
+    try:
+        if atom[0] in [">","<"]:
+            atom = atom[1:]
+        if atom[0] == "=":
+            atom = atom[1:]
+        if atom[0] == "~":
+            atom = atom[1:]
+    except IndexError:
+        pass
 
     return atom
 

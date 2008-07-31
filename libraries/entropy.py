@@ -13131,6 +13131,8 @@ class SocketHostInterface:
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = authenticator.hide_login_data(p_args)
+            elif cmd in self.HostInterface.raw_commands:
+                p_args = ['raw data']
             self.HostInterface.updateProgress(
                 '[from: %s] command validation :: called %s: length: %s, args: %s, session: %s, valid: %s, reason: %s' % (
                     self.client_address,
@@ -13223,6 +13225,8 @@ class SocketHostInterface:
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = authenticator.hide_login_data(p_args)
+            elif cmd in self.HostInterface.raw_commands:
+                p_args = ['raw data']
             self.HostInterface.updateProgress(
                 '[from: %s] run_task :: called %s: args: %s, session: %s' % (
                     self.client_address,
@@ -13268,6 +13272,8 @@ class SocketHostInterface:
             p_args = myargs
             if cmd in self.HostInterface.login_pass_commands:
                 p_args = authenticator.hide_login_data(p_args)
+            elif cmd in self.HostInterface.raw_commands:
+                p_args = ['raw data']
             self.HostInterface.updateProgress(
                 '[from: %s] called %s: args: %s, kwargs: %s' % (
                     self.client_address,
