@@ -17092,7 +17092,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         dcount = 0
         while os.path.isfile(dest_path):
             dcount += 1
-            dest_path = "%s_%s" % (dcount,orig_dest_path,)
+            dest_path_name = "%s_%s" % (dcount,os.path.basename(orig_dest_path),)
+            dest_path = os.path.join(os.path.dirname(orig_dest_path),dest_path_name)
 
         if os.path.dirname(file_path) != self.STORE_PATH:
             shutil.move(file_path,dest_path)
