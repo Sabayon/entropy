@@ -19373,7 +19373,7 @@ class EntropySocketClientCommands:
 
 class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
-    import entropyTools, socket, struct
+    import entropyTools, socket, struct, zlib
     def __init__(self, EntropyInterface, ServiceInterface):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
@@ -19490,7 +19490,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         error = False
         try:
             data = self.Service.stream_to_object(data, gzipped)
-        except (EOFError,IOError,):
+        except (EOFError,IOError,self.zlib.error,):
             mytxt = _("cannot convert stream into object")
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
