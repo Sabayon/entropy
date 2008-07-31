@@ -9758,7 +9758,19 @@ class TriggerInterface:
 
         self.myebuild_moved = None
         if os.path.isfile(myebuild):
-            myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
+            try:
+                myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
+            except EOFError, e:
+                sys.stderr = oldstderr
+                stdfile.close()
+                # stuff on system is broken, ignore it
+                self.Entropy.updateProgress(
+                    darkred("!!! Ebuild: pkg_prerm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                return 0
 
         if os.path.isfile(myebuild):
             self.Entropy.updateProgress(
