@@ -474,6 +474,7 @@ class TextInterface:
     def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
 
         colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
+        colours += colours[:]
         if len(responses) > len(colours):
             import exceptionTools
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
