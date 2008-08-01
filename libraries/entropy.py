@@ -17400,7 +17400,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'cb': self.docmd_remove_comment,
                 'args': ["authenticator","myargs"],
                 'as_user': False,
-                'desc': "remove a comment related to a package key (you need its iddoc and mod/admin privs)",
+                'desc': "remove a comment (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_comment <iddoc>",
                 'from': str(self), # from what class
             },
@@ -17422,6 +17422,36 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "register an uploaded file (through stream cmd) to the relative place (image, file, videos)",
                 'syntax': "<SESSION_ID> ugc:register_stream app-foo/foo <valid xml formatted data>",
+                'from': str(self), # from what class
+            },
+            'ugc:remove_image':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_remove_image,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "remove an image (you need its iddoc and mod/admin privs)",
+                'syntax': "<SESSION_ID> ugc:remove_image <iddoc>",
+                'from': str(self), # from what class
+            },
+            'ugc:remove_file':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_remove_file,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "remove a file (you need its iddoc and mod/admin privs)",
+                'syntax': "<SESSION_ID> ugc:remove_file <iddoc>",
+                'from': str(self), # from what class
+            },
+            'ugc:remove_youtube_video':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_remove_youtube_video,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "remove a youtube video (you need its iddoc and mod/admin privs)",
+                'syntax': "<SESSION_ID> ugc:remove_youtube_video <iddoc>",
                 'from': str(self), # from what class
             },
         }
@@ -17611,6 +17641,99 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return False,'permission denied'
 
         status, iddoc = ugc.edit_comment(iddoc, new_comment, new_title, new_keywords)
+        if not status:
+            return False,'document not removed or not available'
+
+        return iddoc,'ok'
+
+    def docmd_remove_image(self, iddoc):
+
+        if not myargs:
+            return None,'wrong arguments'
+        try:
+            iddoc = int(myargs[0])
+        except (ValueError,):
+            return False,'not a valid iddoc'
+
+        userid = self._get_userid(authenticator)
+        if userid == None:
+            return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return False,'no session data available'
+
+        ugc = self._load_ugc_interface()
+        iddoc_userid = ugc.get_iddoc_userid(iddoc)
+        if iddoc_userid == None:
+            return False,'document not available'
+
+        # check if admin/mod or author
+        if authenticator.is_user() and (userid != iddoc_userid):
+            return False,'permission denied'
+
+        ugc = self._load_ugc_interface()
+        status, iddoc = ugc.delete_image(iddoc)
+        if not status:
+            return False,'document not removed or not available'
+
+        return iddoc,'ok'
+
+    def docmd_remove_file(self, iddoc):
+
+        if not myargs:
+            return None,'wrong arguments'
+        try:
+            iddoc = int(myargs[0])
+        except (ValueError,):
+            return False,'not a valid iddoc'
+
+        userid = self._get_userid(authenticator)
+        if userid == None:
+            return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return False,'no session data available'
+
+        ugc = self._load_ugc_interface()
+        iddoc_userid = ugc.get_iddoc_userid(iddoc)
+        if iddoc_userid == None:
+            return False,'document not available'
+
+        # check if admin/mod or author
+        if authenticator.is_user() and (userid != iddoc_userid):
+            return False,'permission denied'
+
+        ugc = self._load_ugc_interface()
+        status, iddoc = ugc.delete_file(iddoc)
+        if not status:
+            return False,'document not removed or not available'
+
+        return iddoc,'ok'
+
+    def docmd_remove_youtube_video(self, iddoc):
+
+        if not myargs:
+            return None,'wrong arguments'
+        try:
+            iddoc = int(myargs[0])
+        except (ValueError,):
+            return False,'not a valid iddoc'
+
+        userid = self._get_userid(authenticator)
+        if userid == None:
+            return False,'no session userid available'
+        elif isinstance(userid,bool) and not userid:
+            return False,'no session data available'
+
+        ugc = self._load_ugc_interface()
+        iddoc_userid = ugc.get_iddoc_userid(iddoc)
+        if iddoc_userid == None:
+            return False,'document not available'
+
+        # check if admin/mod or author
+        if authenticator.is_user() and (userid != iddoc_userid):
+            return False,'permission denied'
+
+        ugc = self._load_ugc_interface()
+        status, iddoc = ugc.remove_youtube_video(iddoc)
         if not status:
             return False,'document not removed or not available'
 
@@ -19779,6 +19902,36 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         cmd = "%s %s %s" % (
             session_id,
             'ugc:remove_comment',
+            iddoc,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_remove_image(self, session_id, iddoc):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:remove_image',
+            iddoc,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_remove_file(self, session_id, iddoc):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:remove_file',
+            iddoc,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_remove_youtube_video(self, session_id, iddoc):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:remove_youtube_video',
             iddoc,
         )
         return self.do_generic_handler(cmd, session_id)
@@ -26327,11 +26480,16 @@ class EntropyDatabaseInterface:
 
         self.cursor.execute('SELECT idpackage FROM baseinfo'+branchstring+orderbystring, searchkeywords)
 
-        if order_by:
-            results = self.fetchall2list(self.cursor.fetchall())
-        else:
-            results = self.fetchall2set(self.cursor.fetchall())
-        return results
+        try:
+            if order_by:
+                results = self.fetchall2list(self.cursor.fetchall())
+            else:
+                results = self.fetchall2set(self.cursor.fetchall())
+            return results
+        except self.dbapi2.OperationalError:
+            if order_by:
+                return []
+            return set()
 
     def listAllDependencies(self, only_deps = False):
         if only_deps:
