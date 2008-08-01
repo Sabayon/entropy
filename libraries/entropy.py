@@ -20793,11 +20793,20 @@ class UGCClientInterface:
     def send_file(self, repository, pkgkey, file_path, title, description, keywords):
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, file_path, etpConst['ugc_doctypes']['generic_file'], title, description, keywords], {})
 
+    def remove_file(self, repository, iddoc):
+        return self.do_cmd(repository, True, "ugc_remove_file", [iddoc], {})
+
     def send_image(self, repository, pkgkey, image_path, title, description, keywords):
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, image_path, etpConst['ugc_doctypes']['image'], title, description, keywords], {})
 
+    def remove_image(self, repository, iddoc):
+        return self.do_cmd(repository, True, "ugc_remove_image", [iddoc], {})
+
     def send_youtube_video(self, repository, pkgkey, video_path, title, description, keywords):
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, video_path, etpConst['ugc_doctypes']['youtube_video'], title, description, keywords], {})
+
+    def remove_youtube_video(self, repository, iddoc):
+        return self.do_cmd(repository, True, "ugc_remove_youtube_video", [iddoc], {})
 
     def get_downloads(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
