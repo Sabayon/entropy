@@ -927,7 +927,7 @@ class AboutDialog(gtk.Window):
 
 
 def inputBox( parent, title, text, input_text = None):
-    dlg = EntryDialog( parent, title, text)
+    dlg = EntryDialog(parent, title, text)
     if input_text:
         dlg.entry.set_text(input_text)
     rc = dlg.run()
@@ -971,18 +971,29 @@ def infoMessage( parent, title, text ):
     dlg.destroy()
     return not rc == gtk.RESPONSE_OK
 
-def questionDialog(parent, msg, message_format = _("Hey!")):
-    dlg = gtk.MessageDialog(parent=parent,
-                            type=gtk.MESSAGE_QUESTION,
-                            buttons=gtk.BUTTONS_YES_NO, message_format = message_format)
-    dlg.set_title( _("Spritz Question") )
+def questionDialog(parent, msg, title = _("Spritz Question"), get_response = False):
+    dlg = gtk.MessageDialog(
+        parent=parent,
+        type = gtk.MESSAGE_QUESTION,
+        buttons = gtk.BUTTONS_YES_NO,
+        message_format = _("Hey!")
+    )
+    dlg.set_title(title)
     dlg.format_secondary_markup(cleanMarkupString(msg))
     rc = dlg.run()
     dlg.destroy()
+    if get_response:
+        return rc
     if rc == gtk.RESPONSE_YES:
         return True
-    else:
-        return False
+    return False
+
+def choiceDialog(parent, msg, title, buttons):
+    return MessageDialog(parent, title, msg, type = "custom", custom_buttons = buttons).getrc()
+
+def inputDialog(parent, title, input_parameters, cancel):
+    w = InputDialog(parent, title, input_parameters, cancel)
+    return w.run()
 
 def okDialog(parent, msg, title = None):
     dlg = gtk.MessageDialog(parent=parent,
@@ -994,6 +1005,175 @@ def okDialog(parent, msg, title = None):
     dlg.set_title( title )
     dlg.run()
     dlg.destroy()
+
+
+
+class InputDialog:
+
+    parameters = {}
+    button_pressed = False
+    main_window = None
+    parent = None
+    def __init__(self, parent, title, input_parameters, cancel = True):
+
+        mywin = gtk.Window()
+        mywin.set_transient_for(parent)
+        mywin.set_title(_("Please fill the following form"))
+        myvbox = gtk.VBox()
+        mylabel = gtk.Label()
+        mylabel.set_markup(cleanMarkupString(title))
+        myhbox = gtk.HBox()
+        myvbox.pack_start(mylabel)
+        mytable = gtk.Table(rows = len(input_parameters), columns = 2)
+        self.identifiers_table = {}
+        self.cb_table = {}
+        self.entry_text_table = {}
+        row_count = 0
+        for input_id, input_text, input_cb, passworded in input_parameters:
+            input_label = gtk.Label()
+            input_label.set_markup(input_text)
+            input_entry = gtk.Entry()
+            if passworded: input_entry.set_visibility(False)
+            self.identifiers_table[input_id] = input_entry
+            self.entry_text_table[input_id] = input_text
+            self.cb_table[input_entry] = input_cb
+            mytable.attach(input_label, 0, 1, row_count, row_count+1)
+            mytable.attach(input_entry, 1, 2, row_count, row_count+1)
+            row_count += 1
+        myvbox.pack_start(mytable)
+        bbox = gtk.HButtonBox()
+        bbox.set_layout(gtk.BUTTONBOX_END)
+        bbox.set_spacing(10)
+        myok = gtk.Button(stock = "gtk-ok")
+        myok.connect('clicked', self.do_ok )
+        bbox.pack_start(myok, padding = 10)
+        if cancel:
+            mycancel = gtk.Button(stock = "gtk-cancel")
+            mycancel.connect('clicked', self.do_cancel )
+            bbox.pack_start(mycancel)
+        myvbox.pack_start(bbox)
+        myvbox.set_spacing(10)
+        myvbox.show()
+        myhbox.pack_start(myvbox, padding = 10)
+        myhbox.show()
+        mywin.add(myhbox)
+        self.main_window = mywin
+        self.parent = parent
+        mywin.set_keep_above(True)
+        mywin.set_urgency_hint(True)
+        mywin.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        mywin.set_default_size(350,-1)
+        mywin.show_all()
+
+
+    def do_ok(self, widget):
+        # fill self.parameters
+        for input_id in self.identifiers_table:
+            myentry = self.identifiers_table.get(input_id)
+            entry_txt = myentry.get_text()
+            verify_cb = self.cb_table.get(myentry)
+            valid = verify_cb(entry_txt)
+            if not valid:
+                okDialog(self.parent, "%s: %s" % (_("Invalid entry"),self.entry_text_table[input_id],) , title = _("Invalid entry"))
+                self.parameters.clear()
+                return
+            self.parameters[input_id] = entry_txt
+        self.button_pressed = True
+
+    def do_cancel(self, widget):
+        self.parameters = None
+        self.button_pressed = True
+
+    def run(self):
+        import time
+        while not self.button_pressed:
+            time.sleep(0.05)
+            while gtk.events_pending():
+                gtk.main_iteration()
+            continue
+        self.main_window.destroy()
+        return self.parameters
+
+class MessageDialog:
+    """
+        courtesy of Anaconda :-) Copyright 1999-2005 Red Hat, Inc.
+        Matt Wilson <msw@redhat.com>
+        Michael Fulbright <msf@redhat.com>
+    """
+
+    def getrc(self):
+        return self.rc
+
+    def __init__ (self, parent, title, text, type = "ok", default=None, custom_buttons=None, custom_icon=None):
+        self.rc = None
+        docustom = 0
+        if type == 'ok':
+            buttons = gtk.BUTTONS_OK
+            style = gtk.MESSAGE_INFO
+        elif type == 'warning':
+            buttons = gtk.BUTTONS_OK
+            style = gtk.MESSAGE_WARNING
+        elif type == 'okcancel':
+            buttons = gtk.BUTTONS_OK_CANCEL
+            style = gtk.MESSAGE_WARNING
+        elif type == 'yesno':
+            buttons = gtk.BUTTONS_YES_NO
+            style = gtk.MESSAGE_QUESTION
+        elif type == 'custom':
+            docustom = 1
+            buttons = gtk.BUTTONS_NONE
+            style = gtk.MESSAGE_QUESTION
+
+        if custom_icon == "warning":
+            style = gtk.MESSAGE_WARNING
+        elif custom_icon == "question":
+            style = gtk.MESSAGE_QUESTION
+        elif custom_icon == "error":
+            style = gtk.MESSAGE_ERROR
+        elif custom_icon == "info":
+            style = gtk.MESSAGE_INFO
+
+        dialog = gtk.MessageDialog(parent, 0, style, buttons, text)
+
+        if docustom:
+            rid=0
+            for button in custom_buttons:
+                if button == _("Cancel"):
+                    tbutton = "gtk-cancel"
+                else:
+                    tbutton = button
+
+                widget = dialog.add_button(tbutton, rid)
+                rid = rid + 1
+
+            defaultchoice = rid - 1
+        else:
+            if default == "no":
+                defaultchoice = 0
+            elif default == "yes" or default == "ok":
+                defaultchoice = 1
+            else:
+                defaultchoice = 0
+
+        dialog.set_title(title)
+        dialog.format_secondary_markup(cleanMarkupString(text))
+        dialog.set_position (gtk.WIN_POS_CENTER)
+        dialog.set_default_response(defaultchoice)
+        dialog.show_all ()
+
+        rc = dialog.run()
+
+        if rc == gtk.RESPONSE_OK or rc == gtk.RESPONSE_YES:
+            self.rc = 1
+        elif (rc == gtk.RESPONSE_CANCEL or rc == gtk.RESPONSE_NO
+            or rc == gtk.RESPONSE_CLOSE):
+            self.rc = 0
+        elif rc == gtk.RESPONSE_DELETE_EVENT:
+            self.rc = 0
+        else:
+            self.rc = rc
+        dialog.destroy()
+
 
 
 class LicenseDialog:

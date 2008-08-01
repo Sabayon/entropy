@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from spritz_setup import const
-from dialogs import questionDialog, LicenseDialog, okDialog
+from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
 
 # Entropy Imports
 from entropyConstants import *
@@ -196,12 +196,13 @@ class Equo(EquoInterface):
         EquoInterface.__init__(self)
         self.xcache = True # force xcache enabling
 
-    def connect_to_gui(self, progress, progressLog, viewOutput):
-        self.progress = progress
+    def connect_to_gui(self, spritz_app):
+        self.progress = spritz_app.progress
         self.urlFetcher = GuiUrlFetcher
         self.nocolor()
-        self.progressLog = progressLog
-        self.output = viewOutput
+        self.progressLog = spritz_app.progressLogWrite
+        self.output = spritz_app.output
+        self.ui = spritz_app.ui
 
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
@@ -235,6 +236,32 @@ class Equo(EquoInterface):
 
     def setTotalCycles(self, total):
         self.progress.total.setup( range(total) )
+
+    # @input question: question to do
+    #
+    # @input importance:
+    #           values: 0,1,2 (latter is a blocker - popup menu on a GUI env)
+    #           used to specify information importance, 0<important<2
+    #
+    # @input responses:
+    #           list of options whose users can choose between
+    #
+    # feel free to reimplement this
+    def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+
+        choice = choiceDialog(self.ui.main, question, _("Entropy needs your attention"), responses)
+        try:
+            return responses[choice]
+        except IndexError:
+            return responses[0]
+
+    # @ title: title of the input box
+    # @ input_parameters: [('identifier 1','input text 1',input_verification_callback,False), ('password','Password',input_verification_callback,True)]
+    # @ cancel_button: show cancel button ?
+    # @ output: dictionary as follows:
+    #   {'identifier 1': result, 'identifier 2': result}
+    def inputBox(self, title, input_parameters, cancel_button = True):
+        return inputDialog(self.ui.main, title, input_parameters, cancel = cancel_button)
 
 class GuiUrlFetcher(urlFetcher):
 
