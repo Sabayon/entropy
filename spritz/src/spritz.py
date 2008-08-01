@@ -1102,10 +1102,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
 
-        # input_parameters: [('identifier 1','input text 1',input_verification_callback,False), ('password','Password',input_verification_callback,True)]
-        def t(s):
-            return True
-        print self.Equo.inputBox("Test title", [('myuser','Username',t,False),('mypass','Password',t,True)])
 
     def setupPreferences(self):
 
