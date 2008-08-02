@@ -33,7 +33,8 @@ ugc_connection_data = {
   'google_password': 'yourgmailpassword', # valid google e-mail
 }
 ugc_store_path = "/path/to/your/ugc/store"
-ugc_args = [ugc_connection_data,ugc_store_path]
+ugc_store_url = "http://www.yoursite.com"
+ugc_args = [ugc_connection_data,ugc_store_path,ugc_store_url]
 
 # configure my repositories
 repositories = {
