@@ -16650,6 +16650,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `iddoc` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `idkey` INT UNSIGNED NOT NULL,
             `userid` INT UNSIGNED NOT NULL,
+            `username` VARCHAR( 255 ),
             `iddoctype` TINYINT NOT NULL,
             `ddata` TEXT NOT NULL,
             `title` VARCHAR( 512 ),
@@ -16923,16 +16924,17 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         else:
             return self.get_idkey(key)
 
-    def insert_generic_doc(self, idkey, userid, doc_type, data, title, description, keywords, do_commit = False):
+    def insert_generic_doc(self, idkey, userid, username, doc_type, data, title, description, keywords, do_commit = False):
         self.check_connection()
 
         title = title[:self.entropy_docs_title_len]
         description = description[:self.entropy_docs_description_len]
 
-        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',(
                 None,
                 idkey,
                 userid,
+                username,
                 doc_type,
                 data,
                 title,
@@ -16968,10 +16970,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def remove_keywords(self, iddoc):
         self.execute_query('DELETE FROM entropy_docs_keywords WHERE `iddoc` = %s',(iddoc,))
 
-    def insert_comment(self, pkgkey, userid, comment, title, keywords, do_commit = False):
+    def insert_comment(self, pkgkey, userid, username, comment, title, keywords, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
-        iddoc = self.insert_generic_doc(idkey, userid, self.DOC_TYPES['comments'], comment, title, '', keywords)
+        iddoc = self.insert_generic_doc(idkey, userid, username, self.DOC_TYPES['comments'], comment, title, '', keywords)
         if do_commit: self.commit()
         return True, iddoc
 
@@ -17045,11 +17047,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if do_commit: self.commit()
         return True
 
-    def insert_document(self, pkgkey, userid, text, title, description, keywords, doc_type = None, do_commit = False):
+    def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
         if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
-        iddoc = self.insert_generic_doc(idkey, userid, doc_type, text, title, description, keywords)
+        iddoc = self.insert_generic_doc(idkey, userid, username, doc_type, text, title, description, keywords)
         if do_commit: self.commit()
         return True, iddoc
 
@@ -17096,7 +17098,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return True,None
         return False,None
 
-    def insert_generic_file(self, pkgkey, userid, file_path, doc_type, title, description, keywords):
+    def insert_generic_file(self, pkgkey, userid, username, file_path, doc_type, title, description, keywords):
         self.check_connection()
         file_path = os.path.realpath(file_path)
 
@@ -17124,10 +17126,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         # now store in db
         idkey = self.handle_pkgkey(pkgkey)
-        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',(
                 None,
                 idkey,
                 userid,
+                username,
                 doc_type,
                 os.path.basename(dest_path),
                 title,
@@ -17142,11 +17145,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             store_url = os.path.join(self.store_url,store_url)
         return True, (iddoc, store_url)
 
-    def insert_image(self, pkgkey, userid, image_path, title, description, keywords):
-        return self.insert_generic_file(pkgkey, userid, image_path, self.DOC_TYPES['image'], title, description, keywords)
+    def insert_image(self, pkgkey, userid, username, image_path, title, description, keywords):
+        return self.insert_generic_file(pkgkey, userid, username, image_path, self.DOC_TYPES['image'], title, description, keywords)
 
-    def insert_file(self, pkgkey, userid, file_path, title, description, keywords):
-        return self.insert_generic_file(pkgkey, userid, file_path, self.DOC_TYPES['generic_file'], title, description, keywords)
+    def insert_file(self, pkgkey, userid, username, file_path, title, description, keywords):
+        return self.insert_generic_file(pkgkey, userid, username, file_path, self.DOC_TYPES['generic_file'], title, description, keywords)
 
     def delete_image(self, iddoc):
         return self.delete_generic_file(iddoc, self.DOC_TYPES['image'])
@@ -17178,7 +17181,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         return True, (iddoc, None)
 
-    def insert_youtube_video(self, pkgkey, userid, video_path, title, description, keywords):
+    def insert_youtube_video(self, pkgkey, userid, username, video_path, title, description, keywords):
         self.check_connection()
         if not self.gdata:
             return False, None
@@ -17220,7 +17223,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         video_url = new_entry.GetSwfUrl()
         video_id = os.path.basename(video_url)
 
-        iddoc = self.insert_generic_doc(idkey, userid, self.DOC_TYPES['youtube_video'], video_id, title, description, keywords)
+        iddoc = self.insert_generic_doc(idkey, userid, username, self.DOC_TYPES['youtube_video'], video_id, title, description, keywords)
         return True, (iddoc, video_id,)
 
     def remove_youtube_video(self, iddoc):
@@ -17472,6 +17475,9 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return False
         return session_data['auth_uid']
 
+    def _get_username(self, authenticator):
+        return authenticator.get_username()
+
     def _get_session_file(self, authenticator):
         session_data = self.HostInterface.sessions.get(authenticator.session)
         if not session_data:
@@ -17522,6 +17528,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return False,'no session userid available'
         elif isinstance(userid,bool) and not userid:
             return False,'no session data available'
+        username = self._get_username(authenticator)
 
         # get file path
         stream_path = self._get_session_file(authenticator)
@@ -17544,11 +17551,11 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
         rslt = None
         if doc_type == self.DOC_TYPES['image']:
-            rslt = ugc.insert_image(pkgkey, userid, stream_path, title, description, keywords)
+            rslt = ugc.insert_image(pkgkey, userid, username, stream_path, title, description, keywords)
         elif doc_type == self.DOC_TYPES['generic_file']:
-            rslt = ugc.insert_file(pkgkey, userid, stream_path, title, description, keywords)
+            rslt = ugc.insert_file(pkgkey, userid, username, stream_path, title, description, keywords)
         elif doc_type == self.DOC_TYPES['youtube_video']:
-            rslt = ugc.insert_youtube_video(pkgkey, userid, stream_path, title, description, keywords)
+            rslt = ugc.insert_youtube_video(pkgkey, userid, username, stream_path, title, description, keywords)
         return rslt
 
     def docmd_add_comment(self, authenticator, myargs):
@@ -17572,9 +17579,10 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return False,'no session userid available'
         elif isinstance(userid,bool) and not userid:
             return False,'no session data available'
+        username = self._get_username(authenticator)
 
         ugc = self._load_ugc_interface()
-        status, iddoc = ugc.insert_comment(pkgkey, userid, comment, title, keywords)
+        status, iddoc = ugc.insert_comment(pkgkey, userid, username, comment, title, keywords)
         if not status:
             return False,'unable to add comment'
         return iddoc,'ok'
@@ -17651,7 +17659,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
         return iddoc,'ok'
 
-    def docmd_remove_image(self, iddoc):
+    def docmd_remove_image(self, authenticator, myargs):
 
         if not myargs:
             return None,'wrong arguments'
@@ -17682,7 +17690,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
         return iddoc,'ok'
 
-    def docmd_remove_file(self, iddoc):
+    def docmd_remove_file(self, authenticator, myargs):
 
         if not myargs:
             return None,'wrong arguments'
@@ -17713,7 +17721,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
         return iddoc,'ok'
 
-    def docmd_remove_youtube_video(self, iddoc):
+    def docmd_remove_youtube_video(self, authenticator, myargs):
 
         if not myargs:
             return None,'wrong arguments'
@@ -17974,6 +17982,13 @@ class DistributionAuthInterface:
         self._raise_not_implemented_error()
         return {}
 
+    def get_username(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self._raise_not_implemented_error()
+        return {}
+
 
 class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
@@ -18063,6 +18078,19 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
         self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         return self.cursor.fetchone()
+
+    def get_username(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        self.cursor.execute('SELECT username_clean FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
+        data = self.cursor.fetchone()
+        if not data:
+            return ''
+        elif not data.has_key('username_clean'):
+            return ''
+        return data['username_clean']
 
     def is_developer(self):
         self.check_connection()
@@ -20544,9 +20572,10 @@ class UGCClientAuthStore:
             f = open(self.access_file,"w")
             f.close()
         if etpConst['entropygid'] != None:
-            const_setup_perms(self.access_dir,etpConst['entropygid'])
-        if os.path.isfile(self.access_file):
-            const_secure_config_file(self.access_file)
+            try:
+                const_setup_file(self.access_dir, etpConst['entropygid'], 0600)
+            except OSError:
+                pass
 
     def parse_document(self):
         self.store.clear()
@@ -20745,9 +20774,10 @@ class UGCClientInterface:
     # eval(func) must have session as first param
     def do_cmd(self, repository, login_required, func, args, kwargs):
 
-        status, err_msg = self.login(repository)
-        if not status:
-            return False,err_msg
+        if login_required:
+            status, err_msg = self.login(repository)
+            if not status:
+                return False,err_msg
 
         srv = self.get_service_connection(repository)
         if srv == None:
