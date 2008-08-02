@@ -20549,7 +20549,7 @@ class UGCClientAuthStore:
         self.store = {}
         try:
             self.xmldoc = self.minidom.parse(self.access_file)
-        except self.expat.ExpatError:
+        except (self.expat.ExpatError,IOError,):
             self.xmldoc = None
         if self.xmldoc != None:
             try:
