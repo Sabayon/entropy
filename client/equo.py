@@ -253,6 +253,12 @@ myopts = [
         (2,'depends',2,_('regenerate the depends table')),
 
     None,
+    (1,'ugc',2,_('handles User Generated Content features')),
+        (2,'login',2,_('login against a specified repository <repository>')),
+        (2,'logout',2,_('logout from a specified repository <repository>')),
+        (3,'--force',2,_('force action')),
+
+    None,
     (1,'cache',2,_('handles Entropy cache')),
     (2,'clean',2,_('clean Entropy cache')),
     (2,'generate',1,_('regenerate Entropy cache')),
@@ -467,6 +473,10 @@ try:
     elif (options[0] == "packages"):
         import text_rescue
         rc = text_rescue.updater(options[1:])
+
+    elif (options[0] == "ugc"):
+        import text_ugc
+        rc = text_ugc.ugc(options[1:])
 
     elif (options[0] == "community"):
         etpConst['community']['mode'] = True
