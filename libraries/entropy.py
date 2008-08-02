@@ -20545,7 +20545,10 @@ class UGCClientAuthStore:
         self.expat = expat
         self.minidom = minidom
         self.setup_store_paths()
-        self.setup_permissions()
+        try:
+            self.setup_permissions()
+        except IOError:
+            pass
         self.store = {}
         try:
             self.xmldoc = self.minidom.parse(self.access_file)
