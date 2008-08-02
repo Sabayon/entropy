@@ -16692,7 +16692,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         dependencies:
             dev-python/gdata
     '''
-    def __init__(self, connection_data, store_path):
+    def __init__(self, connection_data, store_path, store_url = ''):
+        self.store_url = store_url
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
         RemoteDbSkelInterface.__init__(self)
         self.set_connection_data(connection_data)
@@ -17136,7 +17137,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         )
         iddoc = self.lastrowid()
         self.insert_keywords(iddoc, keywords)
-        return True, (iddoc, None)
+        store_url = os.path.basename(dest_path)
+        if self.store_url:
+            store_url = os.path.join(self.store_url,store_url)
+        return True, (iddoc, store_url)
 
     def insert_image(self, pkgkey, userid, image_path, title, description, keywords):
         return self.insert_generic_file(pkgkey, userid, image_path, self.DOC_TYPES['image'], title, description, keywords)
@@ -17280,11 +17284,12 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 class DistributionUGCCommands(SocketCommandsSkel):
 
     import dumpTools, entropyTools
-    def __init__(self, HostInterface, connection_data, store_path):
+    def __init__(self, HostInterface, connection_data, store_path, store_url):
 
         SocketCommandsSkel.__init__(self, HostInterface, inst_name = "ugc-commands")
         self.connection_data = connection_data.copy()
         self.store_path = store_path
+        self.store_url = store_url
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
         self.SUPPORTED_DOCFILE_TYPES = [
             self.DOC_TYPES['image'],
@@ -17457,7 +17462,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
         }
 
     def _load_ugc_interface(self):
-        return DistributionUGCInterface(self.connection_data, self.store_path)
+        return DistributionUGCInterface(self.connection_data, self.store_path, self.store_url)
 
     def _get_userid(self, authenticator):
         session_data = self.HostInterface.sessions.get(authenticator.session)
@@ -20511,7 +20516,7 @@ class UGCClientAuthStore:
         from xml.parsers import expat
         self.expat = expat
         self.minidom = minidom
-        self.access_dir = os.path.dirname(self.access_file)
+        self.setup_store_paths()
         self.setup_permissions()
         self.store = {}
         try:
@@ -20524,6 +20529,13 @@ class UGCClientAuthStore:
             except self.expat.ExpatError:
                 self.xmldoc = None
                 self.store = {}
+
+    def setup_store_paths(self):
+        myhome = os.getenv("HOME")
+        if myhome != None:
+            if os.path.isdir(myhome) and os.access(myhome,os.W_OK):
+                self.access_file = os.path.join(myhome,".config/entropy",os.path.basename(self.access_file))
+        self.access_dir = os.path.dirname(self.access_file)
 
     def setup_permissions(self):
         if not os.path.isdir(self.access_dir):
@@ -20593,7 +20605,7 @@ class UGCClientAuthStore:
 class UGCClientInterface:
 
     ssl_connection = True
-    def __init__(self, EquoInstance):
+    def __init__(self, EquoInstance, quiet = True):
 
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid EquoInterface based instance is needed")
@@ -20606,6 +20618,7 @@ class UGCClientInterface:
         self.Entropy = EquoInstance
         self.store = UGCClientAuthStore()
         self.xcache = {}
+        self.quiet = quiet
 
     def get_cache_item(self, repository, item):
         if repository not in self.xcache:
@@ -20633,7 +20646,7 @@ class UGCClientInterface:
         except (IndexError,KeyError,):
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 
-        srv = RepositorySocketClientInterface(self.Entropy, EntropyRepositorySocketClientCommands, ssl = self.ssl_connection, quiet = True)
+        srv = RepositorySocketClientInterface(self.Entropy, EntropyRepositorySocketClientCommands, ssl = self.ssl_connection, quiet = self.quiet)
         srv.connect(url, port)
         return srv
 
@@ -20720,7 +20733,7 @@ class UGCClientInterface:
             # login accepted, store it?
             srv.close_session(session)
             srv.disconnect()
-            rc = self.Entropy.askQuestion(_("Login successful. Do you want to save login information ?"))
+            rc = self.Entropy.askQuestion(_("Login successful. Do you want to save these credentials ?"))
             save = False
             if rc == "Yes": save = True
             self.store.store_login(login_data['username'], login_data['password'], repository, save = save)
