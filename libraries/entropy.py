@@ -8562,6 +8562,10 @@ class TriggerInterface:
         ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
         # prepare content
         for x in self.pkgdata['content']:
+
+            if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
+                functions.add('conftouch')
+
             if not self.gentoo_compat:
                 if x.startswith("/usr/share/icons") and x.endswith("index.theme"):
                     functions.add('iconscache')
@@ -8855,6 +8859,33 @@ class TriggerInterface:
             self.trigger_setup_font_dir(fontdir)
             self.trigger_setup_font_cache(fontdir)
         del fontdirs
+
+    def trigger_conftouch(self):
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "[POST] Updating {conf.d,init.d} mtime..."
+        )
+        mytxt = "%s ..." % (_("Updating {conf.d,init.d} mtime"),)
+        self.Entropy.updateProgress(
+            brown(mytxt),
+            importance = 0,
+            header = red("   ## ")
+        )
+        for item in self.pkgdata['content']:
+            if not (item.startswith("/etc/conf.d") or item.startswith("/etc/conf.d")):
+                continue
+            if not os.path.isfile(item):
+                continue
+            if not os.access(item,os.W_OK):
+                continue
+            try:
+                f = open(item,"abw")
+                f.flush()
+                f.close()
+            except (OSError,IOError,):
+                pass
+
 
     def trigger_gccswitch(self):
         self.Entropy.clientLog.log(
@@ -21508,7 +21539,7 @@ class ServerMirrorsInterface:
             pass
         f_out.close()
 
-    def get_files_to_sync(self, cmethod, download = False, repo = None):
+    def get_files_to_sync(self, cmethod, branch, download = False, repo = None):
 
         critical = []
         data = {}
@@ -21576,7 +21607,7 @@ class ServerMirrorsInterface:
         ]
         for myfile,myname in spm_files:
             if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
-                data[myname] = myfile
+                data[myname] = (branch,myfile,)
 
         make_profile = etpConst['spm']['global_make_profile']
         if os.path.islink(make_profile):
@@ -21587,7 +21618,7 @@ class ServerMirrorsInterface:
             f.write(mylink)
             f.flush()
             f.close()
-            data['global_make_profile'] = mytmpfile
+            data['global_make_profile'] = (branch,mytmpfile,)
 
         return data, critical
 
@@ -21790,11 +21821,22 @@ class ServerMirrorsInterface:
                     type = "info",
                     header = blue(" @@ ")
                 )
-                ftp.setCWD(self.ftp_basedir, dodir = True)
 
+                ftp.setCWD(self.ftp_basedir, dodir = True)
                 maxcount = len(self.myfiles)
                 counter = 0
+
                 for mypath in self.myfiles:
+
+                    ftp.setBasedir()
+                    ftp.setCWD(self.ftp_basedir, dodir = True)
+
+                    mycwd = None
+                    if isinstance(mypath,tuple):
+                        if len(mypath) < 2: continue
+                        mycwd = mypath[0]
+                        mypath = mypath[1]
+                        ftp.setCWD(mycwd, dodir = True)
 
                     syncer = ftp.uploadFile
                     myargs = [mypath]
@@ -22131,7 +22173,7 @@ class ServerMirrorsInterface:
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
 
-    def upload_database(self, uris, lock_check = False, pretend = False, repo = None):
+    def upload_database(self, uris, branch, lock_check = False, pretend = False, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -22162,7 +22204,7 @@ class ServerMirrorsInterface:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
-            upload_data, critical = self.get_files_to_sync(cmethod, repo = repo)
+            upload_data, critical = self.get_files_to_sync(cmethod, branch, repo = repo)
 
             if lock_check:
                 given_up = self.mirror_lock_check(uri, repo = repo)
@@ -22171,7 +22213,7 @@ class ServerMirrorsInterface:
                     broken_uris.add(uri)
                     continue
 
-            self.lock_mirrors_for_download(True,[uri], repo = repo)
+            self.lock_mirrors_for_download(True, [uri], repo = repo)
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s" % (
@@ -22275,7 +22317,7 @@ class ServerMirrorsInterface:
         return upload_errors, broken_uris, fine_uris
 
 
-    def download_database(self, uris, lock_check = False, pretend = False, repo = None):
+    def download_database(self, uris, branch, lock_check = False, pretend = False, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -22304,7 +22346,7 @@ class ServerMirrorsInterface:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
-            download_data, critical = self.get_files_to_sync(cmethod, download = True, repo = repo)
+            download_data, critical = self.get_files_to_sync(cmethod, branch, download = True, repo = repo)
             mytmpdir = self.entropyTools.getRandomTempFile()
             os.makedirs(mytmpdir)
 
@@ -22474,7 +22516,11 @@ class ServerMirrorsInterface:
 
         if download_latest:
             download_uri = download_latest[0]
-            download_errors, fine_uris, broken_uris = self.download_database([download_uri], repo = repo)
+            download_errors, fine_uris, broken_uris = self.download_database(
+                [download_uri],
+                etpConst['branch'],
+                repo = repo
+            )
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
@@ -22508,7 +22554,11 @@ class ServerMirrorsInterface:
                 return 3,set(),set()
 
             uris = [x[0] for x in upload_queue]
-            errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)
+            errors, fine_uris, broken_uris = self.upload_database(
+                uris,
+                etpConst['branch'],
+                repo = repo
+            )
             if errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (

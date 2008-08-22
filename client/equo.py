@@ -254,9 +254,12 @@ myopts = [
 
     None,
     (1,'ugc',2,_('handles User Generated Content features')),
-        (2,'login',2,_('login against a specified repository <repository>')),
-        (2,'logout',2,_('logout from a specified repository <repository>')),
-        (3,'--force',2,_('force action')),
+        (2,'login <repository>',1,_('login against a specified repository')),
+        (2,'logout <repository>',1,_('logout from a specified repository')),
+        (3,'--force',3,_('force action')),
+        (2,'comments <repository>',1,_('manage comments for the selected repository')),
+        (3,'get <pkgkey>',3,_('get comments for the specified package key (example: x11-libs/qt)')),
+        (3,'add <pkgkey> <comment>',2,_('add comment to the specified package key (example: x11-libs/qt)')),
 
     None,
     (1,'cache',2,_('handles Entropy cache')),
