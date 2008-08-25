@@ -259,7 +259,7 @@ myopts = [
         (3,'--force',3,_('force action')),
         (2,'comments <repository>',1,_('manage comments for the selected repository')),
         (3,'get <pkgkey>',3,_('get comments for the specified package key (example: x11-libs/qt)')),
-        (3,'add <pkgkey> <comment>',2,_('add comment to the specified package key (example: x11-libs/qt)')),
+        (3,'add <pkgkey>',3,_('add comment to the specified package key (example: x11-libs/qt)')),
 
     None,
     (1,'cache',2,_('handles Entropy cache')),

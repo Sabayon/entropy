@@ -134,6 +134,7 @@ def ugcComments(options):
 
     rc = 0
     if cmd == "get":
+
         data, err_string = Equo.UGC.get_comments(repository, pkgkey)
         if not isinstance(data,tuple):
             print_error(
@@ -148,6 +149,89 @@ def ugcComments(options):
             return 1
         for comment_dict in data:
             showComment(comment_dict, repository, pkgkey)
+
+    elif cmd == "add":
+
+        print_info(" %s [%s|%s] %s" % (
+                bold(u"@@"),
+                darkgreen(unicode(repository)),
+                purple(unicode(pkgkey)),
+                blue(_("Add comment")),
+            )
+        )
+        def mycb(s):
+            return s
+        input_data = [
+            ('title',darkred(_("Insert your title")),mycb,False),
+            ('comment',darkred(_("Insert your comment")),mycb,False),
+            ('keywords',darkred(_("Insert comment's keywords (space separated)")),mycb,False)
+        ]
+        data = Equo.inputBox(blue("%s") % (_("Entropy UGC comment submission"),), input_data, cancel_button = True)
+
+        if not data:
+            return 1
+        elif not isinstance(data,dict):
+            return 1
+        elif not data.has_key('comment'):
+            return 1
+        elif not data['comment']:
+            return 1
+        elif not data.has_key('keywords'):
+            return 1
+        elif not data.has_key('title'):
+            return 1
+
+        title = data['title']
+        comment = data['comment']
+        keywords = ', '.join(data['keywords'].split())
+        # verify
+        print_info(" %s [%s|%s] %s:" % (
+                bold(u"@@"),
+                darkgreen(unicode(repository)),
+                purple(unicode(pkgkey)),
+                blue(_("Please review your submission")),
+            )
+        )
+        print_info("  %s: %s" % (
+                darkred(_("Title")),
+                blue(title),
+            )
+        )
+        print_info("  %s: %s" % (
+                darkred(_("Comment")),
+                blue(comment),
+            )
+        )
+        print_info("  %s: %s" % (
+                darkred(_("Keywords")),
+                blue(keywords),
+            )
+        )
+        rc = Equo.askQuestion("Do you want to submit?")
+        if rc != "Yes":
+            return 1
+
+        # submit comment
+        iddoc, err_string = Equo.UGC.add_comment(repository, pkgkey, title, comment, keywords)
+        if iddoc == None:
+            print_error(
+                "[%s:%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    darkred(pkgkey),
+                    blue(_("UGC error")),
+                    iddoc,
+                    err_string,
+                )
+            )
+            return 1
+        else:
+            print_info(" %s [%s|%s] %s" % (
+                    bold(u"@@"),
+                    darkgreen(unicode(repository)),
+                    purple(unicode(pkgkey)),
+                    blue(_("Comment added, thank you!")),
+                )
+            )
 
     return rc
 
