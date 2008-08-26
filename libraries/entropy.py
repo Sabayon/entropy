@@ -8667,7 +8667,7 @@ class TriggerInterface:
                 if x.startswith('/boot/kernel-'):
                     functions.add('removebootablekernel')
                 if x.startswith('/etc/init.d/'):
-                    functions.add('removeinit')
+                    functions.add('initdisable')
                 if x.endswith('.py'):
                     functions.add('cleanpy')
                 if x.startswith('/etc/env.d/'):
@@ -8703,10 +8703,9 @@ class TriggerInterface:
             functions.add("openglsetup_xorg")
 
         for x in self.pkgdata['removecontent']:
-            if x.startswith("/etc/init.d/"):
-                functions.add('initdisable')
             if x.startswith("/boot"):
                 functions.add('mountboot')
+                break
 
         return functions
 
@@ -9063,14 +9062,21 @@ class TriggerInterface:
         for item in self.pkgdata['removecontent']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-                # running?
-                #running = os.path.isfile(etpConst['systemroot']+self.INITSERVICES_DIR+'/started/'+os.path.basename(item))
-                if not etpConst['systemroot']:
-                    myroot = "/"
-                else:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[POST] Removing boot service: %s" % (os.path.basename(item),)
+                )
+                mytxt = "%s: %s" % (brown(_("Removing boot service")),os.path.basename(item),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                myroot = "/"
+                if etpConst['systemroot']:
                     myroot = etpConst['systemroot']+"/"
-                scheduled = not os.system('ROOT="'+myroot+'" rc-update show | grep '+os.path.basename(item)+'&> /dev/null')
-                self.trigger_initdeactivate(item, scheduled)
+                os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item))
 
     def trigger_initinform(self):
         for item in self.pkgdata['content']:
@@ -9087,30 +9093,6 @@ class TriggerInterface:
                     importance = 0,
                     header = red("   ## ")
                 )
-
-    def trigger_removeinit(self):
-        for item in self.pkgdata['removecontent']:
-            item = etpConst['systemroot']+item
-            if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[POST] Removing boot service: %s" % (os.path.basename(item),)
-                )
-                mytxt = "%s: %s" % (brown(_("Removing boot service")),os.path.basename(item),)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                if not etpConst['systemroot']:
-                    myroot = "/"
-                else:
-                    myroot = etpConst['systemroot']+"/"
-                try:
-                    os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item)+' &> /dev/null')
-                except:
-                    pass
 
     def trigger_openglsetup(self):
         opengl = "xorg-x11"
@@ -10117,24 +10099,6 @@ class TriggerInterface:
                     os.symlink(sympath,filepath)
                 except OSError:
                     pass
-        return 0
-
-    '''
-    @description: shuts down selected init script, and remove from runlevel
-    @output: returns int() as exit status
-    '''
-    def trigger_initdeactivate(self, item, scheduled):
-        if not etpConst['systemroot']:
-            myroot = "/"
-            '''
-            causes WORLD to fall under
-            if (running):
-                os.system(item+' stop --quiet')
-            '''
-        else:
-            myroot = etpConst['systemroot']+"/"
-        if (scheduled):
-            os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item))
         return 0
 
     def __get_entropy_kernel_grub_line(self, kernel):
