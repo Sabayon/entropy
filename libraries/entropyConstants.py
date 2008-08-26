@@ -1369,6 +1369,14 @@ def const_readServerSettings():
         elif (line.find("officialserverrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
             etpConst['officialserverrepositoryid'] = line.split("|")[1].strip()
 
+        elif (line.find("expiration-days|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+            mydays = line.split("|")[1].strip()
+            try:
+                mydays = int(mydays)
+                etpConst['packagesexpirationdays'] = mydays
+            except ValueError:
+                pass
+
         elif line.startswith("repository|") and (len(line.split("|")) in [5,6]):
 
             repoid, repodata = const_extractServerRepositoryParameters(line)

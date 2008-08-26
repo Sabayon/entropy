@@ -13,6 +13,19 @@
 branches|3.5
 
 #
+# Packages expiration days:
+# expiration-days|<number>
+#
+#
+# Number of days after a binary package will be removed from its belonging repository if not available anymore (old files)
+#
+#   example:
+#   expiration-days|15
+#
+# expiration-days|<internal value>
+
+
+#
 #  syntax for officialserverrepositoryid:
 #
 #    officialserverrepositoryid: Repository identifier for the official main distribution repository
