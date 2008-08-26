@@ -16708,6 +16708,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def __init__(self, connection_data, store_path, store_url = ''):
         self.store_url = store_url
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
+        self.UPLOADED_DOC_TYPES = [
+            self.DOC_TYPES['image'],
+            self.DOC_TYPES['generic_file']
+        ]
         RemoteDbSkelInterface.__init__(self)
         self.set_connection_data(connection_data)
         self.connect()
@@ -16877,6 +16881,19 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             for mydict in metadata:
                 if not mydict.has_key('iddoc'): continue
                 mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
+                if not mydict.has_key('idkey'): continue
+                mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+                # for binary files, get size too
+                mydict['size'] = 0
+                if not mydict.has_key('iddoctype'): continue
+                if not mydict.has_key('ddata'): continue
+                if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
+                    mypath = os.path.join(self.STORE_PATH,mydict['ddata'].tostring())
+                    if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
+                        try:
+                            mydict['size'] = int(os.stat(mypath)[6])
+                        except OSError:
+                            pass
         return metadata
 
     def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
@@ -17200,6 +17217,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if data != None:
             mypath = data.get('ddata')
             if mypath != None:
+                mypath = os.path.join(self.STORE_PATH,mypath.tostring())
                 if os.path.isfile(mypath) and os.access(mypath,os.W_OK):
                     os.remove(mypath)
 
