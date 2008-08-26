@@ -16872,6 +16872,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
         return metadata
 
+    def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
+        self.check_connection()
+        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers,typeslist,))
+        return self.fetchall()
+
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
         idkey = self.get_idkey(pkgkey)
@@ -17324,6 +17329,16 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> get_comments app-foo/foo",
                 'from': str(self), # from what class
             },
+            'ugc:get_comments_by_identifiers':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_comments_by_identifiers,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the comments belonging to the provided identifiers",
+                'syntax': "<SESSION_ID> get_comments_by_identifiers <identifier1> <identifier2> <identifier3>",
+                'from': str(self), # from what class
+            },
             'ugc:get_vote':    {
                 'auth': False,
                 'built_in': False,
@@ -17352,6 +17367,16 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided package key",
                 'syntax': "<SESSION_ID> get_textdocs app-foo/foo",
+                'from': str(self), # from what class
+            },
+            'ugc:get_textdocs_by_identifiers':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_get_textdocs_by_identifiers,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "get the text documents belonging to the provided identifiers",
+                'syntax': "<SESSION_ID> get_textdocs_by_identifiers <identifier1> <identifier2> <identifier3>",
                 'from': str(self), # from what class
             },
             'ugc:get_alldocs':    {
@@ -17802,6 +17827,13 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return None
         return metadata
 
+    def _get_generic_doctypes_by_identifiers(self, identifiers, doctypes):
+        ugc = self._load_ugc_interface()
+        metadata = ugc.get_ugc_metadata_doctypes_by_identifiers(identifiers, doctypes)
+        if not metadata:
+            return None
+        return metadata
+
     def docmd_get_comments(self, myargs):
 
         if not myargs:
@@ -17813,6 +17845,28 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return None,'no metadata available'
 
         return metadata,'ok'
+
+    def docmd_get_comments_by_identifiers(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+
+        identifiers = []
+        for myarg in myargs:
+            try:
+                identifiers.append(int(myarg))
+            except ValueError:
+                pass
+
+        if not identifiers:
+            return None,'wrong arguments'
+
+        metadata = self._get_generic_doctypes_by_identifiers(identifiers, [self.DOC_TYPES['comments']])
+        if metadata == None:
+            return None,'no metadata available'
+
+        return metadata,'ok'
+
 
     def docmd_get_allvotes(self):
         ugc = self._load_ugc_interface()
@@ -17855,6 +17909,27 @@ class DistributionUGCCommands(SocketCommandsSkel):
         pkgkey = myargs[0]
 
         metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES['comments'],self.DOC_TYPES['bbcode_doc']])
+        if metadata == None:
+            return None,'no metadata available'
+
+        return metadata,'ok'
+
+    def docmd_get_textdocs_by_identifiers(self, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+
+        identifiers = []
+        for myarg in myargs:
+            try:
+                identifiers.append(int(myarg))
+            except ValueError:
+                pass
+
+        if not identifiers:
+            return None,'wrong arguments'
+
+        metadata = self._get_generic_doctypes_by_identifiers(identifiers, [self.DOC_TYPES['comments'],self.DOC_TYPES['bbcode_doc']])
         if metadata == None:
             return None,'no metadata available'
 
@@ -20001,6 +20076,16 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
+    def ugc_get_textdocs_by_identifiers(self, session_id, identifiers):
+
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:get_textdocs_by_identifiers',
+            ' '.join([str(x) for x in identifiers]),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
     def ugc_send_file_stream(self, session_id, file_path):
 
         if not (os.path.isfile(file_path) and os.access(file_path,os.R_OK)):
@@ -20832,6 +20917,9 @@ class UGCClientInterface:
 
     def get_comments(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_get_textdocs", [pkgkey], {})
+
+    def get_comments_by_identifiers(self, repository, identifiers):
+        return self.do_cmd(repository, False, "ugc_get_textdocs_by_identifiers", [identifiers], {})
 
     def add_comment(self, repository, pkgkey, comment, title, keywords):
         return self.do_cmd(repository, True, "ugc_add_comment", [pkgkey, comment, title, keywords], {})
