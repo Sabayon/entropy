@@ -257,9 +257,12 @@ myopts = [
         (2,'login <repository>',1,_('login against a specified repository')),
         (2,'logout <repository>',1,_('logout from a specified repository')),
         (3,'--force',3,_('force action')),
-        (2,'comments <repository>',1,_('manage comments for the selected repository')),
+        (2,'comments <repository>',1,_('manage package comments for the selected repository')),
         (3,'get <pkgkey>',3,_('get comments for the specified package key (example: x11-libs/qt)')),
         (3,'add <pkgkey>',3,_('add comment to the specified package key (example: x11-libs/qt)')),
+        (2,'vote <repository>',1,_('manage package votes for the selected repository')),
+        (3,'get <pkgkey>',3,_('get vote for the specified package key (example: x11-libs/qt)')),
+        (3,'add <pkgkey>',3,_('add vote for the specified package key (example: x11-libs/qt)')),
 
     None,
     (1,'cache',2,_('handles Entropy cache')),

@@ -16691,7 +16691,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             ALTER TABLE `entropy_docs_keywords` ADD INDEX ( `keyword` );
         """,
     }
-    VOTE_RANGE = range(1,6) # [1, 2, 3, 4, 5]
+    VOTE_RANGE = etpConst['ugc_voterange'] # [1, 2, 3, 4, 5]
     VIRUS_CHECK_EXEC = '/usr/bin/clamscan'
     VIRUS_CHECK_ARGS = []
     gdata = None
@@ -20844,6 +20844,9 @@ class UGCClientInterface:
 
     def add_vote(self, repository, pkgkey, vote):
         return self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
+
+    def get_vote(self, repository, pkgkey):
+        return self.do_cmd(repository, True, "ugc_get_vote", [pkgkey], {})
 
     def add_download(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})

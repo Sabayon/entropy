@@ -801,6 +801,7 @@ def const_defaultSettings(rootdir):
             'youtube_video': 5,
         },
         'ugc_accessfile': ETP_UGC_CONF_DIR+"/access.xml",
+        'ugc_voterange': range(1,6),
 
         # handler settings
         'handlers': {

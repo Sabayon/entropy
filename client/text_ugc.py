@@ -46,6 +46,8 @@ def ugc(options):
         if options: rc = ugcLogout(options[0])
     elif cmd == "comments":
         if options: rc = ugcComments(options)
+    elif cmd == "vote":
+        if options: rc = ugcVotes(options)
 
     return rc
 
@@ -119,6 +121,126 @@ def ugcLogout(repository):
             )
         )
     return 0
+
+def ugcVotes(options):
+
+    rc = -10
+    repository = options[0]
+    options = options[1:]
+    if not options: return rc
+    cmd = options[0]
+    options = options[1:]
+    if not options: return rc
+    pkgkey = options[0]
+    options = options[1:]
+
+    rc = 0
+    if cmd == "get":
+
+        data, err_string = Equo.UGC.get_vote(repository, pkgkey)
+        if not isinstance(data,float):
+            print_error(
+                "[%s:%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    darkred(pkgkey),
+                    blue(_("UGC error")),
+                    data,
+                    err_string,
+                )
+            )
+            return 1
+        showVote(data, repository, pkgkey)
+
+    elif cmd == "add":
+
+        print_info(" %s [%s|%s] %s" % (
+                bold(u"@@"),
+                darkgreen(unicode(repository)),
+                purple(unicode(pkgkey)),
+                blue(_("Add vote")),
+            )
+        )
+        def mycb(s):
+            return s
+        input_data = [('vote',darkred(_("Insert your vote (from 1 to 5)")),mycb,False)]
+
+        data = Equo.inputBox(blue("%s") % (_("Entropy UGC vote submission"),), input_data, cancel_button = True)
+
+        if not data:
+            return 1
+        elif not isinstance(data,dict):
+            return 1
+        elif not data.has_key('vote'):
+            return 1
+        elif not data['vote']:
+            return 1
+
+        try:
+            vote = int(data['vote'])
+        except ValueError:
+            print_error(
+                "[%s:%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    darkred(pkgkey),
+                    blue(_("UGC error")),
+                    _("Vote not valid"),
+                    data['vote'],
+                )
+            )
+            return 1
+
+        if vote not in etpConst['ugc_voterange']:
+            print_error(
+                "[%s:%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    darkred(pkgkey),
+                    blue(_("UGC error")),
+                    _("Vote not in range"),
+                    etpConst['ugc_voterange'],
+                )
+            )
+            return 1
+
+        # verify
+        print_info(" %s [%s|%s] %s:" % (
+                bold(u"@@"),
+                darkgreen(unicode(repository)),
+                purple(unicode(pkgkey)),
+                blue(_("Please review your submission")),
+            )
+        )
+        print_info("  %s: %s" % (
+                darkred(_("Vote")),
+                blue(str(vote)),
+            )
+        )
+        rc = Equo.askQuestion("Do you want to submit?")
+        if rc != "Yes":
+            return 1
+
+        # submit vote
+        voted, err_string = Equo.UGC.add_vote(repository, pkgkey, vote)
+        if not voted:
+            print_error(
+                "[%s:%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    darkred(pkgkey),
+                    blue(_("UGC error")),
+                    voted,
+                    err_string,
+                )
+            )
+            return 1
+        else:
+            print_info(" %s [%s|%s] %s" % (
+                    bold(u"@@"),
+                    darkgreen(unicode(repository)),
+                    purple(unicode(pkgkey)),
+                    blue(_("Vote added, thank you!")),
+                )
+            )
+            ugcVotes([repository,"get",pkgkey])
+
 
 def ugcComments(options):
 
@@ -271,6 +393,15 @@ def showComment(mydict, repository, pkgkey):
         )
     )
 
+def showVote(vote, repository, pkgkey):
+    print_info(" %s [%s|%s] %s: %s" % (
+            bold(u"@@"),
+            darkgreen(unicode(repository)),
+            purple(unicode(pkgkey)),
+            darkred(_("Current package vote")),
+            darkgreen(str(vote)),
+        )
+    )
 
 
 def _my_formatted_print(data,header,reset_columns, min_chars = 25, color = None):
