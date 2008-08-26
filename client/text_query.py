@@ -1006,7 +1006,10 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         pkgflags = dbconn.retrieveCompileFlags(idpackage)
         pkgkeywords = dbconn.retrieveKeywords(idpackage)
         pkgdigest = dbconn.retrieveDigest(idpackage)
-        pkgcreatedate = Equo.entropyTools.convertUnixTimeToHumanTime(float(dbconn.retrieveDateCreation(idpackage)))
+        mydate = dbconn.retrieveDateCreation(idpackage)
+        pkgcreatedate = "N/A"
+        if mydate:
+            pkgcreatedate = Equo.entropyTools.convertUnixTimeToHumanTime(float(mydate))
         pkgsize = Equo.entropyTools.bytesIntoHuman(pkgsize)
         pkgdeps = dbconn.retrieveDependencies(idpackage)
         pkgconflicts = dbconn.retrieveConflicts(idpackage)

@@ -15768,7 +15768,7 @@ class ServerInterface(TextInterface):
                                     red(_("added package")),
                                     darkgreen(pkg),
                                     red(_("revision")),
-                                    brown(mydata_upd['revision']),
+                                    brown(str(revision)),
                             ),
                         importance = 1,
                         type = "info",
@@ -24479,6 +24479,8 @@ class EntropyDatabaseInterface:
             except (KeyError, ValueError):
                 etpData['revision'] = 0 # revision not specified
                 revision = 0
+        elif not etpData.has_key('revision'):
+            etpData['revision'] = revision
 
         if do_remove:
             removelist = self.retrieve_packages_to_remove(

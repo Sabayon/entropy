@@ -488,28 +488,34 @@ def database(options):
             )
             print_info(brown(" @@ ")+mytxt)
 
+            broken = set()
             for x in toBeRemoved:
                 atom = Equo.clientDbconn.retrieveAtom(x)
+                if not atom:
+                    broken.add(x)
+                    continue
                 print_info(brown("    # ")+red(atom))
-            rc = "Yes"
-            if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with removal ?"),))
-            if rc == "Yes":
-                queue = 0
-                totalqueue = str(len(toBeRemoved))
-                for x in toBeRemoved:
-                    queue += 1
-                    atom = Equo.clientDbconn.retrieveAtom(x)
-                    mytxt = " %s (%s/%s) %s %s %s" % (
-                        red("--"),
-                        blue(str(queue)),
-                        red(totalqueue),
-                        brown(">>>"),
-                        _("Removing"),
-                        darkgreen(atom),
-                    )
-                    print_info(mytxt)
-                    Equo.clientDbconn.removePackage(x)
-                print_info(brown(" @@ ")+blue("%s." % (_("Database removal complete"),) ))
+            toBeRemoved -= broken
+            if toBeRemoved:
+                rc = "Yes"
+                if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with removal ?"),))
+                if rc == "Yes":
+                    queue = 0
+                    totalqueue = str(len(toBeRemoved))
+                    for x in toBeRemoved:
+                        queue += 1
+                        atom = Equo.clientDbconn.retrieveAtom(x)
+                        mytxt = " %s (%s/%s) %s %s %s" % (
+                            red("--"),
+                            blue(str(queue)),
+                            red(totalqueue),
+                            brown(">>>"),
+                            _("Removing"),
+                            darkgreen(atom),
+                        )
+                        print_info(mytxt)
+                        Equo.clientDbconn.removePackage(x)
+                    print_info(brown(" @@ ")+blue("%s." % (_("Database removal complete"),) ))
 
         if toBeAdded:
             mytxt = blue("%s. %s:") % (

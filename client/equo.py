@@ -609,6 +609,9 @@ except exceptionTools.PermissionDenied, e:
 except exceptionTools.FileNotFound, e:
     print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
+except exceptionTools.SPMError, e:
+    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    sys.exit(1)
 except dbapi2Exceptions['OperationalError'], e:
     if str(e).find("disk I/O error") == -1:
         raise
