@@ -16882,7 +16882,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
         self.check_connection()
         self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers,typeslist,))
-        return self.fetchall()
+        metadata = self.fetchall()
+        if metadata:
+            for mydict in metadata:
+                if not mydict.has_key('iddoc'): continue
+                mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
+                if not mydict.has_key('idkey'): continue
+                mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+        return metadata
 
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
@@ -17839,11 +17846,6 @@ class DistributionUGCCommands(SocketCommandsSkel):
         metadata = ugc.get_ugc_metadata_doctypes_by_identifiers(identifiers, doctypes)
         if not metadata:
             return None
-        for mydict in metadata:
-            if not mydict.has_key('iddoc'): continue
-            mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-            if not mydict.has_key('idkey'): continue
-            mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
         return metadata
 
     def docmd_get_comments(self, myargs):
