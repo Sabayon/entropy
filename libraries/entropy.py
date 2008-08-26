@@ -1466,6 +1466,8 @@ class EquoInterface(TextInterface):
             etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['plain_packages']]
             etpRepositories[repodata['repoid']]['plain_database'] = repodata['plain_database']
             etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
+            if not repodata['dbcformat'] in etpConst['etpdatabasesupportedcformats']:
+                repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
             etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
             etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']
             # set dbrevision

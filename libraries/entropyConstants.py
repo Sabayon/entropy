@@ -869,6 +869,8 @@ def const_extractClientRepositoryParameters(repostring):
     mydata['plain_packages'] = []
     mydata['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
     mydata['dbcformat'] = dbformat
+    if not dbformat in etpConst['etpdatabasesupportedcformats']:
+        mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
     mydata['plain_database'] = repodatabase
     mydata['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
     mydata['dbrevision'] = "0"
