@@ -83,6 +83,9 @@ class FtpError(EntropyException):
 class SystemDatabaseError(EntropyException):
         """Cannot open system database"""
 
+class SPMError(EntropyException):
+        """Source Package Manager generic errors"""
+
 class OnlineMirrorError(EntropyException):
         """Mirror issue"""
 

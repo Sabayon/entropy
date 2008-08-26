@@ -11609,7 +11609,10 @@ class PortageInterface:
         if cached != None:
             return cached
 
-        mytree = self.portage.vartree(root=root)
+        try:
+            mytree = self.portage.vartree(root=root)
+        except Exception, e:
+            raise exceptionTools.SPMError("SPMError: %s: %s" % (Exception,e,))
         etpConst['spm']['cache']['portage']['vartree'][root] = mytree
         return mytree
 
@@ -11624,7 +11627,10 @@ class PortageInterface:
         if cached != None:
             return cached
 
-        mytree = self.portage.portagetree(root=root)
+        try:
+            mytree = self.portage.portagetree(root=root)
+        except Exception, e:
+            raise exceptionTools.SPMError("SPMError: %s: %s" % (Exception,e,))
         etpConst['spm']['cache']['portage']['portagetree'][root] = mytree
         return mytree
 
@@ -11640,7 +11646,10 @@ class PortageInterface:
             return cached
 
         pkgdir = root+self.portage.settings['PKGDIR']
-        mytree = self.portage.binarytree(root,pkgdir)
+        try:
+            mytree = self.portage.binarytree(root,pkgdir)
+        except Exception, e:
+            raise exceptionTools.SPMError("SPMError: %s: %s" % (Exception,e,))
         etpConst['spm']['cache']['portage']['binarytree'][root] = mytree
         return mytree
 
@@ -11655,7 +11664,10 @@ class PortageInterface:
         if cached != None:
             return cached
 
-        mysettings = self.portage.config(config_root = config_root, target_root = root, config_incrementals = self.portage_const.INCREMENTALS)
+        try:
+            mysettings = self.portage.config(config_root = config_root, target_root = root, config_incrementals = self.portage_const.INCREMENTALS)
+        except Exception, e:
+            raise exceptionTools.SPMError("SPMError: %s: %s" % (Exception,e,))
         etpConst['spm']['cache']['portage']['config'][(config_root,root)] = mysettings
         return mysettings
 
