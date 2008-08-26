@@ -906,7 +906,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 if idpackage == -1:
                     mytxt = "## %s: %s %s." % (
                         red(_("ATTENTION")),
-                        bold(package),
+                        bold(unicode(package,'raw_unicode_escape')),
                         red(_("is not installed")),
                     )
                     print_warning(mytxt)
