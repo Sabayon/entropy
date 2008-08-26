@@ -10187,7 +10187,10 @@ timeout=10
 
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
             for line in new_conf:
-                f.write(line)
+                try:
+                    f.write(line)
+                except UnicodeEncodeError:
+                    f.write(line.encode('utf-8'))
             f.flush()
             f.close()
 
