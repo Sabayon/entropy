@@ -34,7 +34,7 @@ def query(options):
 
     rc = 0
 
-    if len(options) < 1:
+    if not options:
         return -10
 
     equoRequestDeep = False
@@ -45,6 +45,9 @@ def query(options):
         else:
             if not opt.startswith("-"):
                 myopts.append(opt)
+
+    if not myopts:
+        return -10
 
     if myopts[0] == "installed":
         rc = searchInstalledPackages(myopts[1:])
