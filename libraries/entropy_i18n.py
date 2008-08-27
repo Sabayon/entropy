@@ -20,7 +20,7 @@ Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 _LOCALE = None
 try:
     import gettext
-    import sys, os
+    import os
     gettext.bindtextdomain('entropy', '/usr/share/locale')
     gettext.textdomain('entropy')
     gettext.install('entropy', unicode=True)
