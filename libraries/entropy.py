@@ -16883,7 +16883,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
         self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers,typeslist,))
+        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (tuple(identifiers),tuple(typeslist),))
         metadata = self.fetchall()
         if metadata:
             for mydict in metadata:
@@ -16892,7 +16892,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_ugc_metadata_by_identifiers(self, identifiers):
         self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s', (identifiers,))
+        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s', (tuple(identifiers),))
         metadata = self.fetchall()
         if metadata:
             for mydict in metadata:
