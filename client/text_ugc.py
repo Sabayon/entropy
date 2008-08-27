@@ -22,7 +22,7 @@ from outputTools import *
 from entropy import EquoInterface
 from entropy_i18n import _
 Equo = EquoInterface()
-#Equo.UGC.quiet = False
+Equo.UGC.show_progress = True
 
 
 def ugc(options):
@@ -44,8 +44,8 @@ def ugc(options):
         if options: rc = ugcLogin(options[0], force = do_force)
     elif cmd == "logout":
         if options: rc = ugcLogout(options[0])
-    elif cmd == "comments":
-        if options: rc = ugcComments(options)
+    elif cmd == "documents":
+        if options: rc = ugcDocuments(options)
     elif cmd == "vote":
         if options: rc = ugcVotes(options)
 
@@ -241,8 +241,7 @@ def ugcVotes(options):
             )
             ugcVotes([repository,"get",pkgkey])
 
-
-def ugcComments(options):
+def ugcDocuments(options):
 
     rc = -10
     repository = options[0]
@@ -253,11 +252,10 @@ def ugcComments(options):
     if not options: return rc
     pkgkey = options[0]
     options = options[1:]
-
     rc = 0
-    if cmd == "get":
 
-        data, err_string = Equo.UGC.get_comments(repository, pkgkey)
+    if cmd == "get":
+        data, err_string = Equo.UGC.get_docs(repository, pkgkey)
         if not isinstance(data,tuple):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
@@ -269,8 +267,25 @@ def ugcComments(options):
                 )
             )
             return 1
+        downloads, err_string = Equo.UGC.get_downloads(repository, pkgkey)
+        shown = False
         for comment_dict in data:
-            showComment(comment_dict, repository, pkgkey)
+            shown = True
+            showDocument(comment_dict, repository, comment_dict['pkgkey'])
+
+        if shown:
+            print_info(" %s %s: %s" % (
+                    darkred("@@"),
+                    blue(_("Number of downloads")),
+                    downloads,
+                )
+            )
+        else:
+            print_info(" %s %s." % (
+                    darkred("@@"),
+                    blue(_("No User Generated Content available")),
+                )
+            )
 
     elif cmd == "add":
 
@@ -278,33 +293,58 @@ def ugcComments(options):
                 bold(u"@@"),
                 darkgreen(unicode(repository)),
                 purple(unicode(pkgkey)),
-                blue(_("Add comment")),
+                blue(_("Add document")),
             )
         )
+        valid_types = {
+            ('c',_('text comment')): etpConst['ugc_doctypes']['comments'],
+            ('f',_('simple file')): etpConst['ugc_doctypes']['generic_file'],
+            ('i',_('simple image')): etpConst['ugc_doctypes']['image'],
+            ('y',_('youtube video')): etpConst['ugc_doctypes']['youtube_video']
+        }
+        upload_needed_types = [
+            etpConst['ugc_doctypes']['generic_file'],
+            etpConst['ugc_doctypes']['image'],
+            etpConst['ugc_doctypes']['youtube_video']
+        ]
+        my_quick_types = [x[0] for x in valid_types]
         def mycb(s):
             return s
+        def path_cb(s):
+            return os.access(s,os.R_OK)
+        def types_cb(s):
+            return s in my_quick_types
+
         input_data = [
-            ('title',darkred(_("Insert your title")),mycb,False),
-            ('comment',darkred(_("Insert your comment")),mycb,False),
-            ('keywords',darkred(_("Insert comment's keywords (space separated)")),mycb,False)
+            ('title',darkred(_("Insert document title")),mycb,False),
+            ('description',darkred(_("Insert document description/comment")),mycb,False),
+            ('keywords',darkred(_("Insert document's keywords (space separated)")),mycb,False),
+            ('type',"%s [%s]" % (darkred(_("Choose document type")),', '.join(["(%s) %s" % (brown(x[0]),darkgreen(x[1]),) for x in valid_types])),types_cb,False),
         ]
-        data = Equo.inputBox(blue("%s") % (_("Entropy UGC comment submission"),), input_data, cancel_button = True)
+        data = Equo.inputBox(blue("%s") % (_("Entropy UGC document submission"),), input_data, cancel_button = True)
 
         if not data:
             return 1
         elif not isinstance(data,dict):
             return 1
-        elif not data.has_key('comment'):
-            return 1
-        elif not data['comment']:
-            return 1
-        elif not data.has_key('keywords'):
-            return 1
-        elif not data.has_key('title'):
-            return 1
 
-        title = data['title']
-        comment = data['comment']
+        doc_type = None
+        for myshort,mylong in valid_types:
+            if data['type'] == myshort:
+                doc_type = (myshort,mylong)
+                data['type'] = valid_types.get((myshort,mylong,))
+                break
+
+        data['path'] = None
+        if data['type'] in upload_needed_types:
+            input_data = [('path',darkred(_("Insert document path")),path_cb,False)]
+            u_data = Equo.inputBox(blue("%s") % (_("Entropy UGC document submission"),), input_data, cancel_button = True)
+            if not u_data:
+                return 1
+            elif not isinstance(data,dict):
+                return 1
+            data['path'] = u_data['path']
+
         keywords = ', '.join(data['keywords'].split())
         # verify
         print_info(" %s [%s|%s] %s:" % (
@@ -316,12 +356,12 @@ def ugcComments(options):
         )
         print_info("  %s: %s" % (
                 darkred(_("Title")),
-                blue(title),
+                blue(data['title']),
             )
         )
         print_info("  %s: %s" % (
-                darkred(_("Comment")),
-                blue(comment),
+                darkred(_("Description")),
+                blue(data['description']),
             )
         )
         print_info("  %s: %s" % (
@@ -329,35 +369,155 @@ def ugcComments(options):
                 blue(keywords),
             )
         )
+        if data['path'] != None:
+            print_info("  %s: %s" % (
+                    darkred(_("Document path")),
+                    blue(data['path']),
+                )
+            )
+        print_info("  %s: (%s) %s" % (
+                darkred(_("Document type")),
+                darkred(doc_type[0]),
+                blue(doc_type[1]),
+            )
+        )
         rc = Equo.askQuestion("Do you want to submit?")
         if rc != "Yes":
             return 1
 
         # submit comment
-        iddoc, err_string = Equo.UGC.add_comment(repository, pkgkey, title, comment, keywords)
-        if iddoc == None:
+        rslt, data = Equo.UGC.send_document_autosense(
+            repository,
+            pkgkey,
+            data['type'],
+            data['path'],
+            data['title'],
+            data['description'],
+            data['keywords']
+        )
+        if not rslt:
             print_error(
                 "[%s:%s] %s: %s, %s" % (
                     darkgreen(repository),
                     darkred(pkgkey),
                     blue(_("UGC error")),
-                    iddoc,
-                    err_string,
+                    rslt,
+                    data,
                 )
             )
             return 1
         else:
-            print_info(" %s [%s|%s] %s" % (
+            if isinstance(data,tuple):
+                iddoc, r_content = data
+            else:
+                iddoc = rslt
+                r_content = data
+            print_info(" %s [%s|%s|id:%s|%s] %s" % (
                     bold(u"@@"),
                     darkgreen(unicode(repository)),
                     purple(unicode(pkgkey)),
-                    blue(_("Comment added, thank you!")),
+                    iddoc,
+                    r_content,
+                    blue(_("Document added, thank you!")),
                 )
             )
 
+    elif cmd == "remove":
+
+        print_info(" %s [%s] %s" % (
+                bold(u"@@"),
+                darkgreen(unicode(repository)),
+                blue(_("Documents removal")),
+            )
+        )
+        print_info(" %s [%s] %s:" % (
+                bold(u"@@"),
+                darkgreen(unicode(repository)),
+                blue(_("Please review your submission")),
+            )
+        )
+        print_info("  %s: %s" % (
+                darkred(_("Document identifiers")),
+                blue(', '.join(options)),
+            )
+        )
+        identifiers = []
+        for opt in options:
+            try:
+                identifiers.append(int(opt))
+            except ValueError:
+                pass
+        if not identifiers:
+            print_error(
+                "[%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    blue(_("UGC error")),
+                    _("No valid identifiers"),
+                    options,
+                )
+            )
+            return 1
+        rc = Equo.askQuestion("Would you like to review them?")
+        if rc == "Yes":
+            data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, identifiers)
+            if not isinstance(data,tuple):
+                print_error(
+                    "[%s:%s] %s: %s, %s" % (
+                        darkgreen(repository),
+                        darkred(unicode(identifiers)),
+                        blue(_("UGC error")),
+                        data,
+                        err_msg,
+                    )
+                )
+                return 1
+            for comment_dict in data:
+                showDocument(comment_dict, repository, comment_dict['pkgkey'])
+
+        rc = Equo.askQuestion("Would you like to continue with the removal?")
+        if rc != "Yes":
+            return 1
+
+        for identifier in identifiers:
+            doc_data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, [identifier])
+            if not isinstance(doc_data,tuple):
+                print_error(
+                    "[%s:%s] %s: %s, %s" % (
+                        darkgreen(repository),
+                        darkred(unicode(identifier)),
+                        blue(_("UGC error")),
+                        doc_data,
+                        err_msg,
+                    )
+                )
+                continue
+            doc_data = doc_data[0]
+            data, err_msg = Equo.UGC.remove_document_autosense(repository, identifier, doc_data['iddoctype'])
+            if data == False:
+                print_error(
+                    "[%s:%s] %s: %s, %s" % (
+                        darkgreen(repository),
+                        darkred(str(identifier)),
+                        blue(_("UGC error")),
+                        data,
+                        err_msg,
+                    )
+                )
+                continue
+            print_info(
+                "[%s:%s] %s: %s, %s" % (
+                    darkgreen(repository),
+                    darkred(str(identifier)),
+                    blue(_("UGC status")),
+                    data,
+                    err_msg,
+                )
+            )
+
+
     return rc
 
-def showComment(mydict, repository, pkgkey):
+def showDocument(mydict, repository, pkgkey):
 
     title = unicode(mydict['title'],'raw_unicode_escape')
     if not title: title = _("No title")
@@ -385,13 +545,25 @@ def showComment(mydict, repository, pkgkey):
     )
     text = mydict['ddata'].tostring()
     text = unicode(text,'raw_unicode_escape')
-    _my_formatted_print(text,"\t%s: " % (blue(_("Comment")),),"\t")
+    _my_formatted_print(text,"\t%s: " % (blue(_("Content")),),"\t")
 
     print_info("\t%s: %s" % (
             blue(_("Keywords")),
             ', '.join(mydict['keywords']),
         )
     )
+    print_info("\t%s: %s" % (
+            blue(_("Size")),
+            Equo.entropyTools.bytesIntoHuman(mydict['size']),
+        )
+    )
+    if mydict.has_key('store_url'):
+        if mydict['store_url'] != None:
+            print_info("\t%s: %s" % (
+                    blue(_("Download")),
+                    mydict['store_url'],
+                )
+            )
 
 def showVote(vote, repository, pkgkey):
     print_info(" %s [%s|%s] %s: %s" % (
