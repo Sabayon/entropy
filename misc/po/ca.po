@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-07-17 11:49+0000\n"
+"POT-Creation-Date: 2008-08-27 21:43+0000\n"
 "PO-Revision-Date: 2008-07-05 00:57-0000\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team:  <ca@li.org>\n"
@@ -48,55 +48,55 @@ msgstr "Molt bé, jo plego, no teniu sort"
 msgid "Go to hell."
 msgstr "Aneu a pastar fang."
 
-#: ../../libraries/entropyConstants.py:736
+#: ../../libraries/entropyConstants.py:737
 msgid "reason not available"
 msgstr "la raó no està disponible"
 
-#: ../../libraries/entropyConstants.py:737
+#: ../../libraries/entropyConstants.py:738
 msgid "user package.mask"
 msgstr "package.mask d'usuari"
 
-#: ../../libraries/entropyConstants.py:738
+#: ../../libraries/entropyConstants.py:739
 msgid "system keywords"
 msgstr "keywords del sistema"
 
-#: ../../libraries/entropyConstants.py:739
+#: ../../libraries/entropyConstants.py:740
 msgid "user package.unmask"
 msgstr "package.unmask d'usuari"
 
-#: ../../libraries/entropyConstants.py:740
+#: ../../libraries/entropyConstants.py:741
 msgid "user repo package.keywords (all packages)"
 msgstr "package.keywords del repositori d'usuari (tots els paquets)"
 
-#: ../../libraries/entropyConstants.py:741
+#: ../../libraries/entropyConstants.py:742
 msgid "user repo package.keywords"
 msgstr "package.keywords del repositori d'usuari"
 
-#: ../../libraries/entropyConstants.py:742
+#: ../../libraries/entropyConstants.py:743
 msgid "user package.keywords"
 msgstr "package.keywords d'usuari"
 
-#: ../../libraries/entropyConstants.py:743
+#: ../../libraries/entropyConstants.py:744
 msgid "completely masked"
 msgstr "completament emmascarat"
 
-#: ../../libraries/entropyConstants.py:744
+#: ../../libraries/entropyConstants.py:745
 msgid "repository general packages.db.mask"
 msgstr "packages.db.mask del repositori general"
 
-#: ../../libraries/entropyConstants.py:745
+#: ../../libraries/entropyConstants.py:746
 msgid "repository in branch packages.db.mask"
 msgstr "packages.db.mask del repositori en la branca"
 
-#: ../../libraries/entropyConstants.py:746
+#: ../../libraries/entropyConstants.py:747
 msgid "user license.mask"
 msgstr "license.mask d'usuari"
 
-#: ../../libraries/entropyConstants.py:747
+#: ../../libraries/entropyConstants.py:748
 msgid "user live unmask"
 msgstr "desemmascarat d'usuari live"
 
-#: ../../libraries/entropyConstants.py:748
+#: ../../libraries/entropyConstants.py:749
 msgid "user live mask"
 msgstr "emmascarat d'usuari live"
 
@@ -107,299 +107,299 @@ msgid ""
 msgstr ""
 "L'Entropy necessita sqlite+pysqlite o Python compilat amb suport per sqlite"
 
-#: ../../libraries/entropy.py:44 ../../libraries/entropy.py:4750
-#: ../../libraries/entropy.py:4801 ../../libraries/entropy.py:4807
-#: ../../libraries/entropy.py:4832 ../../libraries/entropy.py:4857
-#: ../../libraries/entropy.py:8423 ../../libraries/entropy.py:10936
+#: ../../libraries/entropy.py:44 ../../libraries/entropy.py:4785
+#: ../../libraries/entropy.py:4836 ../../libraries/entropy.py:4842
+#: ../../libraries/entropy.py:4867 ../../libraries/entropy.py:4892
+#: ../../libraries/entropy.py:8458 ../../libraries/entropy.py:10981
 #: ../../spritz/src/spritz.glade.h:34
 msgid "Error"
 msgstr "Error"
 
-#: ../../libraries/entropy.py:155 ../../libraries/entropy.py:163
+#: ../../libraries/entropy.py:160 ../../libraries/entropy.py:168
 #: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
 #: ../../spritz/src/views.py:454 ../../spritz/src/views.py:1039
 msgid "Repository"
 msgstr "Repositori"
 
-#: ../../libraries/entropy.py:155 ../../client/text_ui.py:136
+#: ../../libraries/entropy.py:160 ../../client/text_ui.py:136
 msgid "is not available"
 msgstr "no està disponible"
 
-#: ../../libraries/entropy.py:155 ../../libraries/entropy.py:163
+#: ../../libraries/entropy.py:160 ../../libraries/entropy.py:168
 msgid "Cannot validate"
 msgstr "No es pot validar"
 
-#: ../../libraries/entropy.py:163
+#: ../../libraries/entropy.py:168
 msgid "is corrupted"
 msgstr "està malmès"
 
-#: ../../libraries/entropy.py:227
+#: ../../libraries/entropy.py:232
 msgid ""
 "Another Entropy instance is currently active, cannot satisfy your request."
 msgstr ""
 "S'està executant una altra instància de Entropy. No es pot satisfer la "
 "vostra demanda."
 
-#: ../../libraries/entropy.py:247
+#: ../../libraries/entropy.py:252
 msgid "Resources unlocked, let's go!"
 msgstr "Els recursos s'han desbloquejat, som-hi!"
 
-#: ../../libraries/entropy.py:256
+#: ../../libraries/entropy.py:261
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr "Els recursos segueixen ocupats després de %s minuts, s'abandona!"
 
-#: ../../libraries/entropy.py:264
+#: ../../libraries/entropy.py:269
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr "Els recursos estan bloquejats, en espera %s segons, comprovació #%s/%s"
 
-#: ../../libraries/entropy.py:314
+#: ../../libraries/entropy.py:319
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr "No hi ha de què fer la còpia de seguretat a etpConst amb la clau %s"
 
-#: ../../libraries/entropy.py:388
+#: ../../libraries/entropy.py:393
 msgid "System database not found or corrupted"
 msgstr "La base de dades del sistema no hi és o està malmesa"
 
-#: ../../libraries/entropy.py:425 ../../libraries/entropy.py:456
-#: ../../libraries/entropy.py:464
+#: ../../libraries/entropy.py:430 ../../libraries/entropy.py:461
+#: ../../libraries/entropy.py:469
 msgid "Sanity Check"
 msgstr "Comprovació de sanitat"
 
-#: ../../libraries/entropy.py:425
+#: ../../libraries/entropy.py:430
 msgid "system database"
 msgstr "base de dades del sistema"
 
-#: ../../libraries/entropy.py:433
+#: ../../libraries/entropy.py:438
 msgid "Scanning..."
 msgstr "S'està escanejant..."
 
-#: ../../libraries/entropy.py:450
+#: ../../libraries/entropy.py:455
 #, python-format
 msgid "Errors on idpackage %s, error: %s"
 msgstr "Hi ha errors a idpackage %s, error: %s"
 
-#: ../../libraries/entropy.py:456
+#: ../../libraries/entropy.py:461
 msgid "PASSED"
 msgstr "PASSAT"
 
-#: ../../libraries/entropy.py:464
+#: ../../libraries/entropy.py:469
 msgid "CORRUPTED"
 msgstr "MALMÈS"
 
-#: ../../libraries/entropy.py:510
+#: ../../libraries/entropy.py:515
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
 msgstr "El repositori %s encara no s'ha baixat."
 
-#: ../../libraries/entropy.py:608
+#: ../../libraries/entropy.py:613
 #, python-format
 msgid "Cleaning %s => *.dmp..."
 msgstr "S'està suprimint %s => *.dmp..."
 
-#: ../../libraries/entropy.py:617
+#: ../../libraries/entropy.py:622
 msgid "Cache is now empty."
 msgstr "La memòria de cau està buida."
 
-#: ../../libraries/entropy.py:632
+#: ../../libraries/entropy.py:637
 msgid "Configuration files"
 msgstr "Fitxers de configuració"
 
-#: ../../libraries/entropy.py:637
+#: ../../libraries/entropy.py:642
 msgid "Scanning hard disk"
 msgstr "S'està escanejant el disc dur"
 
-#: ../../libraries/entropy.py:643
+#: ../../libraries/entropy.py:648
 msgid "Cache generation complete."
 msgstr "S'ha generat la memòria de cau."
 
-#: ../../libraries/entropy.py:651
+#: ../../libraries/entropy.py:656
 msgid "Resolving metadata"
 msgstr "S'estan resolent metadades"
 
-#: ../../libraries/entropy.py:669
+#: ../../libraries/entropy.py:674
 msgid "Dependencies cache filled."
 msgstr "S'han satisfet les dependències de la memòria de cau"
 
-#: ../../libraries/entropy.py:713
+#: ../../libraries/entropy.py:718
 #, python-format
 msgid "Checking %s"
 msgstr "S'està comprovant %s"
 
-#: ../../libraries/entropy.py:811
+#: ../../libraries/entropy.py:816
 msgid "Libraries test"
 msgstr "Comprovació de les llibreries"
 
-#: ../../libraries/entropy.py:826
+#: ../../libraries/entropy.py:831
 msgid "Cannot find "
 msgstr "No es pot trobar"
 
-#: ../../libraries/entropy.py:870
+#: ../../libraries/entropy.py:875
 msgid "Collecting broken executables"
 msgstr "S'estan recollint els executables trencats"
 
-#: ../../libraries/entropy.py:875 ../../libraries/entropy.py:6790
-#: ../../libraries/entropy.py:6827 ../../libraries/entropy.py:6842
-#: ../../libraries/entropy.py:6854 ../../libraries/entropy.py:6869
-#: ../../libraries/entropy.py:9478 ../../libraries/entropy.py:15632
+#: ../../libraries/entropy.py:880 ../../libraries/entropy.py:6825
+#: ../../libraries/entropy.py:6862 ../../libraries/entropy.py:6877
+#: ../../libraries/entropy.py:6889 ../../libraries/entropy.py:6904
+#: ../../libraries/entropy.py:9526 ../../libraries/entropy.py:15809
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../client/text_ui.py:690 ../../client/text_ui.py:691
-#: ../../spritz/src/dialogs.py:993 ../../spritz/src/misc.py:91
-#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:1311
+#: ../../spritz/src/dialogs.py:1004 ../../spritz/src/misc.py:91
+#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:1316
 msgid "Attention"
 msgstr "Atenció"
 
-#: ../../libraries/entropy.py:876
+#: ../../libraries/entropy.py:881
 msgid "don't worry about libraries that are shown here but not later."
 msgstr ""
 "no us preocupeu per les llibreries que es mostren aquí, però que no "
 "apareixen després."
 
-#: ../../libraries/entropy.py:889
+#: ../../libraries/entropy.py:894
 msgid "Scanning libraries"
 msgstr "S'estan escanejant les llibreries"
 
-#: ../../libraries/entropy.py:929
+#: ../../libraries/entropy.py:934
 msgid "Matching broken libraries/executables"
 msgstr "Llibreries/executables trencats coincidents"
 
-#: ../../libraries/entropy.py:1194
+#: ../../libraries/entropy.py:1199
 msgid "server_repos needs serverInstance"
 msgstr "server_repos necessita serverInstance"
 
-#: ../../libraries/entropy.py:1444
+#: ../../libraries/entropy.py:1449
 msgid "repodata dictionary is corrupted"
 msgstr "el diccionari repodata està malmès"
 
-#: ../../libraries/entropy.py:2070
+#: ../../libraries/entropy.py:2077
 msgid "Sorting dependencies"
 msgstr "S'estan ordenant les dependències"
 
-#: ../../libraries/entropy.py:2163
+#: ../../libraries/entropy.py:2170
 msgid "Calculating removable depends of"
 msgstr "S'estan calculant les dependències d'eliminació de"
 
-#: ../../libraries/entropy.py:2332
+#: ../../libraries/entropy.py:2339
 msgid "Calculating available packages for"
 msgstr "S'estan calculant els paquets disponibles a"
 
-#: ../../libraries/entropy.py:2423
+#: ../../libraries/entropy.py:2440
 msgid "Calculating world packages"
 msgstr "S'estan calculant els paquets world"
 
-#: ../../libraries/entropy.py:2530
+#: ../../libraries/entropy.py:2547
 msgid "not a valid method"
 msgstr "no és un mètode vàlid"
 
-#: ../../libraries/entropy.py:2875 ../../libraries/entropy.py:15826
+#: ../../libraries/entropy.py:2892 ../../libraries/entropy.py:16003
 msgid "Mirror"
 msgstr "Rèplica"
 
-#: ../../libraries/entropy.py:2877
+#: ../../libraries/entropy.py:2894
 msgid "maximum failure threshold reached"
 msgstr "llindar màxim de fallada aconseguit"
 
-#: ../../libraries/entropy.py:2903
+#: ../../libraries/entropy.py:2920
 msgid "Downloading from"
 msgstr "S'està baixant des de"
 
-#: ../../libraries/entropy.py:2920
+#: ../../libraries/entropy.py:2937
 msgid "Successfully downloaded from"
 msgstr "S'ha baixat amb èxit des de"
 
-#: ../../libraries/entropy.py:2922
+#: ../../libraries/entropy.py:2939
 msgid "at"
 msgstr "a"
 
-#: ../../libraries/entropy.py:2922
+#: ../../libraries/entropy.py:2939
 msgid "second"
 msgstr "segon"
 
-#: ../../libraries/entropy.py:2936
+#: ../../libraries/entropy.py:2963
 msgid "Error downloading from"
 msgstr "S'ha produït un error en la baixada des de"
 
-#: ../../libraries/entropy.py:2941
+#: ../../libraries/entropy.py:2968
 msgid "file not available on this mirror"
 msgstr "el fitxer no està disponible en aquesta rèplica"
 
-#: ../../libraries/entropy.py:2944
+#: ../../libraries/entropy.py:2971
 msgid "wrong checksum"
 msgstr "suma de verificació incorrecta"
 
-#: ../../libraries/entropy.py:2949
+#: ../../libraries/entropy.py:2976
 msgid "discarded download"
 msgstr "baixada descartada"
 
-#: ../../libraries/entropy.py:2952
+#: ../../libraries/entropy.py:2979
 msgid "unknown reason"
 msgstr "raó desconeguda"
 
-#: ../../libraries/entropy.py:3124
+#: ../../libraries/entropy.py:3151
 msgid "Extracting package metadata"
 msgstr "S'estan extraient metadades del paquet"
 
-#: ../../libraries/entropy.py:3269 ../../libraries/entropy.py:15774
-#: ../../libraries/entropy.py:20079
+#: ../../libraries/entropy.py:3296 ../../libraries/entropy.py:15951
+#: ../../libraries/entropy.py:21919
 msgid "not supported"
 msgstr "no suportat"
 
-#: ../../libraries/entropy.py:3270
+#: ../../libraries/entropy.py:3297
 msgid "Probably Portage API has changed"
 msgstr "Probablement la API de Portage ha canviat"
 
-#: ../../libraries/entropy.py:3565
+#: ../../libraries/entropy.py:3592
 msgid "not set"
 msgstr "no s'ha establert"
 
-#: ../../libraries/entropy.py:3565
+#: ../../libraries/entropy.py:3592
 msgid "have you configured make.conf properly?"
 msgstr "heu configurat correctament el make.conf?"
 
-#: ../../libraries/entropy.py:3586
+#: ../../libraries/entropy.py:3613
 msgid "Package extraction complete"
 msgstr "L'extracció del paquet ha acabat"
 
-#: ../../libraries/entropy.py:3640 ../../libraries/entropy.py:5395
-#: ../../libraries/entropy.py:5673 ../../libraries/entropy.py:10305
+#: ../../libraries/entropy.py:3667 ../../libraries/entropy.py:5430
+#: ../../libraries/entropy.py:5708 ../../libraries/entropy.py:10350
 msgid "A valid Equo instance or subclass is needed"
 msgstr "Es necessita una instància o subclasse de Equo vàlida"
 
-#: ../../libraries/entropy.py:3660
+#: ../../libraries/entropy.py:3687
 msgid "Already prepared"
 msgstr "Ja està preparat"
 
-#: ../../libraries/entropy.py:3665
+#: ../../libraries/entropy.py:3692
 msgid "Not yet prepared"
 msgstr "Encara no està preparat"
 
-#: ../../libraries/entropy.py:3670
+#: ../../libraries/entropy.py:3697
 msgid "Action must be in"
 msgstr "L'acció ha de ser a"
 
-#: ../../libraries/entropy.py:3679
+#: ../../libraries/entropy.py:3706
 msgid "Checking package checksum..."
 msgstr "S'està comprovant la suma de verificació del paquet..."
 
-#: ../../libraries/entropy.py:3688
+#: ../../libraries/entropy.py:3715
 msgid "Package checksum matches."
 msgstr "La suma de verificació del paquet coincideix."
 
-#: ../../libraries/entropy.py:3699
+#: ../../libraries/entropy.py:3726
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
 msgstr ""
 "La suma de verificació del paquet no coincideix. S'està baixant de nou... "
 "intent #%s"
 
-#: ../../libraries/entropy.py:3713
+#: ../../libraries/entropy.py:3744
 msgid "Cannot properly fetch package! Quitting."
 msgstr "No es pot recollir el paquet correctament! Sortint."
 
-#: ../../libraries/entropy.py:3722
+#: ../../libraries/entropy.py:3753
 msgid ""
 "Cannot properly fetch package or checksum does not match. Try download "
 "latest repositories."
@@ -407,1056 +407,1060 @@ msgstr ""
 "No es pot recollir el paquet correctament o la suma de verificació no "
 "coincideix. Intenteu baixar els últims repositoris."
 
-#: ../../libraries/entropy.py:3843
+#: ../../libraries/entropy.py:3874
 msgid "Removing from Entropy"
 msgstr "S'està eliminant de Entropy"
 
 #. in this way we filter out directories
-#: ../../libraries/entropy.py:3878
+#: ../../libraries/entropy.py:3909
 msgid "Collision found during removal of"
 msgstr "S'ha trobat una col·lisió en l'eliminació de"
 
-#: ../../libraries/entropy.py:3879 ../../libraries/entropy.py:4715
+#: ../../libraries/entropy.py:3910 ../../libraries/entropy.py:4746
 msgid "cannot overwrite"
 msgstr "no es pot sobreescriure"
 
-#: ../../libraries/entropy.py:3906 ../../libraries/entropy.py:21051
-#: ../../libraries/entropy.py:21890
+#: ../../libraries/entropy.py:3937 ../../libraries/entropy.py:22910
+#: ../../libraries/entropy.py:23749
 msgid "remove"
 msgstr "elimina"
 
-#: ../../libraries/entropy.py:3907 ../../libraries/entropy.py:4674
+#: ../../libraries/entropy.py:3938 ../../libraries/entropy.py:4705
 msgid "Protecting config file"
 msgstr "S'està protegint el fitxer de configuració"
 
-#: ../../libraries/entropy.py:3922
+#: ../../libraries/entropy.py:3953
 msgid "This package contains a badly encoded file !!!"
 msgstr "Aquest paquet conté un fitxer mal codificat !!!"
 
 #. inject into database
-#: ../../libraries/entropy.py:4191
+#: ../../libraries/entropy.py:4222
 msgid "Updating database"
 msgstr "S'està actualitzant la base de dades"
 
-#: ../../libraries/entropy.py:4226
+#: ../../libraries/entropy.py:4257
 msgid "Cleaning old package files..."
 msgstr "S'estan suprimint fitxers de paquets antics..."
 
-#: ../../libraries/entropy.py:4332
+#: ../../libraries/entropy.py:4363
 #, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
 msgstr ""
 "No es pot actualitzar el comptador de Portage, la destinació %s no existeix."
 
-#: ../../libraries/entropy.py:4352
+#: ../../libraries/entropy.py:4383
 #, python-format
 msgid "Cannot update Portage world file, destination %s does not exist."
 msgstr ""
 "No es pot actualitzar el fitxer world de Portage, la destinació %s no "
 "existeix."
 
-#: ../../libraries/entropy.py:4379
+#: ../../libraries/entropy.py:4410
 #, python-format
 msgid "Cannot update Portage world file, destination %s is corrupted."
 msgstr ""
 "No es pot actualitzar el fitxer world de Portage, la destinació %s està "
 "malmesa."
 
-#: ../../libraries/entropy.py:4502
+#: ../../libraries/entropy.py:4533
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 "%s és un fitxer i hauria de ser un directori !! S'eliminarà en 20 segons..."
 
-#: ../../libraries/entropy.py:4577
+#: ../../libraries/entropy.py:4608
 #, python-format
 msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr ""
 "%s és un directori i hauria de ser un fitxer !! S'eliminarà en 20 segons..."
 
-#: ../../libraries/entropy.py:4687
+#: ../../libraries/entropy.py:4718
 msgid "Skipping file installation/removal"
 msgstr "S'omet la instal·lació/eliminació del fitxer"
 
-#: ../../libraries/entropy.py:4700
+#: ../../libraries/entropy.py:4731
 msgid "Cannot check CONFIG PROTECTION. Error"
 msgstr "No es pot comprovar CONFIG PROTECTION. Error"
 
-#: ../../libraries/entropy.py:4714
+#: ../../libraries/entropy.py:4745
 msgid "Collision found during install for"
 msgstr "S'ha trobat una col·lisió en la instal·lació per"
 
-#: ../../libraries/entropy.py:4733
+#: ../../libraries/entropy.py:4764
 msgid "Downloading archive"
 msgstr "S'està baixant el fitxer"
 
-#: ../../libraries/entropy.py:4749
+#: ../../libraries/entropy.py:4784
 msgid "Package cannot be fetched. Try to update repositories and retry"
 msgstr ""
 "No s'ha pogut recollir el paquet. Intenteu actualitzar els repositoris i "
 "torneu-ho a provar"
 
-#: ../../libraries/entropy.py:4764
+#: ../../libraries/entropy.py:4799
 msgid "Installed package in queue vanished, skipping."
 msgstr "El paquet instal·lat a la cua ha desaparegut, s'omet."
 
-#: ../../libraries/entropy.py:4780
+#: ../../libraries/entropy.py:4815
 msgid "Unpacking package"
 msgstr "S'està desempaquetant"
 
-#: ../../libraries/entropy.py:4788
+#: ../../libraries/entropy.py:4823
 msgid "Merging package"
 msgstr "S'està combinant el paquet"
 
-#: ../../libraries/entropy.py:4799
+#: ../../libraries/entropy.py:4834
 msgid "You are running out of disk space"
 msgstr "Us esteu quedant sense espai al disc"
 
-#: ../../libraries/entropy.py:4800
+#: ../../libraries/entropy.py:4835
 msgid "I bet, you're probably Michele"
 msgstr "Us repto, probablement sou Michele"
 
-#: ../../libraries/entropy.py:4805
+#: ../../libraries/entropy.py:4840
 msgid "An error occured while trying to unpack the package"
 msgstr "S'ha produït un error mentre s'estava intentant desempaquetar"
 
-#: ../../libraries/entropy.py:4806 ../../libraries/entropy.py:4831
+#: ../../libraries/entropy.py:4841 ../../libraries/entropy.py:4866
 msgid "Check if your system is healthy"
 msgstr "Comprova si el vostre sistema està sa"
 
-#: ../../libraries/entropy.py:4820
+#: ../../libraries/entropy.py:4855
 msgid "Installing package"
 msgstr "S'està instal·lant el paquet"
 
-#: ../../libraries/entropy.py:4830
+#: ../../libraries/entropy.py:4865
 msgid "An error occured while trying to install the package"
 msgstr "S'ha produït un error mentre s'estava intentant instal·lar el paquet"
 
-#: ../../libraries/entropy.py:4845
+#: ../../libraries/entropy.py:4880
 msgid "Removing data"
 msgstr "S'estan eliminant dades"
 
-#: ../../libraries/entropy.py:4855
+#: ../../libraries/entropy.py:4890
 msgid "An error occured while trying to remove the package"
 msgstr "S'ha produït un error mentre s'estava intentant eliminar el paquet"
 
-#: ../../libraries/entropy.py:4856
+#: ../../libraries/entropy.py:4891
 msgid "Check if you have enough disk space on your hard disk"
 msgstr "Comproveu si teniu suficient espai al disc dur"
 
-#: ../../libraries/entropy.py:4870 ../../libraries/entropy.py:5059
+#: ../../libraries/entropy.py:4905 ../../libraries/entropy.py:5094
 msgid "Cleaning"
 msgstr "S'està suprimint"
 
-#: ../../libraries/entropy.py:4897
+#: ../../libraries/entropy.py:4932
 msgid "Compilation messages"
 msgstr "Missatges de compilació"
 
-#: ../../libraries/entropy.py:5016
+#: ../../libraries/entropy.py:5051
 msgid "Fetching"
 msgstr "S'està recollint"
 
-#: ../../libraries/entropy.py:5022
+#: ../../libraries/entropy.py:5057
 msgid "Verifying"
 msgstr "S'està verificant"
 
-#: ../../libraries/entropy.py:5029
+#: ../../libraries/entropy.py:5064
 msgid "Unpacking"
 msgstr "S'està desempaquetant"
 
-#: ../../libraries/entropy.py:5032
+#: ../../libraries/entropy.py:5067
 msgid "Merging"
 msgstr "S'està combinant"
 
-#: ../../libraries/entropy.py:5041
+#: ../../libraries/entropy.py:5076
 msgid "Installing"
 msgstr "S'està instal·lant"
 
-#: ../../libraries/entropy.py:5047 ../../client/text_rescue.py:507
+#: ../../libraries/entropy.py:5082 ../../client/text_rescue.py:513
 msgid "Removing"
 msgstr "S'està eliminant"
 
-#: ../../libraries/entropy.py:5065
+#: ../../libraries/entropy.py:5100
 msgid "Postinstall"
 msgstr "Postinstal·lació"
 
-#: ../../libraries/entropy.py:5071
+#: ../../libraries/entropy.py:5106
 msgid "Preinstall"
 msgstr "Preinstal·lació"
 
-#: ../../libraries/entropy.py:5077
+#: ../../libraries/entropy.py:5112
 msgid "Preremove"
 msgstr "Preeliminació"
 
-#: ../../libraries/entropy.py:5083
+#: ../../libraries/entropy.py:5118
 msgid "Postremove"
 msgstr "Posteliminació"
 
-#: ../../libraries/entropy.py:5124
+#: ../../libraries/entropy.py:5159
 msgid "An error occured. Action aborted."
 msgstr "S'ha produït un error. L'acció s'ha interromput."
 
-#: ../../libraries/entropy.py:5495 ../../client/text_configuration.py:152
+#: ../../libraries/entropy.py:5530 ../../client/text_configuration.py:152
 #: ../../client/text_configuration.py:162
 #: ../../client/text_configuration.py:229
 msgid "Automerging file"
 msgstr "S'està combinant automàticament el fitxer"
 
-#: ../../libraries/entropy.py:5511
+#: ../../libraries/entropy.py:5546
 msgid "I/O Error"
 msgstr "Error d'E/S"
 
-#: ../../libraries/entropy.py:5512
+#: ../../libraries/entropy.py:5547
 msgid "Cannot automerge file"
 msgstr "El fitxer no es pot combinar automàticament"
 
-#: ../../libraries/entropy.py:5545
+#: ../../libraries/entropy.py:5580
 msgid "Cache is corrupted"
 msgstr "La memòria de cau està malmesa"
 
-#: ../../libraries/entropy.py:5621
+#: ../../libraries/entropy.py:5656
 msgid "Invalid config file number"
 msgstr "El número de fitxer de configuració no és vàlid"
 
-#: ../../libraries/entropy.py:5695
+#: ../../libraries/entropy.py:5730
 #, python-format
 msgid "No repositories specified in %s"
 msgstr "No hi ha repositoris especificats a %s"
 
-#: ../../libraries/entropy.py:5701 ../../libraries/entropy.py:11223
+#: ../../libraries/entropy.py:5736 ../../libraries/entropy.py:11268
 #, python-format
 msgid "Cannot connect to %s"
 msgstr "No es pot connectar amb %s"
 
-#: ../../libraries/entropy.py:5763
+#: ../../libraries/entropy.py:5798
 msgid "Repository is not listed in self.reponames"
 msgstr "El repositori no està llistat a self.reponames"
 
-#: ../../libraries/entropy.py:5772
+#: ../../libraries/entropy.py:5807
 msgid "Wrong database compression method"
 msgstr "El mètode de compressió de la base de dades és erroni"
 
-#: ../../libraries/entropy.py:5797
+#: ../../libraries/entropy.py:5832
 #, python-format
 msgid "Supported items: %s"
 msgstr "Elements suportats: %s"
 
-#: ../../libraries/entropy.py:5802 ../../libraries/entropy.py:5808
+#: ../../libraries/entropy.py:5837 ../../libraries/entropy.py:5843
 #, python-format
 msgid "For %s, cmethod can't be None"
 msgstr "Per %s, cmethod no pot ser Cap"
 
-#: ../../libraries/entropy.py:5881 ../../libraries/entropy.py:5907
-#: ../../libraries/entropy.py:5938
+#: ../../libraries/entropy.py:5916 ../../libraries/entropy.py:5942
+#: ../../libraries/entropy.py:5973
 msgid "self.dbformat_eapi must be in (1,2)"
 msgstr "self.dbformat_eapi ha de ser en (1,2)"
 
 #. verify checksum
-#: ../../libraries/entropy.py:6035
+#: ../../libraries/entropy.py:6070
 msgid "Checking downloaded database"
 msgstr "S'està comprovant la base de dades baixada"
 
-#: ../../libraries/entropy.py:6045
+#: ../../libraries/entropy.py:6080
 msgid "Cannot open digest"
 msgstr "No es pot obrir l'empremta electrònica"
 
-#: ../../libraries/entropy.py:6045 ../../libraries/entropy.py:6754
+#: ../../libraries/entropy.py:6080 ../../libraries/entropy.py:6789
 msgid "Cannot verify database integrity"
 msgstr "No es pot verificar la integritat de la base de dades"
 
-#: ../../libraries/entropy.py:6053 ../../libraries/entropy.py:6061
+#: ../../libraries/entropy.py:6088 ../../libraries/entropy.py:6096
 msgid "Downloaded database status"
 msgstr "Estat de la base de dades baixada"
 
-#: ../../libraries/entropy.py:6053
+#: ../../libraries/entropy.py:6088
 msgid "OK"
 msgstr "CORRECTE"
 
-#: ../../libraries/entropy.py:6061
+#: ../../libraries/entropy.py:6096
 msgid "ERROR"
 msgstr "ERROR"
 
-#: ../../libraries/entropy.py:6068
+#: ../../libraries/entropy.py:6103
 msgid "An error occured while checking database integrity"
 msgstr ""
 "S'ha produït un error mentre s'estava analitzant la integritat de la base de "
 "dades"
 
-#: ../../libraries/entropy.py:6068
+#: ../../libraries/entropy.py:6103
 msgid "Giving up"
 msgstr "S'abandona"
 
-#: ../../libraries/entropy.py:6088 ../../client/text_repositories.py:119
+#: ../../libraries/entropy.py:6123 ../../client/text_repositories.py:119
 #: ../../client/text_repositories.py:141
 msgid "Database URL"
 msgstr "URL de base de dades"
 
-#: ../../libraries/entropy.py:6095
+#: ../../libraries/entropy.py:6130
 msgid "Database local path"
 msgstr "Camí local de la base de dades"
 
-#: ../../libraries/entropy.py:6102
+#: ../../libraries/entropy.py:6137
 msgid "Database EAPI"
 msgstr "Base de dades EAPI"
 
-#: ../../libraries/entropy.py:6196 ../../libraries/entropy.py:6237
-#: ../../libraries/entropy.py:6257
+#: ../../libraries/entropy.py:6231 ../../libraries/entropy.py:6272
+#: ../../libraries/entropy.py:6292
 msgid "EAPI3 Service status"
 msgstr "Estat del Servei EAPI3"
 
-#: ../../libraries/entropy.py:6197
+#: ../../libraries/entropy.py:6232
 msgid "remote database suddenly locked"
 msgstr "la base de dades remota de sobte s'ha bloquejat"
 
-#: ../../libraries/entropy.py:6215
+#: ../../libraries/entropy.py:6250
 msgid "EAPI3 Service"
 msgstr "Servei EAPI3"
 
-#: ../../libraries/entropy.py:6216
+#: ../../libraries/entropy.py:6251
 msgid "skipping differential sync"
 msgstr "s'estan ometent les sincronitzacions diferencials"
 
-#: ../../libraries/entropy.py:6217
+#: ../../libraries/entropy.py:6252
 msgid "threshold"
 msgstr "llindar"
 
-#: ../../libraries/entropy.py:6238
+#: ../../libraries/entropy.py:6273
 msgid "treeupdates data not available"
 msgstr "les dades de l'arbre d'actualitzacions no estan disponibles"
 
-#: ../../libraries/entropy.py:6258
+#: ../../libraries/entropy.py:6293
 msgid "cannot update treeupdates data"
 msgstr "no es poden actualitzar les dades de l'arbre d'actualitzacions"
 
-#: ../../libraries/entropy.py:6288
+#: ../../libraries/entropy.py:6323
 msgid "Fetching segments"
 msgstr "S'estan recollint segments"
 
-#: ../../libraries/entropy.py:6311
+#: ../../libraries/entropy.py:6346
 msgid "Fetch error on segment"
 msgstr "S'ha produït un error en la recollida del segment"
 
-#: ../../libraries/entropy.py:6328
+#: ../../libraries/entropy.py:6363
 msgid "Service status"
 msgstr "Estat de servei"
 
-#: ../../libraries/entropy.py:6364
+#: ../../libraries/entropy.py:6399
 msgid "Fetch error on segment while adding"
 msgstr "S'ha produït un error de recollida del segment mentre s'afegia"
 
-#: ../../libraries/entropy.py:6378
+#: ../../libraries/entropy.py:6413
 msgid "Injecting package"
 msgstr "S'està injectant un paquet"
 
-#: ../../libraries/entropy.py:6397
+#: ../../libraries/entropy.py:6432
 msgid "Packages injection complete"
 msgstr "Ha finalitzat la injecció de paquets"
 
-#: ../../libraries/entropy.py:6409
+#: ../../libraries/entropy.py:6444
 msgid "Removing package"
 msgstr "S'està eliminant un paquet"
 
-#: ../../libraries/entropy.py:6421
+#: ../../libraries/entropy.py:6456
 msgid "Packages removal complete"
 msgstr "L'eliminació de paquets ha acabat"
 
-#: ../../libraries/entropy.py:6436
+#: ../../libraries/entropy.py:6471
 msgid "Database checksum doesn't match remote."
 msgstr ""
 "La suma de verificació de la base de dades no coincideix amb la remota."
 
-#: ../../libraries/entropy.py:6437 ../../libraries/entropy.py:15890
+#: ../../libraries/entropy.py:6472 ../../libraries/entropy.py:16067
 msgid "local"
 msgstr "local"
 
-#: ../../libraries/entropy.py:6439
+#: ../../libraries/entropy.py:6474
 msgid "remote"
 msgstr "remot"
 
-#: ../../libraries/entropy.py:6536
+#: ../../libraries/entropy.py:6571
 msgid "EAPI3 Service error"
 msgstr "Error de Servei EAPI3"
 
-#: ../../libraries/entropy.py:6674
+#: ../../libraries/entropy.py:6709
 msgid "Something bad happened. Please have a look."
 msgstr "Ha passat alguna cosa dolenta. Si us plau, comproveu-ho."
 
-#: ../../libraries/entropy.py:6699
+#: ../../libraries/entropy.py:6734
 msgid "a new release is available"
 msgstr "hi ha una nova versió disponible"
 
-#: ../../libraries/entropy.py:6700
+#: ../../libraries/entropy.py:6735
 msgid "Mind to install it before any other package"
 msgstr "Recordeu instal·lar-lo abans que cap altre paquet"
 
-#: ../../libraries/entropy.py:6714
+#: ../../libraries/entropy.py:6749
 msgid "Unpacking database to"
 msgstr "S'està desempaquetant la base de dades a"
 
-#: ../../libraries/entropy.py:6724
+#: ../../libraries/entropy.py:6759
 msgid "Cannot unpack compressed package"
 msgstr "No es pot desempaquetar el paquet comprimit"
 
-#: ../../libraries/entropy.py:6724
+#: ../../libraries/entropy.py:6759
 msgid "Skipping repository"
 msgstr "S'omet el repositori"
 
-#: ../../libraries/entropy.py:6743
+#: ../../libraries/entropy.py:6778
 msgid "Downloading checksum"
 msgstr "S'està baixant la suma de verificació"
 
-#: ../../libraries/entropy.py:6754
+#: ../../libraries/entropy.py:6789
 msgid "Cannot fetch checksum"
 msgstr "No es pot capturar la suma de verificació"
 
-#: ../../libraries/entropy.py:6784
+#: ../../libraries/entropy.py:6819
 msgid "Current repository got suddenly locked. Download aborted."
 msgstr ""
 "El repositori actual de sobte s'ha bloquejat. S'ha interromput la baixada."
 
-#: ../../libraries/entropy.py:6790
+#: ../../libraries/entropy.py:6825
 msgid "remote database got suddenly locked"
 msgstr "la base de dades remota de sobte s'ha bloquejat"
 
 #. starting to download
-#: ../../libraries/entropy.py:6799
+#: ../../libraries/entropy.py:6834
 msgid "Downloading repository database"
 msgstr "S'està baixant la base de dades del repositori"
 
-#: ../../libraries/entropy.py:6827
+#: ../../libraries/entropy.py:6862
 msgid "database does not exist online"
 msgstr "la base de dades no existeix en línia"
 
-#: ../../libraries/entropy.py:6842
+#: ../../libraries/entropy.py:6877
 msgid "database is already up to date"
 msgstr "la base de dades ja està actualitzada"
 
-#: ../../libraries/entropy.py:6854
+#: ../../libraries/entropy.py:6889
 msgid "database will be ready soon"
 msgstr "la base de dades aviat estarà preparada"
 
-#: ../../libraries/entropy.py:6870
+#: ../../libraries/entropy.py:6905
 msgid "Repository is being updated"
 msgstr "S'està actualitzant el repositori"
 
-#: ../../libraries/entropy.py:6871
+#: ../../libraries/entropy.py:6906
 msgid "Try again in a few minutes"
 msgstr "Torneu-ho a intentar en uns minuts"
 
-#: ../../libraries/entropy.py:6903
+#: ../../libraries/entropy.py:6938
 msgid "Injecting downloaded dump"
 msgstr "S'estan injectant els elements que s'han baixat"
 
-#: ../../libraries/entropy.py:6905 ../../libraries/entropy.py:25303
+#: ../../libraries/entropy.py:6940 ../../libraries/entropy.py:27169
 #: ../../spritz/src/spritz.glade.h:144
 msgid "please wait"
 msgstr "espereu si us plau"
 
-#: ../../libraries/entropy.py:6927
+#: ../../libraries/entropy.py:6962
 msgid "Advisories fetch error"
 msgstr "Error en la recollida d'avisos"
 
-#: ../../libraries/entropy.py:6943
+#: ../../libraries/entropy.py:6978
 msgid "Downloading SSL CA certificate"
 msgstr "S'està baixant el certificat SSL CA"
 
-#: ../../libraries/entropy.py:6953
+#: ../../libraries/entropy.py:6988
 msgid "Downloading SSL Server certificate"
 msgstr "S'està baixant certificat SSL Server"
 
-#: ../../libraries/entropy.py:6963
+#: ../../libraries/entropy.py:6998
 msgid "Downloading package mask"
 msgstr "S'està baixant package mask"
 
-#: ../../libraries/entropy.py:6973
+#: ../../libraries/entropy.py:7008
 msgid "Downloading license whitelist"
 msgstr "S'està baixant la llista de llicències"
 
-#: ../../libraries/entropy.py:6983
+#: ../../libraries/entropy.py:7018
 msgid "Downloading revision"
 msgstr "S'està baixant la revisió"
 
-#: ../../libraries/entropy.py:6993
+#: ../../libraries/entropy.py:7028
 msgid "Downloading SPM global configuration"
 msgstr "S'està baixant la configuració de global de SPM"
 
-#: ../../libraries/entropy.py:7003
+#: ../../libraries/entropy.py:7038
 msgid "Downloading SPM package masking configuration"
 msgstr "S'està baixant la configuració d'emmascarats dels paquets SPM"
 
-#: ../../libraries/entropy.py:7013
+#: ../../libraries/entropy.py:7048
 msgid "Downloading SPM package unmasking configuration"
 msgstr "S'està baixant la configuració de desemmascarats dels paquets SPM"
 
-#: ../../libraries/entropy.py:7023
+#: ../../libraries/entropy.py:7058
 msgid "Downloading SPM package keywording configuration"
 msgstr "S'està baixant la configuració de keywords dels paquets SPM"
 
-#: ../../libraries/entropy.py:7033
+#: ../../libraries/entropy.py:7068
 msgid "Downloading SPM package USE flags configuration"
 msgstr "S'està baixant la configuració de USE flags dels paquets SPM"
 
-#: ../../libraries/entropy.py:7052
+#: ../../libraries/entropy.py:7087
 msgid "not available, it's ok"
 msgstr "no disponible, està bé"
 
-#: ../../libraries/entropy.py:7055
+#: ../../libraries/entropy.py:7090
 msgid "not available, not much ok!"
 msgstr "no disponible, no gaire bé!"
 
-#: ../../libraries/entropy.py:7057
+#: ../../libraries/entropy.py:7092
 msgid "available, w00t!"
 msgstr "disponible, bé!"
 
-#: ../../libraries/entropy.py:7066 ../../client/text_repositories.py:147
+#: ../../libraries/entropy.py:7101 ../../client/text_repositories.py:147
 msgid "Repository revision"
 msgstr "Revisió del repositori"
 
-#: ../../libraries/entropy.py:7082
+#: ../../libraries/entropy.py:7117
 msgid "Indexing Repository metadata"
 msgstr "S'estan indexant les metadades del repositori"
 
 #. let's dance!
-#: ../../libraries/entropy.py:7109
+#: ../../libraries/entropy.py:7144
 msgid "Repositories synchronization"
 msgstr "Sincronització dels repositoris"
 
-#: ../../libraries/entropy.py:7151 ../../libraries/entropy.py:18392
-#: ../../libraries/entropy.py:18855
+#: ../../libraries/entropy.py:7186 ../../libraries/entropy.py:19727
+#: ../../libraries/entropy.py:20324
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
 msgstr ""
 "Es necessita una instància vàlida basada en EquiInterface/ServerInterface"
 
-#: ../../libraries/entropy.py:7157
+#: ../../libraries/entropy.py:7192
 msgid "Now searching for broken depends"
 msgstr "Ara s'estan cercant dependències trencades"
 
-#: ../../libraries/entropy.py:7175
+#: ../../libraries/entropy.py:7210
 msgid "scanning for broken depends"
 msgstr "s'estan cercant dependències trencades"
 
-#: ../../libraries/entropy.py:7214
+#: ../../libraries/entropy.py:7249
 msgid "broken libraries detected"
 msgstr "s'han detectat llibreries trencades"
 
-#: ../../libraries/entropy.py:7225
+#: ../../libraries/entropy.py:7260
 msgid "needs"
 msgstr "necessita"
 
-#: ../../libraries/entropy.py:7246
+#: ../../libraries/entropy.py:7281
 msgid "Now searching for missing RDEPENDs"
 msgstr "Ara s'estan cercant RDEPENDs perdudes"
 
-#: ../../libraries/entropy.py:7256
+#: ../../libraries/entropy.py:7291
 msgid "scanning for missing RDEPENDs"
 msgstr "s'estan escanejant RDEPENDs perdudes"
 
-#: ../../libraries/entropy.py:7282
+#: ../../libraries/entropy.py:7317
 msgid "is missing the following dependencies"
 msgstr "ha perdut les dependències següents"
 
-#: ../../libraries/entropy.py:7304
+#: ../../libraries/entropy.py:7339
 msgid "Do you want to add them?"
 msgstr "Voleu afegir-les?"
 
-#: ../../libraries/entropy.py:7307
+#: ../../libraries/entropy.py:7342
 msgid "Selectively?"
 msgstr "Selectivament?"
 
-#: ../../libraries/entropy.py:7321
+#: ../../libraries/entropy.py:7356
 msgid "Want to add?"
 msgstr "Voleu afegir-la?"
 
-#: ../../libraries/entropy.py:7333
+#: ../../libraries/entropy.py:7368
 msgid "missing dependencies added"
 msgstr "s'han afegit les dependències perdudes"
 
-#: ../../libraries/entropy.py:7515 ../../libraries/entropy.py:11396
-#: ../../libraries/entropy.py:11458
+#: ../../libraries/entropy.py:7550 ../../libraries/entropy.py:11441
+#: ../../libraries/entropy.py:11503
 msgid "A valid TextInterface based instance is needed"
 msgstr "Es necessita una instància vàlida basada en Textinterface"
 
-#: ../../libraries/entropy.py:7571
+#: ../../libraries/entropy.py:7606
 msgid "connecting with user"
 msgstr "s'està connectant amb l'usuari"
 
-#: ../../libraries/entropy.py:7583 ../../libraries/entropy.py:7620
-#: ../../libraries/entropy.py:7650
+#: ../../libraries/entropy.py:7618 ../../libraries/entropy.py:7655
+#: ../../libraries/entropy.py:7685
 msgid "switching to"
 msgstr "s'està commutant a"
 
-#: ../../libraries/entropy.py:7611
+#: ../../libraries/entropy.py:7646
 msgid "reconnecting with user"
 msgstr "s'està reconnectant amb l'usuari"
 
 #. create text
-#: ../../libraries/entropy.py:7773
+#: ../../libraries/entropy.py:7808
 msgid "Upload status"
 msgstr "Estat de càrrega"
 
-#: ../../libraries/entropy.py:7819
+#: ../../libraries/entropy.py:7854
 msgid "Upload issue"
 msgstr "Problema en la càrrega"
 
-#: ../../libraries/entropy.py:7821
+#: ../../libraries/entropy.py:7856
 msgid "retrying"
 msgstr "s'està reintentant"
 
-#: ../../libraries/entropy.py:7848
+#: ../../libraries/entropy.py:7883
 msgid "Download status"
 msgstr "Estat de baixada"
 
-#: ../../libraries/entropy.py:8128 ../../libraries/entropy.py:14040
+#: ../../libraries/entropy.py:8163 ../../libraries/entropy.py:14212
 msgid "Fetch"
 msgstr "Recull"
 
-#: ../../libraries/entropy.py:8129
+#: ../../libraries/entropy.py:8164
 msgid "ETA"
 msgstr "ETA"
 
-#: ../../libraries/entropy.py:8130
+#: ../../libraries/entropy.py:8165
 msgid "sec"
 msgstr "s"
 
-#: ../../libraries/entropy.py:8183
+#: ../../libraries/entropy.py:8218
 msgid "infinite"
 msgstr "infinit"
 
-#: ../../libraries/entropy.py:8397
+#: ../../libraries/entropy.py:8432
 msgid "A valid Entropy Instance is needed"
 msgstr "Es necessita una interfície vàlida de Entropy"
 
-#: ../../libraries/entropy.py:8422
+#: ../../libraries/entropy.py:8457
 msgid "Portage interface can't be loaded"
 msgstr "La interfície de Portage no es pot carregar"
 
-#: ../../libraries/entropy.py:8425
+#: ../../libraries/entropy.py:8460
 msgid "please fix"
 msgstr "Si us plau arregleu"
 
-#: ../../libraries/entropy.py:8440
+#: ../../libraries/entropy.py:8475
 msgid "Valid phases"
 msgstr "Fases vàlides"
 
-#: ../../libraries/entropy.py:8705 ../../libraries/entropy.py:9552
-#: ../../libraries/entropy.py:9624 ../../libraries/entropy.py:9698
-#: ../../libraries/entropy.py:9762 ../../libraries/entropy.py:10159
-#: ../../libraries/entropy.py:10173 ../../libraries/entropy.py:10215
-#: ../../libraries/entropy.py:10233 ../../libraries/entropy.py:10262
-#: ../../libraries/entropy.py:10275 ../../libraries/entropy.py:10288
+#: ../../libraries/entropy.py:8743 ../../libraries/entropy.py:9600
+#: ../../libraries/entropy.py:9672 ../../libraries/entropy.py:9746
+#: ../../libraries/entropy.py:9822 ../../libraries/entropy.py:10204
+#: ../../libraries/entropy.py:10218 ../../libraries/entropy.py:10260
+#: ../../libraries/entropy.py:10278 ../../libraries/entropy.py:10307
+#: ../../libraries/entropy.py:10320 ../../libraries/entropy.py:10333
 msgid "QA"
 msgstr "QA"
 
-#: ../../libraries/entropy.py:8706
+#: ../../libraries/entropy.py:8744
 msgid "Cannot run External trigger for"
 msgstr "No es pot executar l'activador extern per "
 
-#: ../../libraries/entropy.py:8708 ../../libraries/entropy.py:9555
-#: ../../libraries/entropy.py:9627 ../../libraries/entropy.py:9701
-#: ../../libraries/entropy.py:9765
+#: ../../libraries/entropy.py:8746 ../../libraries/entropy.py:9603
+#: ../../libraries/entropy.py:9675 ../../libraries/entropy.py:9749
+#: ../../libraries/entropy.py:9825
 msgid "Please report it"
 msgstr "Si us plau informeu-ho"
 
-#: ../../libraries/entropy.py:8758 ../../libraries/entropy.py:9410
+#: ../../libraries/entropy.py:8796 ../../libraries/entropy.py:9458
 msgid "Regenerating"
 msgstr "S'està regenerant"
 
-#: ../../libraries/entropy.py:8784
+#: ../../libraries/entropy.py:8822
 msgid "Please remember"
 msgstr "Recordeu"
 
-#: ../../libraries/entropy.py:8784
+#: ../../libraries/entropy.py:8822
 msgid "It is always better to leave Entropy updates isolated"
 msgstr "Sempre és millor actualitzar Entropy de manera aïllada"
 
-#: ../../libraries/entropy.py:8790
+#: ../../libraries/entropy.py:8828
 msgid "Purging Entropy cache"
 msgstr "S'està eliminant la memòria de cau de Entropy"
 
-#: ../../libraries/entropy.py:8815
+#: ../../libraries/entropy.py:8853
 msgid "Configuring fonts directories"
 msgstr "S'estan configurant els directoris dels tipus de lletra"
 
-#: ../../libraries/entropy.py:8832
+#: ../../libraries/entropy.py:8870
+msgid "Updating {conf.d,init.d} mtime"
+msgstr ""
+
+#: ../../libraries/entropy.py:8897
 msgid "Configuring GCC Profile"
 msgstr "S'està configurant el Perfil de GCC"
 
-#: ../../libraries/entropy.py:8851
+#: ../../libraries/entropy.py:8916
 msgid "Updating icons cache"
 msgstr "S'està actualitzant la memòria de cau d'icones"
 
-#: ../../libraries/entropy.py:8869
+#: ../../libraries/entropy.py:8934
 msgid "Updating shared mime info database"
 msgstr "S'ha actualitzat la base de dades compartida d'informació mime"
 
-#: ../../libraries/entropy.py:8883
+#: ../../libraries/entropy.py:8948
 msgid "Updating desktop mime database"
 msgstr "S'està actualitzant la base de dades mime de l'escriptori"
 
-#: ../../libraries/entropy.py:8897
+#: ../../libraries/entropy.py:8962
 msgid "Updating scrollkeeper database"
 msgstr "S'està actualitzant la base de dades de scrollkeeper"
 
-#: ../../libraries/entropy.py:8911
+#: ../../libraries/entropy.py:8976
 msgid "Reloading gconf2 database"
 msgstr "S'està tornant a carregar la base de dades gconf2"
 
-#: ../../libraries/entropy.py:8925
+#: ../../libraries/entropy.py:8990
 msgid "Configuring Binutils Profile"
 msgstr "S'està configurant el Perfil Binutils"
 
-#: ../../libraries/entropy.py:8945
+#: ../../libraries/entropy.py:9010
 msgid "Updating moduledb"
 msgstr "S'està actualitzant moduledb"
 
-#: ../../libraries/entropy.py:8953
+#: ../../libraries/entropy.py:9018
 msgid "Running depmod"
 msgstr "S'està executant depmod"
 
-#: ../../libraries/entropy.py:8976
+#: ../../libraries/entropy.py:9041
 msgid "Configuring Python"
 msgstr "S'està configurant Python"
 
-#: ../../libraries/entropy.py:8990
+#: ../../libraries/entropy.py:9055
 msgid "Configuring SQLite"
 msgstr "S'està configurant SQLite"
 
-#: ../../libraries/entropy.py:9020
-msgid "A new service will be installed"
-msgstr "S'instal·larà un nou servei"
-
-#: ../../libraries/entropy.py:9036
+#: ../../libraries/entropy.py:9072
 msgid "Removing boot service"
 msgstr "S'està eliminant el servei d'arrencada"
 
-#: ../../libraries/entropy.py:9065 ../../libraries/entropy.py:9098
+#: ../../libraries/entropy.py:9092
+msgid "A new service will be installed"
+msgstr "S'instal·larà un nou servei"
+
+#: ../../libraries/entropy.py:9113 ../../libraries/entropy.py:9146
 msgid "Reconfiguring OpenGL"
 msgstr "S'està reconfigurant OpenGL"
 
-#: ../../libraries/entropy.py:9083 ../../libraries/entropy.py:9116
+#: ../../libraries/entropy.py:9131 ../../libraries/entropy.py:9164
 msgid "Eselect NOT found, cannot run OpenGL trigger"
 msgstr "No s'ha trobat Eselect, no es pot executar l'activador d'OpenGL"
 
-#: ../../libraries/entropy.py:9146 ../../libraries/entropy.py:9170
+#: ../../libraries/entropy.py:9194 ../../libraries/entropy.py:9218
 msgid "Configuring GRUB bootloader"
 msgstr "S'està configurant el carregador d'arrencada GRUB"
 
-#: ../../libraries/entropy.py:9147
+#: ../../libraries/entropy.py:9195
 msgid "Adding the new kernel"
 msgstr "S'està afegint el nou kernel"
 
-#: ../../libraries/entropy.py:9171
+#: ../../libraries/entropy.py:9219
 msgid "Removing the selected kernel"
 msgstr "S'està eliminat el kernel seleccionat"
 
-#: ../../libraries/entropy.py:9203
+#: ../../libraries/entropy.py:9251
 msgid "Mounted /boot successfully"
 msgstr "/boot s'ha muntat amb èxit"
 
-#: ../../libraries/entropy.py:9214
+#: ../../libraries/entropy.py:9262
 msgid "Cannot mount /boot automatically !!"
 msgstr "/boot no es pot muntar automàticament !!"
 
-#: ../../libraries/entropy.py:9242 ../../libraries/entropy.py:9270
+#: ../../libraries/entropy.py:9290 ../../libraries/entropy.py:9318
 msgid "Running kbuildsycoca to build global KDE database"
 msgstr ""
 "S'està executant kbuildsycoca per construir una base de dades global del KDE"
 
-#: ../../libraries/entropy.py:9295
+#: ../../libraries/entropy.py:9343
 msgid "Installing gconf2 schemas"
 msgstr "S'estan instal·lant els esquemes gconf2"
 
-#: ../../libraries/entropy.py:9376
+#: ../../libraries/entropy.py:9424
 msgid "Creating kernel symlink"
 msgstr "S'està creant el symlink pel kernel"
 
-#: ../../libraries/entropy.py:9378
+#: ../../libraries/entropy.py:9426
 msgid "for"
 msgstr "per"
 
-#: ../../libraries/entropy.py:9427
+#: ../../libraries/entropy.py:9475
 msgid "Updating environment"
 msgstr "S'està actualitzant l'entorn"
 
-#: ../../libraries/entropy.py:9458
+#: ../../libraries/entropy.py:9506
 msgid "Setting system VM to"
 msgstr "Establint el sistema VM a"
 
-#: ../../libraries/entropy.py:9480 ../../libraries/entropy.py:19638
-#: ../../client/text_security.py:73 ../../client/text_smart.py:82
+#: ../../libraries/entropy.py:9528 ../../libraries/entropy.py:21478
+#: ../../client/text_security.py:73 ../../client/text_smart.py:85
 msgid "does not exist"
 msgstr "no existeix"
 
-#: ../../libraries/entropy.py:9553 ../../libraries/entropy.py:9625
-#: ../../libraries/entropy.py:9699 ../../libraries/entropy.py:9763
+#: ../../libraries/entropy.py:9601 ../../libraries/entropy.py:9673
+#: ../../libraries/entropy.py:9747 ../../libraries/entropy.py:9823
 msgid "Cannot run Portage trigger for"
 msgstr "No es pot executar l'activador de Portage per"
 
-#: ../../libraries/entropy.py:10160
+#: ../../libraries/entropy.py:10205
 msgid "Cannot find df"
 msgstr "No es pot trobar df"
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy.py:10161 ../../libraries/entropy.py:10175
-#: ../../libraries/entropy.py:10219 ../../libraries/entropy.py:10264
-#: ../../libraries/entropy.py:10277 ../../libraries/entropy.py:10290
+#: ../../libraries/entropy.py:10206 ../../libraries/entropy.py:10220
+#: ../../libraries/entropy.py:10264 ../../libraries/entropy.py:10309
+#: ../../libraries/entropy.py:10322 ../../libraries/entropy.py:10335
 msgid "Cannot properly configure the kernel"
 msgstr "No es pot configurar el kernel adequadament"
 
-#: ../../libraries/entropy.py:10162 ../../libraries/entropy.py:10176
-#: ../../libraries/entropy.py:10220 ../../libraries/entropy.py:10237
-#: ../../libraries/entropy.py:10265 ../../libraries/entropy.py:10278
-#: ../../libraries/entropy.py:10291
+#: ../../libraries/entropy.py:10207 ../../libraries/entropy.py:10221
+#: ../../libraries/entropy.py:10265 ../../libraries/entropy.py:10282
+#: ../../libraries/entropy.py:10310 ../../libraries/entropy.py:10323
+#: ../../libraries/entropy.py:10336
 msgid "Defaulting to"
 msgstr "Per defecte serà"
 
-#: ../../libraries/entropy.py:10174
+#: ../../libraries/entropy.py:10219
 msgid "Cannot find grub"
 msgstr "No es pot trobar el grub"
 
-#: ../../libraries/entropy.py:10216
+#: ../../libraries/entropy.py:10261
 msgid "cannot match device"
 msgstr "no es pot trobar cap dispositiu coincident"
 
-#: ../../libraries/entropy.py:10218
+#: ../../libraries/entropy.py:10263
 msgid "with a grub one"
 msgstr "amb un del grub"
 
-#: ../../libraries/entropy.py:10234
+#: ../../libraries/entropy.py:10279
 msgid "grub translation not supported for"
 msgstr "la traducció del grub no està suportada per"
 
-#: ../../libraries/entropy.py:10236
+#: ../../libraries/entropy.py:10281
 msgid "Cannot properly configure grub.conf"
 msgstr "No es pot configurar grub.conf correctament"
 
-#: ../../libraries/entropy.py:10263
+#: ../../libraries/entropy.py:10308
 msgid "cannot match grub device with a Linux one"
 msgstr "no s'ha pogut fer coincidir el dispositiu grub amb un de Linux"
 
-#: ../../libraries/entropy.py:10276
+#: ../../libraries/entropy.py:10321
 msgid "cannot find generated device.map"
 msgstr "no es pot trobar el device.map generat"
 
-#: ../../libraries/entropy.py:10289
+#: ../../libraries/entropy.py:10334
 msgid "cannot run df /boot"
 msgstr "no es pot executar df /boot"
 
-#: ../../libraries/entropy.py:10713
+#: ../../libraries/entropy.py:10758
 msgid "Not prepared yet"
 msgstr "Encara no està preparat"
 
-#: ../../libraries/entropy.py:10738
+#: ../../libraries/entropy.py:10783
 msgid "A valid EquoInterface instance or subclass is needed"
 msgstr "Es necessita una instància o subclasse vàlida de Equointeface"
 
-#: ../../libraries/entropy.py:10939
+#: ../../libraries/entropy.py:10984
 msgid "Warning"
 msgstr "Avís"
 
-#: ../../libraries/entropy.py:10941
+#: ../../libraries/entropy.py:10986
 msgid "advisory broken"
 msgstr "l'avís està trencat"
 
-#: ../../libraries/entropy.py:11211 ../../libraries/entropy.py:11226
-#: ../../libraries/entropy.py:11255 ../../libraries/entropy.py:11257
-#: ../../libraries/entropy.py:11276 ../../libraries/entropy.py:11286
-#: ../../libraries/entropy.py:11298 ../../libraries/entropy.py:11312
-#: ../../libraries/entropy.py:11322 ../../libraries/entropy.py:11332
-#: ../../libraries/entropy.py:11342 ../../libraries/entropy.py:11363
-#: ../../libraries/entropy.py:11373 ../../spritz/src/gui.py:306
+#: ../../libraries/entropy.py:11256 ../../libraries/entropy.py:11271
+#: ../../libraries/entropy.py:11300 ../../libraries/entropy.py:11302
+#: ../../libraries/entropy.py:11321 ../../libraries/entropy.py:11331
+#: ../../libraries/entropy.py:11343 ../../libraries/entropy.py:11357
+#: ../../libraries/entropy.py:11367 ../../libraries/entropy.py:11377
+#: ../../libraries/entropy.py:11387 ../../libraries/entropy.py:11408
+#: ../../libraries/entropy.py:11418 ../../spritz/src/gui.py:306
 msgid "Security Advisories"
 msgstr "Avisos de seguretat"
 
-#: ../../libraries/entropy.py:11211
+#: ../../libraries/entropy.py:11256
 msgid "testing service connection"
 msgstr "s'està comprovant el servei de connexió"
 
-#: ../../libraries/entropy.py:11226
+#: ../../libraries/entropy.py:11271
 msgid "getting latest GLSAs"
 msgstr "s'estan obtenint els últims GLSAs"
 
-#: ../../libraries/entropy.py:11255
+#: ../../libraries/entropy.py:11300
 msgid "updated successfully"
 msgstr "s'ha actualitzat amb èxit"
 
-#: ../../libraries/entropy.py:11257
+#: ../../libraries/entropy.py:11302
 msgid "already up to date"
 msgstr "ja està actualitzat"
 
-#: ../../libraries/entropy.py:11276
+#: ../../libraries/entropy.py:11321
 msgid "unable to download the package, sorry"
 msgstr "no es pot baixar el paquet"
 
-#: ../../libraries/entropy.py:11286
+#: ../../libraries/entropy.py:11331
 msgid "Verifying checksum"
 msgstr "S'està comprovant la suma de verificació"
 
-#: ../../libraries/entropy.py:11298
+#: ../../libraries/entropy.py:11343
 msgid "cannot download the checksum, sorry"
 msgstr "no es pot baixar la suma de verificació"
 
-#: ../../libraries/entropy.py:11312
+#: ../../libraries/entropy.py:11357
 msgid "cannot open packages, sorry"
 msgstr "no es poden obrir els paquets"
 
-#: ../../libraries/entropy.py:11322
+#: ../../libraries/entropy.py:11367
 msgid "cannot read the checksum, sorry"
 msgstr "no es pot llegir la suma de verificació"
 
-#: ../../libraries/entropy.py:11332
+#: ../../libraries/entropy.py:11377
 msgid "digest verification failed, sorry"
 msgstr "ha fallat la verificació de l'empremta electrònica"
 
-#: ../../libraries/entropy.py:11342
+#: ../../libraries/entropy.py:11387
 msgid "verification Successful"
 msgstr "la verificació ha tingut èxit"
 
-#: ../../libraries/entropy.py:11350
+#: ../../libraries/entropy.py:11395
 msgid "Return status not valid"
 msgstr "Estat de retorn no vàlid"
 
-#: ../../libraries/entropy.py:11363
+#: ../../libraries/entropy.py:11408
 msgid "digest verification failed, try again later"
 msgstr ""
 "la verificació de l'empremta electrònica ha fallat, torneu a intentar-ho més "
 "tard"
 
-#: ../../libraries/entropy.py:11373
+#: ../../libraries/entropy.py:11418
 msgid "installing"
 msgstr "s'està instal·lant"
 
-#: ../../libraries/entropy.py:11404
+#: ../../libraries/entropy.py:11449
 msgid "Invalid backend"
 msgstr "Rerefons invàlid"
 
-#: ../../libraries/entropy.py:11725 ../../libraries/entropy.py:20271
-#: ../../libraries/entropy.py:20422 ../../libraries/entropy.py:20516
-#: ../../libraries/entropy.py:21725
+#: ../../libraries/entropy.py:11782 ../../libraries/entropy.py:22122
+#: ../../libraries/entropy.py:22273 ../../libraries/entropy.py:22367
+#: ../../libraries/entropy.py:23584
 msgid "error"
 msgstr "error"
 
-#: ../../libraries/entropy.py:11727 ../../server/server_reagent.py:91
+#: ../../libraries/entropy.py:11784 ../../server/server_reagent.py:91
 #: ../../server/server_reagent.py:103
 msgid "not found"
 msgstr "no s'ha trobat"
 
-#: ../../libraries/entropy.py:11799
+#: ../../libraries/entropy.py:11856
 msgid "Error calculating dependencies"
 msgstr "S'ha produït un error en calcular les dependències"
 
-#: ../../libraries/entropy.py:11851
+#: ../../libraries/entropy.py:11908
 msgid "missing right parenthesis"
 msgstr "falta el parèntesi dret"
 
-#: ../../libraries/entropy.py:11917
+#: ../../libraries/entropy.py:11974
 msgid "missing atom list in"
 msgstr "falta la llista d'àtoms a"
 
-#: ../../libraries/entropy.py:11920
+#: ../../libraries/entropy.py:11977
 msgid "Conditional without target in"
 msgstr "Condicional sense objectiu a"
 
-#: ../../libraries/entropy.py:11950
+#: ../../libraries/entropy.py:12007
 msgid "Conditional with no target"
 msgstr "Condicional sense objectiu"
 
-#: ../../libraries/entropy.py:11955
+#: ../../libraries/entropy.py:12012
 msgid "Empty target in string"
 msgstr "L'objectiu en la cadena està buit"
 
-#: ../../libraries/entropy.py:11955 ../../libraries/entropy.py:11964
+#: ../../libraries/entropy.py:12012 ../../libraries/entropy.py:12021
 msgid "Deprecated"
 msgstr "Depreciat"
 
-#: ../../libraries/entropy.py:11964
+#: ../../libraries/entropy.py:12021
 msgid "Nested use flags without parenthesis"
 msgstr "Nested use flags sense parèntesi"
 
-#: ../../libraries/entropy.py:12004
+#: ../../libraries/entropy.py:12061
 msgid "Conditional without flag"
 msgstr "Condicional sense flag"
 
-#: ../../libraries/entropy.py:12020
+#: ../../libraries/entropy.py:12077
 msgid "Conditional without parenthesis"
 msgstr "Condicional sense parèntesi"
 
-#: ../../libraries/entropy.py:12684
+#: ../../libraries/entropy.py:12766
 msgid "Cannot bind the service"
 msgstr "No es pot establir el servei"
 
-#: ../../libraries/entropy.py:14049
+#: ../../libraries/entropy.py:14221
 msgid "Entropy ServerInterface must be run as root"
 msgstr "Heu d'executar com a root la Interfície del Servidor de Entropy"
 
-#: ../../libraries/entropy.py:14077 ../../libraries/entropy.py:14161
+#: ../../libraries/entropy.py:14249 ../../libraries/entropy.py:14333
 msgid "repository not configured"
 msgstr "el repositori no està configurat"
 
-#: ../../libraries/entropy.py:14083
+#: ../../libraries/entropy.py:14255
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr "la id del repositori està protegida, no podeu usar-la..."
 
-#: ../../libraries/entropy.py:14183
+#: ../../libraries/entropy.py:14355
 msgid "Your default repository is not initialized"
 msgstr "El vostre repositori per defecte no està inicialitzat"
 
-#: ../../libraries/entropy.py:14194
+#: ../../libraries/entropy.py:14366
 msgid "Do you want to initialize your default repository ?"
 msgstr "Voleu inicialitzar el vostre repositori per defecte?"
 
-#: ../../libraries/entropy.py:14196
+#: ../../libraries/entropy.py:14368
 msgid "You have taken the risk to continue with an uninitialized repository"
 msgstr "Heu pres el risc de continuar amb un repositori no inicialitzat"
 
-#: ../../libraries/entropy.py:14216
+#: ../../libraries/entropy.py:14388
 msgid "server-side repository"
 msgstr "repositori del costat del servidor"
 
-#: ../../libraries/entropy.py:14218
+#: ../../libraries/entropy.py:14390
 msgid "community repository"
 msgstr "repositori de la comunitat"
 
-#: ../../libraries/entropy.py:14219
+#: ../../libraries/entropy.py:14391
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Interfície d'Instàncies del Servidor de Entropy en el repositori"
 
-#: ../../libraries/entropy.py:14224
+#: ../../libraries/entropy.py:14396
 msgid "type"
 msgstr "tipus"
 
-#: ../../libraries/entropy.py:14233
+#: ../../libraries/entropy.py:14405
 msgid "Currently configured repositories"
 msgstr "Repositoris actualment configurats"
 
-#: ../../libraries/entropy.py:14349
+#: ../../libraries/entropy.py:14521
 msgid "Entropy database is already locked by you :-)"
 msgstr "Ja teniu bloquejada la base de dades de Entropy :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy.py:14356
+#: ../../libraries/entropy.py:14528
 msgid "Locking and Syncing Entropy database"
 msgstr "S'està bloquejant i sincronitzant la base de dades de Entropy"
 
-#: ../../libraries/entropy.py:14368 ../../server/server_activator.py:180
+#: ../../libraries/entropy.py:14540 ../../server/server_activator.py:180
 msgid "Mirrors status table"
 msgstr "Taula d'estat de les rèpliques"
 
-#: ../../libraries/entropy.py:14377 ../../libraries/entropy.py:14380
+#: ../../libraries/entropy.py:14549 ../../libraries/entropy.py:14552
 #: ../../server/server_activator.py:186 ../../server/server_activator.py:190
 msgid "Unlocked"
 msgstr "Desbloquejat"
 
-#: ../../libraries/entropy.py:14379 ../../libraries/entropy.py:14382
+#: ../../libraries/entropy.py:14551 ../../libraries/entropy.py:14554
 #: ../../server/server_activator.py:184 ../../server/server_activator.py:188
 msgid "Locked"
 msgstr "Bloquejat"
 
-#: ../../libraries/entropy.py:14398
+#: ../../libraries/entropy.py:14570
 msgid "cannot lock mirror"
 msgstr "no es pot bloquejar la rèplica"
 
-#: ../../libraries/entropy.py:14471
+#: ../../libraries/entropy.py:14643
 msgid ""
 "Entropy database is probably empty. If you don't agree with what I'm saying, "
 "then it's probably corrupted! I won't stop you here btw..."
@@ -1464,88 +1468,88 @@ msgstr ""
 "La base de dades de Entropy probablement és buida. Si no és buida, és "
 "possible que estigui malmesa! Tot i això, no us deixaré aquí..."
 
-#: ../../libraries/entropy.py:14482
+#: ../../libraries/entropy.py:14654
 msgid "database"
 msgstr "base de dades"
 
-#: ../../libraries/entropy.py:14483
+#: ../../libraries/entropy.py:14655
 msgid "indexing database"
 msgstr "s'està indexant la base de dades"
 
-#: ../../libraries/entropy.py:14516
+#: ../../libraries/entropy.py:14688
 msgid "Checking"
 msgstr "S'està comprovant"
 
-#: ../../libraries/entropy.py:14542
+#: ../../libraries/entropy.py:14716
 msgid "Running dependencies test"
 msgstr "S'està executant la comprovació de dependències"
 
-#: ../../libraries/entropy.py:14570 ../../client/text_ui.py:1144
+#: ../../libraries/entropy.py:14744 ../../client/text_ui.py:1144
 msgid "These are the dependencies not found"
 msgstr "Aquestes són les dependències que no s'han trobat"
 
-#: ../../libraries/entropy.py:14577 ../../client/text_ui.py:1148
+#: ../../libraries/entropy.py:14751 ../../client/text_ui.py:1148
 msgid "Needed by"
 msgstr "Necessàries per"
 
-#: ../../libraries/entropy.py:14594
+#: ../../libraries/entropy.py:14768
 msgid "by repo"
 msgstr "pel repositori"
 
-#: ../../libraries/entropy.py:14601
+#: ../../libraries/entropy.py:14775
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "S'han satisfet totes les dependències. Tot és correcte."
 
-#: ../../libraries/entropy.py:14623 ../../client/text_ui.py:1194
+#: ../../libraries/entropy.py:14797 ../../client/text_ui.py:1194
 msgid "System is healthy"
 msgstr "Es sistema està sa"
 
-#: ../../libraries/entropy.py:14632
+#: ../../libraries/entropy.py:14806
 msgid "Matching libraries with Spm"
 msgstr "Llibreries coincidents amb Spm"
 
-#: ../../libraries/entropy.py:14641
+#: ../../libraries/entropy.py:14815
 msgid "Scanning"
 msgstr "S'està escanejant"
 
-#: ../../libraries/entropy.py:14653
+#: ../../libraries/entropy.py:14827
 msgid "These are the matched packages"
 msgstr "Aquests són els paquets coincidents"
 
-#: ../../libraries/entropy.py:14669
+#: ../../libraries/entropy.py:14843
 msgid "No matched packages"
 msgstr "No hi ha paquets coincidents"
 
-#: ../../libraries/entropy.py:14691
+#: ../../libraries/entropy.py:14865
 msgid "Initializing an empty database file with Entropy structure"
 msgstr ""
 "S'està inicialitzant un fitxer de base de dades buit amb estructura Entropy"
 
-#: ../../libraries/entropy.py:14703
+#: ../../libraries/entropy.py:14877
 msgid "Entropy database file"
 msgstr "El fitxer de base de dades d'Entropy"
 
-#: ../../libraries/entropy.py:14703
+#: ../../libraries/entropy.py:14877
 msgid "successfully initialized"
 msgstr "s'ha inicialitzat amb èxit"
 
-#: ../../libraries/entropy.py:14719
+#: ../../libraries/entropy.py:14893
 msgid "You cannot switch packages from/to your system database"
 msgstr "No podeu commutar paquets des de/a la vostra base de dades del sistema"
 
-#: ../../libraries/entropy.py:14735
+#: ../../libraries/entropy.py:14909
 msgid "Preparing to move selected packages to"
 msgstr "S'està preparant per moure els paquets seleccionats a"
 
-#: ../../libraries/entropy.py:14737
+#: ../../libraries/entropy.py:14911
 msgid "Preparing to copy selected packages to"
 msgstr "S'està preparant per copiar els paquets seleccionats a"
 
-#: ../../libraries/entropy.py:14749
+#: ../../libraries/entropy.py:14923
 msgid "Note"
 msgstr "Nota"
 
-#: ../../libraries/entropy.py:14750
+#: ../../libraries/entropy.py:14924
 msgid ""
 "all the old packages with conflicting scope will be removed from the "
 "destination repo unless injected"
@@ -1554,113 +1558,113 @@ msgstr ""
 "destí a menys que s'injectin"
 
 #. ask to continue
-#: ../../libraries/entropy.py:14774 ../../libraries/entropy.py:15721
-#: ../../libraries/entropy.py:15960 ../../libraries/entropy.py:21902
+#: ../../libraries/entropy.py:14948 ../../libraries/entropy.py:15898
+#: ../../libraries/entropy.py:16137 ../../libraries/entropy.py:23761
 #: ../../server/server_reagent.py:362 ../../server/server_reagent.py:409
 #: ../../server/server_reagent.py:459
 msgid "Would you like to continue ?"
 msgstr "Voleu continuar?"
 
-#: ../../libraries/entropy.py:14790
+#: ../../libraries/entropy.py:14964
 msgid "switching"
 msgstr "s'està commutant"
 
-#: ../../libraries/entropy.py:14808
+#: ../../libraries/entropy.py:14982
 msgid "cannot switch, package not found, skipping"
 msgstr "no es pot commutar, el paquet no s'ha trobat, s'omet"
 
-#: ../../libraries/entropy.py:14834
+#: ../../libraries/entropy.py:15008
 msgid "moving file"
 msgstr "s'està movent el fitxer"
 
-#: ../../libraries/entropy.py:14850
+#: ../../libraries/entropy.py:15024
 msgid "loading data from source database"
 msgstr "s'estan carregant dades des de la base de dades origen"
 
-#: ../../libraries/entropy.py:14867
+#: ../../libraries/entropy.py:15041
 msgid "injecting data to destination database"
 msgstr "s'estan injectant dades a la base de dades de destinació"
 
-#: ../../libraries/entropy.py:14885
+#: ../../libraries/entropy.py:15059
 msgid "removing entry from source database"
 msgstr "s'està eliminant l'entrada de la base de dades origen"
 
-#: ../../libraries/entropy.py:14903
+#: ../../libraries/entropy.py:15077
 msgid "successfully handled atom"
 msgstr "l'àtom s'ha tractat amb èxit"
 
-#: ../../libraries/entropy.py:14928 ../../libraries/entropy.py:15022
+#: ../../libraries/entropy.py:15102 ../../libraries/entropy.py:15196
 msgid "adding package"
 msgstr "s'està afegint un paquet"
 
-#: ../../libraries/entropy.py:14966 ../../libraries/entropy.py:15596
+#: ../../libraries/entropy.py:15140 ../../libraries/entropy.py:15773
 msgid "added package"
 msgstr "s'ha afegit un paquet"
 
-#: ../../libraries/entropy.py:14968
+#: ../../libraries/entropy.py:15142
 msgid "rev"
 msgstr "revisió"
 
-#: ../../libraries/entropy.py:15044
+#: ../../libraries/entropy.py:15218
 msgid "Exception caught, running injection and RDEPEND check before raising"
 msgstr ""
 "S'ha produït una excepció, s'està executant la injecció i la comprovació "
 "RDEPEND abans del relleu"
 
-#: ../../libraries/entropy.py:15105
+#: ../../libraries/entropy.py:15279
 msgid "Injecting entropy metadata into built packages"
 msgstr "S'estan injectant metadades d'Entropy en els paquets construïts"
 
-#: ../../libraries/entropy.py:15120
+#: ../../libraries/entropy.py:15294
 msgid "injecting entropy metadata"
 msgstr "s'estan injectant metadades de Entropy"
 
-#: ../../libraries/entropy.py:15140
+#: ../../libraries/entropy.py:15314
 msgid "injection complete"
 msgstr "la injecció ha acabat"
 
-#: ../../libraries/entropy.py:15164
+#: ../../libraries/entropy.py:15338
 msgid "removing package"
 msgstr "s'està eliminat el paquet"
 
-#: ../../libraries/entropy.py:15176 ../../libraries/entropy.py:21382
+#: ../../libraries/entropy.py:15350 ../../libraries/entropy.py:23241
 msgid "removal complete"
 msgstr "l'eliminació ha acabat"
 
-#: ../../libraries/entropy.py:15290
+#: ../../libraries/entropy.py:15464
 msgid "invalid database revision"
 msgstr "la revisió de la base de dades és no és vàlida"
 
-#: ../../libraries/entropy.py:15292
+#: ../../libraries/entropy.py:15466
 msgid "defaulting to 0"
 msgstr "establint per defecte en 0"
 
-#: ../../libraries/entropy.py:15430
+#: ../../libraries/entropy.py:15607
 msgid "Initializing Entropy database"
 msgstr "S'està inicialitzant la base de dades de Entropy"
 
-#: ../../libraries/entropy.py:15463 ../../libraries/entropy.py:22475
-#: ../../libraries/entropy.py:22493 ../../libraries/entropy.py:22713
+#: ../../libraries/entropy.py:15640 ../../libraries/entropy.py:24334
+#: ../../libraries/entropy.py:24352 ../../libraries/entropy.py:24572
 msgid "WARNING"
 msgstr "AVÍS"
 
-#: ../../libraries/entropy.py:15464
+#: ../../libraries/entropy.py:15641
 msgid "database already exists"
 msgstr "la base de dades ja existeix"
 
-#: ../../libraries/entropy.py:15474
+#: ../../libraries/entropy.py:15651
 msgid "Do you want to continue ?"
 msgstr "Voleu continuar?"
 
-#: ../../libraries/entropy.py:15491
+#: ../../libraries/entropy.py:15668
 msgid "Dumping current revisions to file"
 msgstr "S'estan abocant les revisions actuals al fitxer"
 
-#: ../../libraries/entropy.py:15508
+#: ../../libraries/entropy.py:15685
 msgid "Dumping current 'treeupdates' actions to file"
 msgstr "S'estan abocant les accions 'treeupdate' actuals al fitxer"
 
-#: ../../libraries/entropy.py:15520
+#: ../../libraries/entropy.py:15697
 msgid ""
 "Would you like to sync packages first (important if you don't have them "
 "synced) ?"
@@ -1668,356 +1672,370 @@ msgstr ""
 "Voleu sincronitzar primer els paquets (és important si no els teniu "
 "sincronitzats)?"
 
-#: ../../libraries/entropy.py:15544
+#: ../../libraries/entropy.py:15721
 msgid "Reinitializing Entropy database for branch"
 msgstr "S'està reinicialitzant la base de dades d'Entropy per la branca"
 
-#: ../../libraries/entropy.py:15546
+#: ../../libraries/entropy.py:15723
 msgid "using Packages in the repository"
 msgstr "s'estan usant els paquets en el repositori"
 
-#: ../../libraries/entropy.py:15563
+#: ../../libraries/entropy.py:15740
 msgid "analyzing"
 msgstr "s'està analitzant"
 
-#: ../../libraries/entropy.py:15598 ../../client/text_query.py:1057
-#: ../../client/text_query.py:1059
+#: ../../libraries/entropy.py:15775 ../../client/text_query.py:1063
+#: ../../client/text_query.py:1065
 msgid "revision"
 msgstr "revisió"
 
-#: ../../libraries/entropy.py:15632
+#: ../../libraries/entropy.py:15809
 msgid "cannot match"
 msgstr "no pot coincidir"
 
-#: ../../libraries/entropy.py:15684 ../../libraries/entropy.py:15891
+#: ../../libraries/entropy.py:15861 ../../libraries/entropy.py:16068
 msgid "Integrity verification of the selected packages"
 msgstr "Verificació d'integritat dels paquets seleccionats"
 
-#: ../../libraries/entropy.py:15696 ../../libraries/entropy.py:15903
+#: ../../libraries/entropy.py:15873 ../../libraries/entropy.py:16080
 msgid "All the packages in the Entropy Packages repository will be checked."
 msgstr ""
 "Es comprovaran tots els paquets en el repositori de Paquets de Entropy."
 
-#: ../../libraries/entropy.py:15702
+#: ../../libraries/entropy.py:15879
 msgid "This is the list of the packages that would be checked"
 msgstr "Aquesta és la llista de paquets que es comprovaran"
 
-#: ../../libraries/entropy.py:15735
+#: ../../libraries/entropy.py:15912
 msgid "Working on mirror"
 msgstr "S'està treballant en la rèplica"
 
-#: ../../libraries/entropy.py:15756
+#: ../../libraries/entropy.py:15933
 msgid "checking hash"
 msgstr "s'està comprovant l'empremta electrònica"
 
-#: ../../libraries/entropy.py:15772 ../../libraries/entropy.py:15787
+#: ../../libraries/entropy.py:15949 ../../libraries/entropy.py:15964
 msgid "digest verification of"
 msgstr "verificació de l'empremta electrònica de"
 
-#: ../../libraries/entropy.py:15789
+#: ../../libraries/entropy.py:15966
 msgid "failed for unknown reasons"
 msgstr "ha fallat per causes desconegudes"
 
-#: ../../libraries/entropy.py:15804 ../../libraries/entropy.py:16068
-#: ../../libraries/entropy.py:19636 ../../libraries/entropy.py:19655
-#: ../../libraries/entropy.py:19689 ../../libraries/entropy.py:19704
-#: ../../libraries/entropy.py:19723
+#: ../../libraries/entropy.py:15981 ../../libraries/entropy.py:16245
+#: ../../libraries/entropy.py:21476 ../../libraries/entropy.py:21495
+#: ../../libraries/entropy.py:21529 ../../libraries/entropy.py:21544
+#: ../../libraries/entropy.py:21563
 msgid "package"
 msgstr "paquet"
 
-#: ../../libraries/entropy.py:15806
+#: ../../libraries/entropy.py:15983
 msgid "NOT healthy"
 msgstr "NO és sa"
 
-#: ../../libraries/entropy.py:15818 ../../libraries/entropy.py:16080
+#: ../../libraries/entropy.py:15995 ../../libraries/entropy.py:16257
 msgid "This is the list of broken packages"
 msgstr "Aquesta és la llista de paquets trencats"
 
-#: ../../libraries/entropy.py:15843 ../../server/server_reagent.py:282
+#: ../../libraries/entropy.py:16020 ../../server/server_reagent.py:282
 msgid "Statistics"
 msgstr "Estadístiques"
 
-#: ../../libraries/entropy.py:15852 ../../libraries/entropy.py:16106
+#: ../../libraries/entropy.py:16029 ../../libraries/entropy.py:16283
 msgid "Number of checked packages"
 msgstr "Número de paquets comprovats"
 
-#: ../../libraries/entropy.py:15862 ../../libraries/entropy.py:16116
+#: ../../libraries/entropy.py:16039 ../../libraries/entropy.py:16293
 msgid "Number of healthy packages"
 msgstr "Número de paquets sans"
 
-#: ../../libraries/entropy.py:15872 ../../libraries/entropy.py:16126
+#: ../../libraries/entropy.py:16049 ../../libraries/entropy.py:16303
 msgid "Number of broken packages"
 msgstr "Número de paquets trencats"
 
-#: ../../libraries/entropy.py:15925
+#: ../../libraries/entropy.py:16102
 msgid "available"
 msgstr "disponible"
 
-#: ../../libraries/entropy.py:15938
+#: ../../libraries/entropy.py:16115
 msgid "upload/ignored"
 msgstr "carregat/ignorat"
 
-#: ../../libraries/entropy.py:15949 ../../libraries/entropy.py:20712
-#: ../../libraries/entropy.py:21023
+#: ../../libraries/entropy.py:16126 ../../libraries/entropy.py:22563
+#: ../../libraries/entropy.py:22882
 msgid "download"
 msgstr "baixada"
 
-#: ../../libraries/entropy.py:15973
+#: ../../libraries/entropy.py:16150
 msgid "Starting to download missing files"
 msgstr "S'estan començant a baixar els fitxers perduts"
 
-#: ../../libraries/entropy.py:15983
+#: ../../libraries/entropy.py:16160
 msgid "Trying to search missing or broken files on another mirror"
 msgstr ""
 "S'està intentant buscar fitxers perduts o trencats en una altra rèplica"
 
-#: ../../libraries/entropy.py:16005
+#: ../../libraries/entropy.py:16182
 msgid "All the binary packages have been downloaded successfully."
 msgstr "Tots els paquets binaris s'han baixat amb èxit."
 
-#: ../../libraries/entropy.py:16013
+#: ../../libraries/entropy.py:16190
 msgid "These are the packages that cannot be found online"
 msgstr "Aquests són els paquets que no es troben en línia"
 
-#: ../../libraries/entropy.py:16029
+#: ../../libraries/entropy.py:16206
 msgid "They won't be checked"
 msgstr "No es comprovaran"
 
-#: ../../libraries/entropy.py:16048
+#: ../../libraries/entropy.py:16225
 msgid "checking hash of"
 msgstr "s'està comprovant l'empremta electrònica de"
 
-#: ../../libraries/entropy.py:16070
+#: ../../libraries/entropy.py:16247
 msgid "is corrupted, stored checksum"
 msgstr "està malmès, s'ha desat la suma de verificació"
 
-#: ../../libraries/entropy.py:16136
+#: ../../libraries/entropy.py:16313
 msgid "Number of downloaded packages"
 msgstr "Número de paquets descarregats"
 
-#: ../../libraries/entropy.py:16146
+#: ../../libraries/entropy.py:16323
 msgid "Number of failed downloads"
 msgstr "Número de descàrregues fallades"
 
-#: ../../libraries/entropy.py:16175
+#: ../../libraries/entropy.py:16352
 msgid "Switching selected packages"
 msgstr "S'estan commutant els paquets seleccionats"
 
-#: ../../libraries/entropy.py:16198
+#: ../../libraries/entropy.py:16375
 msgid "Ignoring"
 msgstr "S'està ignorant"
 
-#: ../../libraries/entropy.py:16200
+#: ../../libraries/entropy.py:16377
 msgid "already in branch"
 msgstr "ja a la branca"
 
-#: ../../libraries/entropy.py:16219
+#: ../../libraries/entropy.py:16396
 msgid "cannot switch, package not found!"
 msgstr "no es pot commutar, el paquet no s'ha trobat!"
 
-#: ../../libraries/entropy.py:16228
+#: ../../libraries/entropy.py:16405
 msgid "configuring package information"
 msgstr "informació de configuració de paquets"
 
-#: ../../libraries/entropy.py:16244
+#: ../../libraries/entropy.py:16421
 msgid "moving file locally"
 msgstr "s'està movent el fitxer localment"
 
-#: ../../libraries/entropy.py:16273
+#: ../../libraries/entropy.py:16450
 msgid "cannot find checksum to migrate!"
 msgstr "no es pot trobar la suma de verificació per migrar!"
 
-#: ../../libraries/entropy.py:16281
+#: ../../libraries/entropy.py:16458
 msgid "moving file remotely"
 msgstr "s'està movent el fitxer de remotament"
 
-#: ../../libraries/entropy.py:16304
+#: ../../libraries/entropy.py:16481
 msgid "moving file remotely on"
 msgstr "s'està movent el fitxer remotament a"
 
-#: ../../libraries/entropy.py:16329
+#: ../../libraries/entropy.py:16506
 msgid "migration loop completed"
 msgstr "s'ha completat el bucle de migració"
 
-#: ../../libraries/entropy.py:16359
+#: ../../libraries/entropy.py:16536
 msgid "not connected to database"
 msgstr "no connectat a la base de dades"
 
-#: ../../libraries/entropy.py:16362
+#: ../../libraries/entropy.py:16539 ../../libraries/entropy.py:18065
 msgid "method not implemented"
 msgstr "el mètode no està implementat"
 
-#: ../../libraries/entropy.py:16369
+#: ../../libraries/entropy.py:16546
 msgid "no connection data"
 msgstr "no hi ha dades de connexió"
 
-#: ../../libraries/entropy.py:16737 ../../libraries/entropy.py:16748
+#: ../../libraries/entropy.py:16735
+#, fuzzy
+msgid "not a valid directory path"
+msgstr "no és un mètode vàlid"
+
+#: ../../libraries/entropy.py:18051 ../../libraries/entropy.py:18062
 msgid "not logged in"
 msgstr "no heu iniciat la sessió"
 
-#: ../../libraries/entropy.py:16744
+#: ../../libraries/entropy.py:18058
 msgid "no login data"
 msgstr "no hi ha dades d'inici de sessió"
 
-#: ../../libraries/entropy.py:16880
+#: ../../libraries/entropy.py:18204
 msgid "no username specified"
 msgstr "no s'ha especificat el nom d'usuari"
 
-#: ../../libraries/entropy.py:16882
+#: ../../libraries/entropy.py:18206
 msgid "no password specified"
 msgstr "no s'ha especificat la contrasenya"
 
-#: ../../libraries/entropy.py:16885
+#: ../../libraries/entropy.py:18209
 msgid "empty password"
 msgstr "la contrasenya és buida"
 
-#: ../../libraries/entropy.py:16887
+#: ../../libraries/entropy.py:18211
 msgid "empty username"
 msgstr "nom d'usuari buit"
 
-#: ../../libraries/entropy.py:16892
+#: ../../libraries/entropy.py:18216
 msgid "user not found"
 msgstr "no s'ha trobat l'usuari"
 
-#: ../../libraries/entropy.py:16896
+#: ../../libraries/entropy.py:18220
 msgid "you need to login on the website to update your password format"
 msgstr ""
 "heu d'iniciar la sessió a la pàgina web per actualitzar el format de la "
 "vostra contrasenya"
 
-#: ../../libraries/entropy.py:16902
+#: ../../libraries/entropy.py:18226
 msgid "wrong password"
 msgstr "la contrasenya és incorrecta"
 
-#: ../../libraries/entropy.py:16906
+#: ../../libraries/entropy.py:18230
 msgid "user inactive"
 msgstr "usuari inactiu"
 
-#: ../../libraries/entropy.py:16910
+#: ../../libraries/entropy.py:18234
 msgid "user banned"
 msgstr "l'usuari està bandejat"
 
-#: ../../libraries/entropy.py:17804
+#: ../../libraries/entropy.py:19142
 msgid "Authentication on repository"
 msgstr "Autenticat en el repositori"
 
-#: ../../libraries/entropy.py:17806
+#: ../../libraries/entropy.py:19144 ../../libraries/entropy.py:20947
 msgid "Username"
 msgstr "Nom d'usuari"
 
-#: ../../libraries/entropy.py:17807
+#: ../../libraries/entropy.py:19145 ../../libraries/entropy.py:20948
 msgid "Password"
 msgstr "Contrasenya"
 
-#: ../../libraries/entropy.py:17829
+#: ../../libraries/entropy.py:19167
 #, fuzzy
 msgid "logged"
 msgstr "no heu iniciat la sessió"
 
 #. make it larger
-#: ../../libraries/entropy.py:17837
+#: ../../libraries/entropy.py:19175 ../../libraries/entropy.py:20967
 msgid "Access denied. Login failed"
 msgstr ""
 
-#: ../../libraries/entropy.py:18253
+#: ../../libraries/entropy.py:19588
 msgid "database does not exist. Locking services for it"
 msgstr "la base de dades no existeix. Se li estan bloquejant els serveis"
 
-#: ../../libraries/entropy.py:18271
+#: ../../libraries/entropy.py:19606
 msgid "database got locked. Locking services for it"
 msgstr "la base de dades s'ha bloquejat. S'estan bloquejant els seus serveis"
 
-#: ../../libraries/entropy.py:18285
+#: ../../libraries/entropy.py:19620
 msgid "unlocking and indexing database"
 msgstr "s'està desbloquejant i indexant la base de dades"
 
-#: ../../libraries/entropy.py:18286
+#: ../../libraries/entropy.py:19621
 msgid "hash"
 msgstr "empremta electrònica"
 
-#: ../../libraries/entropy.py:18397
+#: ../../libraries/entropy.py:19732
 msgid "A valid RepositorySocketClientInterface based instance is needed"
 msgstr ""
 "Es necessita una instància vàlida basada en un "
 "RepositorySocketClientInterface"
 
-#: ../../libraries/entropy.py:18407
+#: ../../libraries/entropy.py:19742
 msgid "hello world!"
 msgstr "hola món!"
 
-#: ../../libraries/entropy.py:18417
+#: ../../libraries/entropy.py:19752
 msgid "feature not supported remotely"
 msgstr "la característica no està suportada remotament"
 
-#: ../../libraries/entropy.py:18420 ../../libraries/entropy.py:18437
-#: ../../libraries/entropy.py:18455 ../../libraries/entropy.py:18471
-#: ../../libraries/entropy.py:18508
+#: ../../libraries/entropy.py:19755 ../../libraries/entropy.py:19772
+#: ../../libraries/entropy.py:19790 ../../libraries/entropy.py:19806
+#: ../../libraries/entropy.py:19843
 msgid "repo"
 msgstr "repositori"
 
-#: ../../libraries/entropy.py:18422 ../../libraries/entropy.py:18439
-#: ../../libraries/entropy.py:18457 ../../libraries/entropy.py:18473
-#: ../../libraries/entropy.py:18510
+#: ../../libraries/entropy.py:19757 ../../libraries/entropy.py:19774
+#: ../../libraries/entropy.py:19792 ../../libraries/entropy.py:19808
+#: ../../libraries/entropy.py:19845
 msgid "arch"
 msgstr "arquitectura"
 
-#: ../../libraries/entropy.py:18424 ../../libraries/entropy.py:18441
-#: ../../libraries/entropy.py:18459 ../../libraries/entropy.py:18475
-#: ../../libraries/entropy.py:18512
+#: ../../libraries/entropy.py:19759 ../../libraries/entropy.py:19776
+#: ../../libraries/entropy.py:19794 ../../libraries/entropy.py:19810
+#: ../../libraries/entropy.py:19847
 msgid "product"
 msgstr "producte"
 
-#: ../../libraries/entropy.py:18434
+#: ../../libraries/entropy.py:19769
 msgid "service temporarily not available"
 msgstr "servei temporalment no disponible"
 
 #. command failed
-#: ../../libraries/entropy.py:18452
+#: ../../libraries/entropy.py:19787
 msgid "command failed"
 msgstr "l'ordre ha fallat"
 
-#: ../../libraries/entropy.py:18468
+#: ../../libraries/entropy.py:19803
 msgid "received wrong answer"
 msgstr "s'ha rebut una resposta incorrecta"
 
-#: ../../libraries/entropy.py:18505
+#: ../../libraries/entropy.py:19840
 msgid "cannot convert stream into object"
 msgstr "no s'ha pogut convertir la cadena en un objecte"
 
-#: ../../libraries/entropy.py:18859
+#: ../../libraries/entropy.py:20223
+msgid "User Generated Content"
+msgstr ""
+
+#: ../../libraries/entropy.py:20224
+#, fuzzy
+msgid "sending file"
+msgstr "S'està editant el fitxer"
+
+#: ../../libraries/entropy.py:20328
 msgid "A valid EntropySocketClientCommands based class is needed"
 msgstr "Es necessita una classe vàlida basada en EntropySocketClientCommands"
 
-#: ../../libraries/entropy.py:18958
+#: ../../libraries/entropy.py:20428
 msgid "OpenSSL Python module not available, you need dev-python/pyopenssl"
 msgstr ""
 "El mòdul OpenSSL de Python no està disponible, us cal dev-python/pyopenssl"
 
-#: ../../libraries/entropy.py:19069
+#: ../../libraries/entropy.py:20544
 msgid "malformed EOS. receive aborted"
 msgstr "l'EOS està mal format. S'interromp la recepció"
 
-#: ../../libraries/entropy.py:19100
+#: ../../libraries/entropy.py:20575
 msgid "malformed data. receive aborted"
 msgstr "les dades estan mal formades . S'interromp la recepció"
 
-#: ../../libraries/entropy.py:19115
+#: ../../libraries/entropy.py:20590
 msgid "connection timed out while receiving data"
 msgstr "temps de connexió excedit en la recepció de dades"
 
-#: ../../libraries/entropy.py:19130
+#: ../../libraries/entropy.py:20605
 msgid "connection error while receiving data"
 msgstr "s'ha produït un error de connexió mentre es rebien dades"
 
-#: ../../libraries/entropy.py:19152
+#: ../../libraries/entropy.py:20627
 msgid "Reconnecting to socket"
 msgstr "S'està reconnectant amb el sòcol"
 
-#: ../../libraries/entropy.py:19167
+#: ../../libraries/entropy.py:20642
 msgid "Not connected to host"
 msgstr "No s'ha connectat amb l'ordinador central"
 
-#: ../../libraries/entropy.py:19192
+#: ../../libraries/entropy.py:20667
 msgid ""
 "Warning: you are using an emergency SSL interface, SSL certificate can't be "
 "verified. Please install dev-python/pyopenssl"
@@ -2025,682 +2043,731 @@ msgstr ""
 "Atenció: esteu usant una interfície SSL d'emergència. El certificat SSL no "
 "es pot verificar. Si us plau, instal·leu dev-python/pyopenssl"
 
-#: ../../libraries/entropy.py:19203
+#: ../../libraries/entropy.py:20678
 msgid "Service issuer"
 msgstr "Servei emissor"
 
-#: ../../libraries/entropy.py:19217
+#: ../../libraries/entropy.py:20692
 msgid "Cannot connect to"
 msgstr "No es pot connectar amb"
 
-#: ../../libraries/entropy.py:19217
+#: ../../libraries/entropy.py:20692
 msgid "on port"
 msgstr "en el port"
 
-#: ../../libraries/entropy.py:19223
+#: ../../libraries/entropy.py:20698
 msgid "Successfully connected to host"
 msgstr "S'ha connectat amb l'ordinador central amb èxit"
 
-#: ../../libraries/entropy.py:19247
+#: ../../libraries/entropy.py:20722
 msgid "Successfully disconnected from host"
 msgstr "S'ha desconnectat de l'ordinador central amb èxit"
 
-#: ../../libraries/entropy.py:19269
+#: ../../libraries/entropy.py:20842
+#, fuzzy
+msgid "A valid EquoInterface based instance is needed"
+msgstr "Es necessita una instància vàlida basada en Textinterface"
+
+#: ../../libraries/entropy.py:20873
+#, fuzzy
+msgid "repository is not available"
+msgstr "la raó no està disponible"
+
+#: ../../libraries/entropy.py:20879
+#, fuzzy
+msgid "repository metadata is malformed"
+msgstr "La cadena d'identificació del repositori està mal formada"
+
+#: ../../libraries/entropy.py:20933 ../../libraries/entropy.py:20978
+msgid "ok"
+msgstr ""
+
+#: ../../libraries/entropy.py:20937
+#, fuzzy
+msgid "repository does not support EAPI3"
+msgstr "el directori no existeix"
+
+#: ../../libraries/entropy.py:20951
+#, fuzzy
+msgid "Please login against"
+msgstr "Espereu si us plau"
+
+#: ../../libraries/entropy.py:20951 ../../server/server_reagent.py:82
+#: ../../server/server_reagent.py:85 ../../server/server_reagent.py:94
+#: ../../server/server_reagent.py:97 ../../server/server_reagent.py:123
+msgid "repository"
+msgstr "repositori"
+
+#: ../../libraries/entropy.py:20956
+#, fuzzy
+msgid "login abort"
+msgstr "no hi ha dades d'inici de sessió"
+
+#: ../../libraries/entropy.py:20961
+#, fuzzy
+msgid "connection issues"
+msgstr "Actualitzacions: problema de connexió"
+
+#: ../../libraries/entropy.py:20974
+msgid "Login successful. Do you want to save these credentials ?"
+msgstr ""
+
+#: ../../libraries/entropy.py:21109
 msgid "A valid ServerInterface based instance is needed"
 msgstr "Es necessita una instància basada en ServerInterface vàlida"
 
-#: ../../libraries/entropy.py:19276
+#: ../../libraries/entropy.py:21116
 msgid "Entropy Server Mirrors Interface loaded"
 msgstr "S'ha carregat la Interfície del Servidor de Rèpliques de Entropy"
 
-#: ../../libraries/entropy.py:19283 ../../libraries/entropy.py:19314
+#: ../../libraries/entropy.py:21123 ../../libraries/entropy.py:21154
 msgid "mirror"
 msgstr "rèplica"
 
-#: ../../libraries/entropy.py:19307 ../../libraries/entropy.py:19382
+#: ../../libraries/entropy.py:21147 ../../libraries/entropy.py:21222
 msgid "unlocking"
 msgstr "s'està desbloquejant"
 
-#: ../../libraries/entropy.py:19308 ../../libraries/entropy.py:19383
-#: ../../libraries/entropy.py:20443 ../../libraries/entropy.py:20463
+#: ../../libraries/entropy.py:21148 ../../libraries/entropy.py:21223
+#: ../../libraries/entropy.py:22294 ../../libraries/entropy.py:22314
 msgid "locking"
 msgstr "s'està bloquejant"
 
-#: ../../libraries/entropy.py:19330 ../../libraries/entropy.py:20444
+#: ../../libraries/entropy.py:21170 ../../libraries/entropy.py:22295
 msgid "mirror already locked"
 msgstr "la rèplica ja està bloquejada"
 
-#: ../../libraries/entropy.py:19343
+#: ../../libraries/entropy.py:21183
 msgid "mirror already unlocked"
 msgstr "la rèplica ja està desbloquejada"
 
-#: ../../libraries/entropy.py:19389
+#: ../../libraries/entropy.py:21229
 msgid "mirror for download"
 msgstr "rèplica per baixar"
 
-#: ../../libraries/entropy.py:19405
+#: ../../libraries/entropy.py:21245
 msgid "mirror already locked for download"
 msgstr "la rèplica ja està bloquejada per baixar"
 
-#: ../../libraries/entropy.py:19418
+#: ../../libraries/entropy.py:21258
 msgid "mirror already unlocked for download"
 msgstr "la rèplica ja està desbloquejada per baixar"
 
-#: ../../libraries/entropy.py:19456
+#: ../../libraries/entropy.py:21296
 msgid "for download"
 msgstr "per baixar"
 
-#: ../../libraries/entropy.py:19466
+#: ../../libraries/entropy.py:21306
 msgid "mirror successfully locked"
 msgstr "la rèplica s'ha bloquejat amb èxit"
 
-#: ../../libraries/entropy.py:19480
+#: ../../libraries/entropy.py:21320
 msgid "mirror not locked"
 msgstr "la rèplica no està bloquejada"
 
-#: ../../libraries/entropy.py:19518
+#: ../../libraries/entropy.py:21358
 msgid "mirror successfully unlocked"
 msgstr "la rèplica s'ha desbloquejat amb èxit"
 
-#: ../../libraries/entropy.py:19533
+#: ../../libraries/entropy.py:21373
 msgid "unlock error"
 msgstr "error de desbloqueig"
 
-#: ../../libraries/entropy.py:19535
+#: ../../libraries/entropy.py:21375
 msgid "mirror not unlocked"
 msgstr "la rèplica no està desbloquejada"
 
-#: ../../libraries/entropy.py:19602
+#: ../../libraries/entropy.py:21442
 msgid "connecting to download package"
 msgstr "s'està connectant per baixar el paquet"
 
-#: ../../libraries/entropy.py:19620
+#: ../../libraries/entropy.py:21460
 msgid "downloading package"
 msgstr "s'està baixant el paquet"
 
-#: ../../libraries/entropy.py:19657
+#: ../../libraries/entropy.py:21497
 msgid "is not listed in the current repository database!!"
 msgstr "no està llistat a la base de dades del repositori actual!!"
 
-#: ../../libraries/entropy.py:19672
+#: ../../libraries/entropy.py:21512
 msgid "verifying checksum of package"
 msgstr "s'està comprovant la suma de verificació del paquet"
 
-#: ../../libraries/entropy.py:19691
+#: ../../libraries/entropy.py:21531
 msgid "downloaded successfully"
 msgstr "s'ha baixat amb èxit"
 
-#: ../../libraries/entropy.py:19706
+#: ../../libraries/entropy.py:21546
 msgid "checksum does not match. re-downloading..."
 msgstr "la suma de verificació no coincideix. S'està tornant a baixar..."
 
-#: ../../libraries/entropy.py:19725
+#: ../../libraries/entropy.py:21565
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr "sembla trencat. Considereu reempaquetar-lo. S'abandona!"
 
-#: ../../libraries/entropy.py:19751
+#: ../../libraries/entropy.py:21591
 msgid "mirror doesn't have a valid directory structure"
 msgstr "la rèplica no té una estructura de directoris vàlida"
 
-#: ../../libraries/entropy.py:19762
+#: ../../libraries/entropy.py:21602
 msgid "Wrong database compression method passed"
 msgstr "El mètode de compressió de la base de dades és equivocat"
 
-#: ../../libraries/entropy.py:19783
+#: ../../libraries/entropy.py:21623
 msgid "mirror doesn't have a valid database revision file"
 msgstr "la rèplica no té un fitxer de revisió de la base de dades vàlid"
 
-#: ../../libraries/entropy.py:20012
+#: ../../libraries/entropy.py:21852
 msgid "uris must be a list instance"
 msgstr "uris ha de ser una llista d'instàncies"
 
-#: ../../libraries/entropy.py:20015
+#: ../../libraries/entropy.py:21855
 msgid "files_to_upload must be a list or dict instance"
 msgstr "files_to_upload ha de ser una llista o una instància dict"
 
-#: ../../libraries/entropy.py:20056
+#: ../../libraries/entropy.py:21896
 msgid "verifying upload (if supported)"
 msgstr "s'està verificant la càrrega (si està suportada)"
 
-#: ../../libraries/entropy.py:20077 ../../libraries/entropy.py:20093
-#: ../../libraries/entropy.py:20112 ../../libraries/entropy.py:20128
-#: ../../libraries/entropy.py:20144
+#: ../../libraries/entropy.py:21917 ../../libraries/entropy.py:21933
+#: ../../libraries/entropy.py:21952 ../../libraries/entropy.py:21968
+#: ../../libraries/entropy.py:21984
 msgid "digest verification"
 msgstr "verificació de l'empremta electrònica"
 
-#: ../../libraries/entropy.py:20095
+#: ../../libraries/entropy.py:21935
 msgid "file not found"
 msgstr "no s'ha trobat el fitxer"
 
-#: ../../libraries/entropy.py:20114
+#: ../../libraries/entropy.py:21954
 msgid "so far, so good!"
 msgstr "Tot és correcte :-)"
 
-#: ../../libraries/entropy.py:20130
+#: ../../libraries/entropy.py:21970
 msgid "invalid checksum"
 msgstr "suma de verificació no vàlida"
 
-#: ../../libraries/entropy.py:20146
+#: ../../libraries/entropy.py:21986
 msgid "unknown data returned"
 msgstr "s'han retornat dades desconegudes"
 
-#: ../../libraries/entropy.py:20172
+#: ../../libraries/entropy.py:22012
 msgid "connecting to mirror"
 msgstr "s'està connectant amb la rèplica"
 
-#: ../../libraries/entropy.py:20183
+#: ../../libraries/entropy.py:22023
 msgid "changing directory to"
 msgstr "s'està canviant el directori a"
 
-#: ../../libraries/entropy.py:20234
+#: ../../libraries/entropy.py:22085
 msgid "successful"
 msgstr "amb èxit"
 
-#: ../../libraries/entropy.py:20251
+#: ../../libraries/entropy.py:22102
 msgid "failed, retrying"
 msgstr "ha fallat, s'està reintentant"
 
-#: ../../libraries/entropy.py:20285
+#: ../../libraries/entropy.py:22136
 msgid "not critical"
 msgstr "no crític"
 
-#: ../../libraries/entropy.py:20287
+#: ../../libraries/entropy.py:22138
 msgid "continuing"
 msgstr "s'està continuant"
 
-#: ../../libraries/entropy.py:20314
+#: ../../libraries/entropy.py:22165
 msgid "preparing uncompressed database for the upload"
 msgstr "s'estan preparant les bases de dades no comprimides per la càrrega"
 
-#: ../../libraries/entropy.py:20321 ../../libraries/entropy.py:20345
-#: ../../libraries/entropy.py:20385
+#: ../../libraries/entropy.py:22172 ../../libraries/entropy.py:22196
+#: ../../libraries/entropy.py:22236
 msgid "database path"
 msgstr "camí de la base de dades"
 
-#: ../../libraries/entropy.py:20338
+#: ../../libraries/entropy.py:22189
 msgid "creating compressed database dump + checksum"
 msgstr "s'està creant la base de dades comprimida i la suma de verificació"
 
-#: ../../libraries/entropy.py:20351
+#: ../../libraries/entropy.py:22202
 msgid "dump"
 msgstr "aboca"
 
-#: ../../libraries/entropy.py:20357
+#: ../../libraries/entropy.py:22208
 msgid "dump checksum"
 msgstr "aboca la suma de verificació"
 
-#: ../../libraries/entropy.py:20363 ../../libraries/entropy.py:20403
+#: ../../libraries/entropy.py:22214 ../../libraries/entropy.py:22254
 msgid "opener"
 msgstr "obridor"
 
-#: ../../libraries/entropy.py:20377
+#: ../../libraries/entropy.py:22228
 msgid "compressing database + checksum"
 msgstr "s'està comprimint la base de dades i la suma de verificació"
 
-#: ../../libraries/entropy.py:20391
+#: ../../libraries/entropy.py:22242
 msgid "compressed database path"
 msgstr "camí de la base de dades comprimida"
 
-#: ../../libraries/entropy.py:20397
+#: ../../libraries/entropy.py:22248
 msgid "compressed checksum"
 msgstr "suma de verificació comprimida"
 
-#: ../../libraries/entropy.py:20420
+#: ../../libraries/entropy.py:22271
 msgid "cannot create mirror directory"
 msgstr "no es pot crear un directori de rèplica"
 
-#: ../../libraries/entropy.py:20445
+#: ../../libraries/entropy.py:22296
 msgid "waiting up to 2 minutes before giving up"
 msgstr "2 minuts d'espera abans d'abandonar"
 
-#: ../../libraries/entropy.py:20464
+#: ../../libraries/entropy.py:22315
 msgid "mirror unlocked"
 msgstr "s'ha desbloquejat la rèplica"
 
-#: ../../libraries/entropy.py:20515
+#: ../../libraries/entropy.py:22366
 msgid "Troubles with treeupdates"
 msgstr "Hi ha problemes amb els arbres d'actualitzacions"
 
-#: ../../libraries/entropy.py:20518
+#: ../../libraries/entropy.py:22369
 msgid "Bumping old data back"
 msgstr "S'estan suprimint dades antigues"
 
-#: ../../libraries/entropy.py:20556 ../../libraries/entropy.py:20697
+#: ../../libraries/entropy.py:22407 ../../libraries/entropy.py:22548
 msgid "wrong database compression method passed"
 msgstr "el mètode de compressió de la base de dades és erroni"
 
-#: ../../libraries/entropy.py:20577 ../../libraries/entropy.py:21009
+#: ../../libraries/entropy.py:22428 ../../libraries/entropy.py:22868
 msgid "upload"
 msgstr "càrrega"
 
-#: ../../libraries/entropy.py:20578
+#: ../../libraries/entropy.py:22429
 msgid "preparing to upload database to mirror"
 msgstr "s'està preparant per carregar la base de dades a la rèplica"
 
-#: ../../libraries/entropy.py:20638 ../../libraries/entropy.py:20752
+#: ../../libraries/entropy.py:22489 ../../libraries/entropy.py:22603
 msgid "errors"
 msgstr "errors"
 
-#: ../../libraries/entropy.py:20639
+#: ../../libraries/entropy.py:22490
 msgid "failed to upload to mirror, not unlocking and continuing"
 msgstr "la càrrega a la rèplica ha fallat, no es desbloqueja i es continua"
 
-#: ../../libraries/entropy.py:20648 ../../libraries/entropy.py:20762
-#: ../../libraries/entropy.py:21463 ../../libraries/entropy.py:21524
-#: ../../libraries/entropy.py:21943
+#: ../../libraries/entropy.py:22499 ../../libraries/entropy.py:22613
+#: ../../libraries/entropy.py:23322 ../../libraries/entropy.py:23383
+#: ../../libraries/entropy.py:23802
 msgid "reason"
 msgstr "raó"
 
-#: ../../libraries/entropy.py:20713
+#: ../../libraries/entropy.py:22564
 msgid "preparing to download database from mirror"
 msgstr "s'està preparant per baixar la base de dades des de la rèplica"
 
-#: ../../libraries/entropy.py:20723
+#: ../../libraries/entropy.py:22574
 msgid "download path"
 msgstr "camí de baixada"
 
-#: ../../libraries/entropy.py:20753
+#: ../../libraries/entropy.py:22604
 msgid "failed to download from mirror"
 msgstr "ha fallat en baixar de la rèplica"
 
-#: ../../libraries/entropy.py:20842
+#: ../../libraries/entropy.py:22693
 msgid "Mirrors are not locked remotely but the local database is"
 msgstr ""
 "Les rèpliques no s'han bloquejat remotament, però la base de dades local és"
 
-#: ../../libraries/entropy.py:20843
+#: ../../libraries/entropy.py:22694
 msgid "It is a nonsense"
 msgstr "No té sentit"
 
-#: ../../libraries/entropy.py:20844
+#: ../../libraries/entropy.py:22695
 msgid "Please remove the lock file"
 msgstr "Si us plau, elimineu el fitxer de bloqueig"
 
-#: ../../libraries/entropy.py:20851
+#: ../../libraries/entropy.py:22702
 msgid ""
 "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 "Actualment les rèpliques estan bloquejades, algú està treballant en les "
 "bases de dades"
 
-#: ../../libraries/entropy.py:20852
+#: ../../libraries/entropy.py:22703
 msgid "try again later"
 msgstr "intenteu-ho més tard"
 
-#: ../../libraries/entropy.py:20863 ../../libraries/entropy.py:20879
-#: ../../libraries/entropy.py:20897 ../../libraries/entropy.py:20913
-#: ../../libraries/entropy.py:20927 ../../libraries/entropy.py:21380
-#: ../../libraries/entropy.py:21520 ../../libraries/entropy.py:21536
-#: ../../libraries/entropy.py:21556 ../../libraries/entropy.py:21583
-#: ../../libraries/entropy.py:21604 ../../libraries/entropy.py:21621
-#: ../../libraries/entropy.py:21657 ../../libraries/entropy.py:21704
-#: ../../libraries/entropy.py:21721 ../../libraries/entropy.py:21746
+#: ../../libraries/entropy.py:22714 ../../libraries/entropy.py:22734
+#: ../../libraries/entropy.py:22752 ../../libraries/entropy.py:22772
+#: ../../libraries/entropy.py:22786 ../../libraries/entropy.py:23239
+#: ../../libraries/entropy.py:23379 ../../libraries/entropy.py:23395
+#: ../../libraries/entropy.py:23415 ../../libraries/entropy.py:23442
+#: ../../libraries/entropy.py:23463 ../../libraries/entropy.py:23480
+#: ../../libraries/entropy.py:23516 ../../libraries/entropy.py:23563
+#: ../../libraries/entropy.py:23580 ../../libraries/entropy.py:23605
 msgid "sync"
 msgstr "sincronitza"
 
 #. something short please
-#: ../../libraries/entropy.py:20864
+#: ../../libraries/entropy.py:22715
 msgid "database already in sync"
 msgstr "la base de dades encara s'està sincronitzant"
 
-#: ../../libraries/entropy.py:20880 ../../libraries/entropy.py:20914
+#: ../../libraries/entropy.py:22735 ../../libraries/entropy.py:22773
 msgid "database sync failed"
 msgstr "ha fallat la sincronització de la base de dades"
 
-#: ../../libraries/entropy.py:20881
+#: ../../libraries/entropy.py:22736
 msgid "download issues"
 msgstr "problemes de baixada"
 
-#: ../../libraries/entropy.py:20898
+#: ../../libraries/entropy.py:22753
 msgid "database sync forbidden"
 msgstr "s'ha prohibit la sincronització de la base de dades"
 
-#: ../../libraries/entropy.py:20899
+#: ../../libraries/entropy.py:22754
 msgid "dependencies_test() reported errors"
 msgstr "el dependencies_test() ha informat d'errors"
 
-#: ../../libraries/entropy.py:20915
+#: ../../libraries/entropy.py:22774
 msgid "upload issues"
 msgstr "problemes de càrrega"
 
-#: ../../libraries/entropy.py:20928
+#: ../../libraries/entropy.py:22787
 msgid "database sync completed successfully"
 msgstr "la base de dades s'ha sincronitzat amb èxit"
 
-#: ../../libraries/entropy.py:20972
+#: ../../libraries/entropy.py:22831
 msgid "Local statistics"
 msgstr "Estadístiques locals"
 
-#: ../../libraries/entropy.py:20979
+#: ../../libraries/entropy.py:22838
 msgid "upload directory"
 msgstr "directori de càrrega"
 
-#: ../../libraries/entropy.py:20981 ../../libraries/entropy.py:20992
+#: ../../libraries/entropy.py:22840 ../../libraries/entropy.py:22851
 msgid "files ready"
 msgstr "fitxers ja"
 
-#: ../../libraries/entropy.py:20990
+#: ../../libraries/entropy.py:22849
 msgid "packages directory"
 msgstr "directori de paquets"
 
-#: ../../libraries/entropy.py:21037
+#: ../../libraries/entropy.py:22896
 msgid "copy"
 msgstr "copia"
 
-#: ../../libraries/entropy.py:21062
+#: ../../libraries/entropy.py:22921
 msgid "Packages to be removed"
 msgstr "Paquets a eliminar"
 
-#: ../../libraries/entropy.py:21071
+#: ../../libraries/entropy.py:22930
 msgid "Packages to be moved locally"
 msgstr "Paquets a moure localment"
 
-#: ../../libraries/entropy.py:21080
+#: ../../libraries/entropy.py:22939
 msgid "Packages to be uploaded"
 msgstr "Paquets a carregar"
 
-#: ../../libraries/entropy.py:21090
+#: ../../libraries/entropy.py:22949
 msgid "Total removal size"
 msgstr "Mida total d'eliminació"
 
-#: ../../libraries/entropy.py:21100
+#: ../../libraries/entropy.py:22959
 msgid "Total upload size"
 msgstr "Mida total de càrrega"
 
-#: ../../libraries/entropy.py:21109
+#: ../../libraries/entropy.py:22968
 msgid "Total download size"
 msgstr "Mida total de baixada"
 
-#: ../../libraries/entropy.py:21160
+#: ../../libraries/entropy.py:23019
 msgid "Remote statistics for"
 msgstr "Estadístiques remotes per"
 
-#: ../../libraries/entropy.py:21172
+#: ../../libraries/entropy.py:23031
 msgid "remote packages"
 msgstr "paquets remots"
 
-#: ../../libraries/entropy.py:21174
+#: ../../libraries/entropy.py:23033
 msgid "files stored"
 msgstr "fitxers desats"
 
-#: ../../libraries/entropy.py:21181
+#: ../../libraries/entropy.py:23040
 msgid "Calculating queues"
 msgstr "S'estan calculant les cues"
 
-#: ../../libraries/entropy.py:21363
+#: ../../libraries/entropy.py:23222
 msgid "removing package+hash"
 msgstr "s'està eliminat el paquet i l'empremta electrònica"
 
-#: ../../libraries/entropy.py:21407
+#: ../../libraries/entropy.py:23266
 msgid "copying file+hash to repository"
 msgstr "s'està copiant el fitxer i l'empremta electrònica al repositori"
 
-#: ../../libraries/entropy.py:21461
+#: ../../libraries/entropy.py:23320
 msgid "upload errors"
 msgstr "errors de càrrega"
 
-#: ../../libraries/entropy.py:21475
+#: ../../libraries/entropy.py:23334
 msgid "upload completed successfully"
 msgstr "la càrrega s'ha completat amb èxit"
 
-#: ../../libraries/entropy.py:21522
+#: ../../libraries/entropy.py:23381
 msgid "download errors"
 msgstr "errors de baixada"
 
-#: ../../libraries/entropy.py:21538
+#: ../../libraries/entropy.py:23397
 msgid "download completed successfully"
 msgstr "la baixada s'ha completat amb èxit"
 
-#: ../../libraries/entropy.py:21557
+#: ../../libraries/entropy.py:23416
 msgid "starting packages sync"
 msgstr "s'està iniciant la sincronització de paquets"
 
-#: ../../libraries/entropy.py:21585
+#: ../../libraries/entropy.py:23444
 msgid "packages sync"
 msgstr "sincronització de paquets"
 
-#: ../../libraries/entropy.py:21606
+#: ../../libraries/entropy.py:23465
 #, fuzzy
 msgid "socket error"
 msgstr "error de desbloqueig"
 
-#: ../../libraries/entropy.py:21608
+#: ../../libraries/entropy.py:23467
 msgid "on"
 msgstr ""
 
-#: ../../libraries/entropy.py:21623
+#: ../../libraries/entropy.py:23482
 msgid "nothing to do on"
 msgstr "no s'està processant res a"
 
-#: ../../libraries/entropy.py:21635
+#: ../../libraries/entropy.py:23494
 msgid "Expanding queues"
 msgstr "S'estan expandint les cues"
 
-#: ../../libraries/entropy.py:21659
+#: ../../libraries/entropy.py:23518
 msgid "nothing to sync for"
 msgstr "no hi ha res a sincronitzar per"
 
-#: ../../libraries/entropy.py:21677
+#: ../../libraries/entropy.py:23536
 msgid "Would you like to run the steps above ?"
 msgstr "Voleu executar els passos de dalt?"
 
-#: ../../libraries/entropy.py:21706
+#: ../../libraries/entropy.py:23565
 msgid "keyboard interrupt !"
 msgstr "interrupció del teclat !"
 
-#: ../../libraries/entropy.py:21723
+#: ../../libraries/entropy.py:23582
 msgid "exception caught"
 msgstr "s'ha produït una excepció"
 
-#: ../../libraries/entropy.py:21748
+#: ../../libraries/entropy.py:23607
 msgid "at least one mirror has been sync'd properly, hooray!"
 msgstr "almenys una rèplica s'ha sincronitzat correctament, bé!"
 
-#: ../../libraries/entropy.py:21824
+#: ../../libraries/entropy.py:23683
 msgid "tidy"
 msgstr "neteja"
 
-#: ../../libraries/entropy.py:21826
+#: ../../libraries/entropy.py:23685
 msgid "collecting expired packages"
 msgstr "s'estan recollint paquets que han vençut"
 
-#: ../../libraries/entropy.py:21844
+#: ../../libraries/entropy.py:23703
 msgid "collecting expired packages in the selected branches"
 msgstr "s'estan recollint paquets que han vençut a les branques seleccionades"
 
-#: ../../libraries/entropy.py:21869
+#: ../../libraries/entropy.py:23728
 msgid "nothing to remove on this branch"
 msgstr "no hi ha res a eliminar en aquesta branca"
 
-#: ../../libraries/entropy.py:21880
+#: ../../libraries/entropy.py:23739
 msgid "these are the expired packages"
 msgstr "aquests són els paquets que han vençut"
 
-#: ../../libraries/entropy.py:21916
+#: ../../libraries/entropy.py:23775
 msgid "removing packages remotely"
 msgstr "s'estan eliminant paquets remotament"
 
-#: ../../libraries/entropy.py:21941
+#: ../../libraries/entropy.py:23800
 msgid "remove errors"
 msgstr "errors d'eliminació"
 
-#: ../../libraries/entropy.py:21956
+#: ../../libraries/entropy.py:23815
 msgid "removing packages locally"
 msgstr "s'estan eliminat els paquets localment"
 
-#: ../../libraries/entropy.py:21973
+#: ../../libraries/entropy.py:23832
 msgid "removing"
 msgstr "s'està eliminant"
 
-#: ../../libraries/entropy.py:22008
+#: ../../libraries/entropy.py:23867
 msgid "valid database path needed"
 msgstr "cal un camí vàlid a la base de dades"
 
-#: ../../libraries/entropy.py:22104
+#: ../../libraries/entropy.py:23963
 msgid "Mirrors have not been unlocked. Remember to sync them."
 msgstr "Les rèpliques no s'han bloquejat. Recordeu sincronitzar-les."
 
-#: ../../libraries/entropy.py:22191
+#: ../../libraries/entropy.py:24050
 msgid "can't do that on a readonly database"
 msgstr "això no es pot fer en una base de dades només de lectura"
 
-#: ../../libraries/entropy.py:22268 ../../libraries/entropy.py:22337
-#: ../../libraries/entropy.py:22668 ../../libraries/entropy.py:22732
-#: ../../libraries/entropy.py:25802 ../../libraries/entropy.py:25821
+#: ../../libraries/entropy.py:24127 ../../libraries/entropy.py:24196
+#: ../../libraries/entropy.py:24527 ../../libraries/entropy.py:24591
+#: ../../libraries/entropy.py:27668 ../../libraries/entropy.py:27687
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
 #: ../../client/text_ui.py:348 ../../client/text_ui.py:908
 msgid "ATTENTION"
 msgstr "ATENCIÓ"
 
-#: ../../libraries/entropy.py:22269
+#: ../../libraries/entropy.py:24128
 msgid "forcing package updates"
 msgstr "s'està forçant l'actualització dels paquets"
 
-#: ../../libraries/entropy.py:22270
+#: ../../libraries/entropy.py:24129
 msgid "Syncing with"
 msgstr "S'està sincronitzant amb"
 
-#: ../../libraries/entropy.py:22338
+#: ../../libraries/entropy.py:24197
 msgid "forcing packages metadata update"
 msgstr "s'està forçant l'actualització de les metadades dels paquets"
 
-#: ../../libraries/entropy.py:22339
+#: ../../libraries/entropy.py:24198
 msgid "Updating system database using repository id"
 msgstr "S'està actualitzant la base de dades usant el repositori amb id"
 
-#: ../../libraries/entropy.py:22428 ../../libraries/entropy.py:22767
+#: ../../libraries/entropy.py:24287 ../../libraries/entropy.py:24626
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy.py:22429
+#: ../../libraries/entropy.py:24288
 msgid "Running fixpackages"
 msgstr "S'estan executant fixpackages"
 
-#: ../../libraries/entropy.py:22430
+#: ../../libraries/entropy.py:24289
 msgid "it could take a while"
 msgstr "pot trigar una estona"
 
-#: ../../libraries/entropy.py:22452
+#: ../../libraries/entropy.py:24311
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy.py:22453
+#: ../../libraries/entropy.py:24312
 msgid "action"
 msgstr "acció"
 
-#: ../../libraries/entropy.py:22476
+#: ../../libraries/entropy.py:24335
 msgid "Cannot complete quickpkg for atoms"
 msgstr "No es pot acabar quickpkg pels àtoms"
 
-#: ../../libraries/entropy.py:22478 ../../libraries/entropy.py:22716
+#: ../../libraries/entropy.py:24337 ../../libraries/entropy.py:24575
 msgid "do it manually"
 msgstr "feu-ho manualment"
 
-#: ../../libraries/entropy.py:22494
+#: ../../libraries/entropy.py:24353
 msgid "Cannot run SPM cleanup, error"
 msgstr "No es pot executar la supressió SPM, error"
 
-#: ../../libraries/entropy.py:22545 ../../libraries/entropy.py:22618
+#: ../../libraries/entropy.py:24404 ../../libraries/entropy.py:24477
 msgid "INJECT"
 msgstr "INJECTA"
 
-#: ../../libraries/entropy.py:22547 ../../libraries/entropy.py:22620
+#: ../../libraries/entropy.py:24406 ../../libraries/entropy.py:24479
 msgid "has been injected"
 msgstr "s'ha injectat"
 
-#: ../../libraries/entropy.py:22548 ../../libraries/entropy.py:22621
+#: ../../libraries/entropy.py:24407 ../../libraries/entropy.py:24480
 msgid "You need to quickpkg it manually to update the embedded database"
 msgstr ""
 "Heu de fer quickpkg manualment per actualitzar la base de dades incrustada"
 
-#: ../../libraries/entropy.py:22549 ../../libraries/entropy.py:22622
+#: ../../libraries/entropy.py:24408 ../../libraries/entropy.py:24481
 msgid "Repository database will be updated anyway"
 msgstr "La base de dades del repositori s'actualitzarà igualment"
 
-#: ../../libraries/entropy.py:22658
+#: ../../libraries/entropy.py:24517
 msgid "Would you like to continue with the default branch"
 msgstr "Voleu continuar amb la branca per defecte?"
 
-#: ../../libraries/entropy.py:22665
+#: ../../libraries/entropy.py:24524
 msgid "Type your branch"
 msgstr "Escriviu la vostra branca"
 
-#: ../../libraries/entropy.py:22669
+#: ../../libraries/entropy.py:24528
 msgid "the specified branch does not exist"
 msgstr "la branca especificada no existeix"
 
 #. ask to confirm
-#: ../../libraries/entropy.py:22680
+#: ../../libraries/entropy.py:24539
 msgid "Do you confirm"
 msgstr "Voleu confirmar"
 
-#: ../../libraries/entropy.py:22698
+#: ../../libraries/entropy.py:24557
 msgid "repackaging"
 msgstr "s'està empaquetant de nou"
 
-#: ../../libraries/entropy.py:22714
+#: ../../libraries/entropy.py:24573
 msgid "Cannot complete quickpkg for atom"
 msgstr "No s'ha pogut completar quickpkg per l'àtom"
 
-#: ../../libraries/entropy.py:22733
+#: ../../libraries/entropy.py:24592
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr "l'acció runTreeUpdatesQuickpkgAction no s'ha executat correctament"
 
-#: ../../libraries/entropy.py:22734
+#: ../../libraries/entropy.py:24593
 msgid "Please update packages manually"
 msgstr "Si us plau, actualitzeu els paquets manualment"
 
-#: ../../libraries/entropy.py:22768
+#: ../../libraries/entropy.py:24627
 msgid "Moving old entry"
 msgstr "S'està movent una entrada antiga"
 
-#: ../../libraries/entropy.py:22770 ../../client/text_configuration.py:113
+#: ../../libraries/entropy.py:24629 ../../client/text_configuration.py:113
 msgid "to"
 msgstr "a"
 
-#: ../../libraries/entropy.py:25137 ../../libraries/entropy.py:25168
-#: ../../libraries/entropy.py:25201 ../../client/text_rescue.py:421
+#: ../../libraries/entropy.py:27003 ../../libraries/entropy.py:27034
+#: ../../libraries/entropy.py:27067 ../../client/text_rescue.py:421
 msgid "Entropy database"
 msgstr "Base de dades de Entropy"
 
-#: ../../libraries/entropy.py:25137
+#: ../../libraries/entropy.py:27003
 msgid "regenerating indexes after migration"
 msgstr "s'estan regenerant els índex després de la migració"
 
-#: ../../libraries/entropy.py:25168
+#: ../../libraries/entropy.py:27034
 msgid "migrating table"
 msgstr "taula de migració"
 
-#: ../../libraries/entropy.py:25202
+#: ../../libraries/entropy.py:27068
 msgid "fixing KDE dep strings on"
 msgstr "s'estan arreglant les cadenes de dependents del KDE en"
 
-#: ../../libraries/entropy.py:25204 ../../client/text_rescue.py:277
+#: ../../libraries/entropy.py:27070 ../../client/text_rescue.py:277
 msgid "Please wait"
 msgstr "Espereu si us plau"
 
-#: ../../libraries/entropy.py:25272
+#: ../../libraries/entropy.py:27138
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr "no es troba la taula baseinfo. O no existeix o està malmesa."
 
-#: ../../libraries/entropy.py:25277
+#: ../../libraries/entropy.py:27143
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr "no es troba la taula extrainfo. O no existeix o està malmesa."
 
-#: ../../libraries/entropy.py:25303
+#: ../../libraries/entropy.py:27169
 msgid "Syncing current database"
 msgstr "S'està sincronitzant la base de dades actual"
 
-#: ../../libraries/entropy.py:25315
+#: ../../libraries/entropy.py:27181
 msgid "Removing entry"
 msgstr "S'està eliminant una entrada"
 
-#: ../../libraries/entropy.py:25330
+#: ../../libraries/entropy.py:27196
 msgid "Adding entry"
 msgstr "S'està afegint una entrada"
 
-#: ../../libraries/entropy.py:25368
+#: ../../libraries/entropy.py:27234
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
@@ -2708,39 +2775,39 @@ msgstr ""
 "La EAPI del repositori > la EAPI de Entropy. Si us plau, actualitzeu Equo/"
 "Entropy tan aviat com pugueu!"
 
-#: ../../libraries/entropy.py:25387
+#: ../../libraries/entropy.py:27253
 msgid "Exporting database table"
 msgstr "S'està exportant la taula de la base de dades"
 
-#: ../../libraries/entropy.py:25426
+#: ../../libraries/entropy.py:27292
 msgid "Database Export completed."
 msgstr "S'ha completat l'exportació de la base de dades"
 
-#: ../../libraries/entropy.py:25803
+#: ../../libraries/entropy.py:27669
 msgid "cannot open Spm counter file for"
 msgstr "no es pot obrir el fitxer del comptador Spm per"
 
-#: ../../libraries/entropy.py:25822
+#: ../../libraries/entropy.py:27688
 msgid "counter for atom is duplicated, ignoring"
 msgstr "el comptador per l'àtom està duplicat, s'ignora"
 
-#: ../../libraries/entropy.py:26544
+#: ../../libraries/entropy.py:28410
 msgid "comparison between"
 msgstr "comparació entre"
 
-#: ../../libraries/entropy.py:26546
+#: ../../libraries/entropy.py:28412
 msgid "and"
 msgstr "i"
 
-#: ../../libraries/entropy.py:26548 ../../libraries/entropy.py:26560
+#: ../../libraries/entropy.py:28414 ../../libraries/entropy.py:28426
 msgid "failed"
 msgstr "ha fallat"
 
-#: ../../libraries/entropy.py:26549
+#: ../../libraries/entropy.py:28415
 msgid "Wrong syntax for"
 msgstr "Sintaxi incorrecta per"
 
-#: ../../libraries/entropy.py:26557
+#: ../../libraries/entropy.py:28423
 msgid "from atom"
 msgstr "des de l'àtom"
 
@@ -2754,22 +2821,23 @@ msgid "Ok"
 msgstr "D'acord"
 
 #: ../../libraries/managerTools.py:221 ../../libraries/managerTools.py:247
+#: ../../spritz/src/dialogs.py:1141
 msgid "Cancel"
 msgstr "Cancel·la"
 
-#: ../../libraries/outputTools.py:394
+#: ../../libraries/outputTools.py:394 ../../spritz/src/entropyapi.py:252
 msgid "Entropy needs your attention"
 msgstr "L'Entropy reclama la vostra atenció"
 
-#: ../../libraries/outputTools.py:479
+#: ../../libraries/outputTools.py:480
 msgid "maximum responses length"
 msgstr "llargada màxima de les respostes"
 
-#: ../../libraries/outputTools.py:486
+#: ../../libraries/outputTools.py:487
 msgid "Entropy got a question for you"
 msgstr "L'Entropy us fa una pregunta"
 
-#: ../../libraries/outputTools.py:501
+#: ../../libraries/outputTools.py:502
 msgid "Interrupted"
 msgstr "Interromput"
 
@@ -3082,12 +3150,12 @@ msgstr "cerca fitxers que no pertanyen a cap paquet"
 msgid "search packages by description"
 msgstr "cerca paquets per descripció"
 
-#: ../../client/equo.py:155 ../../client/equo.py:249 ../../client/equo.py:259
+#: ../../client/equo.py:155 ../../client/equo.py:249 ../../client/equo.py:272
 #: ../../server/reagent.py:67
 msgid "show more details"
 msgstr "mostra més detalls"
 
-#: ../../client/equo.py:156 ../../client/equo.py:250 ../../client/equo.py:260
+#: ../../client/equo.py:156 ../../client/equo.py:250 ../../client/equo.py:273
 #: ../../server/reagent.py:68
 msgid "print results in a scriptable way"
 msgstr "mostra els resultats en mode script"
@@ -3388,57 +3456,109 @@ msgid "regenerate the depends table"
 msgstr "regenera la taula de dependents"
 
 #: ../../client/equo.py:256
+#, fuzzy
+msgid "handles User Generated Content features"
+msgstr "gestiona les característiques del costat de la comunitat"
+
+#: ../../client/equo.py:257
+#, fuzzy
+msgid "login against a specified repository"
+msgstr "habilita el repositori especificat"
+
+#: ../../client/equo.py:258
+#, fuzzy
+msgid "logout from a specified repository"
+msgstr "habilita el repositori especificat"
+
+#: ../../client/equo.py:259
+#, fuzzy
+msgid "force action"
+msgstr "Ubicació"
+
+#: ../../client/equo.py:260
+msgid ""
+"manage package documents for the selected repository (comments, files, "
+"videos)"
+msgstr ""
+
+#: ../../client/equo.py:261
+msgid ""
+"get available documents for the specified package key (example: x11-libs/qt)"
+msgstr ""
+
+#: ../../client/equo.py:262
+msgid "add a new document to the specified package key (example: x11-libs/qt)"
+msgstr ""
+
+#: ../../client/equo.py:263
+msgid "remove documents from database using their identifiers"
+msgstr ""
+
+#: ../../client/equo.py:264
+#, fuzzy
+msgid "manage package votes for the selected repository"
+msgstr "(re)crea la base de dades pel repositori especificat"
+
+#: ../../client/equo.py:265
+msgid "get vote for the specified package key (example: x11-libs/qt)"
+msgstr ""
+
+#: ../../client/equo.py:266
+msgid "add vote for the specified package key (example: x11-libs/qt)"
+msgstr ""
+
+#: ../../client/equo.py:269
 msgid "handles Entropy cache"
 msgstr "gestiona la memòria de cau de Entropy"
 
-#: ../../client/equo.py:257
+#: ../../client/equo.py:270
 msgid "clean Entropy cache"
 msgstr "esborra la memòria de cau de Entropy"
 
-#: ../../client/equo.py:258
+#: ../../client/equo.py:271
 msgid "regenerate Entropy cache"
 msgstr "regenera la memòria de cau de Entropy"
 
-#: ../../client/equo.py:262
+#: ../../client/equo.py:275
 msgid "remove downloaded packages and clean temp. directories"
 msgstr "elimina els paquets baixats i esborra els directoris temporals"
 
-#: ../../client/equo.py:264
+#: ../../client/equo.py:277
 msgid "show system information"
 msgstr "mostra informació del sistema"
 
-#: ../../client/equo.py:347
+#: ../../client/equo.py:373
 msgid "Caching equo conf"
 msgstr "S'està capturant equo conf"
 
-#: ../../client/equo.py:359
+#: ../../client/equo.py:385
 msgid "Caching not run."
 msgstr "No s'ha executat la captura"
 
-#: ../../client/equo.py:361
+#: ../../client/equo.py:387
 msgid "Caching complete."
 msgstr "La captura de fitxers ha acabat"
 
-#: ../../client/equo.py:366
+#: ../../client/equo.py:392
 #: ../../entropy-notification-applet/src/etp_applet.py:699
 msgid "There are"
 msgstr "Hi ha"
 
-#: ../../client/equo.py:368
+#: ../../client/equo.py:394
 msgid "configuration file(s) needing update"
 msgstr "fitxer(s) de configuració que cal actualitzar"
 
-#: ../../client/equo.py:371
+#: ../../client/equo.py:397
 msgid "Please run"
 msgstr "Si us plau executeu"
 
-#: ../../client/equo.py:463 ../../client/equo.py:478 ../../client/equo.py:497
-#: ../../client/equo.py:507 ../../client/equo.py:516 ../../client/equo.py:525
-#: ../../client/equo.py:535
+#: ../../client/equo.py:496 ../../client/equo.py:511 ../../client/equo.py:530
+#: ../../client/equo.py:540 ../../client/equo.py:549 ../../client/equo.py:558
+#: ../../client/equo.py:568
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr "Heu d'instal·lar sys-apps/entropy-server. :) Feu-ho!"
 
-#: ../../client/equo.py:565
+#: ../../client/equo.py:598
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
@@ -3446,18 +3566,18 @@ msgstr ""
 "No s'ha trobat la base de dades de paquets o està malmesa. Si us plau, "
 "genereu-la usant les eines 'equo database'"
 
-#: ../../client/equo.py:568 ../../client/equo.py:572 ../../client/equo.py:575
-#: ../../client/equo.py:578 ../../client/equo.py:581
-#: ../../client/text_smart.py:120 ../../client/text_smart.py:263
-#: ../../client/text_smart.py:397
+#: ../../client/equo.py:601 ../../client/equo.py:605 ../../client/equo.py:608
+#: ../../client/equo.py:611 ../../client/equo.py:614 ../../client/equo.py:617
+#: ../../client/text_smart.py:123 ../../client/text_smart.py:267
+#: ../../client/text_smart.py:401
 msgid "Cannot continue"
 msgstr "No es pot continuar"
 
-#: ../../client/equo.py:586
+#: ../../client/equo.py:622
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr "No es pot continuar. El vostre disc dur probablement està malmès."
 
-#: ../../client/equo.py:597
+#: ../../client/equo.py:633
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
@@ -3465,7 +3585,7 @@ msgstr ""
 "El vostre disc dur està ple! Una altra vegada recordeu comprovar-ho abans de "
 "començar. No puc fer-hi res :-("
 
-#: ../../client/equo.py:609
+#: ../../client/equo.py:645
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
@@ -3473,22 +3593,22 @@ msgstr ""
 "Hola. Sóc el Gestor de Petades. Sento informar-vos que Equo ha petat. Mala "
 "sort."
 
-#: ../../client/equo.py:610
+#: ../../client/equo.py:646
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr ""
 "Hi ha una cosa que podeu fer, però, per ajudar a fer de Equo una aplicació "
 "millor."
 
-#: ../../client/equo.py:611
+#: ../../client/equo.py:647
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr "-- ENCARA QUE NO VULGUEU ENVIAR EL MATEIX INFORME DIVERSES VEGADES --"
 
-#: ../../client/equo.py:612
+#: ../../client/equo.py:648
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr "Ara us mostro el que ha passat. No us preocupeu, jo us ajudaré."
 
-#: ../../client/equo.py:638
+#: ../../client/equo.py:674
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
@@ -3496,7 +3616,7 @@ msgstr ""
 "Oh! No puc ni escriure a /tmp. Si us plau, copieu l'error i envieu-lo per "
 "correu electrònic a lxnay@sabayonlinux.org."
 
-#: ../../client/equo.py:642
+#: ../../client/equo.py:678
 msgid ""
 "Ok, back here. Let me see if you are connected to the Internet. Yes, I am "
 "blue now, so?"
@@ -3504,11 +3624,11 @@ msgstr ""
 "D'acord. Deixeu-me comprovar si esteu connectat a Internet. Sí, escric en "
 "blau, no?"
 
-#: ../../client/equo.py:646
+#: ../../client/equo.py:682
 msgid "Of course you are on the Internet..."
 msgstr "Efectivament esteu connectat a Internet..."
 
-#: ../../client/equo.py:647
+#: ../../client/equo.py:683
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
@@ -3518,11 +3638,11 @@ msgstr ""
 "   el vostre maquinari als meus creadors perquè em puguin arreglar? (Es "
 "registrarà la vostra IP)"
 
-#: ../../client/equo.py:649
+#: ../../client/equo.py:685
 msgid "Ok, ok ok ok... Sorry!"
 msgstr "D'acord, d'acord... Ho sento!"
 
-#: ../../client/equo.py:652
+#: ../../client/equo.py:688
 msgid ""
 "Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you "
 "want, mail the file to lxnay@sabayonlinux.org."
@@ -3530,7 +3650,7 @@ msgstr ""
 "Oh, no ho esteu! Bé, he escrit l'error a /tmp/equoerror.txt. Quan vulgueu, "
 "envieu el fitxer per correu electrònic a lxnay@sabayonlinux.org."
 
-#: ../../client/equo.py:655
+#: ../../client/equo.py:691
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
@@ -3538,19 +3658,19 @@ msgstr ""
 "Si voleu que us contactem (i us donem suport actiu), contesteu també les "
 "respostes de baix:"
 
-#: ../../client/equo.py:656
+#: ../../client/equo.py:692
 msgid "Your Full name:"
 msgstr "El vostre nom complet:"
 
-#: ../../client/equo.py:657
+#: ../../client/equo.py:693
 msgid "Your E-Mail address:"
 msgstr "La vostra adreça de correu electrònic:"
 
-#: ../../client/equo.py:658
+#: ../../client/equo.py:694
 msgid "What you were doing:"
 msgstr "El que estàveu fent:"
 
-#: ../../client/equo.py:664
+#: ../../client/equo.py:700
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
@@ -3558,7 +3678,7 @@ msgstr ""
 "Moltes gràcies. El registre d'error s'ha enviat correctament i esperem que "
 "el problema s'arregli el més aviat possible."
 
-#: ../../client/equo.py:666
+#: ../../client/equo.py:702
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -3723,319 +3843,319 @@ msgstr "Únics fitxers a actualitzar"
 msgid "Unique files that would be automerged"
 msgstr "Únics fitxers a combinar automàticament"
 
-#: ../../client/text_query.py:111 ../../client/text_query.py:697
+#: ../../client/text_query.py:114 ../../client/text_query.py:700
 msgid "Searching"
 msgstr "S'està cercant"
 
-#: ../../client/text_query.py:135 ../../client/text_query.py:190
-#: ../../client/text_query.py:257 ../../client/text_query.py:728
-#: ../../client/text_query.py:775 ../../client/text_query.py:822
-#: ../../client/text_query.py:865 ../../client/text_query.py:911
-#: ../../client/text_query.py:971 ../../server/server_query.py:96
+#: ../../client/text_query.py:138 ../../client/text_query.py:193
+#: ../../client/text_query.py:260 ../../client/text_query.py:731
+#: ../../client/text_query.py:778 ../../client/text_query.py:825
+#: ../../client/text_query.py:868 ../../client/text_query.py:914
+#: ../../client/text_query.py:974 ../../server/server_query.py:96
 msgid "Keyword"
 msgstr "Keyword"
 
-#: ../../client/text_query.py:136 ../../client/text_query.py:191
-#: ../../client/text_query.py:267 ../../client/text_query.py:315
-#: ../../client/text_query.py:355 ../../client/text_query.py:399
-#: ../../client/text_query.py:445 ../../client/text_query.py:729
-#: ../../client/text_query.py:776 ../../client/text_query.py:823
-#: ../../client/text_query.py:866 ../../client/text_query.py:912
-#: ../../client/text_query.py:972 ../../server/server_query.py:97
+#: ../../client/text_query.py:139 ../../client/text_query.py:194
+#: ../../client/text_query.py:270 ../../client/text_query.py:318
+#: ../../client/text_query.py:358 ../../client/text_query.py:402
+#: ../../client/text_query.py:448 ../../client/text_query.py:732
+#: ../../client/text_query.py:779 ../../client/text_query.py:826
+#: ../../client/text_query.py:869 ../../client/text_query.py:915
+#: ../../client/text_query.py:975 ../../server/server_query.py:97
 msgid "Found"
 msgstr "S'han trobat"
 
-#: ../../client/text_query.py:136 ../../client/text_query.py:268
-#: ../../client/text_query.py:729 ../../client/text_query.py:776
-#: ../../client/text_query.py:823 ../../client/text_query.py:866
-#: ../../client/text_query.py:912 ../../client/text_query.py:972
+#: ../../client/text_query.py:139 ../../client/text_query.py:271
+#: ../../client/text_query.py:732 ../../client/text_query.py:779
+#: ../../client/text_query.py:826 ../../client/text_query.py:869
+#: ../../client/text_query.py:915 ../../client/text_query.py:975
 #: ../../server/server_query.py:97
 msgid "entries"
 msgstr "entrades"
 
-#: ../../client/text_query.py:155
+#: ../../client/text_query.py:158
 msgid "Belong Search"
 msgstr "Pertanyen a la cerca"
 
-#: ../../client/text_query.py:211
+#: ../../client/text_query.py:214
 msgid "Depends Search"
 msgstr "Cerca de dependents"
 
-#: ../../client/text_query.py:258 ../../client/text_ui.py:1205
+#: ../../client/text_query.py:261 ../../client/text_ui.py:1205
 msgid "Matched"
 msgstr "Coincidents"
 
-#: ../../client/text_query.py:262 ../../client/text_query.py:1056
+#: ../../client/text_query.py:265 ../../client/text_query.py:1062
 #: ../../spritz/src/spritz.glade.h:53
 msgid "Masked"
 msgstr "Emmascarat"
 
-#: ../../client/text_query.py:264
+#: ../../client/text_query.py:267
 msgid "from repository"
 msgstr "del repositori"
 
-#: ../../client/text_query.py:266
+#: ../../client/text_query.py:269
 msgid "from installed packages database"
 msgstr "de la base de dades de paquets instal·lats"
 
-#: ../../client/text_query.py:292 ../../client/text_query.py:334
+#: ../../client/text_query.py:295 ../../client/text_query.py:337
 msgid "Needed Search"
 msgstr "Cerca de necessaris"
 
-#: ../../client/text_query.py:314
+#: ../../client/text_query.py:317
 msgid "Atom"
 msgstr "Àtom"
 
-#: ../../client/text_query.py:315
+#: ../../client/text_query.py:318
 msgid "libraries"
 msgstr "llibreries"
 
-#: ../../client/text_query.py:354
+#: ../../client/text_query.py:357
 msgid "Library"
 msgstr "Llibreria"
 
-#: ../../client/text_query.py:355 ../../client/text_query.py:399
+#: ../../client/text_query.py:358 ../../client/text_query.py:402
 msgid "packages"
 msgstr "paquets"
 
-#: ../../client/text_query.py:374
+#: ../../client/text_query.py:377
 msgid "Eclass Search"
 msgstr "Cerca Eclasses"
 
-#: ../../client/text_query.py:444 ../../client/text_query.py:1052
+#: ../../client/text_query.py:447 ../../client/text_query.py:1058
 #: ../../spritz/src/dialogs.py:617 ../../spritz/src/dialogs.py:623
-#: ../../spritz/src/spritz.py:1325 ../../spritz/src/views.py:453
+#: ../../spritz/src/spritz.py:1330 ../../spritz/src/views.py:453
 msgid "Package"
 msgstr "Paquet"
 
-#: ../../client/text_query.py:445
+#: ../../client/text_query.py:448
 msgid "files"
 msgstr "fitxers"
 
-#: ../../client/text_query.py:465
+#: ../../client/text_query.py:468
 msgid "Orphans Search"
 msgstr "Cerca d'orfes"
 
-#: ../../client/text_query.py:490
+#: ../../client/text_query.py:493
 msgid "Analyzing"
 msgstr "S'està analitzant"
 
-#: ../../client/text_query.py:501
+#: ../../client/text_query.py:504
 msgid "Analyzed directories"
 msgstr "Directoris analitzats"
 
-#: ../../client/text_query.py:502
+#: ../../client/text_query.py:505
 msgid "Masked directories"
 msgstr "Directoris emmascarats"
 
-#: ../../client/text_query.py:503
+#: ../../client/text_query.py:506
 msgid "Number of files collected on the filesystem"
 msgstr "Número de fitxers recollits del sistema de fitxers"
 
-#: ../../client/text_query.py:504
+#: ../../client/text_query.py:507
 msgid "Now looking into Installed Packages database"
 msgstr "Ara s'està cercant a la base de dades de paquets instal·lats"
 
-#: ../../client/text_query.py:516
+#: ../../client/text_query.py:519
 msgid "Intersecting with content of the package"
 msgstr "S'està encreuant amb el contingut del paquet"
 
-#: ../../client/text_query.py:532
+#: ../../client/text_query.py:535
 msgid "Intersection completed. Showing statistics"
 msgstr "L'encreuament ha acabat. Es mostren les estadístiques"
 
-#: ../../client/text_query.py:533
+#: ../../client/text_query.py:536
 msgid "Number of total files"
 msgstr "Número total de fitxers"
 
-#: ../../client/text_query.py:534
+#: ../../client/text_query.py:537
 msgid "Number of matching files"
 msgstr "Número de fitxers coincidents"
 
-#: ../../client/text_query.py:535
+#: ../../client/text_query.py:538
 msgid "Number of orphaned files"
 msgstr "Número de fitxers orfes"
 
-#: ../../client/text_query.py:540
+#: ../../client/text_query.py:543
 msgid "Writing file to disk"
 msgstr "S'està escrivint el fitxer al disc"
 
-#: ../../client/text_query.py:560
+#: ../../client/text_query.py:563
 msgid "Total wasted space"
 msgstr "Espai total malgastat"
 
-#: ../../client/text_query.py:589
+#: ../../client/text_query.py:592
 msgid "Removal Search"
 msgstr "Cerca d'eliminats"
 
-#: ../../client/text_query.py:599 ../../client/text_ui.py:360
+#: ../../client/text_query.py:602 ../../client/text_ui.py:360
 #: ../../client/text_ui.py:917 ../../server/server_reagent.py:354
 #: ../../server/server_reagent.py:399 ../../server/server_reagent.py:448
 msgid "No packages found"
 msgstr "No s'han trobat paquets"
 
-#: ../../client/text_query.py:604
+#: ../../client/text_query.py:607
 msgid "Calculating removal dependencies, please wait"
 msgstr "S'estan calculant les dependències d'eliminació, espereu si us plau"
 
-#: ../../client/text_query.py:615
+#: ../../client/text_query.py:618
 msgid "These are the packages that would added to the removal queue"
 msgstr "Aquests són els paquets que s'afegiran a la cua d'eliminació"
 
-#: ../../client/text_query.py:624 ../../client/text_smart.py:106
-#: ../../client/text_smart.py:254 ../../client/text_smart.py:387
+#: ../../client/text_query.py:627 ../../client/text_smart.py:109
+#: ../../client/text_smart.py:258 ../../client/text_smart.py:391
 #: ../../client/text_ui.py:477 ../../client/text_ui.py:618
 #: ../../client/text_ui.py:785 ../../client/text_ui.py:998
 msgid "from"
 msgstr "des de"
 
-#: ../../client/text_query.py:650
+#: ../../client/text_query.py:653
 msgid "Installed Search"
 msgstr "Cerca d'instal·lats"
 
-#: ../../client/text_query.py:661
+#: ../../client/text_query.py:664
 msgid "These are the installed packages"
 msgstr "Aquests són els paquets instal·lats"
 
-#: ../../client/text_query.py:750 ../../client/text_rescue.py:661
+#: ../../client/text_query.py:753 ../../client/text_rescue.py:667
 msgid "Matching"
 msgstr "Coincidents"
 
-#: ../../client/text_query.py:779
+#: ../../client/text_query.py:782
 msgid "No matches"
 msgstr "No coincidents"
 
-#: ../../client/text_query.py:802
+#: ../../client/text_query.py:805
 msgid "Slot Search"
 msgstr "Cerca per Slot"
 
-#: ../../client/text_query.py:846 ../../server/server_query.py:85
+#: ../../client/text_query.py:849 ../../server/server_query.py:85
 msgid "Tag Search"
 msgstr "Cerca per Tag"
 
-#: ../../client/text_query.py:889
+#: ../../client/text_query.py:892
 msgid "License Search"
 msgstr "Cerca per llicències"
 
-#: ../../client/text_query.py:932
+#: ../../client/text_query.py:935
 msgid "Description Search"
 msgstr "Cerca per descripció"
 
 #. client info
-#: ../../client/text_query.py:1036 ../../client/text_ui.py:387
+#: ../../client/text_query.py:1042 ../../client/text_ui.py:387
 #: ../../client/text_ui.py:416
 #: ../../entropy-notification-applet/src/etp_applet.py:868
 msgid "Not installed"
 msgstr "No instal·lat"
 
-#: ../../client/text_query.py:1037 ../../client/text_query.py:1038
+#: ../../client/text_query.py:1043 ../../client/text_query.py:1044
 msgid "N/A"
 msgstr "N/A"
 
-#: ../../client/text_query.py:1054
+#: ../../client/text_query.py:1060
 msgid "Category"
 msgstr "Categoria"
 
-#: ../../client/text_query.py:1055
+#: ../../client/text_query.py:1061
 msgid "Name"
 msgstr "Nom"
 
-#: ../../client/text_query.py:1057
+#: ../../client/text_query.py:1063
 #: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
 #: ../../spritz/src/spritz.glade.h:9
 msgid "Available"
 msgstr "Disponible"
 
-#: ../../client/text_query.py:1057 ../../client/text_query.py:1059
+#: ../../client/text_query.py:1063 ../../client/text_query.py:1065
 msgid "version"
 msgstr "Versió"
 
-#: ../../client/text_query.py:1059 ../../spritz/src/spritz.glade.h:47
+#: ../../client/text_query.py:1065 ../../spritz/src/spritz.glade.h:47
 msgid "Installed"
 msgstr "Instal·lat"
 
-#: ../../client/text_query.py:1061 ../../spritz/src/spritz.glade.h:92
+#: ../../client/text_query.py:1067 ../../spritz/src/spritz.glade.h:92
 msgid "Slot"
 msgstr "Slot"
 
-#: ../../client/text_query.py:1062
+#: ../../client/text_query.py:1068
 msgid "Size"
 msgstr "Mida"
 
-#: ../../client/text_query.py:1063
+#: ../../client/text_query.py:1069
 msgid "Download"
 msgstr "Baixada"
 
-#: ../../client/text_query.py:1064
+#: ../../client/text_query.py:1070
 msgid "Checksum"
 msgstr "Suma de verificació"
 
-#: ../../client/text_query.py:1066 ../../spritz/src/dialogs.py:131
+#: ../../client/text_query.py:1072 ../../spritz/src/dialogs.py:131
 msgid "Dependencies"
 msgstr "Dependències"
 
-#: ../../client/text_query.py:1070
+#: ../../client/text_query.py:1076
 msgid "Conflicts"
 msgstr "Conflicte"
 
-#: ../../client/text_query.py:1073
+#: ../../client/text_query.py:1079
 msgid "Homepage"
 msgstr "Pàgina inicial"
 
 #. print description
-#: ../../client/text_query.py:1077 ../../client/text_security.py:89
+#: ../../client/text_query.py:1083 ../../client/text_security.py:89
 #: ../../spritz/src/views.py:893 ../../spritz/src/views.py:1101
 #: ../../spritz/src/spritz.glade.h:24
 msgid "Description"
 msgstr "Descripció"
 
 #. print use flags
-#: ../../client/text_query.py:1079 ../../spritz/src/dialogs.py:115
+#: ../../client/text_query.py:1085 ../../spritz/src/dialogs.py:115
 msgid "USE flags"
 msgstr "USE Flags"
 
-#: ../../client/text_query.py:1083 ../../spritz/src/spritz.glade.h:15
+#: ../../client/text_query.py:1089 ../../spritz/src/spritz.glade.h:15
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/text_query.py:1084 ../../spritz/src/spritz.glade.h:14
+#: ../../client/text_query.py:1090 ../../spritz/src/spritz.glade.h:14
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/text_query.py:1085 ../../spritz/src/spritz.glade.h:17
+#: ../../client/text_query.py:1091 ../../spritz/src/spritz.glade.h:17
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
-#: ../../client/text_query.py:1089
+#: ../../client/text_query.py:1095
 msgid "Gentoo eclasses"
 msgstr "Gentoo Eclasses"
 
-#: ../../client/text_query.py:1091 ../../spritz/src/dialogs.py:91
+#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:91
 msgid "Sources"
 msgstr "Codis font"
 
-#: ../../client/text_query.py:1093
+#: ../../client/text_query.py:1099
 msgid "Source"
 msgstr "Codis font"
 
-#: ../../client/text_query.py:1094
+#: ../../client/text_query.py:1100
 msgid "Entry API"
 msgstr "API de Entropy"
 
-#: ../../client/text_query.py:1096
+#: ../../client/text_query.py:1102
 msgid "Compiled with"
 msgstr "Compilat per"
 
-#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:107
+#: ../../client/text_query.py:1103 ../../spritz/src/dialogs.py:107
 msgid "Keywords"
 msgstr "Paraules clau"
 
-#: ../../client/text_query.py:1098
+#: ../../client/text_query.py:1104
 msgid "Created"
 msgstr "Creat"
 
-#: ../../client/text_query.py:1099 ../../client/text_ui.py:781
-#: ../../spritz/src/dialogs.py:1047
+#: ../../client/text_query.py:1105 ../../client/text_ui.py:781
+#: ../../spritz/src/dialogs.py:1227
 msgid "License"
 msgstr "Llicència"
 
@@ -4101,21 +4221,21 @@ msgstr "Nom del Repositori"
 msgid "Repository database checksum"
 msgstr "Suma de verificació de la base de dades del repositori"
 
-#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1470
+#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1475
 #: ../../entropy-notification-applet/src/etp_applet.py:614
 msgid "No repositories specified in"
 msgstr "No hi ha repositoris especificats a"
 
-#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1474
+#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1479
 msgid "You are not connected to the Internet. You should."
 msgstr "No esteu connectat a Internet. Ho hauríeu d'estar."
 
-#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1477
+#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1482
 #: ../../entropy-notification-applet/src/etp_applet.py:622
 msgid "Unhandled exception"
 msgstr "Excepció no suportada"
 
-#: ../../client/text_rescue.py:42 ../../client/text_smart.py:138
+#: ../../client/text_rescue.py:42 ../../client/text_smart.py:141
 msgid "Source Package Manager backend not available"
 msgstr "L'execució en segon pla del Gestor de Paquets Font no està disponible"
 
@@ -4177,12 +4297,12 @@ msgid "Transductingactioningintactering databases"
 msgstr "S'està transductingactioningintactering les bases de dades"
 
 #: ../../client/text_rescue.py:155 ../../client/text_rescue.py:200
-#: ../../client/text_rescue.py:565
+#: ../../client/text_rescue.py:571
 msgid "An error occured while analyzing"
 msgstr "S'ha produït un error mentre s'estava analitzant"
 
 #: ../../client/text_rescue.py:156 ../../client/text_rescue.py:201
-#: ../../client/text_rescue.py:566
+#: ../../client/text_rescue.py:572
 msgid "Exception"
 msgstr "Excepció"
 
@@ -4293,7 +4413,7 @@ msgstr "S'han trobat %s paquets"
 msgid "Filling database"
 msgstr "S'està omplint la base de dades"
 
-#: ../../client/text_rescue.py:354 ../../client/text_rescue.py:538
+#: ../../client/text_rescue.py:354 ../../client/text_rescue.py:544
 msgid "Adding"
 msgstr "S'està afegint"
 
@@ -4372,60 +4492,60 @@ msgstr "Algú ha eliminat aquests paquets"
 msgid "They would be removed from the system database"
 msgstr "S'eliminaran de la base de dades del sistema"
 
-#: ../../client/text_rescue.py:495
+#: ../../client/text_rescue.py:501
 msgid "Continue with removal ?"
 msgstr "Voleu continuar amb l'eliminació?"
 
-#: ../../client/text_rescue.py:512
+#: ../../client/text_rescue.py:518
 msgid "Database removal complete"
 msgstr "S'ha eliminat la base de dades"
 
-#: ../../client/text_rescue.py:516
+#: ../../client/text_rescue.py:522
 msgid "Someone added these packages"
 msgstr "Algú ha afegit aquests paquets"
 
-#: ../../client/text_rescue.py:517
+#: ../../client/text_rescue.py:523
 msgid "They would be added to the system database"
 msgstr "S'afegiran a la base de dades del sistema"
 
-#: ../../client/text_rescue.py:523
+#: ../../client/text_rescue.py:529
 msgid "Continue with adding ?"
 msgstr "Voleu continuar amb afegir?"
 
-#: ../../client/text_rescue.py:586
+#: ../../client/text_rescue.py:592
 msgid "Database update completed"
 msgstr "S'ha completat l'actualització de la base de dades"
 
-#: ../../client/text_rescue.py:604 ../../client/text_smart.py:32
+#: ../../client/text_rescue.py:610 ../../client/text_smart.py:32
 msgid "You are not"
 msgstr "No sou"
 
-#: ../../client/text_rescue.py:620
+#: ../../client/text_rescue.py:626
 msgid "Looking for old Python directories..."
 msgstr "S'estan cercant directoris antics de Python..."
 
-#: ../../client/text_rescue.py:623
+#: ../../client/text_rescue.py:629
 msgid "Your Python installation seems fine."
 msgstr "La instal·lació de Python sembla correcta."
 
-#: ../../client/text_rescue.py:626
+#: ../../client/text_rescue.py:632
 msgid "Multiple Python directories found:"
 msgstr "S'han trobat diversos directoris de Python:"
 
-#: ../../client/text_rescue.py:640
+#: ../../client/text_rescue.py:646
 msgid "There are no files belonging to your old Python installation in"
 msgstr ""
 "No hi ha fitxers que pertanyin a la vostra antiga instal·lació de Python a"
 
-#: ../../client/text_rescue.py:647
+#: ../../client/text_rescue.py:653
 msgid "These are the installed packages with files in:"
 msgstr "Aquests són els paquets instal·lats amb fitxers a:"
 
-#: ../../client/text_rescue.py:658
+#: ../../client/text_rescue.py:664
 msgid "Searching inside available repositories"
 msgstr "S'està cercant en els repositoris disponibles"
 
-#: ../../client/text_rescue.py:670
+#: ../../client/text_rescue.py:676
 msgid ""
 "There are no files belonging to your old Python installation stored in the "
 "repositories for"
@@ -4519,144 +4639,144 @@ msgstr "S'estan calculant les actualitzacions de seguretat"
 msgid "All the available updates have been already installed"
 msgstr "Totes les actualitzacions disponibles ja s'han instal·lat"
 
-#: ../../client/text_smart.py:72 ../../client/text_smart.py:129
-#: ../../client/text_smart.py:232 ../../client/text_smart.py:360
+#: ../../client/text_smart.py:75 ../../client/text_smart.py:132
+#: ../../client/text_smart.py:236 ../../client/text_smart.py:364
 msgid "No packages specified"
 msgstr "No s'han especificat paquets"
 
-#: ../../client/text_smart.py:91 ../../client/text_smart.py:241
-#: ../../client/text_smart.py:374
+#: ../../client/text_smart.py:94 ../../client/text_smart.py:245
+#: ../../client/text_smart.py:378
 msgid "Cannot find"
 msgstr "No es pot trobar"
 
-#: ../../client/text_smart.py:94 ../../client/text_smart.py:244
-#: ../../client/text_smart.py:377
+#: ../../client/text_smart.py:97 ../../client/text_smart.py:248
+#: ../../client/text_smart.py:381
 msgid "No valid packages specified"
 msgstr "No s'han especificat paquets vàlids"
 
 #. print the list
-#: ../../client/text_smart.py:98
+#: ../../client/text_smart.py:101
 msgid "This is the list of the packages that would be quickpkg'd"
 msgstr ""
 "Aquesta és la llista de paquets que es s'empaquetaran ràpidament (quickpkg)"
 
-#: ../../client/text_smart.py:106
+#: ../../client/text_smart.py:109
 #: ../../entropy-notification-applet/src/etp_applet.py:891
 msgid "installed"
 msgstr "instal·lat"
 
-#: ../../client/text_smart.py:109
+#: ../../client/text_smart.py:112
 msgid "Would you like to recompose the selected packages ?"
 msgstr "Voleu recompondre els paquets seleccionats?"
 
-#: ../../client/text_smart.py:114
+#: ../../client/text_smart.py:117
 msgid "Compressing"
 msgstr "S'està comprimint"
 
-#: ../../client/text_smart.py:119
+#: ../../client/text_smart.py:122
 msgid "Error while creating package for"
 msgstr "Error en crear el paquet per"
 
-#: ../../client/text_smart.py:123
+#: ../../client/text_smart.py:126
 msgid "Saved in"
 msgstr "S'ha desat a"
 
-#: ../../client/text_smart.py:144
+#: ../../client/text_smart.py:147
 msgid "directory does not exist"
 msgstr "el directori no existeix"
 
-#: ../../client/text_smart.py:153 ../../client/text_ui.py:344
-#: ../../spritz/src/spritz.py:609
+#: ../../client/text_smart.py:156 ../../client/text_ui.py:344
+#: ../../spritz/src/spritz.py:614
 msgid "is not a valid Entropy package"
 msgstr "no és un paquet vàlid de Entropy"
 
-#: ../../client/text_smart.py:169
+#: ../../client/text_smart.py:172
 msgid "Using branch"
 msgstr "S'està usant la branca"
 
-#: ../../client/text_smart.py:198
+#: ../../client/text_smart.py:202
 msgid "Inflated package"
 msgstr "Paquets inflats"
 
-#: ../../client/text_smart.py:206
+#: ../../client/text_smart.py:210
 msgid "Deflating"
 msgstr "S'està desinflant"
 
-#: ../../client/text_smart.py:211
+#: ../../client/text_smart.py:215
 msgid "Deflated package"
 msgstr "Paquet desinflats"
 
-#: ../../client/text_smart.py:219
+#: ../../client/text_smart.py:223
 msgid "Extracting Entropy metadata from"
 msgstr "S'estan extraient metadades d'Entropy de"
 
-#: ../../client/text_smart.py:225
+#: ../../client/text_smart.py:229
 msgid "Extracted Entropy metadata from"
 msgstr "S'han extret metadades d'Entropy de"
 
 #. print the list
-#: ../../client/text_smart.py:248
+#: ../../client/text_smart.py:252
 msgid "This is the list of the packages that would be merged into a single one"
 msgstr "Aquesta és la llista de paquets que es combinaran en un sol"
 
-#: ../../client/text_smart.py:256 ../../client/text_smart.py:389
+#: ../../client/text_smart.py:260 ../../client/text_smart.py:393
 msgid "Would you like to create the packages above ?"
 msgstr "Voleu crear els paquets de més amunt?"
 
-#: ../../client/text_smart.py:260
+#: ../../client/text_smart.py:264
 msgid "Creating merged Smart Package"
 msgstr "S'està creant el Smart Package combinat"
 
-#: ../../client/text_smart.py:304
+#: ../../client/text_smart.py:308
 msgid "collecting Entropy metadata"
 msgstr "S'estan recollint metadades d'Entropy"
 
-#: ../../client/text_smart.py:332
+#: ../../client/text_smart.py:336
 msgid "Unpack failed due to unknown reasons"
 msgstr "El desempaquetat ha fallat per causes desconegudes"
 
-#: ../../client/text_smart.py:337
+#: ../../client/text_smart.py:341
 msgid "Compressing smart package"
 msgstr "S'està comprimint el Smart Package"
 
-#: ../../client/text_smart.py:344
+#: ../../client/text_smart.py:348
 msgid "Compression failed due to unknown reasons"
 msgstr "La compressió ha fallat per causes desconegudes"
 
-#: ../../client/text_smart.py:348
+#: ../../client/text_smart.py:352
 msgid "Compressed file does not exist"
 msgstr "El fitxer comprimit no existeix"
 
-#: ../../client/text_smart.py:365
+#: ../../client/text_smart.py:369
 msgid "Cannot find G++ compiler"
 msgstr "No es pot trobar el compilador de G++"
 
 #. print the list
-#: ../../client/text_smart.py:381
+#: ../../client/text_smart.py:385
 msgid "This is the list of the packages that would be worked out"
 msgstr "Aquesta és la llista de paquets que s'expandirà"
 
-#: ../../client/text_smart.py:394
+#: ../../client/text_smart.py:398
 msgid "Creating Smart Application from"
 msgstr "S'està creant un formulari de Smart Application"
 
-#: ../../client/text_smart.py:421
+#: ../../client/text_smart.py:425
 msgid "Missing dependencies"
 msgstr "Dependències perdudes"
 
-#: ../../client/text_smart.py:428
+#: ../../client/text_smart.py:432
 msgid "This is the list of the dependencies that would be included"
 msgstr "Aquesta és la llista de dependències que s'inclouran"
 
-#: ../../client/text_smart.py:449
+#: ../../client/text_smart.py:453
 msgid "Unpacking the main package"
 msgstr "S'està desempaquetant el paquet principal"
 
-#: ../../client/text_smart.py:470
+#: ../../client/text_smart.py:474
 msgid "Unpacking dependency package"
 msgstr "S'estan desempaquetant els paquets de dependències"
 
-#: ../../client/text_smart.py:568
+#: ../../client/text_smart.py:572
 msgid "Compressing smart application"
 msgstr "S'està comprimint la Smart Application"
 
@@ -4764,7 +4884,7 @@ msgstr "volíeu dir(tm)"
 msgid "one of these below?"
 msgstr "un d'aquests de baix?"
 
-#: ../../client/text_ui.py:346 ../../spritz/src/spritz.py:611
+#: ../../client/text_ui.py:346 ../../spritz/src/spritz.py:616
 msgid "is not compiled with the same architecture of the system"
 msgstr "no està compilat per la mateixa arquitectura que el vostre sistema"
 
@@ -5204,12 +5324,6 @@ msgstr "No s'han especificat repositoris vàlids."
 msgid "Enabling"
 msgstr "S'està habilitant"
 
-#: ../../server/server_reagent.py:82 ../../server/server_reagent.py:85
-#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:97
-#: ../../server/server_reagent.py:123
-msgid "repository"
-msgstr "repositori"
-
 #: ../../server/server_reagent.py:85 ../../spritz/src/dialogs.py:455
 msgid "Enabled"
 msgstr "Habilitat"
@@ -5446,15 +5560,24 @@ msgid "About"
 msgstr "Quant a"
 
 #: ../../spritz/src/dialogs.py:974
-msgid "Hey!"
-msgstr "Ep!"
-
-#: ../../spritz/src/dialogs.py:978
 msgid "Spritz Question"
 msgstr "Pregunta de Spritz"
 
+#: ../../spritz/src/dialogs.py:979
+msgid "Hey!"
+msgstr "Ep!"
+
+#: ../../spritz/src/dialogs.py:1021
+msgid "Please fill the following form"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1077
+#, fuzzy
+msgid "Invalid entry"
+msgstr "Rerefons invàlid"
+
 #. new
-#: ../../spritz/src/dialogs.py:1050
+#: ../../spritz/src/dialogs.py:1230
 msgid "Accepted"
 msgstr "Acceptat"
 
@@ -5569,8 +5692,8 @@ msgstr "Aquests paquets s'eliminaran"
 msgid "Try clicking the %s button in the %s page"
 msgstr "Proveu fent clic al botó %s a la pàgina %s"
 
-#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:432
-#: ../../spritz/src/spritz.py:465
+#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:434
+#: ../../spritz/src/spritz.py:467
 msgid "Update Repositories"
 msgstr "Actualitza els repositoris"
 
@@ -5582,203 +5705,203 @@ msgstr "No hi ha actualitzacions disponibles"
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr "Sembla que el vostre sistema està actualitzat. Bé!"
 
-#: ../../spritz/src/spritz.py:137
+#: ../../spritz/src/spritz.py:139
 msgid "The chosen package is not vulnerable"
 msgstr "El paquet seleccionat no és vulnerable"
 
-#: ../../spritz/src/spritz.py:145
+#: ../../spritz/src/spritz.py:147
 msgid "Packages in Advisory have been queued."
 msgstr "Els paquets d'avisos s'han posat a la cua d'actualització."
 
-#: ../../spritz/src/spritz.py:160
+#: ../../spritz/src/spritz.py:162
 msgid "Packages in all Advisories have been queued."
 msgstr "Els paquets de tots els avisos s'han posat a la cua d'actualització."
 
-#: ../../spritz/src/spritz.py:172
+#: ../../spritz/src/spritz.py:174
 msgid "Packages not found in repositories, try again later."
 msgstr "No s'han trobat els paquets en els repositoris. Intenteu-ho més tard."
 
-#: ../../spritz/src/spritz.py:258
+#: ../../spritz/src/spritz.py:260
 msgid "Branch switching"
 msgstr "Selector de branca"
 
-#: ../../spritz/src/spritz.py:258
+#: ../../spritz/src/spritz.py:260
 msgid "Enter a valid branch you want to switch to"
 msgstr "Introduïu la branca que voleu seleccionar"
 
-#: ../../spritz/src/spritz.py:261
+#: ../../spritz/src/spritz.py:263
 msgid "The selected branch is not available."
 msgstr "La branca seleccionada no està disponible."
 
-#: ../../spritz/src/spritz.py:264
+#: ../../spritz/src/spritz.py:266
 msgid "New branch is"
 msgstr "La nova branca és"
 
-#: ../../spritz/src/spritz.py:264
+#: ../../spritz/src/spritz.py:266
 msgid "It is suggested to synchronize repositories"
 msgstr "És recomanable que sincronitzeu els repositoris"
 
-#: ../../spritz/src/spritz.py:308 ../../spritz/src/spritz.py:330
+#: ../../spritz/src/spritz.py:310 ../../spritz/src/spritz.py:332
 msgid "Insert URL"
 msgstr "Escriviu l'adreça URL"
 
-#: ../../spritz/src/spritz.py:308 ../../spritz/src/spritz.py:330
+#: ../../spritz/src/spritz.py:310 ../../spritz/src/spritz.py:332
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Introduïu una rèplica de baixada HTTP o FTP"
 
-#: ../../spritz/src/spritz.py:313
+#: ../../spritz/src/spritz.py:315
 msgid "You must enter either a HTTP or a FTP url."
 msgstr "Heu d'introduir una adreça HTTP o FTP."
 
-#: ../../spritz/src/spritz.py:367 ../../spritz/src/spritz.py:435
+#: ../../spritz/src/spritz.py:369 ../../spritz/src/spritz.py:437
 msgid "Wrong entries, errors"
 msgstr "Entrades incorrectes, errors"
 
-#: ../../spritz/src/spritz.py:379 ../../spritz/src/spritz.py:432
+#: ../../spritz/src/spritz.py:381 ../../spritz/src/spritz.py:434
 #: ../../spritz/src/views.py:1059
 msgid "You should press the button"
 msgstr "És recomanable que premeu el botó"
 
-#: ../../spritz/src/spritz.py:379 ../../spritz/src/spritz.py:465
+#: ../../spritz/src/spritz.py:381 ../../spritz/src/spritz.py:467
 #: ../../spritz/src/views.py:1059
 msgid "Regenerate Cache"
 msgstr "Regenera la memòria de cau"
 
-#: ../../spritz/src/spritz.py:379 ../../spritz/src/spritz.py:432
-#: ../../spritz/src/spritz.py:465 ../../spritz/src/views.py:1059
+#: ../../spritz/src/spritz.py:381 ../../spritz/src/spritz.py:434
+#: ../../spritz/src/spritz.py:467 ../../spritz/src/views.py:1059
 msgid "now"
 msgstr "ara"
 
-#: ../../spritz/src/spritz.py:385
+#: ../../spritz/src/spritz.py:387
 msgid "No Repository Identifier"
 msgstr "No hi ha identificador de repositori"
 
-#: ../../spritz/src/spritz.py:388
+#: ../../spritz/src/spritz.py:390
 msgid "Duplicated Repository Identifier"
 msgstr "Identificador de repositori duplicat"
 
-#: ../../spritz/src/spritz.py:392
+#: ../../spritz/src/spritz.py:394
 msgid "No download mirrors"
 msgstr "No hi ha rèpliques de baixada"
 
-#: ../../spritz/src/spritz.py:394
+#: ../../spritz/src/spritz.py:396
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 "L'adreça URL de la base de dades ha de començar per http:// ftp:// o per "
 "file://"
 
-#: ../../spritz/src/spritz.py:402
+#: ../../spritz/src/spritz.py:404
 msgid "Repository Services Port not valid"
 msgstr "Port de serveis de repositoris no vàlid"
 
-#: ../../spritz/src/spritz.py:410
+#: ../../spritz/src/spritz.py:412
 #, fuzzy
 msgid "Secure Services Port not valid"
 msgstr "Port de serveis de repositoris no vàlid"
 
-#: ../../spritz/src/spritz.py:445
+#: ../../spritz/src/spritz.py:447
 msgid "Insert Repository"
 msgstr "Insereix repositori"
 
-#: ../../spritz/src/spritz.py:445
+#: ../../spritz/src/spritz.py:447
 msgid "Insert Repository identification string"
 msgstr "Inseriu la cadena d'identificació de repositori"
 
-#: ../../spritz/src/spritz.py:451
+#: ../../spritz/src/spritz.py:453
 msgid "This Repository identification string is malformed"
 msgstr "La cadena d'identificació del repositori està mal formada"
 
-#: ../../spritz/src/spritz.py:461
+#: ../../spritz/src/spritz.py:463
 msgid "You! Why do you want to remove the main repository ?"
 msgstr "Voleu esborrar el repositori principal? No és possible!"
 
-#: ../../spritz/src/spritz.py:465
+#: ../../spritz/src/spritz.py:467
 msgid "You must now either press the"
 msgstr "Heu de prémer"
 
-#: ../../spritz/src/spritz.py:465
+#: ../../spritz/src/spritz.py:467
 msgid "or the"
 msgstr "o el"
 
-#: ../../spritz/src/spritz.py:495
+#: ../../spritz/src/spritz.py:497
 msgid "Are you sure ?"
 msgstr "N'esteu segur?"
 
-#: ../../spritz/src/spritz.py:508
+#: ../../spritz/src/spritz.py:510
 msgid "Error saving parameter"
 msgstr "S'ha produït un error en desar un paràmetre"
 
-#: ../../spritz/src/spritz.py:509 ../../spritz/src/spritz.py:1172
+#: ../../spritz/src/spritz.py:511 ../../spritz/src/spritz.py:1177
 msgid "An issue occured while saving a preference"
 msgstr "S'ha produït un error mentre s'estava desant una preferència"
 
-#: ../../spritz/src/spritz.py:510 ../../spritz/src/spritz.py:1147
-#: ../../spritz/src/spritz.py:1173
+#: ../../spritz/src/spritz.py:512 ../../spritz/src/spritz.py:1152
+#: ../../spritz/src/spritz.py:1178
 msgid "Parameter"
 msgstr "Paràmetre"
 
-#: ../../spritz/src/spritz.py:510
+#: ../../spritz/src/spritz.py:512
 msgid "not saved"
 msgstr "no s'ha desat"
 
-#: ../../spritz/src/spritz.py:522 ../../spritz/src/spritz.py:528
-#: ../../spritz/src/spritz.py:534 ../../spritz/src/spritz.py:558
-#: ../../spritz/src/spritz.py:568 ../../spritz/src/spritz.py:578
+#: ../../spritz/src/spritz.py:524 ../../spritz/src/spritz.py:530
+#: ../../spritz/src/spritz.py:536 ../../spritz/src/spritz.py:560
+#: ../../spritz/src/spritz.py:570 ../../spritz/src/spritz.py:580
 msgid "New"
 msgstr "Nou"
 
-#: ../../spritz/src/spritz.py:522 ../../spritz/src/spritz.py:528
-#: ../../spritz/src/spritz.py:534
+#: ../../spritz/src/spritz.py:524 ../../spritz/src/spritz.py:530
+#: ../../spritz/src/spritz.py:536
 msgid "Please insert a new path"
 msgstr "Si us plau, introduïu un nou camí"
 
-#: ../../spritz/src/spritz.py:558 ../../spritz/src/spritz.py:568
-#: ../../spritz/src/spritz.py:578
+#: ../../spritz/src/spritz.py:560 ../../spritz/src/spritz.py:570
+#: ../../spritz/src/spritz.py:580
 msgid "Please edit the selected path"
 msgstr "Si us plau, editeu el camí seleccionat"
 
-#: ../../spritz/src/spritz.py:595
+#: ../../spritz/src/spritz.py:600
 msgid "You have chosen to install this package"
 msgstr "Heu escollit instal·lar aquest paquet?"
 
-#: ../../spritz/src/spritz.py:597
+#: ../../spritz/src/spritz.py:602
 msgid "Are you supa sure?"
 msgstr "N'esteu totalment segur?"
 
-#: ../../spritz/src/spritz.py:615
+#: ../../spritz/src/spritz.py:620
 msgid "Cannot install"
 msgstr "No es pot instal·lar"
 
-#: ../../spritz/src/spritz.py:699
+#: ../../spritz/src/spritz.py:704
 msgid "Please select at least one repository"
 msgstr "Si us plau, seleccioneu com a mínim un repositori"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:735
+#: ../../spritz/src/spritz.py:740
 msgid "No packages in queue"
 msgstr "No hi ha paquets a la cua"
 
-#: ../../spritz/src/spritz.py:779
+#: ../../spritz/src/spritz.py:784
 msgid "Queue is too old. Cannot load."
 msgstr "La cua és massa antiga. No es pot carregar."
 
-#: ../../spritz/src/spritz.py:846
+#: ../../spritz/src/spritz.py:851
 msgid "impact"
 msgstr "impacte"
 
-#: ../../spritz/src/spritz.py:848
+#: ../../spritz/src/spritz.py:853
 msgid "access"
 msgstr "accés"
 
-#: ../../spritz/src/spritz.py:862
+#: ../../spritz/src/spritz.py:867
 msgid "Vulnerables"
 msgstr "Vulnerables"
 
-#: ../../spritz/src/spritz.py:866
+#: ../../spritz/src/spritz.py:871
 msgid "Unaffected"
 msgstr "No afectats"
 
-#: ../../spritz/src/spritz.py:987
+#: ../../spritz/src/spritz.py:992
 msgid ""
 "You have chosen to interrupt the queue processing. Doing so could be risky "
 "and you should let Entropy to close all its tasks. Are you sure you want it?"
@@ -5787,48 +5910,48 @@ msgstr ""
 "de deixar que Entropy tanqui totes les tasques. Esteu segur que és el que "
 "voleu?"
 
-#: ../../spritz/src/spritz.py:995
+#: ../../spritz/src/spritz.py:1000
 msgid "Aborting queue tasks."
 msgstr "S'estan aturant les tasques de la cua."
 
-#: ../../spritz/src/spritz.py:1001
+#: ../../spritz/src/spritz.py:1006
 msgid "Skipping current mirror."
 msgstr "S'està ometent la rèplica de descàrrega actual."
 
-#: ../../spritz/src/spritz.py:1047
+#: ../../spritz/src/spritz.py:1052
 msgid "Entropy resources are locked and not accessible. "
 msgstr "Els recursos de Entropy estan bloquejats i no són accessibles."
 
-#: ../../spritz/src/spritz.py:1063
+#: ../../spritz/src/spritz.py:1068
 msgid "Entropy Config Setup"
 msgstr "Instal·lació i configuració de Entropy"
 
-#: ../../spritz/src/spritz.py:1075
+#: ../../spritz/src/spritz.py:1080
 msgid "GUI Setup Completed"
 msgstr "S'ha configurat la GUI"
 
-#: ../../spritz/src/spritz.py:1108 ../../spritz/src/spritz.py:1117
-#: ../../spritz/src/spritz.py:1126
+#: ../../spritz/src/spritz.py:1113 ../../spritz/src/spritz.py:1122
+#: ../../spritz/src/spritz.py:1131
 msgid "Item"
 msgstr "Element"
 
-#: ../../spritz/src/spritz.py:1145 ../../spritz/src/spritz.py:1171
+#: ../../spritz/src/spritz.py:1150 ../../spritz/src/spritz.py:1176
 msgid "Error setting parameter"
 msgstr "S'ha produït un error en establir un paràmetre"
 
-#: ../../spritz/src/spritz.py:1146
+#: ../../spritz/src/spritz.py:1151
 msgid "An issue occured while loading a preference"
 msgstr "S'ha produït un error mentre s'estava carregant una preferència"
 
-#: ../../spritz/src/spritz.py:1147 ../../spritz/src/spritz.py:1173
+#: ../../spritz/src/spritz.py:1152 ../../spritz/src/spritz.py:1178
 msgid "must be of type"
 msgstr "ha de ser del tipus"
 
-#: ../../spritz/src/spritz.py:1147 ../../spritz/src/spritz.py:1173
+#: ../../spritz/src/spritz.py:1152 ../../spritz/src/spritz.py:1178
 msgid "got"
 msgstr "s'ha obtingut"
 
-#: ../../spritz/src/spritz.py:1312
+#: ../../spritz/src/spritz.py:1317
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
@@ -5836,105 +5959,105 @@ msgstr ""
 "Aquests paquets estan emmascarats, ja sigui per defecte o perquè vosaltres "
 "els n'heu. Si us plau, aneu amb compte."
 
-#: ../../spritz/src/spritz.py:1333
+#: ../../spritz/src/spritz.py:1338
 msgid "Bug"
 msgstr "Error"
 
-#: ../../spritz/src/spritz.py:1341
+#: ../../spritz/src/spritz.py:1346
 msgid "Reference"
 msgstr "Referència"
 
-#: ../../spritz/src/spritz.py:1399
+#: ../../spritz/src/spritz.py:1404
 msgid "Generating metadata. Please wait."
 msgstr "S'estan generant metadades. Espereu si us plau."
 
-#: ../../spritz/src/spritz.py:1429
+#: ../../spritz/src/spritz.py:1434
 msgid "Error loading advisories"
 msgstr "S'ha produït un error en la càrrega de les advertències"
 
-#: ../../spritz/src/spritz.py:1461
+#: ../../spritz/src/spritz.py:1466
 msgid "Initializing Repository module..."
 msgstr "S'està inicialitzant el mòdul del repositori..."
 
-#: ../../spritz/src/spritz.py:1467
+#: ../../spritz/src/spritz.py:1472
 msgid "You must run this application as root"
 msgstr "Heu d'executar aquesta aplicació com a usuari root"
 
-#: ../../spritz/src/spritz.py:1482
+#: ../../spritz/src/spritz.py:1487
 msgid "Errors updating repositories."
 msgstr "S'han produït errors durant l'actualització de repositoris."
 
-#: ../../spritz/src/spritz.py:1483
+#: ../../spritz/src/spritz.py:1488
 msgid "Please check logs below for more info"
 msgstr "Si us plau, reviseu els registres de baix per a més informació"
 
-#: ../../spritz/src/spritz.py:1486
+#: ../../spritz/src/spritz.py:1491
 msgid "Repositories updated successfully"
 msgstr "Els reporitoris s'han actualitzat correctament"
 
-#: ../../spritz/src/spritz.py:1489
+#: ../../spritz/src/spritz.py:1494
 msgid "All the repositories were already up to date."
 msgstr "Els repositoris ja estaven actualitzats."
 
-#: ../../spritz/src/spritz.py:1491
+#: ../../spritz/src/spritz.py:1496
 msgid "repositories were already up to date. Others have been updated."
 msgstr "els repositoris ja estaven actualitzats. La resta s'han actualitzat."
 
-#: ../../spritz/src/spritz.py:1494
+#: ../../spritz/src/spritz.py:1499
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "hauríeu d'actualitzar sys-apps/entropy el més aviat possible."
 
-#: ../../spritz/src/spritz.py:1499
+#: ../../spritz/src/spritz.py:1504
 msgid "Nothing to do. I am idle."
 msgstr "No s'està processant cap paquet. Aquí es mostra idle."
 
-#: ../../spritz/src/spritz.py:1500
+#: ../../spritz/src/spritz.py:1505
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr "No perdeu el temps aquí. Això només és un quadre de text variable"
 
-#: ../../spritz/src/spritz.py:1501
+#: ../../spritz/src/spritz.py:1506
 msgid "I am still alive and kickin'"
 msgstr "El programa respon correctament"
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1542
+#: ../../spritz/src/spritz.py:1549
 msgid "Generating Metadata, please wait."
 msgstr "S'estan generant metadades, espereu si us plau."
 
-#: ../../spritz/src/spritz.py:1543
+#: ../../spritz/src/spritz.py:1550
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr "Entropy està indexant els repositoris. Això trigarà uns segons"
 
-#: ../../spritz/src/spritz.py:1544
+#: ../../spritz/src/spritz.py:1551
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr "Mentre espereu, descanseu i mireu a fora. Potser està emplujat?"
 
-#: ../../spritz/src/spritz.py:1546 ../../spritz/src/spritz.py:1552
+#: ../../spritz/src/spritz.py:1553 ../../spritz/src/spritz.py:1559
 msgid "Calculating"
 msgstr "S'està calculant"
 
-#: ../../spritz/src/spritz.py:1564
+#: ../../spritz/src/spritz.py:1571
 msgid "Showing"
 msgstr "Es mostren"
 
-#: ../../spritz/src/spritz.py:1564
+#: ../../spritz/src/spritz.py:1571
 msgid "items"
 msgstr "element/s"
 
-#: ../../spritz/src/spritz.py:1583
+#: ../../spritz/src/spritz.py:1590
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 "S'està executant una altra instància de Entropy. No es pot processar la cua."
 
-#: ../../spritz/src/spritz.py:1588
+#: ../../spritz/src/spritz.py:1595
 msgid "Running tasks"
 msgstr "S'estan executant tasques"
 
-#: ../../spritz/src/spritz.py:1595
+#: ../../spritz/src/spritz.py:1602
 msgid "Processing Packages in queue"
 msgstr "S'estan processant els paquets de la cua"
 
-#: ../../spritz/src/spritz.py:1611
+#: ../../spritz/src/spritz.py:1618
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
@@ -5942,23 +6065,23 @@ msgstr ""
 "Atenció. S'ha produït un error mentre es processava la cua.\n"
 "Si us plau, mireu la terminal de processos."
 
-#: ../../spritz/src/spritz.py:1637
+#: ../../spritz/src/spritz.py:1644
 msgid "No packages selected"
 msgstr "No hi ha paquets seleccionats"
 
-#: ../../spritz/src/spritz.py:1695
+#: ../../spritz/src/spritz.py:1702
 msgid "Exception caught"
 msgstr "S'ha produït una excepció"
 
-#: ../../spritz/src/spritz.py:1696
+#: ../../spritz/src/spritz.py:1703
 msgid "Spritz crashed! An unexpected error occured."
 msgstr "L'Spritz ha petat! S'ha produït un error inesperat."
 
-#: ../../spritz/src/spritz.py:1705
+#: ../../spritz/src/spritz.py:1712
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr "El vostre informe s'ha enviat correctament! Moltes gràcies."
 
-#: ../../spritz/src/spritz.py:1707
+#: ../../spritz/src/spritz.py:1714
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "No es pot enviar l'informe. Potser no esteu connectat a Internet?"
 
