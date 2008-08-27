@@ -16852,8 +16852,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         metadata['docs'] = self.fetchall()
         if metadata['docs']:
             for mydict in metadata['docs']:
-                if not mydict.has_key('iddoc'): continue
-                mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
+                mydict = self._get_ugc_extra_metadata(mydict)
         metadata['vote'] = self.get_ugc_vote(pkgkey)
         metadata['downloads'] = self.get_ugc_downloads(pkgkey)
         return metadata
@@ -16879,29 +16878,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         metadata = self.fetchall()
         if metadata:
             for mydict in metadata:
-                mydict['store_url'] = None
-                if not mydict.has_key('iddoc'): continue
-                mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-                if not mydict.has_key('idkey'): continue
-                mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
-                # for binary files, get size too
-                mydict['size'] = 0
-                if not mydict.has_key('iddoctype'): continue
-                if not mydict.has_key('ddata'): continue
-                if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
-                    myfilename = mydict['ddata'].tostring()
-                    mypath = os.path.join(self.STORE_PATH,myfilename)
-                    if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
-                        try:
-                            mydict['size'] = int(os.stat(mypath)[6])
-                        except OSError:
-                            pass
-                    mydict['store_url'] = os.path.join(self.store_url,myfilename)
-                else:
-                    try:
-                        mydict['size'] = len(mydict['ddata'].tostring())
-                    except:
-                        pass
+                mydict = self._get_ugc_extra_metadata(mydict)
         return metadata
 
     def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
@@ -16910,10 +16887,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         metadata = self.fetchall()
         if metadata:
             for mydict in metadata:
-                if not mydict.has_key('iddoc'): continue
-                mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-                if not mydict.has_key('idkey'): continue
-                mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+                mydict = self._get_ugc_extra_metadata(mydict)
         return metadata
 
     def get_ugc_metadata_by_identifiers(self, identifiers):
@@ -16922,11 +16896,30 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         metadata = self.fetchall()
         if metadata:
             for mydict in metadata:
-                if not mydict.has_key('iddoc'): continue
-                mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-                if not mydict.has_key('idkey'): continue
-                mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+                mydict = self._get_ugc_extra_metadata(mydict)
         return metadata
+
+    def _get_ugc_extra_metadata(self, mydict):
+        mydict['store_url'] = None
+        mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
+        mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+        # for binary files, get size too
+        mydict['size'] = 0
+        if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
+            myfilename = mydict['ddata'].tostring()
+            mypath = os.path.join(self.STORE_PATH,myfilename)
+            if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
+                try:
+                    mydict['size'] = int(os.stat(mypath)[6])
+                except OSError:
+                    pass
+            mydict['store_url'] = os.path.join(self.store_url,myfilename)
+        else:
+            try:
+                mydict['size'] = len(mydict['ddata'].tostring())
+            except:
+                pass
+        return mydict
 
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
@@ -17648,7 +17641,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
         ugc = self._load_ugc_interface()
 
-        rslt = None
+        rslt = None, 'invalid doc type'
         if doc_type == self.DOC_TYPES['image']:
             rslt = ugc.insert_image(pkgkey, userid, username, stream_path, title, description, keywords)
         elif doc_type == self.DOC_TYPES['generic_file']:
@@ -20215,7 +20208,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         max_size = int(os.stat(file_path)[6])
         while chunk:
 
-            if not self.Service.quiet:
+            if (not self.Service.quiet) or self.Service.show_progress:
                 self.Entropy.updateProgress(
                     "%s, %s: %s" % (
                         blue(_("User Generated Content")),
@@ -20315,7 +20308,7 @@ class RepositorySocketClientInterface:
     import dumpTools
     import entropyTools
     import zlib
-    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, output_header = '', ssl = False): #, server_ca_cert = None, server_cert = None):
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False): #, server_ca_cert = None, server_cert = None):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
@@ -20337,6 +20330,7 @@ class RepositorySocketClientInterface:
         self.buffered_data = ''
         self.buffer_length = None
         self.quiet = quiet
+        self.show_progress = show_progress
         self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
         self.CmdInterface.output_header = self.output_header
@@ -20833,7 +20827,7 @@ class UGCClientAuthStore:
 class UGCClientInterface:
 
     ssl_connection = True
-    def __init__(self, EquoInstance, quiet = True):
+    def __init__(self, EquoInstance, quiet = True, show_progress = False):
 
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid EquoInterface based instance is needed")
@@ -20847,6 +20841,7 @@ class UGCClientInterface:
         self.store = UGCClientAuthStore()
         self.xcache = {}
         self.quiet = quiet
+        self.show_progress = show_progress
 
     def get_cache_item(self, repository, item):
         if repository not in self.xcache:
@@ -20874,7 +20869,13 @@ class UGCClientInterface:
         except (IndexError,KeyError,):
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 
-        srv = RepositorySocketClientInterface(self.Entropy, EntropyRepositorySocketClientCommands, ssl = self.ssl_connection, quiet = self.quiet)
+        srv = RepositorySocketClientInterface(
+            self.Entropy,
+            EntropyRepositorySocketClientCommands,
+            ssl = self.ssl_connection,
+            quiet = self.quiet,
+            show_progress = self.show_progress
+        )
         srv.connect(url, port)
         return srv
 
@@ -21067,6 +21068,28 @@ class UGCClientInterface:
 
     def get_docs(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
+
+    def send_document_autosense(self, repository, pkgkey, ugc_type, data, title, description, keywords):
+        if ugc_type == etpConst['ugc_doctypes']['generic_file']:
+            return self.send_file(repository, pkgkey, data, title, description, keywords)
+        elif ugc_type == etpConst['ugc_doctypes']['image']:
+            return self.send_image(repository, pkgkey, data, title, description, keywords)
+        elif ugc_type == etpConst['ugc_doctypes']['youtube_video']:
+            return self.send_youtube_video(repository, pkgkey, data, title, description, keywords)
+        elif ugc_type == etpConst['ugc_doctypes']['comments']:
+            return self.add_comment(repository, pkgkey, description, title, keywords)
+        return None,'type not supported locally'
+
+    def remove_document_autosense(self, repository, iddoc, ugc_type):
+        if ugc_type == etpConst['ugc_doctypes']['generic_file']:
+            return self.remove_file(repository, iddoc)
+        elif ugc_type == etpConst['ugc_doctypes']['image']:
+            return self.remove_image(repository, iddoc)
+        elif ugc_type == etpConst['ugc_doctypes']['youtube_video']:
+            return self.remove_youtube_video(repository, iddoc)
+        elif ugc_type == etpConst['ugc_doctypes']['comments']:
+            return self.remove_comment(repository, iddoc)
+        return None,'type not supported locally'
 
 class ServerMirrorsInterface:
 
