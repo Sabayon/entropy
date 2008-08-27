@@ -16879,6 +16879,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         metadata = self.fetchall()
         if metadata:
             for mydict in metadata:
+                mydict['store_url'] = None
                 if not mydict.has_key('iddoc'): continue
                 mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
                 if not mydict.has_key('idkey'): continue
@@ -16888,12 +16889,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 if not mydict.has_key('iddoctype'): continue
                 if not mydict.has_key('ddata'): continue
                 if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
-                    mypath = os.path.join(self.STORE_PATH,mydict['ddata'].tostring())
+                    myfilename = mydict['ddata'].tostring()
+                    mypath = os.path.join(self.STORE_PATH,myfilename)
                     if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
                         try:
                             mydict['size'] = int(os.stat(mypath)[6])
                         except OSError:
                             pass
+                    mydict['store_url'] = os.path.join(self.store_url,myfilename)
                 else:
                     try:
                         mydict['size'] = len(mydict['ddata'].tostring())
