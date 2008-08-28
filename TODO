@@ -6,21 +6,18 @@ TODO list
   - database backup tools
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
-  - handle multiple versions within the same slot
   - use expiration as a base to have and handle multiple packages in repo?
   - implement notice board
   - implement configuration files snapshot tool
   - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
   - documentation + man page
-  - packages.sabayonlinux.org interactivity (comments + images upload + connection to phpbb user db)
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - server-side: packages upload through ssh?
 
   Spritz:
-    - Popularity feature / Your Ego service
+    - UGC support
     - Category <-> Image dictionary (for the properties menu)
-    - Spritz related preferences
     - allow package remasking?
 
 Notes:
