@@ -17028,7 +17028,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             data = self.fetchone()
             if data['tot_downloads'] != None:
                 downloads = data['tot_downloads']
-            down_data[d_dict['key']] = downloads
+            down_data[d_dict['key']] = int(downloads)
         return down_data
 
     def get_iddoc_userid(self, iddoc):
