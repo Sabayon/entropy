@@ -12841,6 +12841,11 @@ class SocketHostInterface:
             if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
                 self.timed_out = False
+                def check_ssl_pending():
+                    if self.ssl:
+                        if self.request.pending() == 0:
+                            return True
+                    return False
 
                 try:
                     data = self.request.recv(1024)
@@ -12866,6 +12871,10 @@ class SocketHostInterface:
                         data = data[len(mystrlen)+1:]
                         self.data_counter -= len(data)
                         self.buffered_data += data
+
+                    do_quit = check_ssl_pending()
+                    if do_quit: return False
+
                     while self.data_counter > 0:
                         x = self.request.recv(1024)
                         xlen = len(x)
@@ -12873,6 +12882,10 @@ class SocketHostInterface:
                         self.buffered_data += x
                         if not xlen:
                             break
+
+                        do_quit = check_ssl_pending()
+                        if do_quit: return False
+
                     self.data_counter = None
                 except ValueError:
                     #self.entropyTools.printTraceback()
@@ -20523,18 +20536,34 @@ class RepositorySocketClientInterface:
         self.check_socket_connection()
         data = self.append_eos(data)
         try:
+
             if self.ssl and not self.pyopenssl:
                 try:
                     self.sock_conn.write(data)
                 except UnicodeEncodeError:
                     self.sock_conn.write(data.encode('utf-8'))
             else:
-                try:
-                    print self.sock_conn.sendall(data)
-                except UnicodeEncodeError:
-                    self.sock_conn.sendall(data.encode('utf-8'))
+                encode_done = False
+                mydata = data[:]
+                while 1:
+                    try:
+                        sent = self.sock_conn.send(mydata)
+                        print sent
+                        if sent == len(mydata):
+                            break
+                        mydata = mydata[sent:]
+                    except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError'],):
+                        continue
+                    except UnicodeEncodeError:
+                        if encode_done:
+                            raise
+                        mydata = mydata.encode('utf-8')
+                        encode_done = True
+                        continue
+
         except self.SSL_exceptions['Error'], e:
-            raise exceptionTools.SSLError('SSLError: %s' % (e,))
+            raise
+            #raise exceptionTools.SSLError('SSLError: %s' % (e,))
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -20575,8 +20604,8 @@ class RepositorySocketClientInterface:
 
             try:
 
-                print "pre",self.buffer_length
-                print "::::::::::::"
+                #print "pre",self.buffer_length
+                #print "::::::::::::"
                 data = do_receive()
                 print "---\\"
                 print len(data),self.buffer_length
