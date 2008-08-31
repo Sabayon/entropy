@@ -12847,6 +12847,8 @@ class SocketHostInterface:
                     if self.data_counter == None:
                         if data == '': # client wants to close
                             return True
+                        elif data == self.server.processor.HostInterface.answers['noop']:
+                            return False
                         elif len(data) < len(self.myeos):
                             self.server.processor.HostInterface.updateProgress(
                                 'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
@@ -20565,12 +20567,24 @@ class RepositorySocketClientInterface:
                 data = self.sock_conn.recv(1024)
             return data
 
+        def do_send():
+            if self.ssl and not self.pyopenssl:
+                self.sock_conn.sendall(self.answers['noop'])
+            else:
+                self.sock_conn.sendall(self.answers['noop'])
+
         myeos = self.answers['eos']
         while 1:
 
             try:
 
+                #print "pre",self.buffer_length
+                #print "::::::::::::"
                 data = do_receive()
+                #print "---\\"
+                #print len(data),self.buffer_length
+                #print repr(data)
+                #print "---/"
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -20650,6 +20664,8 @@ class RepositorySocketClientInterface:
                     )
                 return None
             except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],):
+                #print "wantread"
+                do_send()
                 continue
             except self.SSL_exceptions['ZeroReturnError']:
                 break

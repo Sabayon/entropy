@@ -789,7 +789,8 @@ def const_defaultSettings(rootdir):
                 'no': chr(0)+"NO"+chr(2), # not allowed
                 'cl': chr(0)+"CL"+chr(3), # close connection
                 'mcr': chr(0)+"MCR"+chr(4), # max connections reached
-                'eos': chr(0) # end of size
+                'eos': chr(0), # end of size,
+                'noop': chr(0)+"NOOP"+chr(0)
             },
         },
 
