@@ -1129,7 +1129,6 @@ class EquoInterface(TextInterface):
             mhash = "-1"
         return mhash
 
-
     def fetch_repository_if_not_available(self, reponame):
         if fetch_repository_if_not_available_cache.has_key(reponame):
             return fetch_repository_if_not_available_cache.get(reponame)
@@ -1145,6 +1144,24 @@ class EquoInterface(TextInterface):
                 rc = 0
         fetch_repository_if_not_available_cache[reponame] = rc
         return rc
+
+    def update_ugc_cache(self, repository):
+        if not self.UGC.is_repository_eapi3_aware(repository):
+            return None
+        status = True
+
+        votes_dict, err_msg = self.UGC.get_all_votes(repository)
+        if isinstance(votes_dict,dict):
+            self.UGC.save_vote_cache(repository, votes_dict)
+        else:
+            status = False
+
+        downloads_dict, err_msg = self.UGC.get_all_downloads(repository)
+        if isinstance(downloads_dict,dict):
+            self.UGC.save_downloads_cache(repository, downloads_dict)
+        else:
+            status = False
+        return status
 
     def atomMatch(          self,
                             atom,
@@ -2944,11 +2961,13 @@ class EquoInterface(TextInterface):
                             header = red("   ## ")
                         )
                         if (self.UGC != None) and (package_name != None):
+
                             def register_download(repository, package_name):
                                 try:
                                     self.UGC.add_download(repository, package_name)
                                 except:
-                                    raise
+                                    pass
+
                             task = self.entropyTools.parallelTask(register_download, repository, package_name)
                             task.parallel_wait()
                             task.start()
@@ -5724,6 +5743,7 @@ class RepoInterface:
         self.reset_dbformat_eapi(None)
         self.eapi3_socket = None
         self.current_repository_got_locked = False
+        self.updated_repos = set()
 
         # check etpRepositories
         if not etpRepositories:
@@ -6678,10 +6698,10 @@ class RepoInterface:
             # database is going to be updated
             self.dbupdated = True
             self.do_standard_items_download(repo)
-
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
+            self.updated_repos.add(repo)
             self.Entropy.cycleDone()
 
             # remove garbage
@@ -6703,6 +6723,8 @@ class RepoInterface:
             )
             if self.fetchSecurity:
                 self.do_update_security_advisories()
+            for repo in self.updated_repos:
+                self.Entropy.update_ugc_cache(repo)
 
         if self.syncErrors:
             self.Entropy.updateProgress(
@@ -17002,7 +17024,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if not keys_data: return down_data
         for d_dict in keys_data:
             downloads = 0
-            self.execute_query('SELECT count(`count`) as `tot_downloads` FROM entropy_downloads WHERE `idkey` = %s', (d_dict['idkey'],))
+            self.execute_query('SELECT sum(`count`) as `tot_downloads` FROM entropy_downloads WHERE `idkey` = %s', (d_dict['idkey'],))
             data = self.fetchone()
             if data['tot_downloads'] != None:
                 downloads = data['tot_downloads']
@@ -20367,7 +20389,7 @@ class RepositorySocketClientInterface:
     import dumpTools
     import entropyTools
     import zlib
-    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False): #, server_ca_cert = None, server_cert = None):
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25): #, server_ca_cert = None, server_cert = None):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
@@ -20393,7 +20415,7 @@ class RepositorySocketClientInterface:
         self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Entropy, self)
         self.CmdInterface.output_header = self.output_header
-        self.socket_timeout = 25
+        self.socket_timeout = socket_timeout
         self.socket.setdefaulttimeout(self.socket_timeout)
 
 
@@ -20911,6 +20933,100 @@ class UGCClientAuthStore:
         if repository in self.store:
             return self.store[repository]['username'],self.store[repository]['password']
 
+class UGCCacheInterface:
+
+    def __init__(self, UGCClientInstance):
+
+        if not isinstance(UGCClientInstance,UGCClientInterface):
+            mytxt = _("A valid UGCClientInterface based instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+
+        import dumpTools
+        self.dumpTools = dumpTools
+        self.Service = UGCClientInstance
+        self.xcache = {}
+
+    def _get_live_cache_item(self, repository, item):
+        if repository not in self.xcache:
+            return None
+        return self.xcache[repository].get(item)
+
+    def _set_live_cache_item(self, repository, item, obj):
+        if repository not in self.xcache:
+            self.xcache[repository] = {}
+        if type(obj) in (list,tuple,):
+            my_obj = obj[:]
+        elif type(obj) in (set,frozenset,dict,):
+            my_obj = obj.copy()
+        else:
+            my_obj = obj
+        self.xcache[repository][item] = my_obj
+
+    def _get_vote_cache_file(self, repository):
+        return etpCache['ugc_votes']+"/"+repository
+
+    def _get_downloads_cache_file(self, repository):
+        return etpCache['ugc_downloads']+"/"+repository
+
+    def update_vote_cache(self, repository, vote_dict):
+        cached = self.get_vote_cache(repository)
+        if cached == None:
+            cached = vote_dict.copy()
+        else:
+            cached.update(vote_dict)
+        self.save_vote_cache(repository,cached)
+
+    def update_downloads_cache(self, repository, down_dict):
+        cached = self.get_downloads_cache(repository)
+        if cached == None:
+            cached = down_dict.copy()
+        else:
+            cached.update(down_dict)
+        self.save_downloads_cache(repository,cached)
+
+    def get_vote_cache(self, repository):
+        cache_key = 'get_vote_cache_'+repository
+        cached = self._get_live_cache_item(repository, cache_key)
+        if cached != None:
+            return cached
+        cache_file = self._get_vote_cache_file(repository)
+        data = self.dumpTools.loadobj(cache_file)
+        if data != None:
+            self._set_live_cache_item(repository, cache_key, data)
+        return data
+
+    def get_downloads_cache(self, repository):
+        cache_file = self._get_downloads_cache_file(repository)
+        return self.dumpTools.loadobj(cache_file)
+
+    def save_vote_cache(self, repository, vote_dict):
+        cache_file = self._get_vote_cache_file(repository)
+        return self.dumpTools.dumpobj(cache_file, vote_dict)
+
+    def save_downloads_cache(self, repository, down_dict):
+        cache_file = self._get_downloads_cache_file(repository)
+        return self.dumpTools.dumpobj(cache_file, down_dict)
+
+    def get_package_vote(self, repository, pkgkey):
+        cache = self.get_vote_cache(repository)
+        if not cache:
+            return 0.0
+        elif not isinstance(cache,dict):
+            return 0.0
+        elif not cache.has_key(pkgkey):
+            return 0.0
+        return cache[pkgkey]
+
+    def get_package_downloads(self, repository, pkgkey):
+        cache = self.get_downloads_cache(repository)
+        if not cache:
+            return None
+        elif not isinstance(cache,dict):
+            return None
+        elif not cache.has_key(pkgkey):
+            return None
+        return cache[pkgkey]
+
 class UGCClientInterface:
 
     ssl_connection = True
@@ -20926,27 +21042,11 @@ class UGCClientInterface:
         self.struct = struct
         self.Entropy = EquoInstance
         self.store = UGCClientAuthStore()
-        self.xcache = {}
         self.quiet = quiet
         self.show_progress = show_progress
+        self.UGCCache = UGCCacheInterface(self)
 
-    def get_cache_item(self, repository, item):
-        if repository not in self.xcache:
-            return None
-        return self.xcache[repository].get(item)
-
-    def set_cache_item(self, repository, item, obj):
-        if repository not in self.xcache:
-            self.xcache[repository] = {}
-        if type(obj) in (list,tuple,):
-            my_obj = obj[:]
-        elif type(obj) in (set,frozenset,dict,):
-            my_obj = obj.copy()
-        else:
-            my_obj = obj
-        self.xcache[repository][item] = my_obj
-
-    def connect_to_service(self, repository):
+    def connect_to_service(self, repository, timeout = None):
         if repository not in etpRepositories:
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository is not available'),))
 
@@ -20957,22 +21057,23 @@ class UGCClientInterface:
         except (IndexError,KeyError,):
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 
-        srv = RepositorySocketClientInterface(
-            self.Entropy,
-            EntropyRepositorySocketClientCommands,
-            ssl = self.ssl_connection,
-            quiet = self.quiet,
-            show_progress = self.show_progress
-        )
+        args = [self.Entropy, EntropyRepositorySocketClientCommands]
+        kwargs = {
+            'ssl': self.ssl_connection,
+            'quiet': self.quiet,
+            'show_progress': self.show_progress
+        }
+        if timeout != None: kwargs['socket_timeout'] = timeout
+        srv = RepositorySocketClientInterface(*args,**kwargs)
         srv.connect(url, port)
         return srv
 
-    def get_service_connection(self, repository, check = True):
+    def get_service_connection(self, repository, check = True, timeout = None):
         if check:
             if not self.is_repository_eapi3_aware(repository):
                 return None
         try:
-            srv = self.connect_to_service(repository)
+            srv = self.connect_to_service(repository, timeout = timeout)
         except (exceptionTools.RepositoryError,exceptionTools.ConnectionError,):
             return None
         except (self.socket.error,self.struct.error,):
@@ -20981,11 +21082,11 @@ class UGCClientInterface:
 
     def is_repository_eapi3_aware(self, repository):
 
-        aware = self.get_cache_item(repository, 'is_repository_eapi3_aware')
+        aware = self.UGCCache._get_live_cache_item(repository, 'is_repository_eapi3_aware')
         if aware != None:
             return aware
 
-        srv = self.get_service_connection(repository, check = False)
+        srv = self.get_service_connection(repository, check = False, timeout = 3)
         if srv == None:
             aware = False
         else:
@@ -20997,7 +21098,7 @@ class UGCClientInterface:
             else:
                 aware = False
 
-        self.set_cache_item(repository, 'is_repository_eapi3_aware', aware)
+        self.UGCCache._set_live_cache_item(repository, 'is_repository_eapi3_aware', aware)
         return aware
 
     def read_login(self, repository):
@@ -21122,22 +21223,38 @@ class UGCClientInterface:
         return self.do_cmd(repository, True, "ugc_remove_comment", [iddoc], {})
 
     def add_vote(self, repository, pkgkey, vote):
-        return self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
+        voted, add_err_msg = self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
+        if voted: self.get_vote(repository, pkgkey)
+        return voted, add_err_msg
 
     def get_vote(self, repository, pkgkey):
-        return self.do_cmd(repository, False, "ugc_get_vote", [pkgkey], {})
+        vote, err_msg = self.do_cmd(repository, False, "ugc_get_vote", [pkgkey], {})
+        if isinstance(vote,float):
+            mydict = {pkgkey: vote}
+            self.UGCCache.update_vote_cache(repository, mydict)
+        return vote, err_msg
 
     def get_all_votes(self, repository):
-        return self.do_cmd(repository, False, "ugc_get_allvotes", [], {})
+        votes_dict, err_msg = self.do_cmd(repository, False, "ugc_get_allvotes", [], {})
+        if isinstance(votes_dict,dict):
+            self.UGCCache.update_vote_cache(repository, votes_dict)
+        return votes_dict, err_msg
 
     def add_download(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
 
     def get_downloads(self, repository, pkgkey):
-        return self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
+        downloads, err_msg = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
+        if downloads:
+            mydict = {pkgkey: downloads}
+            self.UGCCache.update_downloads_cache(repository, mydict)
+        return downloads, err_msg
 
-    def get_alldownloads(self, repository):
-        return self.do_cmd(repository, False, "ugc_get_alldownloads", [], {})
+    def get_all_downloads(self, repository):
+        down_dict, err_msg = self.do_cmd(repository, False, "ugc_get_alldownloads", [], {})
+        if isinstance(down_dict,dict):
+            self.UGCCache.update_downloads_cache(repository, down_dict)
+        return down_dict, err_msg
 
     def send_file(self, repository, pkgkey, file_path, title, description, keywords):
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, file_path, etpConst['ugc_doctypes']['generic_file'], title, description, keywords], {})

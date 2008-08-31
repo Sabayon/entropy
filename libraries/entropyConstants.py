@@ -404,6 +404,8 @@ etpCache = {
     'repolist': 'repos/repolist',
     'repository_server': 'reposerver/item',
     'eapi3_fetch': 'eapi3/segment_',
+    'ugc_votes': 'ugc/ugc_votes',
+    'ugc_downloads': 'ugc/ugc_downloads',
 }
 
 # ahahaha
