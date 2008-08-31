@@ -14189,7 +14189,10 @@ class SocketHostInterface:
         return self.sessions[session]['rc']
 
     def transmit(self, channel, data):
-        channel.sendall(self.append_eos(data))
+        if self.SSL:
+            channel.send(self.append_eos(data))
+        else:
+            channel.sendall(self.append_eos(data))
 
     def updateProgress(self, *args, **kwargs):
         message = args[0]
@@ -20037,7 +20040,16 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             session_id,
             'ugc:get_alldownloads',
         )
-        return self.do_generic_handler(cmd, session_id)
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
+        rc = self.do_generic_handler(cmd, session_id, compression = compression)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
+        return rc
 
     def ugc_do_vote(self, session_id, pkgkey, vote):
 
@@ -20067,7 +20079,16 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             session_id,
             'ugc:get_allvotes',
         )
-        return self.do_generic_handler(cmd, session_id)
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
+        rc = self.do_generic_handler(cmd, session_id, compression = compression)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
+        return rc
 
     def ugc_add_comment(self, session_id, pkgkey, comment, title, keywords):
 
@@ -20537,6 +20558,10 @@ class RepositorySocketClientInterface:
             try:
 
                 data = do_receive()
+                #print "---\\"
+                #print len(data),self.buffer_length
+                #print repr(data)
+                #print "---/"
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -20874,7 +20899,8 @@ class UGCClientInterface:
 
         try:
             url = etpRepositories[repository]['plain_database'].split("/")[2]
-            port = etpRepositories[repository]['ssl_service_port']
+            port = etpRepositories[repository]['service_port']
+            if self.ssl_connection: port = etpRepositories[repository]['ssl_service_port']
         except (IndexError,KeyError,):
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 
@@ -21046,7 +21072,10 @@ class UGCClientInterface:
         return self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
 
     def get_vote(self, repository, pkgkey):
-        return self.do_cmd(repository, True, "ugc_get_vote", [pkgkey], {})
+        return self.do_cmd(repository, False, "ugc_get_vote", [pkgkey], {})
+
+    def get_all_votes(self, repository):
+        return self.do_cmd(repository, False, "ugc_get_allvotes", [], {})
 
     def add_download(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
