@@ -14196,7 +14196,10 @@ class SocketHostInterface:
             encode_done = False
             while 1:
                 try:
-                    channel.send(mydata)
+                    sent = channel.send(mydata)
+                if sent == len(mydata):
+                    break
+                mydata = mydata[sent:]
                 except (self.SSL_exceptions['WantWriteError'],):
                     continue
                 except UnicodeEncodeError:
@@ -14205,7 +14208,7 @@ class SocketHostInterface:
                     mydata = mydata.encode('utf-8')
                     encode_done = True
                     continue
-                break
+                #break
         else:
             channel.sendall(self.append_eos(data))
 
@@ -20527,7 +20530,7 @@ class RepositorySocketClientInterface:
                     self.sock_conn.write(data.encode('utf-8'))
             else:
                 try:
-                    self.sock_conn.sendall(data)
+                    print self.sock_conn.sendall(data)
                 except UnicodeEncodeError:
                     self.sock_conn.sendall(data.encode('utf-8'))
         except self.SSL_exceptions['Error'], e:
@@ -20567,24 +20570,18 @@ class RepositorySocketClientInterface:
                 data = self.sock_conn.recv(1024)
             return data
 
-        def do_send():
-            if self.ssl and not self.pyopenssl:
-                self.sock_conn.sendall(self.answers['noop'])
-            else:
-                self.sock_conn.sendall(self.answers['noop'])
-
         myeos = self.answers['eos']
         while 1:
 
             try:
 
-                #print "pre",self.buffer_length
-                #print "::::::::::::"
+                print "pre",self.buffer_length
+                print "::::::::::::"
                 data = do_receive()
-                #print "---\\"
-                #print len(data),self.buffer_length
-                #print repr(data)
-                #print "---/"
+                print "---\\"
+                print len(data),self.buffer_length
+                print repr(data)
+                print "---/"
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -20664,8 +20661,6 @@ class RepositorySocketClientInterface:
                     )
                 return None
             except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],):
-                #print "wantread"
-                do_send()
                 continue
             except self.SSL_exceptions['ZeroReturnError']:
                 break
