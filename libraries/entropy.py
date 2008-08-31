@@ -14212,7 +14212,7 @@ class SocketHostInterface:
                     if sent == len(mydata):
                         break
                     mydata = mydata[sent:]
-                except (self.SSL_exceptions['WantWriteError'],):
+                except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError']):
                     continue
                 except UnicodeEncodeError:
                     if encode_done:
@@ -14220,7 +14220,6 @@ class SocketHostInterface:
                     mydata = mydata.encode('utf-8')
                     encode_done = True
                     continue
-                #break
         else:
             channel.sendall(self.append_eos(data))
 
@@ -20547,7 +20546,6 @@ class RepositorySocketClientInterface:
                 while 1:
                     try:
                         sent = self.sock_conn.send(mydata)
-                        print sent
                         if sent == len(mydata):
                             break
                         mydata = mydata[sent:]
@@ -20561,8 +20559,7 @@ class RepositorySocketClientInterface:
                         continue
 
         except self.SSL_exceptions['Error'], e:
-            raise
-            #raise exceptionTools.SSLError('SSLError: %s' % (e,))
+            raise exceptionTools.SSLError('SSLError: %s' % (e,))
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -20591,9 +20588,18 @@ class RepositorySocketClientInterface:
 
     def receive(self):
 
+        self.ssl_prepending = True
+
         def do_receive():
+            data = ''
             if self.ssl and not self.pyopenssl:
                 data = self.sock_conn.read(1024)
+            elif self.ssl:
+                if self.ssl_prepending:
+                    data = self.sock_conn.recv(1024)
+                    self.ssl_prepending = False
+                while self.sock_conn.pending():
+                    data += self.sock_conn.recv(1024)
             else:
                 data = self.sock_conn.recv(1024)
             return data
@@ -20603,13 +20609,7 @@ class RepositorySocketClientInterface:
 
             try:
 
-                #print "pre",self.buffer_length
-                #print "::::::::::::"
                 data = do_receive()
-                print "---\\"
-                print len(data),self.buffer_length
-                print repr(data)
-                print "---/"
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
@@ -20635,9 +20635,14 @@ class RepositorySocketClientInterface:
                     data = data[len(mystrlen)+1:]
                     self.buffer_length -= len(data)
                     self.buffered_data = data
+                else:
+                    self.buffer_length -= len(data)
+                    self.buffered_data += data
 
                 while self.buffer_length > 0:
                     x = do_receive()
+                    if self.ssl and self.pyopenssl and not x:
+                        self.ssl_prepending = True
                     self.buffer_length -= len(x)
                     self.buffered_data += x
                 self.buffer_length = None
