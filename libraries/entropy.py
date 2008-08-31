@@ -12873,7 +12873,12 @@ class SocketHostInterface:
                         self.buffered_data += data
 
                     while self.data_counter > 0:
-                        x = self.request.recv(1024)
+                        if self.ssl:
+                            x = ''
+                            while self.request.pending():
+                                x += self.request.recv(1024)
+                        else:
+                            x = self.request.recv(1024)
                         xlen = len(x)
                         self.data_counter -= xlen
                         self.buffered_data += x
