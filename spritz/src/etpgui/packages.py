@@ -1,4 +1,5 @@
 #!/usr/bin/python -tt
+# -*- coding: utf-8 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -37,6 +38,7 @@ class DummyEntropyPackage:
 
 class EntropyPackage:
 
+    import entropyTools
     def __init__(self, matched_atom, avail):
 
         self.queued = None
@@ -81,7 +83,25 @@ class EntropyPackage:
         return True
 
     def getNameDesc(self):
-        t = '/'.join(self.getName().split("/")[1:])
+
+        ugc_string = ''
+        atom = self.getName()
+        if self.from_installed:
+            repo = self.getRepoId()
+        else:
+            repo = self.matched_atom[1]
+        key = self.entropyTools.dep_getkey(atom)
+        vote = EquoConnection.UGC.UGCCache.get_package_vote(repo,key)
+        ugc_string = "["
+        if isinstance(vote,float):
+            vote = int(vote)
+            vote_stars = "★"*vote
+            vote_spaces = "☆"*(5-vote)
+            ugc_string += vote_stars+vote_spaces
+        downloads = EquoConnection.UGC.UGCCache.get_package_downloads(repo,key)
+        ugc_string += ":%s] " % (downloads,)
+
+        t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
             t +=  " <small>[<span foreground='#016AA3'>%s</span>]</small>" % (etpConst['packagemaskingreasons'][self.masked],)
 
@@ -251,6 +271,20 @@ class EntropyPackage:
     def getRel(self):
         return self.dbconn.retrieveBranch(self.matched_atom[0])
 
+    def getUGCPackageVote(self):
+        if self.from_installed: return False
+        atom = self.getName()
+        if not atom: return None
+        key = self.entropyTools.dep_getkey(atom)
+        return EquoConnection.UGC.UGCCache.get_package_vote(self.matched_atom[1],key)
+
+    def getUGCPackageDownloads(self):
+        if self.from_installed: return False
+        atom = self.getName()
+        if not atom: return None
+        key = self.entropyTools.dep_getkey(atom)
+        return EquoConnection.UGC.UGCCache.get_package_downloads(self.matched_atom[1],key)
+
     def getAttr(self,attr):
         x = None
         if attr == "description":
@@ -346,3 +380,5 @@ class EntropyPackage:
     pkgtup = property(fget=getTup)
     syspkg = property(fget=getSysPkg)
     install_status = property(fget=getInstallStatus)
+    vote = property(fget=getUGCPackageVote)
+    downloads = property(fget=getUGCPackageDownloads)

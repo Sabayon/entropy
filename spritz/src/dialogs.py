@@ -32,6 +32,10 @@ class PkgInfoMenu:
         self.pkg = pkg
         self.window = window
         self.Entropy = Entropy
+        self.repository = None
+        self.pkgkey = None
+        self.ugc_page_idx = 5
+        self.switched_to_ugc_page = False
         self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
         self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
@@ -67,12 +71,21 @@ class PkgInfoMenu:
         for x in content:
             self.contentModel.append(None,[x[0],x[1]])
 
-    def on_closeInfo_clicked( self, widget ):
+    def on_closeInfo_clicked(self, widget):
         self.pkginfo_ui.pkgInfo.hide()
 
     def on_pkgInfo_delete_event(self, widget, path):
         self.pkginfo_ui.pkgInfo.hide()
         return True
+
+    def on_loadUgcButton_clicked(self, widget):
+        print widget
+        print "UGC"
+
+    def on_infoBook_switch_page(self, widget, page, page_num):
+        if (page_num == self.ugc_page_idx) and (not self.switched_to_ugc_page):
+            self.switched_to_ugc_page = True
+            self.on_loadUgcButton_clicked(widget)
 
     def setupPkgPropertiesView(self):
 
@@ -172,6 +185,40 @@ class PkgInfoMenu:
         self.contentView.append_column( column )
         self.contentView.set_model( self.contentModel )
 
+    def set_stars(self, count):
+        pix_path = const.PIXMAPS_PATH+'/star.png'
+        pix_path_empty = const.PIXMAPS_PATH+'/star_empty.png'
+        widgets = [
+        self.pkginfo_ui.vote1,
+        self.pkginfo_ui.vote2,
+        self.pkginfo_ui.vote3,
+        self.pkginfo_ui.vote4,
+        self.pkginfo_ui.vote5
+        ]
+        if count > len(widgets):
+            count = len(widgets)
+        if count < 0: count = 0
+        idx = -1
+        while count > -1:
+            w = widgets[count]
+            w.set_from_file(pix_path)
+            w.show()
+            count -= 1
+            idx += 1
+        mycount = len(widgets) - idx
+        while mycount:
+            w = widgets[idx]
+            w.set_from_file(pix_path_empty)
+            w.show()
+            mycount -= 1
+            idx += 1
+
+    def set_stars_from_repository(self):
+        if not (self.repository and self.pkgkey):
+            return
+        vote = self.Entropy.UGC.UGCCache.get_package_vote(self.repository, self.pkgkey)
+        if isinstance(vote,float):
+            self.set_stars(int(vote))
 
     def load(self):
 
@@ -182,22 +229,35 @@ class PkgInfoMenu:
             avail = dbconn.isIDPackageAvailable(pkg.matched_atom[0])
         if not avail:
             return
-        if type(pkg.matched_atom[1]) is not int and pkg.matched_atom[1] not in self.Entropy.validRepositories:
+        from_repo = True
+        if isinstance(pkg.matched_atom[1],int): from_repo = False
+        if from_repo and pkg.matched_atom[1] not in self.Entropy.validRepositories:
             return
 
         # set package image
         pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
-        heart_pixmap = const.PIXMAPS_PATH+'/heart.png'
-
+        ugc_small_pixmap = const.PIXMAPS_PATH+'/ugc.png'
+        pkgatom = pkg.name
+        self.pkgkey = self.Entropy.entropyTools.dep_getkey(pkgatom)
+        self.repository = pkg.repoid
+        self.set_stars_from_repository()
         self.pkginfo_ui.pkgImage.set_from_file(pkg_pixmap)
-        self.pkginfo_ui.vote1.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote2.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote3.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote4.set_from_file(heart_pixmap)
-        self.pkginfo_ui.vote5.set_from_file(heart_pixmap)
+        self.pkginfo_ui.ugcSmallIcon.set_from_file(ugc_small_pixmap)
 
-        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupString(pkg.name),))
+        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupString(pkgatom),))
         self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
+        self.pkginfo_ui.ugcDescriptionLabel.set_markup("<small>%s\n%s</small>" % (
+                _("Share your opinion, your documents, your screenshots!"),
+                _("Be part of our Community!")
+            )
+        )
+        vote = pkg.vote
+        self.pkginfo_ui.voteLabel.set_markup("%s <small>[%s: %s]</small>" % (
+                _("Vote"),
+                _("cur"), # as in current (current vote)
+                int(vote),
+            )
+        )
 
         bold_items = [  self.pkginfo_ui.locationLabel,
                         self.pkginfo_ui.homepageLabel,
@@ -218,7 +278,8 @@ class PkgInfoMenu:
                         self.pkginfo_ui.maskedLabel,
                         self.pkginfo_ui.messagesLabel,
                         self.pkginfo_ui.triggerLabel,
-                        self.pkginfo_ui.configProtectLabel
+                        self.pkginfo_ui.configProtectLabel,
+                        self.pkginfo_ui.ugcTitleLabel
         ]
         for item in bold_items:
             t = item.get_text()
