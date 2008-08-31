@@ -14197,9 +14197,9 @@ class SocketHostInterface:
             while 1:
                 try:
                     sent = channel.send(mydata)
-                if sent == len(mydata):
-                    break
-                mydata = mydata[sent:]
+                    if sent == len(mydata):
+                        break
+                    mydata = mydata[sent:]
                 except (self.SSL_exceptions['WantWriteError'],):
                     continue
                 except UnicodeEncodeError:
