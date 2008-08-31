@@ -14190,7 +14190,20 @@ class SocketHostInterface:
 
     def transmit(self, channel, data):
         if self.SSL:
-            channel.send(self.append_eos(data))
+            mydata = self.append_eos(data)
+            encode_done = False
+            while 1:
+                try:
+                    channel.send(mydata)
+                except (self.SSL_exceptions['WantWriteError'],):
+                    continue
+                except UnicodeEncodeError:
+                    if encode_done:
+                        raise
+                    mydata = mydata.encode('utf-8')
+                    encode_done = True
+                    continue
+                break
         else:
             channel.sendall(self.append_eos(data))
 
@@ -20558,10 +20571,6 @@ class RepositorySocketClientInterface:
             try:
 
                 data = do_receive()
-                #print "---\\"
-                #print len(data),self.buffer_length
-                #print repr(data)
-                #print "---/"
                 if self.buffer_length == None:
                     self.buffered_data = ''
                     if len(data) < len(myeos):
