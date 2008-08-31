@@ -12841,14 +12841,14 @@ class SocketHostInterface:
             if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
                 self.timed_out = False
-                def check_ssl_pending():
-                    if self.ssl:
-                        if self.request.pending() == 0:
-                            return True
-                    return False
 
                 try:
+
                     data = self.request.recv(1024)
+                    if self.ssl:
+                        while self.request.pending():
+                            data += self.request.recv(1024)
+
                     if self.data_counter == None:
                         if data == '': # client wants to close
                             return True
@@ -12872,9 +12872,6 @@ class SocketHostInterface:
                         self.data_counter -= len(data)
                         self.buffered_data += data
 
-                    do_quit = check_ssl_pending()
-                    if do_quit: return False
-
                     while self.data_counter > 0:
                         x = self.request.recv(1024)
                         xlen = len(x)
@@ -12882,9 +12879,6 @@ class SocketHostInterface:
                         self.buffered_data += x
                         if not xlen:
                             break
-
-                        do_quit = check_ssl_pending()
-                        if do_quit: return False
 
                     self.data_counter = None
                 except ValueError:
