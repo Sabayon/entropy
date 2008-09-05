@@ -510,6 +510,17 @@ class EquoInterface(TextInterface):
         if repositoryName.endswith(etpConst['packagesext']):
             xcache = False
 
+        if repositoryName not in etpRepositories:
+            t = _("bad repository id specified")
+            if repositoryName not in repo_error_messages_cache:
+                self.updateProgress(
+                    darkred(t),
+                    importance = 2,
+                    type = "warning"
+                )
+                repo_error_messages_cache.add(repositoryName)
+            raise exceptionTools.RepositoryError("RepositoryError: %s" % (t,))
+
         dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
             t = _("Repository %s hasn't been downloaded yet.") % (repositoryName,)
@@ -1152,13 +1163,13 @@ class EquoInterface(TextInterface):
 
         votes_dict, err_msg = self.UGC.get_all_votes(repository)
         if isinstance(votes_dict,dict):
-            self.UGC.save_vote_cache(repository, votes_dict)
+            self.UGC.UGCCache.save_vote_cache(repository, votes_dict)
         else:
             status = False
 
         downloads_dict, err_msg = self.UGC.get_all_downloads(repository)
         if isinstance(downloads_dict,dict):
-            self.UGC.save_downloads_cache(repository, downloads_dict)
+            self.UGC.UGCCache.save_downloads_cache(repository, downloads_dict)
         else:
             status = False
         return status
@@ -5845,7 +5856,7 @@ class RepoInterface:
             "db","rev","ck",
             "lock","mask","dbdump",
             "dbdumpck","lic_whitelist","make.conf",
-            "package.mask","package.unmask","package.keywords",
+            "package.mask","package.unmask","package.keywords","profile.link",
             "package.use","server.cert","ca.cert",
         )
         if item not in supported_items:
@@ -5880,23 +5891,27 @@ class RepoInterface:
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
         elif item == "make.conf":
             myfile = os.path.basename(etpConst['spm']['global_make_conf'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.mask":
             myfile = os.path.basename(etpConst['spm']['global_package_mask'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.unmask":
             myfile = os.path.basename(etpConst['spm']['global_package_unmask'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.keywords":
             myfile = os.path.basename(etpConst['spm']['global_package_keywords'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.use":
             myfile = os.path.basename(etpConst['spm']['global_package_use'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
+        elif item == "profile.link":
+            myfile = etpConst['spm']['global_make_profile_link_name']
+            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "lic_whitelist":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaselicwhitelistfile']
@@ -6723,8 +6738,6 @@ class RepoInterface:
             )
             if self.fetchSecurity:
                 self.do_update_security_advisories()
-            for repo in self.updated_repos:
-                self.Entropy.update_ugc_cache(repo)
 
         if self.syncErrors:
             self.Entropy.updateProgress(
@@ -7063,7 +7076,7 @@ class RepoInterface:
                 )
             ),
             (
-                "package.mask",
+                "package.unmask",
                 os.path.basename(etpConst['spm']['global_package_unmask']),
                 True,
                 "%s %s %s" % (
@@ -7089,6 +7102,16 @@ class RepoInterface:
                 "%s %s %s" % (
                     red(_("Downloading SPM package USE flags configuration")),
                     darkgreen(os.path.basename(etpConst['spm']['global_package_use'])),
+                    red("..."),
+                )
+            ),
+            (
+                "profile.link",
+                etpConst['spm']['global_make_profile_link_name'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading SPM Profile configuration")),
+                    darkgreen(etpConst['spm']['global_make_profile_link_name']),
                     red("..."),
                 )
             )
@@ -17434,7 +17457,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the comments of the provided package key",
-                'syntax': "<SESSION_ID> get_comments app-foo/foo",
+                'syntax': "<SESSION_ID> ugc:get_comments app-foo/foo",
                 'from': str(self), # from what class
             },
             'ugc:get_comments_by_identifiers':    {
@@ -17444,7 +17467,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the comments belonging to the provided identifiers",
-                'syntax': "<SESSION_ID> get_comments_by_identifiers <identifier1> <identifier2> <identifier3>",
+                'syntax': "<SESSION_ID> ugc:get_comments_by_identifiers <identifier1> <identifier2> <identifier3>",
                 'from': str(self), # from what class
             },
             'ugc:get_documents_by_identifiers':    {
@@ -17454,7 +17477,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the documents belonging to the provided identifiers",
-                'syntax': "<SESSION_ID> get_documents_by_identifiers <identifier1> <identifier2> <identifier3>",
+                'syntax': "<SESSION_ID> ugc:get_documents_by_identifiers <identifier1> <identifier2> <identifier3>",
                 'from': str(self), # from what class
             },
             'ugc:get_vote':    {
@@ -17464,7 +17487,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the vote of the provided package key",
-                'syntax': "<SESSION_ID> get_vote app-foo/foo",
+                'syntax': "<SESSION_ID> ugc:get_vote app-foo/foo",
                 'from': str(self), # from what class
             },
             'ugc:get_downloads':    {
@@ -17474,7 +17497,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the number of downloads of the provided package key",
-                'syntax': "<SESSION_ID> get_downloads app-foo/foo",
+                'syntax': "<SESSION_ID> ugc:get_downloads app-foo/foo",
                 'from': str(self), # from what class
             },
             'ugc:get_textdocs':    {
@@ -17484,7 +17507,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided package key",
-                'syntax': "<SESSION_ID> get_textdocs app-foo/foo",
+                'syntax': "<SESSION_ID> ugc:get_textdocs app-foo/foo",
                 'from': str(self), # from what class
             },
             'ugc:get_textdocs_by_identifiers':    {
@@ -17494,7 +17517,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided identifiers",
-                'syntax': "<SESSION_ID> get_textdocs_by_identifiers <identifier1> <identifier2> <identifier3>",
+                'syntax': "<SESSION_ID> ugc:get_textdocs_by_identifiers <identifier1> <identifier2> <identifier3>",
                 'from': str(self), # from what class
             },
             'ugc:get_alldocs':    {
@@ -17504,7 +17527,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': ["myargs"],
                 'as_user': False,
                 'desc': "get the all the documents belonging to the provided package key",
-                'syntax': "<SESSION_ID> get_alldocs app-foo/foo",
+                'syntax': "<SESSION_ID> ugc:get_alldocs app-foo/foo",
                 'from': str(self), # from what class
             },
             'ugc:get_allvotes':    {
@@ -17514,7 +17537,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': [],
                 'as_user': False,
                 'desc': "get vote information for every available package key",
-                'syntax': "<SESSION_ID> get_allvotes",
+                'syntax': "<SESSION_ID> ugc:get_allvotes",
                 'from': str(self), # from what class
             },
             'ugc:get_alldownloads':    {
@@ -17524,7 +17547,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'args': [],
                 'as_user': False,
                 'desc': "get download information for every available package key",
-                'syntax': "<SESSION_ID> get_alldownloads",
+                'syntax': "<SESSION_ID> ugc:get_alldownloads",
                 'from': str(self), # from what class
             },
             'ugc:do_vote':    {
@@ -20945,6 +20968,7 @@ class UGCCacheInterface:
         self.dumpTools = dumpTools
         self.Service = UGCClientInstance
         self.xcache = {}
+        self.processing = False
 
     def _get_live_cache_item(self, repository, item):
         if repository not in self.xcache:
@@ -20962,11 +20986,24 @@ class UGCCacheInterface:
             my_obj = obj
         self.xcache[repository][item] = my_obj
 
+    def _clear_live_cache_item(self, repository, item):
+        if not self.xcache.has_key(repository):
+            return
+        if not self.xcache[repository].has_key(item):
+            return
+        del self.xcache[repository][item]
+
     def _get_vote_cache_file(self, repository):
         return etpCache['ugc_votes']+"/"+repository
 
     def _get_downloads_cache_file(self, repository):
         return etpCache['ugc_downloads']+"/"+repository
+
+    def _get_vote_cache_key(self, repository):
+        return 'get_vote_cache_'+repository
+
+    def _get_downloads_cache_key(self, repository):
+        return 'get_downloads_cache_'+repository
 
     def update_vote_cache(self, repository, vote_dict):
         cached = self.get_vote_cache(repository)
@@ -20985,27 +21022,56 @@ class UGCCacheInterface:
         self.save_downloads_cache(repository,cached)
 
     def get_vote_cache(self, repository):
-        cache_key = 'get_vote_cache_'+repository
+        cache_key = self._get_vote_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
         if cached != None:
             return cached
+        self.process_wait()
+        self.processing = True
         cache_file = self._get_vote_cache_file(repository)
-        data = self.dumpTools.loadobj(cache_file)
-        if data != None:
-            self._set_live_cache_item(repository, cache_key, data)
+        try:
+            data = self.dumpTools.loadobj(cache_file)
+            if data != None:
+                self._set_live_cache_item(repository, cache_key, data)
+        except (IOError,EOFError,OSError):
+            data = None
+        self.processing = False
         return data
 
     def get_downloads_cache(self, repository):
+        cache_key = self._get_downloads_cache_key(repository)
+        cached = self._get_live_cache_item(repository, cache_key)
+        if cached != None:
+            return cached
+        self.process_wait()
+        self.processing = True
         cache_file = self._get_downloads_cache_file(repository)
-        return self.dumpTools.loadobj(cache_file)
+        try:
+            data = self.dumpTools.loadobj(cache_file)
+            if data != None:
+                self._set_live_cache_item(repository, cache_key, data)
+        except (IOError,EOFError,OSError):
+            data = None
+        self.processing = False
+        return data
 
     def save_vote_cache(self, repository, vote_dict):
-        cache_file = self._get_vote_cache_file(repository)
-        return self.dumpTools.dumpobj(cache_file, vote_dict)
+        self.process_wait()
+        self.processing = True
+        self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
+        self.dumpTools.dumpobj(self._get_vote_cache_file(repository), vote_dict)
+        self.processing = False
 
     def save_downloads_cache(self, repository, down_dict):
-        cache_file = self._get_downloads_cache_file(repository)
-        return self.dumpTools.dumpobj(cache_file, down_dict)
+        self.process_wait()
+        self.processing = True
+        self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
+        self.dumpTools.dumpobj(self._get_downloads_cache_file(repository), down_dict)
+        self.processing = False
+
+    def process_wait(self):
+        while self.processing:
+            time.sleep(0.01)
 
     def get_package_vote(self, repository, pkgkey):
         cache = self.get_vote_cache(repository)
@@ -21020,11 +21086,11 @@ class UGCCacheInterface:
     def get_package_downloads(self, repository, pkgkey):
         cache = self.get_downloads_cache(repository)
         if not cache:
-            return None
+            return 0
         elif not isinstance(cache,dict):
-            return None
+            return 0
         elif not cache.has_key(pkgkey):
-            return None
+            return 0
         return cache[pkgkey]
 
 class UGCClientInterface:

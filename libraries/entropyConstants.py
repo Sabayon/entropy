@@ -683,6 +683,7 @@ def const_defaultSettings(rootdir):
             'global_package_mask': "/etc/portage/package.mask",
             'global_package_unmask': "/etc/portage/package.unmask",
             'global_make_profile': "/etc/make.profile",
+            'global_make_profile_link_name' : "profile.link",
             'exec': "/usr/bin/emerge", # source package manager executable
             'ask_cmd': "--ask",
             'pretend_cmd': "--pretend",
