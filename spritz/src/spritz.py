@@ -76,6 +76,8 @@ class SpritzController(Controller):
 
 
     def quit(self, widget=None, event=None ):
+        if self.ugcTask != None:
+            self.ugcTask.kill()
         ''' Main destroy Handler '''
         gtkEventThread.doQuit()
         if self.isWorking:
@@ -919,7 +921,17 @@ class SpritzController(Controller):
 
     def loadPkgInfoMenu(self, pkg):
         mymenu = PkgInfoMenu(self.Equo, pkg, self.ui.main)
-        mymenu.load()
+        load_count = 6
+        while 1:
+            try:
+                mymenu.load()
+            except:
+                if load_count < 0:
+                    raise
+                load_count -= 1
+                time.sleep(1)
+                continue
+            break
 
     def on_pkg_doubleclick( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
@@ -1058,6 +1070,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger = logging.getLogger("yumex.main")
 
         # init flags
+        self.ugcTask = None
         self.Preferences = None
         self.skipMirrorNow = False
         self.abortQueueNow = False
@@ -1090,6 +1103,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupAdvPropertiesView()
         self.setupPreferences()
 
+        self.setupUgc()
+
         packages_install = os.getenv("SPRITZ_PACKAGES")
         if packages_install:
             packages_install = [x for x in packages_install.split(";") if os.path.isfile(x)]
@@ -1101,6 +1116,30 @@ class SpritzApplication(SpritzController,SpritzGUI):
             time.sleep(1)
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
+
+
+    def setupUgc(self):
+        self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
+        self.ugcTask.start()
+
+    def spawnUgcUpdate(self):
+
+        if self.isWorking: return
+        self.isWorking = True
+        gtkEventThread.startProcessing()
+        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+        if (connected == False) or (self.Equo.UGC == None):
+            self.isWorking = False
+            gtkEventThread.endProcessing()
+            return
+        for repo in self.Equo.validRepositories:
+            try:
+                self.Equo.update_ugc_cache(repo)
+            except:
+                pass
+
+        self.isWorking = False
+        gtkEventThread.endProcessing()
 
 
     def setupPreferences(self):

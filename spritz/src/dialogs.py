@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import time
 import gtk
 import gobject
 import pango
@@ -29,7 +30,14 @@ from entropyConstants import *
 class PkgInfoMenu:
 
     def __init__(self, Entropy, pkg, window):
+
+        self.pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
+        self.ugc_small_pixmap = const.PIXMAPS_PATH+'/ugc.png'
+        self.ugc_pixmap = const.PIXMAPS_PATH+'/ugc/icon.png'
+        self.refresh_pixmap = const.PIXMAPS_PATH+'/ugc/refresh.png'
+
         self.pkg = pkg
+        self.vote = 0
         self.window = window
         self.Entropy = Entropy
         self.repository = None
@@ -66,6 +74,13 @@ class PkgInfoMenu:
             i = i + 1
         return result
 
+    def set_pixbuf_to_cell(self, cell, filepath):
+        try:
+            pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/"+filepath)
+            cell.set_property( 'pixbuf', pixbuf )
+        except gobject.GError:
+            pass
+
     def on_showContentButton_clicked( self, widget ):
         content = self.pkg.contentExt
         for x in content:
@@ -86,6 +101,84 @@ class PkgInfoMenu:
         if (page_num == self.ugc_page_idx) and (not self.switched_to_ugc_page):
             self.switched_to_ugc_page = True
             self.on_loadUgcButton_clicked(widget)
+
+
+    def on_star5_enter_notify_event(self, widget, event):
+        self.star_enter(widget, event, 5)
+
+    def on_star4_enter_notify_event(self, widget, event):
+        self.star_enter(widget, event, 4)
+
+    def on_star3_enter_notify_event(self, widget, event):
+        self.star_enter(widget, event, 3)
+
+    def on_star2_enter_notify_event(self, widget, event):
+        self.star_enter(widget, event, 2)
+
+    def on_star1_enter_notify_event(self, widget, event):
+        self.star_enter(widget, event, 1)
+
+    '''
+    def on_star5_leave_notify_event(self, widget, event):
+        self.star_leave(widget, event, 5)
+
+    def on_star4_leave_notify_event(self, widget, event):
+        self.star_leave(widget, event, 4)
+
+    def on_star3_leave_notify_event(self, widget, event):
+        self.star_leave(widget, event, 3)
+
+    def on_star2_leave_notify_event(self, widget, event):
+        self.star_leave(widget, event, 2)
+
+    def on_star1_leave_notify_event(self, widget, event):
+        self.star_leave(widget, event, 1)
+
+    def star_leave(self, widget, event, number):
+        return
+
+    '''
+
+    def on_starsEvent_leave_notify_event(self, widget, event):
+        self.pkginfo_ui.pkgInfo.window.set_cursor(None)
+        self.set_stars(self.vote)
+
+    def on_starsEvent_enter_notify_event(self, widget, event):
+        self.pkginfo_ui.pkgInfo.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
+
+    def on_starEvent5_button_release_event(self, widget, event):
+        self.vote_click(5)
+
+    def on_starEvent4_button_release_event(self, widget, event):
+        self.vote_click(4)
+
+    def on_starEvent3_button_release_event(self, widget, event):
+        self.vote_click(3)
+
+    def on_starEvent2_button_release_event(self, widget, event):
+        self.vote_click(2)
+
+    def on_starEvent1_button_release_event(self, widget, event):
+        self.vote_click(1)
+
+    def vote_click(self, vote):
+        if self.Entropy.UGC == None:
+            return
+        if not (self.repository and self.pkgkey):
+            return
+        if not self.Entropy.UGC.is_repository_eapi3_aware(self.repository):
+            return
+        status, err_msg = self.Entropy.UGC.add_vote(self.repository, self.pkgkey, vote)
+        if status:
+            self.set_stars_from_repository()
+            msg = "<small><span foreground='#339101'>%s</span>: %s</small>" % (_("Vote registered successfully"),vote,)
+        else:
+            msg = "<small><span foreground='#FF0000'>%s</span>: %s</small>" % (_("Error registering vote"),err_msg,)
+
+        self.pkginfo_ui.ugcMessageBox.set_markup(msg)
+
+    def star_enter(self, widget, event, number):
+        self.set_stars(number, hover = True)
 
     def setupPkgPropertiesView(self):
 
@@ -185,8 +278,40 @@ class PkgInfoMenu:
         self.contentView.append_column( column )
         self.contentView.set_model( self.contentModel )
 
-    def set_stars(self, count):
+        # ugc view
+        self.ugcView = self.pkginfo_ui.ugcView
+        self.ugcModel = gtk.TreeStore( gobject.TYPE_PYOBJECT )
+
+        '''
+        # Setup resent column
+        cell = gtk.CellRendererPixbuf()
+        cell.set_property('height', 52)
+        self.set_pixbuf_to_cell(cell, self.pkg_install_ok )
+        column1 = gtk.TreeViewColumn( self.pkgcolumn_text, cell1 )
+        column1.set_cell_data_func( cell1, self.new_pixbuf )
+        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column1.set_fixed_width( self.selection_width+40 )
+        column1.set_sort_column_id( -1 )
+        self.view.append_column( column1 )
+        column1.set_clickable( False )
+
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "" ), cell )
+        column.set_resizable( True )
+        column.set_cell_data_func( cell, self.get_data_text, property )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( size )
+        column.set_expand(expand)
+        column.set_sort_column_id( -1 )
+        self.view.append_column( column )
+        '''
+
+
+    def set_stars(self, count, hover = False):
         pix_path = const.PIXMAPS_PATH+'/star.png'
+        if hover:
+            pix_path = const.PIXMAPS_PATH+'/star_selected.png'
         pix_path_empty = const.PIXMAPS_PATH+'/star_empty.png'
         widgets = [
         self.pkginfo_ui.vote1,
@@ -200,7 +325,7 @@ class PkgInfoMenu:
         if count < 0: count = 0
         idx = -1
         while count > -1:
-            w = widgets[count]
+            w = widgets[count-1]
             w.set_from_file(pix_path)
             w.show()
             count -= 1
@@ -219,6 +344,7 @@ class PkgInfoMenu:
         vote = self.Entropy.UGC.UGCCache.get_package_vote(self.repository, self.pkgkey)
         if isinstance(vote,float):
             self.set_stars(int(vote))
+            self.vote = int(vote)
 
     def load(self):
 
@@ -235,14 +361,15 @@ class PkgInfoMenu:
             return
 
         # set package image
-        pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
-        ugc_small_pixmap = const.PIXMAPS_PATH+'/ugc.png'
         pkgatom = pkg.name
-        self.pkgkey = self.Entropy.entropyTools.dep_getkey(pkgatom)
+        self.vote = int(pkg.vote)
         self.repository = pkg.repoid
+        self.pkgkey = self.Entropy.entropyTools.dep_getkey(pkgatom)
         self.set_stars_from_repository()
-        self.pkginfo_ui.pkgImage.set_from_file(pkg_pixmap)
-        self.pkginfo_ui.ugcSmallIcon.set_from_file(ugc_small_pixmap)
+        self.pkginfo_ui.pkgImage.set_from_file(self.pkg_pixmap)
+        self.pkginfo_ui.ugcSmallIcon.set_from_file(self.ugc_small_pixmap)
+        self.pkginfo_ui.ugcIcon.set_from_file(self.ugc_pixmap)
+        self.pkginfo_ui.refreshImage.set_from_file(self.refresh_pixmap)
 
         self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupString(pkgatom),))
         self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
@@ -251,12 +378,8 @@ class PkgInfoMenu:
                 _("Be part of our Community!")
             )
         )
-        vote = pkg.vote
-        self.pkginfo_ui.voteLabel.set_markup("%s <small>[%s: %s]</small>" % (
-                _("Vote"),
-                _("cur"), # as in current (current vote)
-                int(vote),
-            )
+        self.pkginfo_ui.ugcDownloaded.set_markup(
+            "<small>%s: <b>%s</b></small>" % (_("Number of downloads"), pkg.downloads,)
         )
 
         bold_items = [  self.pkginfo_ui.locationLabel,
