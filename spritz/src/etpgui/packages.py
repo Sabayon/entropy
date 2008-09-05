@@ -275,8 +275,7 @@ class EntropyPackage:
         if self.from_installed: return False
         atom = self.getName()
         if not atom: return None
-        key = self.entropyTools.dep_getkey(atom)
-        return EquoConnection.UGC.UGCCache.get_package_vote(self.matched_atom[1],key)
+        return EquoConnection.UGC.UGCCache.get_package_vote(self.matched_atom[1],self.entropyTools.dep_getkey(atom))
 
     def getUGCPackageDownloads(self):
         if self.from_installed: return False
