@@ -1071,6 +1071,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
         # init flags
         self.ugcTask = None
+        self.spawning_ugc = False
         self.Preferences = None
         self.skipMirrorNow = False
         self.abortQueueNow = False
@@ -1117,29 +1118,33 @@ class SpritzApplication(SpritzController,SpritzGUI):
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
 
-
     def setupUgc(self):
         self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
         self.ugcTask.start()
 
     def spawnUgcUpdate(self):
+        try:
+            while (self.spawning_ugc or self.isWorking):
+                time.sleep(1)
 
-        if self.isWorking: return
-        self.isWorking = True
-        gtkEventThread.startProcessing()
-        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
-        if (connected == False) or (self.Equo.UGC == None):
-            self.isWorking = False
-            gtkEventThread.endProcessing()
-            return
-        for repo in self.Equo.validRepositories:
-            try:
+            self.isWorking = True
+            self.spawning_ugc = True
+            gtkEventThread.startProcessing()
+            connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+            if (connected == False) or (self.Equo.UGC == None):
+                self.isWorking = False
+                self.spawning_ugc = False
+                gtkEventThread.endProcessing()
+                return
+            for repo in self.Equo.validRepositories:
                 self.Equo.update_ugc_cache(repo)
-            except:
-                pass
 
-        self.isWorking = False
-        gtkEventThread.endProcessing()
+            self.isWorking = False
+            self.spawning_ugc = False
+            gtkEventThread.endProcessing()
+
+        except:
+            pass
 
 
     def setupPreferences(self):
@@ -1526,6 +1531,9 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(_('Please check logs below for more info'))
         else:
+            t = entropyTools.parallelTask(self.spawnUgcUpdate)
+            t.parallel_wait()
+            t.start()
             if repoConn.alreadyUpdated == 0:
                 self.progress.set_mainLabel(_('Repositories updated successfully'))
             else:

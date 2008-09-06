@@ -20,7 +20,7 @@
 import gtk
 import gobject
 from spritz_setup import const, cleanMarkupString, SpritzConf
-from etpgui.widgets import UI
+from etpgui.widgets import UI,CellRendererStars
 from packages import DummyEntropyPackage
 from entropyapi import EquoConnection
 from etpgui import *
@@ -62,6 +62,7 @@ class EntropyPackageView:
 
         self.Equo = EquoConnection
         self.pkgcolumn_text = _("Selection")
+        self.stars_col_size = 100
         self.selection_width = 34
         self.show_reinstall = True
         self.show_purge = True
@@ -70,6 +71,10 @@ class EntropyPackageView:
         self.loaded_event = None
         self.main_window = main_window
         self.event_click_pos = 0,0
+        # UGC pixmaps
+        self.star_normal_pixmap = const.star_normal_pixmap
+        self.star_selected_pixmap = const.star_selected_pixmap
+        self.star_empty_pixmap = const.star_empty_pixmap
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
         self.pkg_install_updatable = "package-installed-outdated.png"
@@ -115,6 +120,8 @@ class EntropyPackageView:
         treeview.set_fixed_height_mode(True)
         self.view = treeview
         self.view.connect("button-release-event", self.load_menu)
+        self.view.connect("enter-notify-event",self.treeview_enter_notify)
+        self.view.connect("leave-notify-event",self.treeview_leave_notify)
         #self.view.connect("button-press-event", self.load_properties_button)
         self.store = self.setupView()
         self.queue = qview.queue
@@ -159,6 +166,12 @@ class EntropyPackageView:
         self.install_undoinstall = self.install_menu_xml.get_widget( "undoinstall" )
         self.install_install.set_image(self.img_pkg_install)
         self.updates_undoupdate.set_image(self.img_pkg_undoinstall)
+
+    def treeview_enter_notify(self, widget, event):
+        self.main_window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
+
+    def treeview_leave_notify(self, widget, event):
+        self.main_window.window.set_cursor(None)
 
     def reset_install_menu(self):
         self.install_install.show()
@@ -223,25 +236,33 @@ class EntropyPackageView:
         else:
             self.enable_properties_menu(None)
 
-        if event.x < 10:
+        event_x = event.x
+        if event_x < 10:
             return
 
         try:
-            row, column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+            row, column, x, y = widget.get_path_at_pos(int(event_x),int(event.y))
         except TypeError:
             return
 
         self.event_click_pos = x,y
-        if column.get_title() != self.pkgcolumn_text:
-            return
-
-        if obj:
-            if obj.action in ["r","rr"]: # installed packages listing
-                self.run_installed_menu_stuff(obj)
-            elif obj.action in ["u"]: # updatable packages listing
-                self.run_updates_menu_stuff(obj)
-            elif obj.action in ["i"]:
-                self.run_install_menu_stuff(obj)
+        if column.get_title() == self.pkgcolumn_text:
+            if obj:
+                if obj.action in ["r","rr"]: # installed packages listing
+                    self.run_installed_menu_stuff(obj)
+                elif obj.action in ["u"]: # updatable packages listing
+                    self.run_updates_menu_stuff(obj)
+                elif obj.action in ["i"]:
+                    self.run_install_menu_stuff(obj)
+        else:
+            distance = 0
+            for col in self.view.get_columns()[0:2]:
+                distance += col.get_width()
+            if (event_x > distance) and (event_x < (distance+self.stars_col_size)):
+                vote = int((event_x - distance)/self.stars_col_size*5)+1
+                obj.voted = vote
+                # submit vote
+                self.spawn_vote_submit(obj)
 
     def reposition_menu(self, menu):
         # devo tradurre x=0,y=20 in posizioni assolute
@@ -438,7 +459,7 @@ class EntropyPackageView:
         self.view.set_model( store )
 
         myheight = 35
-        # Setup resent column
+        # selection pixmap
         cell1 = gtk.CellRendererPixbuf()
         cell1.set_property('height', myheight)
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
@@ -451,9 +472,71 @@ class EntropyPackageView:
         column1.set_clickable( False )
 
         self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True, set_height = myheight)
+
+        # vote event box
+        cell2 = CellRendererStars()
+        cell2.set_property('height', myheight)
+        column2 = gtk.TreeViewColumn( _("Rating"), cell2 )
+        column2.set_resizable( True )
+        column2.set_cell_data_func( cell2, self.get_stars_rating )
+        column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column2.set_fixed_width( self.stars_col_size )
+        column2.set_expand(False)
+        column2.set_sort_column_id( -1 )
+        self.view.append_column( column2 )
+
         self.create_text_column( _( "Repository" ), 'repoid', size = 130, set_height = myheight)
 
         return store
+
+    def get_stars_rating( self, column, cell, model, myiter ):
+        obj = model.get_value( myiter, 0 )
+        if not obj: return
+        try:
+            voted = getattr( obj, 'voted' )
+        except self.Equo.dbapi2.ProgrammingError:
+            return
+        #print obj.name,mydata
+        if voted:
+            cell.value_voted = int(voted)
+            return
+        try:
+            mydata = getattr( obj, 'vote' )
+        except self.Equo.dbapi2.ProgrammingError:
+            return
+        cell.value = int(mydata)
+        cell.value_voted = int(voted)
+        self.queueView.refresh()
+        self.view.queue_draw()
+
+    def spawn_vote_submit(self, obj):
+        if self.Equo.UGC == None:
+            obj.voted = 0
+            return
+        repository = obj.repoid
+        if not self.Equo.UGC.is_repository_eapi3_aware(repository):
+            obj.voted = 0
+            return
+        atom = obj.name
+        key = self.Equo.entropyTools.dep_getkey(atom)
+
+        status, err_msg = self.Equo.UGC.add_vote(repository, key, obj.voted)
+        if status:
+            msg = "<small><span foreground='#339101'><b>%s</b></span>: %s</small>" % (_("Vote registered successfully"),obj.voted,)
+        else:
+            msg = "<small><span foreground='#FF0000'><b>%s</b></span>: %s</small>" % (_("Error registering vote"),err_msg,)
+
+        self.ui.UGCMessageLabel.set_markup(msg)
+        t = self.Equo.entropyTools.parallelTask(self.refresh_vote_info, obj)
+        t.parallel_wait()
+        t.start()
+
+
+    def refresh_vote_info(self, obj):
+        time.sleep(5)
+        obj.voted = 0
+        self.queueView.refresh()
+        self.view.queue_draw()
 
     def clear(self):
         self.store.clear()
@@ -509,8 +592,6 @@ class EntropyPackageView:
             widget.set_property('enable-search',True)
 
         self.view.expand_all()
-
-
 
 
     def atom_search(self, model, column, key, iterator):

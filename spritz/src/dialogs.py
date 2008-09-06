@@ -31,10 +31,13 @@ class PkgInfoMenu:
 
     def __init__(self, Entropy, pkg, window):
 
-        self.pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
-        self.ugc_small_pixmap = const.PIXMAPS_PATH+'/ugc.png'
-        self.ugc_pixmap = const.PIXMAPS_PATH+'/ugc/icon.png'
-        self.refresh_pixmap = const.PIXMAPS_PATH+'/ugc/refresh.png'
+        self.pkg_pixmap = const.pkg_pixmap
+        self.ugc_small_pixmap = const.ugc_small_pixmap
+        self.ugc_pixmap = const.ugc_pixmap
+        self.refresh_pixmap = const.refresh_pixmap
+        self.star_normal_pixmap = const.star_normal_pixmap
+        self.star_selected_pixmap = const.star_selected_pixmap
+        self.star_empty_pixmap = const.star_empty_pixmap
 
         self.pkg = pkg
         self.vote = 0
@@ -47,6 +50,8 @@ class PkgInfoMenu:
         self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
         self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
+        self.pkginfo_ui.pkgInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
         self.setupPkgPropertiesView()
 
     def _getAllMethods(self):
@@ -80,6 +85,13 @@ class PkgInfoMenu:
             cell.set_property( 'pixbuf', pixbuf )
         except gobject.GError:
             pass
+
+    def on_button_press(self, widget, event):
+        self.pkginfo_ui.pkgInfo.begin_move_drag(
+                        event.button,
+                        int(event.x_root),
+                        int(event.y_root),
+                        event.time)
 
     def on_showContentButton_clicked( self, widget ):
         content = self.pkg.contentExt
@@ -309,10 +321,10 @@ class PkgInfoMenu:
 
 
     def set_stars(self, count, hover = False):
-        pix_path = const.PIXMAPS_PATH+'/star.png'
-        if hover:
-            pix_path = const.PIXMAPS_PATH+'/star_selected.png'
-        pix_path_empty = const.PIXMAPS_PATH+'/star_empty.png'
+        pix_path = self.star_normal_pixmap
+        if hover: pix_path = self.star_selected_pixmap
+        pix_path_empty = self.star_empty_pixmap
+
         widgets = [
         self.pkginfo_ui.vote1,
         self.pkginfo_ui.vote2,
@@ -1340,7 +1352,7 @@ class MessageDialog:
                 defaultchoice = 0
 
         dialog.set_title(title)
-        dialog.format_secondary_markup(cleanMarkupString(text))
+        #dialog.format_secondary_markup(cleanMarkupString(text))
         dialog.set_position (gtk.WIN_POS_CENTER)
         dialog.set_default_response(defaultchoice)
         dialog.show_all ()

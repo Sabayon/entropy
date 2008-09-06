@@ -29,6 +29,9 @@ class DummyEntropyPackage:
         self.namedesc = namedesc
         self.queued = None
         self.repoid = ''
+        self.name = ''
+        self.vote = -1
+        self.voted = 0
         self.color = None
         self.action = None
         self.dbconn = None
@@ -47,6 +50,7 @@ class EntropyPackage:
         self.available = avail
         self.do_purge = False
         self.masked = None
+        self.voted = 0
         self.color = SpritzConf.color_normal
 
         if matched_atom[1] == 0:
@@ -91,15 +95,8 @@ class EntropyPackage:
         else:
             repo = self.matched_atom[1]
         key = self.entropyTools.dep_getkey(atom)
-        vote = EquoConnection.UGC.UGCCache.get_package_vote(repo,key)
-        ugc_string = "["
-        if isinstance(vote,float):
-            vote = int(vote)
-            vote_stars = "★"*vote
-            vote_spaces = "☆"*(5-vote)
-            ugc_string += vote_stars+vote_spaces
         downloads = EquoConnection.UGC.UGCCache.get_package_downloads(repo,key)
-        ugc_string += ":%s] " % (downloads,)
+        ugc_string = "<small>[%s]</small> " % (downloads,)
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
@@ -277,6 +274,9 @@ class EntropyPackage:
         if not atom: return None
         return EquoConnection.UGC.UGCCache.get_package_vote(self.matched_atom[1],self.entropyTools.dep_getkey(atom))
 
+    def getUGCPackageVoted(self):
+        return self.voted
+
     def getUGCPackageDownloads(self):
         if self.from_installed: return False
         atom = self.getName()
@@ -380,4 +380,5 @@ class EntropyPackage:
     syspkg = property(fget=getSysPkg)
     install_status = property(fget=getInstallStatus)
     vote = property(fget=getUGCPackageVote)
+    voted = property(fget=getUGCPackageVoted)
     downloads = property(fget=getUGCPackageDownloads)

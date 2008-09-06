@@ -807,7 +807,16 @@
                               </widget>
                             </child>
                             <child>
-                              <placeholder/>
+                              <widget class="GtkLabel" id="UGCMessageLabel">
+                                <property name="visible">True</property>
+                                <property name="xalign">0.99000000953674316</property>
+                                <property name="yalign">1</property>
+                                <property name="label" translatable="yes">&lt;small&gt;Powered by User Generated Content&lt;/small&gt;</property>
+                                <property name="use_markup">True</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </widget>
                           <packing>
@@ -954,7 +963,7 @@
                             <property name="visible">True</property>
                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                             <property name="xalign">0</property>
-                            <property name="label">Hello world</property>
+                            <property name="use_markup">True</property>
                           </widget>
                           <packing>
                             <property name="expand">False</property>
@@ -4445,10 +4454,10 @@ gz</property>
   </widget>
   <widget class="GtkWindow" id="pkgInfo">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-    <property name="border_width">8</property>
     <property name="title" translatable="yes">Package Information</property>
-    <property name="modal">True</property>
-    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ALWAYS</property>
+    <property name="default_width">600</property>
+    <property name="decorated">False</property>
     <signal name="delete_event" handler="on_pkgInfo_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox2">
@@ -4646,6 +4655,35 @@ gz</property>
               </widget>
               <packing>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkAlignment" id="alignment2">
+                <property name="visible">True</property>
+                <property name="xalign">1</property>
+                <property name="yalign">0</property>
+                <property name="xscale">0</property>
+                <property name="yscale">0</property>
+                <property name="right_padding">10</property>
+                <child>
+                  <widget class="GtkButton" id="closeInfo">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="response_id">0</property>
+                    <signal name="clicked" handler="on_closeInfo_clicked"/>
+                    <signal name="delete_event" handler="on_closeInfo_delete_event"/>
+                    <child>
+                      <widget class="GtkImage" id="image14">
+                        <property name="visible">True</property>
+                        <property name="stock">gtk-close</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">2</property>
               </packing>
             </child>
           </widget>
@@ -5847,31 +5885,6 @@ gz</property>
           </widget>
           <packing>
             <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="GtkHButtonBox" id="hbuttonbox1">
-            <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-            <property name="layout_style">GTK_BUTTONBOX_END</property>
-            <child>
-              <widget class="GtkButton" id="closeInfo">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label">gtk-close</property>
-                <property name="use_stock">True</property>
-                <property name="response_id">0</property>
-                <signal name="clicked" handler="on_closeInfo_clicked"/>
-                <signal name="delete_event" handler="on_closeInfo_delete_event"/>
-              </widget>
-            </child>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="padding">7</property>
-            <property name="position">2</property>
           </packing>
         </child>
       </widget>

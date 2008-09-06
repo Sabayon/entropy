@@ -39,6 +39,15 @@ class const:
     else:
         ICONS_PATH = MAIN_PATH+'/pixmaps'
 
+    pkg_pixmap = PIXMAPS_PATH+'/package-x-generic.png'
+    ugc_small_pixmap = PIXMAPS_PATH+'/ugc.png'
+    ugc_pixmap = PIXMAPS_PATH+'/ugc/icon.png'
+    refresh_pixmap = PIXMAPS_PATH+'/ugc/refresh.png'
+    star_normal_pixmap = PIXMAPS_PATH+'/star.png'
+    star_selected_pixmap = PIXMAPS_PATH+'/star_selected.png'
+    star_empty_pixmap = PIXMAPS_PATH+'/star_empty.png'
+    empty_background = PIXMAPS_PATH+'/empty.png'
+
     # package categories
     PACKAGE_CATEGORIES = [
         "None",
