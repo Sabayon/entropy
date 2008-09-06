@@ -169,6 +169,7 @@ class CellRendererStars(gtk.GenericCellRenderer):
         return getattr(self, pspec.name)
 
     def on_render(self, window, widget, background_area, cell_area, expose_area, flags):
+
         (x_offset, y_offset, width, height) = self.on_get_size(widget, cell_area)
         widget.style.paint_box(window,
                                gtk.STATE_NORMAL,

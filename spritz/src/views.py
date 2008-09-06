@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import time
 import gtk
 import gobject
 from spritz_setup import const, cleanMarkupString, SpritzConf
@@ -493,23 +494,21 @@ class EntropyPackageView:
         obj = model.get_value( myiter, 0 )
         if not obj: return
         try:
-            voted = getattr( obj, 'voted' )
+            voted = int(getattr( obj, 'voted' ))
         except self.Equo.dbapi2.ProgrammingError:
             return
-        #print obj.name,mydata
-        if voted:
-            cell.value_voted = int(voted)
-            return
+        #if voted:
+        #    cell.value_voted = int(voted)
+        #    return
         try:
-            mydata = getattr( obj, 'vote' )
+            mydata = int(getattr( obj, 'vote' ))
         except self.Equo.dbapi2.ProgrammingError:
             return
         cell.value = int(mydata)
         cell.value_voted = int(voted)
-        self.queueView.refresh()
-        self.view.queue_draw()
 
     def spawn_vote_submit(self, obj):
+
         if self.Equo.UGC == None:
             obj.voted = 0
             return
@@ -520,12 +519,20 @@ class EntropyPackageView:
         atom = obj.name
         key = self.Equo.entropyTools.dep_getkey(atom)
 
+        self.queueView.refresh()
+        self.view.queue_draw()
+
+        t = self.Equo.entropyTools.parallelTask(self.vote_submit_thread, repository, key, obj)
+        t.parallel_wait()
+        t.start()
+
+
+    def vote_submit_thread(self, repository, key, obj):
         status, err_msg = self.Equo.UGC.add_vote(repository, key, obj.voted)
         if status:
             msg = "<small><span foreground='#339101'><b>%s</b></span>: %s</small>" % (_("Vote registered successfully"),obj.voted,)
         else:
             msg = "<small><span foreground='#FF0000'><b>%s</b></span>: %s</small>" % (_("Error registering vote"),err_msg,)
-
         self.ui.UGCMessageLabel.set_markup(msg)
         t = self.Equo.entropyTools.parallelTask(self.refresh_vote_info, obj)
         t.parallel_wait()
