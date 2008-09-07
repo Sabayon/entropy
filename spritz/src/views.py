@@ -70,6 +70,7 @@ class EntropyPackageView:
         self.loaded_widget = None
         self.loaded_reinstallable = None
         self.loaded_event = None
+        self.do_refresh_view = False
         self.main_window = main_window
         self.event_click_pos = 0,0
         # UGC pixmaps
@@ -167,6 +168,21 @@ class EntropyPackageView:
         self.install_undoinstall = self.install_menu_xml.get_widget( "undoinstall" )
         self.install_install.set_image(self.img_pkg_install)
         self.updates_undoupdate.set_image(self.img_pkg_undoinstall)
+
+        # start view refresher
+        t = self.Equo.entropyTools.parallelTask(self.view_refresher)
+        t.parallel_wait()
+        t.start()
+
+    def view_refresher(self):
+        try:
+            while 1:
+                if self.do_refresh_view:
+                    self.view.queue_draw()
+                    self.do_refresh_view = False
+                time.sleep(0.1)
+        except:
+            pass
 
     def treeview_enter_notify(self, widget, event):
         self.main_window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
@@ -496,6 +512,7 @@ class EntropyPackageView:
         try:
             voted = int(getattr( obj, 'voted' ))
         except self.Equo.dbapi2.ProgrammingError:
+            self.do_refresh_view = True
             return
         #if voted:
         #    cell.value_voted = int(voted)
@@ -503,6 +520,7 @@ class EntropyPackageView:
         try:
             mydata = int(getattr( obj, 'vote' ))
         except self.Equo.dbapi2.ProgrammingError:
+            self.do_refresh_view = True
             return
         cell.value = int(mydata)
         cell.value_voted = int(voted)
@@ -604,7 +622,10 @@ class EntropyPackageView:
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 0 )
         if obj:
-            return not obj.onlyname.startswith(key)
+            try:
+                return not obj.onlyname.startswith(key)
+            except self.Equo.dbapi2.ProgrammingError:
+                pass
         return True
 
     def set_pixbuf_to_cell(self, cell, filename):
@@ -645,7 +666,7 @@ class EntropyPackageView:
                 mydata = getattr( obj, property )
                 cell.set_property('markup',mydata)
             except self.Equo.dbapi2.ProgrammingError:
-                pass
+                self.do_refresh_view = True
             if obj.color:
                 self.set_line_status(obj, cell)
                 cell.set_property('foreground',obj.color)

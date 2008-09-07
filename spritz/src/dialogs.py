@@ -39,6 +39,8 @@ class PkgInfoMenu:
         self.star_selected_pixmap = const.star_selected_pixmap
         self.star_empty_pixmap = const.star_empty_pixmap
 
+        self.ugc_data = None
+        self.ugc_status_message = None
         self.pkg = pkg
         self.vote = 0
         self.window = window
@@ -79,12 +81,31 @@ class PkgInfoMenu:
             i = i + 1
         return result
 
-    def set_pixbuf_to_cell(self, cell, filepath):
+    def set_pixbuf_to_cell(self, cell, path):
         try:
-            pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/"+filepath)
+            pixbuf = gtk.gdk.pixbuf_new_from_file(path)
             cell.set_property( 'pixbuf', pixbuf )
         except gobject.GError:
             pass
+
+    def ugc_pixbuf( self, column, cell, model, myiter ):
+        """ 
+        Cell Data function for recent Column, shows pixmap
+        if recent Value is True.
+        """
+        obj = model.get_value( myiter, 0 )
+        if isinstance(obj,dict):
+            self.set_pixbuf_to_cell(cell,obj['image_path'])
+
+    def ugc_content( self, column, cell, model, myiter ):
+        obj = model.get_value( myiter, 0 )
+        if isinstance(obj,dict):
+            if obj.has_key('parent_desc'):
+                cell.set_property('markup',"<b>%s</b>\n<small>%s</small>" % (obj['parent_desc'],_("Expand to browse"),))
+                cell.set_property('foreground','#68228B')
+            elif obj.has_key('description'):
+                cell.set_property('markup',obj['description'])
+                cell.set_property('foreground',None)
 
     def on_button_press(self, widget, event):
         self.pkginfo_ui.pkgInfo.begin_move_drag(
@@ -99,21 +120,114 @@ class PkgInfoMenu:
             self.contentModel.append(None,[x[0],x[1]])
 
     def on_closeInfo_clicked(self, widget):
+        self.reset_ugc_data()
         self.pkginfo_ui.pkgInfo.hide()
 
     def on_pkgInfo_delete_event(self, widget, path):
+        self.reset_ugc_data()
         self.pkginfo_ui.pkgInfo.hide()
         return True
 
-    def on_loadUgcButton_clicked(self, widget):
-        print widget
-        print "UGC"
+    def on_loadUgcButton_clicked(self, widget, force = True):
+        self.spawn_ugc_load(force = force)
+
+    def reset_ugc_data(self):
+        del self.ugc_data
+        self.ugc_data = None
+
+    def spawn_ugc_load(self, force = False):
+
+        if (self.ugc_data != None) and (not force):
+            return
+        if self.Entropy.UGC == None:
+            return
+        if not (self.pkgkey and self.repository):
+            return
+
+        self.pkginfo_ui.ugcButtonBox.hide()
+        self.pkginfo_ui.loadUgcButton.set_sensitive(False)
+        self.pkginfo_ui.scrolledView.hide()
+        self.pkginfo_ui.ugcView.hide()
+        self.pkginfo_ui.ugcLoadingEvent.show_all()
+        loading_pix = gtk.image_new_from_file(const.loading_pix)
+        self.pkginfo_ui.ugcLoadingEvent.add(loading_pix)
+        self.pkginfo_ui.ugcLoadingEvent.show_all()
+
+        self.pkginfo_ui.pkgInfo.queue_draw()
+
+        docs_cache = None
+        if not force:
+            docs_cache = self.Entropy.UGC.UGCCache.get_alldocs_cache(self.pkgkey, self.repository)
+        if docs_cache == None:
+            docs_data, err_msg = self.Entropy.UGC.get_docs(self.repository, self.pkgkey)
+            if not isinstance(docs_data,tuple):
+                self.ugc_data = {}
+            else:
+                self.ugc_data = self.digest_remote_docs_data(docs_data)
+            self.ugc_status_message = err_msg
+        else:
+            self.ugc_data = self.digest_remote_docs_data(docs_cache)
+
+        self.refresh_ugc_view()
+
+        self.pkginfo_ui.ugcLoadingEvent.remove(loading_pix)
+        del loading_pix
+        self.pkginfo_ui.scrolledView.show()
+        self.pkginfo_ui.ugcView.show()
+        self.pkginfo_ui.ugcLoadingEvent.hide()
+        self.pkginfo_ui.loadUgcButton.set_sensitive(True)
+        self.pkginfo_ui.ugcButtonBox.show_all()
+
+    def digest_remote_docs_data(self, data):
+        newdata = {}
+        for mydict in data:
+            if not mydict:
+                continue
+            if not newdata.has_key(mydict['iddoctype']):
+                newdata[mydict['iddoctype']] = []
+            newdata[mydict['iddoctype']].append(mydict.copy())
+        return newdata
+
+    def refresh_ugc_view(self):
+        self.ugcModel.clear()
+        if self.ugc_data == None: return
+        self.populate_ugc_view()
+        self.ugcView.expand_all()
+
+    def populate_ugc_view(self):
+
+        if self.ugc_data == None: return
+
+        doc_types = self.ugc_data.keys()
+        doc_type_image_map = {
+            1: const.ugc_text_pix,
+            2: const.ugc_text_pix,
+            3: const.ugc_image_pix,
+            4: const.ugc_generic_pix,
+            5: const.ugc_video_pix,
+        }
+        for doc_type in doc_types:
+            image_path = doc_type_image_map.get(int(doc_type))
+            cat_dict = {
+                'image_path': image_path,
+                'parent_desc': "%s" % (etpConst['ugc_doctypes_description'].get(int(doc_type)),),
+            }
+            parent = self.ugcModel.append( None, (cat_dict.copy(),) )
+            for mydoc in self.ugc_data[doc_type]:
+                mydoc['image_path'] = const.ugc_view_pix
+                self.ugcModel.append( parent, (mydoc.copy(),) )
+
+        #search_col = 0
+        #self.view.set_search_column( search_col )
+        #self.view.set_search_equal_func(self.atom_search)
+        self.ugcView.set_property('headers-visible',True)
+        self.ugcView.set_property('enable-search',True)
+        self.ugcView.show_all()
 
     def on_infoBook_switch_page(self, widget, page, page_num):
         if (page_num == self.ugc_page_idx) and (not self.switched_to_ugc_page):
             self.switched_to_ugc_page = True
-            self.on_loadUgcButton_clicked(widget)
-
+            self.on_loadUgcButton_clicked(widget, force = False)
 
     def on_star5_enter_notify_event(self, widget, event):
         self.star_enter(widget, event, 5)
@@ -129,27 +243,6 @@ class PkgInfoMenu:
 
     def on_star1_enter_notify_event(self, widget, event):
         self.star_enter(widget, event, 1)
-
-    '''
-    def on_star5_leave_notify_event(self, widget, event):
-        self.star_leave(widget, event, 5)
-
-    def on_star4_leave_notify_event(self, widget, event):
-        self.star_leave(widget, event, 4)
-
-    def on_star3_leave_notify_event(self, widget, event):
-        self.star_leave(widget, event, 3)
-
-    def on_star2_leave_notify_event(self, widget, event):
-        self.star_leave(widget, event, 2)
-
-    def on_star1_leave_notify_event(self, widget, event):
-        self.star_leave(widget, event, 1)
-
-    def star_leave(self, widget, event, number):
-        return
-
-    '''
 
     def on_starsEvent_leave_notify_event(self, widget, event):
         self.pkginfo_ui.pkgInfo.window.set_cursor(None)
@@ -294,30 +387,29 @@ class PkgInfoMenu:
         self.ugcView = self.pkginfo_ui.ugcView
         self.ugcModel = gtk.TreeStore( gobject.TYPE_PYOBJECT )
 
-        '''
         # Setup resent column
         cell = gtk.CellRendererPixbuf()
-        cell.set_property('height', 52)
-        self.set_pixbuf_to_cell(cell, self.pkg_install_ok )
-        column1 = gtk.TreeViewColumn( self.pkgcolumn_text, cell1 )
-        column1.set_cell_data_func( cell1, self.new_pixbuf )
-        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( self.selection_width+40 )
-        column1.set_sort_column_id( -1 )
-        self.view.append_column( column1 )
-        column1.set_clickable( False )
-
+        cell.set_property('height', 64)
+        column = gtk.TreeViewColumn( _("Document Type"), cell )
+        column.set_cell_data_func( cell, self.ugc_pixbuf )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 120 )
+        column.set_sort_column_id( -1 )
+        self.ugcView.append_column( column )
 
         cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "" ), cell )
+        column = gtk.TreeViewColumn( _( "Content" ), cell )
         column.set_resizable( True )
-        column.set_cell_data_func( cell, self.get_data_text, property )
+        column.set_cell_data_func( cell, self.ugc_content )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column.set_fixed_width( size )
-        column.set_expand(expand)
+        column.set_fixed_width( 350 )
+        column.set_expand(True)
         column.set_sort_column_id( -1 )
-        self.view.append_column( column )
-        '''
+        self.ugcView.append_column( column )
+        self.ugcView.set_model( self.ugcModel )
+
+        self.ugcView.set_property('headers-visible',True)
+        self.ugcView.set_property('enable-search',True)
 
 
     def set_stars(self, count, hover = False):

@@ -5760,7 +5760,7 @@ gz</property>
                       <widget class="GtkVBox" id="vbox55">
                         <property name="visible">True</property>
                         <child>
-                          <widget class="GtkScrolledWindow" id="scrolledwindow23">
+                          <widget class="GtkScrolledWindow" id="scrolledView">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
@@ -5775,7 +5775,17 @@ gz</property>
                           </widget>
                         </child>
                         <child>
-                          <widget class="GtkHButtonBox" id="hbuttonbox5">
+                          <widget class="GtkEventBox" id="ugcLoadingEvent">
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkHButtonBox" id="ugcButtonBox">
                             <property name="visible">True</property>
                             <property name="spacing">6</property>
                             <property name="layout_style">GTK_BUTTONBOX_START</property>
@@ -5842,7 +5852,7 @@ gz</property>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </widget>
