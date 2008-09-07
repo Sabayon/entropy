@@ -47,6 +47,16 @@ class const:
     star_selected_pixmap = PIXMAPS_PATH+'/star_selected.png'
     star_empty_pixmap = PIXMAPS_PATH+'/star_empty.png'
     empty_background = PIXMAPS_PATH+'/empty.png'
+    loading_pix = PIXMAPS_PATH+'/loading.gif'
+
+    # UGC
+    ugc_ok_pix = PIXMAPS_PATH+'/ugc/ok.png'
+    ugc_error_pix = PIXMAPS_PATH+'/ugc/error.png'
+    ugc_generic_pix = PIXMAPS_PATH+'/ugc/generic.png'
+    ugc_text_pix = PIXMAPS_PATH+'/ugc/text.png'
+    ugc_video_pix = PIXMAPS_PATH+'/ugc/video.png'
+    ugc_image_pix = PIXMAPS_PATH+'/ugc/image.png'
+    ugc_view_pix = PIXMAPS_PATH+'/ugc/view.png'
 
     # package categories
     PACKAGE_CATEGORIES = [
