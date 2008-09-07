@@ -406,6 +406,7 @@ etpCache = {
     'eapi3_fetch': 'eapi3/segment_',
     'ugc_votes': 'ugc/ugc_votes',
     'ugc_downloads': 'ugc/ugc_downloads',
+    'ugc_docs': 'ugc/ugc_docs',
 }
 
 # ahahaha
@@ -803,6 +804,13 @@ def const_defaultSettings(rootdir):
             'image': 3,
             'generic_file': 4,
             'youtube_video': 5,
+        },
+        'ugc_doctypes_description': {
+            1: _('Comments'),
+            2: _('BBcode Documents'),
+            3: _('Images/Screenshots'),
+            4: _('Generic Files'),
+            5: _('YouTube(tm) Videos'),
         },
         'ugc_accessfile': ETP_UGC_CONF_DIR+"/access.xml",
         'ugc_voterange': range(1,6),

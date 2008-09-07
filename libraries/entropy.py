@@ -13850,6 +13850,7 @@ class SocketHostInterface:
         self.SSL_exceptions['WantWriteError'] = None
         self.SSL_exceptions['WantX509LookupError'] = None
         self.SSL_exceptions['ZeroReturnError'] = None
+        self.SSL_exceptions['SysCallError'] = None
         self.SSL_exceptions['Error'] = []
         self.last_print = ''
         self.valid_commands = {}
@@ -13914,6 +13915,7 @@ class SocketHostInterface:
         self.SSL_exceptions['WantWriteError'] = SSL.WantWriteError
         self.SSL_exceptions['WantX509LookupError'] = SSL.WantX509LookupError
         self.SSL_exceptions['ZeroReturnError'] = SSL.ZeroReturnError
+        self.SSL_exceptions['SysCallError'] = SSL.SysCallError
         self.SSL['m'] = SSL
         self.SSL['crypto'] = crypto
         self.SSL['key'] = etpConst['socket_service']['ssl_key']
@@ -20450,7 +20452,8 @@ class RepositorySocketClientInterface:
             'WantWriteError': None,
             'WantX509LookupError': None,
             'ZeroReturnError': None,
-            'Error': None
+            'Error': None,
+            'SysCallError': None
         }
         self.ssl = ssl
         self.pyopenssl = True
@@ -20492,6 +20495,7 @@ class RepositorySocketClientInterface:
                 self.SSL_exceptions['WantX509LookupError'] = SSL.WantX509LookupError
                 self.SSL_exceptions['ZeroReturnError'] = SSL.ZeroReturnError
                 self.SSL_exceptions['Error'] = SSL.Error
+                self.SSL_exceptions['SysCallError'] = SSL.SysCallError
                 self.SSL['m'] = SSL
                 self.SSL['crypto'] = crypto
 
@@ -20742,6 +20746,21 @@ class RepositorySocketClientInterface:
                 continue
             except self.SSL_exceptions['ZeroReturnError']:
                 break
+            except self.SSL_exceptions['SysCallError'], e:
+                if not self.quiet:
+                    mytxt = _("syscall error while receiving data")
+                    self.Entropy.updateProgress(
+                        "[%s:%s] %s: %s" % (
+                                brown(self.hostname),
+                                bold(str(self.hostport)),
+                                blue(mytxt),
+                                e,
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = self.output_header
+                    )
+                return None
 
         return self.buffered_data
 
@@ -20999,11 +21018,17 @@ class UGCCacheInterface:
     def _get_downloads_cache_file(self, repository):
         return etpCache['ugc_downloads']+"/"+repository
 
+    def _get_alldocs_cache_file(self, pkgkey, repository):
+        return etpCache['ugc_docs']+"/"+repository+"/"+pkgkey
+
     def _get_vote_cache_key(self, repository):
         return 'get_vote_cache_'+repository
 
     def _get_downloads_cache_key(self, repository):
         return 'get_downloads_cache_'+repository
+
+    def _get_alldocs_cache_key(self, pkgkey, repository):
+        return 'get_package_alldocs_cache_'+pkgkey+"_"+repository
 
     def update_vote_cache(self, repository, vote_dict):
         cached = self.get_vote_cache(repository)
@@ -21020,6 +21045,9 @@ class UGCCacheInterface:
         else:
             cached.update(down_dict)
         self.save_downloads_cache(repository,cached)
+
+    def update_alldocs_cache(self, pkgkey, repository, alldocs_dict):
+        self.save_alldocs_cache(pkgkey, repository, alldocs_dict)
 
     def get_vote_cache(self, repository):
         cache_key = self._get_vote_cache_key(repository)
@@ -21055,6 +21083,23 @@ class UGCCacheInterface:
         self.processing = False
         return data
 
+    def get_alldocs_cache(self, pkgkey, repository):
+        cache_key = self._get_alldocs_cache_key(pkgkey, repository)
+        cached = self._get_live_cache_item(repository, cache_key)
+        if cached != None:
+            return cached
+        self.process_wait()
+        self.processing = True
+        cache_file = self._get_alldocs_cache_file(pkgkey, repository)
+        try:
+            data = self.dumpTools.loadobj(cache_file)
+            if data != None:
+                self._set_live_cache_item(repository, cache_key, data)
+        except (IOError,EOFError,OSError):
+            data = None
+        self.processing = False
+        return data
+
     def save_vote_cache(self, repository, vote_dict):
         self.process_wait()
         self.processing = True
@@ -21067,6 +21112,13 @@ class UGCCacheInterface:
         self.processing = True
         self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
         self.dumpTools.dumpobj(self._get_downloads_cache_file(repository), down_dict)
+        self.processing = False
+
+    def save_alldocs_cache(self, pkgkey, repository, alldocs_dict):
+        self.process_wait()
+        self.processing = True
+        self._clear_live_cache_item(repository, self._get_alldocs_cache_key(pkgkey, repository))
+        self.dumpTools.dumpobj(self._get_alldocs_cache_file(pkgkey, repository), alldocs_dict)
         self.processing = False
 
     def process_wait(self):
@@ -21341,7 +21393,10 @@ class UGCClientInterface:
         return self.do_cmd(repository, True, "ugc_remove_youtube_video", [iddoc], {})
 
     def get_docs(self, repository, pkgkey):
-        return self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
+        docs_data, err_msg = self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
+        if err_msg == 'ok':
+            self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
+        return docs_data, err_msg
 
     def send_document_autosense(self, repository, pkgkey, ugc_type, data, title, description, keywords):
         if ugc_type == etpConst['ugc_doctypes']['generic_file']:
