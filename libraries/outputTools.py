@@ -521,7 +521,7 @@ class TextInterface:
         for identifier, input_text, callback, password in input_parameters:
             while 1:
                 try:
-                    myresult = readtext(input_text+":", password = password)
+                    myresult = readtext(input_text+":", password = password).decode('utf-8')
                 except (KeyboardInterrupt,EOFError,):
                     if not cancel_button: # use with care
                         continue
