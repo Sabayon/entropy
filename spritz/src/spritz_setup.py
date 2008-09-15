@@ -42,6 +42,7 @@ class const:
     pkg_pixmap = PIXMAPS_PATH+'/package-x-generic.png'
     ugc_small_pixmap = PIXMAPS_PATH+'/ugc.png'
     ugc_pixmap = PIXMAPS_PATH+'/ugc/icon.png'
+    ugc_pixmap_small = PIXMAPS_PATH+'/ugc/icon_small.png'
     refresh_pixmap = PIXMAPS_PATH+'/ugc/refresh.png'
     star_normal_pixmap = PIXMAPS_PATH+'/star.png'
     star_selected_pixmap = PIXMAPS_PATH+'/star_selected.png'

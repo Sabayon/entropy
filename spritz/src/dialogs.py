@@ -25,36 +25,11 @@ from etpgui.widgets import UI
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities
 from entropy_i18n import _,_LOCALE
 import packages
+import exceptionTools
 from entropyConstants import *
 
-class PkgInfoMenu:
 
-    def __init__(self, Entropy, pkg, window):
-
-        self.pkg_pixmap = const.pkg_pixmap
-        self.ugc_small_pixmap = const.ugc_small_pixmap
-        self.ugc_pixmap = const.ugc_pixmap
-        self.refresh_pixmap = const.refresh_pixmap
-        self.star_normal_pixmap = const.star_normal_pixmap
-        self.star_selected_pixmap = const.star_selected_pixmap
-        self.star_empty_pixmap = const.star_empty_pixmap
-
-        self.ugc_data = None
-        self.ugc_status_message = None
-        self.pkg = pkg
-        self.vote = 0
-        self.window = window
-        self.Entropy = Entropy
-        self.repository = None
-        self.pkgkey = None
-        self.ugc_page_idx = 5
-        self.switched_to_ugc_page = False
-        self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
-        self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
-        self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
-        self.pkginfo_ui.pkgInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
-        self.setupPkgPropertiesView()
+class MenuSkel:
 
     def _getAllMethods(self):
         result = {}
@@ -81,6 +56,37 @@ class PkgInfoMenu:
             i = i + 1
         return result
 
+class PkgInfoMenu(MenuSkel):
+
+    def __init__(self, Entropy, pkg, window):
+
+        self.pkg_pixmap = const.pkg_pixmap
+        self.ugc_small_pixmap = const.ugc_small_pixmap
+        self.ugc_pixmap = const.ugc_pixmap
+        self.refresh_pixmap = const.refresh_pixmap
+        self.star_normal_pixmap = const.star_normal_pixmap
+        self.star_selected_pixmap = const.star_selected_pixmap
+        self.star_empty_pixmap = const.star_empty_pixmap
+
+        self.loading_pix = gtk.image_new_from_file(const.loading_pix)
+        self.ugc_preview_fetcher = None
+        self.ugc_data = None
+        self.ugc_status_message = None
+        self.pkg = pkg
+        self.vote = 0
+        self.window = window
+        self.Entropy = Entropy
+        self.repository = None
+        self.pkgkey = None
+        self.ugc_page_idx = 5
+        self.switched_to_ugc_page = False
+        self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
+        self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
+        self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
+        self.pkginfo_ui.pkgInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
+        self.setupPkgPropertiesView()
+
     def set_pixbuf_to_cell(self, cell, path):
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(path)
@@ -89,23 +95,65 @@ class PkgInfoMenu:
             pass
 
     def ugc_pixbuf( self, column, cell, model, myiter ):
-        """ 
-        Cell Data function for recent Column, shows pixmap
-        if recent Value is True.
-        """
         obj = model.get_value( myiter, 0 )
         if isinstance(obj,dict):
-            self.set_pixbuf_to_cell(cell,obj['image_path'])
+            if obj.has_key('preview_path'):
+                self.set_pixbuf_to_cell(cell,obj['preview_path'])
+            else:
+                self.set_pixbuf_to_cell(cell,obj['image_path'])
+            self.set_colors_to_cell(cell, obj)
 
     def ugc_content( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
         if isinstance(obj,dict):
-            if obj.has_key('parent_desc'):
+            self.set_colors_to_cell(cell,obj)
+
+            if obj.has_key('is_cat'):
                 cell.set_property('markup',"<b>%s</b>\n<small>%s</small>" % (obj['parent_desc'],_("Expand to browse"),))
-                cell.set_property('foreground','#68228B')
-            elif obj.has_key('description'):
-                cell.set_property('markup',obj['description'])
+            else:
+                title = _("N/A")
+                if obj['title']:
+                    title = unicode(obj['title'],'raw_unicode_escape')
+                description = _("N/A")
+                if obj['description']:
+                    description = obj['description']
+                if obj['iddoctype'] in (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],):
+                    description = unicode(obj['ddata'].tostring(),'raw_unicode_escape')
+                    if len(description) > 100:
+                        description = description[:100].strip()+"..."
+                mytxt = "<small><b>%s</b>: %s, %s: %s\n<b>%s</b>: %s, <i>%s</i>\n<b>%s</b>: %s\n<b>%s</b>: <i>%s</i>\n<b>%s</b>: %s</small>" % (
+                    _("Identifier"),
+                    obj['iddoc'],
+                    _("Size"),
+                    self.Entropy.entropyTools.bytesIntoHuman(obj['size']),
+                    _("Author"),
+                    obj['username'],
+                    obj['ts'],
+                    _("Title"),
+                    title,
+                    _("Description"),
+                    description,
+                    _("Keywords"),
+                    ', '.join(obj['keywords']),
+                )
+                cell.set_property('markup',mytxt)
+
+    def set_colors_to_cell(self, cell, obj):
+        odd = 0
+        if obj.has_key('counter'):
+            odd = obj['counter']%2
+        if obj.has_key('background'):
+            cell.set_property('cell-background',obj['background'][odd])
+        else:
+            cell.set_property('cell-background',None)
+        try:
+            if obj.has_key('foreground'):
+                cell.set_property('foreground',obj['foreground'])
+            else:
                 cell.set_property('foreground',None)
+        except TypeError:
+            pass
+
 
     def on_button_press(self, widget, event):
         self.pkginfo_ui.pkgInfo.begin_move_drag(
@@ -131,9 +179,68 @@ class PkgInfoMenu:
     def on_loadUgcButton_clicked(self, widget, force = True):
         self.spawn_ugc_load(force = force)
 
+    def on_ugcRemoveButton_released(self, widget):
+        if self.Entropy.UGC == None: return
+        if self.repository == None: return
+        model, myiter = self.ugcView.get_selection().get_selected()
+        if myiter == None: return
+        obj = model.get_value( myiter, 0 )
+        if not isinstance(obj,dict): return
+        if obj.has_key('is_cat'): return
+        self.show_loading()
+        self.Entropy.UGC.remove_document_autosense(self.repository, int(obj['iddoc']), obj['iddoctype'])
+        self.hide_loading()
+        self.reset_ugc_data()
+        self.spawn_ugc_load(force = True)
+        self.refresh_ugc_view()
+
+    def on_ugc_doubleclick(self, widget, path, view):
+        self.on_ugcShowButton_clicked(widget)
+
+    def on_ugcShowButton_clicked(self, widget):
+        if self.Entropy.UGC == None: return
+        if self.repository == None: return
+        model, myiter = self.ugcView.get_selection().get_selected()
+        if myiter == None: return
+        obj = model.get_value( myiter, 0 )
+        if not isinstance(obj,dict): return
+        if obj.has_key('is_cat'): return
+        my = UGCInfoMenu(self.Entropy, obj, self.repository, self.pkginfo_ui.pkgInfo)
+        my.load()
+
+    def on_ugcAddButton_clicked(self, widget):
+        if self.Entropy.UGC == None: return
+        if self.repository == None: return
+        if self.pkgkey == None: return
+        my = UGCAddMenu(self.Entropy, self.pkgkey, self.repository, self.pkginfo_ui.pkgInfo, self.refresh_view_cb)
+        my.load()
+
+    def refresh_view_cb(self):
+        self.spawn_ugc_load(force = True)
+
     def reset_ugc_data(self):
         del self.ugc_data
         self.ugc_data = None
+        if self.ugc_preview_fetcher != None:
+            self.ugc_preview_fetcher.kill()
+
+    def show_loading(self):
+        self.pkginfo_ui.ugcButtonBox.hide()
+        self.pkginfo_ui.loadUgcButton.set_sensitive(False)
+        self.pkginfo_ui.scrolledView.hide()
+        self.pkginfo_ui.ugcView.hide()
+        self.pkginfo_ui.ugcLoadingEvent.show_all()
+        self.pkginfo_ui.ugcLoadingEvent.add(self.loading_pix)
+        self.pkginfo_ui.ugcLoadingEvent.show_all()
+        self.pkginfo_ui.pkgInfo.queue_draw()
+
+    def hide_loading(self):
+        self.pkginfo_ui.ugcLoadingEvent.remove(self.loading_pix)
+        self.pkginfo_ui.scrolledView.show()
+        self.pkginfo_ui.ugcView.show()
+        self.pkginfo_ui.ugcLoadingEvent.hide()
+        self.pkginfo_ui.loadUgcButton.set_sensitive(True)
+        self.pkginfo_ui.ugcButtonBox.show_all()
 
     def spawn_ugc_load(self, force = False):
 
@@ -144,16 +251,7 @@ class PkgInfoMenu:
         if not (self.pkgkey and self.repository):
             return
 
-        self.pkginfo_ui.ugcButtonBox.hide()
-        self.pkginfo_ui.loadUgcButton.set_sensitive(False)
-        self.pkginfo_ui.scrolledView.hide()
-        self.pkginfo_ui.ugcView.hide()
-        self.pkginfo_ui.ugcLoadingEvent.show_all()
-        loading_pix = gtk.image_new_from_file(const.loading_pix)
-        self.pkginfo_ui.ugcLoadingEvent.add(loading_pix)
-        self.pkginfo_ui.ugcLoadingEvent.show_all()
-
-        self.pkginfo_ui.pkgInfo.queue_draw()
+        self.show_loading()
 
         docs_cache = None
         if not force:
@@ -169,14 +267,7 @@ class PkgInfoMenu:
             self.ugc_data = self.digest_remote_docs_data(docs_cache)
 
         self.refresh_ugc_view()
-
-        self.pkginfo_ui.ugcLoadingEvent.remove(loading_pix)
-        del loading_pix
-        self.pkginfo_ui.scrolledView.show()
-        self.pkginfo_ui.ugcView.show()
-        self.pkginfo_ui.ugcLoadingEvent.hide()
-        self.pkginfo_ui.loadUgcButton.set_sensitive(True)
-        self.pkginfo_ui.ugcButtonBox.show_all()
+        self.hide_loading()
 
     def digest_remote_docs_data(self, data):
         newdata = {}
@@ -185,19 +276,52 @@ class PkgInfoMenu:
                 continue
             if not newdata.has_key(mydict['iddoctype']):
                 newdata[mydict['iddoctype']] = []
-            newdata[mydict['iddoctype']].append(mydict.copy())
+            newdata[mydict['iddoctype']].append(mydict)
         return newdata
 
     def refresh_ugc_view(self):
         self.ugcModel.clear()
         if self.ugc_data == None: return
         self.populate_ugc_view()
-        self.ugcView.expand_all()
+        #self.ugcView.expand_all()
+
+    def spawn_docs_fetch(self):
+        if self.ugc_data == None: return
+        if self.repository == None: return
+
+        for doc_type in self.ugc_data:
+            if int(doc_type) not in (etpConst['ugc_doctypes']['image'],):
+                continue
+            for mydoc in self.ugc_data[doc_type]:
+                if not mydoc.has_key('store_url'):
+                    continue
+                if not mydoc['store_url']:
+                    continue
+                store_path = self.Entropy.UGC.UGCCache.get_stored_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
+                if store_path == None:
+                    self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
+                    store_path = self.Entropy.UGC.UGCCache.get_stored_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
+                if (store_path != None) and os.access(store_path,os.R_OK):
+                    preview_path = store_path+".preview"
+                    if not os.path.isfile(preview_path) and (os.stat(store_path)[6] < 1024000):
+                        # resize pix
+                        img = gtk.Image()
+                        img.set_from_file(store_path)
+                        img_buf = img.get_pixbuf()
+                        w, h = img_buf.get_width(),img_buf.get_height()
+                        new_w = 64.0
+                        new_h = new_w*h/w
+                        img_buf = img_buf.scale_simple(int(new_w),int(new_h),gtk.gdk.INTERP_BILINEAR)
+                        img_buf.save(preview_path, "png")
+                        del img, img_buf
+                    if os.path.isfile(preview_path):
+                        mydoc['preview_path'] = preview_path
 
     def populate_ugc_view(self):
 
         if self.ugc_data == None: return
 
+        spawn_fetch = False
         doc_types = self.ugc_data.keys()
         doc_type_image_map = {
             1: const.ugc_text_pix,
@@ -206,16 +330,44 @@ class PkgInfoMenu:
             4: const.ugc_generic_pix,
             5: const.ugc_video_pix,
         }
+        doc_type_background_map = {
+            1:('#67AB6F','#599360'),
+            2:('#67AB6F','#599360'),
+            3:('#AB8158','#CA9968'),
+            4:('#BBD5B0','#99AE90'),
+            5:('#A5C0D5','#8EA5B7'),
+        }
+        doc_type_foreground_map = {
+            1:'#FFFFFF',
+            2:'#FFFFFF',
+            3:'#FFFFFF',
+            4:'#FFFFFF',
+            5:'#FFFFFF',
+        }
+        counter = 1
         for doc_type in doc_types:
+            spawn_fetch = True
             image_path = doc_type_image_map.get(int(doc_type))
             cat_dict = {
+                'is_cat': True,
                 'image_path': image_path,
-                'parent_desc': "%s" % (etpConst['ugc_doctypes_description'].get(int(doc_type)),),
+                'parent_desc': "%s (%s)" % (etpConst['ugc_doctypes_description'].get(int(doc_type)),len(self.ugc_data[doc_type]),),
+                'foreground': doc_type_foreground_map.get(int(doc_type)),
+                'background': doc_type_background_map.get(int(doc_type)),
             }
-            parent = self.ugcModel.append( None, (cat_dict.copy(),) )
+            parent = self.ugcModel.append( None, (cat_dict,) )
             for mydoc in self.ugc_data[doc_type]:
-                mydoc['image_path'] = const.ugc_view_pix
-                self.ugcModel.append( parent, (mydoc.copy(),) )
+                mydoc['image_path'] = const.ugc_pixmap_small
+                mydoc['foreground'] = doc_type_foreground_map.get(int(doc_type))
+                mydoc['background'] = doc_type_background_map.get(int(doc_type))
+                mydoc['counter'] = counter
+                self.ugcModel.append( parent, (mydoc,) )
+                counter += 1
+
+        if spawn_fetch:
+            self.ugc_preview_fetcher = self.Entropy.entropyTools.parallelTask(self.spawn_docs_fetch)
+            self.ugc_preview_fetcher.parallel_wait()
+            self.ugc_preview_fetcher.start()
 
         #search_col = 0
         #self.view.set_search_column( search_col )
@@ -387,10 +539,10 @@ class PkgInfoMenu:
         self.ugcView = self.pkginfo_ui.ugcView
         self.ugcModel = gtk.TreeStore( gobject.TYPE_PYOBJECT )
 
-        # Setup resent column
+        # Setup image column
         cell = gtk.CellRendererPixbuf()
-        cell.set_property('height', 64)
-        column = gtk.TreeViewColumn( _("Document Type"), cell )
+        cell.set_property('height', 78)
+        column = gtk.TreeViewColumn( _("Type"), cell ) # Document Type
         column.set_cell_data_func( cell, self.ugc_pixbuf )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( 120 )
@@ -640,6 +792,251 @@ class PkgInfoMenu:
             self.configProtectModel.append(None,[item,'mask'])
 
         self.pkginfo_ui.pkgInfo.show()
+
+class UGCInfoMenu(MenuSkel):
+
+    def __init__(self, Entropy, obj, repository, window):
+
+        import subprocess
+        self.subprocess = subprocess
+        self.repository = repository
+        self.window = window
+        self.Entropy = Entropy
+        self.ugc_data = obj.copy()
+        self.ugcinfo_ui = UI( const.GLADE_FILE, 'ugcInfo', 'entropy' )
+        self.ugcinfo_ui.signal_autoconnect(self._getAllMethods())
+        self.ugcinfo_ui.ugcInfo.set_transient_for(self.window)
+        self.ugcinfo_ui.ugcInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+
+    def on_closeInfo_clicked(self, widget, path = None):
+        self.ugcinfo_ui.ugcInfo.hide()
+        return True
+
+    def on_getButton_clicked(self, widget):
+        if self.ugc_data['store_url'] != None:
+            self.subprocess.call(['xdg-open',self.ugc_data['store_url']])
+
+    def load(self):
+
+        pix_path = self.ugc_data['image_path']
+        if self.ugc_data.has_key('preview_path'):
+            if os.path.isfile(self.ugc_data['preview_path']) and os.access(self.ugc_data['preview_path'],os.R_OK):
+                pix_path = self.ugc_data['preview_path']
+        self.ugcinfo_ui.ugcImage.set_from_file(pix_path)
+        self.ugcinfo_ui.labelKey.set_markup("<b>%s</b>" % (self.ugc_data['pkgkey'],))
+        doc_type_desc = etpConst['ugc_doctypes_description_singular'].get(int(self.ugc_data['iddoctype']))
+        self.ugcinfo_ui.labelTypedesc.set_markup("<small>[<b>%s</b>:%d] <i>%s</i></small>" % (
+                _("Id"),
+                int(self.ugc_data['iddoc']),
+                doc_type_desc,
+            )
+        )
+        self.ugcinfo_ui.titleContent.set_markup("%s" % (unicode(self.ugc_data['title'],'raw_unicode_escape'),))
+        self.ugcinfo_ui.descriptionContent.set_markup("%s" % (unicode(self.ugc_data['description'],'raw_unicode_escape'),))
+        self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (unicode(self.ugc_data['username'],'raw_unicode_escape'),))
+        self.ugcinfo_ui.dateContent.set_markup("<u>%s</u>" % (self.ugc_data['ts'],))
+        self.ugcinfo_ui.keywordsContent.set_markup("%s" % (unicode(', '.join(self.ugc_data['keywords']),'raw_unicode_escape'),))
+        self.ugcinfo_ui.sizeContent.set_markup("%s" % (self.Entropy.entropyTools.bytesIntoHuman(self.ugc_data['size']),))
+
+        bold_items = [
+            self.ugcinfo_ui.titleLabel,
+            self.ugcinfo_ui.descLabel,
+            self.ugcinfo_ui.authorLabel,
+            self.ugcinfo_ui.dateLabel,
+            self.ugcinfo_ui.keywordsLabel,
+            self.ugcinfo_ui.sizeLabel
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<b>%s</b>" % (t,))
+
+        small_items = bold_items
+        small_items += [
+            self.ugcinfo_ui.titleContent,
+            self.ugcinfo_ui.descriptionContent,
+            self.ugcinfo_ui.authorContent,
+            self.ugcinfo_ui.dateContent,
+            self.ugcinfo_ui.keywordsContent,
+            self.ugcinfo_ui.sizeContent
+        ]
+        for item in small_items:
+            t = item.get_label()
+            item.set_markup("<small>%s</small>" % (t,))
+
+        if self.ugc_data['iddoctype'] in (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],):
+            self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descLabel)
+            self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descriptionContent)
+            self.ugcinfo_ui.buttonBox.hide()
+            mybuf = gtk.TextBuffer()
+            mybuf.set_text(unicode(self.ugc_data['ddata'].tostring(),'raw_unicode_escape'))
+            self.ugcinfo_ui.textContent.set_buffer(mybuf)
+        else:
+            self.ugcinfo_ui.textFrame.hide()
+
+        self.ugcinfo_ui.ugcInfo.show()
+
+
+class UGCAddMenu(MenuSkel):
+
+    def __init__(self, Entropy, pkgkey, repository, window, refresh_cb):
+
+        self.loading_pix = gtk.image_new_from_file(const.loading_pix)
+        self.repository = repository
+        self.pix_path = const.ugc_pixmap
+        self.pkgkey = pkgkey
+        self.window = window
+        self.Entropy = Entropy
+        self.ugcadd_ui = UI( const.GLADE_FILE, 'ugcAdd', 'entropy' )
+        self.ugcadd_ui.signal_autoconnect(self._getAllMethods())
+        self.ugcadd_ui.ugcAdd.set_transient_for(self.window)
+        self.ugcadd_ui.ugcAdd.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.store = None
+        self.refresh_cb = refresh_cb
+        self.text_types = (etpConst['ugc_doctypes']['comments'],etpConst['ugc_doctypes']['bbcode_doc'],)
+        self.file_selected = None
+
+    def on_closeAdd_clicked(self, widget, path = None):
+        self.ugcadd_ui.ugcAdd.hide()
+        return True
+
+    def on_ugcAddTypeCombo_changed(self, widget):
+        myiter = widget.get_active_iter()
+        idx = self.store.get_value( myiter, 0 )
+        if idx in self.text_types:
+            txt = "%s %s" % (_("Write your"),etpConst['ugc_doctypes_description_singular'][idx],) # write your <document type>
+            self.setup_text_insert()
+        else:
+            txt = "%s %s" % (_("Select your"),etpConst['ugc_doctypes_description_singular'][idx],) # select your <document type>
+            self.setup_file_insert(txt)
+
+    def on_ugcAddFileChooser_file_set(self, widget):
+        self.file_selected = widget.get_filename()
+
+    def on_submitButton_clicked(self, widget):
+        dialog_title = _("Submit issue")
+        myiter = self.ugcadd_ui.ugcAddTypeCombo.get_active_iter()
+        doc_type = self.store.get_value( myiter, 0 )
+        title = self.ugcadd_ui.ugcAddTitleEntry.get_text()
+        description = self.ugcadd_ui.ugcAddDescEntry.get_text()
+        keywords_text = self.ugcadd_ui.ugcAddKeywordsEntry.get_text()
+        keywords = [x.strip() for x in keywords_text.split() if x.strip()]
+        doc_path = None
+        if doc_type in self.text_types:
+            mybuf = self.ugcadd_ui.ugcAddTextView.get_buffer()
+            start_iter = mybuf.get_start_iter()
+            end_iter = mybuf.get_end_iter()
+            description = mybuf.get_text(start_iter, end_iter)
+            if not description:
+                okDialog(self.window, _("Empty Document"), title = dialog_title)
+                return False
+        else:
+            if not description:
+                okDialog(self.window, _("Invalid Description"), title = dialog_title)
+                return False
+            doc_path = self.file_selected
+
+        # checking
+        if doc_type == None:
+            okDialog(self.window, _("Invalid Document Type"), title = dialog_title)
+            return False
+        if not title:
+            okDialog(self.window, _("Invalid Title"), title = dialog_title)
+            return False
+
+        # confirm ?
+        rc = self.Entropy.askQuestion(_("Do you confirm your submission?"))
+        if rc != "Yes":
+            return False
+
+        self.show_loading()
+        try:
+            rslt, data = self.Entropy.UGC.send_document_autosense(
+                self.repository,
+                str(self.pkgkey),
+                doc_type,
+                doc_path,
+                title,
+                description,
+                keywords_text
+            )
+        except Exception, e:
+            rslt = False
+            data = e
+        self.hide_loading()
+        if not rslt:
+            txt = "<small><span foreground='#FF0000'><b>%s</b></span>: %s | %s</small>" % (_("UGC Error"),rslt,data,)
+            self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
+            return False
+        else:
+            okDialog(self.window, _("Document added successfully. Thank you"), title = _("Success!"))
+            self.on_closeAdd_clicked(None,None)
+            self.refresh_cb()
+            return True
+
+    def show_loading(self):
+        self.ugcadd_ui.ugcAddButtonBox.hide()
+        self.ugcadd_ui.closeAdd.set_sensitive(False)
+        self.ugcadd_ui.ugcAddLoadingEvent.show_all()
+        self.ugcadd_ui.ugcAddLoadingEvent.add(self.loading_pix)
+        self.ugcadd_ui.ugcAddLoadingEvent.show_all()
+        self.ugcadd_ui.ugcAdd.queue_draw()
+
+    def hide_loading(self):
+        self.ugcadd_ui.ugcAddButtonBox.show()
+        self.ugcadd_ui.closeAdd.set_sensitive(True)
+        self.ugcadd_ui.ugcAddLoadingEvent.remove(self.loading_pix)
+        self.ugcadd_ui.ugcAddLoadingEvent.hide()
+        self.ugcadd_ui.ugcAdd.queue_draw()
+
+    def setup_text_insert(self, txt = _("Write your document")):
+        self.ugcadd_ui.ugcAddFileChooser.hide()
+        self.ugcadd_ui.ugcAddFrame.show()
+        self.ugcadd_ui.ugcAddDescLabel.hide()
+        self.ugcadd_ui.ugcAddDescEntry.hide()
+        self.ugcadd_ui.ugcAddInsertLabel.set_markup(txt)
+
+    def setup_file_insert(self, txt = _("Select your file")):
+        self.ugcadd_ui.ugcAddFileChooser.show()
+        self.ugcadd_ui.ugcAddFrame.hide()
+        self.ugcadd_ui.ugcAddDescLabel.show()
+        self.ugcadd_ui.ugcAddDescEntry.show()
+        self.ugcadd_ui.ugcAddInsertLabel.set_markup(txt)
+
+    def load(self):
+
+        self.ugcadd_ui.ugcAddImage.set_from_file(self.pix_path)
+        self.ugcadd_ui.labelAddKey.set_markup("<b>%s</b>" % (self.pkgkey,))
+        self.ugcadd_ui.labelAddRepo.set_markup("<small>%s: <b>%s</b></small>" % (_("On repository"),self.repository,))
+
+        # add types to combo
+        doc_types_list = sorted(etpConst['ugc_doctypes_description_singular'].keys())
+        self.store = gtk.ListStore( gobject.TYPE_INT, gobject.TYPE_STRING )
+        self.ugcadd_ui.ugcAddTypeCombo.set_model(self.store)
+        cell = gtk.CellRendererText()
+        self.ugcadd_ui.ugcAddTypeCombo.pack_start(cell, True)
+        self.ugcadd_ui.ugcAddTypeCombo.add_attribute(cell, 'text', 1)
+        for idx in doc_types_list:
+            # disable bbcode for now
+            if idx == etpConst['ugc_doctypes']['bbcode_doc']:
+                continue
+            self.store.append( (idx, etpConst['ugc_doctypes_description_singular'][idx],) )
+        self.ugcadd_ui.ugcAddTypeCombo.set_active(0)
+
+        # hide file chooser
+        self.setup_text_insert()
+
+        bold_items = [
+            self.ugcadd_ui.ugcAddTitleLabel,
+            self.ugcadd_ui.ugcAddDescLabel,
+            self.ugcadd_ui.ugcAddTypeLabel,
+            self.ugcadd_ui.ugcAddKeywordsLabel
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<b>%s</b>" % (t,))
+
+        self.ugcadd_ui.ugcAdd.show()
+
 
 class MaskedPackagesDialog:
 

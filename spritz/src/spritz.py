@@ -1447,7 +1447,21 @@ class SpritzApplication(SpritzController,SpritzGUI):
     def setupSpritz(self):
         msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
-        self.addPackages()
+        count = 30
+        while count:
+            try:
+                self.addPackages()
+            except self.Equo.dbapi2.ProgrammingError, e:
+                self.setStatus("%s: %s, %s" % (
+                        _("Error during list population"),
+                        e,
+                        _("Retrying in 1 second."),
+                    )
+                )
+                time.sleep(1)
+                count -= 1
+                continue
+            break
         self.populateCategories()
 
     def cleanEntropyCaches(self, alone = False):

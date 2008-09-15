@@ -72,7 +72,7 @@ class ProcessGtkEventsThread(Thread):
     def doQuit(self):
         self.__quit = True
         self.__active.set()
-        time.sleep(2)
+        time.sleep(1)
 
     def startProcessing(self):
         self.__active.set()
