@@ -2,21 +2,18 @@ TODO list
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
   - split entropy.py into entropy package
-  - make.profile support (saving profile information into the db)
+  - UGC: bug report documents?
   - database backup tools
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - use expiration as a base to have and handle multiple packages in repo?
   - implement notice board
-  - implement configuration files snapshot tool
-  - allow interactivity for games requiring CDs/DVDs
   - add changelog to packages
   - documentation + man page
   - find a way to better handle real smartapps deps (need split PDEPEND?)
-  - server-side: packages upload through ssh?
+  - server-side: packages upload through socket?
 
   Spritz:
-    - UGC support
     - Category <-> Image dictionary (for the properties menu)
     - allow package remasking?
 
