@@ -61,12 +61,279 @@ class matchContainer:
     def clear(self):
         self.data.clear()
 
+class urlFetcher:
+
+    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
+
+        import entropyTools, socket
+        self.entropyTools, self.socket = entropyTools, socket
+        self.url = url
+        self.resume = resume
+        self.url = self.encodeUrl(self.url)
+        self.pathToSave = pathToSave
+        self.checksum = checksum
+        self.showSpeed = showSpeed
+        self.initVars()
+        self.progress = None
+        self.abort_check_func = abort_check_func
+        self.disallow_redirect = disallow_redirect
+        self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
+                                        etpConst['entropyversion'],
+                                        "Entropy",
+                                        os.path.basename(self.url),
+                                        os.uname()[0],
+                                        os.uname()[4],
+                                        os.uname()[2],
+        )
+        self.extra_header_data = {}
+
+        # resume support
+        if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
+            self.localfile = open(self.pathToSave,"awb")
+            self.localfile.seek(0,2)
+            self.startingposition = int(self.localfile.tell())
+            self.resumed = True
+        else:
+            self.localfile = open(self.pathToSave,"wb")
+
+        # setup proxy, doing here because config is dynamic
+        mydict = {}
+        if etpConst['proxy']['ftp']:
+            mydict['ftp'] = etpConst['proxy']['ftp']
+        if etpConst['proxy']['http']:
+            mydict['http'] = etpConst['proxy']['http']
+        if mydict:
+            mydict['username'] = etpConst['proxy']['username']
+            mydict['password'] = etpConst['proxy']['password']
+            self.entropyTools.add_proxy_opener(urllib2, mydict)
+        else:
+            # unset
+            urllib2._opener = None
+
+    def encodeUrl(self, url):
+        import urllib
+        url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
+        return url
+
+    def initVars(self):
+        self.resumed = False
+        self.bufferSize = 8192
+        self.status = None
+        self.remotefile = None
+        self.downloadedsize = 0
+        self.average = 0
+        self.remotesize = 0
+        self.oldaverage = 0.0
+        # transfer status data
+        self.startingposition = 0
+        self.datatransfer = 0
+        self.time_remaining = "(infinite)"
+        self.elapsed = 0.0
+        self.updatestep = 0.2
+        self.speedlimit = etpConst['downloadspeedlimit'] # kbytes/sec
+        self.transferpollingtime = float(1)/4
+
+    def download(self):
+        self.initVars()
+        self.speedUpdater = self.entropyTools.TimeScheduled(
+                    self.updateSpeedInfo,
+                    self.transferpollingtime
+        )
+        self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
+        self.speedUpdater.start()
+
+        # set timeout
+        self.socket.setdefaulttimeout(20)
+
+
+        if self.url.startswith("http://"):
+            headers = { 'User-Agent' : self.user_agent }
+            req = urllib2.Request(self.url, self.extra_header_data, headers)
+        else:
+            req = self.url
+
+        u_agent_error = False
+        while 1:
+            # get file size if available
+            try:
+                self.remotefile = urllib2.urlopen(req)
+            except KeyboardInterrupt:
+                self.close()
+                raise
+            except urllib2.HTTPError, e:
+                if (e.code == 405) and not u_agent_error:
+                    # server doesn't like our user agent
+                    req = self.url
+                    u_agent_error = True
+                    continue
+                self.close()
+                self.status = "-3"
+                return self.status
+            except:
+                self.close()
+                self.status = "-3"
+                return self.status
+            break
+
+
+        try:
+            self.remotesize = int(self.remotefile.headers.get("content-length"))
+            self.remotefile.close()
+        except KeyboardInterrupt:
+            self.close()
+            raise
+        except:
+            pass
+
+        # handle user stupidity
+        try:
+            request = self.url
+            if ((self.startingposition > 0) and (self.remotesize > 0)) and (self.startingposition < self.remotesize):
+                try:
+                    request = urllib2.Request(
+                        self.url,
+                        headers = {
+                            "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize) 
+                        }
+                    )
+                except KeyboardInterrupt:
+                    self.close()
+                    raise
+                except:
+                    pass
+            elif (self.startingposition == self.remotesize):
+                return self.prepare_return()
+            else:
+                self.localfile = open(self.pathToSave,"wb")
+            self.remotefile = urllib2.urlopen(request)
+        except KeyboardInterrupt:
+            self.close()
+            raise
+        except:
+            self.close()
+            self.status = "-3"
+            return self.status
+
+        if self.remotesize > 0:
+            self.remotesize = float(int(self.remotesize))/1024
+
+        if self.disallow_redirect and (self.url != self.remotefile.geturl()):
+            self.close()
+            self.status = "-3"
+            return self.status
+
+        rsx = "x"
+        while rsx != '':
+            try:
+                rsx = self.remotefile.read(self.bufferSize)
+                if self.abort_check_func != None:
+                    self.abort_check_func()
+            except KeyboardInterrupt:
+                self.close()
+                raise
+            except:
+                # python 2.4 timeouts go here
+                self.close()
+                self.status = "-3"
+                return self.status
+            self.commitData(rsx)
+            if self.showSpeed:
+                self.updateProgress()
+                self.oldaverage = self.average
+            if self.speedlimit:
+                while self.datatransfer > self.speedlimit*1024:
+                    time.sleep(0.1)
+                    if self.showSpeed:
+                        self.updateProgress()
+                        self.oldaverage = self.average
+
+        # kill thread
+        self.close()
+
+        return self.prepare_return()
+
+
+    def prepare_return(self):
+        if self.checksum:
+            self.status = self.entropyTools.md5sum(self.pathToSave)
+            return self.status
+        else:
+            self.status = "-2"
+            return self.status
+
+    def commitData(self, mybuffer):
+        # writing file buffer
+        self.localfile.write(mybuffer)
+        # update progress info
+        self.downloadedsize = self.localfile.tell()
+        kbytecount = float(self.downloadedsize)/1024
+        self.average = int((kbytecount/self.remotesize)*100)
+
+    def updateProgress(self):
+
+        mytxt = _("Fetch")
+        eta_txt = _("ETA")
+        sec_txt = _("sec") # as in XX kb/sec
+
+        currentText = darkred("    %s: " % (mytxt,)) + \
+            darkgreen(str(round(float(self.downloadedsize)/1024,1))) + "/" + \
+            red(str(round(self.remotesize,1))) + " kB"
+        # create progress bar
+        barsize = 10
+        bartext = "["
+        curbarsize = 1
+        if self.average > self.oldaverage+self.updatestep:
+            averagesize = (self.average*barsize)/100
+            while averagesize > 0:
+                curbarsize += 1
+                bartext += "="
+                averagesize -= 1
+            bartext += ">"
+            diffbarsize = barsize-curbarsize
+            while diffbarsize > 0:
+                bartext += " "
+                diffbarsize -= 1
+            if self.showSpeed:
+                bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(self.datatransfer),)
+                bartext += "/%s : %s: %s" % (sec_txt,eta_txt,self.time_remaining,)
+            else:
+                bartext += "]"
+            average = str(self.average)
+            if len(average) < 2:
+                average = " "+average
+            currentText += " <->  "+average+"% "+bartext
+            print_info(currentText,back = True)
+
+
+    def close(self):
+        try:
+            self.localfile.flush()
+            self.localfile.close()
+        except:
+            pass
+        try:
+            self.remotefile.close()
+        except:
+            pass
+        self.speedUpdater.kill()
+        self.socket.setdefaulttimeout(2)
+
+    def updateSpeedInfo(self):
+        self.elapsed += self.transferpollingtime
+        # we have the diff size
+        self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
+        try:
+            self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
+            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
+        except:
+            self.time_remaining = "(%s)" % (_("infinite"),)
+
 '''
     Main Entropy (client side) package management class
 '''
 class EquoInterface(TextInterface):
 
-    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True, load_ugc = True):
+    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True, load_ugc = True, url_fetcher = urlFetcher):
 
         # modules import
         import dumpTools, entropyTools
@@ -83,7 +350,7 @@ class EquoInterface(TextInterface):
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
 
-        self.urlFetcher = urlFetcher # in this way, can be reimplemented (so you can override updateProgress)
+        self.urlFetcher = url_fetcher # in this way, can be reimplemented (so you can override updateProgress)
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
         self.clientDbconn = None
@@ -6408,6 +6675,23 @@ class RepoInterface:
                     mydbconn.closeDB()
                     self.eapi3_socket.close_session(session)
                     return None
+                elif isinstance(pkgdata,tuple):
+                    mytxt = "%s: %s, %s. %s" % (
+                        blue(_("Service status")),
+                        pkgdata[0],
+                        pkgdata[1],
+                        darkred("Error processing the command"),
+                    )
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "info",
+                        header = "\t",
+                        count = (count,maxcount,)
+                    )
+                    mydbconn.closeDB()
+                    self.eapi3_socket.close_session(session)
+                    return None
                 for idpackage in pkgdata:
                     self.dumpTools.dumpobj(
                         etpCache['eapi3_fetch']+str(idpackage),
@@ -7584,9 +7868,6 @@ class QAInterface:
 '''
 class FtpInterface:
 
-    import ftplib
-    import entropyTools
-    import socket
     # this must be run before calling the other functions
     def __init__(self, ftpuri, EntropyInterface, verbose = True):
 
@@ -7595,6 +7876,8 @@ class FtpInterface:
                 mytxt = _("A valid TextInterface based instance is needed")
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
 
+        import socket, ftplib, entropyTools
+        self.socket, self.ftplib, self.entropyTools = socket, ftplib, entropyTools
         self.Entropy = EntropyInterface
         self.verbose = verbose
         self.oldprogress = 0.0
@@ -7989,278 +8272,11 @@ class FtpInterface:
     def closeConnection(self):
         try:
             self.ftpconn.quit()
-        except (EOFError,AttributeError,):
+        except (EOFError,AttributeError,self.socket.timeout,):
             # AttributeError is raised when socket gets trashed
             # EOFError is raised when the connection breaks
+            # timeout, who cares!
             pass
-
-
-class urlFetcher:
-
-    import entropyTools
-    import socket
-    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
-
-        self.url = url
-        self.resume = resume
-        self.url = self.encodeUrl(self.url)
-        self.pathToSave = pathToSave
-        self.checksum = checksum
-        self.showSpeed = showSpeed
-        self.initVars()
-        self.progress = None
-        self.abort_check_func = abort_check_func
-        self.disallow_redirect = disallow_redirect
-        self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
-                                        etpConst['entropyversion'],
-                                        "Entropy",
-                                        os.path.basename(self.url),
-                                        os.uname()[0],
-                                        os.uname()[4],
-                                        os.uname()[2],
-        )
-        self.extra_header_data = {}
-
-        # resume support
-        if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
-            self.localfile = open(self.pathToSave,"awb")
-            self.localfile.seek(0,2)
-            self.startingposition = int(self.localfile.tell())
-            self.resumed = True
-        else:
-            self.localfile = open(self.pathToSave,"wb")
-
-        # setup proxy, doing here because config is dynamic
-        mydict = {}
-        if etpConst['proxy']['ftp']:
-            mydict['ftp'] = etpConst['proxy']['ftp']
-        if etpConst['proxy']['http']:
-            mydict['http'] = etpConst['proxy']['http']
-        if mydict:
-            mydict['username'] = etpConst['proxy']['username']
-            mydict['password'] = etpConst['proxy']['password']
-            self.entropyTools.add_proxy_opener(urllib2, mydict)
-        else:
-            # unset
-            urllib2._opener = None
-
-    def encodeUrl(self, url):
-        import urllib
-        url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
-        return url
-
-    def initVars(self):
-        self.resumed = False
-        self.bufferSize = 8192
-        self.status = None
-        self.remotefile = None
-        self.downloadedsize = 0
-        self.average = 0
-        self.remotesize = 0
-        self.oldaverage = 0.0
-        # transfer status data
-        self.startingposition = 0
-        self.datatransfer = 0
-        self.time_remaining = "(infinite)"
-        self.elapsed = 0.0
-        self.updatestep = 0.2
-        self.speedlimit = etpConst['downloadspeedlimit'] # kbytes/sec
-        self.transferpollingtime = float(1)/4
-
-    def download(self):
-        self.initVars()
-        self.speedUpdater = self.entropyTools.TimeScheduled(
-                    self.updateSpeedInfo,
-                    self.transferpollingtime
-        )
-        self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
-        self.speedUpdater.start()
-
-        # set timeout
-        self.socket.setdefaulttimeout(20)
-
-
-        if self.url.startswith("http://"):
-            headers = { 'User-Agent' : self.user_agent }
-            req = urllib2.Request(self.url, self.extra_header_data, headers)
-        else:
-            req = self.url
-
-        u_agent_error = False
-        while 1:
-            # get file size if available
-            try:
-                self.remotefile = urllib2.urlopen(req)
-            except KeyboardInterrupt:
-                self.close()
-                raise
-            except urllib2.HTTPError, e:
-                if (e.code == 405) and not u_agent_error:
-                    # server doesn't like our user agent
-                    req = self.url
-                    u_agent_error = True
-                    continue
-                self.close()
-                self.status = "-3"
-                return self.status
-            except:
-                self.close()
-                self.status = "-3"
-                return self.status
-            break
-
-
-        try:
-            self.remotesize = int(self.remotefile.headers.get("content-length"))
-            self.remotefile.close()
-        except KeyboardInterrupt:
-            self.close()
-            raise
-        except:
-            pass
-
-        # handle user stupidity
-        try:
-            request = self.url
-            if ((self.startingposition > 0) and (self.remotesize > 0)) and (self.startingposition < self.remotesize):
-                try:
-                    request = urllib2.Request(
-                        self.url,
-                        headers = {
-                            "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize) 
-                        }
-                    )
-                except KeyboardInterrupt:
-                    self.close()
-                    raise
-                except:
-                    pass
-            elif (self.startingposition == self.remotesize):
-                return self.prepare_return()
-            else:
-                self.localfile = open(self.pathToSave,"wb")
-            self.remotefile = urllib2.urlopen(request)
-        except KeyboardInterrupt:
-            self.close()
-            raise
-        except:
-            self.close()
-            self.status = "-3"
-            return self.status
-
-        if self.remotesize > 0:
-            self.remotesize = float(int(self.remotesize))/1024
-
-        if self.disallow_redirect and (self.url != self.remotefile.geturl()):
-            self.close()
-            self.status = "-3"
-            return self.status
-
-        rsx = "x"
-        while rsx != '':
-            try:
-                rsx = self.remotefile.read(self.bufferSize)
-                if self.abort_check_func != None:
-                    self.abort_check_func()
-            except KeyboardInterrupt:
-                self.close()
-                raise
-            except:
-                # python 2.4 timeouts go here
-                self.close()
-                self.status = "-3"
-                return self.status
-            self.commitData(rsx)
-            if self.showSpeed:
-                self.updateProgress()
-                self.oldaverage = self.average
-            if self.speedlimit:
-                while self.datatransfer > self.speedlimit*1024:
-                    time.sleep(0.1)
-                    if self.showSpeed:
-                        self.updateProgress()
-                        self.oldaverage = self.average
-
-        # kill thread
-        self.close()
-
-        return self.prepare_return()
-
-
-    def prepare_return(self):
-        if self.checksum:
-            self.status = self.entropyTools.md5sum(self.pathToSave)
-            return self.status
-        else:
-            self.status = "-2"
-            return self.status
-
-    def commitData(self, mybuffer):
-        # writing file buffer
-        self.localfile.write(mybuffer)
-        # update progress info
-        self.downloadedsize = self.localfile.tell()
-        kbytecount = float(self.downloadedsize)/1024
-        self.average = int((kbytecount/self.remotesize)*100)
-
-    def updateProgress(self):
-
-        mytxt = _("Fetch")
-        eta_txt = _("ETA")
-        sec_txt = _("sec") # as in XX kb/sec
-
-        currentText = darkred("    %s: " % (mytxt,)) + \
-            darkgreen(str(round(float(self.downloadedsize)/1024,1))) + "/" + \
-            red(str(round(self.remotesize,1))) + " kB"
-        # create progress bar
-        barsize = 10
-        bartext = "["
-        curbarsize = 1
-        if self.average > self.oldaverage+self.updatestep:
-            averagesize = (self.average*barsize)/100
-            while averagesize > 0:
-                curbarsize += 1
-                bartext += "="
-                averagesize -= 1
-            bartext += ">"
-            diffbarsize = barsize-curbarsize
-            while diffbarsize > 0:
-                bartext += " "
-                diffbarsize -= 1
-            if self.showSpeed:
-                bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(self.datatransfer),)
-                bartext += "/%s : %s: %s" % (sec_txt,eta_txt,self.time_remaining,)
-            else:
-                bartext += "]"
-            average = str(self.average)
-            if len(average) < 2:
-                average = " "+average
-            currentText += " <->  "+average+"% "+bartext
-            print_info(currentText,back = True)
-
-
-    def close(self):
-        try:
-            self.localfile.flush()
-            self.localfile.close()
-        except:
-            pass
-        try:
-            self.remotefile.close()
-        except:
-            pass
-        self.speedUpdater.kill()
-        self.socket.setdefaulttimeout(2)
-
-    def updateSpeedInfo(self):
-        self.elapsed += self.transferpollingtime
-        # we have the diff size
-        self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
-        try:
-            self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
-            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
-        except:
-            self.time_remaining = "(%s)" % (_("infinite"),)
 
 
 class rssFeed:
@@ -20183,6 +20199,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             pkgkey,
             xml_string,
         )
+
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_edit_comment(self, session_id, iddoc, new_comment, new_title, new_keywords):
@@ -20600,7 +20617,7 @@ class RepositorySocketClientInterface:
                         mydata = mydata[sent:]
                     except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError'],):
                         continue
-                    except UnicodeEncodeError:
+                    except UnicodeEncodeError, e:
                         if encode_done:
                             raise
                         mydata = mydata.encode('utf-8')
@@ -21012,14 +21029,26 @@ class UGCCacheInterface:
             return
         del self.xcache[repository][item]
 
+    def _get_store_cache_file(self, iddoc, repository, doc_url):
+        return "%s/%s/iddoc_%s/%s" % (etpCache['ugc_docs'], repository, iddoc, doc_url,)
+
     def _get_vote_cache_file(self, repository):
-        return etpCache['ugc_votes']+"/"+repository
+        return self._get_vote_cache_dir(repository)
 
     def _get_downloads_cache_file(self, repository):
-        return etpCache['ugc_downloads']+"/"+repository
+        return self._get_downloads_cache_dir(repository)
 
     def _get_alldocs_cache_file(self, pkgkey, repository):
-        return etpCache['ugc_docs']+"/"+repository+"/"+pkgkey
+        return self._get_alldocs_cache_dir(repository)+"/"+pkgkey
+
+    def _get_alldocs_cache_dir(self, repository):
+        return etpCache['ugc_docs']+"/"+repository
+
+    def _get_downloads_cache_dir(self, repository):
+        return etpCache['ugc_downloads']+"/"+repository
+
+    def _get_vote_cache_dir(self, repository):
+        return etpCache['ugc_votes']+"/"+repository
 
     def _get_vote_cache_key(self, repository):
         return 'get_vote_cache_'+repository
@@ -21029,6 +21058,46 @@ class UGCCacheInterface:
 
     def _get_alldocs_cache_key(self, pkgkey, repository):
         return 'get_package_alldocs_cache_'+pkgkey+"_"+repository
+
+    def store_document(self, iddoc, repository, doc_url):
+        cache_file = os.path.join(etpConst['dumpstoragedir'],self._get_store_cache_file(iddoc, repository, doc_url))
+        cache_dir = os.path.dirname(cache_file)
+
+        try:
+            if not os.path.isdir(cache_dir):
+                os.makedirs(cache_dir,0775)
+                if etpConst['entropygid'] != None:
+                    const_setup_perms(cache_dir,etpConst['entropygid'])
+        except OSError:
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (_("Cannot setup cache directory"),cache_dir,))
+        if not os.access(cache_dir,os.W_OK):
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache directory"),cache_dir,))
+
+        if os.path.isfile(cache_file) or os.path.islink(cache_file):
+            try:
+                os.remove(cache_file)
+            except OSError:
+                raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (_("Cannot remove cache file"),cache_file,))
+
+        fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file, resume = False)
+        rc = fetcher.download()
+        if rc in ("-1","-2","-3"): return None
+        if not os.path.isfile(cache_file): return None
+
+        try:
+            os.chmod(cache_file,0664)
+            if etpConst['entropygid'] != None:
+                os.chown(cache_file,-1,etpConst['entropygid'])
+        except OSError:
+            raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache file"),cache_file,))
+
+        del fetcher
+        return cache_file
+
+    def get_stored_document(self, iddoc, repository, doc_url):
+        cache_file = os.path.join(etpConst['dumpstoragedir'],self._get_store_cache_file(iddoc, repository, doc_url))
+        if os.path.isfile(cache_file) and os.access(cache_file,os.R_OK):
+            return cache_file
 
     def update_vote_cache(self, repository, vote_dict):
         cached = self.get_vote_cache(repository)
@@ -21048,6 +21117,15 @@ class UGCCacheInterface:
 
     def update_alldocs_cache(self, pkgkey, repository, alldocs_dict):
         self.save_alldocs_cache(pkgkey, repository, alldocs_dict)
+
+    def clear_alldocs_cache(self, repository):
+        self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
+
+    def clear_downloads_cache(self, repository):
+        self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
+
+    def clear_vote_cache(self, repository):
+        self.Service.Entropy.clear_dump_cache(self._get_vote_cache_dir(repository))
 
     def get_vote_cache(self, repository):
         cache_key = self._get_vote_cache_key(repository)
@@ -21332,12 +21410,15 @@ class UGCClientInterface:
         return self.do_cmd(repository, False, "ugc_get_documents_by_identifiers", [identifiers], {})
 
     def add_comment(self, repository, pkgkey, comment, title, keywords):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_add_comment", [pkgkey, comment, title, keywords], {})
 
     def edit_comment(self, repository, iddoc, new_comment, new_title, new_keywords):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_edit_comment", [iddoc, new_comment, new_title, new_keywords], {})
 
     def remove_comment(self, repository, iddoc):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_remove_comment", [iddoc], {})
 
     def add_vote(self, repository, pkgkey, vote):
@@ -21375,21 +21456,27 @@ class UGCClientInterface:
         return down_dict, err_msg
 
     def send_file(self, repository, pkgkey, file_path, title, description, keywords):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, file_path, etpConst['ugc_doctypes']['generic_file'], title, description, keywords], {})
 
     def remove_file(self, repository, iddoc):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_remove_file", [iddoc], {})
 
     def send_image(self, repository, pkgkey, image_path, title, description, keywords):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, image_path, etpConst['ugc_doctypes']['image'], title, description, keywords], {})
 
     def remove_image(self, repository, iddoc):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_remove_image", [iddoc], {})
 
     def send_youtube_video(self, repository, pkgkey, video_path, title, description, keywords):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, video_path, etpConst['ugc_doctypes']['youtube_video'], title, description, keywords], {})
 
     def remove_youtube_video(self, repository, iddoc):
+        self.UGCCache.clear_alldocs_cache(repository)
         return self.do_cmd(repository, True, "ugc_remove_youtube_video", [iddoc], {})
 
     def get_docs(self, repository, pkgkey):
@@ -21399,6 +21486,15 @@ class UGCClientInterface:
         return docs_data, err_msg
 
     def send_document_autosense(self, repository, pkgkey, ugc_type, data, title, description, keywords):
+        '''
+        print repr(repository),type(repository)
+        print repr(pkgkey),type(pkgkey)
+        print repr(ugc_type),type(ugc_type)
+        print repr(data),type(data)
+        print repr(title),type(title)
+        print repr(description),type(description)
+        print repr(keywords),type(keywords)
+        '''
         if ugc_type == etpConst['ugc_doctypes']['generic_file']:
             return self.send_file(repository, pkgkey, data, title, description, keywords)
         elif ugc_type == etpConst['ugc_doctypes']['image']:
@@ -28474,7 +28570,7 @@ class EntropyDatabaseInterface:
                 matchRevision,
                 extendedResults
             )
-            if cached != None:
+            if isinstance(cached,tuple):
                 return cached
 
         atomTag = self.entropyTools.dep_gettag(atom)
