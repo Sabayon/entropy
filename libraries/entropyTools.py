@@ -113,6 +113,9 @@ class parallelTask(threading.Thread):
     def nuke(self):
         raise SystemExit
 
+    def kill(self):
+        pass
+
 def printTraceback(f = None):
     import traceback
     traceback.print_exc(file = f)
