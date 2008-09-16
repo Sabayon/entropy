@@ -1435,6 +1435,7 @@ def const_extractServerRepositoryParameters(repostring):
                 eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
 
     mydata = {}
+    mydata['repoid'] = repoid
     mydata['description'] = repodesc
     mydata['mirrors'] = []
     mydata['community'] = False
