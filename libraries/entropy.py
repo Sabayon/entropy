@@ -21056,8 +21056,8 @@ class UGCCacheInterface:
     def _get_downloads_cache_key(self, repository):
         return 'get_downloads_cache_'+repository
 
-    def _get_alldocs_cache_key(self, pkgkey, repository):
-        return 'get_package_alldocs_cache_'+pkgkey+"_"+repository
+    def _get_alldocs_cache_key(self, repository):
+        return 'get_package_alldocs_cache_'+repository
 
     def store_document(self, iddoc, repository, doc_url):
         cache_file = os.path.join(etpConst['dumpstoragedir'],self._get_store_cache_file(iddoc, repository, doc_url))
@@ -21119,13 +21119,31 @@ class UGCCacheInterface:
         self.save_alldocs_cache(pkgkey, repository, alldocs_dict)
 
     def clear_alldocs_cache(self, repository):
+        self.process_wait()
+        self.processing = True
         self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
+        self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
+        self.processing = False
 
     def clear_downloads_cache(self, repository):
+        self.process_wait()
+        self.processing = True
         self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
+        self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
+        self.processing = False
 
     def clear_vote_cache(self, repository):
+        self.process_wait()
+        self.processing = True
         self.Service.Entropy.clear_dump_cache(self._get_vote_cache_dir(repository))
+        self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
+        self.processing = False
+
+    def clear_cache(self, repository):
+        self.clear_alldocs_cache(repository)
+        self.clear_downloads_cache(repository)
+        self.clear_vote_cache(repository)
+        self.xcache.clear()
 
     def get_vote_cache(self, repository):
         cache_key = self._get_vote_cache_key(repository)
@@ -21162,17 +21180,20 @@ class UGCCacheInterface:
         return data
 
     def get_alldocs_cache(self, pkgkey, repository):
-        cache_key = self._get_alldocs_cache_key(pkgkey, repository)
+        cache_key = self._get_alldocs_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
-        if cached != None:
-            return cached
+        if isinstance(cached,dict):
+            if cached.has_key(pkgkey): return cached[pkgkey]
+        else:
+            cached = {}
         self.process_wait()
         self.processing = True
         cache_file = self._get_alldocs_cache_file(pkgkey, repository)
         try:
             data = self.dumpTools.loadobj(cache_file)
             if data != None:
-                self._set_live_cache_item(repository, cache_key, data)
+                cached[pkgkey] = data
+                self._set_live_cache_item(repository, cache_key, cached)
         except (IOError,EOFError,OSError):
             data = None
         self.processing = False
@@ -21195,7 +21216,7 @@ class UGCCacheInterface:
     def save_alldocs_cache(self, pkgkey, repository, alldocs_dict):
         self.process_wait()
         self.processing = True
-        self._clear_live_cache_item(repository, self._get_alldocs_cache_key(pkgkey, repository))
+        self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
         self.dumpTools.dumpobj(self._get_alldocs_cache_file(pkgkey, repository), alldocs_dict)
         self.processing = False
 
@@ -21486,15 +21507,6 @@ class UGCClientInterface:
         return docs_data, err_msg
 
     def send_document_autosense(self, repository, pkgkey, ugc_type, data, title, description, keywords):
-        '''
-        print repr(repository),type(repository)
-        print repr(pkgkey),type(pkgkey)
-        print repr(ugc_type),type(ugc_type)
-        print repr(data),type(data)
-        print repr(title),type(title)
-        print repr(description),type(description)
-        print repr(keywords),type(keywords)
-        '''
         if ugc_type == etpConst['ugc_doctypes']['generic_file']:
             return self.send_file(repository, pkgkey, data, title, description, keywords)
         elif ugc_type == etpConst['ugc_doctypes']['image']:
