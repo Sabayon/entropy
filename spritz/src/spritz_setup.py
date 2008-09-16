@@ -87,6 +87,15 @@ class const:
        'preferences': PAGE_PREFERENCES
     }
 
+    PREF_PAGE_SYSTEM = 0
+    PREF_PAGE_NETWORKING = 1
+    PREF_PAGE_UGC = 2
+    PREF_PAGES = {
+        'system': PREF_PAGE_SYSTEM,
+        'networking': PREF_PAGE_NETWORKING,
+        'ugc': PREF_PAGE_UGC
+    }
+
     PACKAGE_PROGRESS_STEPS = ( 0.1, # Depsolve
                                0.5, # Download
                                0.1, # Transaction Test
