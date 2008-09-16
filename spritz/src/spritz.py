@@ -38,6 +38,7 @@ from entropy_i18n import _
 
 # GTK Imports
 import gtk, gobject
+gtk.gdk.threads_init()
 from etpgui.widgets import UI, Controller
 from etpgui import *
 from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupString
@@ -83,17 +84,15 @@ class SpritzController(Controller):
         if self.isWorking:
             self.quitNow = True
             self.exitNow()
-            return False
         else:
             self.exitNow()
-            return False
 
     def exitNow(self):
         try:
             gtk.main_quit()       # Exit gtk
         except RuntimeError,e:
             pass
-        sys.exit( 1 )         # Terminate Program
+        raise SystemExit
 
     def __getSelectedRepoIndex( self ):
         selection = self.repoView.view.get_selection()
@@ -1054,6 +1053,54 @@ class SpritzController(Controller):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
 
+    def on_notebook1_switch_page(self, widget, page, page_num):
+        if page_num == const.PREF_PAGES['ugc']:
+            self.load_ugc_repositories()
+
+    def on_ugcLoginButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
+        if (myiter == None) or (model == None): return
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            if logged_data:
+                self.Equo.UGC.remove_login(obj['repoid'])
+            self.Equo.UGC.login(obj['repoid'])
+            self.load_ugc_repositories()
+
+    def on_ugcClearLoginButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
+        if (myiter == None) or (model == None): return
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            if not self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']): return
+            logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            if logged_data: self.Equo.UGC.remove_login(obj['repoid'])
+            self.load_ugc_repositories()
+
+    def on_ugcClearCacheButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        for repoid in list(set(etpRepositories.keys()+etpRepositoriesExcluded.keys())):
+            self.Equo.UGC.UGCCache.clear_cache(repoid)
+            self.setStatus("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
+        self.setStatus("%s" % (_("UGC cache cleared"),))
+
+    def on_ugcClearCredentialsButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        for repoid in list(set(etpRepositories.keys()+etpRepositoriesExcluded.keys())):
+            if not self.Equo.UGC.is_repository_eapi3_aware(repoid): continue
+            logged_data = self.Equo.UGC.read_login(repoid)
+            if logged_data: self.Equo.UGC.remove_login(repoid)
+        self.load_ugc_repositories()
+        self.setStatus("%s" % (_("UGC credentials cleared"),))
+
+    def load_ugc_repositories(self):
+        self.ugcRepositoriesModel.clear()
+        for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
+            self.ugcRepositoriesModel.append([etpRepositories[repoid]])
+
 class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
@@ -1129,19 +1176,16 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
             self.isWorking = True
             self.spawning_ugc = True
-            gtkEventThread.startProcessing()
             connected = entropyTools.get_remote_data(etpConst['conntestlink'])
             if (connected == False) or (self.Equo.UGC == None):
                 self.isWorking = False
                 self.spawning_ugc = False
-                gtkEventThread.endProcessing()
                 return
             for repo in self.Equo.validRepositories:
                 self.Equo.update_ugc_cache(repo)
 
             self.isWorking = False
             self.spawning_ugc = False
-            gtkEventThread.endProcessing()
 
         except:
             pass
@@ -1175,6 +1219,64 @@ class SpritzApplication(SpritzController,SpritzGUI):
         column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
         self.configProtectSkipView.append_column( column )
         self.configProtectSkipView.set_model( self.configProtectSkipModel )
+
+        # UGC repositories
+
+        def get_ugc_repo_text( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                t = "[<b>%s</b>] %s" % (obj['repoid'],obj['description'],)
+                cell.set_property('markup',t)
+
+        def get_ugc_logged_text( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                t = "<i>%s</i>" % (_("Not logged in"),)
+                if self.Equo.UGC != None:
+                    logged_data = self.Equo.UGC.read_login(obj['repoid'])
+                    if logged_data != None:
+                        t = "<i>%s</i>" % (logged_data[0],)
+                cell.set_property('markup',t)
+
+        def get_ugc_status_pix( column, cell, model, myiter ):
+            if self.Equo.UGC == None:
+                cell.set_property( 'icon-name', 'gtk-cancel' )
+                return
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                if self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']):
+                    cell.set_property( 'icon-name', 'gtk-apply' )
+                else:
+                    cell.set_property( 'icon-name', 'gtk-cancel' )
+                return
+            cell.set_property( 'icon-name', 'gtk-cancel' )
+
+        self.ugcRepositoriesView = self.ui.ugcRepositoriesView
+        self.ugcRepositoriesModel = gtk.ListStore( gobject.TYPE_PYOBJECT )
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Repository" ), cell )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 300 )
+        column.set_expand(True)
+        column.set_cell_data_func( cell, get_ugc_repo_text )
+        self.ugcRepositoriesView.append_column( column )
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Logged in as" ), cell )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 150 )
+        column.set_cell_data_func( cell, get_ugc_logged_text )
+        self.ugcRepositoriesView.append_column( column )
+
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _( "UGC Status" ), cell)
+        column.set_cell_data_func( cell, get_ugc_status_pix )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 120 )
+
+        self.ugcRepositoriesView.append_column( column )
+        self.ugcRepositoriesView.set_model( self.ugcRepositoriesModel )
 
         # prepare generic config to allow filling of data
         def fillSettingView(model, view, data):
@@ -1545,9 +1647,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(_('Please check logs below for more info'))
         else:
-            t = entropyTools.parallelTask(self.spawnUgcUpdate)
-            t.parallel_wait()
-            t.start()
             if repoConn.alreadyUpdated == 0:
                 self.progress.set_mainLabel(_('Repositories updated successfully'))
             else:
@@ -1680,8 +1779,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
                                     "\nPlease have a look in the processing terminal.")
                     )
                 self.endWorking()
-                while gtk.events_pending():
-                    time.sleep(0.1)
                 self.etpbase.clearPackages()
                 time.sleep(5)
             self.endWorking()
