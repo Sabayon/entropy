@@ -25,8 +25,7 @@ import sys
 import time
 import logging
 from threading import Thread,Event
-import thread
-
+import thread, random
 
 def busyCursor(mainwin,insensitive=False):
     ''' Set busy cursor in mainwin and make it insensitive if selected '''
@@ -65,14 +64,13 @@ class ProcessGtkEventsThread(Thread):
 
     def dosleep(self):
         try:
-            time.sleep(0.5)
+            time.sleep(0.4)
         except:
             pass
 
     def doQuit(self):
         self.__quit = True
         self.__active.set()
-        time.sleep(1)
 
     def startProcessing(self):
         self.__active.set()
