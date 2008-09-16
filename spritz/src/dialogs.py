@@ -302,20 +302,23 @@ class PkgInfoMenu(MenuSkel):
                     self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
                     store_path = self.Entropy.UGC.UGCCache.get_stored_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
                 if (store_path != None) and os.access(store_path,os.R_OK):
-                    preview_path = store_path+".preview"
-                    if not os.path.isfile(preview_path) and (os.stat(store_path)[6] < 1024000):
-                        # resize pix
-                        img = gtk.Image()
-                        img.set_from_file(store_path)
-                        img_buf = img.get_pixbuf()
-                        w, h = img_buf.get_width(),img_buf.get_height()
-                        new_w = 64.0
-                        new_h = new_w*h/w
-                        img_buf = img_buf.scale_simple(int(new_w),int(new_h),gtk.gdk.INTERP_BILINEAR)
-                        img_buf.save(preview_path, "png")
-                        del img, img_buf
-                    if os.path.isfile(preview_path):
-                        mydoc['preview_path'] = preview_path
+                    try:
+                        preview_path = store_path+".preview"
+                        if not os.path.isfile(preview_path) and (os.stat(store_path)[6] < 1024000):
+                            # resize pix
+                            img = gtk.Image()
+                            img.set_from_file(store_path)
+                            img_buf = img.get_pixbuf()
+                            w, h = img_buf.get_width(),img_buf.get_height()
+                            new_w = 64.0
+                            new_h = new_w*h/w
+                            img_buf = img_buf.scale_simple(int(new_w),int(new_h),gtk.gdk.INTERP_BILINEAR)
+                            img_buf.save(preview_path, "png")
+                            del img, img_buf
+                        if os.path.isfile(preview_path):
+                            mydoc['preview_path'] = preview_path
+                    except:
+                        continue
 
     def populate_ugc_view(self):
 
@@ -356,13 +359,21 @@ class PkgInfoMenu(MenuSkel):
                 'background': doc_type_background_map.get(int(doc_type)),
             }
             parent = self.ugcModel.append( None, (cat_dict,) )
+            docs_dates = {}
             for mydoc in self.ugc_data[doc_type]:
-                mydoc['image_path'] = const.ugc_pixmap_small
-                mydoc['foreground'] = doc_type_foreground_map.get(int(doc_type))
-                mydoc['background'] = doc_type_background_map.get(int(doc_type))
-                mydoc['counter'] = counter
-                self.ugcModel.append( parent, (mydoc,) )
-                counter += 1
+                ts = mydoc['ts']
+                if not docs_dates.has_key(ts):
+                    docs_dates[ts] = []
+                docs_dates[ts].append(mydoc)
+            sorted_dates = sorted(docs_dates.keys())
+            for ts in sorted_dates:
+                for mydoc in docs_dates[ts]:
+                    mydoc['image_path'] = const.ugc_pixmap_small
+                    mydoc['foreground'] = doc_type_foreground_map.get(int(doc_type))
+                    mydoc['background'] = doc_type_background_map.get(int(doc_type))
+                    mydoc['counter'] = counter
+                    self.ugcModel.append( parent, (mydoc,) )
+                    counter += 1
 
         if spawn_fetch:
             self.ugc_preview_fetcher = self.Entropy.entropyTools.parallelTask(self.spawn_docs_fetch)
@@ -919,7 +930,6 @@ class UGCAddMenu(MenuSkel):
         title = self.ugcadd_ui.ugcAddTitleEntry.get_text()
         description = self.ugcadd_ui.ugcAddDescEntry.get_text()
         keywords_text = self.ugcadd_ui.ugcAddKeywordsEntry.get_text()
-        keywords = [x.strip() for x in keywords_text.split() if x.strip()]
         doc_path = None
         if doc_type in self.text_types:
             mybuf = self.ugcadd_ui.ugcAddTextView.get_buffer()
