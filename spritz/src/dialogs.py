@@ -22,6 +22,7 @@ import gtk
 import gobject
 import pango
 from etpgui.widgets import UI
+from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities
 from entropy_i18n import _,_LOCALE
 import packages
@@ -408,11 +409,11 @@ class PkgInfoMenu(MenuSkel):
         self.star_enter(widget, event, 1)
 
     def on_starsEvent_leave_notify_event(self, widget, event):
-        self.pkginfo_ui.pkgInfo.window.set_cursor(None)
+        normalCursor(self.pkginfo_ui.pkgInfo)
         self.set_stars(self.vote)
 
     def on_starsEvent_enter_notify_event(self, widget, event):
-        self.pkginfo_ui.pkgInfo.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
+        busyCursor(self.pkginfo_ui.pkgInfo, cur = gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
 
     def on_starEvent5_button_release_event(self, widget, event):
         self.vote_click(5)

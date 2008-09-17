@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # Base Python Imports
-import sys, os, pty
+import sys, os, pty, random
 import logging
 import traceback
 import commands
@@ -80,6 +80,12 @@ class SpritzController(Controller):
         if self.ugcTask != None:
             self.ugcTask.kill()
         ''' Main destroy Handler '''
+
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if hasattr(thread,'nuke'):
+                thread.nuke()
+
         gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
@@ -642,7 +648,6 @@ class SpritzController(Controller):
             yp.action = 'i'
             yp.queued = 'i'
             pkgs.append(yp)
-        # welcome to our world, now process !
 
         busyCursor(self.ui.main)
         status, myaction = self.queue.add(pkgs)
@@ -1096,6 +1101,17 @@ class SpritzController(Controller):
         self.load_ugc_repositories()
         self.setStatus("%s" % (_("UGC credentials cleared"),))
 
+    def on_bannerEventBox_button_release_event(self, widget, event):
+        if self.ad_url != None:
+            import subprocess
+            subprocess.call(['xdg-open',self.ad_url])
+
+    def on_bannerEventBox_enter_notify_event(self, widget, event):
+        busyCursor(self.ui.main, cur = gtk.gdk.Cursor(gtk.gdk.HAND2))
+
+    def on_bannerEventBox_leave_notify_event(self, widget, event):
+        busyCursor(self.ui.main, cur = CURRENT_CURSOR)
+
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
         for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
@@ -1117,6 +1133,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger = logging.getLogger("yumex.main")
 
         # init flags
+        self.ad_list_url = 'http://www.sabayonlinux.org/entropy_ads/LIST'
+        self.ad_uri_dir = os.path.dirname(self.ad_list_url)
+        self.previous_ad_index = None
+        self.previous_ad_image_path = None
+        self.ad_url = None
+        self.ad_pix = gtk.image_new_from_file(const.plain_ad_pix)
+        self.adTask = None
         self.ugcTask = None
         self.spawning_ugc = False
         self.Preferences = None
@@ -1152,6 +1175,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupPreferences()
 
         self.setupUgc()
+        self.setupAds()
 
         packages_install = os.getenv("SPRITZ_PACKAGES")
         if packages_install:
@@ -1165,31 +1189,98 @@ class SpritzApplication(SpritzController,SpritzGUI):
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
 
+    def setupAds(self):
+        self.ui.bannerEventBox.add(self.ad_pix)
+        self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
+        self.ad_url = 'http://www.silkbit.com'
+        self.ui.bannerEventBox.show_all()
+        self.adTask = entropyTools.TimeScheduled(self.spawnAdRotation, 60)
+        self.adTask.start()
+
     def setupUgc(self):
         self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
         self.ugcTask.start()
 
-    def spawnUgcUpdate(self):
+    def spawnAdRotation(self):
         try:
-            while (self.spawning_ugc or self.isWorking):
-                time.sleep(1)
-
-            self.isWorking = True
-            self.spawning_ugc = True
-            connected = entropyTools.get_remote_data(etpConst['conntestlink'])
-            if (connected == False) or (self.Equo.UGC == None):
-                self.isWorking = False
-                self.spawning_ugc = False
-                return
-            for repo in self.Equo.validRepositories:
-                self.Equo.update_ugc_cache(repo)
-
-            self.isWorking = False
-            self.spawning_ugc = False
-
+            self.ad_rotation()
         except:
             pass
 
+    def ad_rotation(self):
+        while self.isWorking:
+            time.sleep(1)
+
+        tries = 5
+        while tries:
+
+            ads_data = entropyTools.get_remote_data(self.ad_list_url)
+            if not ads_data:
+                tries -= 1
+                continue
+
+            ads_data = [x.strip() for x in ads_data if x.strip() and x.split() > 1]
+            length = len(ads_data)
+            myrand = int(random.random()*length)
+            while myrand == self.previous_ad_index:
+                myrand = int(random.random()*length)
+
+            mydata = ads_data[myrand].split()
+            mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
+            myurl = ' '.join(mydata[1:])
+
+            pix_tmp_path = entropyTools.getRandomTempFile()
+            fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
+            rc = fetchConn.download()
+            if rc in ("-1","-2","-3"):
+                tries -= 1
+                continue
+
+            # load the image
+            try:
+                myadpix = gtk.image_new_from_file(pix_tmp_path)
+            except:
+                tries -= 1
+                continue
+
+            self.ui.bannerEventBox.remove(self.ad_pix)
+            self.ad_pix = myadpix
+            self.ui.bannerEventBox.add(self.ad_pix)
+            self.ui.bannerEventBox.show_all()
+            self.ad_url = myurl
+
+            if self.previous_ad_image_path != None:
+                if os.path.isfile(self.previous_ad_image_path) and os.access(self.previous_ad_image_path,os.W_OK):
+                    try:
+                        os.remove(self.previous_ad_image_path)
+                    except (OSError,IOError,):
+                        pass
+            self.previous_ad_image_path = pix_tmp_path
+            self.previous_ad_index = myrand
+            break
+
+    def spawnUgcUpdate(self):
+        try:
+            self.ugc_update()
+        except:
+            pass
+
+    def ugc_update(self):
+        while (self.spawning_ugc or self.isWorking):
+            time.sleep(1)
+
+        self.isWorking = True
+        self.spawning_ugc = True
+        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+        if (connected == False) or (self.Equo.UGC == None):
+            self.isWorking = False
+            self.spawning_ugc = False
+            return
+        for repo in self.Equo.validRepositories:
+            self.Equo.update_ugc_cache(repo)
+
+        self.isWorking = False
+        self.spawning_ugc = False
 
     def setupPreferences(self):
 

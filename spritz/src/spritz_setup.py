@@ -59,6 +59,9 @@ class const:
     ugc_image_pix = PIXMAPS_PATH+'/ugc/image.png'
     ugc_view_pix = PIXMAPS_PATH+'/ugc/view.png'
 
+    # ads
+    plain_ad_pix = PIXMAPS_PATH+'/ad.png'
+
     # package categories
     PACKAGE_CATEGORIES = [
         "None",
