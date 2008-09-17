@@ -101,6 +101,7 @@ class parallelTask(threading.Thread):
         threading.Thread.__init__(self)
         self.function = args[0]
         self.args = args[1:][:]
+        self.exc = SystemExit
         self.kwargs = kwargs.copy()
 
     def parallel_wait(self):
@@ -111,7 +112,7 @@ class parallelTask(threading.Thread):
         self.function(*self.args,**self.kwargs)
 
     def nuke(self):
-        raise SystemExit
+        raise self.exc
 
     def kill(self):
         pass
