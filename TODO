@@ -3,6 +3,7 @@ TODO list
   - External trigger: rewrite support and use bash
   - split entropy.py into entropy package
   - UGC: bug report documents?
+  - UGC: ads documents/rotation support?
   - database backup tools
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
