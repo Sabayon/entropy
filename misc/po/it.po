@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Spritz 0.14\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-09-16 19:35+0000\n"
-"PO-Revision-Date: 2008-09-16 19:56-0000\n"
+"PO-Revision-Date: 2008-09-17 11:56-0000\n"
 "Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
 "Language-Team: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
 "MIME-Version: 1.0\n"
@@ -254,9 +254,8 @@ msgid "CORRUPTED"
 msgstr "CORROTTO"
 
 #: ../../libraries/entropy.py:781
-#, fuzzy
 msgid "bad repository id specified"
-msgstr "Nessuna repository valida specificata."
+msgstr "identificatore repository specificato errato"
 
 #: ../../libraries/entropy.py:793
 #, python-format
@@ -416,7 +415,6 @@ msgid "unknown reason"
 msgstr "ragione sconosciuta"
 
 #: ../../libraries/entropy.py:3448
-#, fuzzy
 msgid "Extracting package metadata"
 msgstr "Estrazione metadati pacchetto"
 
@@ -521,19 +519,19 @@ msgid "Cleaning old package files..."
 msgstr "Pulitura dei vecchi file del pacchetto..."
 
 #: ../../libraries/entropy.py:4660
-#, fuzzy, python-format
+#, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
-msgstr "Impossibile aggiornare counter Gentoo, destinazione %s non esiste."
+msgstr "Impossibile aggiornare counter Portage, destinazione %s inesistente."
 
 #: ../../libraries/entropy.py:4680
-#, fuzzy, python-format
+#, python-format
 msgid "Cannot update Portage world file, destination %s does not exist."
-msgstr "Impossibile aggiornare counter Gentoo, destinazione %s non esiste."
+msgstr "Impossibile aggiornare file world di Portage, destinazione %s inesistente."
 
 #: ../../libraries/entropy.py:4707
-#, fuzzy, python-format
+#, python-format
 msgid "Cannot update Portage world file, destination %s is corrupted."
-msgstr "Impossibile aggiornare counter Gentoo, destinazione %s non esiste."
+msgstr "Impossibile aggiornare file world di Portage, destinazione %s corrotta."
 
 #: ../../libraries/entropy.py:4830
 #, python-format
@@ -546,9 +544,8 @@ msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr "%s è una directory quando dovrebbe essere un file !! Rimozione in 20 secondi..."
 
 #: ../../libraries/entropy.py:5015
-#, fuzzy
 msgid "Skipping file installation/removal"
-msgstr "Salto installazione file"
+msgstr "Salto installazione/rimozione file"
 
 #: ../../libraries/entropy.py:5028
 msgid "Cannot check CONFIG PROTECTION. Error"
@@ -911,9 +908,8 @@ msgid "database is already up to date"
 msgstr "database già aggiornato"
 
 #: ../../libraries/entropy.py:7208
-#, fuzzy
 msgid "database will be ready soon"
-msgstr "database già sincronizzato"
+msgstr "il database sarà presto"
 
 #: ../../libraries/entropy.py:7224
 msgid "Repository is being updated"
@@ -938,14 +934,12 @@ msgid "Advisories fetch error"
 msgstr "Errore di scaricamento Avvisi"
 
 #: ../../libraries/entropy.py:7297
-#, fuzzy
 msgid "Downloading SSL CA certificate"
-msgstr "Scaricamento archivio"
+msgstr "Scaricamento certificato SSL CA"
 
 #: ../../libraries/entropy.py:7307
-#, fuzzy
 msgid "Downloading SSL Server certificate"
-msgstr "Scaricamento archivio"
+msgstr "Scaricamento certificato SSL Server"
 
 #: ../../libraries/entropy.py:7317
 msgid "Downloading package mask"
@@ -980,9 +974,8 @@ msgid "Downloading SPM package USE flags configuration"
 msgstr "Scariamento configurazione USE pacchetti SPM"
 
 #: ../../libraries/entropy.py:7397
-#, fuzzy
 msgid "Downloading SPM Profile configuration"
-msgstr "Scaricamento configurazione globale SPM"
+msgstr "Scaricamento configurazione profilo SPM"
 
 #: ../../libraries/entropy.py:7416
 msgid "not available, it's ok"
@@ -1129,9 +1122,8 @@ msgid "QA"
 msgstr "QA"
 
 #: ../../libraries/entropy.py:8805
-#, fuzzy
 msgid "Cannot run External trigger for"
-msgstr "Impossibile eseguire trigger Portage per"
+msgstr "Impossibile eseguire trigger esterno per"
 
 #: ../../libraries/entropy.py:8807
 #: ../../libraries/entropy.py:9664
@@ -1574,9 +1566,8 @@ msgid "cannot lock mirror"
 msgstr "impossibile bloccare mirror"
 
 #: ../../libraries/entropy.py:14738
-#, fuzzy
 msgid "Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw..."
-msgstr "Database Entropy probabilmente vuoto. Se non sei d'accordo,"
+msgstr "Database Entropy probabilmente vuoto. Se non sei d'accordo con quello che sto dicendo, allora è probabilmente corrotto! Non ti fermerò qui comunque..."
 
 #: ../../libraries/entropy.py:14749
 msgid "database"
@@ -1654,18 +1645,16 @@ msgid "Preparing to move selected packages to"
 msgstr "Preparazione allo spostamento dei pacchetti selezionati a"
 
 #: ../../libraries/entropy.py:15006
-#, fuzzy
 msgid "Preparing to copy selected packages to"
-msgstr "Preparazione allo spostamento dei pacchetti selezionati a"
+msgstr "Preparazione alla copia dei pacchetti selezionati"
 
 #: ../../libraries/entropy.py:15018
 msgid "Note"
 msgstr "oNota"
 
 #: ../../libraries/entropy.py:15019
-#, fuzzy
 msgid "all the old packages with conflicting scope will be removed from the destination repo unless injected"
-msgstr "tutti i pacchetti vecchi con scope in conflitto saranno"
+msgstr "tutti i pacchetti vecchi con scope in conflitto saranno rimossi dalla destinazione a meno che non siano iniettati"
 
 #. ask to continue
 #: ../../libraries/entropy.py:15043
@@ -1703,9 +1692,8 @@ msgid "removing entry from source database"
 msgstr "rimozione voce dal database sorgente"
 
 #: ../../libraries/entropy.py:15172
-#, fuzzy
 msgid "successfully handled atom"
-msgstr "atomo spostato con successo"
+msgstr "atomo gestito con successo"
 
 #: ../../libraries/entropy.py:15197
 #: ../../libraries/entropy.py:15291
@@ -1968,9 +1956,8 @@ msgid "migration loop completed"
 msgstr "ciclo di migrazione completato"
 
 #: ../../libraries/entropy.py:16631
-#, fuzzy
 msgid "not connected to database"
-msgstr "Non connesso all'host"
+msgstr "non connesso al database"
 
 #: ../../libraries/entropy.py:16634
 #: ../../libraries/entropy.py:18160
@@ -1978,14 +1965,12 @@ msgid "method not implemented"
 msgstr "metodo non implementato"
 
 #: ../../libraries/entropy.py:16641
-#, fuzzy
 msgid "no connection data"
-msgstr "Impossibile connettersi a"
+msgstr "nessuna informazione di connessione"
 
 #: ../../libraries/entropy.py:16830
-#, fuzzy
 msgid "not a valid directory path"
-msgstr "metodo non valido"
+msgstr "percorso directory non valido"
 
 #: ../../libraries/entropy.py:18146
 #: ../../libraries/entropy.py:18157
@@ -1993,33 +1978,28 @@ msgid "not logged in"
 msgstr "non loggato"
 
 #: ../../libraries/entropy.py:18153
-#, fuzzy
 msgid "no login data"
-msgstr "Rimozione dati"
+msgstr "nessuna informazione di login"
 
 #: ../../libraries/entropy.py:18299
-#, fuzzy
 msgid "no username specified"
-msgstr "nessun pacchetto specificato."
+msgstr "nessun nome utente specificato"
 
 #: ../../libraries/entropy.py:18301
-#, fuzzy
 msgid "no password specified"
-msgstr "Nessun pacchetto specificato"
+msgstr "nessuna password specificata"
 
 #: ../../libraries/entropy.py:18304
 msgid "empty password"
 msgstr "password vuota"
 
 #: ../../libraries/entropy.py:18306
-#, fuzzy
 msgid "empty username"
-msgstr "Nome repository"
+msgstr "username vuoto"
 
 #: ../../libraries/entropy.py:18311
-#, fuzzy
 msgid "user not found"
-msgstr "file non trovato"
+msgstr "utente non trovato"
 
 #: ../../libraries/entropy.py:18315
 msgid "you need to login on the website to update your password format"
@@ -2030,24 +2010,21 @@ msgid "wrong password"
 msgstr "password errata"
 
 #: ../../libraries/entropy.py:18325
-#, fuzzy
 msgid "user inactive"
-msgstr "attiva"
+msgstr "utente inattivo"
 
 #: ../../libraries/entropy.py:18329
 msgid "user banned"
 msgstr "utente bannato"
 
 #: ../../libraries/entropy.py:19237
-#, fuzzy
 msgid "Authentication on repository"
-msgstr "Accoppiamento nella repository"
+msgstr "autenticazione su repository"
 
 #: ../../libraries/entropy.py:19239
 #: ../../libraries/entropy.py:21344
-#, fuzzy
 msgid "Username"
-msgstr "Nome file"
+msgstr "Nome utente"
 
 #: ../../libraries/entropy.py:19240
 #: ../../libraries/entropy.py:21345
@@ -2122,9 +2099,8 @@ msgstr "servizio temporaneamente non disponibile"
 
 #. command failed
 #: ../../libraries/entropy.py:19882
-#, fuzzy
 msgid "command failed"
-msgstr "fallito"
+msgstr "comando fallito"
 
 #: ../../libraries/entropy.py:19898
 msgid "received wrong answer"
@@ -2140,9 +2116,8 @@ msgid "User Generated Content"
 msgstr "Contenuto Generato dagli Utenti"
 
 #: ../../libraries/entropy.py:20338
-#, fuzzy
 msgid "sending file"
-msgstr "Modifica del file"
+msgstr "invio file"
 
 #: ../../libraries/entropy.py:20442
 msgid "A valid EntropySocketClientCommands based class is needed"
@@ -2165,14 +2140,12 @@ msgid "connection timed out while receiving data"
 msgstr "timeout della connessione durante la ricezione"
 
 #: ../../libraries/entropy.py:20749
-#, fuzzy
 msgid "connection error while receiving data"
-msgstr "timeout della connessione durante la ricezione"
+msgstr "errore di connessione durante la ricezione dati"
 
 #: ../../libraries/entropy.py:20768
-#, fuzzy
 msgid "syscall error while receiving data"
-msgstr "timeout della connessione durante la ricezione"
+msgstr "errore syscall durante la ricezione dati"
 
 #: ../../libraries/entropy.py:20786
 msgid "Reconnecting to socket"
@@ -2187,9 +2160,8 @@ msgid "Warning: you are using an emergency SSL interface, SSL certificate can't 
 msgstr "Attenzione: stai usando un'interfaccia SSL di emergenza, i certificati SSL non possono essere verificati. Per favore installa dev-python/pyopenssl"
 
 #: ../../libraries/entropy.py:20837
-#, fuzzy
 msgid "Service issuer"
-msgstr "Stato servizio"
+msgstr "Emittente del Servizio"
 
 #: ../../libraries/entropy.py:20851
 msgid "Cannot connect to"
@@ -2208,44 +2180,36 @@ msgid "Successfully disconnected from host"
 msgstr "Disconnessione dall'host effettuata"
 
 #: ../../libraries/entropy.py:21000
-#, fuzzy
 msgid "A valid UGCClientInterface based instance is needed"
-msgstr "E' richiesta un'istanza TextInterface valida"
+msgstr "E' richiesta un'istanza basata su UGCClientInterface valida"
 
 #: ../../libraries/entropy.py:21072
-#, fuzzy
 msgid "Cannot setup cache directory"
-msgstr "impossibile creare cartella mirror"
+msgstr "Impossibile preparare la directory della cache"
 
 #: ../../libraries/entropy.py:21074
-#, fuzzy
 msgid "Cannot write to cache directory"
-msgstr "impossibile creare cartella mirror"
+msgstr "Impossibile scrivere sulla directory della cache"
 
 #: ../../libraries/entropy.py:21080
-#, fuzzy
 msgid "Cannot remove cache file"
-msgstr "Impossibile auto-incorporare il file"
+msgstr "Impossibile rimuovere file della cache"
 
 #: ../../libraries/entropy.py:21092
-#, fuzzy
 msgid "Cannot write to cache file"
-msgstr "Impossibile auto-incorporare il file"
+msgstr "Impossibile scrivere su file della cache"
 
 #: ../../libraries/entropy.py:21253
-#, fuzzy
 msgid "A valid EquoInterface based instance is needed"
-msgstr "E' richiesta un'istanza TextInterface valida"
+msgstr "E' richiesta un'interfaccia basata su EquoInterface valida"
 
 #: ../../libraries/entropy.py:21268
-#, fuzzy
 msgid "repository is not available"
-msgstr "motivo non disponibile"
+msgstr "repository non disponibile"
 
 #: ../../libraries/entropy.py:21275
-#, fuzzy
 msgid "repository metadata is malformed"
-msgstr "La stringa di identificazione Repository è malformata"
+msgstr "Metadati repository malformati"
 
 #: ../../libraries/entropy.py:21330
 #: ../../libraries/entropy.py:21375
@@ -2253,14 +2217,12 @@ msgid "ok"
 msgstr "ok"
 
 #: ../../libraries/entropy.py:21334
-#, fuzzy
 msgid "repository does not support EAPI3"
-msgstr "la cartella non esiste"
+msgstr "repository non supporta EAPI3"
 
 #: ../../libraries/entropy.py:21348
-#, fuzzy
 msgid "Please login against"
-msgstr "Attendere prego"
+msgstr "Eseguire login su"
 
 #: ../../libraries/entropy.py:21348
 #: ../../server/server_reagent.py:82
@@ -2272,14 +2234,12 @@ msgid "repository"
 msgstr "repository"
 
 #: ../../libraries/entropy.py:21353
-#, fuzzy
 msgid "login abort"
-msgstr "Rimozione dati"
+msgstr "annullamento login"
 
 #: ../../libraries/entropy.py:21358
-#, fuzzy
 msgid "connection issues"
-msgstr "Aggiornamenti: problemi di connessione"
+msgstr "problemi di connessione"
 
 #: ../../libraries/entropy.py:21371
 msgid "Login successful. Do you want to save these credentials ?"
@@ -2720,9 +2680,8 @@ msgid "packages sync"
 msgstr "sincronizzazione paccheti"
 
 #: ../../libraries/entropy.py:23893
-#, fuzzy
 msgid "socket error"
-msgstr "errore sbloccamento"
+msgstr "errore socket"
 
 #: ../../libraries/entropy.py:23895
 msgid "on"
@@ -3022,9 +2981,8 @@ msgstr "(CTRL+E Menu | CTRL+X Uscita)"
 
 #: ../../libraries/managerTools.py:220
 #: ../../libraries/managerTools.py:245
-#, fuzzy
 msgid "Ok"
-msgstr "Ok?"
+msgstr "Ok"
 
 #: ../../libraries/managerTools.py:221
 #: ../../libraries/managerTools.py:247
@@ -3665,9 +3623,8 @@ msgstr "muove i pacchetti da una repository all'altra"
 
 #: ../../client/equo.py:236
 #: ../../server/reagent.py:90
-#, fuzzy
 msgid "copy packages from a repository to another"
-msgstr "muove i pacchetti da una repository all'altra"
+msgstr "copia pacchetti da una repository all'altra"
 
 #: ../../client/equo.py:237
 #: ../../server/reagent.py:91
@@ -3718,24 +3675,20 @@ msgid "regenerate the depends table"
 msgstr "rigenera la tabella delle dipendenze inverse"
 
 #: ../../client/equo.py:256
-#, fuzzy
 msgid "handles User Generated Content features"
-msgstr "gestisce le funzionalità lato Community"
+msgstr "gestisce le funzioni di Contenuti Generati dagli Utenti"
 
 #: ../../client/equo.py:257
-#, fuzzy
 msgid "login against a specified repository"
-msgstr "abilita la repository specificata"
+msgstr "login su repository specificata"
 
 #: ../../client/equo.py:258
-#, fuzzy
 msgid "logout from a specified repository"
-msgstr "abilita la repository specificata"
+msgstr "logout su repository specificata"
 
 #: ../../client/equo.py:259
-#, fuzzy
 msgid "force action"
-msgstr "Luogo"
+msgstr "forza azione"
 
 #: ../../client/equo.py:260
 msgid "manage package documents for the selected repository (comments, files, videos)"
@@ -3754,9 +3707,8 @@ msgid "remove documents from database using their identifiers"
 msgstr "rimuove documenti dal database usando i relativi identificatori"
 
 #: ../../client/equo.py:264
-#, fuzzy
 msgid "manage package votes for the selected repository"
-msgstr "(ri)crea il database per la repository specificata"
+msgstr "gestisce votazione pacchetti per la repository selezionata"
 
 #: ../../client/equo.py:265
 msgid "get vote for the specified package key (example: x11-libs/qt)"
@@ -5780,21 +5732,18 @@ msgstr "Identificatore"
 
 #: ../../spritz/src/dialogs.py:129
 #: ../../spritz/src/spritz.glade.h:11
-#, fuzzy
 msgid "Author"
-msgstr "Atomo"
+msgstr "Autore"
 
 #: ../../spritz/src/dialogs.py:442
 #: ../../spritz/src/views.py:551
-#, fuzzy
 msgid "Vote registered successfully"
-msgstr "Database risorto con successo"
+msgstr "Voto registrato con successo"
 
 #: ../../spritz/src/dialogs.py:444
 #: ../../spritz/src/views.py:553
-#, fuzzy
 msgid "Error registering vote"
-msgstr "Errore durante l'impostazione del parametro"
+msgstr "Errore durante la registrazione del voto"
 
 #: ../../spritz/src/dialogs.py:457
 msgid "License name"
@@ -5833,9 +5782,8 @@ msgstr "File"
 
 #: ../../spritz/src/dialogs.py:564
 #: ../../spritz/src/spritz.glade.h:24
-#, fuzzy
 msgid "Content"
-msgstr "Carica il contenuto"
+msgstr "Contenuto"
 
 #: ../../spritz/src/dialogs.py:644
 msgid "Share your opinion, your documents, your screenshots!"
@@ -5846,9 +5794,8 @@ msgid "Be part of our Community!"
 msgstr "Fai parte della nostra Community!"
 
 #: ../../spritz/src/dialogs.py:649
-#, fuzzy
 msgid "Number of downloads"
-msgstr "Numero di download falliti"
+msgstr "Numero di download"
 
 #: ../../spritz/src/dialogs.py:680
 msgid "From your Operating System"
@@ -5863,68 +5810,57 @@ msgid "Write your"
 msgstr "Scrivi il tuo"
 
 #: ../../spritz/src/dialogs.py:920
-#, fuzzy
 msgid "Select your"
-msgstr "Selezione"
+msgstr "Seleziona il tuo"
 
 #: ../../spritz/src/dialogs.py:927
-#, fuzzy
 msgid "Submit issue"
-msgstr "Stato servizio"
+msgstr "Problema di immissione"
 
 #: ../../spritz/src/dialogs.py:940
 msgid "Empty Document"
 msgstr "Documento vuoto"
 
 #: ../../spritz/src/dialogs.py:944
-#, fuzzy
 msgid "Invalid Description"
-msgstr "Descrizione"
+msgstr "Descrizione non valida"
 
 #: ../../spritz/src/dialogs.py:950
-#, fuzzy
 msgid "Invalid Document Type"
-msgstr "Backend non valido"
+msgstr "Tipo documento non valido"
 
 #: ../../spritz/src/dialogs.py:953
-#, fuzzy
 msgid "Invalid Title"
-msgstr "Backend non valido"
+msgstr "Titolo non valido"
 
 #. confirm ?
 #: ../../spritz/src/dialogs.py:957
-#, fuzzy
 msgid "Do you confirm your submission?"
-msgstr "Confermi"
+msgstr "Confermi l'inserimento?"
 
 #: ../../spritz/src/dialogs.py:977
-#, fuzzy
 msgid "UGC Error"
-msgstr "Errore"
+msgstr "Errore UGC"
 
 #: ../../spritz/src/dialogs.py:981
-#, fuzzy
 msgid "Document added successfully. Thank you"
-msgstr "scaricato con successo"
+msgstr "Documento aggiunto con successo. Grazie!"
 
 #: ../../spritz/src/dialogs.py:981
-#, fuzzy
 msgid "Success!"
-msgstr "accesso"
+msgstr "Successo!"
 
 #: ../../spritz/src/dialogs.py:1001
 msgid "Write your document"
 msgstr "Scrivi il tuo documento"
 
 #: ../../spritz/src/dialogs.py:1008
-#, fuzzy
 msgid "Select your file"
-msgstr "File selezionato"
+msgstr "Seleziona il file"
 
 #: ../../spritz/src/dialogs.py:1019
-#, fuzzy
 msgid "On repository"
-msgstr "repository"
+msgstr "Su Repository"
 
 #: ../../spritz/src/dialogs.py:1073
 msgid "These are the packages that must be enabled to satisfy your request"
@@ -5993,9 +5929,8 @@ msgid "Please fill the following form"
 msgstr "Per favore riempi il form seguente"
 
 #: ../../spritz/src/dialogs.py:1772
-#, fuzzy
 msgid "Invalid entry"
-msgstr "Backend non valido"
+msgstr "Voce non valida"
 
 #. new
 #: ../../spritz/src/dialogs.py:1925
@@ -6209,9 +6144,8 @@ msgid "Repository Services Port not valid"
 msgstr "Porta Servizi Repository non valida"
 
 #: ../../spritz/src/spritz.py:413
-#, fuzzy
 msgid "Secure Services Port not valid"
-msgstr "Porta Servizi Repository non valida"
+msgstr "Porta Servizi Sicuri non valida"
 
 #: ../../spritz/src/spritz.py:448
 msgid "Insert Repository"
@@ -6335,9 +6269,8 @@ msgid "Skipping current mirror."
 msgstr "Salto il mirror corrente."
 
 #: ../../spritz/src/spritz.py:1087
-#, fuzzy
 msgid "Cleaning UGC cache of"
-msgstr "Pulitura dei vecchi file del pacchetto..."
+msgstr "Pulitura cache UGC di"
 
 #: ../../spritz/src/spritz.py:1088
 msgid "UGC cache cleared"
@@ -6374,9 +6307,8 @@ msgid "Logged in as"
 msgstr "Loggato come"
 
 #: ../../spritz/src/spritz.py:1273
-#, fuzzy
 msgid "UGC Status"
-msgstr "Stato"
+msgstr "Stato UGC"
 
 #: ../../spritz/src/spritz.py:1296
 #: ../../spritz/src/spritz.py:1322
@@ -6556,9 +6488,8 @@ msgid "Selection"
 msgstr "Selezione"
 
 #: ../../spritz/src/views.py:496
-#, fuzzy
 msgid "Rating"
-msgstr "Corrisposti"
+msgstr "Punteggio"
 
 #: ../../spritz/src/views.py:846
 msgid "Packages To Reinstall"
@@ -6835,9 +6766,8 @@ msgstr ""
 "<small>...fai un piccolo break!</small>"
 
 #: ../../spritz/src/spritz.glade.h:4
-#, fuzzy
 msgid "<small>Powered by User Generated Content</small>"
-msgstr "gestisce le funzionalità lato Community"
+msgstr "<small>Powered by User Generated Content</small>"
 
 #: ../../spritz/src/spritz.glade.h:5
 msgid "Add Document"
@@ -6884,7 +6814,6 @@ msgid "Collision protection"
 msgstr "Protezione collisioni"
 
 #: ../../spritz/src/spritz.glade.h:23
-#, fuzzy
 msgid "Compression"
 msgstr "Compressione"
 
@@ -6897,9 +6826,8 @@ msgid "D_ependencies"
 msgstr "Dip_endenze"
 
 #: ../../spritz/src/spritz.glade.h:27
-#, fuzzy
 msgid "Date"
-msgstr "a"
+msgstr "Data"
 
 #: ../../spritz/src/spritz.glade.h:28
 msgid "Dele_te all"
@@ -6988,9 +6916,8 @@ msgid "Keywords (space separated)"
 msgstr "Keywords (separate da spazio)"
 
 #: ../../spritz/src/spritz.glade.h:57
-#, fuzzy
 msgid "Load User Generated Content"
-msgstr "gestisce le funzionalità lato Community"
+msgstr "Carica Contenuto Generato dagli Utenti"
 
 #: ../../spritz/src/spritz.glade.h:58
 msgid "Load content"
@@ -7089,9 +7016,8 @@ msgid "Remove"
 msgstr "Rimuovi"
 
 #: ../../spritz/src/spritz.glade.h:86
-#, fuzzy
 msgid "Remove Selected"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr "Rimuovi Selezionato"
 
 #: ../../spritz/src/spritz.glade.h:87
 msgid "Remove the selected package"
@@ -7122,19 +7048,16 @@ msgid "Save"
 msgstr "Salva"
 
 #: ../../spritz/src/spritz.glade.h:97
-#, fuzzy
 msgid "Secure Services Port"
-msgstr "Porta Servizi Repository"
+msgstr "Porta Servizi Sicuri"
 
 #: ../../spritz/src/spritz.glade.h:98
-#, fuzzy
 msgid "Services Port"
-msgstr "Porta Servizi Repository"
+msgstr "Porta Servizi"
 
 #: ../../spritz/src/spritz.glade.h:99
-#, fuzzy
 msgid "Show Selected"
-msgstr "Rimuovi il pacchetto selezionato"
+msgstr "Visualizza Selezionato"
 
 #: ../../spritz/src/spritz.glade.h:100
 msgid "Show all"
@@ -7169,9 +7092,8 @@ msgid "This is what they call \"nice level\""
 msgstr "Questo è quello che chiamano \"nice level\""
 
 #: ../../spritz/src/spritz.glade.h:112
-#, fuzzy
 msgid "UGC Entry Information"
-msgstr "Informazione Critica"
+msgstr "Informazioni voce UGC"
 
 #: ../../spritz/src/spritz.glade.h:113
 msgid "URI"
@@ -7346,9 +7268,8 @@ msgid "_Remove All"
 msgstr "_Rimuovi tutto"
 
 #: ../../spritz/src/spritz.glade.h:159
-#, fuzzy
 msgid "_Remove Login"
-msgstr "Rimozione"
+msgstr "_Rimozione Login"
 
 #: ../../spritz/src/spritz.glade.h:160
 msgid "_Skip mirror"
@@ -7371,9 +7292,8 @@ msgid "type your password here"
 msgstr "scrivi qui la tua password"
 
 #: ../../spritz/src/spritz.glade.h:166
-#, fuzzy
 msgid "type your username here"
-msgstr "Scrivi la tua branch"
+msgstr "inserire nome utente qui"
 
 #~ msgid "Soon!"
 #~ msgstr "Presto!"
