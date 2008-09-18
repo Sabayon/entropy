@@ -199,6 +199,40 @@ def get_remote_data(url):
         socket.setdefaulttimeout(2)
         return False
 
+def is_png_file(path):
+    f = open(path,"r")
+    x = f.read(4)
+    if x == '\x89PNG':
+        return True
+    return False
+
+def is_jpeg_file(path):
+    f = open(path,"r")
+    x = f.read(10)
+    if x == '\xff\xd8\xff\xe0\x00\x10JFIF':
+        return True
+    return False
+
+def is_bmp_file(path):
+    f = open(path,"r")
+    x = f.read(2)
+    if x == 'BM':
+        return True
+    return False
+
+def is_gif_file(path):
+    f = open(path,"r")
+    x = f.read(5)
+    if x == 'GIF89':
+        return True
+    return False
+
+def is_supported_image_file(path):
+    calls = [is_png_file, is_jpeg_file, is_bmp_file, is_gif_file]
+    for mycall in calls:
+        if mycall(path): return True
+    return False
+
 def add_proxy_opener(module, data):
     import types
     if type(module) != types.ModuleType: # FIXME: check if it's urllib2
