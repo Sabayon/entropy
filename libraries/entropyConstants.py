@@ -812,6 +812,13 @@ def const_defaultSettings(rootdir):
             4: _('Generic Files'),
             5: _('YouTube(tm) Videos'),
         },
+        'ugc_doctypes_description_singular': {
+            1: _('Comment'),
+            2: _('BBcode Document'),
+            3: _('Image/Screenshot'),
+            4: _('Generic File'),
+            5: _('YouTube(tm) Video'),
+        },
         'ugc_accessfile': ETP_UGC_CONF_DIR+"/access.xml",
         'ugc_voterange': range(1,6),
 
@@ -1428,6 +1435,7 @@ def const_extractServerRepositoryParameters(repostring):
                 eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
 
     mydata = {}
+    mydata['repoid'] = repoid
     mydata['description'] = repodesc
     mydata['mirrors'] = []
     mydata['community'] = False

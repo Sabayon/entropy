@@ -25,12 +25,14 @@ import sys
 import time
 import logging
 from threading import Thread,Event
-import thread
+import thread, random
+CURRENT_CURSOR = None
 
-
-def busyCursor(mainwin,insensitive=False):
+def busyCursor(mainwin,insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
     ''' Set busy cursor in mainwin and make it insensitive if selected '''
-    mainwin.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+    mainwin.window.set_cursor(cur)
+    global CURRENT_CURSOR
+    CURRENT_CURSOR = cur
     if insensitive:
         mainwin.set_sensitive(False)
     doGtkEvents()
@@ -40,6 +42,8 @@ def normalCursor(mainwin):
     if mainwin.window != None:
         mainwin.window.set_cursor(None)
         mainwin.set_sensitive(True)
+    global CURRENT_CURSOR
+    CURRENT_CURSOR = None
     doGtkEvents()
 
 def doGtkEvents():
@@ -65,14 +69,13 @@ class ProcessGtkEventsThread(Thread):
 
     def dosleep(self):
         try:
-            time.sleep(0.5)
+            time.sleep(0.4)
         except:
             pass
 
     def doQuit(self):
         self.__quit = True
         self.__active.set()
-        time.sleep(2)
 
     def startProcessing(self):
         self.__active.set()

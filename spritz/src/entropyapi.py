@@ -188,12 +188,12 @@ class QueueExecutor:
 
 class Equo(EquoInterface):
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.progressLog = None
         self.output = None
         self.progress = None
         self.urlFetcher = None
-        EquoInterface.__init__(self)
+        EquoInterface.__init__(self, *args, **kwargs)
         self.xcache = True # force xcache enabling
 
     def connect_to_gui(self, spritz_app):
@@ -273,6 +273,8 @@ class GuiUrlFetcher(urlFetcher):
     # reimplementing updateProgress
     def updateProgress(self):
 
+        if self.progress == None: return
+
         myavg = int(round(float(self.average),1))
         if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
@@ -286,4 +288,4 @@ class GuiUrlFetcher(urlFetcher):
             self.gui_last_avg = myavg
 
 
-EquoConnection = Equo()
+EquoConnection = Equo(url_fetcher = GuiUrlFetcher)

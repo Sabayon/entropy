@@ -42,6 +42,7 @@ class const:
     pkg_pixmap = PIXMAPS_PATH+'/package-x-generic.png'
     ugc_small_pixmap = PIXMAPS_PATH+'/ugc.png'
     ugc_pixmap = PIXMAPS_PATH+'/ugc/icon.png'
+    ugc_pixmap_small = PIXMAPS_PATH+'/ugc/icon_small.png'
     refresh_pixmap = PIXMAPS_PATH+'/ugc/refresh.png'
     star_normal_pixmap = PIXMAPS_PATH+'/star.png'
     star_selected_pixmap = PIXMAPS_PATH+'/star_selected.png'
@@ -57,6 +58,9 @@ class const:
     ugc_video_pix = PIXMAPS_PATH+'/ugc/video.png'
     ugc_image_pix = PIXMAPS_PATH+'/ugc/image.png'
     ugc_view_pix = PIXMAPS_PATH+'/ugc/view.png'
+
+    # ads
+    plain_ad_pix = PIXMAPS_PATH+'/ad.png'
 
     # package categories
     PACKAGE_CATEGORIES = [
@@ -84,6 +88,15 @@ class const:
        'filesconf' : PAGE_FILESCONF,
        'glsa'      : PAGE_GLSA,
        'preferences': PAGE_PREFERENCES
+    }
+
+    PREF_PAGE_SYSTEM = 0
+    PREF_PAGE_NETWORKING = 1
+    PREF_PAGE_UGC = 2
+    PREF_PAGES = {
+        'system': PREF_PAGE_SYSTEM,
+        'networking': PREF_PAGE_NETWORKING,
+        'ugc': PREF_PAGE_UGC
     }
 
     PACKAGE_PROGRESS_STEPS = ( 0.1, # Depsolve

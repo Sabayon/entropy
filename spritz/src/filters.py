@@ -71,7 +71,7 @@ class KeywordFilter(SpritzFilter):
     def __init__(self):
         SpritzFilter.__init__(self)
         self.reList = []
-        self.fields = ['name', 'description']
+        self.fields = ['name']#, 'description']
 
     def setKeys(self,criteria):
         self.reList = []

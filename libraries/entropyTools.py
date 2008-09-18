@@ -101,6 +101,7 @@ class parallelTask(threading.Thread):
         threading.Thread.__init__(self)
         self.function = args[0]
         self.args = args[1:][:]
+        self.exc = SystemExit
         self.kwargs = kwargs.copy()
 
     def parallel_wait(self):
@@ -111,7 +112,10 @@ class parallelTask(threading.Thread):
         self.function(*self.args,**self.kwargs)
 
     def nuke(self):
-        raise SystemExit
+        raise self.exc
+
+    def kill(self):
+        pass
 
 def printTraceback(f = None):
     import traceback
@@ -194,6 +198,40 @@ def get_remote_data(url):
     except:
         socket.setdefaulttimeout(2)
         return False
+
+def is_png_file(path):
+    f = open(path,"r")
+    x = f.read(4)
+    if x == '\x89PNG':
+        return True
+    return False
+
+def is_jpeg_file(path):
+    f = open(path,"r")
+    x = f.read(10)
+    if x == '\xff\xd8\xff\xe0\x00\x10JFIF':
+        return True
+    return False
+
+def is_bmp_file(path):
+    f = open(path,"r")
+    x = f.read(2)
+    if x == 'BM':
+        return True
+    return False
+
+def is_gif_file(path):
+    f = open(path,"r")
+    x = f.read(5)
+    if x == 'GIF89':
+        return True
+    return False
+
+def is_supported_image_file(path):
+    calls = [is_png_file, is_jpeg_file, is_bmp_file, is_gif_file]
+    for mycall in calls:
+        if mycall(path): return True
+    return False
 
 def add_proxy_opener(module, data):
     import types

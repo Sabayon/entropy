@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # Base Python Imports
-import sys, os, pty
+import sys, os, pty, random
 import logging
 import traceback
 import commands
@@ -38,6 +38,7 @@ from entropy_i18n import _
 
 # GTK Imports
 import gtk, gobject
+gtk.gdk.threads_init()
 from etpgui.widgets import UI, Controller
 from etpgui import *
 from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupString
@@ -79,21 +80,25 @@ class SpritzController(Controller):
         if self.ugcTask != None:
             self.ugcTask.kill()
         ''' Main destroy Handler '''
+
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if hasattr(thread,'nuke'):
+                thread.nuke()
+
         gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
             self.exitNow()
-            return False
         else:
             self.exitNow()
-            return False
 
     def exitNow(self):
         try:
             gtk.main_quit()       # Exit gtk
         except RuntimeError,e:
             pass
-        sys.exit( 1 )         # Terminate Program
+        raise SystemExit
 
     def __getSelectedRepoIndex( self ):
         selection = self.repoView.view.get_selection()
@@ -643,7 +648,6 @@ class SpritzController(Controller):
             yp.action = 'i'
             yp.queued = 'i'
             pkgs.append(yp)
-        # welcome to our world, now process !
 
         busyCursor(self.ui.main)
         status, myaction = self.queue.add(pkgs)
@@ -1054,6 +1058,65 @@ class SpritzController(Controller):
         about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
         about.show()
 
+    def on_notebook1_switch_page(self, widget, page, page_num):
+        if page_num == const.PREF_PAGES['ugc']:
+            self.load_ugc_repositories()
+
+    def on_ugcLoginButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
+        if (myiter == None) or (model == None): return
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            if logged_data:
+                self.Equo.UGC.remove_login(obj['repoid'])
+            self.Equo.UGC.login(obj['repoid'])
+            self.load_ugc_repositories()
+
+    def on_ugcClearLoginButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
+        if (myiter == None) or (model == None): return
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            if not self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']): return
+            logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            if logged_data: self.Equo.UGC.remove_login(obj['repoid'])
+            self.load_ugc_repositories()
+
+    def on_ugcClearCacheButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        for repoid in list(set(etpRepositories.keys()+etpRepositoriesExcluded.keys())):
+            self.Equo.UGC.UGCCache.clear_cache(repoid)
+            self.setStatus("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
+        self.setStatus("%s" % (_("UGC cache cleared"),))
+
+    def on_ugcClearCredentialsButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        for repoid in list(set(etpRepositories.keys()+etpRepositoriesExcluded.keys())):
+            if not self.Equo.UGC.is_repository_eapi3_aware(repoid): continue
+            logged_data = self.Equo.UGC.read_login(repoid)
+            if logged_data: self.Equo.UGC.remove_login(repoid)
+        self.load_ugc_repositories()
+        self.setStatus("%s" % (_("UGC credentials cleared"),))
+
+    def on_bannerEventBox_button_release_event(self, widget, event):
+        if self.ad_url != None:
+            import subprocess
+            subprocess.call(['xdg-open',self.ad_url])
+
+    def on_bannerEventBox_enter_notify_event(self, widget, event):
+        busyCursor(self.ui.main, cur = gtk.gdk.Cursor(gtk.gdk.HAND2))
+
+    def on_bannerEventBox_leave_notify_event(self, widget, event):
+        busyCursor(self.ui.main, cur = CURRENT_CURSOR)
+
+    def load_ugc_repositories(self):
+        self.ugcRepositoriesModel.clear()
+        for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
+            self.ugcRepositoriesModel.append([etpRepositories[repoid]])
+
 class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):
@@ -1070,6 +1133,13 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.logger = logging.getLogger("yumex.main")
 
         # init flags
+        self.ad_list_url = 'http://www.sabayonlinux.org/entropy_ads/LIST'
+        self.ad_uri_dir = os.path.dirname(self.ad_list_url)
+        self.previous_ad_index = None
+        self.previous_ad_image_path = None
+        self.ad_url = None
+        self.ad_pix = gtk.image_new_from_file(const.plain_ad_pix)
+        self.adTask = None
         self.ugcTask = None
         self.spawning_ugc = False
         self.Preferences = None
@@ -1105,6 +1175,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.setupPreferences()
 
         self.setupUgc()
+        self.setupAds()
 
         packages_install = os.getenv("SPRITZ_PACKAGES")
         if packages_install:
@@ -1118,34 +1189,98 @@ class SpritzApplication(SpritzController,SpritzGUI):
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
 
+    def setupAds(self):
+        self.ui.bannerEventBox.add(self.ad_pix)
+        self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
+        self.ad_url = 'http://www.silkbit.com'
+        self.ui.bannerEventBox.show_all()
+        self.adTask = entropyTools.TimeScheduled(self.spawnAdRotation, 60)
+        self.adTask.start()
+
     def setupUgc(self):
         self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
         self.ugcTask.start()
 
-    def spawnUgcUpdate(self):
+    def spawnAdRotation(self):
         try:
-            while (self.spawning_ugc or self.isWorking):
-                time.sleep(1)
-
-            self.isWorking = True
-            self.spawning_ugc = True
-            gtkEventThread.startProcessing()
-            connected = entropyTools.get_remote_data(etpConst['conntestlink'])
-            if (connected == False) or (self.Equo.UGC == None):
-                self.isWorking = False
-                self.spawning_ugc = False
-                gtkEventThread.endProcessing()
-                return
-            for repo in self.Equo.validRepositories:
-                self.Equo.update_ugc_cache(repo)
-
-            self.isWorking = False
-            self.spawning_ugc = False
-            gtkEventThread.endProcessing()
-
+            self.ad_rotation()
         except:
             pass
 
+    def ad_rotation(self):
+        while self.isWorking:
+            time.sleep(1)
+
+        tries = 5
+        while tries:
+
+            ads_data = entropyTools.get_remote_data(self.ad_list_url)
+            if not ads_data:
+                tries -= 1
+                continue
+
+            ads_data = [x.strip() for x in ads_data if x.strip() and x.split() > 1]
+            length = len(ads_data)
+            myrand = int(random.random()*length)
+            while myrand == self.previous_ad_index:
+                myrand = int(random.random()*length)
+
+            mydata = ads_data[myrand].split()
+            mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
+            myurl = ' '.join(mydata[1:])
+
+            pix_tmp_path = entropyTools.getRandomTempFile()
+            fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
+            rc = fetchConn.download()
+            if rc in ("-1","-2","-3"):
+                tries -= 1
+                continue
+
+            # load the image
+            try:
+                myadpix = gtk.image_new_from_file(pix_tmp_path)
+            except:
+                tries -= 1
+                continue
+
+            self.ui.bannerEventBox.remove(self.ad_pix)
+            self.ad_pix = myadpix
+            self.ui.bannerEventBox.add(self.ad_pix)
+            self.ui.bannerEventBox.show_all()
+            self.ad_url = myurl
+
+            if self.previous_ad_image_path != None:
+                if os.path.isfile(self.previous_ad_image_path) and os.access(self.previous_ad_image_path,os.W_OK):
+                    try:
+                        os.remove(self.previous_ad_image_path)
+                    except (OSError,IOError,):
+                        pass
+            self.previous_ad_image_path = pix_tmp_path
+            self.previous_ad_index = myrand
+            break
+
+    def spawnUgcUpdate(self):
+        try:
+            self.ugc_update()
+        except:
+            pass
+
+    def ugc_update(self):
+        while (self.spawning_ugc or self.isWorking):
+            time.sleep(1)
+
+        self.isWorking = True
+        self.spawning_ugc = True
+        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+        if (connected == False) or (self.Equo.UGC == None):
+            self.isWorking = False
+            self.spawning_ugc = False
+            return
+        for repo in self.Equo.validRepositories:
+            self.Equo.update_ugc_cache(repo)
+
+        self.isWorking = False
+        self.spawning_ugc = False
 
     def setupPreferences(self):
 
@@ -1175,6 +1310,64 @@ class SpritzApplication(SpritzController,SpritzGUI):
         column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
         self.configProtectSkipView.append_column( column )
         self.configProtectSkipView.set_model( self.configProtectSkipModel )
+
+        # UGC repositories
+
+        def get_ugc_repo_text( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                t = "[<b>%s</b>] %s" % (obj['repoid'],obj['description'],)
+                cell.set_property('markup',t)
+
+        def get_ugc_logged_text( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                t = "<i>%s</i>" % (_("Not logged in"),)
+                if self.Equo.UGC != None:
+                    logged_data = self.Equo.UGC.read_login(obj['repoid'])
+                    if logged_data != None:
+                        t = "<i>%s</i>" % (logged_data[0],)
+                cell.set_property('markup',t)
+
+        def get_ugc_status_pix( column, cell, model, myiter ):
+            if self.Equo.UGC == None:
+                cell.set_property( 'icon-name', 'gtk-cancel' )
+                return
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                if self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']):
+                    cell.set_property( 'icon-name', 'gtk-apply' )
+                else:
+                    cell.set_property( 'icon-name', 'gtk-cancel' )
+                return
+            cell.set_property( 'icon-name', 'gtk-cancel' )
+
+        self.ugcRepositoriesView = self.ui.ugcRepositoriesView
+        self.ugcRepositoriesModel = gtk.ListStore( gobject.TYPE_PYOBJECT )
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Repository" ), cell )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 300 )
+        column.set_expand(True)
+        column.set_cell_data_func( cell, get_ugc_repo_text )
+        self.ugcRepositoriesView.append_column( column )
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Logged in as" ), cell )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 150 )
+        column.set_cell_data_func( cell, get_ugc_logged_text )
+        self.ugcRepositoriesView.append_column( column )
+
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _( "UGC Status" ), cell)
+        column.set_cell_data_func( cell, get_ugc_status_pix )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 120 )
+
+        self.ugcRepositoriesView.append_column( column )
+        self.ugcRepositoriesView.set_model( self.ugcRepositoriesModel )
 
         # prepare generic config to allow filling of data
         def fillSettingView(model, view, data):
@@ -1447,7 +1640,21 @@ class SpritzApplication(SpritzController,SpritzGUI):
     def setupSpritz(self):
         msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
-        self.addPackages()
+        count = 30
+        while count:
+            try:
+                self.addPackages()
+            except self.Equo.dbapi2.ProgrammingError, e:
+                self.setStatus("%s: %s, %s" % (
+                        _("Error during list population"),
+                        e,
+                        _("Retrying in 1 second."),
+                    )
+                )
+                time.sleep(1)
+                count -= 1
+                continue
+            break
         self.populateCategories()
 
     def cleanEntropyCaches(self, alone = False):
@@ -1531,9 +1738,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(_('Please check logs below for more info'))
         else:
-            t = entropyTools.parallelTask(self.spawnUgcUpdate)
-            t.parallel_wait()
-            t.start()
             if repoConn.alreadyUpdated == 0:
                 self.progress.set_mainLabel(_('Repositories updated successfully'))
             else:
@@ -1666,8 +1870,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
                                     "\nPlease have a look in the processing terminal.")
                     )
                 self.endWorking()
-                while gtk.events_pending():
-                    time.sleep(0.1)
                 self.etpbase.clearPackages()
                 time.sleep(5)
             self.endWorking()
