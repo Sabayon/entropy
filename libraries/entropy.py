@@ -16801,7 +16801,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             dev-python/gdata
     '''
     def __init__(self, connection_data, store_path, store_url = ''):
+        import entropyTools
+        self.entropyTools = entropyTools
         self.store_url = store_url
+        self.FLOOD_INTERVAL = 30
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
         self.UPLOADED_DOC_TYPES = [
             self.DOC_TYPES['image'],
@@ -17089,11 +17092,28 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         else:
             return self.get_idkey(key)
 
+    def insert_flood_control_check(self, userid):
+        from datetime import datetime
+        self.execute_query('SELECT max(`ts`) as ts FROM entropy_docs WHERE `userid` = %s', (userid,))
+        data = self.fetchone()
+        if not data:
+            return False
+        elif not data.has_key('ts'):
+            return False
+        delta = datetime.fromtimestamp(time.time()) - data['ts']
+        if (delta.days == 0) and (delta.seconds <= self.FLOOD_INTERVAL):
+            return True
+        return False
+
     def insert_generic_doc(self, idkey, userid, username, doc_type, data, title, description, keywords, do_commit = False):
         self.check_connection()
 
         title = title[:self.entropy_docs_title_len]
         description = description[:self.entropy_docs_description_len]
+
+        # flood control
+        flood_risk = self.insert_flood_control_check(userid)
+        if flood_risk: return 'flooding detected'
 
         self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',(
                 None,
@@ -17139,6 +17159,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
         iddoc = self.insert_generic_doc(idkey, userid, username, self.DOC_TYPES['comments'], comment, title, '', keywords)
+        if isinstance(iddoc,basestring):
+            return False, iddoc
         if do_commit: self.commit()
         return True, iddoc
 
@@ -17217,6 +17239,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         idkey = self.handle_pkgkey(pkgkey)
         if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
         iddoc = self.insert_generic_doc(idkey, userid, username, doc_type, text, title, description, keywords)
+        if isinstance(iddoc,basestring):
+            return False, iddoc
         if do_commit: self.commit()
         return True, iddoc
 
@@ -17272,6 +17296,18 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if virus_found:
             os.remove(file_path)
             return False, None
+
+        # flood control
+        flood_risk = self.insert_flood_control_check(userid)
+        if flood_risk: return False, 'flooding detected'
+
+        # validity check
+        if doc_type == self.DOC_TYPES['image']:
+            valid = False
+            if os.path.isfile(file_path) and os.access(file_path,os.R_OK):
+                valid = self.entropyTools.is_supported_image_file(file_path)
+            if not valid:
+                return False, 'not a valid image'
 
         dest_path = os.path.join(self.STORE_PATH,os.path.basename(file_path))
         orig_dest_path = dest_path
@@ -17390,6 +17426,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         video_id = os.path.basename(video_url)
 
         iddoc = self.insert_generic_doc(idkey, userid, username, self.DOC_TYPES['youtube_video'], video_id, title, description, keywords)
+        if isinstance(iddoc,basestring):
+            return False, (iddoc, None,)
         return True, (iddoc, video_id,)
 
     def remove_youtube_video(self, iddoc):
@@ -17780,7 +17818,10 @@ class DistributionUGCCommands(SocketCommandsSkel):
         ugc = self._load_ugc_interface()
         status, iddoc = ugc.insert_comment(pkgkey, userid, username, comment, title, keywords)
         if not status:
-            return False,'unable to add comment'
+            t = 'unable to add comment'
+            if isinstance(iddoc,basestring):
+                t = iddoc
+            return False,t
         return iddoc,'ok'
 
     def docmd_remove_comment(self, authenticator, myargs):
