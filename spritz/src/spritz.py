@@ -1921,6 +1921,7 @@ if __name__ == "__main__":
         except gobject.GError:
             pass
         mainApp = SpritzApplication()
+	time.sleep(5)
         gtk.main()
         killThreads()
     except SystemExit:
