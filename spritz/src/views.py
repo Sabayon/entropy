@@ -551,7 +551,9 @@ class EntropyPackageView:
             msg = "<small><span foreground='#339101'><b>%s</b></span>: %s</small>" % (_("Vote registered successfully"),obj.voted,)
         else:
             msg = "<small><span foreground='#FF0000'><b>%s</b></span>: %s</small>" % (_("Error registering vote"),err_msg,)
+        gtk.gdk.threads_enter()
         self.ui.UGCMessageLabel.set_markup(msg)
+        gtk.gdk.threads_leave()
         t = self.Equo.entropyTools.parallelTask(self.refresh_vote_info, obj)
         t.parallel_wait()
         t.start()
@@ -560,8 +562,10 @@ class EntropyPackageView:
     def refresh_vote_info(self, obj):
         time.sleep(5)
         obj.voted = 0
+        gtk.gdk.threads_enter()
         self.queueView.refresh()
         self.view.queue_draw()
+        gtk.gdk.threads_leave()
 
     def clear(self):
         self.store.clear()

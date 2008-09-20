@@ -1,7 +1,9 @@
 #!/usr/bin/python -tt
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
+#    It was: Yum Exteder (yumex) - A GUI for yum
 #    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Now is: Spritz (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -38,7 +40,6 @@ from entropy_i18n import _
 
 # GTK Imports
 import gtk, gobject
-gtk.gdk.threads_init()
 from etpgui.widgets import UI, Controller
 from etpgui import *
 from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupString
@@ -70,7 +71,12 @@ class SpritzController(Controller):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        if "--debug" not in sys.argv:
+        self.do_debug = False
+        if "--debug" in sys.argv:
+            self.do_debug = True
+        elif os.getenv('SPRITZ_DEBUG') != None:
+            self.do_debug = True
+        if not self.do_debug:
             sys.stdout = self.output
             sys.stderr = self.output
             sys.stdin = self.input
@@ -89,16 +95,14 @@ class SpritzController(Controller):
         gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
-            self.exitNow()
-        else:
-            self.exitNow()
+
+        self.exitNow()
 
     def exitNow(self):
         try:
             gtk.main_quit()       # Exit gtk
         except RuntimeError,e:
             pass
-        raise SystemExit
 
     def __getSelectedRepoIndex( self ):
         selection = self.repoView.view.get_selection()
@@ -1208,6 +1212,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             pass
 
     def ad_rotation(self):
+
         while self.isWorking:
             time.sleep(1)
 
@@ -1243,6 +1248,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
                 tries -= 1
                 continue
 
+            gtk.gdk.threads_enter()
+
             self.ui.bannerEventBox.remove(self.ad_pix)
             self.ad_pix = myadpix
             self.ui.bannerEventBox.add(self.ad_pix)
@@ -1257,6 +1264,8 @@ class SpritzApplication(SpritzController,SpritzGUI):
                         pass
             self.previous_ad_image_path = pix_tmp_path
             self.previous_ad_index = myrand
+
+            gtk.gdk.threads_leave()
             break
 
     def spawnUgcUpdate(self):
@@ -1266,6 +1275,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             pass
 
     def ugc_update(self):
+
         while (self.spawning_ugc or self.isWorking):
             time.sleep(1)
 
@@ -1921,18 +1931,21 @@ if __name__ == "__main__":
         except gobject.GError:
             pass
         mainApp = SpritzApplication()
+        gobject.threads_init()
+        gtk.gdk.threads_enter()
         gtk.main()
+        gtk.gdk.threads_leave()
         killThreads()
     except SystemExit:
         print "Quit by User"
         gtkEventThread.doQuit()
         killThreads()
-        sys.exit(1)
+        raise SystemExit
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
         gtkEventThread.doQuit()
         killThreads()
-        sys.exit(1)
+        raise SystemExit
     except: # catch other exception and write it to the logger.
 
         etype = sys.exc_info()[0]

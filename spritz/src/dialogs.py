@@ -85,7 +85,8 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
         self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
         self.pkginfo_ui.pkgInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
-        self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
+        # noeeees! otherwise voting won't work
+        #self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
         self.setupPkgPropertiesView()
 
     def set_pixbuf_to_cell(self, cell, path):
