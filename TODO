@@ -1,4 +1,6 @@
 TODO list
+  - implement notice board (through UGC)
+  - force a package to keep the current version
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
   - split entropy.py into entropy package
@@ -8,7 +10,6 @@ TODO list
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - use expiration as a base to have and handle multiple packages in repo?
-  - implement notice board
   - add changelog to packages
   - documentation + man page
   - find a way to better handle real smartapps deps (need split PDEPEND?)
