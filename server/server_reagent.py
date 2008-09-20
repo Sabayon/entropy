@@ -114,7 +114,7 @@ def repositories(options):
         if "world" not in myopts:
             # match
             for package in myopts:
-                match = Entropy.atomMatch(package)
+                match = Entropy.atomMatch(package, matchRepo = [repoid])
                 if (match[1] == repoid):
                     matches.append(match)
                 else:
