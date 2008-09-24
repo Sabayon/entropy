@@ -1,21 +1,27 @@
 import sys
 sys.path.insert(0,'../libraries')
-from entropy import RepositorySocketClientInterface, EntropyRepositorySocketClientCommands, EquoInterface
+from entropy import SystemManagerClientInterface, SystemManagerRepositoryClientCommands, SystemManagerRepositoryMethodsInterface, EquoInterface
 from entropyConstants import *
-repository = 'sabayonlinux.org'
 Entropy = EquoInterface()
-dburl = etpRepositories[repository]['plain_database'].split("/")[2]
-port = etpRepositories[repository]['service_port']
+cli_srv = SystemManagerClientInterface(
+        Entropy,
+        MethodsInterface = SystemManagerRepositoryMethodsInterface,
+        ClientCommandsInterface = SystemManagerRepositoryClientCommands
+)
+def fake_callback(s):
+    return s
 
-ssl_ca_cert = "/etc/entropy/certs/sabayonlinux.org.crt"
-ssl_cert = "/etc/entropy/certs/sabayonlinux.org.server.crt"
-eapi3_socket = RepositorySocketClientInterface(Entropy, EntropyRepositorySocketClientCommands, ssl = True)# , server_ca_cert = ssl_ca_cert, server_cert = ssl_cert)
-eapi3_socket.connect(dburl, port+1)
-
-username = 'lxnay'
-password = 'xxxx'
-session_id = eapi3_socket.open_session()
-print "logged in?",eapi3_socket.CmdInterface.service_login(username, password, session_id)
-print "logging out...",eapi3_socket.CmdInterface.service_logout(username, session_id)
-eapi3_socket.close_session(session_id)
-eapi3_socket.disconnect()
+input_params = [
+    ('password','Password',fake_callback,True)
+]
+data = Entropy.inputBox(
+    'insert root password',
+    input_params,
+    cancel_button = True
+)
+if isinstance(data,dict):
+    cli_srv.setup_connection('localhost', 1027, 'root', data['password'])
+    print cli_srv.get_available_client_commands()
+    #print cli_srv.Methods.compile_atom('sys-libs/zlib')
+    #st, queue = cli_srv.Methods.get_queue()
+    #if st: print queue['processing']
