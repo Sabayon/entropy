@@ -269,10 +269,9 @@ class EntropyPackage:
         return self.dbconn.retrieveBranch(self.matched_atom[0])
 
     def getUGCPackageVote(self):
-        if self.from_installed: return False
         atom = self.getName()
         if not atom: return None
-        return EquoConnection.UGC.UGCCache.get_package_vote(self.matched_atom[1],self.entropyTools.dep_getkey(atom))
+        return EquoConnection.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
 
     def getUGCPackageVoted(self):
         return self.voted

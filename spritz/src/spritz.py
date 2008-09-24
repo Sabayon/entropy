@@ -1121,6 +1121,11 @@ class SpritzController(Controller):
         for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
             self.ugcRepositoriesModel.append([etpRepositories[repoid]])
 
+    def on_repoManagerMenuItem_activate(self, widget):
+        mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
+        rc = mymenu.load()
+        if not rc: del mymenu
+
 class SpritzApplication(SpritzController,SpritzGUI):
 
     def __init__(self):

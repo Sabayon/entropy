@@ -57,6 +57,624 @@ class MenuSkel:
             i = i + 1
         return result
 
+class RemoteConnectionMenu(MenuSkel):
+
+    def __init__( self, verification_callback, window ):
+
+        # hostname, port, username, password, ssl will be passed as parameters
+        self.verification_callback = verification_callback
+        self.window = window
+        self.cm_ui = UI( const.GLADE_FILE, 'remoteConnManager', 'entropy' )
+        self.cm_ui.signal_autoconnect(self._getAllMethods())
+        self.cm_ui.remoteConnManager.set_transient_for(self.window)
+        self.cm_ui.remoteConnManager.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.button_pressed = False
+        self.loaded = False
+        self.parameters = None
+
+    def load( self ):
+        bold_items = [
+            self.cm_ui.connManagerTitleLabel,
+        ]
+        for item in bold_items:
+            item.set_markup("<b>%s</b>" % ( item.get_text(),))
+
+        self.loaded = True
+        self.cm_ui.remoteConnManager.show_all()
+
+    def run(self):
+
+        if not self.loaded:
+            return None
+
+        tries = 3
+        while tries:
+
+            while not self.button_pressed:
+                time.sleep(0.05)
+                while gtk.events_pending():
+                    gtk.main_iteration()
+                continue
+
+            if self.parameters:
+                valid, error_msg = self.verification_callback(
+                        self.parameters['hostname'],
+                        self.parameters['port'],
+                        self.parameters['username'],
+                        self.parameters['password'],
+                        self.parameters['ssl']
+                    )
+                if not valid:
+                    okDialog(self.window, error_msg, title = _("Connection Error"))
+                    self.button_pressed = False
+                    tries -= 1
+                    continue
+            break
+
+        self.destroy()
+        if not tries:
+            return None
+        return self.parameters
+
+    def on_remoteConnEventBox_key_release_event(self, widget, event):
+        if event.string == "\r":
+            self.cm_ui.connManagerConnectButton.clicked()
+            return True
+        return False # propagate
+
+    def on_connManagerConnectButton_clicked(self, widget):
+        self.parameters = {
+            'hostname': self.cm_ui.connManagerHostnameEntry.get_text(),
+            'port': self.cm_ui.connManagerPortSpinButton.get_value(),
+            'username': self.cm_ui.connManagerUsernameEntry.get_text(),
+            'password': self.cm_ui.connManagerPasswordEntry.get_text(),
+            'ssl': self.cm_ui.connManagerSSLCheckButton.get_active()
+        }
+        self.button_pressed = True
+
+    def on_remoteConnCloseButton_clicked(self, widget):
+        self.parameters = None
+        self.button_pressed = True
+
+    def destroy( self ):
+        self.cm_ui.remoteConnManager.hide()
+        self.cm_ui.remoteConnManager.destroy()
+
+class RepositoryManagerMenu(MenuSkel):
+
+    def __init__(self, Entropy, window):
+        self.Entropy = Entropy
+        self.window = window
+        self.sm_ui = UI( const.GLADE_FILE, 'repositoryManager', 'entropy' )
+        self.sm_ui.signal_autoconnect(self._getAllMethods())
+        self.sm_ui.repositoryManager.set_transient_for(self.window)
+        self.sm_ui.repositoryManager.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.setup_queue_view()
+        self.is_processing = None
+        self.Queue = {}
+        self.Output = None
+        self.output_pause = False
+        self.queue_pause = False
+        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_queue_view, 5)
+        self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_output_view, 4)
+        self.ssl_mode = True
+        self.OutputBuffer = gtk.TextBuffer()
+        self.sm_ui.repoOutputView.set_buffer(self.OutputBuffer)
+        self.sm_ui.repoManagerOutputScroll.set_placement(gtk.CORNER_BOTTOM_LEFT)
+        self.output_scroll_vadj = self.sm_ui.repoManagerOutputScroll.get_vadjustment()
+        self.output_scroll_vadj.connect('changed', lambda a, s=self.sm_ui.repoManagerOutputScroll: self.rescroll_output(a,s))
+        self.notebook_pages = {
+            'queue': 0,
+            'commands': 1,
+            'data': 2,
+            'output': 3
+        }
+        self.channel_call = False
+
+        from entropy import SystemManagerClientInterface, \
+            SystemManagerRepositoryClientCommands, \
+            SystemManagerRepositoryMethodsInterface
+        self.Service = SystemManagerClientInterface(
+            self.Entropy,
+            MethodsInterface = SystemManagerRepositoryMethodsInterface,
+            ClientCommandsInterface = SystemManagerRepositoryClientCommands
+        )
+        self.CommandsStore = None
+        self.setup_commands_view()
+        self.fill_commands_view(self.Service.get_available_client_commands())
+
+    def set_notebook_page(self, page):
+        self.sm_ui.repoManagerNotebook.set_current_page(page)
+
+    def rescroll_output(self, adj, scroll):
+        adj.set_value(adj.upper-adj.page_size)
+        scroll.set_vadjustment(adj)
+
+    def setup_commands_view(self):
+
+        # setup commands view
+        self.CommandsView = self.sm_ui.repoManagerCommandsView
+        self.CommandsStore = gtk.ListStore( gobject.TYPE_PYOBJECT )
+        self.CommandsView.set_model( self.CommandsStore )
+
+        # command col
+        self.create_text_column( self.CommandsView, _( "Command" ), 'commands:command', size = 200, set_height = 40)
+        # desc col
+        self.create_text_column( self.CommandsView, _( "Description" ), 'commands:desc', size = 200, expand = True, set_height = 40)
+
+    def fill_commands_view(self, data):
+        self.CommandsStore.clear()
+        keys = sorted(data.keys())
+        for key in keys:
+            if data[key]['private']: continue
+            item = data[key].copy()
+            item['key'] = key
+            params = ' | '.join([cleanMarkupString(unicode(x)) for x in item['params']])
+            if not params:
+                params = _("None")
+            txt = "<small><b>%s</b>: %s\n<b>%s</b>: %s</small>" % (
+                _("Description"),
+                cleanMarkupString(item['desc']),
+                _("Parameters"),
+                params,
+            )
+            item['myinfo'] = txt
+            self.CommandsStore.append((item,))
+        self.CommandsView.queue_draw()
+
+    def setup_queue_view(self):
+
+        # setup queue view
+        self.QueueView = self.sm_ui.repoManagerQueueView
+        self.QueueStore = gtk.ListStore( gobject.TYPE_PYOBJECT )
+        self.QueueView.set_model( self.QueueStore )
+
+        # selection pixmap
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _("Status"), cell )
+        column.set_cell_data_func( cell, self.queue_pixbuf )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 60 )
+        column.set_sort_column_id( -1 )
+        self.QueueView.append_column( column )
+        column.set_clickable( False )
+
+        # command col
+        self.create_text_column( self.QueueView, _( "Command" ), 'queue:command_name', size = 180)
+        # description col
+        self.create_text_column( self.QueueView, _( "Parameters" ), 'queue:command_text', size = 200, expand = True)
+        # date col
+        self.create_text_column( self.QueueView, _( "Date" ), 'queue:ts', size = 120)
+
+    def create_text_column( self, view, hdr, property, size, sortcol = None, expand = False, set_height = 0):
+        cell = gtk.CellRendererText()
+        if set_height: cell.set_property('height', set_height)
+        column = gtk.TreeViewColumn( hdr, cell )
+        column.set_resizable( True )
+        column.set_cell_data_func( cell, self.get_data_text, property )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( size )
+        column.set_expand(expand)
+        column.set_sort_column_id( -1 )
+        view.append_column( column )
+        return column
+
+    def set_pixbuf_to_cell(self, cell, filename):
+        try:
+            pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
+            cell.set_property( 'pixbuf', pixbuf )
+        except gobject.GError:
+            pass
+
+    def queue_pixbuf( self, column, cell, model, myiter ):
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            st = self.get_status_from_queue_item(obj.copy())
+            if st != None:
+                cell.set_property('stock-id',st)
+
+    def get_status_from_queue_item(self, item):
+        if item.has_key('errored_ts'):
+            return "gtk-cancel"
+        elif item.has_key('processed_ts'):
+            return "gtk-apply"
+        elif item.has_key('processing_ts'):
+            return "gtk-refresh"
+        elif item.has_key('queue_ts'):
+            return "gtk-up"
+        return "gtk-apply"
+
+    def get_ts_from_queue_item(self, item):
+        if item.has_key('errored_ts'):
+            return item['errored_ts']
+        elif item.has_key('processed_ts'):
+            return item['processed_ts']
+        elif item.has_key('processing_ts'):
+            return item['processing_ts']
+        elif item.has_key('queue_ts'):
+            return item['queue_ts']
+        return None
+
+    def get_data_text( self, column, cell, model, myiter, property ):
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            if property == "queue:ts":
+                cell.set_property('markup',self.get_ts_from_queue_item(obj))
+            elif property == "queue:command_text":
+                cell.set_property('markup',obj['command_text'])
+            elif property == "queue:command_name":
+                cell.set_property('markup',obj['command_name'])
+            elif property == "commands:command":
+                cell.set_property('markup',obj['key'])
+            elif property == "commands:desc":
+                cell.set_property('markup',obj['myinfo'])
+
+    def connection_verification_callback(self, host, port, username, password, ssl):
+        self.Service.setup_connection(
+            host,
+            int(port),
+            username,
+            password,
+            ssl
+        )
+        # test connection
+        srv = self.Service.get_service_connection(timeout = 5)
+        if srv == None:
+            return False, _("No connection to host, please check your data")
+        session = srv.open_session()
+        if session == None:
+            return False, _("Unable to create a remote session. Try again later.")
+        try:
+            logged, error = self.Service.login(srv, session)
+            if not logged:
+                return False, _("Login failed. Please retry.")
+        except Exception, e:
+            return False, "%s: %s" % (_("Connection Error"),e,)
+        srv.close_session(session)
+        srv.disconnect()
+        return True, None
+
+    def load(self):
+
+        my = RemoteConnectionMenu(self.connection_verification_callback, self.window)
+        my.load()
+        login_data = my.run()
+        if not login_data:
+            return False
+
+        bold_items = []
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<b>%s</b>" % (t,))
+
+        self.sm_ui.repositoryManager.show_all()
+
+        # spawn parallel tasks
+        self.QueueUpdater.start()
+        self.OutputUpdater.start()
+
+        return True
+
+    def wait_channel_call(self):
+        while self.channel_call:
+            time.sleep(0.5)
+        self.channel_call = True
+
+    def update_queue_view(self):
+        self.wait_channel_call()
+
+        try:
+            status, queue = self.Service.Methods.get_queue()
+        except:
+            self.channel_call = False
+            return
+        self.channel_call = False
+        if not status: return
+        if queue == self.Queue: return
+
+        gtk.gdk.threads_enter()
+        self.fill_queue_view(queue)
+        gtk.gdk.threads_leave()
+        self.Queue = queue.copy()
+
+    def fill_queue_view(self, queue):
+        self.QueueStore.clear()
+        keys = queue.keys()
+
+        if "processing" in keys:
+            for item in queue['processing']:
+                self.is_processing = item.copy()
+                item = item.copy()
+                item['from'] = "processing"
+                self.QueueStore.append((item,))
+            if not queue['processing']:
+                self.is_processing = None
+        else:
+            self.is_processing = None
+
+        if "processed" in keys:
+            for item in queue['processed']:
+                item = item.copy()
+                item['from'] = "processed"
+                self.QueueStore.append((item,))
+
+        if "queue" in keys:
+            for item in queue['queue']:
+                item = item.copy()
+                item['from'] = "queue"
+                self.QueueStore.append((item,))
+        if "errored" in keys:
+            for item in queue['errored']:
+                item = item.copy()
+                item['from'] = "errored"
+                self.QueueStore.append((item,))
+
+        self.QueueView.queue_draw()
+
+    def update_output_view(self):
+
+        if self.output_pause:
+            return
+        n_bytes = 4000
+        if self.is_processing == None:
+            return
+        obj = self.is_processing.copy()
+        if not obj.has_key('queue_id'):
+            return
+        self.wait_channel_call()
+        status, stdout = self.Service.Methods.get_queue_id_stdout(obj['queue_id'], n_bytes)
+        self.channel_call = False
+        if not status:
+            return
+        stdout = stdout[-1*n_bytes:]
+        if stdout == self.Output:
+            return
+        self.Output = stdout
+        self.OutputBuffer.set_text(stdout)
+        gtk.gdk.threads_enter()
+        self.sm_ui.repoOutputView.queue_draw()
+        while gtk.events_pending():
+            gtk.main_iteration()
+        gtk.gdk.threads_leave()
+
+    def load_queue_info_menu(self, obj):
+        my = SmQueueMenu(self.window)
+        my.load(obj)
+
+    def on_repoManagerQueueDown_clicked(self, widget):
+        ( model, iterator ) = self.QueueView.get_selection().get_selected()
+        if not iterator: return
+
+        next_iterator = model.iter_next(iterator)
+        if iterator and next_iterator:
+            item1 = model.get_value(iterator, 0)
+            item2 = model.get_value(next_iterator, 0)
+            if item1 and item2:
+                item1 = item1.copy()
+                item2 = item2.copy()
+                self.wait_channel_call()
+                status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
+                self.channel_call = False
+                if status: self.QueueStore.swap(iterator,next_iterator)
+                self.update_queue_view()
+
+    def on_repoManagerQueueUp_clicked(self, widget):
+        ( model, next_iterator ) = self.QueueView.get_selection().get_selected()
+        if not next_iterator: return
+
+        path = model.get_path(next_iterator)[0]
+        iterator = model.get_iter(path-1)
+
+        if iterator and next_iterator:
+            item1 = model.get_value(iterator, 0)
+            item2 = model.get_value(next_iterator, 0)
+            if item1 and item2:
+                item1 = item1.copy()
+                item2 = item2.copy()
+                self.wait_channel_call()
+                status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
+                self.channel_call = False
+                if status: self.QueueStore.swap(iterator,next_iterator)
+                self.update_queue_view()
+
+    def on_repoManagerRunButton_clicked(self, widget):
+
+        command = self.sm_ui.remoManagerRunEntry.get_text().strip()
+        if not command: return
+        command = command.split()
+        cmd = command[0]
+
+        avail_cmds = self.Service.get_available_client_commands()
+        if cmd not in avail_cmds:
+            okDialog(self.window, _("Invalid Command"), title = _("Custom command Error"))
+            return
+
+        cmd_data = avail_cmds.get(cmd)
+        params = command[1:]
+        mandatory_cmds = []
+        for item in cmd_data['params']:
+            if item[3]: mandatory_cmds.append(item)
+
+        evalued_params = []
+        for param in params:
+            try:
+                evalued_params.append(eval(param))
+            except (NameError, SyntaxError):
+                evalued_params.append(param)
+            except TypeError:
+                pass
+
+        if len(evalued_params) < len(mandatory_cmds):
+            okDialog(self.window, _("Not enough parameters"), title = _("Custom command Error"))
+            return
+
+        try:
+            cmd_data['call'](*evalued_params)
+        except Exception, e:
+            okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
+
+    def on_repoManagerPauseQueueButton_toggled(self, widget):
+        self.wait_channel_call()
+        do_pause = not self.queue_pause
+        self.Service.Methods.pause_queue(do_pause)
+        self.queue_pause = do_pause
+        self.channel_call = False
+
+    def on_repoManagerQueueView_row_activated(self, treeview, path, column):
+        ( model, iterator ) = treeview.get_selection().get_selected()
+        if model != None and iterator != None:
+            obj = model.get_value( iterator, 0 )
+            if obj:
+                self.load_queue_info_menu(obj)
+
+    def on_repoManagerOutputPauseButton_toggled(self, widget):
+        self.output_pause = not self.output_pause
+
+    def on_repoManagerQueueRefreshButton_clicked(self, widget):
+        self.Queue = None
+        self.update_queue_view()
+
+    def on_repoManagerOutputCleanButton_clicked(self, widget):
+        self.Output = None
+        self.OutputBuffer.set_text('')
+        self.sm_ui.repoOutputView.queue_draw()
+
+    def on_repoManagerCleanQueue_clicked(self, widget):
+        clear_ids = set()
+        for item in self.QueueStore:
+            obj = item[0]
+            if obj['from'] not in ("processed","errored"):
+                continue
+            clear_ids.add(obj['queue_id'])
+        self.wait_channel_call()
+        for queue_id in clear_ids:
+            self.Service.Methods.remove_queue_id(queue_id)
+        self.channel_call = False
+
+    def on_repoManagerClose_clicked(self, *args, **kwargs):
+        self.QueueUpdater.kill()
+        self.OutputUpdater.kill()
+        self.destroy()
+
+    def on_portageSync_clicked(self, widget):
+        self.set_notebook_page(self.notebook_pages['output'])
+        self.wait_channel_call()
+        self.Service.Methods.sync_spm()
+        self.channel_call = False
+
+    def on_compileAtom_clicked(self, widget):
+        def fake_callback(s):
+            return s
+        def fake_bool_cb(s):
+            return True
+        input_params = [
+            ('atom',_('Atom'),fake_callback,False),
+            ('pretend',('checkbox',_('Pretend'),),fake_bool_cb,False,),
+        ]
+        data = self.Entropy.inputBox(
+            _('Insert compilation parameters'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        self.set_notebook_page(self.notebook_pages['output'])
+        self.Service.Methods.compile_atom(data['atom'])
+
+    def on_repoManagerRemoveButton_clicked(self, widget):
+        model, myiter = self.QueueView.get_selection().get_selected()
+        if myiter:
+            obj = model.get_value( myiter, 0 )
+            if obj and (obj['from'] != "processing"):
+                self.wait_channel_call()
+                self.Service.Methods.remove_queue_id(obj['queue_id'])
+                self.channel_call = False
+
+    def on_repoManagerStopButton_clicked(self, widget):
+        model, myiter = self.QueueView.get_selection().get_selected()
+        if myiter:
+            obj = model.get_value( myiter, 0 )
+            if obj and (obj['from'] == "processing"):
+                self.wait_channel_call()
+                self.Service.Methods.kill_processing_queue_id(obj['queue_id'])
+                self.channel_call = False
+
+    def destroy(self):
+        self.sm_ui.repositoryManager.destroy()
+
+class SmQueueMenu(MenuSkel):
+
+    def __init__(self, window):
+
+        self.window = window
+        self.sm_ui = UI( const.GLADE_FILE, 'smQueueInfo', 'entropy' )
+        self.sm_ui.signal_autoconnect(self._getAllMethods())
+        self.sm_ui.smQueueInfo.set_transient_for(self.window)
+        self.sm_ui.smQueueInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+
+    def on_smQueueCloseButton_clicked(self, widget):
+        self.sm_ui.smQueueInfo.hide()
+
+    def destroy(self):
+        self.sm_ui.smQueueInfo.destroy()
+
+    def load(self, item):
+
+        na = _("N/A")
+        self.sm_ui.smQueueIdL.set_text(unicode(item['queue_id']))
+        self.sm_ui.smCommandNameL.set_text(item['command_name'])
+        self.sm_ui.smCommandDescL.set_text(item['command_desc'])
+        args = "None"
+        if isinstance(item['args'],list):
+            args = ' '.join([unicode(x) for x in item['args']])
+        self.sm_ui.smCommandArgsL.set_text(args)
+        self.sm_ui.smCallL.set_text(item['call'])
+        self.sm_ui.smUserGroupL.set_text("%s / %s " % (item.get('user_id'),item.get('group_id'),))
+        self.sm_ui.smQueuedAtL.set_text(unicode(item['queue_ts']))
+        self.sm_ui.smProcessingAtL.set_text(unicode(item.get('processing_ts')))
+        self.sm_ui.smCompletedAtL.set_text(unicode(item.get('completed_ts')))
+        self.sm_ui.smErroredAtL.set_text(unicode(item.get('errored_ts')))
+        self.sm_ui.smStdoutFileL.set_text(unicode(item['stdout']))
+        self.sm_ui.smProcessResultL.set_text(unicode(item.get('result')))
+
+        bold_items = [
+
+            self.sm_ui.smQueueIdLabel,
+            self.sm_ui.smCommandNameLabel,
+            self.sm_ui.smCommandDescLabel,
+            self.sm_ui.smCommandArgsLabel,
+            self.sm_ui.smCallLabel,
+            self.sm_ui.smUserGroupLabel,
+            self.sm_ui.smQueuedAtLabel,
+            self.sm_ui.smProcessingAtLabel,
+            self.sm_ui.smCompletedAtLabel,
+            self.sm_ui.smErroredAtLabel,
+            self.sm_ui.smStdoutFileLabel,
+            self.sm_ui.smProcessResultLabel
+
+        ]
+        small_items = [
+            self.sm_ui.smQueueIdL,
+            self.sm_ui.smCommandNameL,
+            self.sm_ui.smCommandDescL,
+            self.sm_ui.smCommandArgsL,
+            self.sm_ui.smCallL,
+            self.sm_ui.smUserGroupL,
+            self.sm_ui.smQueuedAtL,
+            self.sm_ui.smProcessingAtL,
+            self.sm_ui.smCompletedAtL,
+            self.sm_ui.smErroredAtL,
+            self.sm_ui.smStdoutFileL,
+            self.sm_ui.smProcessResultL
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<small><b>%s</b></small>" % (t,))
+        for item in small_items:
+            t = item.get_text()
+            item.set_markup("<small>%s</small>" % (t,))
+
+        self.sm_ui.smQueueInfo.show_all()
+
 class PkgInfoMenu(MenuSkel):
 
     def __init__(self, Entropy, pkg, window):
@@ -1423,9 +2041,6 @@ class ConfirmationDialog:
     def destroy( self ):
         return self.dialog.destroy()
 
-class ConfimationDialog(ConfirmationDialog):
-    pass
-
 class ErrorDialog:
     def __init__( self, parent, title, text, longtext, modal ):
         self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="entropy" )
@@ -1727,15 +2342,54 @@ class InputDialog:
         self.entry_text_table = {}
         row_count = 0
         for input_id, input_text, input_cb, passworded in input_parameters:
-            input_label = gtk.Label()
-            input_label.set_markup(input_text)
-            input_entry = gtk.Entry()
-            if passworded: input_entry.set_visibility(False)
-            self.identifiers_table[input_id] = input_entry
-            self.entry_text_table[input_id] = input_text
-            self.cb_table[input_entry] = input_cb
-            mytable.attach(input_label, 0, 1, row_count, row_count+1)
-            mytable.attach(input_entry, 1, 2, row_count, row_count+1)
+
+            if isinstance(input_text,tuple):
+
+                input_type, text = input_text
+                combo_options = []
+                if isinstance(text,tuple):
+                    text, combo_options = text
+
+                input_label = gtk.Label()
+                input_label.set_line_wrap(True)
+                input_label.set_alignment(0.0,0.5)
+                input_label.set_markup(text)
+
+                if input_type == "checkbox":
+                    input_widget = gtk.CheckButton(text)
+                    input_widget.set_alignment(0.0,0.5)
+                    input_widget.set_active(passworded)
+                elif input_type == "combo":
+                    input_widget = gtk.combo_box_new_text()
+                    for opt in combo_options:
+                        input_widget.append_text(opt)
+                    if combo_options:
+                        input_widget.set_active(0)
+                    mytable.attach(input_label, 0, 1, row_count, row_count+1)
+                else:
+                    continue
+
+                self.entry_text_table[input_id] = text
+                self.identifiers_table[input_id] = input_widget
+                self.cb_table[input_widget] = input_cb
+                mytable.attach(input_widget, 1, 2, row_count, row_count+1)
+
+
+            else:
+
+                input_label = gtk.Label()
+                input_label.set_line_wrap(True)
+                input_label.set_alignment(0.0,0.5)
+                input_label.set_markup(input_text)
+                self.entry_text_table[input_id] = input_text
+                mytable.attach(input_label, 0, 1, row_count, row_count+1)
+                input_entry = gtk.Entry()
+                if passworded: input_entry.set_visibility(False)
+
+                self.identifiers_table[input_id] = input_entry
+                self.cb_table[input_entry] = input_cb
+                mytable.attach(input_entry, 1, 2, row_count, row_count+1)
+
             row_count += 1
         myvbox.pack_start(mytable)
         bbox = gtk.HButtonBox()
@@ -1766,15 +2420,22 @@ class InputDialog:
     def do_ok(self, widget):
         # fill self.parameters
         for input_id in self.identifiers_table:
-            myentry = self.identifiers_table.get(input_id)
-            entry_txt = myentry.get_text()
-            verify_cb = self.cb_table.get(myentry)
-            valid = verify_cb(entry_txt)
+            mywidget = self.identifiers_table.get(input_id)
+            if isinstance(mywidget,gtk.Entry):
+                content = mywidget.get_text()
+            elif isinstance(mywidget,gtk.CheckButton):
+                content = mywidget.get_active()
+            elif isinstance(mywidget,gtk.ComboBox):
+                content = mywidget.get_active(),mywidget.get_active_text()
+            else:
+                continue
+            verify_cb = self.cb_table.get(mywidget)
+            valid = verify_cb(content)
             if not valid:
                 okDialog(self.parent, "%s: %s" % (_("Invalid entry"),self.entry_text_table[input_id],) , title = _("Invalid entry"))
                 self.parameters.clear()
                 return
-            self.parameters[input_id] = entry_txt
+            self.parameters[input_id] = content
         self.button_pressed = True
 
     def do_cancel(self, widget):
@@ -1782,7 +2443,6 @@ class InputDialog:
         self.button_pressed = True
 
     def run(self):
-        import time
         while not self.button_pressed:
             time.sleep(0.05)
             while gtk.events_pending():
