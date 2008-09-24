@@ -103,19 +103,21 @@ class parallelTask(threading.Thread):
         self.args = args[1:][:]
         self.exc = SystemExit
         self.kwargs = kwargs.copy()
+        self.result = None
 
     def parallel_wait(self):
         while len(threading.enumerate()) > etpSys['maxthreads']:
             time.sleep(0.001)
 
     def run(self):
-        self.function(*self.args,**self.kwargs)
+        self.result = self.function(*self.args,**self.kwargs)
 
     def nuke(self):
         raise self.exc
 
     def kill(self):
         pass
+
 
 def printTraceback(f = None):
     import traceback
