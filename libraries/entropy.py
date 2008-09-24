@@ -1453,7 +1453,8 @@ class EquoInterface(TextInterface):
                             matchRepo = None,
                             server_repos = [],
                             serverInstance = None,
-                            extendedResults = False
+                            extendedResults = False,
+                            useCache = True
                                                         ):
 
         if not server_repos:
@@ -1465,29 +1466,28 @@ class EquoInterface(TextInterface):
 
         if self.xcache:
 
-            if matchRepo and (type(matchRepo) in (list,tuple,set)):
+            if matchRepo and isinstance(matchRepo,(list,tuple,set,)):
                 u_hash = hash(tuple(matchRepo))
             else:
                 u_hash = hash(matchRepo)
-            z_hash = "0"
-            if extendedResults:
-                z_hash = "1"
-            c_hash =    str(hash(atom)) + \
-                        str(hash(matchSlot)) + \
+            c_hash =    str(atom) + \
+                        str(matchSlot) + \
                         str(hash(tuple(matchBranches))) + \
-                        str(hash(packagesFilter)) + \
+                        str(packagesFilter) + \
                         str(hash(tuple(self.validRepositories))) + \
                         str(hash(tuple(etpRepositories.keys()))) + \
-                        str(hash(multiMatch)) + \
-                        str(hash(multiRepo)) + \
-                        str(hash(caseSensitive)) + \
-                        str(hash(matchRevision)) + \
-                        z_hash + \
+                        str(multiMatch) + \
+                        str(multiRepo) + \
+                        str(caseSensitive) + \
+                        str(matchRevision) + \
+                        str(extendedResults) + \
                         str(u_hash)
             c_hash = str(hash(c_hash))
-            cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
-            if cached != None:
-                return cached
+
+            if useCache:
+                cached = self.dumpTools.loadobj(etpCache['atomMatch']+c_hash)
+                if cached != None:
+                    return cached
 
         if server_repos:
             if not serverInstance:
@@ -1496,8 +1496,8 @@ class EquoInterface(TextInterface):
             valid_repos = server_repos[:]
         else:
             valid_repos = self.validRepositories
-            if matchRepo and (type(matchRepo) in (list,tuple,set)):
-                valid_repos = list(matchRepo)
+        if matchRepo and (type(matchRepo) in (list,tuple,set)):
+            valid_repos = list(matchRepo)
 
         def open_db(repoid):
             if server_repos:
@@ -1517,7 +1517,7 @@ class EquoInterface(TextInterface):
 
             # search
             dbconn = open_db(repo)
-            use_cache = True
+            use_cache = useCache
             while 1:
                 try:
                     query = dbconn.atomMatch(
@@ -2752,22 +2752,34 @@ class EquoInterface(TextInterface):
             # check against broken entries, or removed during iteration
             if mystrictdata == None:
                 continue
-            try:
-                match = self.atomMatch(
-                    mystrictdata[0],
-                    matchSlot = mystrictdata[1],
-                    matchBranches = (branch,),
-                    extendedResults = True
-                )
-            except dbapi2.OperationalError:
-                # ouch, but don't crash here
-                continue
+            use_match_cache = True
+            do_continue = False
+            while 1:
+                try:
+                    match = self.atomMatch(
+                        mystrictdata[0],
+                        matchSlot = mystrictdata[1],
+                        matchBranches = (branch,),
+                        extendedResults = True,
+                        useCache = use_match_cache
+                    )
+                except dbapi2.OperationalError:
+                    # ouch, but don't crash here
+                    do_continue = True
+                    break
+                try:
+                    idpackage = match[0][0]
+                except TypeError:
+                    if not use_match_cache: raise
+                    use_match_cache = False
+                    continue
+                break
+            if do_continue: continue
             # now compare
             # version: mystrictdata[2]
             # tag: mystrictdata[3]
             # revision: mystrictdata[4]
-            if (match[0][0] != -1):
-                idpackage = match[0][0]
+            if (idpackage != -1):
                 repoid = match[1]
                 version = match[0][1]
                 tag = match[0][2]
@@ -6005,6 +6017,14 @@ class RepoInterface:
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
+        self.supported_download_items = (
+            "db","rev","ck",
+            "lock","mask","dbdump",
+            "dbdumpck","lic_whitelist","make.conf",
+            "package.mask","package.unmask","package.keywords","profile.link",
+            "package.use","server.cert","ca.cert",
+            "notice_board"
+        )
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
         self.dbapi2 = dbapi2
@@ -6055,8 +6075,8 @@ class RepoInterface:
         port = etpRepositories[repository]['service_port']
 
         try:
-            self.eapi3_socket = RepositorySocketClientInterface(
-                self.Entropy, EntropyRepositorySocketClientCommands, output_header = "\t"
+            self.eapi3_socket = SystemSocketClientInterface(
+                self.Entropy, RepositorySocketClientCommands, output_header = "\t"
             )
             self.eapi3_socket.socket_timeout = self.big_socket_timeout
             self.eapi3_socket.connect(dburl, port)
@@ -6119,27 +6139,17 @@ class RepoInterface:
 
     def __construct_paths(self, item, repo, cmethod):
 
-        supported_items = (
-            "db","rev","ck",
-            "lock","mask","dbdump",
-            "dbdumpck","lic_whitelist","make.conf",
-            "package.mask","package.unmask","package.keywords","profile.link",
-            "package.use","server.cert","ca.cert",
-        )
-        if item not in supported_items:
-            mytxt = _("Supported items: %s") % (supported_items,)
+        if item not in self.supported_download_items:
+            mytxt = _("Supported items: %s") % (self.supported_download_items,)
             raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
-
-        if item == "db":
-            if cmethod == None:
+        if (item in ("db","dbdump", "dbdumpck",)) and (cmethod == None):
                 mytxt = _("For %s, cmethod can't be None") % (item,)
                 raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
+
+        if item == "db":
             url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[2]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
         elif item == "dbdump":
-            if cmethod == None:
-                mytxt = _("For %s, cmethod can't be None") % (item,)
-                raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
             url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[3]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[3]]
         elif item == "rev":
@@ -6149,8 +6159,6 @@ class RepoInterface:
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile']
         elif item == "dbdumpck":
-            if cmethod == None:
-                raise exceptionTools.InvalidData("InvalidData: for db, cmethod can't be None")
             url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[4]]
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[4]]
         elif item == "mask":
@@ -6192,6 +6200,9 @@ class RepoInterface:
         elif item == "ca.cert":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaseservercertfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaseservercertfile']
+        elif item == "notice_board":
+            url = etpRepositories[repo]['notice_board']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + os.path.basename(etpRepositories[repo]['notice_board'])
 
         return url, filepath
 
@@ -7396,6 +7407,16 @@ class RepoInterface:
                 "%s %s %s" % (
                     red(_("Downloading SPM Profile configuration")),
                     darkgreen(etpConst['spm']['global_make_profile_link_name']),
+                    red("..."),
+                )
+            ),
+            (
+                "notice_board",
+                os.path.basename(etpRepositories[repo]['notice_board']),
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading Notice Board")),
+                    darkgreen(os.path.basename(etpRepositories[repo]['notice_board'])),
                     red("..."),
                 )
             )
@@ -12642,7 +12663,7 @@ class SocketHostInterface:
 
         import entropyTools
 
-        def __init__(self, HostInterface):
+        def __init__(self, HostInterface, *args, **kwargs):
             self.valid_auth_types = [ "plain", "shadow", "md5" ]
             SocketAuthenticatorSkel.__init__(self, HostInterface)
 
@@ -13410,7 +13431,7 @@ class SocketHostInterface:
                 if logged_in != None:
                     uid = logged_in
                     gid = etpConst['entropygid']
-            return self.entropyTools.spawnFunction(self._do_fork, authenticator, f, uid, gid, *args, **kwargs)
+            return self.entropyTools.spawnFunction(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
 
         def _do_fork(self, f, authenticator, uid, gid, *args, **kwargs):
             authenticator.set_exc_permissions(uid,gid)
@@ -13431,7 +13452,7 @@ class SocketHostInterface:
                                 'auth': False, # does it need authentication ?
                                 'built_in': True, # is it built-in ?
                                 'cb': self.docmd_begin, # function to call
-                                'args': ["self.transmit", "self.client_address"], # arguments to be passed before *args and **kwards
+                                'args': ["self.transmit", "self.client_address"], # arguments to be passed before *args and **kwards, in SocketHostInterface.do_spawn()
                                 'as_user': False, # do I have to fork the process and run it as logged user?
                                                   # needs auth = True
                                 'desc': "instantiate a session", # description
@@ -13458,17 +13479,6 @@ class SocketHostInterface:
                                 'syntax': "<SESSION_ID> session_config <option> [parameters]",
                                 'from': str(self),
                             },
-                'reposync': {
-                                'auth': True,
-                                'built_in': True,
-                                'cb': self.docmd_reposync,
-                                'args': ["Entropy"],
-                                'as_user': True,
-                                'desc': "update repositories",
-                                'syntax': "<SESSION_ID> reposync (optionals: reponames=['repoid1'] forceUpdate=Bool "
-                                          "noEquoCheck=Bool fetchSecurity=Bool",
-                                'from': str(self),
-                            },
                 'rc':       {
                                 'auth': False,
                                 'built_in': True,
@@ -13477,16 +13487,6 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "get data returned by the last valid command (streamed python object)",
                                 'syntax': "<SESSION_ID> rc",
-                                'from': str(self),
-                            },
-                'match':    {
-                                'auth': False,
-                                'built_in': True,
-                                'cb': self.docmd_match,
-                                'args': ["Entropy"],
-                                'as_user': True,
-                                'desc': "match an atom inside configured repositories",
-                                'syntax': "<SESSION_ID> match app-foo/foo",
                                 'from': str(self),
                             },
                 'hello':    {
@@ -13549,6 +13549,16 @@ class SocketHostInterface:
                                 'syntax': "help",
                                 'from': str(self),
                             },
+                'available_commands':   {
+                                'auth': False,
+                                'built_in': True,
+                                'cb': self.docmd_available_commands,
+                                'args': ["self.HostInterface"],
+                                'as_user': False,
+                                'desc': "get info about available commands (you must retrieve this using the 'rc' command)",
+                                'syntax': "available_commands",
+                                'from': str(self),
+                            },
                 'stream':   {
                                 'auth': True,
                                 'built_in': True,
@@ -13606,6 +13616,35 @@ class SocketHostInterface:
                 return True,'stream mode: %s' % (dostream,)
             else:
                 return False,"invalid config option"
+
+        def docmd_available_commands(self, host_interface):
+
+            def copy_obj(obj):
+                if isinstance(obj,set) or isinstance(obj,dict):
+                    return obj.copy()
+                elif isinstance(obj,list) or isinstance(obj,tuple):
+                    return obj[:]
+                return obj
+
+            def can_be_streamed(obj):
+                if isinstance(obj,(bool,basestring,int,float,list,tuple,set,dict,)):
+                    return True
+                return False
+
+            mydata = {}
+            mydata['disabled_commands'] = copy_obj(host_interface.disabled_commands)
+            valid_cmds = copy_obj(host_interface.valid_commands)
+            mydata['valid_commands'] = {}
+            for cmd in valid_cmds:
+                mydict = {}
+                for item in valid_cmds[cmd]:
+                    param = valid_cmds[cmd][item]
+                    if not can_be_streamed(param):
+                        continue
+                    mydict[item] = param
+                mydata['valid_commands'][cmd] = mydict.copy()
+
+            return mydata
 
         def docmd_stream(self, session, myargs):
 
@@ -13821,13 +13860,6 @@ class SocketHostInterface:
             transmitter(myserialized)
 
             return rc
-
-        def docmd_match(self, Entropy, *myargs, **mykwargs):
-            return Entropy.atomMatch(*myargs, **mykwargs)
-
-        def docmd_reposync(self, Entropy, *myargs, **mykwargs):
-            repoConn = Entropy.Repositories(*myargs, **mykwargs)
-            return repoConn.sync()
 
     import gc
     def __init__(self, service_interface, *args, **kwds):
@@ -14120,7 +14152,7 @@ class SocketHostInterface:
 
     def setup_authenticator(self):
 
-        auth_inst = (self.BasicPamAuthenticator, [self], {}) # authentication class, args, keywords
+        auth_inst = (self.BasicPamAuthenticator, [self], {},) # authentication class, args, keywords
         # external authenticator
         if self.kwds.has_key('sock_auth'):
             authIntf = self.kwds.pop('sock_auth')
@@ -14188,9 +14220,9 @@ class SocketHostInterface:
         if len(self.sessions) > self.threads:
             # fuck!
             return "0"
-        rng = str(int(random.random()*100000000000000000)+1)
+        rng = str(abs(hash(os.urandom(20))))
         while rng in self.sessions:
-            rng = str(int(random.random()*100000000000000000)+1)
+            rng = str(abs(hash(os.urandom(20))))
         self.sessions[rng] = {}
         self.sessions[rng]['running'] = False
         self.sessions[rng]['auth_uid'] = None
@@ -14400,8 +14432,9 @@ class ServerInterface(TextInterface):
         const_createWorkingDirectories()
 
     def close_server_databases(self):
-        for item in self.serverDbCache:
-            self.serverDbCache[item].closeDB()
+        if hasattr(self,'serverDbCache'):
+            for item in self.serverDbCache:
+                self.serverDbCache[item].closeDB()
         self.serverDbCache.clear()
 
     def close_server_database(self, dbinstance):
@@ -19262,7 +19295,7 @@ class RepositoryManager(ServerInterface):
             def validate_txt(s):
                 return s
 
-            client = RepositorySocketClientInterface(self, EntropyRepositorySocketClientCommands, ssl = True)
+            client = SystemSocketClientInterface(self, RepositorySocketClientCommands, ssl = True)
             # connect
             client.connect(
                 etpConst['server_repositories'][repo]['service_url'],
@@ -19470,7 +19503,6 @@ class RepositoryManager(ServerInterface):
         self.last_rc = function(*args,**kwargs)
         self.Manager.statusBar.set_text(old_text)
         self.Manager.process_spawned = False
-
 
 
 class RepositorySocketServerInterface(SocketHostInterface):
@@ -19849,37 +19881,24 @@ class RepositorySocketServerInterface(SocketHostInterface):
             )
 
 class EntropySocketClientCommands:
-    """ this is just a placeholder """
-    def __init__(self):
-        pass
 
-class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
+    def __init__(self, Entropy, Service):
 
-    import entropyTools, socket, struct, zlib
-    def __init__(self, EntropyInterface, ServiceInterface):
-
-        if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
-            not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
+        if not isinstance(Entropy, (EquoInterface, ServerInterface)) and \
+            not issubclass(Entropy, (EquoInterface, ServerInterface)):
                 mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Entropy,mytxt,))
 
-        if not isinstance(ServiceInterface, (RepositorySocketClientInterface,)) and \
-            not issubclass(ServiceInterface, (RepositorySocketClientInterface,)):
-                mytxt = _("A valid RepositorySocketClientInterface based instance is needed")
-                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ServiceInterface,mytxt,))
+        if not isinstance(Service, (SystemSocketClientInterface,)) and \
+            not issubclass(Service, (SystemSocketClientInterface,)):
+                mytxt = _("A valid SystemSocketClientInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service,mytxt,))
 
-        self.Entropy = EntropyInterface
-        self.Service = ServiceInterface
+        import entropyTools, socket, zlib, struct
+        self.entropyTools, self.socket, self.zlib, self.struct = entropyTools, socket, zlib, struct
+        self.Entropy = Entropy
+        self.Service = Service
         self.output_header = ''
-        EntropySocketClientCommands.__init__(self)
-
-    def hello(self):
-        self.Entropy.updateProgress(
-            "%s" % (_("hello world!"),),
-            importance = 1,
-            type = "info",
-            header = self.output_header
-        )
 
     def handle_standard_answer(self, data, repository = None, arch = None, product = None):
         do_skip = False
@@ -19992,22 +20011,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             error = True
         return data, error
 
-    def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = False):
-        self.Service.check_socket_connection()
-        close_session = False
-        if session_id == None:
-            close_session = True
-            session_id = self.Service.open_session()
-
-        myidlist = ' '.join([str(x) for x in idpackages])
-        cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
-
-        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
-
-        if close_session:
-            self.Service.close_session(session_id)
-        return data
-
     def retrieve_command_answer(self, cmd, session_id, repository = None, arch = None, product = None, compression = False):
 
         tries = 3
@@ -20038,6 +20041,120 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             objdata, error = self.convert_stream_to_object(data, compression, repository, arch, product)
             if not error:
                 return objdata
+
+    def do_generic_handler(self, cmd, session_id, tries = 10, compression = False):
+
+        self.Service.check_socket_connection()
+
+        while 1:
+            try:
+                result = self.retrieve_command_answer(cmd, session_id, compression = compression)
+                if result == None:
+                    return False,'command not supported' # untranslated on purpose
+                return result
+            except (self.socket.error,self.struct.error,):
+                self.Service.reconnect_socket()
+                tries -= 1
+                if tries < 1:
+                    raise
+
+    def set_gzip_compression(self, session, do):
+        self.Service.check_socket_connection()
+        cmd = "%s %s %s %s zlib" % (session, 'session_config', 'compression', do,)
+        self.Service.transmit(cmd)
+        data = self.Service.receive()
+        if data == self.Service.answers['ok']:
+            return True
+        return False
+
+    def service_login(self, username, password, session_id):
+
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'login',
+            username,
+            password,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def service_logout(self, username, session_id):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'logout',
+            username,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_logged_user_data(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'user_data',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def is_user(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_user',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def is_developer(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_developer',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def is_moderator(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_moderator',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def is_administrator(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'is_administrator',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def available_commands(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'available_commands',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+
+class RepositorySocketClientCommands(EntropySocketClientCommands):
+
+    def __init__(self, EntropyInterface, ServiceInterface):
+        EntropySocketClientCommands.__init__(self, EntropyInterface, ServiceInterface)
+
+    def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = False):
+        self.Service.check_socket_connection()
+        close_session = False
+        if session_id == None:
+            close_session = True
+            session_id = self.Service.open_session()
+
+        myidlist = ' '.join([str(x) for x in idpackages])
+        cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
+
+        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
+
+        if close_session:
+            self.Service.close_session(session_id)
+        return data
 
     def get_repository_treeupdates(self, repository, arch, product, session_id = None, compression = False):
 
@@ -20080,75 +20197,8 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             self.Service.close_session(session_id)
         return data
 
-    def service_login(self, username, password, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s %s %s" % (
-            session_id,
-            'login',
-            username,
-            password,
-        )
-        return self.do_generic_handler(cmd, session_id)
-
-    def service_logout(self, username, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s %s" % (
-            session_id,
-            'logout',
-            username,
-        )
-        return self.do_generic_handler(cmd, session_id)
-
-    def get_logged_user_data(self, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s" % (
-            session_id,
-            'user_data',
-        )
-        return self.do_generic_handler(cmd, session_id)
-
-    def is_user(self, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s" % (
-            session_id,
-            'is_user',
-        )
-        return self.do_generic_handler(cmd, session_id)
-
-    def is_developer(self, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s" % (
-            session_id,
-            'is_developer',
-        )
-        return self.do_generic_handler(cmd, session_id)
-
-    def is_moderator(self, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s" % (
-            session_id,
-            'is_moderator',
-        )
-        return self.do_generic_handler(cmd, session_id)
-
-    def is_administrator(self, session_id):
-
-        self.Service.check_socket_connection()
-        cmd = "%s %s" % (
-            session_id,
-            'is_administrator',
-        )
-        return self.do_generic_handler(cmd, session_id)
-
     def ugc_do_download(self, session_id, pkgkey):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:do_download',
@@ -20158,7 +20208,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_downloads(self, session_id, pkgkey):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:get_downloads',
@@ -20168,7 +20217,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_alldownloads(self, session_id):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s" % (
             session_id,
             'ugc:get_alldownloads',
@@ -20186,7 +20234,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_do_vote(self, session_id, pkgkey, vote):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s %s" % (
             session_id,
             'ugc:do_vote',
@@ -20197,7 +20244,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_vote(self, session_id, pkgkey):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:get_vote',
@@ -20207,7 +20253,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_allvotes(self, session_id):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s" % (
             session_id,
             'ugc:get_allvotes',
@@ -20224,8 +20269,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         return rc
 
     def ugc_add_comment(self, session_id, pkgkey, comment, title, keywords):
-
-        self.Service.check_socket_connection()
 
         mydict = {
             'comment': comment,
@@ -20245,8 +20288,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_edit_comment(self, session_id, iddoc, new_comment, new_title, new_keywords):
 
-        self.Service.check_socket_connection()
-
         mydict = {
             'comment': new_comment,
             'title': new_title,
@@ -20264,7 +20305,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_remove_comment(self, session_id, iddoc):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:remove_comment',
@@ -20274,7 +20314,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_remove_image(self, session_id, iddoc):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:remove_image',
@@ -20284,7 +20323,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_remove_file(self, session_id, iddoc):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:remove_file',
@@ -20294,7 +20332,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_remove_youtube_video(self, session_id, iddoc):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:remove_youtube_video',
@@ -20304,7 +20341,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_docs(self, session_id, pkgkey):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:get_alldocs',
@@ -20314,7 +20350,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_textdocs(self, session_id, pkgkey):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:get_textdocs',
@@ -20324,7 +20359,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_textdocs_by_identifiers(self, session_id, identifiers):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:get_textdocs_by_identifiers',
@@ -20334,7 +20368,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
 
     def ugc_get_documents_by_identifiers(self, session_id, identifiers):
 
-        self.Service.check_socket_connection()
         cmd = "%s %s %s" % (
             session_id,
             'ugc:get_documents_by_identifiers',
@@ -20348,7 +20381,6 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
             return False,False,'cannot read file_path'
 
         import zlib
-        self.Service.check_socket_connection()
         # enable stream
         cmd = "%s %s %s on" % (
             session_id,
@@ -20443,30 +20475,7 @@ class EntropyRepositorySocketClientCommands(EntropySocketClientCommands):
         return self.do_generic_handler(cmd, session_id)
 
 
-    def do_generic_handler(self, cmd, session_id, tries = 10, compression = False):
-
-        while 1:
-            try:
-                result = self.retrieve_command_answer(cmd, session_id, compression = compression)
-                if result == None:
-                    return False,'command not supported' # untranslated on purpose
-                return result
-            except (self.socket.error,self.struct.error,):
-                self.Service.reconnect_socket()
-                tries -= 1
-                if tries < 1:
-                    raise
-
-    def set_gzip_compression(self, session, do):
-        self.Service.check_socket_connection()
-        cmd = "%s %s %s %s zlib" % (session, 'session_config', 'compression', do,)
-        self.Service.transmit(cmd)
-        data = self.Service.receive()
-        if data == self.Service.answers['ok']:
-            return True
-        return False
-
-class RepositorySocketClientInterface:
+class SystemSocketClientInterface:
 
     import socket
     import dumpTools
@@ -20934,6 +20943,1102 @@ class RepositorySocketClientInterface:
         self.hostname = None
         self.hostport = None
 
+class SystemManagerExecutorInterface:
+
+    def __init__(self, SystemInterface, Entropy):
+        import entropyTools
+        self.entropyTools = entropyTools
+        self.Entropy = Entropy
+        self.SystemInterface = SystemInterface
+        self.available_commands = {}
+        self.task_result = None
+
+    def register(self, available_commands):
+        self.available_commands.update(available_commands)
+
+    def execute_task(self, command_data):
+
+        import signal
+        queue_id = command_data['queue_id']
+        args = command_data['args']
+        kwargs = command_data['kwargs']
+        data = self.available_commands.get(command_data['call'])
+
+        if data == None:
+            return False, 'no command'
+        elif len(args)+1 < data['args']:
+            return False, 'not enough args'
+
+
+
+        args.insert(0,queue_id)
+        self.task_result = None
+        t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
+        t.start()
+        killed = False
+        while 1:
+            if not t.isAlive():
+                break
+            time.sleep(1)
+            self.SystemInterface.queue_change_wait()
+            self.SystemInterface.load_queue()
+            self.SystemInterface.queue_changing = False
+            live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
+            if isinstance(live_item,dict) and (key == "processing") and (not killed):
+                if live_item['kill'] and (live_item['processing_pid'] != None):
+                    os.kill(live_item['processing_pid'],signal.SIGKILL)
+                    killed = True
+        if killed:
+            return False, 'killed by user'
+
+        return True, t.result
+
+
+class SystemManagerExecutorServerRepositoryInterface:
+
+    def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
+        import subprocess
+        self.subprocess = subprocess
+        self.SystemManagerExecutor = SystemManagerExecutorInstance
+        self.available_commands = {
+            'sync_spm': {
+                'func': self.sync_portage,
+                'args': 1,
+            },
+            'compile_atom': {
+                'func': self.compile_atom,
+                'args': 2,
+            }
+        }
+
+    def _set_processing_pid(self, queue_id, process_pid):
+        self.SystemManagerExecutor.SystemInterface.queue_change_wait()
+        self.SystemManagerExecutor.SystemInterface.load_queue()
+        live_item, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if isinstance(live_item,dict):
+            live_item['processing_pid'] = process_pid
+        self.SystemManagerExecutor.SystemInterface.store_queue()
+        self.SystemManagerExecutor.SystemInterface.queue_changing = False
+
+    def sync_portage(self, queue_id):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"aw")
+
+        cmd = ["emerge", "--sync"]
+        p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
+        self._set_processing_pid(queue_id, p.pid)
+        rc = p.wait()
+        stdout_err.flush()
+        stdout_err.close()
+        return True,rc
+
+    def compile_atom(self, queue_id, atom):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"aw")
+
+        cmd = ["emerge", atom]
+        p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
+        self._set_processing_pid(queue_id, p.pid)
+        rc = p.wait()
+        stdout_err.flush()
+        stdout_err.close()
+        return True,rc
+
+
+class SystemManagerRepositoryCommands(SocketCommandsSkel):
+
+    def __init__(self, HostInterface):
+
+        SocketCommandsSkel.__init__(self, HostInterface, inst_name = "srvrepo")
+        self.valid_commands = {
+            'srvrepo:sync_spm':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_sync_spm,
+                'args': ["cmd","cmd_data","myargs","authenticator"],
+                'as_user': False,
+                'desc': "spawn portage sync (emerge --sync)",
+                'syntax': "<SESSION_ID> srvrepo:sync_spm",
+                'from': str(self)
+            },
+            'srvrepo:compile_atom':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_compile_atom,
+                'args': ["cmd","cmd_data","myargs","authenticator"],
+                'as_user': False,
+                'desc': "compile specified atom using Spm (Portage?)",
+                'syntax': "<SESSION_ID> srvrepo:compile_atom <atom>",
+                'from': str(self)
+            },
+        }
+
+    def docmd_sync_spm(self, cmd, cmd_data, myargs, authenticator):
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'sync_spm', [], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_compile_atom(self, cmd, cmd_data, myargs, authenticator):
+
+        if not myargs:
+            return False,'wrong arguments'
+
+        atom = myargs[0]
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atom', [atom], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+
+class SystemManagerServerInterface(SocketHostInterface):
+
+    class SystemCommands(SocketCommandsSkel):
+
+        def __init__(self, HostInterface):
+
+            SocketCommandsSkel.__init__(self, HostInterface, inst_name = "systemsrv")
+
+            self.valid_commands = {
+                'systemsrv:get_queue':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_get_queue,
+                    'args': [],
+                    'as_user': False,
+                    'desc': "get current queue",
+                    'syntax': "<SESSION_ID> systemsrv:get_queue",
+                    'from': str(self),
+                },
+                'systemsrv:get_queue_item_by_id':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_get_queue_item_by_id,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "get current queue item through its queue id",
+                    'syntax': "<SESSION_ID> systemsrv:get_queue_item_by_id <queue_id>",
+                    'from': str(self),
+                },
+                'systemsrv:get_queue_id_stdout':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_get_queue_id_stdout,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "get current queue item stdout/stderr output",
+                    'syntax': "<SESSION_ID> systemsrv:get_queue_id_stdout <queue_id> <how many bytes (from tail)>",
+                    'from': str(self),
+                },
+                'systemsrv:get_queue_id_result':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_get_queue_id_result,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "get current queue item result output",
+                    'syntax': "<SESSION_ID> systemsrv:get_queue_id_result <queue_id>",
+                    'from': str(self),
+                },
+                'systemsrv:remove_queue_id':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_remove_queue_id,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "remove queue item using its queue id",
+                    'syntax': "<SESSION_ID> systemsrv:remove_queue_id <queue_id>",
+                    'from': str(self),
+                },
+                'systemsrv:pause_queue':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_pause_queue,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "toggle queue pause (understood?)",
+                    'syntax': "<SESSION_ID> systemsrv:pause_queue <True/False>",
+                    'from': str(self),
+                },
+                'systemsrv:kill_processing_queue_id':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_kill_processing_queue_id,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "kill a running process using its queue id",
+                    'syntax': "<SESSION_ID> systemsrv:kill_processing_queue_id <queue_id>",
+                    'from': str(self),
+                },
+                'systemsrv:swap_items_in_queue':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_swap_items_in_queue,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "swap items in queue to change their order",
+                    'syntax': "<SESSION_ID> systemsrv:swap_items_in_queue <queue_id1> <queue_id1>",
+                    'from': str(self),
+                },
+            }
+
+        def docmd_get_queue(self):
+            return True, self.HostInterface.ManagerQueue.copy()
+
+        def docmd_get_queue_item_by_id(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+            queue_id = myargs[0]
+            try:
+                queue_id = int(queue_id)
+            except ValueError:
+                return False,'wrong argument: queue_id'
+
+            item, key = self.HostInterface.get_item_by_queue_id(queue_id)
+            if item == None:
+                return False,'wrong queue id'
+            item = item.copy()
+
+            return True,item
+
+        def docmd_get_queue_id_stdout(self, myargs):
+
+            if len(myargs) < 1:
+                return False,'wrong arguments'
+            queue_id = myargs[0]
+            bytes_from_tail = myargs[1]
+
+            try:
+                queue_id = int(queue_id)
+            except ValueError:
+                return False,'wrong argument: queue_id'
+            try:
+                bytes_from_tail = int(bytes_from_tail)
+            except ValueError:
+                return False,'wrong argument: lines from tail'
+
+            item, key = self.HostInterface.get_item_by_queue_id(queue_id)
+            if item == None:
+                return False,'wrong queue id'
+            item = item.copy()
+
+            file_path = item['stdout']
+            if not (os.path.isfile(file_path) and os.access(file_path,os.R_OK)):
+                text = ''
+            else:
+                f = open(file_path,"r")
+                f.seek(0,2)
+                tell_me = f.tell()
+                if bytes_from_tail < 1:
+                    bytes_from_tail = tell_me
+                if bytes_from_tail > tell_me:
+                    bytes_from_tail = tell_me
+                f.seek(-1*bytes_from_tail,2)
+                text = f.read()
+                f.close()
+
+            return True,text
+
+        def docmd_get_queue_id_result(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+            queue_id = myargs[0]
+            try:
+                queue_id = int(queue_id)
+            except ValueError:
+                return False,'wrong argument: queue_id'
+
+            item, key = self.HostInterface.get_item_by_queue_id(queue_id)
+            if item == None:
+                return False,'wrong queue id'
+            item = item.copy()
+
+            if key not in self.HostInterface.done_queue_keys:
+                return False,'process not completed yet'
+
+            if not item.has_key('result'):
+                return False,'result not available'
+
+            return True,item['result']
+
+        def docmd_remove_queue_id(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+            queue_id = myargs[0]
+            try:
+                queue_id = int(queue_id)
+            except ValueError:
+                return False,'wrong argument: queue_id'
+
+            item, key = self.HostInterface.get_item_by_queue_id(queue_id)
+            if item == None:
+                return False,'wrong queue id'
+            item = item.copy()
+
+            if key not in self.HostInterface.removable_queue_keys:
+                return False,'cannot remove running queue id'
+
+            # remove
+            status = self.HostInterface.remove_from_queue(queue_id)
+
+            if not status:
+                return False,'queue id not found'
+            return True,'ok'
+
+        def docmd_pause_queue(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+
+            do = myargs[0]
+            if do:
+                self.HostInterface.pause_queue()
+            else:
+                self.HostInterface.play_queue()
+
+            return self.HostInterface.ManagerQueue['pause'],'ok'
+
+        def docmd_kill_processing_queue_id(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+
+            queue_id = myargs[0]
+            self.HostInterface.kill_processing_queue_id(queue_id)
+            return True,'ok'
+
+        def docmd_swap_items_in_queue(self, myargs):
+
+            if len(myargs) < 2:
+                return False,'wrong arguments'
+
+            queue_id1 = myargs[0]
+            queue_id2 = myargs[1]
+            status = self.HostInterface.swap_items_in_queue(queue_id1,queue_id2)
+            if status:
+                return True,'ok'
+            return False,'not done'
+
+    class FakeServiceInterface:
+        def __init__(self, *args, **kwargs):
+            pass
+
+    class BuiltInSystemManagerExecutorCommands:
+
+        def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
+            self.SystemManagerExecutor = SystemManagerExecutorInstance
+            self.available_commands = {
+                'hello_world': {
+                    'func': self.hello_world,
+                    'args': 0,
+                }
+            }
+
+        def hello_world(self):
+            rc = os.system('echo hello world')
+            return True,rc
+
+
+    import entropyTools, dumpTools
+    queue_file = 'system_manager_queue'
+    STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'],'system_manager_stdout')
+    def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, entropy_interface_kwargs = {}, **kwargs):
+
+        self.setup_stdout_storage_dir()
+
+        if not kwargs.has_key('external_cmd_classes'):
+            kwargs['external_cmd_classes'] = []
+        kwargs['external_cmd_classes'].insert(0,self.SystemCommands)
+
+        self.Entropy = EntropyInterface(**entropy_interface_kwargs)
+        self.SystemExecutor = SystemManagerExecutorInterface(self, self.Entropy)
+
+        self.ExecutorCommandClasses = [(self.BuiltInSystemManagerExecutorCommands,[],{},)]
+        self.ExecutorCommandInstances = []
+        if kwargs.has_key('external_executor_cmd_classes'):
+            self.ExecutorCommandClasses += kwargs.pop('external_executor_cmd_classes')
+        self.handle_executor_command_classes_initialization()
+
+        self.stdout_logging = stdout_logging
+        self.QueueProcessor = None
+        self.queue_changing = False
+        self.do_ssl = do_ssl
+        self.ServiceInterface = EntropyInterface
+
+        self.done_queue_keys = ['processed','errored']
+        self.removable_queue_keys = ['processed','errored','queue']
+        self.processing_queue_keys = ['processing']
+        self.ManagerQueue = {
+            'queue': [],
+            'processing': [],
+            'processed': [],
+            'errored' : [],
+            'pause': True
+        }
+        self.load_queue()
+        self.ManagerQueue['processing'] = []
+        if not self.ManagerQueue.has_key('pause'):
+            self.ManagerQueue['pause'] = True
+        self.store_queue()
+
+
+        SocketHostInterface.__init__(
+            self,
+            self.FakeServiceInterface, #self.ServiceInterface,
+            sock_output = self.Entropy,
+            ssl = do_ssl,
+            **kwargs
+        )
+        self.load_queue_processor()
+        # here we can put anything that must be loaded before the queue processor execution
+        self.play_queue()
+
+    def handle_executor_command_classes_initialization(self):
+        for myclass, args, kwargs in self.ExecutorCommandClasses:
+            myintf = myclass(self.SystemExecutor, *args,**kwargs)
+            if hasattr(myintf,'available_commands'):
+                self.SystemExecutor.register(myintf.available_commands)
+                self.ExecutorCommandInstances.append(myintf)
+            else:
+                del myintf
+
+    def setup_stdout_storage_dir(self):
+        if os.path.isfile(self.STDOUT_STORAGE_DIR) or os.path.islink(self.STDOUT_STORAGE_DIR):
+            os.remove(self.STDOUT_STORAGE_DIR)
+        if not os.path.isdir(self.STDOUT_STORAGE_DIR):
+            os.makedirs(self.STDOUT_STORAGE_DIR,0775)
+            if etpConst['entropygid'] != None:
+                const_setup_perms(self.STDOUT_STORAGE_DIR,etpConst['entropygid'])
+
+    def load_queue_processor(self):
+        self.QueueProcessor = self.entropyTools.parallelTask(self.queue_processor)
+        self.QueueProcessor.parallel_wait()
+        self.QueueProcessor.start()
+
+    def queue_change_wait(self):
+        while self.queue_changing:
+            continue
+        self.queue_changing = True
+
+    def get_stored_queue(self):
+        return self.dumpTools.loadobj(self.queue_file)
+
+    def load_queue(self):
+        obj = self.get_stored_queue()
+        if isinstance(obj,dict):
+            for key in self.ManagerQueue.keys():
+                if not obj.has_key(key):
+                    return False
+            self.ManagerQueue = obj.copy()
+            return True
+        return False
+
+    def store_queue(self):
+        self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
+        rc = self.load_queue()
+        if not rc:
+            raise exceptionTools.CorruptionError('CorruptionError: %s' % (
+                    _("cannot load queue previously stored. Something is really bad"),
+                )
+            )
+
+    def get_ts(self):
+        from datetime import datetime
+        return datetime.fromtimestamp(time.time())
+
+    def swap_items_in_queue(self, queue_id1, queue_id2):
+        self.queue_change_wait()
+        self.load_queue()
+
+        item1, key1 = self.get_item_by_queue_id(queue_id1)
+        item2, key2 = self.get_item_by_queue_id(queue_id2)
+        if key1 != key2:
+            self.queue_changing = False
+            return False
+        t_item = item1.copy()
+        item1.clear()
+        item1.update(item2)
+        item2.clear()
+        item2.update(t_item)
+        self.store_queue()
+        self.queue_changing = False
+        return True
+
+
+    def add_to_queue(self, command_name, command_text, user_id, group_id, function, args, kwargs):
+
+        if function not in self.SystemExecutor.available_commands:
+            return -1
+
+        self.queue_change_wait()
+        self.load_queue()
+        queue_id = self.generate_unique_queue_id()
+        myqueue_dict = {
+            'queue_id': queue_id,
+            'command_name': command_name,
+            'command_desc': self.valid_commands[command_name]['desc'],
+            'command_text': command_text,
+            'call': function,
+            'args': args,
+            'kwargs': kwargs,
+            'user_id': user_id,
+            'group_id': group_id,
+            'stdout': self.assign_unique_stdout_file(queue_id),
+            'queue_ts': "%s" % (self.get_ts(),),
+            'kill': False,
+            'processing_pid': None,
+        }
+        self.ManagerQueue['queue'].append(myqueue_dict)
+        self.store_queue()
+        self.queue_changing = False
+        return len(self.ManagerQueue['queue'])-1
+
+    def remove_from_queue(self, queue_id):
+        self.queue_change_wait()
+        self.load_queue()
+        for key in self.ManagerQueue:
+            if not isinstance(self.ManagerQueue[key],list):
+                continue
+            for counter in range(len(self.ManagerQueue[key])):
+                if self.ManagerQueue[key][counter]['queue_id'] == queue_id:
+                    item = self.ManagerQueue[key].pop(counter)
+                    self.flush_item(item)
+                    self.store_queue()
+                    self.queue_changing = False
+                    return True
+        self.queue_changing = False
+        return False
+
+    def kill_processing_queue_id(self, queue_id):
+        self.queue_change_wait()
+        self.load_queue()
+        item, key = self.get_item_by_queue_id(queue_id)
+        if key in self.processing_queue_keys:
+            item['kill'] = True
+            self.store_queue()
+        self.queue_changing = False
+
+    def pause_queue(self):
+        self.queue_change_wait()
+        self.load_queue()
+        self.ManagerQueue['pause'] = True
+        self.store_queue()
+        self.queue_changing = False
+
+    def play_queue(self):
+        self.queue_change_wait()
+        self.load_queue()
+        self.ManagerQueue['pause'] = False
+        self.store_queue()
+        self.queue_changing = False
+
+    def reorder_queue(self, new_order):
+        self.queue_change_wait()
+        self.load_queue()
+
+        if len(new_order) != len(self.ManagerQueue['queue']):
+            self.queue_changing = False
+            return False
+
+        mycounter = 0
+        self.new_queue = self.ManagerQueue['queue'][:]
+        for item in self.ManagerQueue['queue']:
+            new_idx = new_order[mycounter]
+            if not (item['is_processing'] or self.ManagerQueue['queue'][new_idx]['is_processing']):
+                self.new_queue[mycounter] = self.ManagerQueue['queue'][new_idx].copy()
+            mycounter += 1
+
+        self.ManagerQueue['queue'] = self.new_queue
+        self.store_queue()
+        self.queue_changing = False
+        return True
+
+    def flush_item(self, item):
+        if not isinstance(item,dict):
+            return False
+        if item.has_key('stdout'):
+            stdout = item['stdout']
+            if (os.path.isfile(stdout) and os.access(stdout,os.W_OK)):
+                os.remove(stdout)
+            return True
+
+    def assign_unique_stdout_file(self, queue_id):
+        stdout = os.path.join(self.STDOUT_STORAGE_DIR,"%d.%s" % (queue_id,"stdout",))
+        if os.path.isfile(stdout):
+            os.remove(stdout)
+        count = 0
+        orig_stdout = stdout
+        while os.path.lexists(stdout):
+            count += 1
+            stdout = "%s.%d" % (orig_stdout,count,)
+        return stdout
+
+    def generate_unique_queue_id(self):
+        import random
+        current_ids = set()
+        for key in self.ManagerQueue:
+            if not isinstance(self.ManagerQueue[key],list):
+                continue
+            for item in self.ManagerQueue[key]:
+                if not isinstance(item,dict):
+                    continue
+                elif not item.has_key('queue_id'):
+                    continue
+                current_ids.add(item['queue_id'])
+        while 1:
+            queue_id = int(random.random()*1000000000000)
+            if queue_id not in current_ids:
+                return queue_id
+
+    def get_item_by_queue_id(self, queue_id):
+        for key in self.ManagerQueue:
+            if not isinstance(self.ManagerQueue[key],list):
+                continue
+            for item in self.ManagerQueue[key]:
+                if not isinstance(item,dict):
+                    continue
+                elif not item.has_key('queue_id'):
+                    continue
+                elif item['queue_id'] == queue_id:
+                    return item, key
+        return None, None
+
+    def queue_processor(self):
+
+        def do_store_and_free():
+            self.store_queue()
+            self.queue_changing = False
+
+        def wait_and_takeover():
+            self.queue_change_wait()
+            self.load_queue()
+
+        def copy_obj(obj):
+            if isinstance(obj,(dict,set,)):
+                return obj.copy()
+            elif isinstance(obj,(list,tuple,)):
+                return obj[:]
+            return obj
+
+        while 1:
+
+            wait_and_takeover()
+
+            if self.ManagerQueue['pause']:
+                self.queue_changing = False
+                time.sleep(0.2)
+                continue
+
+            if not self.ManagerQueue['queue']:
+                self.queue_changing = False
+                time.sleep(0.2)
+                continue
+
+            command_data = self.ManagerQueue['queue'].pop(0)
+
+            command_data['processing_ts'] = "%s" % (self.get_ts(),)
+            self.ManagerQueue['processing'].append(command_data)
+            processing_idx = len(self.ManagerQueue['processing'])-1
+            do_store_and_free()
+
+            done, result = self.SystemExecutor.execute_task(command_data)
+
+            wait_and_takeover()
+            command_data['result'] = copy_obj(result)
+            if not done:
+                self.ManagerQueue['processing'].pop(processing_idx)
+                command_data['errored_ts'] = "%s" % (self.get_ts(),)
+                self.ManagerQueue['errored'].append(command_data)
+                do_store_and_free()
+                continue
+
+            done, cmd_result = result
+            if not done:
+                self.ManagerQueue['processing'].pop(processing_idx)
+                command_data['errored_ts'] = "%s" % (self.get_ts(),)
+                self.ManagerQueue['errored'].append(command_data)
+                do_store_and_free()
+                continue
+
+            self.ManagerQueue['processing'].pop(processing_idx)
+            command_data['processed_ts'] = "%s" % (self.get_ts(),)
+            self.ManagerQueue['processed'].append(command_data)
+            do_store_and_free()
+
+
+    def killall(self):
+        SocketHostInterface.killall(self)
+        if self.QueueProcessor != None:
+            self.QueueProcessor.kill()
+
+
+class SystemManagerClientCommands(EntropySocketClientCommands):
+
+    def __init__(self, *args, **kwargs):
+        EntropySocketClientCommands.__init__(self, *args, **kwargs)
+
+    def service_login(self, username, password, session_id):
+
+        cmd = "%s %s %s %s %s" % (
+            session_id,
+            'login',
+            username,
+            'plain',
+            password,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_queue(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'systemsrv:get_queue',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_queue_item_by_id(self, session_id, queue_id):
+
+        cmd = "%s %s %d" % (
+            session_id,
+            'systemsrv:get_queue_item_by_id',
+            queue_id,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_queue_id_stdout(self, session_id, queue_id, last_bytes):
+
+        cmd = "%s %s %d %d" % (
+            session_id,
+            'systemsrv:get_queue_id_stdout',
+            queue_id,
+            last_bytes,
+        )
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
+        rc = self.do_generic_handler(cmd, session_id, compression = compression)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
+        return rc
+
+    def get_queue_id_result(self, session_id, queue_id):
+
+        cmd = "%s %s %d" % (
+            session_id,
+            'systemsrv:get_queue_id_result',
+            queue_id,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def remove_queue_id(self, session_id, queue_id):
+
+        cmd = "%s %s %d" % (
+            session_id,
+            'systemsrv:remove_queue_id',
+            queue_id,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def pause_queue(self, session_id, do_pause):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'systemsrv:pause_queue',
+            do_pause,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def kill_processing_queue_id(self, session_id, queue_id):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'systemsrv:kill_processing_queue_id',
+            queue_id,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def swap_items_in_queue(self, session_id, queue_id1, queue_id2):
+
+        cmd = "%s %s %d %d" % (
+            session_id,
+            'systemsrv:swap_items_in_queue',
+            queue_id1,
+            queue_id2,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+
+class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
+
+    def sync_spm(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'srvrepo:sync_spm',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def compile_atom(self, session_id, atom):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:compile_atom',
+            atom,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+class SystemManagerMethodsInterface:
+
+    def __init__(self, SystemManagerClientInstance):
+        self.Manager = SystemManagerClientInstance
+        self.available_commands = {
+            'get_available_commands': {
+                'desc': _("Get a list of remotely available commands"),
+                'params': [],
+                'call': self.get_available_commands,
+                'private': True,
+            },
+            'get_queue': {
+                'desc': _("Get current queue content"),
+                'params': [],
+                'call': self.get_queue,
+                'private': True,
+            },
+            'get_queue_item_by_id': {
+                'desc': _("Get queue item using its queue unique identifier"),
+                'params': [('queue_id',int,_('Queue Identifier'),True,)],
+                'call': self.get_queue,
+                'private': True,
+            },
+            'get_queue_id_stdout': {
+                'desc': _("Get queue stdout/stderr using its queue unique identifier"),
+                'params': [('queue_id',int,_('Queue Identifier'),True,)],
+                'call': self.get_queue_id_stdout,
+                'private': True,
+            },
+            'get_queue_id_stdout': {
+                'desc': _("Get queued command result using its queue unique identifier"),
+                'params': [('queue_id',int,_('Queue Identifier'),True,)],
+                'call': self.get_queue_id_result,
+                'private': True,
+            },
+            'remove_queue_id': {
+                'desc': _("Remove queued command using its queue unique identifier"),
+                'params': [('queue_id',int,_('Queue Identifier'),True,)],
+                'call': self.remove_queue_id,
+                'private': True,
+            },
+            'pause_queue': {
+                'desc': _("Toggle queue pause (True/False)"),
+                'params': [('do_pause',bool,_('Pause or not'),True,)],
+                'call': self.pause_queue,
+                'private': True,
+            },
+            'kill_processing_queue_id': {
+                'desc': _("Kill a running process through its queue id"),
+                'params': [('queue_id',int,_('Queue Identifier'),True,)],
+                'call': self.kill_processing_queue_id,
+                'private': True,
+            },
+            'swap_items_in_queue': {
+                'desc': _("Swap items in queue using their queue ids"),
+                'params': [
+                    ('queue_id1',int,_('Queue Identifier'),True,),
+                    ('queue_id2',int,_('Queue Identifier'),True,)
+                ],
+                'call': self.swap_items_in_queue,
+                'private': True,
+            },
+        }
+
+    def get_available_commands(self):
+        return self.Manager.do_cmd(False, "available_commands", [], {})
+
+    def get_queue(self):
+        return self.Manager.do_cmd(True, "get_queue", [], {})
+
+    def get_queue_item_by_id(self, queue_id):
+        return self.Manager.do_cmd(True, "get_queue_item_by_id", [queue_id], {})
+
+    def get_queue_id_stdout(self, queue_id, last_bytes = 0):
+        return self.Manager.do_cmd(True, "get_queue_id_stdout", [queue_id, last_bytes], {})
+
+    def get_queue_id_result(self, queue_id):
+        return self.Manager.do_cmd(True, "get_queue_id_result", [queue_id], {})
+
+    def remove_queue_id(self, queue_id):
+        return self.Manager.do_cmd(True, "remove_queue_id", [queue_id], {})
+
+    def pause_queue(self, do_queue):
+        return self.Manager.do_cmd(True, "pause_queue", [do_queue], {})
+
+    def kill_processing_queue_id(self, queue_id):
+        return self.Manager.do_cmd(True, "kill_processing_queue_id", [queue_id], {})
+
+    def swap_items_in_queue(self, queue_id1, queue_id2):
+        return self.Manager.do_cmd(True, "swap_items_in_queue", [queue_id1,queue_id2], {})
+
+class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
+
+    def __init__(self, *args, **kwargs):
+        SystemManagerMethodsInterface.__init__(self, *args, **kwargs)
+        self.available_commands.update({
+            'sync_spm': {
+                'desc': _("Update Spm Repository (emerge --sync)"),
+                'params': [],
+                'call': self.sync_spm,
+                'private': False,
+            },
+            'compile_atom': {
+                'desc': _("Compile specified atom with specified parameters"),
+                'params': [('atom',basestring,_('Atom'),True,)],
+                'call': self.compile_atom,
+                'private': False,
+            },
+        })
+
+    def sync_spm(self):
+        return self.Manager.do_cmd(True, "sync_spm", [], {})
+
+    def compile_atom(self, atom):
+        return self.Manager.do_cmd(True, "compile_atom", [atom], {})
+
+
+class SystemManagerClientInterface:
+
+    ssl_connection = True
+    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False):
+
+        if not isinstance(EntropyInstance, (EquoInterface, ServerInterface)) and \
+            not issubclass(EntropyInstance, (EquoInterface, ServerInterface)):
+                mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInstance,mytxt,))
+
+        if ClientCommandsInterface != None:
+            if not issubclass(ClientCommandsInterface, SystemManagerClientCommands):
+                mytxt = _("A valid SystemManagerClientCommands class/subclass is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            self.ClientCommandsInterface = ClientCommandsInterface
+        else:
+            self.ClientCommandsInterface = SystemManagerClientCommands
+
+        if MethodsInterface != None:
+            if not issubclass(MethodsInterface, SystemManagerMethodsInterface):
+                mytxt = _("A valid SystemManagerMethodsInterface class/subclass is needed")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            self.MethodsInterface = MethodsInterface
+        else:
+            self.MethodsInterface = SystemManagerMethodsInterface
+
+        import socket, struct
+        self.socket, self.struct = socket, struct
+        self.Entropy = EntropyInstance
+        self.hostname = None
+        self.hostport = None
+        self.username = None
+        self.password = None
+        self.quiet = quiet
+        self.show_progress = show_progress
+        self.ClientCommandsInterface = ClientCommandsInterface
+        self.Methods = self.MethodsInterface(self)
+
+    def _validate_credentials(self):
+        if not isinstance(self.hostname,basestring):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: hostname: %s. %s" % (_('not a string'),_('Please use setup_connection() properly'),))
+        if not isinstance(self.username,basestring):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: username: %s. %s" % (_('not a string'),_('Please use setup_connection() properly'),))
+        if not isinstance(self.password,basestring):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: password: %s. %s" % (_('not a string'),_('Please use setup_connection() properly'),))
+        if not isinstance(self.hostport,int):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: port: %s. %s" % (_('not an int'),_('Please use setup_connection() properly'),))
+        if not isinstance(self.ssl_connection,bool):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: ssl_connection: %s. %s" % (_('not a bool'),_('Please use setup_connection() properly'),))
+
+    def setup_connection(self, hostname, port, username, password, ssl):
+        self.hostname = hostname
+        self.hostport = port
+        self.username = username
+        self.password = password
+        self.ssl_connection = ssl
+        self._validate_credentials()
+
+    def connect_to_service(self, timeout = None):
+        self._validate_credentials()
+        args = [self.Entropy, self.ClientCommandsInterface]
+        kwargs = {
+            'ssl': self.ssl_connection,
+            'quiet': self.quiet,
+            'show_progress': self.show_progress
+        }
+        if timeout != None: kwargs['socket_timeout'] = timeout
+        srv = SystemSocketClientInterface(*args,**kwargs)
+        srv.connect(self.hostname, self.hostport)
+        return srv
+
+    def get_service_connection(self, timeout = None):
+        try:
+            srv = self.connect_to_service(timeout = timeout)
+        except (exceptionTools.ConnectionError,self.socket.error,self.struct.error,):
+            return None
+        return srv
+
+    def logout(self, srv, session_id):
+        self._validate_credentials()
+        return srv.CmdInterface.service_logout(self.username, session_id)
+
+    def login(self, srv, session_id):
+        self._validate_credentials()
+        return srv.CmdInterface.service_login(self.username, self.password, session_id)
+
+    # eval(func) must have session as first param
+    def do_cmd(self, login_required, func, args, kwargs):
+
+        srv = self.get_service_connection()
+        if srv == None:
+            return False, 'no connection'
+        session = srv.open_session()
+        if session == None:
+            return False, 'no session'
+        args.insert(0,session)
+
+        if login_required:
+            logged, error = self.login(srv, session)
+            if not logged:
+                srv.close_session(session)
+                srv.disconnect()
+                return False, error
+
+        rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
+        if login_required:
+            self.logout(srv, session)
+        srv.close_session(session)
+        srv.disconnect()
+        return rslt
+
+    def get_available_client_commands(self):
+        return self.Methods.available_commands.copy()
+
 class UGCClientAuthStore:
 
     access_file = etpConst['ugc_accessfile']
@@ -21315,14 +22420,14 @@ class UGCClientInterface:
         except (IndexError,KeyError,):
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 
-        args = [self.Entropy, EntropyRepositorySocketClientCommands]
+        args = [self.Entropy, RepositorySocketClientCommands]
         kwargs = {
             'ssl': self.ssl_connection,
             'quiet': self.quiet,
             'show_progress': self.show_progress
         }
         if timeout != None: kwargs['socket_timeout'] = timeout
-        srv = RepositorySocketClientInterface(*args,**kwargs)
+        srv = SystemSocketClientInterface(*args,**kwargs)
         srv.connect(url, port)
         return srv
 
