@@ -1,9 +1,5 @@
 #!/usr/bin/python
-import os
-import sys
-if os.getuid():
-    print "Please run %s as root" % (sys.argv[0],)
-    sys.exit(1)
+import sys, time
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -11,14 +7,49 @@ sys.path.insert(0,'../client')
 # disable pid management
 sys.argv.append("--no-pid-handling")
 do_ssl = False
+do_stdout_logging = True
 if "--ssl" in sys.argv:
     do_ssl = True
-from entropy import SocketHostInterface, EquoInterface
-Equo = EquoInterface()
-srv = SocketHostInterface(EquoInterface, sock_output = Equo, ssl = do_ssl)
-try:
-    srv.go()
-except KeyboardInterrupt:
-    srv.Gc.kill()
-    sys.exit(0)
+if "--nostdout" in sys.argv:
+    do_stdout_logging = False
 
+import entropyTools, exceptionTools
+from entropy import SystemManagerServerInterface, SystemManagerExecutorServerRepositoryInterface, SystemManagerRepositoryCommands, ServerInterface
+
+def run_srv(s):
+    try:
+        s.go()
+    except (KeyboardInterrupt, SystemExit,):
+        s.killall()
+
+srv_ssl = None
+srv = SystemManagerServerInterface(
+        ServerInterface,
+        do_ssl = do_ssl,
+        stdout_logging = do_stdout_logging,
+        external_cmd_classes = [SystemManagerRepositoryCommands],
+        external_executor_cmd_classes = [(SystemManagerExecutorServerRepositoryInterface,[],{},)]
+    )
+
+thread_names = ["system_socket"]
+task = entropyTools.parallelTask(run_srv, srv)
+task.setName(thread_names[0])
+task.start()
+
+while 1:
+    try:
+        time.sleep(1)
+        found = False
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if thread.getName() in thread_names:
+                found = True
+                break
+        if not found:
+            break
+    except (KeyboardInterrupt, SystemExit,):
+        threads = entropyTools.threading.enumerate()
+        for thread in threads:
+            if thread.getName() in thread_names:
+                thread.args[0].killall()
+        raise SystemExit
