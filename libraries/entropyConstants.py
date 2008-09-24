@@ -596,6 +596,7 @@ def const_defaultSettings(rootdir):
         'rss-max-entries': 10000, # maximum rss entries
         'rss-light-max-entries': 300, # max entries for the light version
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
+        'rss-notice-board': "notice.rss", # repository RSS-based notice board content
 
         'packagesext': ".tbz2",
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
@@ -893,6 +894,7 @@ def const_extractClientRepositoryParameters(repostring):
         mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
     mydata['plain_database'] = repodatabase
     mydata['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
+    mydata['notice_board'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/"+etpConst['rss-notice-board']
     mydata['dbrevision'] = "0"
     dbrevision_file = os.path.join(mydata['dbpath'],etpConst['etpdatabaserevisionfile'])
     if os.path.isfile(dbrevision_file) and os.access(dbrevision_file,os.R_OK):
