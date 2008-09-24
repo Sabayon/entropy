@@ -505,11 +505,18 @@ class TextInterface:
         xtermTitleReset()
         flush_stdouterr()
 
-    # @ title: title of the input box
-    # @ input_parameters: [('identifier 1','input text 1',input_verification_callback,False), ('password','Password',input_verification_callback,True)]
-    # @ cancel_button: show cancel button ?
-    # @ output: dictionary as follows:
-    #   {'identifier 1': result, 'identifier 2': result}
+    '''
+     @ title: title of the input box
+     @ input_parameters: [
+        ('identifier 1','input text 1',input_verification_callback,False),
+        ('password','Password',input_verification_callback,True),
+        ('item_3',('checkbox','Checkbox option (boolean request) - please choose',),input_verification_callback,True),
+        ('item_4',('combo',('Select your favorite option',['option 1', 'option 2', 'option 3']),),input_verification_callback,True)
+    ]
+     @ cancel_button: show cancel button ?
+     @ output: dictionary as follows:
+       {'identifier 1': result, 'identifier 2': result}
+    '''
     def inputBox(self, title, input_parameters, cancel_button = True):
         results = {}
         try:
@@ -518,10 +525,39 @@ class TextInterface:
             print title.encode('utf-8')
         flush_stdouterr()
 
+        def option_chooser(option_data):
+            mydict = {}
+            counter = 1
+            option_text, option_list = option_data
+            self.updateProgress(option_text)
+            for item in option_list:
+                mydict[counter] = item
+                txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
+                self.updateProgress(txt)
+                counter += 1
+            while 1:
+                myresult = readtext("%s:" % (_('Selected number'),)).decode('utf-8')
+                try:
+                    myresult = int(myresult)
+                except ValueError:
+                    continue
+                selected = mydict.get(myresult)
+                if selected != None:
+                    return myresult, selected
+
         for identifier, input_text, callback, password in input_parameters:
             while 1:
                 try:
-                    myresult = readtext(input_text+":", password = password).decode('utf-8')
+                    if isinstance(input_text,tuple):
+                        myresult = False
+                        input_type, data = input_text
+                        if input_type == "checkbox":
+                            answer = self.askQuestion(data)
+                            if answer == "Yes": myresult = True
+                        if input_type == "combo":
+                            myresult = option_chooser(data)
+                    else:
+                        myresult = readtext(input_text+":", password = password).decode('utf-8')
                 except (KeyboardInterrupt,EOFError,):
                     if not cancel_button: # use with care
                         continue
