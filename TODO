@@ -1,6 +1,8 @@
 TODO list
-  - implement notice board (through UGC)
+  - implement notice board RSS
+  - text ADS
   - force a package to keep the current version
+  - server-side messages collection
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
   - split entropy.py into entropy package
@@ -16,6 +18,7 @@ TODO list
   - server-side: packages upload through socket?
 
   Spritz:
+    - Remote System Manager
     - improve filters.py layout
     - Category <-> Image dictionary (for the properties menu)
     - allow package remasking?
