@@ -17347,6 +17347,17 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 return False, 'not a valid image'
 
         dest_path = os.path.join(self.STORE_PATH,file_name)
+
+        # create dir if not exists
+        dest_dir = os.path.dirname(dest_path)
+        if not os.path.isdir(dest_dir):
+            try:
+                os.makedirs(dest_dir)
+            except OSError, e:
+                raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (e,))
+            if etpConst['entropygid'] != None:
+                const_setup_perms(dest_dir,etpConst['entropygid'])
+
         orig_dest_path = dest_path
         dcount = 0
         while os.path.isfile(dest_path):
@@ -17354,7 +17365,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             dest_path_name = "%s_%s" % (dcount,os.path.basename(orig_dest_path),)
             dest_path = os.path.join(os.path.dirname(orig_dest_path),dest_path_name)
 
-        if os.path.dirname(file_path) != os.path.dirname(dest_path):
+        if os.path.dirname(file_path) != dest_dir:
             shutil.move(file_path,dest_path)
         if etpConst['entropygid'] != None:
             const_setup_file(dest_path, etpConst['entropygid'], 0664)
@@ -17805,18 +17816,8 @@ class DistributionUGCCommands(SocketCommandsSkel):
         stream_path = self._get_session_file(authenticator)
         if not stream_path:
             return False,'no stream path available'
-        orig_stream_path = os.path.join(os.path.dirname(stream_path),file_name)
+        orig_stream_path = os.path.dirname(stream_path)
         new_stream_path = orig_stream_path
-
-        # create dir if not exists
-        stream_dir = os.path.dirname(orig_stream_path)
-        if not os.path.isdir(stream_dir):
-            try:
-                os.makedirs(stream_dir)
-            except OSError, e:
-                raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (e,))
-            if etpConst['entropygid'] != None:
-                const_setup_perms(stream_dir,etpConst['entropygid'])
 
         scount = -1
         while os.path.lexists(new_stream_path):
