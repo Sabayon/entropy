@@ -14860,26 +14860,30 @@ class ServerInterface(TextInterface):
             )
             conn.createAllIndexes()
 
-            # check if we need to setup the counters table
-            current_branch = etpConst['branch']
-            all_branches = sorted(list(conn.listAllBranches()))
-            if (current_branch not in all_branches) and all_branches:
-                from_branch = all_branches[-1]
-                self.updateProgress(
-                    "[repo:%s|%s] %s %s %s %s" % (
-                                blue(repo),
-                                red(_("branch copy")),
-                                blue(_("copying counters from")),
-                                red(from_branch),
-                                blue(_("to")),
-                                red(current_branch),
-                        ),
-                    importance = 1,
-                    type = "info",
-                    header = brown(" @@ "),
-                    back = True
-                )
-                conn.copyCountersToBranch(from_branch,current_branch)
+        # check if we need to setup the counters table
+        current_branch = etpConst['branch']
+        all_branches = sorted(list(conn.listAllBranches()))
+        if (current_branch not in all_branches) and all_branches:
+            from_branch = all_branches[-1]
+            self.updateProgress(
+                "[repo:%s|%s] %s %s %s %s" % (
+                            blue(repo),
+                            red(_("branch copy")),
+                            blue(_("copying counters from")),
+                            red(from_branch),
+                            blue(_("to")),
+                            red(current_branch),
+                    ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ "),
+                back = True
+            )
+            conn.copyCountersToBranch(from_branch,current_branch)
+            # since we don't know if conn.commitChanges() will allow us to
+            # really commit, let's force it
+            conn.connection.commit()
+            conn.connection.commit()
 
         # !!! also cache just_reading otherwise there will be
         # real issues if the connection is opened several times
