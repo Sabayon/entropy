@@ -20,10 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import shutil
-import commands
-import urllib2
-import time
+import shutil, commands, urllib2, time, thread
 from entropyConstants import *
 from outputTools import TextInterface, \
     print_info, print_warning, print_error, \
@@ -742,7 +739,8 @@ class EquoInterface(TextInterface):
             return -1
 
     def openRepositoryDatabase(self, repoid):
-        if not self.repoDbCache.has_key((repoid,etpConst['systemroot'])) or (etpConst['packagemasking'] == None):
+        t_ident = thread.get_ident()
+        if not self.repoDbCache.has_key((repoid,etpConst['systemroot'],t_ident,)) or (etpConst['packagemasking'] == None):
             if etpConst['packagemasking'] == None:
                 self.closeAllRepositoryDatabases()
             dbconn = self.loadRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
@@ -750,10 +748,10 @@ class EquoInterface(TextInterface):
                 dbconn.checkDatabaseApi()
             except:
                 pass
-            self.repoDbCache[(repoid,etpConst['systemroot'])] = dbconn
+            self.repoDbCache[(repoid,etpConst['systemroot'],t_ident,)] = dbconn
             return dbconn
         else:
-            return self.repoDbCache.get((repoid,etpConst['systemroot']))
+            return self.repoDbCache.get((repoid,etpConst['systemroot'],t_ident,))
 
     def parse_masking_settings(self):
         etpConst['packagemasking'] = self.MaskingParser.parse()
@@ -14796,6 +14794,7 @@ class ServerInterface(TextInterface):
         if etpConst['packagemasking'] == None:
             self.ClientService.parse_masking_settings()
 
+        t_ident = thread.get_ident()
         local_dbfile = self.get_local_database_file(repo)
         cached = self.serverDbCache.get(
                         (   etpConst['systemroot'],
@@ -14804,6 +14803,7 @@ class ServerInterface(TextInterface):
                             no_upload,
                             just_reading,
                             repo,
+                            t_ident,
                         )
         )
         if cached != None:
@@ -14844,7 +14844,9 @@ class ServerInterface(TextInterface):
                     type = "warning",
                     header = bold(" !!! ")
                 )
+
         if not read_only and valid and indexing:
+
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
                             blue(repo),
@@ -14858,26 +14860,26 @@ class ServerInterface(TextInterface):
             )
             conn.createAllIndexes()
 
-        # check if we need to setup the counters table
-        current_branch = etpConst['branch']
-        all_branches = sorted(list(conn.listAllBranches()))
-        if (current_branch not in all_branches) and all_branches:
-            from_branch = all_branches[-1]
-            self.updateProgress(
-                "[repo:%s|%s] %s %s %s %s" % (
-                            blue(repo),
-                            red(_("branch copy")),
-                            blue(_("copying counters from")),
-                            red(from_branch),
-                            blue(_("to")),
-                            red(current_branch),
-                    ),
-                importance = 1,
-                type = "info",
-                header = brown(" @@ "),
-                back = True
-            )
-            conn.copyCountersToBranch(from_branch,current_branch)
+            # check if we need to setup the counters table
+            current_branch = etpConst['branch']
+            all_branches = sorted(list(conn.listAllBranches()))
+            if (current_branch not in all_branches) and all_branches:
+                from_branch = all_branches[-1]
+                self.updateProgress(
+                    "[repo:%s|%s] %s %s %s %s" % (
+                                blue(repo),
+                                red(_("branch copy")),
+                                blue(_("copying counters from")),
+                                red(from_branch),
+                                blue(_("to")),
+                                red(current_branch),
+                        ),
+                    importance = 1,
+                    type = "info",
+                    header = brown(" @@ "),
+                    back = True
+                )
+                conn.copyCountersToBranch(from_branch,current_branch)
 
         # !!! also cache just_reading otherwise there will be
         # real issues if the connection is opened several times
@@ -14888,6 +14890,7 @@ class ServerInterface(TextInterface):
                                 no_upload,
                                 just_reading,
                                 repo,
+                                t_ident,
                             )] = conn
         return conn
 
