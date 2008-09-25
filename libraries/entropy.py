@@ -24215,7 +24215,7 @@ class ServerMirrorsInterface:
             files_to_sync.sort()
             for myfile in files_to_sync:
                 self.Entropy.updateProgress(
-                    "%s: %s" % (blue(_("download path")),brown(download_data[myfile]),),
+                    "%s: %s" % (blue(_("download path")),brown(unicode(download_data[myfile])),),
                     importance = 0,
                     type = "info",
                     header = brown("    # ")
