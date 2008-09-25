@@ -2086,6 +2086,10 @@ class EquoInterface(TextInterface):
                 mydep = mybuffer.pop()
                 continue
 
+            if mydep[1] == None: # corrupted entry
+                mydep = mybuffer.pop()
+                continue
+
             # conflicts
             if mydep[1][0] == "!":
                 xmatch = self.clientDbconn.atomMatch(mydep[1][1:])
@@ -17320,7 +17324,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return True,None
         return False,None
 
-    def insert_generic_file(self, pkgkey, userid, username, file_path, doc_type, title, description, keywords):
+    def insert_generic_file(self, pkgkey, userid, username, file_path, file_name, doc_type, title, description, keywords):
         self.check_connection()
         file_path = os.path.realpath(file_path)
 
@@ -17342,7 +17346,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             if not valid:
                 return False, 'not a valid image'
 
-        dest_path = os.path.join(self.STORE_PATH,os.path.basename(file_path))
+        dest_path = os.path.join(self.STORE_PATH,file_name)
         orig_dest_path = dest_path
         dcount = 0
         while os.path.isfile(dest_path):
@@ -17350,7 +17354,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             dest_path_name = "%s_%s" % (dcount,os.path.basename(orig_dest_path),)
             dest_path = os.path.join(os.path.dirname(orig_dest_path),dest_path_name)
 
-        if os.path.dirname(file_path) != self.STORE_PATH:
+        if os.path.dirname(file_path) != os.path.dirname(dest_path):
             shutil.move(file_path,dest_path)
         if etpConst['entropygid'] != None:
             const_setup_file(dest_path, etpConst['entropygid'], 0664)
@@ -17366,7 +17370,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 userid,
                 username,
                 doc_type,
-                os.path.basename(dest_path),
+                file_name,
                 title,
                 description,
                 None,
@@ -17379,11 +17383,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             store_url = os.path.join(self.store_url,store_url)
         return True, (iddoc, store_url)
 
-    def insert_image(self, pkgkey, userid, username, image_path, title, description, keywords):
-        return self.insert_generic_file(pkgkey, userid, username, image_path, self.DOC_TYPES['image'], title, description, keywords)
+    def insert_image(self, pkgkey, userid, username, image_path, file_name, title, description, keywords):
+        return self.insert_generic_file(pkgkey, userid, username, image_path, file_name, self.DOC_TYPES['image'], title, description, keywords)
 
-    def insert_file(self, pkgkey, userid, username, file_path, title, description, keywords):
-        return self.insert_generic_file(pkgkey, userid, username, file_path, self.DOC_TYPES['generic_file'], title, description, keywords)
+    def insert_file(self, pkgkey, userid, username, file_path, file_name, title, description, keywords):
+        return self.insert_generic_file(pkgkey, userid, username, file_path, file_name, self.DOC_TYPES['generic_file'], title, description, keywords)
 
     def delete_image(self, iddoc):
         return self.delete_generic_file(iddoc, self.DOC_TYPES['image'])
@@ -17803,6 +17807,17 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return False,'no stream path available'
         orig_stream_path = os.path.join(os.path.dirname(stream_path),file_name)
         new_stream_path = orig_stream_path
+
+        # create dir if not exists
+        stream_dir = os.path.dirname(orig_stream_path)
+        if not os.path.isdir(stream_dir):
+            try:
+                os.makedirs(stream_dir)
+            except OSError, e:
+                raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (e,))
+            if etpConst['entropygid'] != None:
+                const_setup_perms(stream_dir,etpConst['entropygid'])
+
         scount = -1
         while os.path.lexists(new_stream_path):
             scount += 1
@@ -17818,9 +17833,9 @@ class DistributionUGCCommands(SocketCommandsSkel):
 
         rslt = None, 'invalid doc type'
         if doc_type == self.DOC_TYPES['image']:
-            rslt = ugc.insert_image(pkgkey, userid, username, stream_path, title, description, keywords)
+            rslt = ugc.insert_image(pkgkey, userid, username, stream_path, file_name, title, description, keywords)
         elif doc_type == self.DOC_TYPES['generic_file']:
-            rslt = ugc.insert_file(pkgkey, userid, username, stream_path, title, description, keywords)
+            rslt = ugc.insert_file(pkgkey, userid, username, stream_path, file_name, title, description, keywords)
         elif doc_type == self.DOC_TYPES['youtube_video']:
             rslt = ugc.insert_youtube_video(pkgkey, userid, username, stream_path, title, description, keywords)
         return rslt
@@ -20462,7 +20477,7 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
             'title': title,
             'description': description,
             'keywords': keywords,
-            'file_name': os.path.basename(file_path)
+            'file_name': os.path.join(pkgkey,os.path.basename(file_path))
         }
         xml_string = self.entropyTools.xml_from_dict(mydict)
 
@@ -21008,7 +21023,11 @@ class SystemManagerExecutorServerRepositoryInterface:
             'compile_atom': {
                 'func': self.compile_atom,
                 'args': 2,
-            }
+            },
+            'get_spm_category_updates': {
+                'func': self.get_spm_category_updates,
+                'args': 2,
+            },
         }
 
     def _set_processing_pid(self, queue_id, process_pid):
@@ -21052,6 +21071,15 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.close()
         return True,rc
 
+    def get_spm_category_updates(self, queue_id, category):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        packages = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_available_packages([category])
+        packages = sorted(list(packages))
+        return True, packages
 
 class SystemManagerRepositoryCommands(SocketCommandsSkel):
 
@@ -21077,6 +21105,16 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "compile specified atom using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:compile_atom <atom>",
+                'from': str(self)
+            },
+            'srvrepo:get_spm_category_updates':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_get_spm_category_updates,
+                'args': ["cmd","cmd_data","myargs","authenticator"],
+                'as_user': False,
+                'desc': "get SPM updates for the specified package category",
+                'syntax': "<SESSION_ID> srvrepo:get_spm_category_updates <category>",
                 'from': str(self)
             },
         }
@@ -21105,6 +21143,18 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
+    def docmd_get_spm_category_updates(self, cmd, cmd_data, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        category = myargs[0]
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_category_updates', [category], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
 
 class SystemManagerServerInterface(SocketHostInterface):
 
@@ -21509,7 +21559,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.ManagerQueue['queue'].append(myqueue_dict)
         self.store_queue()
         self.queue_changing = False
-        return len(self.ManagerQueue['queue'])-1
+        return queue_id
 
     def remove_from_queue(self, queue_id):
         self.queue_change_wait()
@@ -21808,6 +21858,15 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
+    def get_spm_category_updates(self, session_id, category):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:get_spm_category_updates',
+            category,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
 class SystemManagerMethodsInterface:
 
     def __init__(self, SystemManagerClientInstance):
@@ -21916,6 +21975,12 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
                 'call': self.compile_atom,
                 'private': False,
             },
+            'get_spm_category_updates': {
+                'desc': _("Get SPM updates for the specified category"),
+                'params': [('category',basestring,_('Category'),True,)],
+                'call': self.get_spm_category_updates,
+                'private': False,
+            },
         })
 
     def sync_spm(self):
@@ -21924,6 +21989,8 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
     def compile_atom(self, atom):
         return self.Manager.do_cmd(True, "compile_atom", [atom], {})
 
+    def get_spm_category_updates(self, category):
+        return self.Manager.do_cmd(True, "get_spm_category_updates", [category], {})
 
 class SystemManagerClientInterface:
 
