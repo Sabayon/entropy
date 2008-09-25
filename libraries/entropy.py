@@ -14522,9 +14522,11 @@ class ServerInterface(TextInterface):
             type_txt = _("community repository")
         mytxt = _("Entropy Server Interface Instance on repository") # ..on repository: <repository_name>
         self.updateProgress(
-            blue("%s: %s (%s: %s)" % (
+            blue("%s: %s, %s: %s (%s: %s)" % (
                     mytxt,
                     red(self.default_repository),
+                    _("current branch"),
+                    darkgreen(etpConst['branch']),
                     purple(_("type")),
                     bold(type_txt),
                 )
