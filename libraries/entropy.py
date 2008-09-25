@@ -11871,6 +11871,69 @@ class PortageInterface:
                 )
             )
 
+    def get_package_use_file(self):
+        return os.path.join(self.portage_const.USER_CONFIG_PATH,'package.use')
+
+    def enable_package_useflags(self, atom, useflags):
+        pass
+
+    def disable_package_useflags(self, atom, useflags):
+        pass
+
+    def unset_package_useflags(self, atom, useflags):
+        matched_atom = self.get_best_atom(atom)
+        if not matched_atom:
+            return False
+        use_file = self.get_package_use_file()
+
+        if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
+            return False
+        f = open(use_file,"r")
+        content = [x.strip() for x in f.readlines()]
+        f.close()
+
+        new_content = []
+        for line in content:
+
+            data = line.split()
+            if len(data) < 2:
+                new_content.append(line)
+                continue
+
+            myatom = data[0]
+            if matched_atom != self.get_best_atom(myatom):
+                new_content.append(line)
+                continue
+
+            flags = data[1:]
+            new_flags = []
+            for flag in flags:
+                myflag = flag
+
+                if myflag.startswith("+"):
+                    myflag = myflag[1:]
+                elif myflag.startswith("-"):
+                    myflag = myflag[1:]
+
+                if myflag in useflags:
+                    continue
+                elif not flag:
+                    continue
+
+                new_flags.append(flag)
+
+            if new_flags:
+                new_line = "%s %s" % (myatom, ' '.join(new_flags))
+                new_content.append(new_line)
+
+        f = open(use_file+".tmp","w")
+        for line in new_content:
+            f.write(line+"\n")
+        f.flush()
+        f.close()
+        shutil.move(use_file+".tmp",use_file)
+        return True
+
     def get_useflags(self):
         return self.portage.settings['USE']
 
@@ -14795,6 +14858,27 @@ class ServerInterface(TextInterface):
             )
             conn.createAllIndexes()
 
+        # check if we need to setup the counters table
+        current_branch = etpConst['branch']
+        all_branches = sorted(list(conn.listAllBranches()))
+        if (current_branch not in all_branches) and all_branches:
+            from_branch = all_branches[-1]
+            self.updateProgress(
+                "[repo:%s|%s] %s %s %s %s" % (
+                            blue(repo),
+                            red(_("branch copy")),
+                            blue(_("copying counters from")),
+                            red(from_branch),
+                            blue(_("to")),
+                            red(current_branch),
+                    ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ "),
+                back = True
+            )
+            conn.copyCountersToBranch(from_branch,current_branch)
+
         # !!! also cache just_reading otherwise there will be
         # real issues if the connection is opened several times
         self.serverDbCache[(
@@ -15630,7 +15714,7 @@ class ServerInterface(TextInterface):
             for server_repo in server_repos:
                 installed_counters.add(x[1])
                 server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
-                counter = server_dbconn.isCounterAvailable(x[1], branch = etpConst['branch'], branch_operator = "<=")
+                counter = server_dbconn.isCounterAvailable(x[1], branch = etpConst['branch'])#, branch_operator = "<="
                 if counter:
                     found = True
                     break
@@ -23700,7 +23784,7 @@ class ServerMirrorsInterface:
                     tries = 0
                     done = False
                     lastrc = None
-                    while tries < 8:
+                    while tries < 5:
                         tries += 1
                         self.Entropy.updateProgress(
                             "[%s|#%s|(%s/%s)] %s: %s" % (
@@ -26868,11 +26952,7 @@ class EntropyDatabaseInterface:
             deps.add((idpackage,iddep,deptype,))
             dcache.add(dep)
 
-        def myiter():
-            for item in deps:
-                yield item
-
-        self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', myiter())
+        self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
 
     def removeContent(self, idpackage):
         self.checkReadOnly()
@@ -26902,18 +26982,14 @@ class EntropyDatabaseInterface:
     def insertLicenses(self, licenses_data):
 
         mylicenses = licenses_data.keys()
-        mydata = []
+        mydata = set()
         for mylicense in mylicenses:
             found = self.isLicensedataKeyAvailable(mylicense)
             if found:
                 continue
-            mydata.append((mylicense,buffer(licenses_data[mylicense]),0,))
+            mydata.add((mylicense,buffer(licenses_data[mylicense]),0,))
 
-        def myiter():
-            for item in mydata:
-                yield item
-
-        self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',myiter())
+        self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',mydata)
 
     def insertConfigProtect(self, idpackage, idprotect, mask = False):
 
@@ -26940,11 +27016,7 @@ class EntropyDatabaseInterface:
                 idkeyword = self.addKeyword(key)
             mydata.add((idpackage,idkeyword,))
 
-        def myiter():
-            for item in mydata:
-                yield item
-
-        self.cursor.executemany('INSERT into keywords VALUES (?,?)',myiter())
+        self.cursor.executemany('INSERT into keywords VALUES (?,?)',mydata)
 
     def insertUseflags(self, idpackage, useflags):
 
@@ -26956,11 +27028,7 @@ class EntropyDatabaseInterface:
                 iduseflag = self.addUseflag(flag)
             mydata.add((idpackage,iduseflag,))
 
-        def myiter():
-            for item in mydata:
-                yield item
-
-        self.cursor.executemany('INSERT into useflags VALUES (?,?)',myiter())
+        self.cursor.executemany('INSERT into useflags VALUES (?,?)',mydata)
 
     def insertSources(self, idpackage, sources):
 
@@ -26974,11 +27042,7 @@ class EntropyDatabaseInterface:
                 idsource = self.addSource(source)
             mydata.add((idpackage,idsource,))
 
-        def myiter():
-            for item in mydata:
-                yield item
-
-        self.cursor.executemany('INSERT into sources VALUES (?,?)',myiter())
+        self.cursor.executemany('INSERT into sources VALUES (?,?)',mydata)
 
     def insertConflicts(self, idpackage, conflicts):
 
@@ -27014,11 +27078,7 @@ class EntropyDatabaseInterface:
                 idneeded = self.addNeeded(needed)
             mydata.add((idpackage,idneeded,elfclass))
 
-        def myiter():
-            for item in mydata:
-                yield item
-
-        self.cursor.executemany('INSERT into needed VALUES (?,?,?)',myiter())
+        self.cursor.executemany('INSERT into needed VALUES (?,?,?)',mydata)
 
     def insertEclasses(self, idpackage, eclasses):
 
@@ -27030,11 +27090,7 @@ class EntropyDatabaseInterface:
                 idclass = self.addEclass(eclass)
             mydata.add((idpackage,idclass))
 
-        def myiter():
-            for item in mydata:
-                yield item
-
-        self.cursor.executemany('INSERT into eclasses VALUES (?,?)',myiter())
+        self.cursor.executemany('INSERT into eclasses VALUES (?,?)',mydata)
 
     def insertOnDiskSize(self, idpackage, mysize):
         self.cursor.execute('INSERT into sizes VALUES (?,?)', (idpackage,mysize,))
@@ -27572,7 +27628,7 @@ class EntropyDatabaseInterface:
 
     def retrieveCounter(self, idpackage):
         counter = -1
-        self.cursor.execute('SELECT counter FROM counters WHERE idpackage = (?)', (idpackage,))
+        self.cursor.execute('SELECT counters.counter FROM counters,baseinfo WHERE counters.idpackage = (?) AND baseinfo.idpackage = counters.idpackage AND baseinfo.branch = counters.branch', (idpackage,))
         mycounter = self.cursor.fetchone()
         if mycounter:
             return mycounter[0]
@@ -29178,6 +29234,12 @@ class EntropyDatabaseInterface:
         self.createEclassesIndex()
         self.createCategoriesIndex()
         self.createCompileFlagsIndex()
+        self.createCountersIndex()
+
+    def createCountersIndex(self):
+        if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage )')
+            self.commitChanges()
 
     def createNeededIndex(self):
         if self.indexing:
@@ -29361,12 +29423,10 @@ class EntropyDatabaseInterface:
 
     def migrateCountersTable(self):
         self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
-        self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
+        self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER, branch VARCHAR, PRIMARY KEY(idpackage,branch) );')
         self.cursor.execute('select * from counters')
         countersdata = self.cursor.fetchall()
-        if countersdata:
-            for row in countersdata:
-                self.cursor.execute('INSERT INTO counterstemp VALUES (?,?,?)',row)
+        self.cursor.executemany('INSERT INTO counterstemp VALUES (?,?,?)',countersdata)
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
@@ -29514,6 +29574,21 @@ class EntropyDatabaseInterface:
         # now validate dependstable
         self.sanitizeDependsTable()
 
+    def copyCountersToBranch(self, from_branch, to_branch):
+        self.cursor.execute('SELECT counter,idpackage,(?) FROM counters WHERE branch = (?)', (to_branch,from_branch,))
+        counters_data = self.cursor.fetchall()
+        migrated = False
+        while 1:
+            try:
+                self.cursor.executemany('INSERT into counters VALUES (?,?,?)', counters_data)
+            except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
+                if migrated: raise
+                self.migrateCountersTable()
+                migrated = True
+                continue
+            break
+        self.commitChanges()
+        self.clearCache()
 
 ########################################################
 ####
@@ -29852,7 +29927,7 @@ class EntropyDatabaseInterface:
             if self.dbname == etpConst['clientdbid']:
                 # collect all available branches
                 myBranchIndex = tuple(self.listAllBranches())
-            elif self.dbname.startswith(etpConst['dbnamerepoprefix']):
+            elif self.dbname.startswith(etpConst['dbnamerepoprefix']) or self.dbname.startswith(etpConst['serverdbid']):
                 # repositories should match to any branch <= than the current if none specified
                 allbranches = set([x for x in self.listAllBranches() if x <= etpConst['branch']])
                 allbranches = list(allbranches)

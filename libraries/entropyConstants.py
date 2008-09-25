@@ -268,8 +268,9 @@ CREATE TABLE messages (
 
 CREATE TABLE counters (
     counter INTEGER,
-    idpackage INTEGER PRIMARY KEY,
-    branch VARCHAR
+    idpackage INTEGER,
+    branch VARCHAR,
+    PRIMARY KEY(idpackage,branch)
 );
 
 CREATE TABLE trashedcounters (
