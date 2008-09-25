@@ -14879,9 +14879,9 @@ class ServerInterface(TextInterface):
                 header = brown(" @@ "),
                 back = True
             )
+            # force r/w
+            conn.readOnly = False
             conn.copyCountersToBranch(from_branch,current_branch)
-            # since we don't know if conn.commitChanges() will allow us to
-            # really commit, let's force it
             conn.connection.commit()
             conn.connection.commit()
 
