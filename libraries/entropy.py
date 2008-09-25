@@ -14862,7 +14862,7 @@ class ServerInterface(TextInterface):
 
         # check if we need to setup the counters table
         current_branch = etpConst['branch']
-        all_branches = sorted(list(conn.listAllBranches()))
+        all_branches = sorted(list(conn.listAllBranchesFromCounters()))
         if (current_branch not in all_branches) and all_branches:
             from_branch = all_branches[-1]
             self.updateProgress(
@@ -14882,8 +14882,6 @@ class ServerInterface(TextInterface):
             # force r/w
             conn.readOnly = False
             conn.copyCountersToBranch(from_branch,current_branch)
-            conn.connection.commit()
-            conn.connection.commit()
 
         # !!! also cache just_reading otherwise there will be
         # real issues if the connection is opened several times
@@ -28518,6 +28516,10 @@ class EntropyDatabaseInterface:
         else:
             self.cursor.execute('SELECT * FROM dependenciesreference')
             return self.cursor.fetchall()
+
+    def listAllBranchesFromCounters(self):
+        self.cursor.execute('SELECT distinct branch FROM counters')
+        return self.fetchall2set(self.cursor.fetchall())
 
     def listAllBranches(self):
 
