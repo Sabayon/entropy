@@ -27151,7 +27151,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         if not branch:
             branch = etpConst['branch']
-        self.cursor.execute('DELETE FROM counters WHERE counter = (?) OR idpackage = (?)', (counter,idpackage,))
+        self.cursor.execute('DELETE FROM counters WHERE counter = (?) OR idpackage = (?) AND branch = (?)', (counter,idpackage,branch,))
         self.cursor.execute('INSERT INTO counters VALUES (?,?,?)', (counter,idpackage,branch,))
         self.commitChanges()
 
