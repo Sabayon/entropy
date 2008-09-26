@@ -11873,10 +11873,79 @@ class PortageInterface:
         return os.path.join(self.portage_const.USER_CONFIG_PATH,'package.use')
 
     def enable_package_useflags(self, atom, useflags):
-        pass
+        result = self.unset_package_useflags(atom, useflags)
+        if not result: return False
+        return self._handle_new_useflags(atom, useflags, "")
 
     def disable_package_useflags(self, atom, useflags):
-        pass
+        result = self.unset_package_useflags(atom, useflags)
+        if not result: return False
+        return self._handle_new_useflags(atom, useflags, "-")
+
+    def _handle_new_useflags(self, atom, useflags, mark):
+        matched_atom = self.get_best_atom(atom)
+        if not matched_atom:
+            return False
+        use_file = self.get_package_use_file()
+
+        if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
+            return False
+        f = open(use_file,"r")
+        content = [x.strip() for x in f.readlines()]
+        f.close()
+
+        def handle_line(line, useflags):
+
+            data = line.split()
+            if len(data) < 2:
+                return False, line
+
+            myatom = data[0]
+            if matched_atom != self.get_best_atom(myatom):
+                return False, line
+
+            flags = data[1:]
+            base_flags = []
+            added_flags = []
+            for flag in flags:
+                myflag = flag
+                if myflag.startswith("+"):
+                    myflag = myflag[1:]
+                elif myflag.startswith("-"):
+                    myflag = myflag[1:]
+                if not myflag:
+                    continue
+                base_flags.append(myflag)
+
+            for useflag in useflags:
+                if mark+useflag in base_flags:
+                    continue
+                added_flags.append(mark+useflag)
+
+            new_line = "%s %s" % (myatom, ' '.join(flags+added_flags))
+            return True, new_line
+
+
+        atom_found = False
+        new_content = []
+        for line in content:
+
+            changed, elaborated_line = handle_line(line, useflags)
+            if changed: atom_found = True
+            new_content.append(elaborated_line)
+
+        if not atom_found:
+            myline = "%s %s" % (atom, ' '.join([mark+x for x in useflags]))
+            new_content.append(myline)
+
+
+        f = open(use_file+".tmp","w")
+        for line in new_content:
+            f.write(line+"\n")
+        f.flush()
+        f.close()
+        shutil.move(use_file+".tmp",use_file)
+        return True
 
     def unset_package_useflags(self, atom, useflags):
         matched_atom = self.get_best_atom(atom)
