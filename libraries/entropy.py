@@ -136,7 +136,7 @@ class urlFetcher:
                     self.updateSpeedInfo,
                     self.transferpollingtime
         )
-        self.speedUpdater.setName("download::"+self.url+str(random.random())) # set unique ID to thread, hopefully
+        self.speedUpdater.setName("download::"+self.url+str(abs(hash(os.urandom(20))))) # set unique ID to thread, hopefully
         self.speedUpdater.start()
 
         # set timeout
@@ -1288,7 +1288,7 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
-    def get_meant_packages(self, search_term):
+    def get_meant_packages(self, search_term, from_installed = False):
         import re
         match_string = ''
         for x in search_term:
@@ -1298,8 +1298,16 @@ class EquoInterface(TextInterface):
         match_exp = re.compile(match_string,re.IGNORECASE)
 
         matched = {}
-        for repo in self.validRepositories:
-            dbconn = self.openRepositoryDatabase(repo)
+        valid_repos = self.validRepositories
+        if from_installed:
+            valid_repos = [1]
+        for repo in valid_repos:
+            if isinstance(repo,basestring):
+                dbconn = self.openRepositoryDatabase(repo)
+            elif hasattr(self,'clientDbconn'):
+                dbconn = self.clientDbconn
+            else:
+                continue
             # get names
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
             for idpackage in idpackages:
@@ -4109,12 +4117,11 @@ class PackageInterface:
             if rc != 0:
                 return rc
         else:
-            #self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
-            self.Entropy.entropyTools.spawnFunction(
-                        self.__fill_image_dir,
-                        self.infoDict['merge_from'],
-                        self.infoDict['imagedir']
-                )
+            pid = os.fork()
+            if pid > 0:
+                os.waitpid(pid, 0)
+            else:
+                self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
 
         # unpack xpak ?
         if etpConst['gentoo-compat']:
@@ -4349,7 +4356,7 @@ class PackageInterface:
             shutil.rmtree(removePath,True)
         elif others_installed:
             for myatom in others_installed:
-                myslot = Spm.get_package_slot(myatom)
+                myslot = Spm.get_installed_package_slot(myatom)
                 if myslot != slot:
                     continue
                 shutil.rmtree(portDbDir+myatom,True)
@@ -4611,7 +4618,7 @@ class PackageInterface:
             if atomsfound:
                 pkgToRemove = ''
                 for atom in atomsfound:
-                    atomslot = Spm.get_package_slot(atom)
+                    atomslot = Spm.get_installed_package_slot(atom)
                     # get slot from gentoo db
                     if atomslot == self.infoDict['slot']:
                         pkgToRemove = atom
@@ -7132,7 +7139,7 @@ class RepoInterface:
         self.current_repository_got_locked = False
         self.kill_previous_repository_lock_scanner()
         self.LockScanner = self.entropyTools.TimeScheduled( self.repository_lock_scanner, 2, {'repo': repo} )
-        self.LockScanner.setName("Lock_Scanner::"+str(random.random()))
+        self.LockScanner.setName("Lock_Scanner::"+str(abs(hash(os.urandom(20)))))
         self.LockScanner.start()
 
     def kill_previous_repository_lock_scanner(self):
@@ -11590,6 +11597,7 @@ class PortageInterface:
         # interface only needed OutputInterface functions
         self.updateProgress = OutputInterface.updateProgress
         self.askQuestion = OutputInterface.askQuestion
+        sys.path.append("/usr/lib/gentoolkit/pym")
 
         # importing portage stuff
         import portage
@@ -11599,6 +11607,93 @@ class PortageInterface:
         except ImportError:
             import portage_const
         self.portage_const = portage_const
+
+        try:
+            import portage.util as portage_util
+        except ImportError:
+            import portage_util
+        self.portage_util = portage_util
+
+        try:
+            import glsa
+            self.glsa = glsa
+        except ImportError:
+            self.glsa = None
+
+        if hasattr(self.portage,'exception'):
+            self.portage_exception = self.portage.exception
+        else: # portage <2.2 workaround
+            self.portage_exception = Exception
+
+    def list_glsa_packages(self, command = "affected"):
+
+        if not self.glsa: return
+        if command not in ['new','all','affected']: return
+
+        glsaconfig = self.glsa.checkconfig(self.portage.config(clone=self.portage.settings))
+        completelist = self.glsa.get_glsa_list(glsaconfig["GLSA_DIR"], glsaconfig)
+
+        glsalist = []
+        if command == "new":
+            checklist = []
+            if os.access(glsaconfig["CHECKFILE"], os.R_OK):
+                checklist = [line.strip() for line in open(glsaconfig["CHECKFILE"], "r").readlines()]
+            glsalist = [e for e in completelist if e not in checklist]
+        elif command == "all":
+            glsalist = completelist
+        elif command == "affected":
+            # maybe this should be todolist instead
+            for x in completelist:
+                try:
+                    myglsa = self.glsa.Glsa(x, glsaconfig)
+                except (self.glsa.GlsaTypeException, self.glsa.GlsaFormatException), e:
+                    continue
+                if not myglsa.isVulnerable():
+                    continue
+                glsalist.append(x)
+
+        return glsalist
+
+    def get_glsa_id_information(self, glsa_id):
+        if not self.glsa: return {}
+
+        glsaconfig = self.glsa.checkconfig(self.portage.config(clone=self.portage.settings))
+        try:
+            myglsa = self.glsa.Glsa(glsa_id, glsaconfig)
+        except (self.glsa.GlsaTypeException, self.glsa.GlsaFormatException):
+            return {}
+
+        mydict = {
+            'glsa_id': glsa_id,
+            'number': myglsa.nr,
+            'access': myglsa.access,
+            'title': myglsa.title,
+            'synopsis': myglsa.synopsis,
+            'announced': myglsa.announced,
+            'revised': myglsa.revised,
+            'bugs': myglsa.bugs,
+            'description': myglsa.description,
+            'resolution': myglsa.resolution,
+            'impact': myglsa.impact_text,
+            'impacttype': myglsa.impact_type,
+            'affected': myglsa.affected,
+            'background': myglsa.background,
+            'glsatype': myglsa.glsatype,
+            'packages': myglsa.packages,
+            'services': myglsa.services,
+            'product': myglsa.product,
+            'references': myglsa.references,
+            'workaround': myglsa.workaround,
+        }
+        if myglsa.isApplied():
+            status = "[A]"
+        elif myglsa.isVulnerable():
+            status = "[N]"
+        else:
+            status = "[U]"
+        mydict['status'] = status
+
+        return mydict.copy()
 
     def run_fixpackages(self, myroot = None):
         if myroot == None:
@@ -11623,30 +11718,6 @@ class PortageInterface:
     def get_spm_setting(self, var):
         return self.portage.settings[var]
 
-    # Packages in system (in the Portage language -> emerge system, remember?)
-    def get_atoms_in_system(self):
-        system = self.portage.settings.packages
-        sysoutput = []
-        for x in system:
-            y = self.get_installed_atoms(x)
-            if (y != None):
-                for z in y:
-                    sysoutput.append(z)
-        sysoutput.extend(etpConst['spm']['system_packages']) # add our packages
-        return sysoutput
-
-    def get_category_description_data(self, category):
-        from xml.dom import minidom
-        data = {}
-        portdir = self.portage.settings['PORTDIR']
-        myfile = os.path.join(portdir,category,"metadata.xml")
-        if os.access(myfile,os.R_OK) and os.path.isfile(myfile):
-            doc = minidom.parse(myfile)
-            longdescs = doc.getElementsByTagName("longdescription")
-            for longdesc in longdescs:
-                data[longdesc.getAttribute("lang").strip()] = ' '.join([x.strip() for x in longdesc.firstChild.data.strip().split("\n")])
-        return data
-
     def get_config_protect_and_mask(self):
         config_protect = self.portage.settings['CONFIG_PROTECT']
         config_protect = config_protect.split()
@@ -11662,30 +11733,6 @@ class PortageInterface:
             x = os.path.expandvars(x)
             mask.append(x)
         return ' '.join(protect),' '.join(mask)
-
-    # resolve atoms automagically (best, not current!)
-    # sys-libs/application --> sys-libs/application-1.2.3-r1
-    def get_best_atom(self, atom, match = "bestmatch-visible"):
-        try:
-            return self.portage.portdb.xmatch(match,str(atom))
-        except ValueError:
-            return None
-
-    # same as above but includes masked ebuilds
-    def get_best_masked_atom(self, atom):
-        atoms = self.portage.portdb.xmatch("match-all",str(atom))
-        # find the best
-        try:
-            from portage_versions import best
-        except ImportError:
-            from portage.versions import best
-        return best(atoms)
-
-    def get_atom_category(self, atom):
-        try:
-            return self.portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
-        except:
-            return None
 
     def _get_portage_vartree(self, root):
 
@@ -11760,32 +11807,87 @@ class PortageInterface:
         etpConst['spm']['cache']['portage']['config'][(config_root,root)] = mysettings
         return mysettings
 
-    # please always force =pkgcat/pkgname-ver if possible
+    # resolve atoms automagically (best, not current!)
+    # sys-libs/application --> sys-libs/application-1.2.3-r1
+    def get_best_atom(self, atom, match = "bestmatch-visible"):
+        try:
+            return self.portage.portdb.xmatch(match,str(atom))
+        except ValueError:
+            return None
+
+    # same as above but includes masked ebuilds
+    def get_best_masked_atom(self, atom):
+        atoms = self.portage.portdb.xmatch("match-all",str(atom))
+        # find the best
+        try:
+            from portage_versions import best
+        except ImportError:
+            from portage.versions import best
+        return best(atoms)
+
+    def get_category_description_data(self, category):
+        from xml.dom import minidom
+        data = {}
+        portdir = self.portage.settings['PORTDIR']
+        myfile = os.path.join(portdir,category,"metadata.xml")
+        if os.access(myfile,os.R_OK) and os.path.isfile(myfile):
+            doc = minidom.parse(myfile)
+            longdescs = doc.getElementsByTagName("longdescription")
+            for longdesc in longdescs:
+                data[longdesc.getAttribute("lang").strip()] = ' '.join([x.strip() for x in longdesc.firstChild.data.strip().split("\n")])
+        return data
+
+    def get_atom_category(self, atom):
+        try:
+            return self.portage.portdb.xmatch("match-all",str(atom))[0].split("/")[0]
+        except:
+            return None
+
+    # Packages in system (in the Portage language -> emerge system, remember?)
+    def get_atoms_in_system(self):
+        system = self.portage.settings.packages
+        sysoutput = []
+        for x in system:
+            y = self.get_installed_atoms(x)
+            if (y != None):
+                for z in y:
+                    sysoutput.append(z)
+        sysoutput.extend(etpConst['spm']['system_packages']) # add our packages
+        return sysoutput
+
     def get_installed_atom(self, atom):
         mypath = etpConst['systemroot']+"/"
         mytree = self._get_portage_vartree(mypath)
         rc = mytree.dep_match(str(atom))
-        if rc:
-            return rc[-1]
-        return None
+        if rc: return rc[-1]
 
-    def get_package_slot(self, atom):
+    def get_package_description(self, atom):
+        if atom.startswith("="): atom = atom[1:]
+        return self.portage.portdb.aux_get(atom,['DESCRIPTION'])[0]
+
+    def get_installed_package_description(self, atom):
         mypath = etpConst['systemroot']+"/"
         mytree = self._get_portage_vartree(mypath)
-        if atom.startswith("="):
-            atom = atom[1:]
+        if atom.startswith("="): atom = atom[1:]
+        rc = mytree.dbapi.aux_get(atom, ["DESCRIPTION"])[0]
+        if rc: return rc
+
+    def get_package_slot(self, atom):
+        if atom.startswith("="): atom = atom[1:]
+        return self.portage.portdb.aux_get(atom,['SLOT'])[0]
+
+    def get_installed_package_slot(self, atom):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        if atom.startswith("="): atom = atom[1:]
         rc = mytree.getslot(atom)
-        if rc:
-            return rc
-        return None
+        if rc: return rc
 
     def get_installed_atoms(self, atom):
         mypath = etpConst['systemroot']+"/"
         mytree = self._get_portage_vartree(mypath)
         rc = mytree.dep_match(str(atom))
-        if rc:
-            return rc
-        return None
+        if rc: return rc
 
     def search_keys(self, key):
         key_split = key.split("/")
@@ -11951,10 +12053,11 @@ class PortageInterface:
         matched_atom = self.get_best_atom(atom)
         if not matched_atom:
             return False
-        use_file = self.get_package_use_file()
 
+        use_file = self.get_package_use_file()
         if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
             return False
+
         f = open(use_file,"r")
         content = [x.strip() for x in f.readlines()]
         f.close()
@@ -12001,6 +12104,182 @@ class PortageInterface:
         shutil.move(use_file+".tmp",use_file)
         return True
 
+    def get_package_useflags(self, atom):
+        matched_atom = self.get_best_atom(atom)
+        if not matched_atom:
+            return {}
+        global_useflags = self.get_useflags()
+        use_force = self.get_useflags_force()
+        use_mask = self.get_useflags_mask()
+        package_use_useflags = self.get_package_use_useflags(atom)
+
+        data = {}
+        data['use_force'] = use_force.copy()
+        data['use_mask'] = use_mask.copy()
+        data['global_use'] = global_useflags.split()
+
+        iuse = self.get_package_setting(atom, "IUSE")
+        if not isinstance(iuse,basestring):
+            iuse = ''
+        data['iuse'] = iuse.split()[:]
+        iuse = set()
+        for myiuse in data['iuse']:
+            if myiuse.startswith("+"):
+                myiuse = myiuse[1:]
+            iuse.add(myiuse)
+
+        use = [f for f in data['global_use']+list(package_use_useflags['enabled']) if (f in iuse) and (f not in use_mask) and (f not in package_use_useflags['disabled'])]
+        use_disabled = [f for f in iuse if (f not in data['global_use']) and (f not in use_mask) and (f not in package_use_useflags['enabled'])]
+        data['use'] = use[:]
+        data['use_disabled'] = use_disabled[:]
+
+        matched_slot = self.get_package_slot(matched_atom)
+        try:
+            installed_atom = self.get_installed_atom("%s:%s" % (self.entropyTools.dep_getkey(atom),matched_slot,))
+        except self.portage_exception:
+            installed_atom = None
+
+        if installed_atom:
+
+            # get its useflags
+            previous_iuse = self.get_installed_package_setting(installed_atom, "IUSE").split()
+            previous_use = self.get_installed_package_setting(installed_atom, "USE").split()
+
+            new_previous_iuse = set()
+            for myuse in previous_iuse:
+                if myuse.startswith("+"):
+                    myuse = myuse[1:]
+                new_previous_iuse.add(myuse)
+            previous_iuse = list(new_previous_iuse)
+
+            inst_use = [f for f in previous_iuse if (f in previous_use) and (f not in use_mask)]
+            #inst_use_disabled = [f for f in previous_use if (f not in previous_iuse) and (f not in use_mask)]
+
+            # check removed use
+            use_removed = []
+            for myuse in inst_use:
+                if myuse not in use:
+                    use_removed.append(myuse)
+
+            # use not available
+            use_not_avail = []
+            for myuse in previous_iuse:
+                if (myuse not in iuse) and (myuse not in use_removed):
+                    use_not_avail.append(myuse)
+
+            # check new use
+            t_use = []
+            for myuse in use:
+                if myuse not in inst_use:
+                    myuse = "+%s*" % (myuse,)
+                t_use.append(myuse)
+            use = t_use
+
+            # check disabled use
+            t_use_disabled = []
+            for myuse in use_disabled:
+                if myuse in inst_use:
+                    if myuse in use_removed+use_not_avail:
+                        continue
+                    myuse = "-%s*" % (myuse,)
+                else:
+                    myuse = "-%s" % (myuse,)
+                t_use_disabled.append(myuse)
+            use_disabled = t_use_disabled
+
+            for myuse in use_removed:
+                use_disabled.append("(-%s*)" % (myuse,))
+            for myuse in use_not_avail:
+                use_disabled.append("(-%s)" % (myuse,))
+        else:
+            use_disabled = ["-"+x for x in use_disabled]
+
+        data['use_string'] = ' '.join(sorted(use)+sorted([x for x in use_disabled]))
+        data['use_string_colored'] = ' '.join(
+                sorted([darkred(x) for x in use if not x.startswith("+")] + \
+                        [darkgreen(x) for x in use if x.startswith("+")]) + \
+                sorted([darkblue(x) for x in use_disabled if x.startswith("-")] + \
+                        [brown(x) for x in use_disabled if x.startswith("(") and (x.find("*") == -1)] + \
+                        [purple(x) for x in use_disabled if x.startswith("(") and (x.find("*") != -1)]
+                )
+        )
+        return data
+
+    def get_installed_package_useflags(self, atom):
+
+        matched_atom = self.get_installed_atom(atom)
+        if not matched_atom:
+            return {}
+
+        global_use = self.get_installed_package_setting(matched_atom, "USE")
+        use_mask = self.get_useflags_mask()
+
+        data = {}
+        data['use_mask'] = use_mask.copy()
+        data['global_use'] = global_use.split()
+
+        iuse = self.get_installed_package_setting(matched_atom, "IUSE")
+        if not isinstance(iuse,basestring): iuse = ''
+        data['iuse'] = iuse.split()[:]
+        iuse = set()
+        for myiuse in data['iuse']:
+            if myiuse.startswith("+"):
+                myiuse = myiuse[1:]
+            iuse.add(myiuse)
+
+        use = [f for f in data['global_use'] if (f in iuse) and (f not in use_mask)]
+        use_disabled = [f for f in iuse if (f not in data['global_use']) and (f not in use_mask)]
+        data['use'] = use[:]
+        data['use_disabled'] = use_disabled[:]
+
+        data['use_string'] = ' '.join(sorted(use)+sorted([x for x in use_disabled]))
+        data['use_string_colored'] = ' '.join(
+                sorted([darkred(x) for x in use if not x.startswith("+")] + \
+                        [darkgreen(x) for x in use if x.startswith("+")]) + \
+                sorted([darkblue(x) for x in use_disabled if x.startswith("-")] + \
+                        [brown(x) for x in use_disabled if x.startswith("(") and (x.find("*") == -1)] + \
+                        [purple(x) for x in use_disabled if x.startswith("(") and (x.find("*") != -1)]
+                )
+        )
+        return data
+
+    # package.use
+    def get_package_use_useflags(self, atom):
+
+        data = {
+            'enabled': set(),
+            'disabled': set(),
+        }
+
+        matched_atom = self.get_best_atom(atom)
+        if not matched_atom:
+            return data
+
+        use_file = self.get_package_use_file()
+        if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
+            return data
+
+        use_data = self.portage_util.grabdict(use_file)
+        for myatom in use_data:
+            mymatch = self.get_best_atom(myatom)
+            if mymatch != matched_atom:
+                continue
+            for flag in use_data[myatom]:
+                if flag.startswith("-"):
+                    myflag = flag[1:]
+                    if myflag in data['enabled']:
+                        data['enabled'].remove(myflag)
+                    data['disabled'].add(myflag)
+                else:
+                    myflag = flag
+                    if myflag.startswith("+"):
+                        myflag = myflag[1:]
+                    if myflag in data['disabled']:
+                        data['disabled'].remove(myflag)
+                    data['enabled'].add(myflag)
+
+        return data
+
     def get_useflags(self):
         return self.portage.settings['USE']
 
@@ -12010,11 +12289,15 @@ class PortageInterface:
     def get_useflags_mask(self):
         return self.portage.settings.usemask
 
+    def get_installed_package_setting(self, atom, setting):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        if atom.startswith("="): atom = atom[1:]
+        return mytree.dbapi.aux_get(atom, [setting])[0]
+
     def get_package_setting(self, atom, setting):
-        myatom = atom[:]
-        if myatom.startswith("="):
-            myatom = myatom[1:]
-        return self.portage.portdb.aux_get(myatom,[setting])[0]
+        if atom.startswith("="): atom = atom[1:]
+        return self.portage.portdb.aux_get(atom,[setting])[0]
 
     def query_files(self, atom):
         mypath = etpConst['systemroot']+"/"
@@ -12443,7 +12726,7 @@ class PortageInterface:
         return available
 
     # Collect installed packages
-    def get_installed_packages(self, dbdir = None):
+    def get_installed_packages(self, dbdir = None, categories = []):
         if not dbdir:
             appDbDir = self.get_vdb_path()
         else:
@@ -12454,11 +12737,13 @@ class PortageInterface:
             if os.path.isdir(appDbDir+pkgsdir):
                 pkgdir = os.listdir(appDbDir+pkgsdir)
                 for pdir in pkgdir:
-                    pkgcat = pkgsdir.split("/")[len(pkgsdir.split("/"))-1]
+                    pkgcat = pkgsdir.split("/")[-1]
+                    if categories and (pkgcat not in categories):
+                        continue
                     pkgatom = pkgcat+"/"+pdir
                     if pkgatom.find("-MERGING-") == -1:
                         installedAtoms.add(pkgatom)
-        return list(installedAtoms), len(installedAtoms)
+        return sorted(list(installedAtoms)), len(installedAtoms)
 
     def get_installed_packages_counter(self, dbdir = None):
         if not dbdir:
@@ -13025,6 +13310,7 @@ class SocketHostInterface:
         import select
         import socket
         import entropyTools
+        import gc
         timed_out = False
 
         def __init__(self, request, client_address, server):
@@ -13144,7 +13430,17 @@ class SocketHostInterface:
                 return False
 
         def handle(self):
-            self.entropyTools.spawnFunction(self.do_handle)
+            # not using spawnFunction because it causes some mess
+            # forking this way avoids having memory leaks
+            if self.server.processor.HostInterface.fork_requests:
+                pid = os.fork()
+                if pid > 0:
+                    os.waitpid(pid, 0)
+                else:
+                    self.do_handle()
+            else:
+                self.do_handle()
+            #self.entropyTools.spawnFunction(self.do_handle)
 
         def do_handle(self):
 
@@ -13256,6 +13552,7 @@ class SocketHostInterface:
 
         import entropyTools
         import socket
+        import gc
 
         def __init__(self, HostInterface):
             self.HostInterface = HostInterface
@@ -13425,6 +13722,15 @@ class SocketHostInterface:
                     )
                     # close connection
                     return "close"
+                except self.HostInterface.SSL_exceptions['SysCallError'], e:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] command error: SSL SysCallError: %s' % (
+                            self.client_address,
+                            e,
+                        )
+                    )
+                    # close connection
+                    return "close"
                 except Exception, e:
                     # write to self.HostInterface.socketLog
                     self.entropyTools.printTraceback()
@@ -13441,6 +13747,8 @@ class SocketHostInterface:
                         self.HostInterface.store_rc(str(e),session)
                     whoops = True
 
+                del Entropy
+
             if session != None:
                 self.HostInterface.update_session_time(session)
                 self.HostInterface.unset_session_running(session)
@@ -13451,6 +13759,8 @@ class SocketHostInterface:
                 rcmd = "close"
 
             authenticator.terminate_instance()
+            del authenticator
+            self.gc.collect()
             return rcmd
 
         def transmit(self, data):
@@ -14012,6 +14322,7 @@ class SocketHostInterface:
         )
 
         # settings
+        self.fork_requests = True # used by the command processor
         self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
@@ -14302,14 +14613,14 @@ class SocketHostInterface:
 
     def start_python_garbage_collector(self):
         self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600 )
-        self.PythonGarbageCollector.setName("Garbage_Collector::"+str(random.random()))
+        self.PythonGarbageCollector.setName("Garbage_Collector::"+str(abs(hash(os.urandom(20)))))
         self.PythonGarbageCollector.exc = exceptionTools.InterruptError('InterruptError: interrupted')
         self.PythonGarbageCollector.accurate = False
         self.PythonGarbageCollector.start()
 
     def start_session_garbage_collector(self):
         self.Gc = self.entropyTools.TimeScheduled( self.gc_clean, 5 )
-        self.Gc.setName("Socket_GC::"+str(random.random()))
+        self.Gc.setName("Socket_GC::"+str(abs(hash(os.urandom(20)))))
         self.Gc.exc = exceptionTools.InterruptError('InterruptError: interrupted')
         self.Gc.start()
 
@@ -15836,7 +16147,7 @@ class ServerInterface(TextInterface):
 
                 add = True
                 for pkgdata in toBeAdded:
-                    addslot = self.SpmService.get_package_slot(pkgdata[0])
+                    addslot = self.SpmService.get_installed_package_slot(pkgdata[0])
                     addkey = self.entropyTools.dep_getkey(pkgdata[0])
                     # workaround for ebuilds not having slot
                     if addslot == None:
@@ -18846,17 +19157,19 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         return False
 
     def _get_unique_id(self):
-        import md5, random
+        import md5
         m = md5.new()
-        rnd = str(random.random())
+        rnd = str(abs(hash(os.urandom(20))))
         m.update(rnd)
         x = m.hexdigest()[:-16]
         del m
         return x
 
     def _get_random_number(self):
-        import random
-        return int(random.uniform(100000,999999))
+        myrand = 0
+        while (myrand < 100000) or (myrand > 999999):
+            myrand = hash(os.urandom(50))%999999
+        return myrand
 
     def _get_password_hash(self, password):
 
@@ -19122,565 +19435,6 @@ class phpbb3Commands(SocketCommandsSkel):
     def docmd_is_moderator(self, authenticator):
         return authenticator.is_moderator(),'ok'
 
-class RepositoryManager(ServerInterface):
-
-    class ManagerCallbacks:
-
-        def __init__(self, Interface):
-            self.Interface = Interface
-
-        def emerge_sync(self):
-            self.Interface.spawn_process(["emerge","--sync","--color=n"])
-
-        def do_exit(self):
-            rc = self.Interface.askQuestion("Do you really want to quit?")
-            if rc == "Yes":
-                raise SystemExit
-
-        def show_application_menu(self):
-            menu_data = {
-                'Exit': self.do_exit
-            }
-            pos = (0,1)
-            return self.show_generic_menu(menu_data,pos)
-
-        def show_system_menu(self):
-            menu_data = {
-                'Sync Portage': self.emerge_sync
-            }
-            pos = (14,1)
-            return self.show_generic_menu(menu_data,pos)
-
-        def show_repository_menu(self):
-            pass
-
-        def show_generic_menu(self, menu_data, pos):
-
-            menu = self.Interface.Manager.Widgets.Menu(menu_data.keys(), pos)
-            keys_pressed = True
-            while 1:
-
-                if keys_pressed:
-                    self.Interface.screen_redraw(widget = menu)
-
-                try:
-                    keys_pressed, raw_keycodes = self.Interface.Manager.screen.get_input(raw_keys=True)
-                except KeyboardInterrupt:
-                    return responses[-1]
-
-                handled, dobreak = self.Interface.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
-                if handled: continue
-                if dobreak: break
-
-                if "esc" in keys_pressed:
-                    return
-
-                dim = self.Interface.get_screen_dim()
-                for k in keys_pressed:
-                    menu.keypress(dim, k)
-
-                if menu.selected in menu_data:
-                    return menu_data[menu.selected]()
-
-
-    def __init__(self, *myargs, **mykwargs):
-        import urwid.curses_display, urwid, pty, signal, managerTools
-        self.urwid_curses_display = urwid.curses_display
-        self.urwid = urwid
-        self.pty = pty
-        self.signal = signal
-        self.managerTools = managerTools
-        self.OutputPrinter = None
-        self.PtyReader = None
-        nocolor()
-        self.electronLog = LogFile(
-            level = etpConst['electronloglevel'],
-            filename = etpConst['electronlogfile'],
-            header = "[Electron]"
-        )
-        self.PtyOut = self.pty.openpty()
-        self.PtyIn = self.pty.openpty()
-        self.Manager = self.managerTools.ManagerSettings()
-        self.Callbacks = self.ManagerCallbacks(self)
-        ServerInterface.__init__(self, *myargs, **mykwargs)
-
-
-    def __del__(self):
-        self.killall()
-
-    def create_body(self):
-        self.Manager.programWidget = self.urwid.AttrWrap(self.urwid.Filler(self.urwid.Text("")), 'bg')
-        self.Manager.output = self.urwid.Edit()
-        self.Manager.outputWidget = self.urwid.Filler(self.Manager.output, valign = 'top')
-        return self.urwid.Pile([self.Manager.programWidget,self.Manager.outputWidget], 1)
-
-    def create_statusbar(self):
-        return self.urwid.AttrWrap(self.urwid.Text(self.Manager.welcome_text), 'menu')
-
-    def fill_menu(self, palette = 'menu_e', palette_h = 'menu_eh'):
-        menu_text = [
-            (palette_h, "A"), (palette, "pplication   "),
-            (palette_h, "S"), (palette, "ystem   "),
-            (palette_h, "R"), (palette, "epository"),
-        ]
-        self.Manager.menu_keys_calls["A"] = self.Callbacks.show_application_menu
-        self.Manager.menu_keys_calls["S"] = self.Callbacks.show_system_menu
-        self.Manager.menu_keys_calls["R"] = self.Callbacks.show_repository_menu
-        txt = self.urwid.Text(menu_text)
-        self.Manager.menuBar.set_w(txt)
-        self.Manager.menuBar.set_attr(palette)
-
-    def toggle_focus(self):
-        new = self.Manager.inFocus+1
-        if new not in self.Manager.focusOptions:
-            new = self.Manager.focusOptions[0]
-        self.Manager.mainBody.set_focus(new)
-        self.Manager.inFocus = new
-        self.Manager.statusBar.set_text(self.Manager.header_txt+"Focus on %s" % (self.Manager.focusInfo.get(new),))
-
-    def initialize_screen(self):
-        self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
-        self.Manager.mainBody = self.create_body()
-        self.Manager.statusBar = self.create_statusbar()
-        self.Manager.menuBar = self.urwid.AttrWrap(self.urwid.Text(''),'menu_e')
-        self.fill_menu()
-        self.Manager.mainFrame = self.urwid.Frame(self.Manager.mainBody, self.Manager.menuBar, self.Manager.statusBar)
-        self.Manager.mainBody.set_focus(self.Manager.inFocus)
-        self.Manager.Widgets = self.managerTools.SimpleWidgets(self)
-        self.start_output_printer()
-        self.start_pty_reader()
-        # setup an exception hook
-        sys.excepthook = self.raise_exception
-
-    def load_widget_in_programSpace(self, widget, redraw_to_widget = None):
-        self.Manager.programWidget = widget
-        # recreate pile
-        self.Manager.mainBody = self.urwid.Pile([self.Manager.programWidget,self.Manager.outputWidget], 1)
-        self.Manager.mainFrame = self.urwid.Frame(self.Manager.mainBody, self.Manager.menuBar, self.Manager.statusBar)
-        self.screen_redraw(redraw_to_widget)
-
-    def killall(self):
-        sys.excepthook = sys.__excepthook__
-        if self.OutputPrinter != None:
-            self.stop_output_printer()
-        if self.PtyReader != None:
-            self.stop_pty_reader()
-        for mypid in etpSys['killpids']:
-            try:
-                os.kill(mypid,self.signal.SIGKILL)
-            except OSError:
-                pass
-        threads = self.entropyTools.threading.enumerate()
-        for thread in threads:
-            if thread.getName() in ["output_printer","spawn_process","pty_reader"]:
-                thread.nuke()
-
-    def raise_exception(self, mytype, value, tb):
-        mytb = self.entropyTools.getTraceback()
-        self.askQuestion("Exception caught (and logged): %s: %s" % (mytype,value,), responses = ["Ok"])
-        self.killall()
-        sys.__excepthook__(mytype, value, tb)
-
-    def log_data(self, data, pri = ETP_LOGLEVEL_NORMAL):
-        if etpUi['debug']:
-            self.electronLog.log(ETP_LOGPRI_INFO,pri,data.strip())
-
-    def start_pty_reader(self):
-        self.PtyReader = self.entropyTools.TimeScheduled( self.read_and_push_pty, 0.05 )
-        self.PtyReader.setName('pty_reader')
-        self.PtyReader.start()
-
-    def stop_pty_reader(self):
-        self.PtyReader.kill()
-
-    def start_output_printer(self):
-        self.OutputPrinter = self.entropyTools.TimeScheduled( self.flush_from_pty, 0.05 )
-        self.OutputPrinter.setName('output_printer')
-        self.OutputPrinter.start()
-
-    def stop_output_printer(self):
-        self.OutputPrinter.kill()
-
-    def read_and_push_pty(self, n = 1024):
-        data = os.read(self.PtyOut[0],n)
-        self.Manager.output_buffer += data
-
-    def flush_from_pty(self):
-        if not self.Manager.output_buffer:
-            return
-        mybuf = self.Manager.output_buffer
-        self.flushProgress(mybuf)
-        self.Manager.output_buffer = self.Manager.output_buffer[len(mybuf):]
-
-    def write_to_pty_in(self, data):
-        os.write(self.PtyIn[0],data)
-        self.updateProgress(data, raw = True)
-
-    def handle_non_printable(self, msg):
-        mymsg = ''
-        for x in msg:
-            if x == "\r" and mymsg:
-                mymsg = ''
-                continue
-            mymsg += x
-        return mymsg
-
-    def handle_backspace(self):
-        cur_txt = self.Manager.output.get_edit_text()[:-1]
-        self.Manager.output.set_edit_text(cur_txt)
-
-    def flushProgress(self, data):
-        # tail :-)
-        cur_txt = self.Manager.output.get_edit_text().split("\n")
-        if len(cur_txt) > 30:
-            self.Manager.output.set_edit_text('\n'.join(cur_txt[-25:]))
-        newdata = ''
-        for mychr in data:
-            if not self.Manager.output.valid_char(mychr) and mychr not in ["\n"]:
-                continue
-            if ord(mychr) == 127:
-                self.handle_backspace()
-            else:
-                newdata += mychr
-        self.Manager.output.insert_text(newdata)
-        self.screen_redraw()
-
-    def inputBox(self, title, input_parameters, cancel_button = True):
-
-        while 1:
-
-            keys_pressed = True
-            myw = self.Manager.Widgets.InputDialog(title, input_parameters, show_cancel = cancel_button)
-            while 1:
-
-                self.screen_redraw(widget = myw)
-
-                try:
-                    keys_pressed, raw_keycodes = self.Manager.screen.get_input(raw_keys=True)
-                except KeyboardInterrupt:
-                    return None
-
-                handled, dobreak = self.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
-                if handled:
-                    continue
-
-                if "esc" in keys_pressed:
-                    if cancel_button:
-                        return None
-                    continue
-
-                if "tab" in keys_pressed:
-                    keys_pressed = ['down']
-                elif "shift tab" in keys_pressed:
-                    keys_pressed = ['up']
-
-                dim = self.get_screen_dim()
-                for k in keys_pressed:
-                    myw.keypress(dim, k)
-
-                if myw.b_pressed == 'ok':
-                    if not myw.input_text_is_valid:
-                        self.askQuestion("Data submitted is invalid. Try again.", responses = ["Ok"])
-                        break
-                    return myw.input_data
-                elif myw.b_pressed == 'cancel':
-                    return None
-
-
-    def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
-
-        myq = self.Manager.Widgets.Dialog(question, responses)
-        keys_pressed = True
-        while 1:
-
-            if keys_pressed:
-                self.screen_redraw(widget = myq)
-
-            try:
-                keys_pressed, raw_keycodes = self.Manager.screen.get_input(raw_keys=True)
-            except KeyboardInterrupt:
-                return responses[-1]
-
-            handled, dobreak = self.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
-            if handled:
-                continue
-            if "esc" in keys_pressed:
-                return responses[-1]
-
-            dim = self.get_screen_dim()
-            for k in keys_pressed:
-                myq.keypress(dim, k)
-
-            if myq.b_pressed in responses:
-                return myq.b_pressed
-
-
-    def updateProgress(self, *args, **kwargs):
-
-        message = args[0]
-        back = False
-        if kwargs.has_key('back'):
-            back = kwargs['back']
-        raw = False
-        if kwargs.has_key('raw'):
-            raw = kwargs['raw']
-        if not back and not raw: message += "\n"
-        if raw:
-            valid_raw_range = range(32,256) + [10,8]
-            newmessage = ''
-            for mychr in message:
-                if ord(mychr) in valid_raw_range:
-                    newmessage += mychr
-            message = newmessage
-        header = ''
-        footer = ''
-        count = []
-        percent = False
-        if kwargs.has_key('header'):
-            header = kwargs['header']
-        if kwargs.has_key('footer'):
-            footer = kwargs['footer']
-        if kwargs.has_key('count'):
-            count = kwargs['count']
-        if kwargs.has_key('percent'):
-            percent = kwargs['percent']
-
-        count_str = ""
-        if count:
-            if len(count) > 1:
-                if percent:
-                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
-                else:
-                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
-
-        message = header+count_str+message+footer
-        message = self.handle_non_printable(message)
-
-        # get textbox width
-        self.Manager.output_buffer += message
-
-    def load_pinboard(self):
-        if self.Manager.pinboardWidget == None:
-            self.Manager.pinboardWidget = self.urwid.AttrWrap(self.urwid.Filler(self.urwid.Text("hello world")), 'bg')
-        self.load_widget_in_programSpace(self.Manager.pinboardWidget)
-
-    def do_repository_authentication(self, repo):
-
-        if etpConst['server_repositories'][repo]['service_url']:
-
-            def validate_txt(s):
-                return s
-
-            client = SystemSocketClientInterface(self, RepositorySocketClientCommands, ssl = True)
-            # connect
-            client.connect(
-                etpConst['server_repositories'][repo]['service_url'],
-                etpConst['server_repositories'][repo]['ssl_service_port']
-            )
-
-            tries = 3
-            while tries:
-
-                if not self.Manager.auth_data.has_key(repo):
-                    #self.screen_redraw()
-                    auth_data = self.inputBox(
-                        "%s: %s" % (_("Authentication on repository"),repo,),
-                        [
-                            ('username',_("Username"),validate_txt,False,),
-                            ('password',_("Password"),validate_txt,True,),
-                        ],
-                        cancel_button = True
-                    )
-                    if auth_data == None:
-                        return False
-                    elif not auth_data:
-                        tries -= 1
-                        continue
-                else:
-                    auth_data = self.Manager.auth_data[repo]
-
-                session_id = client.open_session()
-                # do login
-                logged, error = client.CmdInterface.service_login(auth_data['username'], auth_data['password'], session_id)
-                if logged:
-                    # are we admin?
-                    logged = client.CmdInterface.is_administrator(session_id)
-                    if not logged:
-                        # developers?
-                        logged = client.CmdInterface.is_developer(session_id)
-                if logged:
-                    self.set_statusBar_header("[%s:%s|%s] " % (_('logged'),auth_data['username'],repo,))
-                    client.CmdInterface.service_logout(auth_data['username'], session_id)
-                    client.close_session(session_id)
-                    client.disconnect()
-                    self.Manager.auth_data[repo] = auth_data.copy()
-                    return True
-                else:
-                    # make it larger
-                    self.askQuestion("%s: %s" % (_("Access denied. Login failed"),error,), responses = ["Ok"])
-                    tries -= 1
-
-            return False
-
-        return True
-
-
-    def get_screen_dim(self):
-        self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
-        return self.Manager.max_x, self.Manager.max_y
-
-    def screen_redraw(self, widget = None):
-        if widget == None:
-            widget = self.Manager.mainFrame
-        dim = self.get_screen_dim()
-        self.Manager.screen.draw_screen(dim, widget.render(dim, True))
-
-    def start(self):
-        self.Manager.screen = self.urwid_curses_display.Screen()
-        self.Manager.screen.register_palette(
-            [
-                ('menu', 'white', 'dark red', 'standout'),
-                ('menuh', 'yellow', 'dark red', ('standout', 'bold')),
-                ('menu_e', 'white', 'dark blue', 'standout'),
-                ('menu_eh', 'yellow', 'dark blue', ('standout', 'bold')),
-                ('menuf', 'black', 'light gray'),
-                ('bg', 'white', 'dark blue'),
-                ('bgf', 'white', 'dark red', 'standout')
-            ]
-        )
-        try:
-            self.Manager.screen.run_wrapper(self.main)
-        except SystemExit:
-            self.killall()
-        except:
-            self.entropyTools.printTraceback(f = self.electronLog)
-            self.killall()
-            raise
-
-    def toggle_application_menu(self):
-        do = not self.Manager.menu_enabled
-        if do:
-            self.fill_menu(palette = 'menu', palette_h = 'menuh')
-        else:
-            self.fill_menu()
-        self.Manager.menu_enabled = do
-
-    def handle_standard_keyboard_commands(self, keys_pressed, raw_keycodes):
-
-        handled = False
-        dobreak = False
-
-        if "window resize" in keys_pressed:
-            self.Manager.max_x, self.Manager.max_y = self.Manager.screen.get_cols_rows()
-            handled = True
-
-        return handled, dobreak
-
-    def set_statusBar_header(self, header):
-        cur_txt = self.Manager.statusBar.get_text()[0]
-        cur_txt = cur_txt[len(self.Manager.header_txt):]
-        self.Manager.header_txt = header
-        self.Manager.statusBar.set_text(header+cur_txt)
-
-    def main(self):
-
-        self.initialize_screen()
-        self.screen_redraw()
-
-        valid = self.do_repository_authentication(repo = self.default_repository)
-
-        keys = True
-        # start the application loop now
-        while valid:
-
-            if keys:
-                self.screen_redraw()
-
-            try:
-                keys_pressed, raw_keycodes = self.Manager.screen.get_input(raw_keys=True)
-            except KeyboardInterrupt:
-                break
-
-            if not keys_pressed:
-                continue
-
-            self.log_data(repr((keys_pressed,raw_keycodes,)))
-
-            handled, dobreak = self.handle_standard_keyboard_commands(keys_pressed, raw_keycodes)
-            if dobreak:
-                break
-            if handled:
-                continue
-
-            elif ["ctrl x"] == keys_pressed:
-                rc = self.askQuestion("Do you really want to quit?")
-                if rc == "Yes":
-                    break
-
-            elif ["ctrl d"] == keys_pressed:
-                self.load_pinboard()
-
-            elif ["ctrl e"] == keys_pressed:
-                self.toggle_application_menu()
-
-            elif ["tab"] == keys_pressed:
-                self.toggle_focus()
-
-            elif self.Manager.menu_enabled and keys_pressed[0].upper() in self.Manager.menu_keys_calls:
-                self.Manager.menu_keys_calls[keys_pressed[0].upper()]()
-
-            # focus on terminal
-            elif (self.Manager.inFocus == 1) and (not self.Manager.menu_enabled):
-
-                mykeys = ''
-                for myord in raw_keycodes:
-                    if myord in range(32,256)+[10]:
-                        mykeys += chr(myord)
-                if mykeys:
-                    self.write_to_pty_in(mykeys)
-
-        self.killall()
-
-    def spawn_process(self, argv, null_stderr = True, parallel = True):
-        if self.Manager.process_spawned:
-            return
-
-        self.Manager.process_spawned = True
-        null = self.PtyOut[1]
-        if null_stderr:
-            null = self.entropyTools.getfd("/dev/null")
-        if not parallel:
-            old_text = self.Manager.statusBar.get_text()[0]
-            self.Manager.statusBar.set_text(self.Manager.header_txt+"Launched: %s" % (' '.join(argv),))
-            self.last_rc = self.entropyTools.execWithRedirect(
-                argv,
-                stdin = self.PtyIn[1],
-                stdout = self.PtyOut[1],
-                stderr = null
-            )
-            self.Manager.statusBar.set_text(old_text)
-        else:
-            task = self.entropyTools.parallelTask(
-                self.do_spawn_parallel,
-                self.entropyTools.execWithRedirect,
-                argv,
-                stdin = self.PtyIn[1],
-                stdout = self.PtyOut[1],
-                stderr = null
-            )
-            task.setName('spawn_process')
-            task.start()
-
-    def do_spawn_parallel(self, *args, **kwargs):
-        function = args[0]
-        args = args[1:]
-        old_text = self.Manager.statusBar.get_text()[0]
-        self.Manager.statusBar.set_text(self.Manager.header_txt+"Launched: %s" % (' '.join(args),))
-        self.last_rc = function(*args,**kwargs)
-        self.Manager.statusBar.set_text(old_text)
-        self.Manager.process_spawned = False
-
-
 class RepositorySocketServerInterface(SocketHostInterface):
 
     class RepositoryCommands(SocketCommandsSkel):
@@ -19896,7 +19650,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
     def start_repository_lock_scanner(self):
         self.LockScanner = self.entropyTools.TimeScheduled( self.lock_scan, 0.5 )
-        self.LockScanner.setName("Lock_Scanner::"+str(random.random()))
+        self.LockScanner.setName("Lock_Scanner::"+str(abs(hash(os.urandom(20)))))
         self.LockScanner.start()
 
     def set_repository_db_availability(self, repo_tuple):
@@ -21156,9 +20910,6 @@ class SystemManagerExecutorInterface:
             if not t.isAlive():
                 break
             time.sleep(1)
-            self.SystemInterface.queue_change_wait()
-            self.SystemInterface.load_queue()
-            self.SystemInterface.queue_changing = False
             live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
             if isinstance(live_item,dict) and (key == "processing") and (not killed):
                 if live_item['kill'] and (live_item['processing_pid'] != None):
@@ -21173,32 +20924,68 @@ class SystemManagerExecutorInterface:
 class SystemManagerExecutorServerRepositoryInterface:
 
     def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
-        import subprocess
+        import subprocess, entropyTools
         self.subprocess = subprocess
+        self.entropyTools = entropyTools
         self.SystemManagerExecutor = SystemManagerExecutorInstance
+        self.args = args
+        self.kwargs = kwargs
         self.available_commands = {
             'sync_spm': {
                 'func': self.sync_portage,
                 'args': 1,
             },
-            'compile_atom': {
-                'func': self.compile_atom,
+            'compile_atoms': {
+                'func': self.compile_atoms,
                 'args': 2,
             },
-            'get_spm_category_updates': {
-                'func': self.get_spm_category_updates,
+            'spm_remove_atoms': {
+                'func': self.spm_remove_atoms,
                 'args': 2,
+            },
+            'get_spm_categories_updates': {
+                'func': self.get_spm_categories_updates,
+                'args': 2,
+            },
+            'get_spm_categories_installed': {
+                'func': self.get_spm_categories_installed,
+                'args': 2,
+            },
+            'enable_uses_for_atoms': {
+                'func': self.enable_uses_for_atoms,
+                'args': 3,
+            },
+            'disable_uses_for_atoms': {
+                'func': self.disable_uses_for_atoms,
+                'args': 3,
+            },
+            'get_spm_atoms_info': {
+                'func': self.get_spm_atoms_info,
+                'args': 2,
+            },
+            'run_spm_info': {
+                'func': self.run_spm_info,
+                'args': 1,
+            },
+            'run_custom_shell_command': {
+                'func': self.run_custom_shell_command,
+                'args': 1,
+            },
+            'get_spm_glsa_data': {
+                'func': self.get_spm_glsa_data,
+                'args': 1,
             },
         }
 
     def _set_processing_pid(self, queue_id, process_pid):
-        self.SystemManagerExecutor.SystemInterface.queue_change_wait()
-        self.SystemManagerExecutor.SystemInterface.load_queue()
-        live_item, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
-        if isinstance(live_item,dict):
-            live_item['processing_pid'] = process_pid
-        self.SystemManagerExecutor.SystemInterface.store_queue()
-        self.SystemManagerExecutor.SystemInterface.queue_changing = False
+        self.SystemManagerExecutor.SystemInterface.queue_lock_acquire()
+        try:
+            live_item, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+            if isinstance(live_item,dict):
+                live_item['processing_pid'] = process_pid
+                self.SystemManagerExecutor.SystemInterface.store_queue()
+        finally:
+            self.SystemManagerExecutor.SystemInterface.queue_lock_release()
 
     def sync_portage(self, queue_id):
 
@@ -21209,14 +20996,16 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err = open(queue_data['stdout'],"aw")
 
         cmd = ["emerge", "--sync"]
-        p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
-        self._set_processing_pid(queue_id, p.pid)
-        rc = p.wait()
-        stdout_err.flush()
-        stdout_err.close()
+        try:
+            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
+            self._set_processing_pid(queue_id, p.pid)
+            rc = p.wait()
+        finally:
+            stdout_err.flush()
+            stdout_err.close()
         return True,rc
 
-    def compile_atom(self, queue_id, atom):
+    def compile_atoms(self, queue_id, atoms, pretend = False, oneshot = False, verbose = True, nocolor = True, custom_use = '', ldflags = '', cflags = ''):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
         if queue_data == None:
@@ -21224,63 +21013,374 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         stdout_err = open(queue_data['stdout'],"aw")
 
-        cmd = ["emerge", atom]
-        p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
-        self._set_processing_pid(queue_id, p.pid)
-        rc = p.wait()
+        cmd = [etpConst['spm']['env_update_cmd'],"&&"]
+        cmd += etpConst['spm']['source_profile']+["&&"]
+        if custom_use:
+            cmd += ['export USE="']+custom_use.strip().split()+['"','&&']
+        if ldflags:
+            cmd += ['export LDFLAGS="']+custom_use.strip().split()+['"','&&']
+        if cflags:
+            cmd += ['export CFLAGS="']+custom_use.strip().split()+['"','&&']
+        cmd += [etpConst['spm']['exec']]+atoms
+        if pretend: cmd.append(etpConst['spm']['pretend_cmd'])
+        if verbose:
+            cmd.append(etpConst['spm']['verbose_cmd'])
+        if oneshot:
+            cmd.append(etpConst['spm']['oneshot_cmd'])
+        if nocolor:
+            cmd.append(etpConst['spm']['nocolor_cmd'])
+
+        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
         stdout_err.flush()
-        stdout_err.close()
+
+        try:
+            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, shell = True)
+            self._set_processing_pid(queue_id, p.pid)
+            rc = p.wait()
+        finally:
+            stdout_err.flush()
+            stdout_err.close()
         return True,rc
 
-    def get_spm_category_updates(self, queue_id, category):
+    def spm_remove_atoms(self, queue_id, atoms, pretend = True, verbose = True, nocolor = True):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
         if queue_data == None:
             return False,'no item in queue'
 
-        packages = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_available_packages([category])
-        packages = sorted(list(packages))
-        return True, packages
+        stdout_err = open(queue_data['stdout'],"aw")
+
+        cmd = [etpConst['spm']['env_update_cmd'],"&&"]
+        cmd += etpConst['spm']['source_profile']+["&&"]
+        cmd += [etpConst['spm']['exec'],etpConst['spm']['remove_cmd']]+atoms
+        if pretend:
+            cmd.append(etpConst['spm']['pretend_cmd'])
+        if verbose:
+            cmd.append(etpConst['spm']['verbose_cmd'])
+        if nocolor:
+            cmd.append(etpConst['spm']['nocolor_cmd'])
+
+        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
+        stdout_err.flush()
+
+        try:
+            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, shell = True)
+            self._set_processing_pid(queue_id, p.pid)
+            rc = p.wait()
+        finally:
+            stdout_err.flush()
+            stdout_err.close()
+        return True,rc
+
+    def enable_uses_for_atoms(self, queue_id, atoms, useflags):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        use_data = {}
+        for atom in atoms:
+            try:
+                status = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.enable_package_useflags(atom, useflags)
+            except:
+                continue
+            if status:
+                use_data[atom] = {}
+                matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom(atom)
+                use_data[atom] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
+
+        return True, use_data
+
+    def disable_uses_for_atoms(self, queue_id, atoms, useflags):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        use_data = {}
+        for atom in atoms:
+            try:
+                status = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.disable_package_useflags(atom, useflags)
+            except:
+                continue
+            if status:
+                use_data[atom] = {}
+                matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom(atom)
+                use_data[atom] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
+
+        return True, use_data
+
+    def get_spm_atoms_info(self, queue_id, atoms):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        atoms_data = {}
+        for atom in atoms:
+
+            try:
+                key = self.entropyTools.dep_getkey(atom)
+                category = key.split("/")[0]
+            except:
+                continue
+            matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom(atom)
+            if not matched_atom: continue
+
+            if not atoms_data.has_key(category):
+                atoms_data[category] = {}
+
+            atoms_data[category][matched_atom] = self._get_pkginfo(matched_atom)
+
+        return True, atoms_data
+
+    def get_spm_categories_updates(self, queue_id, categories):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        packages = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_available_packages(categories)
+        package_data = {}
+        for package in packages:
+            try:
+                key = self.entropyTools.dep_getkey(package)
+                category = key.split("/")[0]
+            except:
+                continue
+            if not package_data.has_key(category):
+                package_data[category] = {}
+            package_data[category][package] = self._get_pkginfo(package)
+        return True, package_data
+
+    def get_spm_categories_installed(self, queue_id, categories):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        packages, pkg_len = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_packages(categories = categories)
+        package_data = {}
+        for package in packages:
+            try:
+                key = self.entropyTools.dep_getkey(package)
+                category = key.split("/")[0]
+            except:
+                continue
+            if not package_data.has_key(category):
+                package_data[category] = {}
+            package_data[category][package] = self._get_pkginfo(package, from_installed = True)
+        return True, package_data
+
+    def run_spm_info(self, queue_id):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"aw")
+
+        cmd = [etpConst['spm']['exec'],etpConst['spm']['info_cmd']]
+
+        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
+        stdout_err.flush()
+
+        try:
+            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
+            self._set_processing_pid(queue_id, p.pid)
+            rc = p.wait()
+        finally:
+            stdout_err.flush()
+            stdout_err.close()
+        return True,rc
+
+    def run_custom_shell_command(self, queue_id, command):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"aw")
+
+        cmd = [etpConst['spm']['env_update_cmd'],"&&"]
+        cmd += etpConst['spm']['source_profile']+[";"]
+        cmd += command.split()
+
+        cmd = ' '.join(cmd)
+        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (cmd,))
+        stdout_err.flush()
+
+        try:
+            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, shell = True)
+            self._set_processing_pid(queue_id, p.pid)
+            rc = p.wait()
+        finally:
+            stdout_err.flush()
+            stdout_err.close()
+        return True,rc
+
+    def get_spm_glsa_data(self, queue_id, list_type):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        data = {}
+        glsa_ids = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.list_glsa_packages(list_type)
+        if not glsa_ids: return False,data
+        for myid in glsa_ids:
+            data[myid] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_glsa_id_information(myid)
+        return True,data
+
+    def _get_pkginfo(self, matched_atom, from_installed = False):
+        data = {}
+        data['key'] = self.entropyTools.dep_getkey(matched_atom)
+        if from_installed:
+            data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_slot(matched_atom)
+            portage_matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom("%s:%s" % (data['key'],data['slot'],))
+            # get installed package description
+            data['available_atom'] = portage_matched_atom
+            if portage_matched_atom:
+                data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(portage_matched_atom)
+            else:
+                # get use flags of the installed package
+                data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_useflags(matched_atom)
+            data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_description(matched_atom)
+        else:
+            data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_slot(matched_atom)
+            data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
+            data['installed_atom'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_atom("%s:%s" % (data['key'],data['slot'],))
+            data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_description(matched_atom)
+
+        return data
 
 class SystemManagerRepositoryCommands(SocketCommandsSkel):
 
+    import entropyTools
     def __init__(self, HostInterface):
 
         SocketCommandsSkel.__init__(self, HostInterface, inst_name = "srvrepo")
+        self.raw_commands = [
+            'srvrepo:enable_uses_for_atoms',
+            'srvrepo:disable_uses_for_atoms',
+            'srvrepo:compile_atoms',
+            'srvrepo:spm_remove_atoms',
+            'srvrepo:run_custom_shell_command'
+        ]
         self.valid_commands = {
             'srvrepo:sync_spm':    {
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_sync_spm,
-                'args': ["cmd","cmd_data","myargs","authenticator"],
+                'args': ["cmd","myargs","authenticator"],
                 'as_user': False,
                 'desc': "spawn portage sync (emerge --sync)",
                 'syntax': "<SESSION_ID> srvrepo:sync_spm",
                 'from': str(self)
             },
-            'srvrepo:compile_atom':    {
+            'srvrepo:compile_atoms':    {
                 'auth': True,
                 'built_in': False,
-                'cb': self.docmd_compile_atom,
-                'args': ["cmd","cmd_data","myargs","authenticator"],
+                'cb': self.docmd_compile_atoms,
+                'args': ["cmd","myargs","authenticator"],
                 'as_user': False,
-                'desc': "compile specified atom using Spm (Portage?)",
-                'syntax': "<SESSION_ID> srvrepo:compile_atom <atom>",
+                'desc': "compile specified atoms using Spm (Portage?)",
+                'syntax': "<SESSION_ID> srvrepo:compile_atoms <xml string containing atoms and compile options>",
                 'from': str(self)
             },
-            'srvrepo:get_spm_category_updates':    {
+            'srvrepo:spm_remove_atoms':    {
                 'auth': True,
                 'built_in': False,
-                'cb': self.docmd_get_spm_category_updates,
-                'args': ["cmd","cmd_data","myargs","authenticator"],
+                'cb': self.docmd_spm_remove_atoms,
+                'args': ["cmd","myargs","authenticator"],
                 'as_user': False,
-                'desc': "get SPM updates for the specified package category",
-                'syntax': "<SESSION_ID> srvrepo:get_spm_category_updates <category>",
+                'desc': "remove specified atoms using Spm (Portage?)",
+                'syntax': "<SESSION_ID> srvrepo:spm_remove_atoms <xml string containing atoms and remove options>",
+                'from': str(self)
+            },
+            'srvrepo:get_spm_categories_updates':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_get_spm_categories_updates,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "get SPM updates for the specified package categories",
+                'syntax': "<SESSION_ID> srvrepo:get_spm_categories_updates <category 1> <category 2> <...>",
+                'from': str(self)
+            },
+            'srvrepo:get_spm_categories_installed':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_get_spm_categories_installed,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "get SPM installed packages for the specified package categories",
+                'syntax': "<SESSION_ID> srvrepo:get_spm_categories_installed <category 1> <category 2> <...>",
+                'from': str(self)
+            },
+            'srvrepo:enable_uses_for_atoms':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_enable_uses_for_atoms,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "enable use flags for the specified atom",
+                'syntax': "<SESSION_ID> srvrepo:enable_uses_for_atom <xml string containing atoms and use flags>",
+                'from': str(self)
+            },
+            'srvrepo:disable_uses_for_atoms':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_disable_uses_for_atoms,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "enable use flags for the specified atom",
+                'syntax': "<SESSION_ID> srvrepo:disable_uses_for_atom <xml string containing atoms and use flags>",
+                'from': str(self)
+            },
+            'srvrepo:get_spm_atoms_info':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_get_spm_atoms_info,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "get info from SPM for the specified atoms",
+                'syntax': "<SESSION_ID> srvrepo:get_spm_atoms_info <atom1> <atom2> <atom3>",
+                'from': str(self)
+            },
+            'srvrepo:run_spm_info':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_run_spm_info,
+                'args': ["cmd","authenticator"],
+                'as_user': False,
+                'desc': "run SPM info command",
+                'syntax': "<SESSION_ID> srvrepo:run_spm_info",
+                'from': str(self)
+            },
+            'srvrepo:run_custom_shell_command':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_run_custom_shell_command,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "run custom shell command",
+                'syntax': "<SESSION_ID> srvrepo:run_custom_shell_command <shell command blah blah>",
+                'from': str(self)
+            },
+            'srvrepo:get_spm_glsa_data':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_get_spm_glsa_data,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "get SPM security updates info",
+                'syntax': "<SESSION_ID> srvrepo:get_spm_glsa_data <list_type string (affected,new,all)>",
                 'from': str(self)
             },
         }
 
-    def docmd_sync_spm(self, cmd, cmd_data, myargs, authenticator):
+    def docmd_sync_spm(self, cmd, myargs, authenticator):
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -21290,30 +21390,221 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
-    def docmd_compile_atom(self, cmd, cmd_data, myargs, authenticator):
+    def docmd_compile_atoms(self, cmd, myargs, authenticator):
 
         if not myargs:
             return False,'wrong arguments'
 
-        atom = myargs[0]
+        xml_string = ' '.join(myargs)
+
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None,"error: %s" % (e,)
+
+        if not ( mydict.has_key('atoms') and mydict.has_key('pretend') and \
+                 mydict.has_key('oneshot') and  mydict.has_key('verbose') and \
+                 mydict.has_key('nocolor') and  mydict.has_key('custom_use') and \
+                 mydict.has_key('ldflags') and  mydict.has_key('cflags') ):
+            return None,'wrong dict arguments, xml must have 8 items with attr value -> atoms, pretend, oneshot, verbose, nocolor, custom_use, ldflags, cflags'
+
+        atoms = mydict.get('atoms')
+        if atoms: atoms = atoms.split()
+        pretend = mydict.get('pretend')
+        oneshot = mydict.get('oneshot')
+        verbose = mydict.get('verbose')
+        nocolor = mydict.get('nocolor')
+        custom_use = mydict.get('custom_use')
+        ldflags = mydict.get('ldflags')
+        cflags = mydict.get('cflags')
+
+        if pretend == "1": pretend = True
+        else: pretend = False
+        if oneshot == "1": oneshot = True
+        else: oneshot = False
+        if verbose == "1": verbose = True
+        else: verbose = False
+        if nocolor == "1": nocolor = True
+        else: nocolor = False
+
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atom', [atom], {})
+        add_dict = {
+            'pretend': pretend,
+            'oneshot': oneshot,
+            'verbose': verbose,
+            'nocolor': nocolor,
+            'custom_use': custom_use,
+            'ldflags': ldflags,
+            'cflags': cflags,
+        }
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms][:], add_dict.copy())
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
-    def docmd_get_spm_category_updates(self, cmd, cmd_data, myargs, authenticator):
+    def docmd_spm_remove_atoms(self, cmd, myargs, authenticator):
         if not myargs:
             return False,'wrong arguments'
 
-        category = myargs[0]
+        xml_string = ' '.join(myargs)
+
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None,"error: %s" % (e,)
+
+        if not ( mydict.has_key('atoms') and mydict.has_key('pretend') and \
+                 mydict.has_key('verbose') and mydict.has_key('nocolor') ):
+            return None,'wrong dict arguments, xml must have 4 items with attr value -> atoms, pretend, verbose, nocolor'
+
+        atoms = mydict.get('atoms')
+        if atoms: atoms = atoms.split()
+        pretend = mydict.get('pretend')
+        verbose = mydict.get('verbose')
+        nocolor = mydict.get('nocolor')
+
+        if pretend == "1": pretend = True
+        else: pretend = False
+        if verbose == "1": verbose = True
+        else: verbose = False
+        if nocolor == "1": nocolor = True
+        else: nocolor = False
+
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_category_updates', [category], {})
+        add_dict = {
+            'pretend': pretend,
+            'verbose': verbose,
+            'nocolor': nocolor,
+        }
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms][:], add_dict.copy())
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_get_spm_categories_updates(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_updates', [myargs], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_get_spm_categories_installed(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_installed', [myargs], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_enable_uses_for_atoms(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        xml_string = ' '.join(myargs)
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None,"error: %s" % (e,)
+        if not (mydict.has_key('atoms') and mydict.has_key('useflags')):
+            return None,'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
+
+        atoms = mydict.get('atoms')
+        useflags = mydict.get('useflags')
+        if atoms: atoms = atoms.split()
+        if useflags: useflags = useflags.split()
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'enable_uses_for_atoms', [atoms,useflags], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_disable_uses_for_atoms(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        xml_string = ' '.join(myargs)
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None,"error: %s" % (e,)
+        if not (mydict.has_key('atoms') and mydict.has_key('useflags')):
+            return None,'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
+
+        atoms = mydict.get('atoms')
+        useflags = mydict.get('useflags')
+        if atoms: atoms = atoms.split()
+        if useflags: useflags = useflags.split()
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'disable_uses_for_atoms', [atoms,useflags], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_get_spm_atoms_info(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_atoms_info', [myargs], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_run_spm_info(self, cmd, authenticator):
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_spm_info', [], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_run_custom_shell_command(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+        command = ' '.join(myargs)
+
+        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {})
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_get_spm_glsa_data(self, cmd, myargs, authenticator):
+        if not myargs:
+            return False,'wrong arguments'
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_glsa_data', [myargs[0]], {})
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21321,9 +21612,11 @@ class SystemManagerServerInterface(SocketHostInterface):
 
     class SystemCommands(SocketCommandsSkel):
 
+        import entropyTools
         def __init__(self, HostInterface):
 
             SocketCommandsSkel.__init__(self, HostInterface, inst_name = "systemsrv")
+            self.raw_commands = ['systemsrv:add_to_pinboard']
 
             self.valid_commands = {
                 'systemsrv:get_queue':    {
@@ -21366,14 +21659,14 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'syntax': "<SESSION_ID> systemsrv:get_queue_id_result <queue_id>",
                     'from': str(self),
                 },
-                'systemsrv:remove_queue_id':    {
+                'systemsrv:remove_queue_ids':    {
                     'auth': True,
                     'built_in': False,
-                    'cb': self.docmd_remove_queue_id,
+                    'cb': self.docmd_remove_queue_ids,
                     'args': ["myargs"],
                     'as_user': False,
-                    'desc': "remove queue item using its queue id",
-                    'syntax': "<SESSION_ID> systemsrv:remove_queue_id <queue_id>",
+                    'desc': "remove queue items using their queue ids",
+                    'syntax': "<SESSION_ID> systemsrv:remove_queue_ids <queue_id 1> <queue_id 2> <...>",
                     'from': str(self),
                 },
                 'systemsrv:pause_queue':    {
@@ -21404,6 +21697,46 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "swap items in queue to change their order",
                     'syntax': "<SESSION_ID> systemsrv:swap_items_in_queue <queue_id1> <queue_id1>",
+                    'from': str(self),
+                },
+                'systemsrv:get_pinboard_data':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_get_pinboard_data,
+                    'args': [],
+                    'as_user': False,
+                    'desc': "get pinboard content",
+                    'syntax': "<SESSION_ID> systemsrv:get_pinboard_data",
+                    'from': str(self),
+                },
+                'systemsrv:add_to_pinboard':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_add_to_pinboard,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "add item to pinboard",
+                    'syntax': "<SESSION_ID> systemsrv:add_to_pinboard <xml string containing pinboard note and extended text>",
+                    'from': str(self),
+                },
+                'systemsrv:remove_from_pinboard':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_remove_from_pinboard,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "remove item from pinboard",
+                    'syntax': "<SESSION_ID> systemsrv:remove_from_pinboard <pinboard identifier 1> <pinboard identifier 2> <...>",
+                    'from': str(self),
+                },
+                'systemsrv:set_pinboard_items_done':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_set_pinboard_items_done,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "set pinboard items status using their pinboard identifiers",
+                    'syntax': "<SESSION_ID> systemsrv:set_pinboard_items_done <pinboard identifier 1> <pinboard identifier 2> <...> <status (True/False)>",
                     'from': str(self),
                 },
             }
@@ -21489,29 +21822,23 @@ class SystemManagerServerInterface(SocketHostInterface):
 
             return True,item['result']
 
-        def docmd_remove_queue_id(self, myargs):
+        def docmd_remove_queue_ids(self, myargs):
 
             if not myargs:
                 return False,'wrong arguments'
-            queue_id = myargs[0]
-            try:
-                queue_id = int(queue_id)
-            except ValueError:
-                return False,'wrong argument: queue_id'
 
-            item, key = self.HostInterface.get_item_by_queue_id(queue_id)
-            if item == None:
-                return False,'wrong queue id'
-            item = item.copy()
+            valid_queue_ids = set()
+            for queue_id in myargs:
+                item, key = self.HostInterface.get_item_by_queue_id(queue_id)
+                if (item != None) and (key in self.HostInterface.removable_queue_keys):
+                    valid_queue_ids.add(queue_id)
 
-            if key not in self.HostInterface.removable_queue_keys:
-                return False,'cannot remove running queue id'
+            if not valid_queue_ids:
+                return False,'no valid queue ids'
 
             # remove
-            status = self.HostInterface.remove_from_queue(queue_id)
+            self.HostInterface.remove_from_queue(valid_queue_ids)
 
-            if not status:
-                return False,'queue id not found'
             return True,'ok'
 
         def docmd_pause_queue(self, myargs):
@@ -21548,6 +21875,58 @@ class SystemManagerServerInterface(SocketHostInterface):
                 return True,'ok'
             return False,'not done'
 
+        def docmd_get_pinboard_data(self):
+            data = self.HostInterface.get_pinboard_data()
+            return True,data.copy()
+
+        def docmd_add_to_pinboard(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+
+            xml_string = ' '.join(myargs)
+            try:
+                mydict = self.entropyTools.dict_from_xml(xml_string)
+            except Exception, e:
+                return None,"error: %s" % (e,)
+
+            if not (mydict.has_key('note') and mydict.has_key('extended_text')):
+                return None,'wrong dict arguments, xml must have 2 items with attr value -> note, extended_text'
+            note = mydict.get('note')
+            extended_text = mydict.get('extended_text')
+
+            self.HostInterface.add_to_pinboard(note, extended_text)
+            return True,'ok'
+
+        def docmd_remove_from_pinboard(self, myargs):
+
+            if not myargs:
+                return False,'wrong arguments'
+
+            for pinboard_id in myargs:
+                try:
+                    pinboard_id = int(pinboard_id)
+                except ValueError:
+                    continue
+                self.HostInterface.remove_from_pinboard(pinboard_id)
+            return True,'ok'
+
+        def docmd_set_pinboard_items_done(self, myargs):
+
+            if len(myargs) < 2:
+                return False,'wrong arguments'
+
+            status = myargs[-1]
+            pinboard_ids = myargs[:-1]
+
+            for pinboard_id in pinboard_ids:
+                try:
+                    pinboard_id = int(pinboard_id)
+                except ValueError:
+                    continue
+                self.HostInterface.set_pinboard_item_status(pinboard_id, status)
+            return True,'ok'
+
     class FakeServiceInterface:
         def __init__(self, *args, **kwargs):
             pass
@@ -21568,10 +21947,14 @@ class SystemManagerServerInterface(SocketHostInterface):
             return True,rc
 
 
-    import entropyTools, dumpTools
     queue_file = 'system_manager_queue'
+    pinboard_file = "system_manager_pinboard"
     STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'],'system_manager_stdout')
-    def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, entropy_interface_kwargs = {}, **kwargs):
+    def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, fork_requests = False, entropy_interface_kwargs = {}, **kwargs):
+
+        self.queue_loaded = False
+        import entropyTools, dumpTools
+        self.entropyTools, self.dumpTools = entropyTools, dumpTools
 
         self.setup_stdout_storage_dir()
 
@@ -21590,26 +21973,35 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         self.stdout_logging = stdout_logging
         self.QueueProcessor = None
-        self.queue_changing = False
+        self.QueueLock = thread.allocate_lock()
+        self.PinboardLock = thread.allocate_lock()
         self.do_ssl = do_ssl
         self.ServiceInterface = EntropyInterface
+
+        self.PinboardData = {}
+        self.load_pinboard()
 
         self.done_queue_keys = ['processed','errored']
         self.removable_queue_keys = ['processed','errored','queue']
         self.processing_queue_keys = ['processing']
+        self.dict_queue_keys = ['queue','processing','processed','errored']
         self.ManagerQueue = {
-            'queue': [],
-            'processing': [],
-            'processed': [],
-            'errored' : [],
+            'queue': {},
+            'queue_order': [],
+            'processing': {},
+            'processing_order': [],
+            'processed': {},
+            'processed_order': [],
+            'errored' : {},
+            'errored_order': [],
             'pause': True
         }
         self.load_queue()
-        self.ManagerQueue['processing'] = []
-        if not self.ManagerQueue.has_key('pause'):
-            self.ManagerQueue['pause'] = True
-        self.store_queue()
-
+        self.queue_loaded = True
+        if self.ManagerQueue['processing'] or self.ManagerQueue['processing_order']:
+            self.ManagerQueue['processing'].clear()
+            del self.ManagerQueue['processing_order'][:]
+            self.store_queue()
 
         SocketHostInterface.__init__(
             self,
@@ -21618,9 +22010,15 @@ class SystemManagerServerInterface(SocketHostInterface):
             ssl = do_ssl,
             **kwargs
         )
+        self.fork_requests = fork_requests
         self.load_queue_processor()
         # here we can put anything that must be loaded before the queue processor execution
         self.play_queue()
+
+    def __del__(self):
+        if hasattr(self,'queue_loaded'):
+            if self.queue_loaded:
+                self.store_queue()
 
     def handle_executor_command_classes_initialization(self):
         for myclass, args, kwargs in self.ExecutorCommandClasses:
@@ -21639,15 +22037,87 @@ class SystemManagerServerInterface(SocketHostInterface):
             if etpConst['entropygid'] != None:
                 const_setup_perms(self.STDOUT_STORAGE_DIR,etpConst['entropygid'])
 
+    def pinboard_lock_acquire(self):
+        self.PinboardLock.acquire()
+
+    def pinboard_lock_release(self):
+        self.PinboardLock.release()
+
+    def load_pinboard(self):
+        obj = self.get_stored_pinboard()
+        if isinstance(obj,dict):
+            self.PinboardData = obj
+            return True
+        return False
+
+    def get_stored_pinboard(self):
+        return self.dumpTools.loadobj(self.pinboard_file)
+
+    def store_pinboard(self):
+        self.dumpTools.dumpobj(self.pinboard_file, self.PinboardData)
+
+    def add_to_pinboard(self, note, extended_text):
+        self.pinboard_lock_acquire()
+        try:
+            mydata = {
+                'note': note,
+                'extended_text': extended_text,
+                'ts': self.get_ts(),
+                'done': False,
+            }
+            pinboard_id = self.get_pinboard_id()
+            self.PinboardData[pinboard_id] = mydata
+            self.store_pinboard()
+        finally:
+            self.pinboard_lock_release()
+
+    def remove_from_pinboard(self, pinboard_id):
+        self.pinboard_lock_acquire()
+        try:
+            if self.PinboardData.has_key(pinboard_id):
+                self.PinboardData.pop(pinboard_id)
+                self.store_pinboard()
+                return True
+            return False
+        finally:
+            self.pinboard_lock_release()
+
+    def set_pinboard_item_status(self, pinboard_id, status):
+        self.pinboard_lock_acquire()
+        try:
+            if self.PinboardData.has_key(pinboard_id):
+                self.PinboardData[pinboard_id]['done'] = status
+                self.store_pinboard()
+                return True
+            return False
+        finally:
+            self.pinboard_lock_release()
+
+    def get_pinboard_id(self):
+        numbers = self.PinboardData.keys()
+        if numbers:
+            number = max(numbers)+1
+        else:
+            number = 1
+        return number
+
+    def get_pinboard_data(self):
+        self.pinboard_lock_acquire()
+        try:
+            return self.PinboardData.copy()
+        finally:
+            self.pinboard_lock_release()
+
     def load_queue_processor(self):
         self.QueueProcessor = self.entropyTools.parallelTask(self.queue_processor)
         self.QueueProcessor.parallel_wait()
         self.QueueProcessor.start()
 
-    def queue_change_wait(self):
-        while self.queue_changing:
-            continue
-        self.queue_changing = True
+    def queue_lock_acquire(self):
+        self.QueueLock.acquire()
+
+    def queue_lock_release(self):
+        self.QueueLock.release()
 
     def get_stored_queue(self):
         return self.dumpTools.loadobj(self.queue_file)
@@ -21658,39 +22128,37 @@ class SystemManagerServerInterface(SocketHostInterface):
             for key in self.ManagerQueue.keys():
                 if not obj.has_key(key):
                     return False
-            self.ManagerQueue = obj.copy()
+            self.ManagerQueue = obj
             return True
         return False
 
     def store_queue(self):
         self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
-        rc = self.load_queue()
-        if not rc:
-            raise exceptionTools.CorruptionError('CorruptionError: %s' % (
-                    _("cannot load queue previously stored. Something is really bad"),
-                )
-            )
 
     def get_ts(self):
         from datetime import datetime
         return datetime.fromtimestamp(time.time())
 
     def swap_items_in_queue(self, queue_id1, queue_id2):
-        self.queue_change_wait()
-        self.load_queue()
-
-        item1, key1 = self.get_item_by_queue_id(queue_id1)
-        item2, key2 = self.get_item_by_queue_id(queue_id2)
-        if key1 != key2:
-            self.queue_changing = False
-            return False
-        t_item = item1.copy()
-        item1.clear()
-        item1.update(item2)
-        item2.clear()
-        item2.update(t_item)
-        self.store_queue()
-        self.queue_changing = False
+        self.queue_lock_acquire()
+        try:
+            item1, key1 = self.get_item_by_queue_id(queue_id1)
+            item2, key2 = self.get_item_by_queue_id(queue_id2)
+            if key1 != key2:
+                return False
+            t_item = item1.copy()
+            item1.clear()
+            item1.update(item2)
+            item2.clear()
+            item2.update(t_item)
+            # fix the _order
+            queue_id1_idx = self.ManagerQueue[key1+"_order"].index(queue_id1)
+            queue_id2_idx = self.ManagerQueue[key2+"_order"].index(queue_id2)
+            self.ManagerQueue[key1+"_order"][queue_id1_idx] = queue_id2
+            self.ManagerQueue[key2+"_order"][queue_id2_idx] = queue_id1
+            self.store_queue()
+        finally:
+            self.queue_lock_release()
         return True
 
 
@@ -21699,88 +22167,77 @@ class SystemManagerServerInterface(SocketHostInterface):
         if function not in self.SystemExecutor.available_commands:
             return -1
 
-        self.queue_change_wait()
-        self.load_queue()
-        queue_id = self.generate_unique_queue_id()
-        myqueue_dict = {
-            'queue_id': queue_id,
-            'command_name': command_name,
-            'command_desc': self.valid_commands[command_name]['desc'],
-            'command_text': command_text,
-            'call': function,
-            'args': args,
-            'kwargs': kwargs,
-            'user_id': user_id,
-            'group_id': group_id,
-            'stdout': self.assign_unique_stdout_file(queue_id),
-            'queue_ts': "%s" % (self.get_ts(),),
-            'kill': False,
-            'processing_pid': None,
-        }
-        self.ManagerQueue['queue'].append(myqueue_dict)
-        self.store_queue()
-        self.queue_changing = False
+        self.queue_lock_acquire()
+        try:
+            queue_id = self.generate_unique_queue_id()
+            myqueue_dict = {
+                'queue_id': queue_id,
+                'command_name': command_name,
+                'command_desc': self.valid_commands[command_name]['desc'],
+                'command_text': command_text,
+                'call': function,
+                'args': args,
+                'kwargs': kwargs,
+                'user_id': user_id,
+                'group_id': group_id,
+                'stdout': self.assign_unique_stdout_file(queue_id),
+                'queue_ts': "%s" % (self.get_ts(),),
+                'kill': False,
+                'processing_pid': None,
+            }
+            self.ManagerQueue['queue'][queue_id] = myqueue_dict
+            self.ManagerQueue['queue_order'].append(queue_id)
+            self.store_queue()
+        finally:
+            self.queue_lock_release()
         return queue_id
 
-    def remove_from_queue(self, queue_id):
-        self.queue_change_wait()
-        self.load_queue()
-        for key in self.ManagerQueue:
-            if not isinstance(self.ManagerQueue[key],list):
-                continue
-            for counter in range(len(self.ManagerQueue[key])):
-                if self.ManagerQueue[key][counter]['queue_id'] == queue_id:
-                    item = self.ManagerQueue[key].pop(counter)
-                    self.flush_item(item)
-                    self.store_queue()
-                    self.queue_changing = False
-                    return True
-        self.queue_changing = False
-        return False
+    def remove_from_queue(self, queue_ids):
+        self.queue_lock_acquire()
+        removed = False
+        try:
+            for key in self.ManagerQueue:
+                if key not in self.dict_queue_keys:
+                    continue
+                for queue_id in queue_ids:
+                    item = None
+                    try:
+                        item = self.ManagerQueue[key].pop(queue_id)
+                    except KeyError:
+                        continue
+                    if item:
+                        self.flush_item(item)
+                        if queue_id in self.ManagerQueue[key+"_order"]:
+                            self.ManagerQueue[key+"_order"].remove(queue_id)
+                    removed = True
+            if removed:
+                self.store_queue()
+        finally:
+            self.queue_lock_release()
+        return removed
 
     def kill_processing_queue_id(self, queue_id):
-        self.queue_change_wait()
-        self.load_queue()
-        item, key = self.get_item_by_queue_id(queue_id)
-        if key in self.processing_queue_keys:
-            item['kill'] = True
-            self.store_queue()
-        self.queue_changing = False
+        self.queue_lock_acquire()
+        try:
+            item, key = self.get_item_by_queue_id(queue_id)
+            if key in self.processing_queue_keys:
+                item['kill'] = True
+        finally:
+            self.queue_lock_release()
 
     def pause_queue(self):
-        self.queue_change_wait()
-        self.load_queue()
-        self.ManagerQueue['pause'] = True
-        self.store_queue()
-        self.queue_changing = False
+        self.queue_lock_acquire()
+        try:
+            self.ManagerQueue['pause'] = True
+        finally:
+            self.queue_lock_release()
 
     def play_queue(self):
-        self.queue_change_wait()
-        self.load_queue()
-        self.ManagerQueue['pause'] = False
-        self.store_queue()
-        self.queue_changing = False
-
-    def reorder_queue(self, new_order):
-        self.queue_change_wait()
-        self.load_queue()
-
-        if len(new_order) != len(self.ManagerQueue['queue']):
-            self.queue_changing = False
-            return False
-
-        mycounter = 0
-        self.new_queue = self.ManagerQueue['queue'][:]
-        for item in self.ManagerQueue['queue']:
-            new_idx = new_order[mycounter]
-            if not (item['is_processing'] or self.ManagerQueue['queue'][new_idx]['is_processing']):
-                self.new_queue[mycounter] = self.ManagerQueue['queue'][new_idx].copy()
-            mycounter += 1
-
-        self.ManagerQueue['queue'] = self.new_queue
-        self.store_queue()
-        self.queue_changing = False
-        return True
+        self.queue_lock_acquire()
+        try:
+            self.ManagerQueue['pause'] = False
+        finally:
+            self.queue_lock_release()
 
     def flush_item(self, item):
         if not isinstance(item,dict):
@@ -21803,44 +22260,33 @@ class SystemManagerServerInterface(SocketHostInterface):
         return stdout
 
     def generate_unique_queue_id(self):
-        import random
         current_ids = set()
         for key in self.ManagerQueue:
-            if not isinstance(self.ManagerQueue[key],list):
+            if not key.endswith("_order"):
                 continue
-            for item in self.ManagerQueue[key]:
-                if not isinstance(item,dict):
-                    continue
-                elif not item.has_key('queue_id'):
-                    continue
-                current_ids.add(item['queue_id'])
+            current_ids |= set(self.ManagerQueue[key])
         while 1:
-            queue_id = int(random.random()*1000000000000)
+            queue_id = abs(hash(os.urandom(20)))
             if queue_id not in current_ids:
                 return queue_id
 
     def get_item_by_queue_id(self, queue_id):
         for key in self.ManagerQueue:
-            if not isinstance(self.ManagerQueue[key],list):
+            if key not in self.dict_queue_keys:
                 continue
-            for item in self.ManagerQueue[key]:
-                if not isinstance(item,dict):
-                    continue
-                elif not item.has_key('queue_id'):
-                    continue
-                elif item['queue_id'] == queue_id:
-                    return item, key
+            item = self.ManagerQueue[key].get(queue_id)
+            if item != None:
+                return item, key
         return None, None
 
     def queue_processor(self):
 
         def do_store_and_free():
             self.store_queue()
-            self.queue_changing = False
+            self.queue_lock_release()
 
         def wait_and_takeover():
-            self.queue_change_wait()
-            self.load_queue()
+            self.queue_lock_acquire()
 
         def copy_obj(obj):
             if isinstance(obj,(dict,set,)):
@@ -21851,47 +22297,63 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         while 1:
 
+            if self.ManagerQueue['pause']:
+                time.sleep(0.1)
+                continue
+
+            if not self.ManagerQueue['queue_order']:
+                time.sleep(0.1)
+                continue
+
             wait_and_takeover()
 
-            if self.ManagerQueue['pause']:
-                self.queue_changing = False
-                time.sleep(0.2)
+            queue_id = self.ManagerQueue['queue_order'].pop(0)
+            try:
+                command_data = self.ManagerQueue['queue'].pop(queue_id)
+            except KeyError:
+                do_store_and_free()
                 continue
-
-            if not self.ManagerQueue['queue']:
-                self.queue_changing = False
-                time.sleep(0.2)
-                continue
-
-            command_data = self.ManagerQueue['queue'].pop(0)
-
             command_data['processing_ts'] = "%s" % (self.get_ts(),)
-            self.ManagerQueue['processing'].append(command_data)
-            processing_idx = len(self.ManagerQueue['processing'])-1
+            self.ManagerQueue['processing'][queue_id] = command_data
+            self.ManagerQueue['processing_order'].append(queue_id)
             do_store_and_free()
 
-            done, result = self.SystemExecutor.execute_task(command_data)
+            try:
+                done, result = self.SystemExecutor.execute_task(command_data)
+            except:
+                self.queue_lock_release()
+                raise
 
             wait_and_takeover()
             command_data['result'] = copy_obj(result)
             if not done:
-                self.ManagerQueue['processing'].pop(processing_idx)
+                self.ManagerQueue['processing'].pop(queue_id)
+                self.ManagerQueue['processing_order'].remove(queue_id)
                 command_data['errored_ts'] = "%s" % (self.get_ts(),)
-                self.ManagerQueue['errored'].append(command_data)
+                self.ManagerQueue['errored'][queue_id] = command_data
+                self.ManagerQueue['errored_order'].append(queue_id)
                 do_store_and_free()
                 continue
 
-            done, cmd_result = result
+            try:
+                done, cmd_result = result
+            except TypeError:
+                done = False
+                cmd_result = 'wrong tuple split from queue processor'
             if not done:
-                self.ManagerQueue['processing'].pop(processing_idx)
+                self.ManagerQueue['processing'].pop(queue_id)
+                self.ManagerQueue['processing_order'].remove(queue_id)
                 command_data['errored_ts'] = "%s" % (self.get_ts(),)
-                self.ManagerQueue['errored'].append(command_data)
+                self.ManagerQueue['errored'][queue_id] = command_data
+                self.ManagerQueue['errored_order'].append(queue_id)
                 do_store_and_free()
                 continue
 
-            self.ManagerQueue['processing'].pop(processing_idx)
+            self.ManagerQueue['processing'].pop(queue_id)
+            self.ManagerQueue['processing_order'].remove(queue_id)
             command_data['processed_ts'] = "%s" % (self.get_ts(),)
-            self.ManagerQueue['processed'].append(command_data)
+            self.ManagerQueue['processed'][queue_id] = command_data
+            self.ManagerQueue['processed_order'].append(queue_id)
             do_store_and_free()
 
 
@@ -21903,6 +22365,7 @@ class SystemManagerServerInterface(SocketHostInterface):
 
 class SystemManagerClientCommands(EntropySocketClientCommands):
 
+    import entropyTools
     def __init__(self, *args, **kwargs):
         EntropySocketClientCommands.__init__(self, *args, **kwargs)
 
@@ -21962,12 +22425,12 @@ class SystemManagerClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def remove_queue_id(self, session_id, queue_id):
+    def remove_queue_ids(self, session_id, queue_ids):
 
-        cmd = "%s %s %d" % (
+        cmd = "%s %s %s" % (
             session_id,
-            'systemsrv:remove_queue_id',
-            queue_id,
+            'systemsrv:remove_queue_ids',
+            ' '.join([str(x) for x in queue_ids]),
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -21999,6 +22462,45 @@ class SystemManagerClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
+    def get_pinboard_data(self, session_id):
+        cmd = "%s %s" % (
+            session_id,
+            'systemsrv:get_pinboard_data',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def add_to_pinboard(self, session_id, note, extended_text):
+
+        mydict = {
+            'note': note,
+            'extended_text': extended_text,
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'systemsrv:add_to_pinboard',
+            xml_string,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def remove_from_pinboard(self, session_id, pinboard_ids):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'systemsrv:remove_from_pinboard',
+            ' '.join([str(x) for x in pinboard_ids]),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def set_pinboard_items_done(self, session_id, pinboard_ids, status):
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'systemsrv:set_pinboard_items_done',
+            ' '.join([str(x) for x in pinboard_ids]),
+            status,
+        )
+        return self.do_generic_handler(cmd, session_id)
 
 class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
 
@@ -22010,21 +22512,138 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def compile_atom(self, session_id, atom):
+    def compile_atoms(self, session_id, atoms, pretend = False, oneshot = False, verbose = False, nocolor = True, custom_use = '', ldflags = '', cflags = ''):
+
+        s_pretend = "0"
+        s_oneshot = "0"
+        s_verbose = "0"
+        s_nocolor = "0"
+        if pretend: s_pretend = "1"
+        if oneshot: s_oneshot = "1"
+        if verbose: s_verbose = "1"
+        if nocolor: s_nocolor = "1"
+        mydict = {
+            'atoms': ' '.join(atoms),
+            'pretend': s_pretend,
+            'oneshot': s_oneshot,
+            'verbose': s_verbose,
+            'nocolor': s_nocolor,
+            'custom_use': custom_use,
+            'ldflags': ldflags,
+            'cflags': cflags,
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
-            'srvrepo:compile_atom',
-            atom,
+            'srvrepo:compile_atoms',
+            xml_string,
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def get_spm_category_updates(self, session_id, category):
+    def spm_remove_atoms(self, session_id, atoms, pretend = False, verbose = False, nocolor = True):
+
+        s_pretend = "0"
+        s_verbose = "0"
+        s_nocolor = "0"
+        if pretend: s_pretend = "1"
+        if verbose: s_verbose = "1"
+        if nocolor: s_nocolor = "1"
+        mydict = {
+            'atoms': ' '.join(atoms),
+            'pretend': s_pretend,
+            'verbose': s_verbose,
+            'nocolor': s_nocolor,
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
-            'srvrepo:get_spm_category_updates',
-            category,
+            'srvrepo:spm_remove_atoms',
+            xml_string,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_spm_categories_updates(self, session_id, categories):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:get_spm_categories_updates',
+            ' '.join(categories),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_spm_categories_installed(self, session_id, categories):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:get_spm_categories_installed',
+            ' '.join(categories),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def enable_uses_for_atoms(self, session_id, atoms, useflags):
+
+        mydict = {
+            'atoms': ' '.join(atoms),
+            'useflags': ' '.join(useflags),
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:enable_uses_for_atoms',
+            xml_string,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def disable_uses_for_atoms(self, session_id, atoms, useflags):
+
+        mydict = {
+            'atoms': ' '.join(atoms),
+            'useflags': ' '.join(useflags),
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:disable_uses_for_atoms',
+            xml_string,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_spm_atoms_info(self, session_id, atoms):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:get_spm_atoms_info',
+            ' '.join(atoms),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def run_spm_info(self, session_id):
+
+        cmd = "%s %s" % (
+            session_id,
+            'srvrepo:run_spm_info',
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def run_custom_shell_command(self, session_id, command):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:run_custom_shell_command',
+            command,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def get_spm_glsa_data(self, session_id, list_type):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:get_spm_glsa_data',
+            list_type,
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -22063,10 +22682,10 @@ class SystemManagerMethodsInterface:
                 'call': self.get_queue_id_result,
                 'private': True,
             },
-            'remove_queue_id': {
-                'desc': _("Remove queued command using its queue unique identifier"),
-                'params': [('queue_id',int,_('Queue Identifier'),True,)],
-                'call': self.remove_queue_id,
+            'remove_queue_ids': {
+                'desc': _("Remove queued commands using their queue unique identifiers"),
+                'params': [('queue_ids',list,_('Queue Identifiers'),True,)],
+                'call': self.remove_queue_ids,
                 'private': True,
             },
             'pause_queue': {
@@ -22090,6 +22709,36 @@ class SystemManagerMethodsInterface:
                 'call': self.swap_items_in_queue,
                 'private': True,
             },
+            'get_pinboard_data': {
+                'desc': _("Get pinboard content"),
+                'params': [],
+                'call': self.get_pinboard_data,
+                'private': True,
+            },
+            'add_to_pinboard': {
+                'desc': _("Add item to pinboard"),
+                'params': [
+                    ('note',basestring,_('Note'),True,),
+                    ('extended_text',basestring,_('Extended text'),True,)
+                ],
+                'call': self.add_to_pinboard,
+                'private': True,
+            },
+            'remove_from_pinboard': {
+                'desc': _("Remove item from pinboard"),
+                'params': [('pinboard_ids',list,_('Pinboard identifiers'),True,)],
+                'call': self.remove_from_pinboard,
+                'private': True,
+            },
+            'set_pinboard_items_done': {
+                'desc': _("Set pinboard items status (done/not done)"),
+                'params': [
+                    ('pinboard_ids',list,_('Pinboard identifiers'),True,),
+                    ('done_status',bool,_('Done status'),True,),
+                ],
+                'call': self.set_pinboard_items_done,
+                'private': True,
+            },
         }
 
     def get_available_commands(self):
@@ -22107,8 +22756,8 @@ class SystemManagerMethodsInterface:
     def get_queue_id_result(self, queue_id):
         return self.Manager.do_cmd(True, "get_queue_id_result", [queue_id], {})
 
-    def remove_queue_id(self, queue_id):
-        return self.Manager.do_cmd(True, "remove_queue_id", [queue_id], {})
+    def remove_queue_ids(self, queue_ids):
+        return self.Manager.do_cmd(True, "remove_queue_ids", [queue_ids], {})
 
     def pause_queue(self, do_queue):
         return self.Manager.do_cmd(True, "pause_queue", [do_queue], {})
@@ -22118,6 +22767,18 @@ class SystemManagerMethodsInterface:
 
     def swap_items_in_queue(self, queue_id1, queue_id2):
         return self.Manager.do_cmd(True, "swap_items_in_queue", [queue_id1,queue_id2], {})
+
+    def get_pinboard_data(self):
+        return self.Manager.do_cmd(True, "get_pinboard_data", [], {})
+
+    def add_to_pinboard(self, note, extended_text):
+        return self.Manager.do_cmd(True, "add_to_pinboard", [note,extended_text], {})
+
+    def remove_from_pinboard(self, pinboard_ids):
+        return self.Manager.do_cmd(True, "remove_from_pinboard", [pinboard_ids], {})
+
+    def set_pinboard_items_done(self, pinboard_ids, done_status):
+        return self.Manager.do_cmd(True, "set_pinboard_items_done", [pinboard_ids,done_status], {})
 
 class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 
@@ -22130,16 +22791,88 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
                 'call': self.sync_spm,
                 'private': False,
             },
-            'compile_atom': {
-                'desc': _("Compile specified atom with specified parameters"),
-                'params': [('atom',basestring,_('Atom'),True,)],
-                'call': self.compile_atom,
+            'compile_atoms': {
+                'desc': _("Compile specified atoms with specified parameters"),
+                'params': [
+                    ('atoms',list,_('Atoms'),True,),
+                    ('pretend',bool,_('Pretend'),False,),
+                    ('oneshot',bool,_('Oneshot'),False,),
+                    ('verbose',bool,_('Verbose'),False,),
+                    ('nocolor',bool,_('No color'),False,),
+                    ('custom_use',basestring,_('Custom USE'),False,),
+                    ('ldflags',basestring,_('Custom LDFLAGS'),False,),
+                    ('cflags',basestring,_('Custom CFLAGS'),False,),
+                ],
+                'call': self.compile_atoms,
                 'private': False,
             },
-            'get_spm_category_updates': {
-                'desc': _("Get SPM updates for the specified category"),
-                'params': [('category',basestring,_('Category'),True,)],
-                'call': self.get_spm_category_updates,
+            'spm_remove_atoms': {
+                'desc': _("Remove specified atoms with specified parameters"),
+                'params': [
+                    ('atoms',list,_('Atoms'),True,),
+                    ('pretend',bool,_('Pretend'),False,),
+                    ('verbose',bool,_('Verbose'),False,),
+                    ('nocolor',bool,_('No color'),False,),
+                ],
+                'call': self.spm_remove_atoms,
+                'private': False,
+            },
+            'get_spm_categories_updates': {
+                'desc': _("Get SPM updates for the specified categories"),
+                'params': [('categories',list,_('Categories'),True,)],
+                'call': self.get_spm_categories_updates,
+                'private': False,
+            },
+            'get_spm_categories_installed': {
+                'desc': _("Get SPM installed packages for the specified categories"),
+                'params': [('categories',list,_('Categories'),True,)],
+                'call': self.get_spm_categories_installed,
+                'private': False,
+            },
+            'enable_uses_for_atoms': {
+                'desc': _("Enable USE flags for the specified atoms"),
+                'params': [
+                    ('atoms',list,_('Atoms'),True,),
+                    ('useflags',list,_('USE flags'),True,)
+                ],
+                'call': self.enable_uses_for_atoms,
+                'private': False,
+            },
+            'disable_uses_for_atoms': {
+                'desc': _("Disable USE flags for the specified atoms"),
+                'params': [
+                    ('atoms',list,_('Atoms'),True,),
+                    ('useflags',list,_('USE flags'),True,)
+                ],
+                'call': self.disable_uses_for_atoms,
+                'private': False,
+            },
+            'get_spm_atoms_info': {
+                'desc': _("Get info for the specified atoms"),
+                'params': [('atoms',list,_('Atoms'),True,)],
+                'call': self.get_spm_atoms_info,
+                'private': False,
+            },
+            'run_spm_info': {
+                'desc': _("Run SPM info command"),
+                'params': [],
+                'call': self.run_spm_info,
+                'private': False,
+            },
+            'run_custom_shell_command': {
+                'desc': _("Run custom shell command"),
+                'params': [
+                    ('command',basestring,_('Command'),True,),
+                ],
+                'call': self.run_custom_shell_command,
+                'private': False,
+            },
+            'get_spm_glsa_data': {
+                'desc': _("Get Spm security updates information"),
+                'params': [
+                    ('list_type',basestring,_('List type (affected,new,all)'),True,),
+                ],
+                'call': self.get_spm_glsa_data,
                 'private': False,
             },
         })
@@ -22147,11 +22880,57 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
     def sync_spm(self):
         return self.Manager.do_cmd(True, "sync_spm", [], {})
 
-    def compile_atom(self, atom):
-        return self.Manager.do_cmd(True, "compile_atom", [atom], {})
+    def compile_atoms(self, atoms, pretend = False, oneshot = False, verbose = True, nocolor = True, custom_use = '', ldflags = '', cflags = ''):
+        return self.Manager.do_cmd(
+            True,
+            "compile_atoms",
+            [atoms],
+            {
+                'pretend': pretend,
+                'oneshot': oneshot,
+                'verbose': verbose,
+                'nocolor': nocolor,
+                'custom_use': custom_use,
+                'ldflags': ldflags,
+                'cflags': cflags,
+            }
+        )
 
-    def get_spm_category_updates(self, category):
-        return self.Manager.do_cmd(True, "get_spm_category_updates", [category], {})
+    def spm_remove_atoms(self, atoms, pretend = True, verbose = True, nocolor = True):
+        return self.Manager.do_cmd(
+            True,
+            "spm_remove_atoms",
+            [atoms],
+            {
+                'pretend': pretend,
+                'verbose': verbose,
+                'nocolor': nocolor,
+            }
+        )
+
+    def get_spm_categories_updates(self, categories):
+        return self.Manager.do_cmd(True, "get_spm_categories_updates", [categories], {})
+
+    def get_spm_categories_installed(self, categories):
+        return self.Manager.do_cmd(True, "get_spm_categories_installed", [categories], {})
+
+    def enable_uses_for_atoms(self, atoms, useflags):
+        return self.Manager.do_cmd(True, "enable_uses_for_atoms", [atoms,useflags], {})
+
+    def disable_uses_for_atoms(self, atoms, useflags):
+        return self.Manager.do_cmd(True, "disable_uses_for_atoms", [atoms,useflags], {})
+
+    def get_spm_atoms_info(self, atoms):
+        return self.Manager.do_cmd(True, "get_spm_atoms_info", [atoms], {})
+
+    def run_spm_info(self):
+        return self.Manager.do_cmd(True, "run_spm_info", [], {})
+
+    def run_custom_shell_command(self, command):
+        return self.Manager.do_cmd(True, "run_custom_shell_command", [command], {})
+
+    def get_spm_glsa_data(self, list_type = "affected"):
+        return self.Manager.do_cmd(True, "get_spm_glsa_data", [list_type], {})
 
 class SystemManagerClientInterface:
 
@@ -22375,10 +23154,16 @@ class UGCCacheInterface:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         import dumpTools
+        self.CacheLock = thread.allocate_lock()
         self.dumpTools = dumpTools
         self.Service = UGCClientInstance
         self.xcache = {}
-        self.processing = False
+
+    def acquire_lock(self):
+        self.CacheLock.acquire()
+
+    def release_lock(self):
+        self.CacheLock.release()
 
     def _get_live_cache_item(self, repository, item):
         if repository not in self.xcache:
@@ -22493,25 +23278,28 @@ class UGCCacheInterface:
         self.save_alldocs_cache(pkgkey, repository, alldocs_dict)
 
     def clear_alldocs_cache(self, repository):
-        self.process_wait()
-        self.processing = True
-        self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
-        self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
-        self.processing = False
+        self.acquire_lock()
+        try:
+            self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
+            self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
+        finally:
+            self.release_lock()
 
     def clear_downloads_cache(self, repository):
-        self.process_wait()
-        self.processing = True
-        self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
-        self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
-        self.processing = False
+        self.acquire_lock()
+        try:
+            self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
+            self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
+        finally:
+            self.release_lock()
 
     def clear_vote_cache(self, repository):
-        self.process_wait()
-        self.processing = True
-        self.Service.Entropy.clear_dump_cache(self._get_vote_cache_dir(repository))
-        self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
-        self.processing = False
+        self.acquire_lock()
+        try:
+            self.Service.Entropy.clear_dump_cache(self._get_vote_cache_dir(repository))
+            self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
+        finally:
+            self.release_lock()
 
     def clear_cache(self, repository):
         self.clear_alldocs_cache(repository)
@@ -22524,8 +23312,7 @@ class UGCCacheInterface:
         cached = self._get_live_cache_item(repository, cache_key)
         if cached != None:
             return cached
-        self.process_wait()
-        self.processing = True
+        self.acquire_lock()
         cache_file = self._get_vote_cache_file(repository)
         try:
             data = self.dumpTools.loadobj(cache_file)
@@ -22533,7 +23320,8 @@ class UGCCacheInterface:
                 self._set_live_cache_item(repository, cache_key, data)
         except (IOError,EOFError,OSError):
             data = None
-        self.processing = False
+        finally:
+            self.release_lock()
         return data
 
     def get_downloads_cache(self, repository):
@@ -22541,8 +23329,7 @@ class UGCCacheInterface:
         cached = self._get_live_cache_item(repository, cache_key)
         if cached != None:
             return cached
-        self.process_wait()
-        self.processing = True
+        self.acquire_lock()
         cache_file = self._get_downloads_cache_file(repository)
         try:
             data = self.dumpTools.loadobj(cache_file)
@@ -22550,7 +23337,8 @@ class UGCCacheInterface:
                 self._set_live_cache_item(repository, cache_key, data)
         except (IOError,EOFError,OSError):
             data = None
-        self.processing = False
+        finally:
+            self.release_lock()
         return data
 
     def get_alldocs_cache(self, pkgkey, repository):
@@ -22560,8 +23348,7 @@ class UGCCacheInterface:
             if cached.has_key(pkgkey): return cached[pkgkey]
         else:
             cached = {}
-        self.process_wait()
-        self.processing = True
+        self.acquire_lock()
         cache_file = self._get_alldocs_cache_file(pkgkey, repository)
         try:
             data = self.dumpTools.loadobj(cache_file)
@@ -22570,33 +23357,33 @@ class UGCCacheInterface:
                 self._set_live_cache_item(repository, cache_key, cached)
         except (IOError,EOFError,OSError):
             data = None
-        self.processing = False
+        finally:
+            self.release_lock()
         return data
 
     def save_vote_cache(self, repository, vote_dict):
-        self.process_wait()
-        self.processing = True
-        self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
-        self.dumpTools.dumpobj(self._get_vote_cache_file(repository), vote_dict)
-        self.processing = False
+        self.acquire_lock()
+        try:
+            self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
+            self.dumpTools.dumpobj(self._get_vote_cache_file(repository), vote_dict)
+        finally:
+            self.release_lock()
 
     def save_downloads_cache(self, repository, down_dict):
-        self.process_wait()
-        self.processing = True
-        self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
-        self.dumpTools.dumpobj(self._get_downloads_cache_file(repository), down_dict)
-        self.processing = False
+        self.acquire_lock()
+        try:
+            self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
+            self.dumpTools.dumpobj(self._get_downloads_cache_file(repository), down_dict)
+        finally:
+            self.release_lock()
 
     def save_alldocs_cache(self, pkgkey, repository, alldocs_dict):
-        self.process_wait()
-        self.processing = True
-        self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
-        self.dumpTools.dumpobj(self._get_alldocs_cache_file(pkgkey, repository), alldocs_dict)
-        self.processing = False
-
-    def process_wait(self):
-        while self.processing:
-            time.sleep(0.01)
+        self.acquire_lock()
+        try:
+            self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
+            self.dumpTools.dumpobj(self._get_alldocs_cache_file(pkgkey, repository), alldocs_dict)
+        finally:
+            self.release_lock()
 
     def get_package_vote(self, repository, pkgkey):
         cache = self.get_vote_cache(repository)
@@ -29312,12 +30099,6 @@ class EntropyDatabaseInterface:
         self.createEclassesIndex()
         self.createCategoriesIndex()
         self.createCompileFlagsIndex()
-        self.createCountersIndex()
-
-    def createCountersIndex(self):
-        if self.indexing:
-            self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage )')
-            self.commitChanges()
 
     def createNeededIndex(self):
         if self.indexing:
@@ -29396,6 +30177,7 @@ class EntropyDatabaseInterface:
 
     def createCountersIndex(self):
         if self.indexing:
+            self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage )')
             self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter )')
             self.commitChanges()
 
