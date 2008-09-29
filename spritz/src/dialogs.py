@@ -156,6 +156,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.is_writing_output = False
         self.PinboardData = {}
         self.Queue = {}
+        self.QueueLock = thread.allocate_lock()
         self.Output = None
         self.output_pause = False
         self.queue_pause = False
@@ -415,12 +416,16 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerStatusbar.queue_draw()
 
     def get_item_by_queue_id(self, queue_id):
-        for key in self.Queue:
-            if key not in self.dict_queue_keys:
-                continue
-            item = self.Queue[key].get(queue_id)
-            if item != None:
-                return item, key
+        self.QueueLock.acquire()
+        try:
+            for key in self.Queue:
+                if key not in self.dict_queue_keys:
+                    continue
+                item = self.Queue[key].get(queue_id)
+                if item != None:
+                    return item, key
+        finally:
+            self.QueueLock.release()
         return None, None
 
     def service_status_message(self, e):
@@ -429,7 +434,6 @@ class RepositoryManagerMenu(MenuSkel):
 
     def update_queue_view(self):
         self.wait_channel_call()
-
         try:
             status, queue = self.Service.Methods.get_queue()
         except Exception, e:
@@ -438,12 +442,16 @@ class RepositoryManagerMenu(MenuSkel):
         finally:
             self.release_channel_call()
         if not status: return
-        if queue == self.Queue: return
 
-        gtk.gdk.threads_enter()
-        self.fill_queue_view(queue)
-        gtk.gdk.threads_leave()
-        self.Queue = queue.copy()
+        self.QueueLock.acquire()
+        try:
+            if queue == self.Queue: return
+            gtk.gdk.threads_enter()
+            self.fill_queue_view(queue)
+            gtk.gdk.threads_leave()
+            self.Queue = queue.copy()
+        finally:
+            self.QueueLock.release()
 
     def fill_queue_view(self, queue):
         self.QueueStore.clear()
@@ -453,7 +461,7 @@ class RepositoryManagerMenu(MenuSkel):
             for queue_id in queue['processing_order']:
                 item = queue['processing'].get(queue_id)
                 if item == None: continue
-                self.is_processing = item.copy()
+                #self.is_processing = item.copy()
                 item = item.copy()
                 item['from'] = "processing"
                 self.QueueStore.append((item,item['queue_ts'],))
@@ -507,19 +515,21 @@ class RepositoryManagerMenu(MenuSkel):
         if (pindata == self.PinboardData) and (not force):
             return
 
-        gtk.gdk.threads_enter()
-        self.fill_pinboard_view(pindata)
-        gtk.gdk.threads_leave()
-        self.PinboardData = pindata.copy()
+        if isinstance(pindata,dict):
+            gtk.gdk.threads_enter()
+            self.fill_pinboard_view(pindata)
+            gtk.gdk.threads_leave()
+            self.PinboardData = pindata.copy()
 
     def fill_pinboard_view(self, pinboard_data):
-        self.PinboardStore.clear()
-        identifiers = sorted(pinboard_data.keys())
-        for identifier in identifiers:
-            item = pinboard_data[identifier].copy()
-            item['pinboard_id'] = identifier
-            self.PinboardStore.append((item,item['ts'],))
-        self.PinboardView.queue_draw()
+        if isinstance(pinboard_data,dict):
+            self.PinboardStore.clear()
+            identifiers = sorted(pinboard_data.keys())
+            for identifier in identifiers:
+                item = pinboard_data[identifier].copy()
+                item['pinboard_id'] = identifier
+                self.PinboardStore.append((item,item['ts'],))
+            self.PinboardView.queue_draw()
 
     def update_output_view(self, force = False, queue_id = None, n_bytes = 40000):
 
@@ -944,6 +954,8 @@ class RepositoryManagerMenu(MenuSkel):
             status, queue_id = self.Service.Methods.run_custom_shell_command(command)
             if status:
                 self.is_writing_output = True
+                self.is_processing = {'queue_id': queue_id}
+                self.set_notebook_page(self.notebook_pages['output'])
         except Exception, e:
             self.service_status_message(e)
             return
@@ -1061,8 +1073,12 @@ class RepositoryManagerMenu(MenuSkel):
         self.output_pause = not self.output_pause
 
     def on_repoManagerQueueRefreshButton_clicked(self, widget):
-        self.Queue = {}
-        self.update_queue_view()
+        self.QueueLock.acquire()
+        try:
+            self.Queue = {}
+            self.update_queue_view()
+        finally:
+            self.QueueLock.release()
 
     def on_repoManagerOutputCleanButton_clicked(self, widget):
         self.Output = None
@@ -1136,7 +1152,6 @@ class RepositoryManagerMenu(MenuSkel):
         if not atoms:
             data['atoms'] = data['atoms'].split()
 
-        self.set_notebook_page(self.notebook_pages['output'])
         if data['atoms']:
             self.wait_channel_call()
             try:
@@ -1148,6 +1163,8 @@ class RepositoryManagerMenu(MenuSkel):
                 )
                 if status:
                     self.is_writing_output = True
+                    self.is_processing = {'queue_id': queue_id}
+                    self.set_notebook_page(self.notebook_pages['output'])
             except Exception, e:
                 self.service_status_message(e)
                 return
@@ -1195,7 +1212,6 @@ class RepositoryManagerMenu(MenuSkel):
         if not atoms:
             data['atoms'] = data['atoms'].split()
 
-        self.set_notebook_page(self.notebook_pages['output'])
         if data['atoms']:
             self.wait_channel_call()
             try:
@@ -1211,6 +1227,8 @@ class RepositoryManagerMenu(MenuSkel):
                 )
                 if status:
                     self.is_writing_output = True
+                    self.is_processing = {'queue_id': queue_id}
+                    self.set_notebook_page(self.notebook_pages['output'])
             except Exception, e:
                 self.service_status_message(e)
                 return
@@ -1219,13 +1237,13 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerSpmInfo_clicked(self, widget):
 
-        self.set_notebook_page(self.notebook_pages['output'])
-
         self.wait_channel_call()
         try:
             status, queue_id = self.Service.Methods.run_spm_info()
             if status:
                 self.is_writing_output = True
+                self.is_processing = {'queue_id': queue_id}
+                self.set_notebook_page(self.notebook_pages['output'])
         except Exception, e:
             self.service_status_message(e)
             return
