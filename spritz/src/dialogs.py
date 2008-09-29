@@ -17,10 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import time
-import gtk
-import gobject
-import pango
+import time, gtk, gobject, pango, thread
 from etpgui.widgets import UI
 from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities
@@ -143,6 +140,9 @@ class RemoteConnectionMenu(MenuSkel):
 class RepositoryManagerMenu(MenuSkel):
 
     def __init__(self, Entropy, window):
+        self.BufferLock = thread.allocate_lock()
+        import entropyTools
+        self.entropyTools = entropyTools
         self.Entropy = Entropy
         self.window = window
         self.sm_ui = UI( const.GLADE_FILE, 'repositoryManager', 'entropy' )
@@ -150,13 +150,18 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repositoryManager.set_transient_for(self.window)
         self.sm_ui.repositoryManager.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.setup_queue_view()
+        self.setup_pinboard_view()
+        self.paused_queue_id = None
         self.is_processing = None
+        self.is_writing_output = False
+        self.PinboardData = {}
         self.Queue = {}
         self.Output = None
         self.output_pause = False
         self.queue_pause = False
-        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_queue_view, 5)
-        self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_output_view, 4)
+        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_queue_view, 3)
+        self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_output_view, 0.5)
+        self.PinboardUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_pinboard_view, 5)
         self.ssl_mode = True
         self.OutputBuffer = gtk.TextBuffer()
         self.sm_ui.repoOutputView.set_buffer(self.OutputBuffer)
@@ -169,7 +174,12 @@ class RepositoryManagerMenu(MenuSkel):
             'data': 2,
             'output': 3
         }
-        self.channel_call = False
+        self.dict_queue_keys = ['queue','processing','processed','errored']
+        self.DataStore = gtk.TreeStore( gobject.TYPE_PYOBJECT )
+        self.DataView = self.sm_ui.repoManagerDataView
+        self.DataView.set_model(self.DataStore)
+        self.DataViewBox = self.sm_ui.repoManagerDataViewBox
+        self.data_tree_selection_mode = self.DataView.get_selection().get_mode()
 
         from entropy import SystemManagerClientInterface, \
             SystemManagerRepositoryClientCommands, \
@@ -182,6 +192,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.CommandsStore = None
         self.setup_commands_view()
         self.fill_commands_view(self.Service.get_available_client_commands())
+        self.ServiceStatus = True
 
     def set_notebook_page(self, page):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
@@ -198,7 +209,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.CommandsView.set_model( self.CommandsStore )
 
         # command col
-        self.create_text_column( self.CommandsView, _( "Command" ), 'commands:command', size = 200, set_height = 40)
+        self.create_text_column( self.CommandsView, _( "Command" ), 'commands:command', size = 270, set_height = 40)
         # desc col
         self.create_text_column( self.CommandsView, _( "Description" ), 'commands:desc', size = 200, expand = True, set_height = 40)
 
@@ -226,7 +237,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         # setup queue view
         self.QueueView = self.sm_ui.repoManagerQueueView
-        self.QueueStore = gtk.ListStore( gobject.TYPE_PYOBJECT )
+        self.QueueStore = gtk.ListStore( gobject.TYPE_PYOBJECT, gobject.TYPE_STRING )
         self.QueueView.set_model( self.QueueStore )
 
         # selection pixmap
@@ -234,28 +245,51 @@ class RepositoryManagerMenu(MenuSkel):
         column = gtk.TreeViewColumn( _("Status"), cell )
         column.set_cell_data_func( cell, self.queue_pixbuf )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column.set_fixed_width( 60 )
-        column.set_sort_column_id( -1 )
+        column.set_fixed_width( 80 )
+        column.set_sort_column_id( 0 )
         self.QueueView.append_column( column )
-        column.set_clickable( False )
 
         # command col
         self.create_text_column( self.QueueView, _( "Command" ), 'queue:command_name', size = 180)
         # description col
         self.create_text_column( self.QueueView, _( "Parameters" ), 'queue:command_text', size = 200, expand = True)
         # date col
-        self.create_text_column( self.QueueView, _( "Date" ), 'queue:ts', size = 120)
+        self.create_text_column( self.QueueView, _( "Date" ), 'queue:ts', size = 120, sort_col_id = 1)
 
-    def create_text_column( self, view, hdr, property, size, sortcol = None, expand = False, set_height = 0):
+    def setup_pinboard_view(self):
+
+        # setup pinboard view
+        self.PinboardView = self.sm_ui.repoManagerPinboardView
+        self.PinboardStore = gtk.ListStore( gobject.TYPE_PYOBJECT, gobject.TYPE_STRING )
+        self.PinboardView.set_model( self.PinboardStore )
+        self.PinboardView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.PinboardView.set_rubber_banding(True)
+
+        # selection pixmap
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _("Status"), cell )
+        column.set_cell_data_func( cell, self.pinboard_pixbuf )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 80 )
+        column.set_sort_column_id( 0 )
+        self.PinboardView.append_column( column )
+
+        # date
+        self.create_text_column( self.PinboardView, _( "Date" ), 'pinboard:date', size = 130, sort_col_id = 1)
+        # note
+        self.create_text_column( self.PinboardView, _( "Note" ), 'pinboard:note', size = 200, expand = True)
+
+    def create_text_column( self, view, hdr, property, size, sortcol = None, expand = False, set_height = 0, cell_data_func = None, sort_col_id = -1):
+        if cell_data_func == None: cell_data_func = self.get_data_text
         cell = gtk.CellRendererText()
         if set_height: cell.set_property('height', set_height)
         column = gtk.TreeViewColumn( hdr, cell )
         column.set_resizable( True )
-        column.set_cell_data_func( cell, self.get_data_text, property )
+        column.set_cell_data_func( cell, cell_data_func, property )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( size )
         column.set_expand(expand)
-        column.set_sort_column_id( -1 )
+        column.set_sort_column_id( sort_col_id )
         view.append_column( column )
         return column
 
@@ -268,10 +302,18 @@ class RepositoryManagerMenu(MenuSkel):
 
     def queue_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
-        if obj:
+        if isinstance(obj,dict):
             st = self.get_status_from_queue_item(obj.copy())
             if st != None:
                 cell.set_property('stock-id',st)
+
+    def pinboard_pixbuf( self, column, cell, model, myiter ):
+        obj = model.get_value( myiter, 0 )
+        if isinstance(obj,dict):
+            if obj['done']:
+                cell.set_property('stock-id','gtk-apply')
+            else:
+                cell.set_property('stock-id','gtk-cancel')
 
     def get_status_from_queue_item(self, item):
         if item.has_key('errored_ts'):
@@ -297,17 +339,21 @@ class RepositoryManagerMenu(MenuSkel):
 
     def get_data_text( self, column, cell, model, myiter, property ):
         obj = model.get_value( myiter, 0 )
-        if obj:
+        if isinstance(obj,dict):
             if property == "queue:ts":
                 cell.set_property('markup',self.get_ts_from_queue_item(obj))
             elif property == "queue:command_text":
-                cell.set_property('markup',obj['command_text'])
+                cell.set_property('markup',cleanMarkupString(obj['command_text']))
             elif property == "queue:command_name":
-                cell.set_property('markup',obj['command_name'])
+                cell.set_property('markup',cleanMarkupString(obj['command_name']))
             elif property == "commands:command":
                 cell.set_property('markup',obj['key'])
             elif property == "commands:desc":
                 cell.set_property('markup',obj['myinfo'])
+            elif property == "pinboard:date":
+                cell.set_property('markup',unicode(obj['ts']))
+            elif property == "pinboard:note":
+                cell.set_property('markup',cleanMarkupString(obj['note']))
 
     def connection_verification_callback(self, host, port, username, password, ssl):
         self.Service.setup_connection(
@@ -352,23 +398,45 @@ class RepositoryManagerMenu(MenuSkel):
         # spawn parallel tasks
         self.QueueUpdater.start()
         self.OutputUpdater.start()
+        self.PinboardUpdater.start()
 
         return True
 
     def wait_channel_call(self):
-        while self.channel_call:
-            time.sleep(0.5)
-        self.channel_call = True
+        context_id = self.sm_ui.repoManagerStatusbar.get_context_id( "Status" )
+        self.sm_ui.repoManagerStatusbar.push(context_id, _("Please wait"))
+        self.sm_ui.repoManagerStatusbar.queue_draw()
+        self.BufferLock.acquire()
+
+    def release_channel_call(self):
+        self.BufferLock.release()
+        context_id = self.sm_ui.repoManagerStatusbar.get_context_id( "Status" )
+        self.sm_ui.repoManagerStatusbar.push(context_id, _("Ready"))
+        self.sm_ui.repoManagerStatusbar.queue_draw()
+
+    def get_item_by_queue_id(self, queue_id):
+        for key in self.Queue:
+            if key not in self.dict_queue_keys:
+                continue
+            item = self.Queue[key].get(queue_id)
+            if item != None:
+                return item, key
+        return None, None
+
+    def service_status_message(self, e):
+        self.ServiceStatus = False
+        okDialog(self.window, unicode(e), title = _("Communication error"))
 
     def update_queue_view(self):
         self.wait_channel_call()
 
         try:
             status, queue = self.Service.Methods.get_queue()
-        except:
-            self.channel_call = False
+        except Exception, e:
+            self.service_status_message(e)
             return
-        self.channel_call = False
+        finally:
+            self.release_channel_call()
         if not status: return
         if queue == self.Queue: return
 
@@ -381,54 +449,101 @@ class RepositoryManagerMenu(MenuSkel):
         self.QueueStore.clear()
         keys = queue.keys()
 
-        if "processing" in keys:
-            for item in queue['processing']:
+        if "processing_order" in keys:
+            for queue_id in queue['processing_order']:
+                item = queue['processing'].get(queue_id)
+                if item == None: continue
                 self.is_processing = item.copy()
                 item = item.copy()
                 item['from'] = "processing"
-                self.QueueStore.append((item,))
+                self.QueueStore.append((item,item['queue_ts'],))
             if not queue['processing']:
                 self.is_processing = None
+                self.is_writing_output = False
         else:
             self.is_processing = None
+            self.is_writing_output = False
 
-        if "processed" in keys:
-            for item in queue['processed']:
+        if "processed_order" in keys:
+            mylist = queue['processed_order'][:]
+            mylist.reverse()
+            for queue_id in mylist:
+                item = queue['processed'].get(queue_id)
+                if item == None: continue
                 item = item.copy()
                 item['from'] = "processed"
-                self.QueueStore.append((item,))
+                self.QueueStore.append((item,item['queue_ts'],))
 
-        if "queue" in keys:
-            for item in queue['queue']:
+        if "queue_order" in keys:
+            for queue_id in queue['queue_order']:
+                item = queue['queue'].get(queue_id)
+                if item == None: continue
                 item = item.copy()
                 item['from'] = "queue"
-                self.QueueStore.append((item,))
-        if "errored" in keys:
-            for item in queue['errored']:
+                self.QueueStore.append((item,item['queue_ts'],))
+        if "errored_order" in keys:
+            mylist = queue['errored_order'][:]
+            mylist.reverse()
+            for queue_id in mylist:
+                item = queue['errored'].get(queue_id)
+                if item == None: continue
                 item = item.copy()
                 item['from'] = "errored"
-                self.QueueStore.append((item,))
+                self.QueueStore.append((item,item['queue_ts'],))
 
         self.QueueView.queue_draw()
 
-    def update_output_view(self):
+    def update_pinboard_view(self, force = False):
 
-        if self.output_pause:
-            return
-        n_bytes = 4000
-        if self.is_processing == None:
-            return
-        obj = self.is_processing.copy()
-        if not obj.has_key('queue_id'):
-            return
         self.wait_channel_call()
-        status, stdout = self.Service.Methods.get_queue_id_stdout(obj['queue_id'], n_bytes)
-        self.channel_call = False
-        if not status:
+        pindata = None
+        try:
+            status, pindata = self.Service.Methods.get_pinboard_data()
+        except Exception, e:
+            self.service_status_message(e)
             return
+        finally:
+            self.release_channel_call()
+        if (pindata == self.PinboardData) and (not force):
+            return
+
+        gtk.gdk.threads_enter()
+        self.fill_pinboard_view(pindata)
+        gtk.gdk.threads_leave()
+        self.PinboardData = pindata.copy()
+
+    def fill_pinboard_view(self, pinboard_data):
+        self.PinboardStore.clear()
+        identifiers = sorted(pinboard_data.keys())
+        for identifier in identifiers:
+            item = pinboard_data[identifier].copy()
+            item['pinboard_id'] = identifier
+            self.PinboardStore.append((item,item['ts'],))
+        self.PinboardView.queue_draw()
+
+    def update_output_view(self, force = False, queue_id = None, n_bytes = 40000):
+
+        if self.output_pause and not force: return
+
+        if not queue_id:
+            if self.is_processing == None: return
+            if not self.is_writing_output: return
+            obj = self.is_processing.copy()
+            if not obj.has_key('queue_id'): return
+            queue_id = obj['queue_id']
+
+        self.wait_channel_call()
+        stdout = None
+        try:
+            status, stdout = self.Service.Methods.get_queue_id_stdout(queue_id, n_bytes)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+        if not status: return
         stdout = stdout[-1*n_bytes:]
-        if stdout == self.Output:
-            return
+        if stdout == self.Output: return
         self.Output = stdout
         self.OutputBuffer.set_text(stdout)
         gtk.gdk.threads_enter()
@@ -441,7 +556,299 @@ class RepositoryManagerMenu(MenuSkel):
         my = SmQueueMenu(self.window)
         my.load(obj)
 
+    def clear_data_view(self):
+        ts_mode = self.DataView.get_selection().get_mode()
+        if ts_mode != self.data_tree_selection_mode:
+            self.DataView.get_selection().set_mode(self.data_tree_selection_mode)
+        self.DataView.set_rubber_banding(False)
+        self.DataStore.clear()
+        for col in self.DataView.get_columns():
+            self.DataView.remove_column(col)
+        children = self.DataViewBox.get_children()
+        for child in children:
+            self.DataViewBox.remove(child)
+
+    def collect_data_view_iters(self):
+        model, paths = self.DataView.get_selection().get_selected_rows()
+        if not model:
+            return [], model
+        data = []
+        for path in paths:
+            myiter = model.get_iter(path)
+            data.append(myiter)
+        return data, model
+
+    def glsa_data_view(self, queue_id):
+
+        key = None
+        while key not in ("processed","errored",):
+            item, key = self.get_item_by_queue_id(queue_id)
+            time.sleep(0.1)
+        if key == "errored":
+            return
+        item = item.copy()
+        status, data = item['result']
+        if not status:
+            return
+
+        self.clear_data_view()
+        self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.DataView.set_rubber_banding(True)
+
+        def is_affected(obj):
+            if obj['status'] == "[A]":
+                return False
+            elif obj['status'] == "[N]":
+                return True
+            else:
+                return False
+
+        def my_data_text( column, cell, model, myiter, property ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                if property == "glsa_id":
+                    cell.set_property('markup',cleanMarkupString(obj['number']))
+                elif property == "title":
+                    cell.set_property('markup',cleanMarkupString(obj['title']))
+                cell.set_property('cell-background',obj['color'])
+
+        def my_data_pix( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                affected = is_affected(obj)
+                if affected:
+                    cell.set_property( 'stock-id', 'gtk-cancel' )
+                else:
+                    cell.set_property( 'stock-id', 'gtk-apply' )
+                cell.set_property('cell-background',obj['color'])
+
+        def package_info_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+            atoms = set()
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                for atom in obj['packages']:
+                    for atom_info in obj['packages'][atom]:
+                        if atom_info.has_key('unaff_atoms'):
+                            atoms |= set(atom_info['unaff_atoms'])
+            if atoms:
+                self.on_repoManagerPkgInfo_clicked(None, atoms = atoms)
+
+        def adv_info_button_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                my = SecurityAdvisoryMenu(self.window)
+                item = obj['number'], is_affected(obj), obj
+                my.load(item)
+
+        # Package information
+        package_info_button = gtk.Button(label = _("Packages information"))
+        package_info_image = gtk.Image()
+        package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
+        package_info_button.set_image(package_info_image)
+        package_info_button.connect('clicked',package_info_clicked)
+        package_info_button.show()
+
+        # GLSA information button
+        adv_info_button = gtk.Button(label = _("Advisory information"))
+        adv_info_image = gtk.Image()
+        adv_info_image.set_from_stock(gtk.STOCK_EDIT, 4)
+        adv_info_button.set_image(adv_info_image)
+        adv_info_button.connect('clicked',adv_info_button_clicked)
+        adv_info_button.show()
+
+
+        self.DataViewBox.pack_start(package_info_button, False, False, 1)
+        self.DataViewBox.pack_start(adv_info_button, False, False, 1)
+        self.DataViewBox.show_all()
+
+        # selection pixmap
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _("Status"), cell )
+        column.set_cell_data_func( cell, my_data_pix )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 80 )
+        column.set_sort_column_id( -1 )
+        self.DataView.append_column( column )
+
+        # glsa id
+        self.create_text_column( self.DataView, _( "GLSA Id." ), 'glsa_id', size = 80, cell_data_func = my_data_text)
+
+        # glsa title
+        self.create_text_column( self.DataView, _( "Title" ), 'title', size = 300, cell_data_func = my_data_text, expand = True)
+
+        colors = ["#CDEEFF","#AFCBDA"]
+        counter = 0
+        for myid in data:
+            counter += 1
+            obj = data[myid].copy()
+            obj['color'] = colors[counter%len(colors)]
+            self.DataStore.append( None, (obj,) )
+        self.DataView.queue_draw()
+
+        self.set_notebook_page(self.notebook_pages['data'])
+
+
+    def categories_updates_data_view(self, queue_id, categories, expand = False, reload_function = None):
+
+        if reload_function == None:
+            def reload_function():
+                self.on_repoManagerCategoryUpdButton_clicked(None, categories = categories, expand = True)
+
+        key = None
+        while key not in ("processed","errored",):
+            item, key = self.get_item_by_queue_id(queue_id)
+            time.sleep(0.1)
+        if key == "errored":
+            return
+        item = item.copy()
+        status, data = item['result']
+        if not status:
+            return
+        self.clear_data_view()
+        self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.DataView.set_rubber_banding(True)
+
+        def my_data_text( column, cell, model, myiter, property ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                if obj.has_key('is_cat'):
+                    txt = "<big><b>%s</b></big>" % (obj['name'],)
+                    cell.set_property('markup',txt)
+                else:
+                    use_data = obj['use']['use_string'].split()
+                    max_chars = 100
+                    use_string = []
+                    for use in use_data:
+                        max_chars -= len(use)
+                        use_string.append(use)
+                        if max_chars < 0:
+                            use_string.append("\n")
+                            max_chars = 100
+                    use_string = ' '.join(use_string).strip()
+                    installed_string = ''
+                    available_string = ''
+                    if obj.has_key('installed_atom'):
+                        installed_string = '<b>%s</b>: %s\n' % (_("Installed"),cleanMarkupString(str(obj['installed_atom'])),)
+                    if obj.has_key('available_atom'):
+                        available_string = '<b>%s</b>: %s\n' % (_("Available"),cleanMarkupString(str(obj['available_atom'])),)
+                    txt = "<i>%s</i>\n<small><b>%s</b>: %s, <b>%s</b>: %s\n" % (
+                        cleanMarkupString(obj['atom']),
+                        _("Key"),
+                        cleanMarkupString(obj['key']),
+                        _("Slot"),
+                        cleanMarkupString(obj['slot']),
+                    )
+                    txt += installed_string
+                    txt += available_string
+                    txt += "<b>%s</b>: %s\n<b>%s</b>: %s</small>" % (
+                        _("Description"),
+                        cleanMarkupString(obj['description']),
+                        _("USE Flags"),
+                        cleanMarkupString(use_string),
+                    )
+                    cell.set_property('markup',txt)
+                cell.set_property('cell-background',obj['color'])
+
+        def compile_button_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            atoms = []
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                if obj:
+                    if obj.has_key('available_atom'):
+                        if not obj['available_atom']:
+                            continue
+                        atom = obj['available_atom']
+                    else:
+                        atom = obj['atom']
+                    atoms.append("="+atom)
+            if atoms:
+                self.on_compileAtom_clicked(None,atoms)
+
+        def add_use_button_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            atoms = []
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                if obj.has_key('key') and obj.has_key('slot'):
+                    atom_string = "%s:%s" % (obj['key'],obj['slot'],)
+                    atoms.append(atom_string)
+            if atoms:
+                status = self.on_addUseAtom_clicked(None, atoms = atoms, load_view = False)
+                if status:
+                    reload_function()
+
+        def remove_use_button_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            atoms = []
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                if obj.has_key('key') and obj.has_key('slot'):
+                    atom_string = "%s:%s" % (obj['key'],obj['slot'],)
+                    atoms.append(atom_string)
+            if atoms:
+                status = self.on_removeUseAtom_clicked(None, atoms = atoms, load_view = False)
+                if status:
+                    reload_function()
+
+        # Compile
+        compile_button = gtk.Button(label = _("Compile selected"))
+        compile_image = gtk.Image()
+        compile_image.set_from_stock(gtk.STOCK_GOTO_BOTTOM, 4)
+        compile_button.set_image(compile_image)
+        compile_button.connect('clicked',compile_button_clicked)
+        compile_button.show()
+
+        # Add USE flag
+        add_use_button = gtk.Button(label = _("Add USE"))
+        add_use_image = gtk.Image()
+        add_use_image.set_from_stock(gtk.STOCK_ADD, 4)
+        add_use_button.set_image(add_use_image)
+        add_use_button.connect('clicked',add_use_button_clicked)
+        add_use_button.show()
+
+        # Remove USE flag
+        remove_use_button = gtk.Button(label = _("Remove USE"))
+        remove_use_image = gtk.Image()
+        remove_use_image.set_from_stock(gtk.STOCK_REMOVE, 4)
+        remove_use_button.set_image(remove_use_image)
+        remove_use_button.connect('clicked',remove_use_button_clicked)
+        remove_use_button.show()
+
+
+        self.DataViewBox.pack_start(compile_button, False, False, 1)
+        self.DataViewBox.pack_start(add_use_button, False, False, 1)
+        self.DataViewBox.pack_start(remove_use_button, False, False, 1)
+        self.DataViewBox.show_all()
+
+        # atom
+        self.create_text_column( self.DataView, _( "Atom" ), 'atom', size = 220, cell_data_func = my_data_text, set_height = 110, expand = True)
+
+        colors = ["#D2FFB9","#B0D69B"]
+
+        counter = 0
+        for category in data:
+            counter += 1
+            master = {'is_cat': True, 'name': category, 'color': colors[counter%len(colors)]}
+            parent = self.DataStore.append( None, (master,) )
+            for atom in data[category]:
+                counter += 1
+                obj = data[category][atom].copy()
+                obj['atom'] = atom
+                obj['color'] = colors[counter%len(colors)]
+                self.DataStore.append( parent, (obj,) )
+        if expand:
+            self.DataView.expand_all()
+        self.DataView.queue_draw()
+
+        self.set_notebook_page(self.notebook_pages['data'])
+
     def on_repoManagerQueueDown_clicked(self, widget):
+
         ( model, iterator ) = self.QueueView.get_selection().get_selected()
         if not iterator: return
 
@@ -453,12 +860,20 @@ class RepositoryManagerMenu(MenuSkel):
                 item1 = item1.copy()
                 item2 = item2.copy()
                 self.wait_channel_call()
-                status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
-                self.channel_call = False
-                if status: self.QueueStore.swap(iterator,next_iterator)
+                try:
+                    status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
+                    if status:
+                        self.QueueStore.swap(iterator,next_iterator)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+                finally:
+                    self.release_channel_call()
+
                 self.update_queue_view()
 
     def on_repoManagerQueueUp_clicked(self, widget):
+
         ( model, next_iterator ) = self.QueueView.get_selection().get_selected()
         if not next_iterator: return
 
@@ -472,14 +887,111 @@ class RepositoryManagerMenu(MenuSkel):
                 item1 = item1.copy()
                 item2 = item2.copy()
                 self.wait_channel_call()
-                status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
-                self.channel_call = False
-                if status: self.QueueStore.swap(iterator,next_iterator)
+                try:
+                    status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
+                    if status:
+                        self.QueueStore.swap(iterator,next_iterator)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+                finally:
+                    self.release_channel_call()
                 self.update_queue_view()
+
+    def on_repoManagerCategoryUpdButton_clicked(self, widget, categories = [], expand = False):
+
+        def fake_callback(s):
+            return s
+
+        input_params = []
+        if not categories:
+            input_params += [
+                ('categories',_('Categories, space separated'),fake_callback,False),
+            ]
+        data = {}
+        data['categories'] = categories
+        if input_params:
+            mydata = self.Entropy.inputBox(
+                _('Insert categories'),
+                input_params,
+                cancel_button = True
+            )
+            if mydata == None: return
+            data.update(mydata)
+            if not categories:
+                data['categories'] = data['categories'].split()
+
+        if data['categories']:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.get_spm_categories_updates(data['categories'])
+                if status:
+                    t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, data['categories'], expand)
+                    t.start()
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+
+
+    def on_repoManagerCustomRunButton_clicked(self, widget):
+        command = self.sm_ui.repoManagerCustomCmdEntry.get_text().strip()
+        if not command:
+            return
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.run_custom_shell_command(command)
+            if status:
+                self.is_writing_output = True
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+    def on_repoManagerInstalledPackages_clicked(self, widget, categories = [], world = False):
+
+        def fake_callback_true(s):
+            return True
+
+        if world: categories = []
+        input_params = []
+        if not world:
+            input_params += [
+                ('categories',_('Categories, space separated'),fake_callback_true,False),
+            ]
+        data = {}
+        data['categories'] = categories
+        if input_params:
+            mydata = self.Entropy.inputBox(
+                _('Insert categories (if you want)'),
+                input_params,
+                cancel_button = True
+            )
+            if mydata == None: return
+            data.update(mydata)
+            if not categories:
+                data['categories'] = data['categories'].split()
+
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.get_spm_categories_installed(data['categories'])
+            if status:
+                def reload_function():
+                    self.on_repoManagerInstalledPackages_clicked(None, categories = data['categories'], world = world)
+                t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, data['categories'], expand = True, reload_function = reload_function)
+                t.start()
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
 
     def on_repoManagerRunButton_clicked(self, widget):
 
-        command = self.sm_ui.remoManagerRunEntry.get_text().strip()
+        command = self.sm_ui.repoManagerRunEntry.get_text().strip()
         if not command: return
         command = command.split()
         cmd = command[0]
@@ -507,18 +1019,26 @@ class RepositoryManagerMenu(MenuSkel):
         if len(evalued_params) < len(mandatory_cmds):
             okDialog(self.window, _("Not enough parameters"), title = _("Custom command Error"))
             return
-
+        self.wait_channel_call()
         try:
             cmd_data['call'](*evalued_params)
         except Exception, e:
             okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
+        finally:
+            self.release_channel_call()
 
     def on_repoManagerPauseQueueButton_toggled(self, widget):
+
         self.wait_channel_call()
         do_pause = not self.queue_pause
-        self.Service.Methods.pause_queue(do_pause)
+        try:
+            self.Service.Methods.pause_queue(do_pause)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
         self.queue_pause = do_pause
-        self.channel_call = False
 
     def on_repoManagerQueueView_row_activated(self, treeview, path, column):
         ( model, iterator ) = treeview.get_selection().get_selected()
@@ -528,10 +1048,20 @@ class RepositoryManagerMenu(MenuSkel):
                 self.load_queue_info_menu(obj)
 
     def on_repoManagerOutputPauseButton_toggled(self, widget):
+        if not self.output_pause:
+            if isinstance(self.is_processing,dict):
+                try:
+                    self.paused_queue_id = self.is_processing['queue_id']
+                except:
+                    pass
+        else:
+            # back from pause, schedule refresh
+            self.update_output_view(force = True, queue_id = self.paused_queue_id)
+            self.paused_queue_id = None
         self.output_pause = not self.output_pause
 
     def on_repoManagerQueueRefreshButton_clicked(self, widget):
-        self.Queue = None
+        self.Queue = {}
         self.update_queue_view()
 
     def on_repoManagerOutputCleanButton_clicked(self, widget):
@@ -540,6 +1070,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoOutputView.queue_draw()
 
     def on_repoManagerCleanQueue_clicked(self, widget):
+
         clear_ids = set()
         for item in self.QueueStore:
             obj = item[0]
@@ -547,38 +1078,259 @@ class RepositoryManagerMenu(MenuSkel):
                 continue
             clear_ids.add(obj['queue_id'])
         self.wait_channel_call()
-        for queue_id in clear_ids:
-            self.Service.Methods.remove_queue_id(queue_id)
-        self.channel_call = False
+        try:
+            self.Service.Methods.remove_queue_ids(clear_ids)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
 
     def on_repoManagerClose_clicked(self, *args, **kwargs):
         self.QueueUpdater.kill()
         self.OutputUpdater.kill()
+        self.PinboardUpdater.kill()
         self.destroy()
 
     def on_portageSync_clicked(self, widget):
+
         self.set_notebook_page(self.notebook_pages['output'])
         self.wait_channel_call()
-        self.Service.Methods.sync_spm()
-        self.channel_call = False
+        try:
+            self.Service.Methods.sync_spm()
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
 
-    def on_compileAtom_clicked(self, widget):
+    def on_removeAtom_clicked(self, widget, atoms = [], pretend = True, verbose = True, nocolor = True):
+
         def fake_callback(s):
             return s
         def fake_bool_cb(s):
             return True
-        input_params = [
-            ('atom',_('Atom'),fake_callback,False),
-            ('pretend',('checkbox',_('Pretend'),),fake_bool_cb,False,),
+        def fake_true_callback(s):
+            return True
+
+        input_params = []
+        data = {}
+        data['atoms'] = atoms
+        data['pretend'] = pretend
+        data['verbose'] = verbose
+        data['nocolor'] = nocolor
+        if not atoms:
+            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+        input_params += [
+            ('pretend',('checkbox',_('Pretend'),),fake_bool_cb,pretend,),
+            ('verbose',('checkbox',_('Verbose'),),fake_bool_cb,verbose,),
+            ('nocolor',('checkbox',_('No color'),),fake_bool_cb,nocolor,),
         ]
-        data = self.Entropy.inputBox(
+        mydata = self.Entropy.inputBox(
+            _('Insert packages removal parameters'),
+            input_params,
+            cancel_button = True
+        )
+        if mydata == None: return
+        data.update(mydata)
+        if not atoms:
+            data['atoms'] = data['atoms'].split()
+
+        self.set_notebook_page(self.notebook_pages['output'])
+        if data['atoms']:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.spm_remove_atoms(
+                    data['atoms'],
+                    data['pretend'],
+                    data['verbose'],
+                    data['nocolor'],
+                )
+                if status:
+                    self.is_writing_output = True
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+
+
+    def on_compileAtom_clicked(self, widget, atoms = [], pretend = False, oneshot = False, verbose = True, nocolor = True, custom_use = '', ldflags = '', cflags = ''):
+
+        def fake_callback(s):
+            return s
+        def fake_bool_cb(s):
+            return True
+        def fake_true_callback(s):
+            return True
+
+        input_params = []
+        data = {}
+        data['atoms'] = atoms
+        data['pretend'] = pretend
+        data['oneshot'] = oneshot
+        data['verbose'] = verbose
+        data['nocolor'] = nocolor
+        data['custom_use'] = custom_use
+        data['ldflags'] = ldflags
+        data['cflags'] = cflags
+        if not atoms:
+            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+        input_params += [
+            ('pretend',('checkbox',_('Pretend'),),fake_bool_cb,pretend,),
+            ('oneshot',('checkbox',_('Oneshot'),),fake_bool_cb,oneshot,),
+            ('verbose',('checkbox',_('Verbose'),),fake_bool_cb,verbose,),
+            ('nocolor',('checkbox',_('No color'),),fake_bool_cb,nocolor,),
+            ('custom_use',_('Custom USE flags'),fake_true_callback,False),
+            ('ldflags',_('Custom LDFLAGS'),fake_true_callback,False),
+            ('cflags',_('Custom CFLAGS'),fake_true_callback,False),
+        ]
+        mydata = self.Entropy.inputBox(
             _('Insert compilation parameters'),
             input_params,
             cancel_button = True
         )
-        if data == None: return
+        if mydata == None: return
+        data.update(mydata)
+        if not atoms:
+            data['atoms'] = data['atoms'].split()
+
         self.set_notebook_page(self.notebook_pages['output'])
-        self.Service.Methods.compile_atom(data['atom'])
+        if data['atoms']:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.compile_atoms(
+                    data['atoms'],
+                    data['pretend'],
+                    data['oneshot'],
+                    data['verbose'],
+                    data['nocolor'],
+                    data['custom_use'],
+                    data['ldflags'],
+                    data['cflags'],
+                )
+                if status:
+                    self.is_writing_output = True
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+
+    def on_repoManagerSpmInfo_clicked(self, widget):
+
+        self.set_notebook_page(self.notebook_pages['output'])
+
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.run_spm_info()
+            if status:
+                self.is_writing_output = True
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+    def handle_uses_for_atoms(self, atoms, use):
+
+        def fake_callback(s):
+            return s
+
+        input_params = []
+        data = {}
+        data['atoms'] = atoms
+        data['use'] = use
+        if not atoms:
+            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+        if not use:
+            input_params.append(('use',_('USE flags, space separated'),fake_callback,False),)
+        if input_params:
+            mydata = self.Entropy.inputBox(
+                _('Insert command parameters'),
+                input_params,
+                cancel_button = True
+            )
+            if mydata == None: return
+            data.update(mydata)
+            if not atoms:
+                data['atoms'] = data['atoms'].split()
+            if not use:
+                data['use'] = data['use'].split()
+        return data
+
+    def on_addUseAtom_clicked(self, widget, atoms = [], use = [], load_view = True):
+        data = self.handle_uses_for_atoms(atoms, use)
+        if data == None: return False
+        self.set_notebook_page(self.notebook_pages['data'])
+        if data['atoms'] and data['use']:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.enable_uses_for_atoms(data['atoms'], data['use'])
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+            if load_view and status:
+                self.on_repoManagerPkgInfo_clicked(None, atoms = data['atoms'])
+            return status
+
+    def on_removeUseAtom_clicked(self, widget, atoms = [], use = [], load_view = True):
+        data = self.handle_uses_for_atoms(atoms, use)
+        if data == None: return False
+        self.set_notebook_page(self.notebook_pages['data'])
+        if data['atoms'] and data['use']:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.disable_uses_for_atoms(data['atoms'], data['use'])
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+            if load_view and status:
+                self.on_repoManagerPkgInfo_clicked(None, atoms = data['atoms'])
+            return status
+
+    def on_repoManagerPkgInfo_clicked(self, widget, atoms = []):
+
+        def fake_callback(s):
+            return s
+
+        input_params = []
+        data = {}
+        data['atoms'] = atoms
+        if not atoms:
+            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+        if input_params:
+            mydata = self.Entropy.inputBox(
+                _('Insert Package Information parameters'),
+                input_params,
+                cancel_button = True
+            )
+            if mydata == None: return
+            data.update(mydata)
+            if not atoms:
+                data['atoms'] = data['atoms'].split()
+
+        if data['atoms']:
+            categories = []
+            for atom in data['atoms']:
+                categories.append(self.entropyTools.dep_getkey(atom).split("/")[0])
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.get_spm_atoms_info(data['atoms'])
+                if status:
+                    def reload_function():
+                        self.on_repoManagerPkgInfo_clicked(None, atoms = data['atoms'])
+                    t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, categories, expand = True, reload_function = reload_function)
+                    t.start()
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
 
     def on_repoManagerRemoveButton_clicked(self, widget):
         model, myiter = self.QueueView.get_selection().get_selected()
@@ -586,8 +1338,13 @@ class RepositoryManagerMenu(MenuSkel):
             obj = model.get_value( myiter, 0 )
             if obj and (obj['from'] != "processing"):
                 self.wait_channel_call()
-                self.Service.Methods.remove_queue_id(obj['queue_id'])
-                self.channel_call = False
+                try:
+                    self.Service.Methods.remove_queue_ids([obj['queue_id']])
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+                finally:
+                    self.release_channel_call()
 
     def on_repoManagerStopButton_clicked(self, widget):
         model, myiter = self.QueueView.get_selection().get_selected()
@@ -595,11 +1352,229 @@ class RepositoryManagerMenu(MenuSkel):
             obj = model.get_value( myiter, 0 )
             if obj and (obj['from'] == "processing"):
                 self.wait_channel_call()
-                self.Service.Methods.kill_processing_queue_id(obj['queue_id'])
-                self.channel_call = False
+                try:
+                    self.Service.Methods.kill_processing_queue_id(obj['queue_id'])
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+                finally:
+                    self.release_channel_call()
+
+    def on_repoManagerQueueGetOutputButton_clicked(self, widget, queue_id = None):
+
+        if self.is_writing_output:
+            return
+
+        def fake_callback_cb(s):
+            return True
+
+        model, myiter = self.QueueView.get_selection().get_selected()
+        if myiter:
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                queue_id = obj['queue_id']
+
+        if not queue_id: return
+
+        input_params = [
+            ('full',("checkbox",_('Full output'),),fake_callback_cb,False),
+        ]
+        data = self.Entropy.inputBox(
+            _('Insert output parameters'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+
+        mykwargs = {
+            'force': True,
+            'queue_id': queue_id,
+        }
+        if data['full']: mykwargs['n_bytes'] = 0
+
+        t = self.entropyTools.parallelTask(self.update_output_view, **mykwargs)
+        t.start()
+        self.set_notebook_page(self.notebook_pages['output'])
+
+    def on_repoManagerPinboardRefreshButton_clicked(self, widget):
+        t = self.entropyTools.parallelTask(self.update_pinboard_view, force = True)
+        t.start()
+
+    def on_repoManagerPinboardAddButton_clicked(self, widget):
+
+        def fake_callback(s):
+            return s
+
+        input_params = [
+            ('note',_('Note'),fake_callback,False),
+            ('extended_text',("text",_('Extended note'),),fake_callback,False),
+        ]
+        data = self.Entropy.inputBox(
+            _('Insert your new pinboard item'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        self.wait_channel_call()
+        try:
+            status, err_msg = self.Service.Methods.add_to_pinboard(data['note'],data['extended_text'])
+            if status:
+                self.on_repoManagerPinboardRefreshButton_clicked(widget)
+            else:
+                self.service_status_message(err_msg)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+    def _collect_pinboard_view_iters(self):
+        model, paths = self.PinboardView.get_selection().get_selected_rows()
+        if not model:
+            return [], model
+        data = []
+        for path in paths:
+            myiter = model.get_iter(path)
+            data.append(myiter)
+        return data, model
+
+    def on_repoManagerPinboardRemoveButton_clicked(self, widget):
+
+        myiters, model = self._collect_pinboard_view_iters()
+        if model == None: return
+        remove_ids = []
+        for myiter in myiters:
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                remove_ids.append(obj['pinboard_id'])
+
+        if remove_ids:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
+                if status:
+                    self.on_repoManagerPinboardRefreshButton_clicked(widget)
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+
+    def on_repoManagerPinboardDoneButton_clicked(self, widget):
+        self._set_pinboard_items_status(widget, True)
+
+
+    def on_repoManagerPinboardNotDoneButton_clicked(self, widget):
+        self._set_pinboard_items_status(widget, False)
+
+    def _set_pinboard_items_status(self, widget, status):
+
+        myiters, model = self._collect_pinboard_view_iters()
+        if model == None: return
+        done_ids = []
+        for myiter in myiters:
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                done_ids.append(obj['pinboard_id'])
+
+        if done_ids:
+            self.wait_channel_call()
+            try:
+                status, queue_id = self.Service.Methods.set_pinboard_items_done(done_ids, status)
+                if status:
+                    self.on_repoManagerPinboardRefreshButton_clicked(widget)
+            except Exception, e:
+                self.service_status_message(e)
+                return
+            finally:
+                self.release_channel_call()
+
+    def on_repoManagerPinboardView_row_activated(self, treeview, path, column):
+        model = treeview.get_model()
+        myiter = model.get_iter(path)
+        obj = model.get_value(myiter, 0)
+        if obj:
+            my = SmPinboardMenu(self.window)
+            my.load(obj.copy())
+
+    def on_repoManagerSecurityUpdatesButton_clicked(self, widget):
+        def fake_callback(s):
+            return s
+
+        input_params = [
+            ('list_type',('combo',(_('List type'),['affected', 'new', 'all']),),fake_callback,False),
+        ]
+        data = self.Entropy.inputBox(
+            _('Choose what kind of list you want to see'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.get_spm_glsa_data(data['list_type'][1])
+            if status:
+                t = self.entropyTools.parallelTask(self.glsa_data_view, queue_id)
+                t.start()
+            else:
+                self.service_status_message(queue_id)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
 
     def destroy(self):
         self.sm_ui.repositoryManager.destroy()
+
+class SmPinboardMenu(MenuSkel):
+
+    def __init__(self, window):
+
+        self.window = window
+        self.sm_ui = UI( const.GLADE_FILE, 'smPinboardInfo', 'entropy' )
+        self.sm_ui.signal_autoconnect(self._getAllMethods())
+        self.sm_ui.smPinboardInfo.set_transient_for(self.window)
+        self.sm_ui.smPinboardInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+
+    def on_smPinboardCloseButton_clicked(self, widget):
+        self.sm_ui.smPinboardInfo.hide()
+
+    def destroy(self):
+        self.sm_ui.smPinboardInfo.destroy()
+
+    def load(self, item):
+
+        na = _("N/A")
+        self.sm_ui.smPinboardId.set_text(unicode(item['pinboard_id']))
+        self.sm_ui.smPinboardDate.set_text(unicode(item['ts']))
+        self.sm_ui.smPinboardDone.set_text(unicode(item['done']))
+        self.sm_ui.smPinboardNote.set_text(item['note'])
+        mybuffer = gtk.TextBuffer()
+        mybuffer.set_text(item['extended_text'])
+        self.sm_ui.smPinboardExtendedNote.set_buffer(mybuffer)
+
+        bold_items = [
+            self.sm_ui.smPinboardIdLabel,
+            self.sm_ui.smPinboardDateLabel,
+            self.sm_ui.smPinboardDoneLabel,
+            self.sm_ui.smPinboardNoteLabel,
+            self.sm_ui.smPinboardExtendedNoteLabel
+        ]
+        small_items = [
+            self.sm_ui.smPinboardId,
+            self.sm_ui.smPinboardDate,
+            self.sm_ui.smPinboardDone,
+            self.sm_ui.smPinboardNote,
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<small><b>%s</b></small>" % (t,))
+        for item in small_items:
+            t = item.get_text()
+            item.set_markup("<small>%s</small>" % (t,))
+
+        self.sm_ui.smPinboardInfo.show_all()
 
 class SmQueueMenu(MenuSkel):
 
@@ -1423,6 +2398,175 @@ class PkgInfoMenu(MenuSkel):
             self.configProtectModel.append(None,[item,'mask'])
 
         self.pkginfo_ui.pkgInfo.show()
+
+class SecurityAdvisoryMenu(MenuSkel):
+
+    def __init__(self, window):
+
+        self.window = window
+        self.advinfo_ui = UI( const.GLADE_FILE , 'advInfo', 'entropy' )
+        self.advinfo_ui.signal_autoconnect(self._getAllMethods())
+        self.advinfo_ui.advInfo.set_transient_for(self.window)
+        self.advinfo_ui.advInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.setupAdvPropertiesView()
+
+    def setupAdvPropertiesView(self):
+
+        # affected view
+        self.affectedView = self.advinfo_ui.affectedView
+        self.affectedModel = gtk.TreeStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Package" ), cell, markup = 0 )
+        self.affectedView.append_column( column )
+        self.affectedView.set_model( self.affectedModel )
+
+        # bugs view
+        self.bugsView = self.advinfo_ui.bugsView
+        self.bugsModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Bug" ), cell, markup = 0 )
+        self.bugsView.append_column( column )
+        self.bugsView.set_model( self.bugsModel )
+
+        # references view
+        self.referencesView = self.advinfo_ui.referencesView
+        self.referencesModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Reference" ), cell, markup = 0 )
+        self.referencesView.append_column( column )
+        self.referencesView.set_model( self.referencesModel )
+
+    def load(self, item):
+
+        key, affected, data = item
+
+        adv_pixmap = const.PIXMAPS_PATH+'/button-glsa.png'
+        self.advinfo_ui.advImage.set_from_file(adv_pixmap)
+
+        glsa_idtext = "<b>GLSA</b>#<span foreground='#FF0000' weight='bold'>%s</span>" % (key,)
+        self.advinfo_ui.labelIdentifier.set_markup(glsa_idtext)
+
+        bold_items = [
+                        self.advinfo_ui.descriptionLabel,
+                        self.advinfo_ui.backgroundLabel,
+                        self.advinfo_ui.impactLabel,
+                        self.advinfo_ui.affectedLabel,
+                        self.advinfo_ui.bugsLabel,
+                        self.advinfo_ui.referencesLabel,
+                        self.advinfo_ui.revisedLabel,
+                        self.advinfo_ui.announcedLabel,
+                        self.advinfo_ui.synopsisLabel,
+                        self.advinfo_ui.workaroundLabel,
+                        self.advinfo_ui.resolutionLabel
+                     ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<b>%s</b>" % (t,))
+
+        # packages
+        if data.has_key('packages'):
+            packages_data = data['packages']
+        else:
+            packages_data = data['affected']
+        glsa_packages = '\n'.join([x for x in packages_data])
+        glsa_packages = "<span weight='bold' size='large'>%s</span>" % (glsa_packages,)
+        self.advinfo_ui.labelPackages.set_markup(glsa_packages)
+
+        # title
+        myurl = ''
+        if data.has_key('url'):
+            myurl = data['url']
+        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='#0000FF'>%s</span></small>" % (data['title'],myurl,))
+
+        # description
+        desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()
+        if data.has_key('description_items'):
+            if data['description_items']:
+                for item in data['description_items']:
+                    desc_text += '\n\t%s %s' % ("<span foreground='#FF0000'>(*)</span>",item,)
+        desc_text = desc_text.replace('!;\\n','')
+        desc_text = "<small>%s</small>" % (desc_text,)
+        self.advinfo_ui.descriptionTextLabel.set_markup(desc_text)
+
+        # background
+        back_text = ' '.join([x.strip() for x in data['background'].split("\n")]).strip()
+        back_text = "<small>%s</small>" % (back_text,)
+        back_text = back_text.replace('!;\\n','')
+        self.advinfo_ui.backgroundTextLabel.set_markup(back_text)
+
+        # impact
+        impact_text = ' '.join([x.strip() for x in data['impact'].split("\n")]).strip()
+        impact_text = impact_text.replace('!;\\n','')
+        impact_text = "<small>%s</small>" % (impact_text,)
+        self.advinfo_ui.impactTextLabel.set_markup(impact_text)
+        t = self.advinfo_ui.impactLabel.get_text()
+        t = "<b>%s</b>" % (t,)
+        t += " [<span foreground='darkgreen'>%s</span>:<span foreground='#0000FF'>%s</span>|<span foreground='darkgreen'>%s</span>:<span foreground='#FF0000'>%s</span>]" % (
+                    _("impact"),
+                    data['impacttype'],
+                    _("access"),
+                    data['access'],
+        )
+        self.advinfo_ui.impactLabel.set_markup(t)
+
+        # affected packages
+        self.affectedModel.clear()
+        self.affectedView.set_model( self.affectedModel )
+        for key in packages_data:
+            affected_data = packages_data[key][0]
+            vul_atoms = affected_data['vul_atoms']
+            unaff_atoms = affected_data['unaff_atoms']
+            parent = self.affectedModel.append(None,[key])
+            if vul_atoms:
+                myparent = self.affectedModel.append(parent,[_('Vulnerables')])
+                for atom in vul_atoms:
+                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
+            if unaff_atoms:
+                myparent = self.affectedModel.append(parent,[_('Unaffected')])
+                for atom in unaff_atoms:
+                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
+
+        # bugs
+        self.bugsModel.clear()
+        self.bugsView.set_model( self.bugsModel )
+        for bug in data['bugs']:
+            self.bugsModel.append([cleanMarkupString(bug)])
+
+        self.referencesModel.clear()
+        self.referencesView.set_model( self.referencesModel )
+        for reference in data['references']:
+            self.referencesModel.append([cleanMarkupString(reference)])
+
+        # announcedTextLabel
+        self.advinfo_ui.announcedTextLabel.set_markup(data['announced'])
+        # revisedTextLabel
+        self.advinfo_ui.revisedTextLabel.set_markup(data['revised'])
+
+        # synopsis
+        synopsis_text = ' '.join([x.strip() for x in data['synopsis'].split("\n")]).strip()
+        synopsis_text = "<small>%s</small>" % (synopsis_text,)
+        self.advinfo_ui.synopsisTextLabel.set_markup(synopsis_text)
+
+        # workaround
+        workaround_text = ' '.join([x.strip() for x in data['workaround'].split("\n")]).strip()
+        workaround_text = workaround_text.replace('!;\\n','')
+        workaround_text = "<small>%s</small>" % (workaround_text,)
+        self.advinfo_ui.workaroundTextLabel.set_markup(workaround_text)
+
+        # resolution
+
+        if isinstance(data['resolution'],list):
+            resolution_text = []
+            for resolution in data['resolution']:
+                resolution_text.append(' '.join([x.strip() for x in resolution.split("\n")]).strip())
+            resolution_text = '\n'.join(resolution_text)
+        else:
+            resolution_text = data['resolution'].replace('!;\\n','')
+            resolution_text = '\n'.join([x for x in resolution_text.strip().split("\n")])
+        resolution_text = "<small>%s</small>" % (resolution_text,)
+        self.advinfo_ui.resolutionTextLabel.set_markup(resolution_text)
+
+        self.advinfo_ui.advInfo.show()
 
 class UGCInfoMenu(MenuSkel):
 
@@ -2329,6 +3473,7 @@ class InputDialog:
     def __init__(self, parent, title, input_parameters, cancel = True):
 
         mywin = gtk.Window()
+        mywin.set_default_size(350, -1)
         mywin.set_transient_for(parent)
         mywin.set_title(_("Please fill the following form"))
         myvbox = gtk.VBox()
@@ -2366,13 +3511,36 @@ class InputDialog:
                     if combo_options:
                         input_widget.set_active(0)
                     mytable.attach(input_label, 0, 1, row_count, row_count+1)
+                elif input_type == "text":
+
+                    def rescroll_output(adj, scroll):
+                        adj.set_value(adj.upper-adj.page_size)
+                        scroll.set_vadjustment(adj)
+
+                    scrolled_win = gtk.ScrolledWindow()
+                    scrolled_win.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+                    scrolled_win.set_placement(gtk.CORNER_BOTTOM_LEFT)
+                    # textview
+                    input_widget = gtk.TextBuffer()
+                    output_scroll_vadj = scrolled_win.get_vadjustment()
+                    output_scroll_vadj.connect('changed', lambda a, s=scrolled_win: rescroll_output(a,s))
+
+                    my_tv = gtk.TextView()
+                    my_tv.set_buffer(input_widget)
+                    my_tv.set_wrap_mode(gtk.WRAP_WORD)
+                    my_tv.set_editable(True)
+                    my_tv.set_accepts_tab(True)
+                    scrolled_win.add_with_viewport(my_tv)
+                    mytable.attach(input_label, 0, 1, row_count, row_count+1)
+                    mytable.attach(scrolled_win, 1, 2, row_count, row_count+1)
                 else:
                     continue
 
                 self.entry_text_table[input_id] = text
                 self.identifiers_table[input_id] = input_widget
                 self.cb_table[input_widget] = input_cb
-                mytable.attach(input_widget, 1, 2, row_count, row_count+1)
+                if input_type != "text":
+                    mytable.attach(input_widget, 1, 2, row_count, row_count+1)
 
 
             else:
@@ -2427,6 +3595,8 @@ class InputDialog:
                 content = mywidget.get_active()
             elif isinstance(mywidget,gtk.ComboBox):
                 content = mywidget.get_active(),mywidget.get_active_text()
+            elif isinstance(mywidget,gtk.TextBuffer):
+                content = mywidget.get_text(mywidget.get_start_iter(),mywidget.get_end_iter(), True)
             else:
                 continue
             verify_cb = self.cb_table.get(mywidget)
@@ -2443,6 +3613,7 @@ class InputDialog:
         self.button_pressed = True
 
     def run(self):
+        self.parameters.clear()
         while not self.button_pressed:
             time.sleep(0.05)
             while gtk.events_pending():

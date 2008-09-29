@@ -563,7 +563,10 @@ class EntropyPackageView:
         time.sleep(5)
         obj.voted = 0
         gtk.gdk.threads_enter()
-        self.queueView.refresh()
+        try:
+            self.queueView.refresh()
+        except self.Equo.dbapi2.ProgrammingError:
+            pass
         self.view.queue_draw()
         gtk.gdk.threads_leave()
 

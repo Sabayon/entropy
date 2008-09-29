@@ -61,11 +61,9 @@ class SpritzController(Controller):
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
         addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
-
-        advinfo_ui = UI( const.GLADE_FILE , 'advInfo', 'entropy' )
         wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
         # init the Controller Class to connect signals.
-        Controller.__init__( self, ui, addrepo_ui, wait_ui, advinfo_ui )
+        Controller.__init__( self, ui, addrepo_ui, wait_ui )
 
         self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
@@ -802,122 +800,6 @@ class SpritzController(Controller):
 
             self.queueView.refresh()
 
-    def loadAdvInfoMenu(self, item):
-
-        key, affected, data = item
-
-        adv_pixmap = const.PIXMAPS_PATH+'/button-glsa.png'
-        self.advinfo_ui.advImage.set_from_file(adv_pixmap)
-
-        glsa_idtext = "<b>GLSA</b>#<span foreground='#FF0000' weight='bold'>%s</span>" % (key,)
-        self.advinfo_ui.labelIdentifier.set_markup(glsa_idtext)
-
-        bold_items = [
-                        self.advinfo_ui.descriptionLabel,
-                        self.advinfo_ui.backgroundLabel,
-                        self.advinfo_ui.impactLabel,
-                        self.advinfo_ui.affectedLabel,
-                        self.advinfo_ui.bugsLabel,
-                        self.advinfo_ui.referencesLabel,
-                        self.advinfo_ui.revisedLabel,
-                        self.advinfo_ui.announcedLabel,
-                        self.advinfo_ui.synopsisLabel,
-                        self.advinfo_ui.workaroundLabel,
-                        self.advinfo_ui.resolutionLabel
-                     ]
-        for item in bold_items:
-            t = item.get_text()
-            item.set_markup("<b>%s</b>" % (t,))
-
-        # packages
-        packages_data = data['affected']
-        glsa_packages = '\n'.join([x for x in packages_data])
-        glsa_packages = "<span weight='bold' size='large'>%s</span>" % (glsa_packages,)
-        self.advinfo_ui.labelPackages.set_markup(glsa_packages)
-
-        # title
-        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='#0000FF'>%s</span></small>" % (data['title'],data['url'],))
-
-        # description
-        desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()
-        if data['description_items']:
-            for item in data['description_items']:
-                desc_text += '\n\t%s %s' % ("<span foreground='#FF0000'>(*)</span>",item,)
-        desc_text = "<small>%s</small>" % (desc_text,)
-        self.advinfo_ui.descriptionTextLabel.set_markup(desc_text)
-
-        # background
-        back_text = ' '.join([x.strip() for x in data['background'].split("\n")]).strip()
-        back_text = "<small>%s</small>" % (back_text,)
-        self.advinfo_ui.backgroundTextLabel.set_markup(back_text)
-
-        # impact
-        impact_text = ' '.join([x.strip() for x in data['impact'].split("\n")]).strip()
-        impact_text = "<small>%s</small>" % (impact_text,)
-        self.advinfo_ui.impactTextLabel.set_markup(impact_text)
-        t = self.advinfo_ui.impactLabel.get_text()
-        t = "<b>%s</b>" % (t,)
-        t += " [<span foreground='darkgreen'>%s</span>:<span foreground='#0000FF'>%s</span>|<span foreground='darkgreen'>%s</span>:<span foreground='#FF0000'>%s</span>]" % (
-                    _("impact"),
-                    data['impacttype'],
-                    _("access"),
-                    data['access'],
-        )
-        self.advinfo_ui.impactLabel.set_markup(t)
-
-        # affected packages
-        self.affectedModel.clear()
-        self.affectedView.set_model( self.affectedModel )
-        for key in data['affected']:
-            affected_data = data['affected'][key][0]
-            vul_atoms = affected_data['vul_atoms']
-            unaff_atoms = affected_data['unaff_atoms']
-            parent = self.affectedModel.append(None,[key])
-            if vul_atoms:
-                myparent = self.affectedModel.append(parent,[_('Vulnerables')])
-                for atom in vul_atoms:
-                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
-            if unaff_atoms:
-                myparent = self.affectedModel.append(parent,[_('Unaffected')])
-                for atom in unaff_atoms:
-                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
-
-        # bugs
-        self.bugsModel.clear()
-        self.bugsView.set_model( self.bugsModel )
-        for bug in data['bugs']:
-            self.bugsModel.append([cleanMarkupString(bug)])
-
-        self.referencesModel.clear()
-        self.referencesView.set_model( self.referencesModel )
-        for reference in data['references']:
-            self.referencesModel.append([cleanMarkupString(reference)])
-
-        # announcedTextLabel
-        self.advinfo_ui.announcedTextLabel.set_markup(data['announced'])
-        # revisedTextLabel
-        self.advinfo_ui.revisedTextLabel.set_markup(data['revised'])
-
-        # synopsis
-        synopsis_text = ' '.join([x.strip() for x in data['synopsis'].split("\n")]).strip()
-        synopsis_text = "<small>%s</small>" % (synopsis_text,)
-        self.advinfo_ui.synopsisTextLabel.set_markup(synopsis_text)
-
-        # workaround
-        workaround_text = ' '.join([x.strip() for x in data['workaround'].split("\n")]).strip()
-        workaround_text = "<small>%s</small>" % (workaround_text,)
-        self.advinfo_ui.workaroundTextLabel.set_markup(workaround_text)
-
-        # resolution
-        resolution_text = []
-        for resolution in data['resolution']:
-            resolution_text.append(' '.join([x.strip() for x in resolution.split("\n")]).strip())
-        resolution_text = '\n'.join(resolution_text)
-        resolution_text = "<small>%s</small>" % (resolution_text,)
-        self.advinfo_ui.resolutionTextLabel.set_markup(resolution_text)
-
-        self.advinfo_ui.advInfo.show()
-
 
     def on_adv_doubleclick( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
@@ -926,6 +808,10 @@ class SpritzController(Controller):
             data = model.get_value( iterator, 0 )
             if data:
                 self.loadAdvInfoMenu(data)
+
+    def loadAdvInfoMenu(self, item):
+        my = SecurityAdvisoryMenu(self.ui.main)
+        my.load(item)
 
     def loadPkgInfoMenu(self, pkg):
         mymenu = PkgInfoMenu(self.Equo, pkg, self.ui.main)
@@ -981,10 +867,6 @@ class SpritzController(Controller):
 
     def destroy_read_license_dialog( self, widget ):
         self.read_license_dialog.destroy()
-
-    def on_advInfo_delete_event(self, widget, path):
-        self.advinfo_ui.advInfo.hide()
-        return True
 
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''
@@ -1180,7 +1062,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
         self.console.set_pty(self.pty[0])
         self.resetProgressText()
         self.pkgProperties_selected = None
-        self.setupAdvPropertiesView()
         self.setupPreferences()
 
         self.setupUgc()
@@ -1572,32 +1453,6 @@ class SpritzApplication(SpritzController,SpritzGUI):
 
     def setupAdvisories(self):
         self.Advisories = self.Equo.Security()
-
-    def setupAdvPropertiesView(self):
-
-        # affected view
-        self.affectedView = self.advinfo_ui.affectedView
-        self.affectedModel = gtk.TreeStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Package" ), cell, markup = 0 )
-        self.affectedView.append_column( column )
-        self.affectedView.set_model( self.affectedModel )
-
-        # bugs view
-        self.bugsView = self.advinfo_ui.bugsView
-        self.bugsModel = gtk.ListStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Bug" ), cell, markup = 0 )
-        self.bugsView.append_column( column )
-        self.bugsView.set_model( self.bugsModel )
-
-        # references view
-        self.referencesView = self.advinfo_ui.referencesView
-        self.referencesModel = gtk.ListStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Reference" ), cell, markup = 0 )
-        self.referencesView.append_column( column )
-        self.referencesView.set_model( self.referencesModel )
 
     def setupEditor(self):
 

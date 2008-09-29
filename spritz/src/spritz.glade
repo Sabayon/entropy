@@ -6570,7 +6570,6 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     <property name="modal">True</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <property name="default_width">530</property>
-    <signal name="delete_event" handler="on_advInfo_delete_event"/>
     <child>
       <widget class="GtkVBox" id="vbox47">
         <property name="visible">True</property>
@@ -8112,7 +8111,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
   </widget>
   <widget class="GtkWindow" id="repositoryManager">
-    <property name="width_request">640</property>
+    <property name="width_request">800</property>
     <property name="height_request">500</property>
     <property name="title" translatable="yes">Entropy Repository Manager</property>
     <property name="window_position">GTK_WIN_POS_CENTER_ALWAYS</property>
@@ -8128,14 +8127,17 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
             <child>
               <widget class="GtkVBox" id="vbox74">
                 <property name="visible">True</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkHBox" id="hbox53">
                     <property name="visible">True</property>
+                    <property name="spacing">2</property>
                     <child>
                       <widget class="GtkButton" id="portageSync">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">emerge --sync ? (o;</property>
                         <property name="response_id">0</property>
                         <signal name="clicked" handler="on_portageSync_clicked"/>
                         <child>
@@ -8150,8 +8152,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <child>
                               <widget class="GtkLabel" id="label50">
                                 <property name="visible">True</property>
-                                <property name="tooltip" translatable="yes">emerge --sync</property>
-                                <property name="label" translatable="yes">Sync</property>
+                                <property name="label" translatable="yes">Spm Sync</property>
                               </widget>
                               <packing>
                                 <property name="position">1</property>
@@ -8166,27 +8167,26 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkButton" id="compileAtom">
+                      <widget class="GtkButton" id="repoManagerSpmInfo">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="tooltip" translatable="yes">Compile a package on the remote server</property>
+                        <property name="tooltip" translatable="yes">Get Spm environment information</property>
                         <property name="response_id">0</property>
-                        <signal name="clicked" handler="on_compileAtom_clicked"/>
+                        <signal name="clicked" handler="on_repoManagerSpmInfo_clicked"/>
                         <child>
-                          <widget class="GtkHBox" id="hbox49">
+                          <widget class="GtkHBox" id="hbox61">
                             <property name="visible">True</property>
                             <child>
-                              <widget class="GtkImage" id="image39">
+                              <widget class="GtkImage" id="image50">
                                 <property name="visible">True</property>
-                                <property name="stock">gtk-goto-bottom</property>
+                                <property name="stock">gtk-help</property>
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label51">
+                              <widget class="GtkLabel" id="label59">
                                 <property name="visible">True</property>
-                                <property name="tooltip" translatable="yes">emerge --sync</property>
-                                <property name="label" translatable="yes">Compile atom</property>
+                                <property name="label" translatable="yes">Spm Info</property>
                               </widget>
                               <packing>
                                 <property name="position">1</property>
@@ -8202,26 +8202,26 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkButton" id="button3">
+                      <widget class="GtkButton" id="repoManagerPkgInfo">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="tooltip" translatable="yes">Compile a package on the remote server</property>
+                        <property name="tooltip" translatable="yes">Get package information</property>
                         <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerPkgInfo_clicked"/>
                         <child>
-                          <widget class="GtkHBox" id="hbox51">
+                          <widget class="GtkHBox" id="hbox59">
                             <property name="visible">True</property>
                             <child>
-                              <widget class="GtkImage" id="image40">
+                              <widget class="GtkImage" id="image49">
                                 <property name="visible">True</property>
-                                <property name="stock">gtk-media-forward</property>
+                                <property name="stock">gtk-zoom-in</property>
                               </widget>
                             </child>
                             <child>
-                              <widget class="GtkLabel" id="label52">
+                              <widget class="GtkLabel" id="label58">
                                 <property name="visible">True</property>
-                                <property name="tooltip" translatable="yes">emerge --sync</property>
-                                <property name="label" translatable="yes">Get category updates</property>
+                                <property name="label" translatable="yes">Package Info</property>
                               </widget>
                               <packing>
                                 <property name="position">1</property>
@@ -8237,6 +8237,40 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       </packing>
                     </child>
                     <child>
+                      <widget class="GtkButton" id="repoManagerSecurityUpdatesButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerSecurityUpdatesButton_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox72">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image57">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-about</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label68">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Security updates</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
                       <placeholder/>
                     </child>
                     <child>
@@ -8246,6 +8280,226 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkHBox" id="hbox60">
+                    <property name="visible">True</property>
+                    <property name="spacing">2</property>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerInstalledPackages">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">Get updates related to the chosen categories</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerInstalledPackages_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox65">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image51">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-harddisk</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label60">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Installed Packages</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerCategoryUpdButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">Get updates related to the chosen categories</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerCategoryUpdButton_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox51">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image40">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-new</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label52">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Updates</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="compileAtom">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">Compile packages on the remote server</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_compileAtom_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox49">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image39">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-goto-bottom</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label51">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Compile atoms</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="removeAtom">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">Remove packages on the remote server</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_removeAtom_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox66">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image52">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-goto-top</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label61">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Remove atoms</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="addUseAtom">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">Add USE flags on atoms</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_addUseAtom_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox57">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image47">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-add</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label54">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Add USE</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="removeUseAtom">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="tooltip" translatable="yes">Remove USE flags on atoms</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_removeUseAtom_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox58">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image48">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-add</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label57">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Remove USE</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
               </widget>
@@ -8320,13 +8574,13 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
           <widget class="GtkVBox" id="vbox92">
             <property name="visible">True</property>
             <child>
-              <widget class="GtkHBox" id="hbox55">
+              <widget class="GtkHBox" id="hbox68">
                 <property name="visible">True</property>
                 <child>
-                  <widget class="GtkLabel" id="label46">
+                  <widget class="GtkLabel" id="label64">
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
-                    <property name="label" translatable="yes">Custom command</property>
+                    <property name="label" translatable="yes">Custom shell command</property>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -8335,7 +8589,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkEntry" id="remoManagerRunEntry">
+                  <widget class="GtkEntry" id="repoManagerCustomCmdEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </widget>
@@ -8344,14 +8598,14 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkButton" id="repoManagerRunButton">
+                  <widget class="GtkButton" id="repoManagerCustomRunButton">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="label" translatable="yes">gtk-execute</property>
                     <property name="use_stock">True</property>
                     <property name="response_id">0</property>
-                    <signal name="clicked" handler="on_repoManagerRunButton_clicked"/>
+                    <signal name="clicked" handler="on_repoManagerCustomRunButton_clicked"/>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -8360,6 +8614,9 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
               </widget>
+              <packing>
+                <property name="expand">False</property>
+              </packing>
             </child>
           </widget>
           <packing>
@@ -8545,6 +8802,40 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="position">4</property>
                       </packing>
                     </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerQueueGetOutputButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerQueueGetOutputButton_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox71">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image56">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-file</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label67">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Get output</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
                   </widget>
                   <packing>
                     <property name="expand">False</property>
@@ -8568,6 +8859,51 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
               <widget class="GtkVBox" id="vbox91">
                 <property name="visible">True</property>
                 <child>
+                  <widget class="GtkHBox" id="hbox55">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkLabel" id="label46">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Custom command</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="padding">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkEntry" id="repoManagerRunEntry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerRunButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="label" translatable="yes">gtk-execute</property>
+                        <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerRunButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                  </packing>
+                </child>
+                <child>
                   <widget class="GtkScrolledWindow" id="scrolledwindow27">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -8581,6 +8917,9 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       </widget>
                     </child>
                   </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
                 </child>
               </widget>
               <packing>
@@ -8616,6 +8955,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                     </child>
                   </widget>
                 </child>
+                <child>
+                  <widget class="GtkHBox" id="repoManagerDataViewBox">
+                    <property name="visible">True</property>
+                    <property name="spacing">5</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
                 <property name="position">2</property>
@@ -8647,6 +8999,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
+                        <property name="wrap_mode">GTK_WRAP_CHAR</property>
                       </widget>
                     </child>
                   </widget>
@@ -8703,9 +9056,180 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
+            <child>
+              <widget class="GtkVBox" id="vbox95">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow34">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTreeView" id="repoManagerPinboardView">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="headers_clickable">True</property>
+                        <signal name="row_activated" handler="on_repoManagerPinboardView_row_activated"/>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkHBox" id="hbox67">
+                    <property name="visible">True</property>
+                    <property name="spacing">2</property>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerPinboardAddButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="label" translatable="yes">gtk-add</property>
+                        <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerPinboardAddButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerPinboardRemoveButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="label" translatable="yes">gtk-remove</property>
+                        <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerPinboardRemoveButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerPinboardDoneButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerPinboardDoneButton_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox69">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image53">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-apply</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label65">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Done</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerPinboardNotDoneButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerPinboardNotDoneButton_clicked"/>
+                        <child>
+                          <widget class="GtkHBox" id="hbox70">
+                            <property name="visible">True</property>
+                            <child>
+                              <widget class="GtkImage" id="image54">
+                                <property name="visible">True</property>
+                                <property name="stock">gtk-undo</property>
+                              </widget>
+                            </child>
+                            <child>
+                              <widget class="GtkLabel" id="label66">
+                                <property name="visible">True</property>
+                                <property name="label" translatable="yes">Not done</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="repoManagerPinboardRefreshButton">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="label" translatable="yes">gtk-refresh</property>
+                        <property name="use_stock">True</property>
+                        <property name="response_id">0</property>
+                        <signal name="clicked" handler="on_repoManagerPinboardRefreshButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">4</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label62">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Pinboard View</property>
+              </widget>
+              <packing>
+                <property name="type">tab</property>
+                <property name="position">4</property>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkStatusbar" id="repoManagerStatusbar">
+            <property name="visible">True</property>
+            <property name="spacing">2</property>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">3</property>
           </packing>
         </child>
       </widget>
@@ -8773,6 +9297,9 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="n_rows">5</property>
                             <property name="n_columns">2</property>
                             <child>
+                              <placeholder/>
+                            </child>
+                            <child>
                               <widget class="GtkEntry" id="connManagerHostnameEntry">
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
@@ -8782,9 +9309,6 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <property name="left_attach">1</property>
                                 <property name="right_attach">2</property>
                               </packing>
-                            </child>
-                            <child>
-                              <placeholder/>
                             </child>
                             <child>
                               <widget class="GtkCheckButton" id="connManagerSSLCheckButton">
@@ -8983,6 +9507,8 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smProcessResultL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                        <property name="wrap_mode">PANGO_WRAP_CHAR</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -8995,6 +9521,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smStdoutFileL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9007,6 +9534,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smErroredAtL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9019,6 +9547,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smCompletedAtL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9031,6 +9560,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smProcessingAtL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9043,6 +9573,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smQueuedAtL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9055,6 +9586,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smUserGroupL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9067,6 +9599,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smCallL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9079,6 +9612,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smCommandArgsL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9091,6 +9625,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smCommandDescL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9103,6 +9638,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smCommandNameL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9115,6 +9651,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkLabel" id="smQueueIdL">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="wrap">True</property>
                       </widget>
                       <packing>
                         <property name="left_attach">1</property>
@@ -9264,6 +9801,189 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
             <signal name="clicked" handler="on_smQueueCloseButton_clicked"/>
             <child>
               <widget class="GtkImage" id="image41">
+                <property name="visible">True</property>
+                <property name="stock">gtk-close</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="type">label_item</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="smPinboardInfo">
+    <property name="width_request">400</property>
+    <property name="height_request">300</property>
+    <property name="title" translatable="yes">Pinboard Item Information</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
+    <property name="decorated">False</property>
+    <child>
+      <widget class="GtkFrame" id="frame10">
+        <property name="visible">True</property>
+        <property name="label_xalign">1</property>
+        <property name="shadow_type">GTK_SHADOW_IN</property>
+        <child>
+          <widget class="GtkAlignment" id="alignment20">
+            <property name="visible">True</property>
+            <property name="top_padding">6</property>
+            <property name="bottom_padding">6</property>
+            <property name="left_padding">12</property>
+            <property name="right_padding">12</property>
+            <child>
+              <widget class="GtkVBox" id="vbox96">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkTable" id="table10">
+                    <property name="visible">True</property>
+                    <property name="n_rows">4</property>
+                    <property name="n_columns">2</property>
+                    <property name="column_spacing">8</property>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardNote">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardDone">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardDate">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardId">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="wrap">True</property>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardNoteLabel">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Note</property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">3</property>
+                        <property name="bottom_attach">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardDoneLabel">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Done</property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardDateLabel">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Date</property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardIdLabel">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Pinboard Id</property>
+                      </widget>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkVBox" id="vbox97">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkLabel" id="smPinboardExtendedNoteLabel">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Extended note</property>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkScrolledWindow" id="scrolledwindow35">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                        <child>
+                          <widget class="GtkTextView" id="smPinboardExtendedNote">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                          </widget>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </widget>
+            </child>
+          </widget>
+        </child>
+        <child>
+          <widget class="GtkButton" id="smPinboardCloseButton">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="response_id">0</property>
+            <signal name="clicked" handler="on_smPinboardCloseButton_clicked"/>
+            <child>
+              <widget class="GtkImage" id="image55">
                 <property name="visible">True</property>
                 <property name="stock">gtk-close</property>
               </widget>
