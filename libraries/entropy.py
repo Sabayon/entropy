@@ -21386,7 +21386,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'sync_spm', [], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'sync_spm', [], {}, False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21441,7 +21441,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'cflags': cflags,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms][:], add_dict.copy())
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms][:], add_dict.copy(), False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21483,7 +21483,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'nocolor': nocolor,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms][:], add_dict.copy())
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms][:], add_dict.copy(), False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21495,7 +21495,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_updates', [myargs], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_updates', [myargs], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21507,7 +21507,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_installed', [myargs], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_installed', [myargs], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21532,7 +21532,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'enable_uses_for_atoms', [atoms,useflags], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'enable_uses_for_atoms', [atoms,useflags], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21557,7 +21557,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'disable_uses_for_atoms', [atoms,useflags], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'disable_uses_for_atoms', [atoms,useflags], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21569,7 +21569,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_atoms_info', [myargs], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_atoms_info', [myargs], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21579,7 +21579,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_spm_info', [], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_spm_info', [], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21592,7 +21592,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         gid = userdata.get('gid')
         command = ' '.join(myargs)
 
-        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {}, False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21604,7 +21604,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_glsa_data', [myargs[0]], {})
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_glsa_data', [myargs[0]], {}, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -21973,6 +21973,7 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         self.stdout_logging = stdout_logging
         self.QueueProcessor = None
+        self.QueueProcessorParallel = None
         self.QueueLock = thread.allocate_lock()
         self.PinboardLock = thread.allocate_lock()
         self.do_ssl = do_ssl
@@ -22011,7 +22012,7 @@ class SystemManagerServerInterface(SocketHostInterface):
             **kwargs
         )
         self.fork_requests = fork_requests
-        self.load_queue_processor()
+        self.load_queue_processors()
         # here we can put anything that must be loaded before the queue processor execution
         self.play_queue()
 
@@ -22108,10 +22109,11 @@ class SystemManagerServerInterface(SocketHostInterface):
         finally:
             self.pinboard_lock_release()
 
-    def load_queue_processor(self):
-        self.QueueProcessor = self.entropyTools.parallelTask(self.queue_processor)
-        self.QueueProcessor.parallel_wait()
+    def load_queue_processors(self):
+        self.QueueProcessor = self.entropyTools.parallelTask(self.queue_processor, False)
         self.QueueProcessor.start()
+        self.QueueProcessorParallel = self.entropyTools.parallelTask(self.queue_processor, True)
+        self.QueueProcessorParallel.start()
 
     def queue_lock_acquire(self):
         self.QueueLock.acquire()
@@ -22162,7 +22164,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         return True
 
 
-    def add_to_queue(self, command_name, command_text, user_id, group_id, function, args, kwargs):
+    def add_to_queue(self, command_name, command_text, user_id, group_id, function, args, kwargs, do_parallel):
 
         if function not in self.SystemExecutor.available_commands:
             return -1
@@ -22184,6 +22186,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                 'queue_ts': "%s" % (self.get_ts(),),
                 'kill': False,
                 'processing_pid': None,
+                'do_parallel': do_parallel,
             }
             self.ManagerQueue['queue'][queue_id] = myqueue_dict
             self.ManagerQueue['queue_order'].append(queue_id)
@@ -22279,7 +22282,18 @@ class SystemManagerServerInterface(SocketHostInterface):
                 return item, key
         return None, None
 
-    def queue_processor(self):
+    def _pop_item_from_queue_by_parallel(self, parallel):
+        self.queue_lock_acquire()
+        try:
+            for idx in range(len(self.ManagerQueue['queue_order'])):
+                queue_id = self.ManagerQueue['queue_order'][idx]
+                if parallel == self.ManagerQueue['queue'][queue_id]['do_parallel']:
+                    return self.ManagerQueue['queue'].pop(queue_id), self.ManagerQueue['queue_order'].pop(idx)
+        finally:
+            self.queue_lock_release()
+        return None, None
+
+    def queue_processor(self, parallel_mode):
 
         def do_store_and_free():
             self.store_queue()
@@ -22305,14 +22319,12 @@ class SystemManagerServerInterface(SocketHostInterface):
                 time.sleep(0.1)
                 continue
 
-            wait_and_takeover()
-
-            queue_id = self.ManagerQueue['queue_order'].pop(0)
-            try:
-                command_data = self.ManagerQueue['queue'].pop(queue_id)
-            except KeyError:
-                do_store_and_free()
+            command_data, queue_id = self._pop_item_from_queue_by_parallel(parallel_mode)
+            if not command_data:
+                time.sleep(0.5)
                 continue
+
+            wait_and_takeover()
             command_data['processing_ts'] = "%s" % (self.get_ts(),)
             self.ManagerQueue['processing'][queue_id] = command_data
             self.ManagerQueue['processing_order'].append(queue_id)
@@ -22361,6 +22373,8 @@ class SystemManagerServerInterface(SocketHostInterface):
         SocketHostInterface.killall(self)
         if self.QueueProcessor != None:
             self.QueueProcessor.kill()
+        if self.QueueProcessorParallel != None:
+            self.QueueProcessorParallel.kill()
 
 
 class SystemManagerClientCommands(EntropySocketClientCommands):
