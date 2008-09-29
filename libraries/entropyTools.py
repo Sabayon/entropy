@@ -2052,7 +2052,10 @@ def dict_from_xml(xml_string):
     for item in items:
         key = item.getAttribute('value')
         if not key: continue
-        data = item.firstChild.data
+        try:
+            data = item.firstChild.data
+        except AttributeError:
+            data = ''
         mydict[key] = data
     return mydict
 
