@@ -454,7 +454,7 @@ def database(options):
                     atomslot = Equo.clientDbconn.retrieveSlot(x[1])
                     add = True
                     for pkgdata in toBeAdded:
-                        addslot = Spm.get_package_slot(pkgdata[0])
+                        addslot = Spm.get_installed_package_slot(pkgdata[0])
                         addkey = Equo.entropyTools.dep_getkey(pkgdata[0])
                         # workaround for ebuilds not having slot
                         if addslot == None:

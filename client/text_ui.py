@@ -317,7 +317,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         items = Equo.get_meant_packages(package)
                         if items:
                             items_cache = set()
-                            mytxt = "%s %s %s %s %s." % (
+                            mytxt = "%s %s %s %s %s" % (
                                 bold("   ?"),
                                 red(_("When you wrote")),
                                 bold(package),
@@ -910,6 +910,25 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                         red(_("is not installed")),
                     )
                     print_warning(mytxt)
+                    if len(package) < 4:
+                        continue
+                    items = Equo.get_meant_packages(package, from_installed = True)
+                    if items:
+                        items_cache = set()
+                        mytxt = "%s %s %s %s %s" % (
+                            bold("   ?"),
+                            red(_("When you wrote")),
+                            bold(package),
+                            darkgreen(_("You Meant(tm)")),
+                            red(_("one of these below?")),
+                        )
+                        print_info(mytxt)
+                        for match in items:
+                            key, slot = Equo.clientDbconn.retrieveKeySlot(match[0])
+                            if (key,slot) not in items_cache:
+                                print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
+                            items_cache.add((key, slot))
+                        del items_cache
                     continue
                 foundAtoms.append(idpackage)
 
