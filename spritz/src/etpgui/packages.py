@@ -1,5 +1,5 @@
 #!/usr/bin/python -tt
-# -*- coding: utf-8 -*-
+# -*- coding: iso-8859-1 -*-
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -42,7 +42,7 @@ class DummyEntropyPackage:
 class EntropyPackage:
 
     import entropyTools
-    def __init__(self, matched_atom, avail):
+    def __init__(self, matched_atom, avail, remote = None):
 
         self.queued = None
         self.action = None
@@ -52,16 +52,28 @@ class EntropyPackage:
         self.masked = None
         self.voted = 0
         self.color = SpritzConf.color_normal
+        self.remote = remote
 
-        if matched_atom[1] == 0:
-            self.dbconn = EquoConnection.clientDbconn
-            self.from_installed = True
-        else:
-            self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
+        if self.remote:
+            self.dbconn = EquoConnection.openMemoryDatabase()
+            idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
+            self.matched_atom = (idpackage,matched_atom[1])
             self.from_installed = False
+        else:
+            if matched_atom[1] == 0:
+                self.dbconn = EquoConnection.clientDbconn
+                self.from_installed = True
+            else:
+                self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
+                self.from_installed = False
 
         self.matched_atom = matched_atom
         self.installed_match = None
+
+    def __del__(self):
+        if hasattr(self,'remote'):
+            if self.remote:
+                self.dbconn.closeDB()
 
     def __str__(self):
         return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
@@ -317,9 +329,8 @@ class EntropyPackage:
         return "No ChangeLog"
 
     def get_filelist( self ):
-        c = list(self.dbconn.retrieveContent(self.matched_atom[0]))
-        c.sort()
-        return c
+        mycont = sorted(list(self.dbconn.retrieveContent(self.matched_atom[0])))
+        return mycont
 
     def get_filelist_ext( self ):
         c = self.dbconn.retrieveContent(self.matched_atom[0], extended = True)

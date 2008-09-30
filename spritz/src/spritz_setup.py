@@ -106,9 +106,9 @@ class const:
 
     SETUP_PROGRESS_STEPS = ( 0.1, # Yum Config
                              0.2, # Repo Setup
-                             0.1, # Sacksetup  
-                             0.2, # Updates 
-                             0.1, # Group 
+                             0.1, # Sacksetup
+                             0.2, # Updates
+                             0.1, # Group
                              0.3) # get package Lists
 
     CREDITS = (

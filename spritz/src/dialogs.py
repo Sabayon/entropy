@@ -195,12 +195,24 @@ class RepositoryManagerMenu(MenuSkel):
         self.fill_commands_view(self.Service.get_available_client_commands())
         self.ServiceStatus = True
 
+        self.setup_available_repositories()
+
     def set_notebook_page(self, page):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
 
     def rescroll_output(self, adj, scroll):
         adj.set_value(adj.upper-adj.page_size)
         scroll.set_vadjustment(adj)
+
+    def setup_available_repositories(self):
+        self.EntropyRepositories = {}
+        self.EntropyRepositoryCombo = self.sm_ui.repoManagerRepositoryCombo
+        self.EntropyRepositoryStore = gtk.ListStore( gobject.TYPE_STRING )
+        self.EntropyRepositoryCombo.set_model(self.EntropyRepositoryStore)
+        cell = gtk.CellRendererText()
+        self.EntropyRepositoryCombo.pack_start(cell, True)
+        self.EntropyRepositoryCombo.add_attribute(cell, 'text', 0)
+        self.EntropyRepositoryComboLoader = self.Entropy.entropyTools.parallelTask(self.load_available_repositories)
 
     def setup_commands_view(self):
 
@@ -400,6 +412,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.QueueUpdater.start()
         self.OutputUpdater.start()
         self.PinboardUpdater.start()
+        self.EntropyRepositoryComboLoader.start()
 
         return True
 
@@ -432,16 +445,46 @@ class RepositoryManagerMenu(MenuSkel):
         self.ServiceStatus = False
         okDialog(self.window, unicode(e), title = _("Communication error"))
 
-    def update_queue_view(self):
+    def load_available_repositories(self):
         self.wait_channel_call()
         try:
-            status, queue = self.Service.Methods.get_queue()
+            status, repo_info = self.Service.Methods.get_available_repositories()
+            if not status:
+                return
         except Exception, e:
             self.service_status_message(e)
             return
         finally:
             self.release_channel_call()
-        if not status: return
+
+        if isinstance(repo_info,dict):
+            self.EntropyRepositories = repo_info.copy()
+            self.EntropyRepositoryStore.clear()
+            for repoid in self.EntropyRepositories['available'].keys():
+                item = self.EntropyRepositoryStore.append( (repoid,) )
+                if repoid == self.EntropyRepositories['current']:
+                    self.EntropyRepositoryCombo.set_active_iter(item)
+            mytxt = "<small><b>%s</b>: %s [<b>%s</b>: %s | <b>%s</b>: %s]</small>" % (
+                _("Current"),
+                self.EntropyRepositories['current'],
+                _("c.mode"),
+                self.EntropyRepositories['community_mode'],
+                _("branch"),
+                self.EntropyRepositories['branch'],
+            )
+            self.sm_ui.repoManagerCurrentRepoLabel.set_markup(mytxt)
+
+    def update_queue_view(self):
+        self.wait_channel_call()
+        try:
+            status, queue = self.Service.Methods.get_queue()
+            if not status:
+                return
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
 
         self.QueueLock.acquire()
         try:
@@ -701,6 +744,282 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.set_notebook_page(self.notebook_pages['data'])
 
+    def retrieve_entropy_idpackage_data_and_show(self, idpackage, repoid):
+        self.wait_channel_call()
+        package_data = None
+        try:
+            status, package_data = self.Service.Methods.get_entropy_idpackage_information(idpackage, repoid)
+            if not status:
+                return
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+        if not package_data:
+            return
+        pkg = packages.EntropyPackage((idpackage,repoid,), True, remote = package_data)
+        mymenu = PkgInfoMenu(self.Entropy, pkg, self.window)
+        mymenu.load(remote = True)
+
+    def remove_entropy_packages(self, matched_atoms, reload_func = None):
+
+        rc = self.Entropy.askQuestion(_("Are you sure you want to remove the selected packages ? (For EVA!)"))
+        if rc != "Yes": return
+
+        rc = self.Entropy.askQuestion(_("This is your last chance, are you really really really sure?"))
+        if rc != "Yes": return
+
+        self.wait_channel_call()
+        package_data = None
+        status = False
+        try:
+            status, msg = self.Service.Methods.remove_entropy_packages(matched_atoms)
+            if not status:
+                self.service_status_message(msg)
+                return
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+        if status and reload_func:
+            reload_func()
+
+    def run_package_search(self, search_type, search_string, repoid):
+        self.wait_channel_call()
+        status = False
+        data = {}
+        try:
+            status, data = self.Service.Methods.search_entropy_packages(search_type, search_string, repoid)
+            if not status:
+                self.service_status_message(data)
+                return
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+        def reload_func():
+            self.run_package_search(search_type, search_string, repoid)
+        self.entropy_available_packages_data_view(data, repoid, reload_func = reload_func)
+
+    def move_entropy_packages(self, matches, reload_function):
+
+        idpackages = []
+        repoids = set()
+        for idpackage, repoid in matches:
+            repoids.add(repoid)
+            idpackages.append(idpackage)
+
+        if len(repoids) > 1:
+            self.service_status_message(_("Cannot move/copy packages from different repositories"))
+            return
+
+        from_repo = list(repoids)[0]
+
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+
+        def fake_callback_repos(s):
+            entryid, myrepoid = s
+            if myrepoid == from_repo:
+                return True
+            return True
+
+        def fake_callback_cb(s):
+            return True
+
+        input_params = [
+            ('to_repo',('combo',(_('To repository'),avail_repos),),fake_callback_repos,False),
+            ('do_copy',('checkbox',_('Execute copy'),),fake_callback_cb,False),
+        ]
+        data = self.Entropy.inputBox(
+            _('Entropy packages move/copy'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+
+        data['to_repo'] = data['to_repo'][1]
+
+        self.wait_channel_call()
+        status = False
+        try:
+            status, queue_id = self.Service.Methods.move_entropy_packages_to_repository(idpackages, from_repo, data['to_repo'], do_copy = data['do_copy'])
+            if not status:
+                self.service_status_message(queue_id)
+                return
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+        if status:
+            t = self.entropyTools.parallelTask(self.reload_after_package_move, queue_id, reload_function)
+            t.start()
+
+    def reload_after_package_move(self, queue_id, reload_func):
+
+        key = None
+        while key not in ("processed","errored",):
+            item, key = self.get_item_by_queue_id(queue_id)
+            time.sleep(0.1)
+        if key == "errored":
+            return
+        item = item.copy()
+        status, data = item['result']
+        if not status:
+            return
+
+        reload_func()
+
+
+    def entropy_available_packages_data_view(self, packages_data, repoid, reload_func = None):
+
+        if not isinstance(packages_data,dict):
+            return
+
+        if reload_func == None:
+            def reload_func():
+                self.on_repoManagerAvailablePackagesButton_clicked(None, repoid = repoid)
+
+        self.clear_data_view()
+        self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.DataView.set_rubber_banding(True)
+
+
+        def my_data_text( column, cell, model, myiter, property ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                if property == "package":
+                    is_cat = False
+                    if obj.has_key('is_cat'):
+                        is_cat = True
+                    if is_cat:
+                        mytxt = "<big><b>%s</b></big>" % (obj['name'],)
+                    else:
+                        mytxt = '<small><i>%s</i>\n%s\n<b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s\n<b>%s</b>: %s</small>' % (
+                            obj['atom'],
+                            cleanMarkupString(obj['description']),
+                            _("Size"),
+                            self.entropyTools.bytesIntoHuman(obj['size']),
+                            _("Branch"),
+                            obj['branch'],
+                            _("Slot"),
+                            cleanMarkupString(obj['slot']),
+                            _("Tag"),
+                            cleanMarkupString(obj['versiontag']),
+                            _("Injected"),
+                            obj['injected'],
+                            _("Homepage"),
+                            cleanMarkupString(obj['homepage']),
+                        )
+                    cell.set_property('markup',mytxt)
+                elif property == "repoid":
+                    cell.set_property('markup',"<small>%s</small>" % (cleanMarkupString(obj['repoid']),))
+                cell.set_property('cell-background',obj['color'])
+
+        def package_info_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                if obj.has_key('is_cat'): continue
+                t = self.entropyTools.parallelTask(self.retrieve_entropy_idpackage_data_and_show, obj['idpackage'], obj['repoid'])
+                t.start()
+
+        def remove_package_button_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+            items = []
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                if obj.has_key('is_cat'): continue
+                items.append((obj['idpackage'],obj['repoid'],))
+            if items:
+                t = self.entropyTools.parallelTask(self.remove_entropy_packages, items, reload_func = reload_func)
+                t.start()
+
+        def move_package_button_clicked(widget):
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+            items = []
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                if obj.has_key('is_cat'): continue
+                items.append((obj['idpackage'],obj['repoid'],))
+            if items:
+                self.move_entropy_packages(items, reload_func)
+
+        # Package information
+        package_info_button = gtk.Button(label = _("Packages information"))
+        package_info_image = gtk.Image()
+        package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
+        package_info_button.set_image(package_info_image)
+        package_info_button.connect('clicked',package_info_clicked)
+        package_info_button.show()
+
+        # Remove package button
+        remove_package_button = gtk.Button(label = _("Remove packages"))
+        remove_package_image = gtk.Image()
+        remove_package_image.set_from_stock(gtk.STOCK_REMOVE, 4)
+        remove_package_button.set_image(remove_package_image)
+        remove_package_button.connect('clicked',remove_package_button_clicked)
+        remove_package_button.show()
+
+        # Move package button
+        move_package_button = gtk.Button(label = _("Copy/move packages"))
+        move_package_image = gtk.Image()
+        move_package_image.set_from_stock(gtk.STOCK_COPY, 4)
+        move_package_button.set_image(move_package_image)
+        move_package_button.connect('clicked',move_package_button_clicked)
+        move_package_button.show()
+
+        self.DataViewBox.pack_start(package_info_button, False, False, 1)
+        self.DataViewBox.pack_start(remove_package_button, False, False, 1)
+        self.DataViewBox.pack_start(move_package_button, False, False, 1)
+        self.DataViewBox.show_all()
+
+        # glsa id
+        self.create_text_column( self.DataView, _( "Package" ), 'package', size = 300, set_height = 60, cell_data_func = my_data_text, expand = True)
+
+        # glsa title
+        self.create_text_column( self.DataView, _( "Repository" ), 'repoid', size = 130, set_height = 60, cell_data_func = my_data_text)
+
+        cats_data = {}
+        for idpackage in packages_data['ordered_idpackages']:
+            item = packages_data['data'].get(idpackage)
+            if item == None: continue
+            mycat = item['category']
+            if not cats_data.has_key(mycat):
+                cats_data[mycat] = []
+            cats_data[mycat].append(item)
+
+        colors = ["#CDEEFF","#AFCBDA"]
+        counter = 0
+        cat_keys = sorted(cats_data.keys())
+
+        for category in cat_keys:
+            counter += 1
+            mydict = {
+                'is_cat': True,
+                'name': category,
+                'color': colors[counter%len(colors)],
+                'repoid': repoid,
+            }
+            parent = self.DataStore.append( None, (mydict,) )
+            for item in cats_data[category]:
+                counter += 1
+                item['color'] = colors[counter%len(colors)]
+                item['repoid'] = repoid
+                self.DataStore.append( parent, (item,) )
+
+        self.DataView.queue_draw()
+
+        self.set_notebook_page(self.notebook_pages['data'])
 
     def categories_updates_data_view(self, queue_id, categories, expand = False, reload_function = None):
 
@@ -1172,7 +1491,7 @@ class RepositoryManagerMenu(MenuSkel):
                 self.release_channel_call()
 
 
-    def on_compileAtom_clicked(self, widget, atoms = [], pretend = False, oneshot = False, verbose = True, nocolor = True, custom_use = '', ldflags = '', cflags = ''):
+    def on_compileAtom_clicked(self, widget, atoms = [], pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, custom_use = '', ldflags = '', cflags = ''):
 
         def fake_callback(s):
             return s
@@ -1188,6 +1507,8 @@ class RepositoryManagerMenu(MenuSkel):
         data['oneshot'] = oneshot
         data['verbose'] = verbose
         data['nocolor'] = nocolor
+        data['fetchonly'] = fetchonly
+        data['buildonly'] = buildonly
         data['custom_use'] = custom_use
         data['ldflags'] = ldflags
         data['cflags'] = cflags
@@ -1198,6 +1519,8 @@ class RepositoryManagerMenu(MenuSkel):
             ('oneshot',('checkbox',_('Oneshot'),),fake_bool_cb,oneshot,),
             ('verbose',('checkbox',_('Verbose'),),fake_bool_cb,verbose,),
             ('nocolor',('checkbox',_('No color'),),fake_bool_cb,nocolor,),
+            ('fetchonly',('checkbox',_('Fetch only'),),fake_bool_cb,nocolor,),
+            ('buildonly',('checkbox',_('Build only'),),fake_bool_cb,nocolor,),
             ('custom_use',_('Custom USE flags'),fake_true_callback,False),
             ('ldflags',_('Custom LDFLAGS'),fake_true_callback,False),
             ('cflags',_('Custom CFLAGS'),fake_true_callback,False),
@@ -1221,6 +1544,8 @@ class RepositoryManagerMenu(MenuSkel):
                     data['oneshot'],
                     data['verbose'],
                     data['nocolor'],
+                    data['fetchonly'],
+                    data['buildonly'],
                     data['custom_use'],
                     data['ldflags'],
                     data['cflags'],
@@ -1481,7 +1806,6 @@ class RepositoryManagerMenu(MenuSkel):
     def on_repoManagerPinboardDoneButton_clicked(self, widget):
         self._set_pinboard_items_status(widget, True)
 
-
     def on_repoManagerPinboardNotDoneButton_clicked(self, widget):
         self._set_pinboard_items_status(widget, False)
 
@@ -1541,6 +1865,102 @@ class RepositoryManagerMenu(MenuSkel):
             return
         finally:
             self.release_channel_call()
+
+    def on_repoManagerSwitchRepoButton_clicked(self, widget):
+        # get current combo iter
+        model = self.EntropyRepositoryStore
+        myiter = self.EntropyRepositoryCombo.get_active_iter()
+        repoid = model.get_value(myiter, 0)
+        if not repoid:
+            return
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.set_default_repository(repoid)
+            if status:
+                t = self.entropyTools.parallelTask(self.load_available_repositories)
+                t.start()
+            else:
+                self.service_status_message(queue_id)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+    def on_repoManagerAvailablePackagesButton_clicked(self, widget, repoid = None):
+
+        def fake_callback(s):
+            return s
+
+        data = {}
+        data['repoid'] = repoid
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+        input_params = []
+        if not repoid:
+            input_params.append(('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False))
+
+        if input_params:
+            mydata = self.Entropy.inputBox(
+                _('Choose from which repository'),
+                input_params,
+                cancel_button = True
+            )
+            if mydata == None: return
+            mydata['repoid'] = mydata['repoid'][1]
+            data.update(mydata)
+
+        self.wait_channel_call()
+        try:
+            status, repo_data = self.Service.Methods.get_available_entropy_packages(data['repoid'])
+            if status:
+                def reload_func():
+                    self.on_repoManagerAvailablePackagesButton_clicked(widget, repoid = data['repoid'])
+                t = self.entropyTools.parallelTask(self.entropy_available_packages_data_view, repo_data, data['repoid'], reload_func = reload_func)
+                t.start()
+            else:
+                self.service_status_message(repo_data)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+    def on_repoManagerPackageSearchButton_clicked(self, widget):
+
+        def fake_callback(s):
+            return s
+
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+
+        search_reference = {
+            0: 'atom',
+            1: 'needed',
+            2: 'depends',
+            3: 'tag',
+            4: 'file',
+            5: 'description',
+            6: 'eclass',
+        }
+        search_types = [
+            _("Atom"), _("Needed Libraries") , _("Reverse dependencies"), _("Tag"), _("File"), _("Description"), _("Eclass")
+        ]
+        input_params = [
+            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False),
+            ('search_type',('combo',(_('Search type'),search_types),),fake_callback,False),
+            ('search_string',_('Search string'),fake_callback,False)
+        ]
+        data = self.Entropy.inputBox(
+            _('Entropy Search'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        data['search_type'] = search_reference.get(data['search_type'][0])
+        data['repoid'] = data['repoid'][1]
+        t = self.entropyTools.parallelTask(self.run_package_search, data['search_type'], data['search_string'], data['repoid'])
+        t.start()
 
     def destroy(self):
         self.sm_ui.repositoryManager.destroy()
@@ -2226,7 +2646,7 @@ class PkgInfoMenu(MenuSkel):
             self.set_stars(int(vote))
             self.vote = int(vote)
 
-    def load(self):
+    def load(self, remote = False):
 
         pkg = self.pkg
         dbconn = self.pkg.dbconn
@@ -2237,7 +2657,7 @@ class PkgInfoMenu(MenuSkel):
             return
         from_repo = True
         if isinstance(pkg.matched_atom[1],int): from_repo = False
-        if from_repo and pkg.matched_atom[1] not in self.Entropy.validRepositories:
+        if from_repo and (pkg.matched_atom[1] not in self.Entropy.validRepositories) and (not remote):
             return
 
         # set package image
@@ -2292,7 +2712,10 @@ class PkgInfoMenu(MenuSkel):
         if repo == 0:
             self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
         else:
-            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(etpRepositories[repo]['description']),))
+            if remote:
+                self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"),pkg.repoid,))
+            else:
+                self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(etpRepositories[repo]['description']),))
 
         self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
         tag = pkg.tag
