@@ -779,7 +779,12 @@ def extractElog(file):
 # Copyright 2003-2004 Gentoo Foundation
 # done to avoid the import of portage_dep here
 
-ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))(-t(\\S+))?$")
+ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
+suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
+suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
+endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
+
+
 def isjustpkgname(mypkg):
     myparts = mypkg.split('-')
     for x in myparts:
@@ -940,6 +945,7 @@ def dep_getkey(mydepx):
 
     mydep = mydepx[:]
     mydep = remove_tag(mydep)
+    mydep = remove_usedeps(mydep)
 
     mydep = dep_getcpv(mydep)
     if mydep and isspecific(mydep):
@@ -947,8 +953,8 @@ def dep_getkey(mydepx):
         if not mysplit:
             return mydep
         return mysplit[0] + "/" + mysplit[1]
-    else:
-        return mydep
+
+    return mydep
 
 
 def dep_getcpv(mydep):
@@ -981,33 +987,116 @@ def dep_getcpv(mydep):
 
     return mydep
 
-
-def dep_getslot(dep):
+def dep_getslot(mydep):
     """
+
+    # Imported from portage.dep
+    # $Id: dep.py 11281 2008-07-30 06:12:19Z zmedico $
+
     Retrieve the slot on a depend.
 
     Example usage:
-        >>> dep_getslot('app-misc/test:3')
-        '3'
+            >>> dep_getslot('app-misc/test:3')
+            '3'
 
     @param mydep: The depstring to retrieve the slot of
-    @type dep: String
+    @type mydep: String
     @rtype: String
     @return: The slot
     """
-
-    colon = dep.rfind(":")
+    colon = mydep.find(":")
     if colon != -1:
-        mydep = dep[colon+1:]
-        rslt = remove_tag(mydep)
-        return rslt
-
+        bracket = mydep.find("[", colon)
+        if bracket == -1:
+            return mydep[colon+1:]
+        else:
+            return mydep[colon+1:bracket]
     return None
 
+def dep_getusedeps(depend):
+
+    """
+
+    # Imported from portage.dep
+    # $Id: dep.py 11281 2008-07-30 06:12:19Z zmedico $
+
+    Pull a listing of USE Dependencies out of a dep atom.
+
+    Example usage:
+            >>> dep_getusedeps('app-misc/test:3[foo,-bar]')
+            ('foo','-bar')
+
+    @param depend: The depstring to process
+    @type depend: String
+    @rtype: List
+    @return: List of use flags ( or [] if no flags exist )
+    """
+
+    use_list = []
+    open_bracket = depend.find('[')
+    # -1 = failure (think c++ string::npos)
+    comma_separated = False
+    bracket_count = 0
+    while( open_bracket != -1 ):
+        bracket_count += 1
+        if bracket_count > 1:
+            raise exceptionTools.InvalidAtom("USE Dependency with more " + \
+                "than one set of brackets: %s" % (depend,))
+        close_bracket = depend.find(']', open_bracket )
+        if close_bracket == -1:
+            raise exceptionTools.InvalidAtom("USE Dependency with no closing bracket: %s" % depend )
+        use = depend[open_bracket + 1: close_bracket]
+        # foo[1:1] may return '' instead of None, we don't want '' in the result
+        if not use:
+            raise exceptionTools.InvalidAtom("USE Dependency with " + \
+                "no use flag ([]): %s" % depend )
+        if not comma_separated:
+            comma_separated = "," in use
+
+        if comma_separated and bracket_count > 1:
+            raise exceptionTools.InvalidAtom("USE Dependency contains a mixture of " + \
+                "comma and bracket separators: %s" % depend )
+
+        if comma_separated:
+            for x in use.split(","):
+                if x:
+                    use_list.append(x)
+                else:
+                    raise exceptionTools.InvalidAtom("USE Dependency with no use " + \
+                            "flag next to comma: %s" % depend )
+        else:
+            use_list.append(use)
+
+        # Find next use flag
+        open_bracket = depend.find( '[', open_bracket+1 )
+
+    return tuple(use_list)
+
+def remove_usedeps(depend):
+    open_bracket = depend.find('[')
+    close_bracket = depend.find(']')
+    if open_bracket == -1:
+        return depend
+    return depend[:open_bracket]+depend[close_bracket+1:]
+
 def remove_slot(mydep):
-    colon = mydep.rfind(":")
+    """
+
+    # Imported from portage.dep
+    # $Id: dep.py 11281 2008-07-30 06:12:19Z zmedico $
+
+    Removes dep components from the right side of an atom:
+            * slot
+            * use
+            * repo
+    """
+    colon = mydep.find(":")
     if colon != -1:
         mydep = mydep[:colon]
+    else:
+        bracket = mydep.find("[")
+        if bracket != -1:
+            mydep = mydep[:bracket]
     return mydep
 
 # input must be a valid package version or a full atom
@@ -1019,19 +1108,17 @@ def remove_revision(ver):
 
 def remove_tag(mydep):
     colon = mydep.rfind("#")
-    if colon != -1:
-        mystring = mydep[:colon]
-        return mystring
-    return mydep
+    if colon == -1:
+        return mydep
+    return mydep[:colon]
 
 def remove_entropy_revision(mydep):
     dep = removePackageOperators(mydep)
     operators = mydep[:-len(dep)]
     colon = dep.rfind("~")
-    if colon != -1:
-        mystring = operators+dep[:colon]
-        return mystring
-    return mydep
+    if colon == -1:
+        return mydep
+    return operators+dep[:colon]
 
 def dep_get_entropy_revision(mydep):
     #dep = removePackageOperators(mydep)
@@ -1106,10 +1193,7 @@ def removePackageOperators(atom):
 # Version compare function taken from portage_versions.py
 # portage_versions.py -- core Portage functionality
 # Copyright 1998-2006 Gentoo Foundation
-ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
-suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
-suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
-endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
+
 def compareVersions(ver1, ver2):
 
     if ver1 == ver2:

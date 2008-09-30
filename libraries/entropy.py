@@ -3815,7 +3815,7 @@ class EquoInterface(TextInterface):
                 x = x[1:]
             elif x.startswith("-"):
                 x = x[1:]
-            if x in portage_metadata['USE']:
+            if (x in portage_metadata['USE']) or (x in portage_metadata['USE_MASK']):
                 data['useflags'].append(x)
             else:
                 data['useflags'].append("-"+x)
@@ -12334,9 +12334,9 @@ class PortageInterface:
         metadata['SRC_URI'] = my_src_uri
         use = metadata['USE'].split()
         raw_use = use
+        metadata['USE_MASK'] = self.get_useflags_mask()
         iuse = set(metadata['IUSE'].split())
-        use = [f for f in use if f in iuse]
-        use.sort()
+        use = sorted([f for f in use if f in iuse])
         metadata['USE'] = " ".join(use)
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
@@ -20376,7 +20376,6 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
         )
         status, msg = self.do_generic_handler(cmd, session_id)
         if not status:
-            print cmd
             return False,status,msg
 
         return True,stream_status,stream_msg
@@ -30721,6 +30720,22 @@ class EntropyDatabaseInterface:
         else:
             return self.__do_operator_compare(idpackage, operators, compare)
 
+    def __filterUse(self, idpackage, use):
+        if not use:
+            return idpackage
+        pkguse = self.retrieveUseflags(idpackage)
+        disabled = set([x[1:] for x in use if x.startswith("-")])
+        enabled = set([x for x in use if not x.startswith("-")])
+        enabled_not_satisfied = enabled - pkguse
+        # check enabled
+        if enabled_not_satisfied:
+            return None
+        # check disabled
+        disabled_not_satisfied = disabled - pkguse
+        if len(disabled_not_satisfied) != len(disabled):
+            return None
+        return idpackage
+
     def __do_operator_compare(self, token, operators, compare):
         if operators == ">" and compare == -1:
             return token
@@ -30731,12 +30746,16 @@ class EntropyDatabaseInterface:
         elif operators == "<=" and compare > -1:
             return token
 
-    def __filterSlotTag(self, foundIDs, slot, tag, operators):
+    def __filterSlotTagUse(self, foundIDs, slot, tag, use, operators):
 
         newlist = set()
         for idpackage in foundIDs:
 
             idpackage = self.__filterSlot(idpackage, slot)
+            if not idpackage:
+                continue
+
+            idpackage = self.__filterUse(idpackage, use)
             if not idpackage:
                 continue
 
@@ -30756,10 +30775,11 @@ class EntropyDatabaseInterface:
        @input multiMatch: bool, return all the available atoms
        @input matchBranches: tuple or list, match packages only in the specified branches
        @input matchTag: match packages only for the specified tag
+       @input matchUse: match packages only if it owns the specified use flags
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, packagesFilter = True, matchRevision = None, extendedResults = False, useCache = True):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, matchUse = (), packagesFilter = True, matchRevision = None, extendedResults = False, useCache = True):
 
         if not atom:
             return -1,1
@@ -30772,6 +30792,7 @@ class EntropyDatabaseInterface:
                 multiMatch,
                 matchBranches,
                 matchTag,
+                matchUse,
                 packagesFilter,
                 matchRevision,
                 extendedResults
@@ -30780,8 +30801,14 @@ class EntropyDatabaseInterface:
                 return cached
 
         atomTag = self.entropyTools.dep_gettag(atom)
+        atomUse = self.entropyTools.dep_getusedeps(atom)
         atomSlot = self.entropyTools.dep_getslot(atom)
         atomRev = self.entropyTools.dep_get_entropy_revision(atom)
+
+        # use match
+        scan_atom = self.entropyTools.remove_usedeps(atom)
+        if (not matchUse) and (atomUse):
+            matchUse = atomUse
 
         # tag match
         scan_atom = self.entropyTools.remove_tag(atom)
@@ -30945,7 +30972,7 @@ class EntropyDatabaseInterface:
         ### FILTERING
 
         # filter slot and tag
-        foundIDs = self.__filterSlotTag(foundIDs, matchSlot, matchTag, direction)
+        foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
 
         if packagesFilter: # keyword filtering
             foundIDs = self.packagesFilter(foundIDs, atom)
@@ -31108,6 +31135,7 @@ class EntropyDatabaseInterface:
                     multiMatch,
                     matchBranches,
                     matchTag,
+                    matchUse,
                     packagesFilter,
                     matchRevision,
                     extendedResults,
@@ -31122,6 +31150,7 @@ class EntropyDatabaseInterface:
                     multiMatch,
                     matchBranches,
                     matchTag,
+                    matchUse,
                     packagesFilter,
                     matchRevision,
                     extendedResults,
@@ -31139,6 +31168,7 @@ class EntropyDatabaseInterface:
                     multiMatch,
                     matchBranches,
                     matchTag,
+                    matchUse,
                     packagesFilter,
                     matchRevision,
                     extendedResults,
@@ -31154,6 +31184,7 @@ class EntropyDatabaseInterface:
                     multiMatch,
                     matchBranches,
                     matchTag,
+                    matchUse,
                     packagesFilter,
                     matchRevision,
                     extendedResults,
@@ -31172,6 +31203,7 @@ class EntropyDatabaseInterface:
                     multiMatch,
                     matchBranches,
                     matchTag,
+                    matchUse,
                     packagesFilter,
                     matchRevision,
                     extendedResults,
@@ -31186,6 +31218,7 @@ class EntropyDatabaseInterface:
                     multiMatch,
                     matchBranches,
                     matchTag,
+                    matchUse,
                     packagesFilter,
                     matchRevision,
                     extendedResults,
@@ -31211,6 +31244,7 @@ class EntropyDatabaseInterface:
                 multiMatch,
                 matchBranches,
                 matchTag,
+                matchUse,
                 packagesFilter,
                 matchRevision,
                 extendedResults,
@@ -31225,6 +31259,7 @@ class EntropyDatabaseInterface:
                 multiMatch,
                 matchBranches,
                 matchTag,
+                matchUse,
                 packagesFilter,
                 matchRevision,
                 extendedResults,

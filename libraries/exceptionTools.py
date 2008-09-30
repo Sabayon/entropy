@@ -95,6 +95,9 @@ class QueueError(EntropyException):
 class InvalidLocation(EntropyException):
         """Data was not found when it was expected to exist or was specified incorrectly"""
 
+class InvalidAtom(EntropyException):
+        """Atom not properly formatted"""
+
 class FileNotFound(InvalidLocation):
         """A file was not found when it was expected to exist"""
 
