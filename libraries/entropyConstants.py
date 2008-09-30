@@ -693,6 +693,8 @@ def const_defaultSettings(rootdir):
             'ask_cmd': "--ask",
             'info_cmd': "--info",
             'remove_cmd': "-C",
+            'fetchonly_cmd': "--fetchonly",
+            'buildonly_cmd': "--buildonly",
             'oneshot_cmd': "--oneshot",
             'pretend_cmd': "--pretend",
             'verbose_cmd': "--verbose",
