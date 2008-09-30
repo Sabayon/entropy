@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-09-17 14:06+0000\n"
+"POT-Creation-Date: 2008-09-30 11:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,2810 +16,3025 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../libraries/entropyConstants.py:414
+#: ../../libraries/entropyConstants.py:415
 msgid "You should run equo --help"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:415
+#: ../../libraries/entropyConstants.py:416
 msgid "You didn't run equo --help, did you?"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:416
+#: ../../libraries/entropyConstants.py:417
 msgid "Did you even read equo --help??"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:417
+#: ../../libraries/entropyConstants.py:418
 msgid "I give up. Run that equo --help !!!!!!!"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:418
+#: ../../libraries/entropyConstants.py:419
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:419
+#: ../../libraries/entropyConstants.py:420
 msgid "Illiteracy is a huge problem in this world"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:420
+#: ../../libraries/entropyConstants.py:421
 msgid "Ok i give up, you are hopeless"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:421
+#: ../../libraries/entropyConstants.py:422
 msgid "Go to hell."
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:741
+#: ../../libraries/entropyConstants.py:751
 msgid "reason not available"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:742
+#: ../../libraries/entropyConstants.py:752
 msgid "user package.mask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:743
+#: ../../libraries/entropyConstants.py:753
 msgid "system keywords"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:744
+#: ../../libraries/entropyConstants.py:754
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:745
+#: ../../libraries/entropyConstants.py:755
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:746
+#: ../../libraries/entropyConstants.py:756
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:747
+#: ../../libraries/entropyConstants.py:757
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:748
+#: ../../libraries/entropyConstants.py:758
 msgid "completely masked"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:749
+#: ../../libraries/entropyConstants.py:759
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:750
+#: ../../libraries/entropyConstants.py:760
 msgid "repository in branch packages.db.mask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:751
+#: ../../libraries/entropyConstants.py:761
 msgid "user license.mask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:752
+#: ../../libraries/entropyConstants.py:762
 msgid "user live unmask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:753
+#: ../../libraries/entropyConstants.py:763
 msgid "user live mask"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:809
+#: ../../libraries/entropyConstants.py:819
 msgid "Comments"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:810
+#: ../../libraries/entropyConstants.py:820
 msgid "BBcode Documents"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:811
+#: ../../libraries/entropyConstants.py:821
 msgid "Images/Screenshots"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:812
+#: ../../libraries/entropyConstants.py:822
 msgid "Generic Files"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:813
+#: ../../libraries/entropyConstants.py:823
 msgid "YouTube(tm) Videos"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:816
+#: ../../libraries/entropyConstants.py:826
 msgid "Comment"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:817
+#: ../../libraries/entropyConstants.py:827
 msgid "BBcode Document"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:818
+#: ../../libraries/entropyConstants.py:828
 msgid "Image/Screenshot"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:819
+#: ../../libraries/entropyConstants.py:829
 msgid "Generic File"
 msgstr ""
 
-#: ../../libraries/entropyConstants.py:820
+#: ../../libraries/entropyConstants.py:830
 msgid "YouTube(tm) Video"
 msgstr ""
 
-#: ../../libraries/entropy.py:43
+#: ../../libraries/entropy.py:40
 msgid ""
 "Entropy needs a working sqlite+pysqlite or Python compiled with sqlite "
 "support"
 msgstr ""
 
-#: ../../libraries/entropy.py:44 ../../libraries/entropy.py:5082
-#: ../../libraries/entropy.py:5133 ../../libraries/entropy.py:5139
-#: ../../libraries/entropy.py:5164 ../../libraries/entropy.py:5189
-#: ../../libraries/entropy.py:8519 ../../libraries/entropy.py:11042
-#: ../../spritz/src/spritz.glade.h:40
+#: ../../libraries/entropy.py:41 ../../libraries/entropy.py:5103
+#: ../../libraries/entropy.py:5154 ../../libraries/entropy.py:5160
+#: ../../libraries/entropy.py:5185 ../../libraries/entropy.py:5210
+#: ../../libraries/entropy.py:8549 ../../libraries/entropy.py:11072
+#: ../../spritz/src/spritz.glade.h:57
 msgid "Error"
 msgstr ""
 
-#: ../../libraries/entropy.py:274 ../../libraries/entropy.py:14307
+#: ../../libraries/entropy.py:271 ../../libraries/entropy.py:14784
 msgid "Fetch"
 msgstr ""
 
-#: ../../libraries/entropy.py:275
+#: ../../libraries/entropy.py:272
 msgid "ETA"
 msgstr ""
 
-#: ../../libraries/entropy.py:276
+#: ../../libraries/entropy.py:273
 msgid "sec"
 msgstr ""
 
-#: ../../libraries/entropy.py:329
+#: ../../libraries/entropy.py:326
 msgid "infinite"
 msgstr ""
 
-#: ../../libraries/entropy.py:427 ../../libraries/entropy.py:435
+#: ../../libraries/entropy.py:424 ../../libraries/entropy.py:432
 #: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
-#: ../../spritz/src/spritz.py:1349 ../../spritz/src/views.py:505
-#: ../../spritz/src/views.py:1148
+#: ../../spritz/src/spritz.py:1245 ../../spritz/src/views.py:505
+#: ../../spritz/src/views.py:1155
 msgid "Repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:427 ../../client/text_ui.py:136
+#: ../../libraries/entropy.py:424 ../../client/text_ui.py:136
 msgid "is not available"
 msgstr ""
 
-#: ../../libraries/entropy.py:427 ../../libraries/entropy.py:435
+#: ../../libraries/entropy.py:424 ../../libraries/entropy.py:432
 msgid "Cannot validate"
 msgstr ""
 
-#: ../../libraries/entropy.py:435
+#: ../../libraries/entropy.py:432
 msgid "is corrupted"
 msgstr ""
 
-#: ../../libraries/entropy.py:499
+#: ../../libraries/entropy.py:496
 msgid ""
 "Another Entropy instance is currently active, cannot satisfy your request."
 msgstr ""
 
-#: ../../libraries/entropy.py:519
+#: ../../libraries/entropy.py:516
 msgid "Resources unlocked, let's go!"
 msgstr ""
 
-#: ../../libraries/entropy.py:528
+#: ../../libraries/entropy.py:525
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr ""
 
-#: ../../libraries/entropy.py:536
+#: ../../libraries/entropy.py:533
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr ""
 
-#: ../../libraries/entropy.py:586
+#: ../../libraries/entropy.py:583
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr ""
 
-#: ../../libraries/entropy.py:660
+#: ../../libraries/entropy.py:657
 msgid "System database not found or corrupted"
 msgstr ""
 
-#: ../../libraries/entropy.py:697 ../../libraries/entropy.py:728
-#: ../../libraries/entropy.py:736
+#: ../../libraries/entropy.py:694 ../../libraries/entropy.py:725
+#: ../../libraries/entropy.py:733
 msgid "Sanity Check"
 msgstr ""
 
-#: ../../libraries/entropy.py:697
+#: ../../libraries/entropy.py:694
 msgid "system database"
 msgstr ""
 
-#: ../../libraries/entropy.py:705
+#: ../../libraries/entropy.py:702
 msgid "Scanning..."
 msgstr ""
 
-#: ../../libraries/entropy.py:722
+#: ../../libraries/entropy.py:719
 #, python-format
 msgid "Errors on idpackage %s, error: %s"
 msgstr ""
 
-#: ../../libraries/entropy.py:728
+#: ../../libraries/entropy.py:725
 msgid "PASSED"
 msgstr ""
 
-#: ../../libraries/entropy.py:736
+#: ../../libraries/entropy.py:733
 msgid "CORRUPTED"
 msgstr ""
 
-#: ../../libraries/entropy.py:781
+#: ../../libraries/entropy.py:779
 msgid "bad repository id specified"
 msgstr ""
 
-#: ../../libraries/entropy.py:793
+#: ../../libraries/entropy.py:791
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
 msgstr ""
 
-#: ../../libraries/entropy.py:891
+#: ../../libraries/entropy.py:889
 #, python-format
 msgid "Cleaning %s => *.dmp..."
 msgstr ""
 
-#: ../../libraries/entropy.py:900
+#: ../../libraries/entropy.py:898
 msgid "Cache is now empty."
 msgstr ""
 
-#: ../../libraries/entropy.py:915
+#: ../../libraries/entropy.py:913
 msgid "Configuration files"
 msgstr ""
 
-#: ../../libraries/entropy.py:920
+#: ../../libraries/entropy.py:918
 msgid "Scanning hard disk"
 msgstr ""
 
-#: ../../libraries/entropy.py:926
+#: ../../libraries/entropy.py:924
 msgid "Cache generation complete."
 msgstr ""
 
-#: ../../libraries/entropy.py:934
+#: ../../libraries/entropy.py:932
 msgid "Resolving metadata"
 msgstr ""
 
-#: ../../libraries/entropy.py:952
+#: ../../libraries/entropy.py:950
 msgid "Dependencies cache filled."
 msgstr ""
 
-#: ../../libraries/entropy.py:996
+#: ../../libraries/entropy.py:994
 #, python-format
 msgid "Checking %s"
 msgstr ""
 
-#: ../../libraries/entropy.py:1094
+#: ../../libraries/entropy.py:1092
 msgid "Libraries test"
 msgstr ""
 
-#: ../../libraries/entropy.py:1109
+#: ../../libraries/entropy.py:1107
 msgid "Cannot find "
 msgstr ""
 
-#: ../../libraries/entropy.py:1153
+#: ../../libraries/entropy.py:1151
 msgid "Collecting broken executables"
 msgstr ""
 
-#: ../../libraries/entropy.py:1158 ../../libraries/entropy.py:7144
-#: ../../libraries/entropy.py:7181 ../../libraries/entropy.py:7196
-#: ../../libraries/entropy.py:7208 ../../libraries/entropy.py:7223
-#: ../../libraries/entropy.py:9587 ../../libraries/entropy.py:15904
+#: ../../libraries/entropy.py:1156 ../../libraries/entropy.py:7164
+#: ../../libraries/entropy.py:7201 ../../libraries/entropy.py:7216
+#: ../../libraries/entropy.py:7228 ../../libraries/entropy.py:7243
+#: ../../libraries/entropy.py:9617 ../../libraries/entropy.py:16412
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../client/text_ui.py:690 ../../client/text_ui.py:691
-#: ../../spritz/src/dialogs.py:1700 ../../spritz/src/misc.py:91
-#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:1553
+#: ../../spritz/src/dialogs.py:3484 ../../spritz/src/misc.py:91
+#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:1449
 msgid "Attention"
 msgstr ""
 
-#: ../../libraries/entropy.py:1159
+#: ../../libraries/entropy.py:1157
 msgid "don't worry about libraries that are shown here but not later."
 msgstr ""
 
-#: ../../libraries/entropy.py:1172
+#: ../../libraries/entropy.py:1170
 msgid "Scanning libraries"
 msgstr ""
 
-#: ../../libraries/entropy.py:1212
+#: ../../libraries/entropy.py:1210
 msgid "Matching broken libraries/executables"
 msgstr ""
 
-#: ../../libraries/entropy.py:1494
+#: ../../libraries/entropy.py:1500
 msgid "server_repos needs serverInstance"
 msgstr ""
 
-#: ../../libraries/entropy.py:1744
+#: ../../libraries/entropy.py:1750
 msgid "repodata dictionary is corrupted"
 msgstr ""
 
-#: ../../libraries/entropy.py:2372
+#: ../../libraries/entropy.py:2382
 msgid "Sorting dependencies"
 msgstr ""
 
-#: ../../libraries/entropy.py:2465
+#: ../../libraries/entropy.py:2475
 msgid "Calculating removable depends of"
 msgstr ""
 
-#: ../../libraries/entropy.py:2634
+#: ../../libraries/entropy.py:2644
 msgid "Calculating available packages for"
 msgstr ""
 
-#: ../../libraries/entropy.py:2735
+#: ../../libraries/entropy.py:2745
 msgid "Calculating world packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:2842
+#: ../../libraries/entropy.py:2864
 msgid "not a valid method"
 msgstr ""
 
-#: ../../libraries/entropy.py:3187 ../../libraries/entropy.py:16098
+#: ../../libraries/entropy.py:3209 ../../libraries/entropy.py:16606
 msgid "Mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:3189
+#: ../../libraries/entropy.py:3211
 msgid "maximum failure threshold reached"
 msgstr ""
 
-#: ../../libraries/entropy.py:3215
+#: ../../libraries/entropy.py:3237
 msgid "Downloading from"
 msgstr ""
 
-#: ../../libraries/entropy.py:3232
+#: ../../libraries/entropy.py:3254
 msgid "Successfully downloaded from"
 msgstr ""
 
-#: ../../libraries/entropy.py:3234
+#: ../../libraries/entropy.py:3256
 msgid "at"
 msgstr ""
 
-#: ../../libraries/entropy.py:3234
+#: ../../libraries/entropy.py:3256
 msgid "second"
 msgstr ""
 
-#: ../../libraries/entropy.py:3260
+#: ../../libraries/entropy.py:3282
 msgid "Error downloading from"
 msgstr ""
 
-#: ../../libraries/entropy.py:3265
+#: ../../libraries/entropy.py:3287
 msgid "file not available on this mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:3268
+#: ../../libraries/entropy.py:3290
 msgid "wrong checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:3273
+#: ../../libraries/entropy.py:3295
 msgid "discarded download"
 msgstr ""
 
-#: ../../libraries/entropy.py:3276
+#: ../../libraries/entropy.py:3298
 msgid "unknown reason"
 msgstr ""
 
-#: ../../libraries/entropy.py:3448
+#: ../../libraries/entropy.py:3470
 msgid "Extracting package metadata"
 msgstr ""
 
-#: ../../libraries/entropy.py:3593 ../../libraries/entropy.py:16046
-#: ../../libraries/entropy.py:22347
+#: ../../libraries/entropy.py:3615 ../../libraries/entropy.py:16554
+#: ../../libraries/entropy.py:24551
 msgid "not supported"
 msgstr ""
 
-#: ../../libraries/entropy.py:3594
+#: ../../libraries/entropy.py:3616
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../libraries/entropy.py:3889
+#: ../../libraries/entropy.py:3911
 msgid "not set"
 msgstr ""
 
-#: ../../libraries/entropy.py:3889
+#: ../../libraries/entropy.py:3911
 msgid "have you configured make.conf properly?"
 msgstr ""
 
-#: ../../libraries/entropy.py:3910
+#: ../../libraries/entropy.py:3932
 msgid "Package extraction complete"
 msgstr ""
 
-#: ../../libraries/entropy.py:3964 ../../libraries/entropy.py:5727
-#: ../../libraries/entropy.py:6005 ../../libraries/entropy.py:10411
+#: ../../libraries/entropy.py:3986 ../../libraries/entropy.py:5748
+#: ../../libraries/entropy.py:6026 ../../libraries/entropy.py:10441
 msgid "A valid Equo instance or subclass is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:3984
+#: ../../libraries/entropy.py:4006
 msgid "Already prepared"
 msgstr ""
 
-#: ../../libraries/entropy.py:3989
+#: ../../libraries/entropy.py:4011
 msgid "Not yet prepared"
 msgstr ""
 
-#: ../../libraries/entropy.py:3994
+#: ../../libraries/entropy.py:4016
 msgid "Action must be in"
 msgstr ""
 
-#: ../../libraries/entropy.py:4003
+#: ../../libraries/entropy.py:4025
 msgid "Checking package checksum..."
 msgstr ""
 
-#: ../../libraries/entropy.py:4012
+#: ../../libraries/entropy.py:4034
 msgid "Package checksum matches."
 msgstr ""
 
-#: ../../libraries/entropy.py:4023
+#: ../../libraries/entropy.py:4045
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
 msgstr ""
 
-#: ../../libraries/entropy.py:4041
+#: ../../libraries/entropy.py:4063
 msgid "Cannot properly fetch package! Quitting."
 msgstr ""
 
-#: ../../libraries/entropy.py:4050
+#: ../../libraries/entropy.py:4072
 msgid ""
 "Cannot properly fetch package or checksum does not match. Try download "
 "latest repositories."
 msgstr ""
 
-#: ../../libraries/entropy.py:4171
+#: ../../libraries/entropy.py:4192
 msgid "Removing from Entropy"
 msgstr ""
 
 #. in this way we filter out directories
-#: ../../libraries/entropy.py:4206
+#: ../../libraries/entropy.py:4227
 msgid "Collision found during removal of"
 msgstr ""
 
-#: ../../libraries/entropy.py:4207 ../../libraries/entropy.py:5043
+#: ../../libraries/entropy.py:4228 ../../libraries/entropy.py:5064
 msgid "cannot overwrite"
 msgstr ""
 
-#: ../../libraries/entropy.py:4234 ../../libraries/entropy.py:23338
-#: ../../libraries/entropy.py:24177
+#: ../../libraries/entropy.py:4255 ../../libraries/entropy.py:25542
+#: ../../libraries/entropy.py:26381
 msgid "remove"
 msgstr ""
 
-#: ../../libraries/entropy.py:4235 ../../libraries/entropy.py:5002
+#: ../../libraries/entropy.py:4256 ../../libraries/entropy.py:5023
 msgid "Protecting config file"
 msgstr ""
 
-#: ../../libraries/entropy.py:4250
+#: ../../libraries/entropy.py:4271
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
 #. inject into database
-#: ../../libraries/entropy.py:4519
+#: ../../libraries/entropy.py:4540
 msgid "Updating database"
 msgstr ""
 
-#: ../../libraries/entropy.py:4554
+#: ../../libraries/entropy.py:4575
 msgid "Cleaning old package files..."
 msgstr ""
 
-#: ../../libraries/entropy.py:4660
+#: ../../libraries/entropy.py:4681
 #, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
 msgstr ""
 
-#: ../../libraries/entropy.py:4680
+#: ../../libraries/entropy.py:4701
 #, python-format
 msgid "Cannot update Portage world file, destination %s does not exist."
 msgstr ""
 
-#: ../../libraries/entropy.py:4707
+#: ../../libraries/entropy.py:4728
 #, python-format
 msgid "Cannot update Portage world file, destination %s is corrupted."
 msgstr ""
 
-#: ../../libraries/entropy.py:4830
+#: ../../libraries/entropy.py:4851
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy.py:4905
+#: ../../libraries/entropy.py:4926
 #, python-format
 msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy.py:5015
+#: ../../libraries/entropy.py:5036
 msgid "Skipping file installation/removal"
 msgstr ""
 
-#: ../../libraries/entropy.py:5028
+#: ../../libraries/entropy.py:5049
 msgid "Cannot check CONFIG PROTECTION. Error"
 msgstr ""
 
-#: ../../libraries/entropy.py:5042
+#: ../../libraries/entropy.py:5063
 msgid "Collision found during install for"
 msgstr ""
 
-#: ../../libraries/entropy.py:5061
+#: ../../libraries/entropy.py:5082
 msgid "Downloading archive"
 msgstr ""
 
-#: ../../libraries/entropy.py:5081
+#: ../../libraries/entropy.py:5102
 msgid "Package cannot be fetched. Try to update repositories and retry"
 msgstr ""
 
-#: ../../libraries/entropy.py:5096
+#: ../../libraries/entropy.py:5117
 msgid "Installed package in queue vanished, skipping."
 msgstr ""
 
-#: ../../libraries/entropy.py:5112
+#: ../../libraries/entropy.py:5133
 msgid "Unpacking package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5120
+#: ../../libraries/entropy.py:5141
 msgid "Merging package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5131
+#: ../../libraries/entropy.py:5152
 msgid "You are running out of disk space"
 msgstr ""
 
-#: ../../libraries/entropy.py:5132
+#: ../../libraries/entropy.py:5153
 msgid "I bet, you're probably Michele"
 msgstr ""
 
-#: ../../libraries/entropy.py:5137
+#: ../../libraries/entropy.py:5158
 msgid "An error occured while trying to unpack the package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5138 ../../libraries/entropy.py:5163
+#: ../../libraries/entropy.py:5159 ../../libraries/entropy.py:5184
 msgid "Check if your system is healthy"
 msgstr ""
 
-#: ../../libraries/entropy.py:5152
+#: ../../libraries/entropy.py:5173
 msgid "Installing package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5162
+#: ../../libraries/entropy.py:5183
 msgid "An error occured while trying to install the package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5177
+#: ../../libraries/entropy.py:5198
 msgid "Removing data"
 msgstr ""
 
-#: ../../libraries/entropy.py:5187
+#: ../../libraries/entropy.py:5208
 msgid "An error occured while trying to remove the package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5188
+#: ../../libraries/entropy.py:5209
 msgid "Check if you have enough disk space on your hard disk"
 msgstr ""
 
-#: ../../libraries/entropy.py:5202 ../../libraries/entropy.py:5391
+#: ../../libraries/entropy.py:5223 ../../libraries/entropy.py:5412
 msgid "Cleaning"
 msgstr ""
 
-#: ../../libraries/entropy.py:5229
+#: ../../libraries/entropy.py:5250
 msgid "Compilation messages"
 msgstr ""
 
-#: ../../libraries/entropy.py:5348
+#: ../../libraries/entropy.py:5369
 msgid "Fetching"
 msgstr ""
 
-#: ../../libraries/entropy.py:5354
+#: ../../libraries/entropy.py:5375
 msgid "Verifying"
 msgstr ""
 
-#: ../../libraries/entropy.py:5361
+#: ../../libraries/entropy.py:5382
 msgid "Unpacking"
 msgstr ""
 
-#: ../../libraries/entropy.py:5364
+#: ../../libraries/entropy.py:5385
 msgid "Merging"
 msgstr ""
 
-#: ../../libraries/entropy.py:5373
+#: ../../libraries/entropy.py:5394
 msgid "Installing"
 msgstr ""
 
-#: ../../libraries/entropy.py:5379 ../../client/text_rescue.py:513
+#: ../../libraries/entropy.py:5400 ../../client/text_rescue.py:513
 msgid "Removing"
 msgstr ""
 
-#: ../../libraries/entropy.py:5397
+#: ../../libraries/entropy.py:5418
 msgid "Postinstall"
 msgstr ""
 
-#: ../../libraries/entropy.py:5403
+#: ../../libraries/entropy.py:5424
 msgid "Preinstall"
 msgstr ""
 
-#: ../../libraries/entropy.py:5409
+#: ../../libraries/entropy.py:5430
 msgid "Preremove"
 msgstr ""
 
-#: ../../libraries/entropy.py:5415
+#: ../../libraries/entropy.py:5436
 msgid "Postremove"
 msgstr ""
 
-#: ../../libraries/entropy.py:5456
+#: ../../libraries/entropy.py:5477
 msgid "An error occured. Action aborted."
 msgstr ""
 
-#: ../../libraries/entropy.py:5827 ../../client/text_configuration.py:152
+#: ../../libraries/entropy.py:5848 ../../client/text_configuration.py:152
 #: ../../client/text_configuration.py:162
 #: ../../client/text_configuration.py:229
 msgid "Automerging file"
 msgstr ""
 
-#: ../../libraries/entropy.py:5843
+#: ../../libraries/entropy.py:5864
 msgid "I/O Error"
 msgstr ""
 
-#: ../../libraries/entropy.py:5844
+#: ../../libraries/entropy.py:5865
 msgid "Cannot automerge file"
 msgstr ""
 
-#: ../../libraries/entropy.py:5877
+#: ../../libraries/entropy.py:5898
 msgid "Cache is corrupted"
 msgstr ""
 
-#: ../../libraries/entropy.py:5953
+#: ../../libraries/entropy.py:5974
 msgid "Invalid config file number"
 msgstr ""
 
-#: ../../libraries/entropy.py:6028
+#: ../../libraries/entropy.py:6057
 #, python-format
 msgid "No repositories specified in %s"
 msgstr ""
 
-#: ../../libraries/entropy.py:6034 ../../libraries/entropy.py:11329
+#: ../../libraries/entropy.py:6063 ../../libraries/entropy.py:11359
 #, python-format
 msgid "Cannot connect to %s"
 msgstr ""
 
-#: ../../libraries/entropy.py:6096
+#: ../../libraries/entropy.py:6125
 msgid "Repository is not listed in self.reponames"
 msgstr ""
 
-#: ../../libraries/entropy.py:6105
+#: ../../libraries/entropy.py:6134
 msgid "Wrong database compression method"
 msgstr ""
 
-#: ../../libraries/entropy.py:6130
+#: ../../libraries/entropy.py:6152
 #, python-format
 msgid "Supported items: %s"
 msgstr ""
 
-#: ../../libraries/entropy.py:6135 ../../libraries/entropy.py:6141
+#: ../../libraries/entropy.py:6155
 #, python-format
 msgid "For %s, cmethod can't be None"
 msgstr ""
 
-#: ../../libraries/entropy.py:6218 ../../libraries/entropy.py:6244
-#: ../../libraries/entropy.py:6275
+#: ../../libraries/entropy.py:6238 ../../libraries/entropy.py:6264
+#: ../../libraries/entropy.py:6295
 msgid "self.dbformat_eapi must be in (1,2)"
 msgstr ""
 
 #. verify checksum
-#: ../../libraries/entropy.py:6372
+#: ../../libraries/entropy.py:6392
 msgid "Checking downloaded database"
 msgstr ""
 
-#: ../../libraries/entropy.py:6382
+#: ../../libraries/entropy.py:6402
 msgid "Cannot open digest"
 msgstr ""
 
-#: ../../libraries/entropy.py:6382 ../../libraries/entropy.py:7108
+#: ../../libraries/entropy.py:6402 ../../libraries/entropy.py:7128
 msgid "Cannot verify database integrity"
 msgstr ""
 
-#: ../../libraries/entropy.py:6390 ../../libraries/entropy.py:6398
+#: ../../libraries/entropy.py:6410 ../../libraries/entropy.py:6418
 msgid "Downloaded database status"
 msgstr ""
 
-#: ../../libraries/entropy.py:6390
+#: ../../libraries/entropy.py:6410
 msgid "OK"
 msgstr ""
 
-#: ../../libraries/entropy.py:6398
+#: ../../libraries/entropy.py:6418
 msgid "ERROR"
 msgstr ""
 
-#: ../../libraries/entropy.py:6405
+#: ../../libraries/entropy.py:6425
 msgid "An error occured while checking database integrity"
 msgstr ""
 
-#: ../../libraries/entropy.py:6405
+#: ../../libraries/entropy.py:6425
 msgid "Giving up"
 msgstr ""
 
-#: ../../libraries/entropy.py:6425 ../../client/text_repositories.py:119
+#: ../../libraries/entropy.py:6445 ../../client/text_repositories.py:119
 #: ../../client/text_repositories.py:141
 msgid "Database URL"
 msgstr ""
 
-#: ../../libraries/entropy.py:6432
+#: ../../libraries/entropy.py:6452
 msgid "Database local path"
 msgstr ""
 
-#: ../../libraries/entropy.py:6439
+#: ../../libraries/entropy.py:6459
 msgid "Database EAPI"
 msgstr ""
 
-#: ../../libraries/entropy.py:6533 ../../libraries/entropy.py:6574
-#: ../../libraries/entropy.py:6594
+#: ../../libraries/entropy.py:6553 ../../libraries/entropy.py:6594
+#: ../../libraries/entropy.py:6614
 msgid "EAPI3 Service status"
 msgstr ""
 
-#: ../../libraries/entropy.py:6534
+#: ../../libraries/entropy.py:6554
 msgid "remote database suddenly locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:6552
+#: ../../libraries/entropy.py:6572
 msgid "EAPI3 Service"
 msgstr ""
 
-#: ../../libraries/entropy.py:6553
+#: ../../libraries/entropy.py:6573
 msgid "skipping differential sync"
 msgstr ""
 
-#: ../../libraries/entropy.py:6554
+#: ../../libraries/entropy.py:6574
 msgid "threshold"
 msgstr ""
 
-#: ../../libraries/entropy.py:6575
+#: ../../libraries/entropy.py:6595
 msgid "treeupdates data not available"
 msgstr ""
 
-#: ../../libraries/entropy.py:6595
+#: ../../libraries/entropy.py:6615
 msgid "cannot update treeupdates data"
 msgstr ""
 
-#: ../../libraries/entropy.py:6625
+#: ../../libraries/entropy.py:6645
 msgid "Fetching segments"
 msgstr ""
 
-#: ../../libraries/entropy.py:6648
+#: ../../libraries/entropy.py:6668
 msgid "Fetch error on segment"
 msgstr ""
 
-#: ../../libraries/entropy.py:6665 ../../libraries/entropy.py:6680
+#: ../../libraries/entropy.py:6685 ../../libraries/entropy.py:6700
 msgid "Service status"
 msgstr ""
 
-#: ../../libraries/entropy.py:6718
+#: ../../libraries/entropy.py:6738
 msgid "Fetch error on segment while adding"
 msgstr ""
 
-#: ../../libraries/entropy.py:6732
+#: ../../libraries/entropy.py:6752
 msgid "Injecting package"
 msgstr ""
 
-#: ../../libraries/entropy.py:6751
+#: ../../libraries/entropy.py:6771
 msgid "Packages injection complete"
 msgstr ""
 
-#: ../../libraries/entropy.py:6763
+#: ../../libraries/entropy.py:6783
 msgid "Removing package"
 msgstr ""
 
-#: ../../libraries/entropy.py:6775
+#: ../../libraries/entropy.py:6795
 msgid "Packages removal complete"
 msgstr ""
 
-#: ../../libraries/entropy.py:6790
+#: ../../libraries/entropy.py:6810
 msgid "Database checksum doesn't match remote."
 msgstr ""
 
-#: ../../libraries/entropy.py:6791 ../../libraries/entropy.py:16162
+#: ../../libraries/entropy.py:6811 ../../libraries/entropy.py:16670
 msgid "local"
 msgstr ""
 
-#: ../../libraries/entropy.py:6793
+#: ../../libraries/entropy.py:6813
 msgid "remote"
 msgstr ""
 
-#: ../../libraries/entropy.py:6890
+#: ../../libraries/entropy.py:6910
 msgid "EAPI3 Service error"
 msgstr ""
 
-#: ../../libraries/entropy.py:7028
+#: ../../libraries/entropy.py:7048
 msgid "Something bad happened. Please have a look."
 msgstr ""
 
-#: ../../libraries/entropy.py:7053
+#: ../../libraries/entropy.py:7073
 msgid "a new release is available"
 msgstr ""
 
-#: ../../libraries/entropy.py:7054
+#: ../../libraries/entropy.py:7074
 msgid "Mind to install it before any other package"
 msgstr ""
 
-#: ../../libraries/entropy.py:7068
+#: ../../libraries/entropy.py:7088
 msgid "Unpacking database to"
 msgstr ""
 
-#: ../../libraries/entropy.py:7078
+#: ../../libraries/entropy.py:7098
 msgid "Cannot unpack compressed package"
 msgstr ""
 
-#: ../../libraries/entropy.py:7078
+#: ../../libraries/entropy.py:7098
 msgid "Skipping repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:7097
+#: ../../libraries/entropy.py:7117
 msgid "Downloading checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:7108
+#: ../../libraries/entropy.py:7128
 msgid "Cannot fetch checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:7138
+#: ../../libraries/entropy.py:7158
 msgid "Current repository got suddenly locked. Download aborted."
 msgstr ""
 
-#: ../../libraries/entropy.py:7144
+#: ../../libraries/entropy.py:7164
 msgid "remote database got suddenly locked"
 msgstr ""
 
 #. starting to download
-#: ../../libraries/entropy.py:7153
+#: ../../libraries/entropy.py:7173
 msgid "Downloading repository database"
 msgstr ""
 
-#: ../../libraries/entropy.py:7181
+#: ../../libraries/entropy.py:7201
 msgid "database does not exist online"
 msgstr ""
 
-#: ../../libraries/entropy.py:7196
+#: ../../libraries/entropy.py:7216
 msgid "database is already up to date"
 msgstr ""
 
-#: ../../libraries/entropy.py:7208
+#: ../../libraries/entropy.py:7228
 msgid "database will be ready soon"
 msgstr ""
 
-#: ../../libraries/entropy.py:7224
+#: ../../libraries/entropy.py:7244
 msgid "Repository is being updated"
 msgstr ""
 
-#: ../../libraries/entropy.py:7225
+#: ../../libraries/entropy.py:7245
 msgid "Try again in a few minutes"
 msgstr ""
 
-#: ../../libraries/entropy.py:7257
+#: ../../libraries/entropy.py:7277
 msgid "Injecting downloaded dump"
 msgstr ""
 
-#: ../../libraries/entropy.py:7259 ../../libraries/entropy.py:27597
-#: ../../spritz/src/spritz.glade.h:164
+#: ../../libraries/entropy.py:7279 ../../libraries/entropy.py:29777
+#: ../../spritz/src/spritz.glade.h:232
 msgid "please wait"
 msgstr ""
 
-#: ../../libraries/entropy.py:7281
+#: ../../libraries/entropy.py:7301
 msgid "Advisories fetch error"
 msgstr ""
 
-#: ../../libraries/entropy.py:7297
+#: ../../libraries/entropy.py:7317
 msgid "Downloading SSL CA certificate"
 msgstr ""
 
-#: ../../libraries/entropy.py:7307
+#: ../../libraries/entropy.py:7327
 msgid "Downloading SSL Server certificate"
 msgstr ""
 
-#: ../../libraries/entropy.py:7317
+#: ../../libraries/entropy.py:7337
 msgid "Downloading package mask"
 msgstr ""
 
-#: ../../libraries/entropy.py:7327
+#: ../../libraries/entropy.py:7347
 msgid "Downloading license whitelist"
 msgstr ""
 
-#: ../../libraries/entropy.py:7337
+#: ../../libraries/entropy.py:7357
 msgid "Downloading revision"
 msgstr ""
 
-#: ../../libraries/entropy.py:7347
+#: ../../libraries/entropy.py:7367
 msgid "Downloading SPM global configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7357
+#: ../../libraries/entropy.py:7377
 msgid "Downloading SPM package masking configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7367
+#: ../../libraries/entropy.py:7387
 msgid "Downloading SPM package unmasking configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7377
+#: ../../libraries/entropy.py:7397
 msgid "Downloading SPM package keywording configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7387
+#: ../../libraries/entropy.py:7407
 msgid "Downloading SPM package USE flags configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7397
+#: ../../libraries/entropy.py:7417
 msgid "Downloading SPM Profile configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7416
-msgid "not available, it's ok"
-msgstr ""
-
-#: ../../libraries/entropy.py:7419
-msgid "not available, not much ok!"
-msgstr ""
-
-#: ../../libraries/entropy.py:7421
-msgid "available, w00t!"
-msgstr ""
-
-#: ../../libraries/entropy.py:7430 ../../client/text_repositories.py:147
-msgid "Repository revision"
+#: ../../libraries/entropy.py:7427
+msgid "Downloading Notice Board"
 msgstr ""
 
 #: ../../libraries/entropy.py:7446
+msgid "not available, it's ok"
+msgstr ""
+
+#: ../../libraries/entropy.py:7449
+msgid "not available, not much ok!"
+msgstr ""
+
+#: ../../libraries/entropy.py:7451
+msgid "available, w00t!"
+msgstr ""
+
+#: ../../libraries/entropy.py:7460 ../../client/text_repositories.py:147
+msgid "Repository revision"
+msgstr ""
+
+#: ../../libraries/entropy.py:7476
 msgid "Indexing Repository metadata"
 msgstr ""
 
 #. let's dance!
-#: ../../libraries/entropy.py:7473
+#: ../../libraries/entropy.py:7503
 msgid "Repositories synchronization"
 msgstr ""
 
-#: ../../libraries/entropy.py:7515 ../../libraries/entropy.py:19822
-#: ../../libraries/entropy.py:20438
+#: ../../libraries/entropy.py:7545 ../../libraries/entropy.py:19819
+#: ../../libraries/entropy.py:20418 ../../libraries/entropy.py:22985
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:7521
+#: ../../libraries/entropy.py:7551
 msgid "Now searching for broken depends"
 msgstr ""
 
-#: ../../libraries/entropy.py:7539
+#: ../../libraries/entropy.py:7569
 msgid "scanning for broken depends"
 msgstr ""
 
-#: ../../libraries/entropy.py:7578
+#: ../../libraries/entropy.py:7608
 msgid "broken libraries detected"
 msgstr ""
 
-#: ../../libraries/entropy.py:7589
+#: ../../libraries/entropy.py:7619
 msgid "needs"
 msgstr ""
 
-#: ../../libraries/entropy.py:7610
+#: ../../libraries/entropy.py:7640
 msgid "Now searching for missing RDEPENDs"
 msgstr ""
 
-#: ../../libraries/entropy.py:7620
+#: ../../libraries/entropy.py:7650
 msgid "scanning for missing RDEPENDs"
 msgstr ""
 
-#: ../../libraries/entropy.py:7646
+#: ../../libraries/entropy.py:7676
 msgid "is missing the following dependencies"
 msgstr ""
 
-#: ../../libraries/entropy.py:7668
+#: ../../libraries/entropy.py:7698
 msgid "Do you want to add them?"
 msgstr ""
 
-#: ../../libraries/entropy.py:7671
+#: ../../libraries/entropy.py:7701
 msgid "Selectively?"
 msgstr ""
 
-#: ../../libraries/entropy.py:7685
+#: ../../libraries/entropy.py:7715
 msgid "Want to add?"
 msgstr ""
 
-#: ../../libraries/entropy.py:7697
+#: ../../libraries/entropy.py:7727
 msgid "missing dependencies added"
 msgstr ""
 
-#: ../../libraries/entropy.py:7876 ../../libraries/entropy.py:11502
-#: ../../libraries/entropy.py:11564
+#: ../../libraries/entropy.py:7906 ../../libraries/entropy.py:11532
+#: ../../libraries/entropy.py:11594
 msgid "A valid TextInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:7934
+#: ../../libraries/entropy.py:7964
 msgid "connecting with user"
 msgstr ""
 
-#: ../../libraries/entropy.py:7946 ../../libraries/entropy.py:7983
-#: ../../libraries/entropy.py:8013
+#: ../../libraries/entropy.py:7976 ../../libraries/entropy.py:8013
+#: ../../libraries/entropy.py:8043
 msgid "switching to"
 msgstr ""
 
-#: ../../libraries/entropy.py:7974
+#: ../../libraries/entropy.py:8004
 msgid "reconnecting with user"
 msgstr ""
 
 #. create text
-#: ../../libraries/entropy.py:8136
+#: ../../libraries/entropy.py:8166
 msgid "Upload status"
 msgstr ""
 
-#: ../../libraries/entropy.py:8182
+#: ../../libraries/entropy.py:8212
 msgid "Upload issue"
 msgstr ""
 
-#: ../../libraries/entropy.py:8184
+#: ../../libraries/entropy.py:8214
 msgid "retrying"
 msgstr ""
 
-#: ../../libraries/entropy.py:8211
+#: ../../libraries/entropy.py:8241
 msgid "Download status"
 msgstr ""
 
-#: ../../libraries/entropy.py:8493
+#: ../../libraries/entropy.py:8523
 msgid "A valid Entropy Instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:8518
+#: ../../libraries/entropy.py:8548
 msgid "Portage interface can't be loaded"
 msgstr ""
 
-#: ../../libraries/entropy.py:8521
+#: ../../libraries/entropy.py:8551
 msgid "please fix"
 msgstr ""
 
-#: ../../libraries/entropy.py:8536
+#: ../../libraries/entropy.py:8566
 msgid "Valid phases"
 msgstr ""
 
-#: ../../libraries/entropy.py:8804 ../../libraries/entropy.py:9661
-#: ../../libraries/entropy.py:9733 ../../libraries/entropy.py:9807
-#: ../../libraries/entropy.py:9883 ../../libraries/entropy.py:10265
-#: ../../libraries/entropy.py:10279 ../../libraries/entropy.py:10321
-#: ../../libraries/entropy.py:10339 ../../libraries/entropy.py:10368
-#: ../../libraries/entropy.py:10381 ../../libraries/entropy.py:10394
+#: ../../libraries/entropy.py:8834 ../../libraries/entropy.py:9691
+#: ../../libraries/entropy.py:9763 ../../libraries/entropy.py:9837
+#: ../../libraries/entropy.py:9913 ../../libraries/entropy.py:10295
+#: ../../libraries/entropy.py:10309 ../../libraries/entropy.py:10351
+#: ../../libraries/entropy.py:10369 ../../libraries/entropy.py:10398
+#: ../../libraries/entropy.py:10411 ../../libraries/entropy.py:10424
 msgid "QA"
 msgstr ""
 
-#: ../../libraries/entropy.py:8805
+#: ../../libraries/entropy.py:8835
 msgid "Cannot run External trigger for"
 msgstr ""
 
-#: ../../libraries/entropy.py:8807 ../../libraries/entropy.py:9664
-#: ../../libraries/entropy.py:9736 ../../libraries/entropy.py:9810
-#: ../../libraries/entropy.py:9886
+#: ../../libraries/entropy.py:8837 ../../libraries/entropy.py:9694
+#: ../../libraries/entropy.py:9766 ../../libraries/entropy.py:9840
+#: ../../libraries/entropy.py:9916
 msgid "Please report it"
 msgstr ""
 
-#: ../../libraries/entropy.py:8857 ../../libraries/entropy.py:9519
+#: ../../libraries/entropy.py:8887 ../../libraries/entropy.py:9549
 msgid "Regenerating"
 msgstr ""
 
-#: ../../libraries/entropy.py:8883
+#: ../../libraries/entropy.py:8913
 msgid "Please remember"
 msgstr ""
 
-#: ../../libraries/entropy.py:8883
+#: ../../libraries/entropy.py:8913
 msgid "It is always better to leave Entropy updates isolated"
 msgstr ""
 
-#: ../../libraries/entropy.py:8889
+#: ../../libraries/entropy.py:8919
 msgid "Purging Entropy cache"
 msgstr ""
 
-#: ../../libraries/entropy.py:8914
+#: ../../libraries/entropy.py:8944
 msgid "Configuring fonts directories"
 msgstr ""
 
-#: ../../libraries/entropy.py:8931
+#: ../../libraries/entropy.py:8961
 msgid "Updating {conf.d,init.d} mtime"
 msgstr ""
 
-#: ../../libraries/entropy.py:8958
+#: ../../libraries/entropy.py:8988
 msgid "Configuring GCC Profile"
 msgstr ""
 
-#: ../../libraries/entropy.py:8977
+#: ../../libraries/entropy.py:9007
 msgid "Updating icons cache"
 msgstr ""
 
-#: ../../libraries/entropy.py:8995
+#: ../../libraries/entropy.py:9025
 msgid "Updating shared mime info database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9009
+#: ../../libraries/entropy.py:9039
 msgid "Updating desktop mime database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9023
+#: ../../libraries/entropy.py:9053
 msgid "Updating scrollkeeper database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9037
+#: ../../libraries/entropy.py:9067
 msgid "Reloading gconf2 database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9051
+#: ../../libraries/entropy.py:9081
 msgid "Configuring Binutils Profile"
 msgstr ""
 
-#: ../../libraries/entropy.py:9071
+#: ../../libraries/entropy.py:9101
 msgid "Updating moduledb"
 msgstr ""
 
-#: ../../libraries/entropy.py:9079
+#: ../../libraries/entropy.py:9109
 msgid "Running depmod"
 msgstr ""
 
-#: ../../libraries/entropy.py:9102
+#: ../../libraries/entropy.py:9132
 msgid "Configuring Python"
 msgstr ""
 
-#: ../../libraries/entropy.py:9116
+#: ../../libraries/entropy.py:9146
 msgid "Configuring SQLite"
 msgstr ""
 
-#: ../../libraries/entropy.py:9133
+#: ../../libraries/entropy.py:9163
 msgid "Removing boot service"
 msgstr ""
 
-#: ../../libraries/entropy.py:9153
+#: ../../libraries/entropy.py:9183
 msgid "A new service will be installed"
 msgstr ""
 
-#: ../../libraries/entropy.py:9174 ../../libraries/entropy.py:9207
+#: ../../libraries/entropy.py:9204 ../../libraries/entropy.py:9237
 msgid "Reconfiguring OpenGL"
 msgstr ""
 
-#: ../../libraries/entropy.py:9192 ../../libraries/entropy.py:9225
+#: ../../libraries/entropy.py:9222 ../../libraries/entropy.py:9255
 msgid "Eselect NOT found, cannot run OpenGL trigger"
 msgstr ""
 
-#: ../../libraries/entropy.py:9255 ../../libraries/entropy.py:9279
+#: ../../libraries/entropy.py:9285 ../../libraries/entropy.py:9309
 msgid "Configuring GRUB bootloader"
 msgstr ""
 
-#: ../../libraries/entropy.py:9256
+#: ../../libraries/entropy.py:9286
 msgid "Adding the new kernel"
 msgstr ""
 
-#: ../../libraries/entropy.py:9280
+#: ../../libraries/entropy.py:9310
 msgid "Removing the selected kernel"
 msgstr ""
 
-#: ../../libraries/entropy.py:9312
+#: ../../libraries/entropy.py:9342
 msgid "Mounted /boot successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:9323
+#: ../../libraries/entropy.py:9353
 msgid "Cannot mount /boot automatically !!"
 msgstr ""
 
-#: ../../libraries/entropy.py:9351 ../../libraries/entropy.py:9379
+#: ../../libraries/entropy.py:9381 ../../libraries/entropy.py:9409
 msgid "Running kbuildsycoca to build global KDE database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9404
+#: ../../libraries/entropy.py:9434
 msgid "Installing gconf2 schemas"
 msgstr ""
 
-#: ../../libraries/entropy.py:9485
+#: ../../libraries/entropy.py:9515
 msgid "Creating kernel symlink"
 msgstr ""
 
-#: ../../libraries/entropy.py:9487
+#: ../../libraries/entropy.py:9517
 msgid "for"
 msgstr ""
 
-#: ../../libraries/entropy.py:9536
+#: ../../libraries/entropy.py:9566
 msgid "Updating environment"
 msgstr ""
 
-#: ../../libraries/entropy.py:9567
+#: ../../libraries/entropy.py:9597
 msgid "Setting system VM to"
 msgstr ""
 
-#: ../../libraries/entropy.py:9589 ../../libraries/entropy.py:21906
+#: ../../libraries/entropy.py:9619 ../../libraries/entropy.py:24110
 #: ../../client/text_security.py:73 ../../client/text_smart.py:85
 msgid "does not exist"
 msgstr ""
 
-#: ../../libraries/entropy.py:9662 ../../libraries/entropy.py:9734
-#: ../../libraries/entropy.py:9808 ../../libraries/entropy.py:9884
+#: ../../libraries/entropy.py:9692 ../../libraries/entropy.py:9764
+#: ../../libraries/entropy.py:9838 ../../libraries/entropy.py:9914
 msgid "Cannot run Portage trigger for"
 msgstr ""
 
-#: ../../libraries/entropy.py:10266
+#: ../../libraries/entropy.py:10296
 msgid "Cannot find df"
 msgstr ""
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy.py:10267 ../../libraries/entropy.py:10281
-#: ../../libraries/entropy.py:10325 ../../libraries/entropy.py:10370
-#: ../../libraries/entropy.py:10383 ../../libraries/entropy.py:10396
+#: ../../libraries/entropy.py:10297 ../../libraries/entropy.py:10311
+#: ../../libraries/entropy.py:10355 ../../libraries/entropy.py:10400
+#: ../../libraries/entropy.py:10413 ../../libraries/entropy.py:10426
 msgid "Cannot properly configure the kernel"
 msgstr ""
 
-#: ../../libraries/entropy.py:10268 ../../libraries/entropy.py:10282
-#: ../../libraries/entropy.py:10326 ../../libraries/entropy.py:10343
-#: ../../libraries/entropy.py:10371 ../../libraries/entropy.py:10384
-#: ../../libraries/entropy.py:10397
+#: ../../libraries/entropy.py:10298 ../../libraries/entropy.py:10312
+#: ../../libraries/entropy.py:10356 ../../libraries/entropy.py:10373
+#: ../../libraries/entropy.py:10401 ../../libraries/entropy.py:10414
+#: ../../libraries/entropy.py:10427
 msgid "Defaulting to"
 msgstr ""
 
-#: ../../libraries/entropy.py:10280
+#: ../../libraries/entropy.py:10310
 msgid "Cannot find grub"
 msgstr ""
 
-#: ../../libraries/entropy.py:10322
+#: ../../libraries/entropy.py:10352
 msgid "cannot match device"
 msgstr ""
 
-#: ../../libraries/entropy.py:10324
+#: ../../libraries/entropy.py:10354
 msgid "with a grub one"
 msgstr ""
 
-#: ../../libraries/entropy.py:10340
+#: ../../libraries/entropy.py:10370
 msgid "grub translation not supported for"
 msgstr ""
 
-#: ../../libraries/entropy.py:10342
+#: ../../libraries/entropy.py:10372
 msgid "Cannot properly configure grub.conf"
 msgstr ""
 
-#: ../../libraries/entropy.py:10369
+#: ../../libraries/entropy.py:10399
 msgid "cannot match grub device with a Linux one"
 msgstr ""
 
-#: ../../libraries/entropy.py:10382
+#: ../../libraries/entropy.py:10412
 msgid "cannot find generated device.map"
 msgstr ""
 
-#: ../../libraries/entropy.py:10395
+#: ../../libraries/entropy.py:10425
 msgid "cannot run df /boot"
 msgstr ""
 
-#: ../../libraries/entropy.py:10819
+#: ../../libraries/entropy.py:10849
 msgid "Not prepared yet"
 msgstr ""
 
-#: ../../libraries/entropy.py:10844
+#: ../../libraries/entropy.py:10874
 msgid "A valid EquoInterface instance or subclass is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:11045
+#: ../../libraries/entropy.py:11075
 msgid "Warning"
 msgstr ""
 
-#: ../../libraries/entropy.py:11047
+#: ../../libraries/entropy.py:11077
 msgid "advisory broken"
 msgstr ""
 
-#: ../../libraries/entropy.py:11317 ../../libraries/entropy.py:11332
-#: ../../libraries/entropy.py:11361 ../../libraries/entropy.py:11363
-#: ../../libraries/entropy.py:11382 ../../libraries/entropy.py:11392
-#: ../../libraries/entropy.py:11404 ../../libraries/entropy.py:11418
-#: ../../libraries/entropy.py:11428 ../../libraries/entropy.py:11438
-#: ../../libraries/entropy.py:11448 ../../libraries/entropy.py:11469
-#: ../../libraries/entropy.py:11479 ../../spritz/src/gui.py:306
+#: ../../libraries/entropy.py:11347 ../../libraries/entropy.py:11362
+#: ../../libraries/entropy.py:11391 ../../libraries/entropy.py:11393
+#: ../../libraries/entropy.py:11412 ../../libraries/entropy.py:11422
+#: ../../libraries/entropy.py:11434 ../../libraries/entropy.py:11448
+#: ../../libraries/entropy.py:11458 ../../libraries/entropy.py:11468
+#: ../../libraries/entropy.py:11478 ../../libraries/entropy.py:11499
+#: ../../libraries/entropy.py:11509 ../../spritz/src/gui.py:306
 msgid "Security Advisories"
 msgstr ""
 
-#: ../../libraries/entropy.py:11317
+#: ../../libraries/entropy.py:11347
 msgid "testing service connection"
 msgstr ""
 
-#: ../../libraries/entropy.py:11332
+#: ../../libraries/entropy.py:11362
 msgid "getting latest GLSAs"
 msgstr ""
 
-#: ../../libraries/entropy.py:11361
+#: ../../libraries/entropy.py:11391
 msgid "updated successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:11363
+#: ../../libraries/entropy.py:11393
 msgid "already up to date"
 msgstr ""
 
-#: ../../libraries/entropy.py:11382
+#: ../../libraries/entropy.py:11412
 msgid "unable to download the package, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11392
+#: ../../libraries/entropy.py:11422
 msgid "Verifying checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:11404
+#: ../../libraries/entropy.py:11434
 msgid "cannot download the checksum, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11418
+#: ../../libraries/entropy.py:11448
 msgid "cannot open packages, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11428
+#: ../../libraries/entropy.py:11458
 msgid "cannot read the checksum, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11438
+#: ../../libraries/entropy.py:11468
 msgid "digest verification failed, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11448
+#: ../../libraries/entropy.py:11478
 msgid "verification Successful"
 msgstr ""
 
-#: ../../libraries/entropy.py:11456
+#: ../../libraries/entropy.py:11486
 msgid "Return status not valid"
 msgstr ""
 
-#: ../../libraries/entropy.py:11469
+#: ../../libraries/entropy.py:11499
 msgid "digest verification failed, try again later"
 msgstr ""
 
-#: ../../libraries/entropy.py:11479
+#: ../../libraries/entropy.py:11509
 msgid "installing"
 msgstr ""
 
-#: ../../libraries/entropy.py:11510
+#: ../../libraries/entropy.py:11540
 msgid "Invalid backend"
 msgstr ""
 
-#: ../../libraries/entropy.py:11843 ../../libraries/entropy.py:22550
-#: ../../libraries/entropy.py:22701 ../../libraries/entropy.py:22795
-#: ../../libraries/entropy.py:24012
+#: ../../libraries/entropy.py:11968 ../../libraries/entropy.py:24754
+#: ../../libraries/entropy.py:24905 ../../libraries/entropy.py:24999
+#: ../../libraries/entropy.py:26216
 msgid "error"
 msgstr ""
 
-#: ../../libraries/entropy.py:11845 ../../server/server_reagent.py:91
+#: ../../libraries/entropy.py:11970 ../../server/server_reagent.py:91
 #: ../../server/server_reagent.py:103
 msgid "not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:11917
+#: ../../libraries/entropy.py:12355
 msgid "Error calculating dependencies"
 msgstr ""
 
-#: ../../libraries/entropy.py:11969
+#: ../../libraries/entropy.py:12407
 msgid "missing right parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy.py:12035
+#: ../../libraries/entropy.py:12473
 msgid "missing atom list in"
 msgstr ""
 
-#: ../../libraries/entropy.py:12038
+#: ../../libraries/entropy.py:12476
 msgid "Conditional without target in"
 msgstr ""
 
-#: ../../libraries/entropy.py:12068
+#: ../../libraries/entropy.py:12506
 msgid "Conditional with no target"
 msgstr ""
 
-#: ../../libraries/entropy.py:12073
+#: ../../libraries/entropy.py:12511
 msgid "Empty target in string"
 msgstr ""
 
-#: ../../libraries/entropy.py:12073 ../../libraries/entropy.py:12082
+#: ../../libraries/entropy.py:12511 ../../libraries/entropy.py:12520
 msgid "Deprecated"
 msgstr ""
 
-#: ../../libraries/entropy.py:12082
+#: ../../libraries/entropy.py:12520
 msgid "Nested use flags without parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy.py:12122
+#: ../../libraries/entropy.py:12560
 msgid "Conditional without flag"
 msgstr ""
 
-#: ../../libraries/entropy.py:12138
+#: ../../libraries/entropy.py:12576
 msgid "Conditional without parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy.py:12827
+#: ../../libraries/entropy.py:13267
 msgid "Cannot bind the service"
 msgstr ""
 
-#: ../../libraries/entropy.py:14316
+#: ../../libraries/entropy.py:14793
 msgid "Entropy ServerInterface must be run as root"
 msgstr ""
 
-#: ../../libraries/entropy.py:14344 ../../libraries/entropy.py:14428
+#: ../../libraries/entropy.py:14821 ../../libraries/entropy.py:14906
 msgid "repository not configured"
 msgstr ""
 
-#: ../../libraries/entropy.py:14350
+#: ../../libraries/entropy.py:14827
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr ""
 
-#: ../../libraries/entropy.py:14450
+#: ../../libraries/entropy.py:14928
 msgid "Your default repository is not initialized"
 msgstr ""
 
-#: ../../libraries/entropy.py:14461
+#: ../../libraries/entropy.py:14939
 msgid "Do you want to initialize your default repository ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:14463
+#: ../../libraries/entropy.py:14941
 msgid "You have taken the risk to continue with an uninitialized repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:14483
+#: ../../libraries/entropy.py:14961
 msgid "server-side repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:14485
+#: ../../libraries/entropy.py:14963
 msgid "community repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:14486
+#: ../../libraries/entropy.py:14964
 msgid "Entropy Server Interface Instance on repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:14491
+#: ../../libraries/entropy.py:14969
+msgid "current branch"
+msgstr ""
+
+#: ../../libraries/entropy.py:14971
 msgid "type"
 msgstr ""
 
-#: ../../libraries/entropy.py:14500
+#: ../../libraries/entropy.py:14980
 msgid "Currently configured repositories"
 msgstr ""
 
-#: ../../libraries/entropy.py:14616
+#: ../../libraries/entropy.py:15096
 msgid "Entropy database is already locked by you :-)"
 msgstr ""
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy.py:14623
+#: ../../libraries/entropy.py:15103
 msgid "Locking and Syncing Entropy database"
 msgstr ""
 
-#: ../../libraries/entropy.py:14635 ../../server/server_activator.py:180
+#: ../../libraries/entropy.py:15115 ../../server/server_activator.py:180
 msgid "Mirrors status table"
 msgstr ""
 
-#: ../../libraries/entropy.py:14644 ../../libraries/entropy.py:14647
+#: ../../libraries/entropy.py:15124 ../../libraries/entropy.py:15127
 #: ../../server/server_activator.py:186 ../../server/server_activator.py:190
 msgid "Unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:14646 ../../libraries/entropy.py:14649
+#: ../../libraries/entropy.py:15126 ../../libraries/entropy.py:15129
 #: ../../server/server_activator.py:184 ../../server/server_activator.py:188
 msgid "Locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:14665
+#: ../../libraries/entropy.py:15145
 msgid "cannot lock mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:14738
+#: ../../libraries/entropy.py:15220
 msgid ""
 "Entropy database is probably empty. If you don't agree with what I'm saying, "
 "then it's probably corrupted! I won't stop you here btw..."
 msgstr ""
 
-#: ../../libraries/entropy.py:14749
+#: ../../libraries/entropy.py:15233
 msgid "database"
 msgstr ""
 
-#: ../../libraries/entropy.py:14750
+#: ../../libraries/entropy.py:15234
 msgid "indexing database"
 msgstr ""
 
-#: ../../libraries/entropy.py:14783
+#: ../../libraries/entropy.py:15251
+msgid "branch copy"
+msgstr ""
+
+#: ../../libraries/entropy.py:15252
+msgid "copying counters from"
+msgstr ""
+
+#: ../../libraries/entropy.py:15254 ../../libraries/entropy.py:27261
+#: ../../client/text_configuration.py:113
+msgid "to"
+msgstr ""
+
+#: ../../libraries/entropy.py:15291
 msgid "Checking"
 msgstr ""
 
-#: ../../libraries/entropy.py:14811
+#: ../../libraries/entropy.py:15319
 msgid "Running dependencies test"
 msgstr ""
 
-#: ../../libraries/entropy.py:14839 ../../client/text_ui.py:1144
+#: ../../libraries/entropy.py:15347 ../../client/text_ui.py:1163
 msgid "These are the dependencies not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:14846 ../../client/text_ui.py:1148
+#: ../../libraries/entropy.py:15354 ../../client/text_ui.py:1167
 msgid "Needed by"
 msgstr ""
 
-#: ../../libraries/entropy.py:14863
+#: ../../libraries/entropy.py:15371
 msgid "by repo"
 msgstr ""
 
-#: ../../libraries/entropy.py:14870
+#: ../../libraries/entropy.py:15378
 msgid "Every dependency is satisfied. It's all fine."
 msgstr ""
 
-#: ../../libraries/entropy.py:14892 ../../client/text_ui.py:1194
+#: ../../libraries/entropy.py:15400 ../../client/text_ui.py:1213
 msgid "System is healthy"
 msgstr ""
 
-#: ../../libraries/entropy.py:14901
+#: ../../libraries/entropy.py:15409
 msgid "Matching libraries with Spm"
 msgstr ""
 
-#: ../../libraries/entropy.py:14910
+#: ../../libraries/entropy.py:15418
 msgid "Scanning"
 msgstr ""
 
-#: ../../libraries/entropy.py:14922
+#: ../../libraries/entropy.py:15430
 msgid "These are the matched packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:14938
+#: ../../libraries/entropy.py:15446
 msgid "No matched packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:14960
+#: ../../libraries/entropy.py:15468
 msgid "Initializing an empty database file with Entropy structure"
 msgstr ""
 
-#: ../../libraries/entropy.py:14972
+#: ../../libraries/entropy.py:15480
 msgid "Entropy database file"
 msgstr ""
 
-#: ../../libraries/entropy.py:14972
+#: ../../libraries/entropy.py:15480
 msgid "successfully initialized"
 msgstr ""
 
-#: ../../libraries/entropy.py:14988
+#: ../../libraries/entropy.py:15496
 msgid "You cannot switch packages from/to your system database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15004
+#: ../../libraries/entropy.py:15512
 msgid "Preparing to move selected packages to"
 msgstr ""
 
-#: ../../libraries/entropy.py:15006
+#: ../../libraries/entropy.py:15514
 msgid "Preparing to copy selected packages to"
 msgstr ""
 
-#: ../../libraries/entropy.py:15018
+#. note
+#: ../../libraries/entropy.py:15526 ../../libraries/entropy.py:22762
+#: ../../spritz/src/dialogs.py:281 ../../spritz/src/dialogs.py:1433
+#: ../../spritz/src/spritz.glade.h:93
 msgid "Note"
 msgstr ""
 
-#: ../../libraries/entropy.py:15019
+#: ../../libraries/entropy.py:15527
 msgid ""
 "all the old packages with conflicting scope will be removed from the "
 "destination repo unless injected"
 msgstr ""
 
 #. ask to continue
-#: ../../libraries/entropy.py:15043 ../../libraries/entropy.py:15993
-#: ../../libraries/entropy.py:16232 ../../libraries/entropy.py:24189
+#: ../../libraries/entropy.py:15551 ../../libraries/entropy.py:16501
+#: ../../libraries/entropy.py:16740 ../../libraries/entropy.py:26393
 #: ../../server/server_reagent.py:362 ../../server/server_reagent.py:409
 #: ../../server/server_reagent.py:459
 msgid "Would you like to continue ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:15059
+#: ../../libraries/entropy.py:15567
 msgid "switching"
 msgstr ""
 
-#: ../../libraries/entropy.py:15077
+#: ../../libraries/entropy.py:15585
 msgid "cannot switch, package not found, skipping"
 msgstr ""
 
-#: ../../libraries/entropy.py:15103
+#: ../../libraries/entropy.py:15611
 msgid "moving file"
 msgstr ""
 
-#: ../../libraries/entropy.py:15119
+#: ../../libraries/entropy.py:15627
 msgid "loading data from source database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15136
+#: ../../libraries/entropy.py:15644
 msgid "injecting data to destination database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15154
+#: ../../libraries/entropy.py:15662
 msgid "removing entry from source database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15172
+#: ../../libraries/entropy.py:15680
 msgid "successfully handled atom"
 msgstr ""
 
-#: ../../libraries/entropy.py:15197 ../../libraries/entropy.py:15291
+#: ../../libraries/entropy.py:15705 ../../libraries/entropy.py:15799
 msgid "adding package"
 msgstr ""
 
-#: ../../libraries/entropy.py:15235 ../../libraries/entropy.py:15868
+#: ../../libraries/entropy.py:15743 ../../libraries/entropy.py:16376
 msgid "added package"
 msgstr ""
 
-#: ../../libraries/entropy.py:15237
+#: ../../libraries/entropy.py:15745
 msgid "rev"
 msgstr ""
 
-#: ../../libraries/entropy.py:15313
+#: ../../libraries/entropy.py:15821
 msgid "Exception caught, running injection and RDEPEND check before raising"
 msgstr ""
 
-#: ../../libraries/entropy.py:15374
+#: ../../libraries/entropy.py:15882
 msgid "Injecting entropy metadata into built packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:15389
+#: ../../libraries/entropy.py:15897
 msgid "injecting entropy metadata"
 msgstr ""
 
-#: ../../libraries/entropy.py:15409
+#: ../../libraries/entropy.py:15917
 msgid "injection complete"
 msgstr ""
 
-#: ../../libraries/entropy.py:15433
+#: ../../libraries/entropy.py:15941
 msgid "removing package"
 msgstr ""
 
-#: ../../libraries/entropy.py:15445 ../../libraries/entropy.py:23669
+#: ../../libraries/entropy.py:15953 ../../libraries/entropy.py:25873
 msgid "removal complete"
 msgstr ""
 
-#: ../../libraries/entropy.py:15559
+#: ../../libraries/entropy.py:16067
 msgid "invalid database revision"
 msgstr ""
 
-#: ../../libraries/entropy.py:15561
+#: ../../libraries/entropy.py:16069
 msgid "defaulting to 0"
 msgstr ""
 
-#: ../../libraries/entropy.py:15702
+#: ../../libraries/entropy.py:16210
 msgid "Initializing Entropy database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15735 ../../libraries/entropy.py:24762
-#: ../../libraries/entropy.py:24780 ../../libraries/entropy.py:25000
+#: ../../libraries/entropy.py:16243 ../../libraries/entropy.py:26966
+#: ../../libraries/entropy.py:26984 ../../libraries/entropy.py:27204
 msgid "WARNING"
 msgstr ""
 
-#: ../../libraries/entropy.py:15736
+#: ../../libraries/entropy.py:16244
 msgid "database already exists"
 msgstr ""
 
-#: ../../libraries/entropy.py:15746
+#: ../../libraries/entropy.py:16254
 msgid "Do you want to continue ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:15763
+#: ../../libraries/entropy.py:16271
 msgid "Dumping current revisions to file"
 msgstr ""
 
-#: ../../libraries/entropy.py:15780
+#: ../../libraries/entropy.py:16288
 msgid "Dumping current 'treeupdates' actions to file"
 msgstr ""
 
-#: ../../libraries/entropy.py:15792
+#: ../../libraries/entropy.py:16300
 msgid ""
 "Would you like to sync packages first (important if you don't have them "
 "synced) ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:15816
+#: ../../libraries/entropy.py:16324
 msgid "Reinitializing Entropy database for branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:15818
+#: ../../libraries/entropy.py:16326
 msgid "using Packages in the repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:15835
+#: ../../libraries/entropy.py:16343
 msgid "analyzing"
 msgstr ""
 
-#: ../../libraries/entropy.py:15870 ../../client/text_query.py:1063
+#: ../../libraries/entropy.py:16378 ../../client/text_query.py:1063
 #: ../../client/text_query.py:1065
 msgid "revision"
 msgstr ""
 
-#: ../../libraries/entropy.py:15904
+#: ../../libraries/entropy.py:16412
 msgid "cannot match"
 msgstr ""
 
-#: ../../libraries/entropy.py:15956 ../../libraries/entropy.py:16163
+#: ../../libraries/entropy.py:16464 ../../libraries/entropy.py:16671
 msgid "Integrity verification of the selected packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:15968 ../../libraries/entropy.py:16175
+#: ../../libraries/entropy.py:16476 ../../libraries/entropy.py:16683
 msgid "All the packages in the Entropy Packages repository will be checked."
 msgstr ""
 
-#: ../../libraries/entropy.py:15974
+#: ../../libraries/entropy.py:16482
 msgid "This is the list of the packages that would be checked"
 msgstr ""
 
-#: ../../libraries/entropy.py:16007
+#: ../../libraries/entropy.py:16515
 msgid "Working on mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:16028
+#: ../../libraries/entropy.py:16536
 msgid "checking hash"
 msgstr ""
 
-#: ../../libraries/entropy.py:16044 ../../libraries/entropy.py:16059
+#: ../../libraries/entropy.py:16552 ../../libraries/entropy.py:16567
 msgid "digest verification of"
 msgstr ""
 
-#: ../../libraries/entropy.py:16061
+#: ../../libraries/entropy.py:16569
 msgid "failed for unknown reasons"
 msgstr ""
 
-#: ../../libraries/entropy.py:16076 ../../libraries/entropy.py:16340
-#: ../../libraries/entropy.py:21904 ../../libraries/entropy.py:21923
-#: ../../libraries/entropy.py:21957 ../../libraries/entropy.py:21972
-#: ../../libraries/entropy.py:21991
+#: ../../libraries/entropy.py:16584 ../../libraries/entropy.py:16848
+#: ../../libraries/entropy.py:24108 ../../libraries/entropy.py:24127
+#: ../../libraries/entropy.py:24161 ../../libraries/entropy.py:24176
+#: ../../libraries/entropy.py:24195
 msgid "package"
 msgstr ""
 
-#: ../../libraries/entropy.py:16078
+#: ../../libraries/entropy.py:16586
 msgid "NOT healthy"
 msgstr ""
 
-#: ../../libraries/entropy.py:16090 ../../libraries/entropy.py:16352
+#: ../../libraries/entropy.py:16598 ../../libraries/entropy.py:16860
 msgid "This is the list of broken packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:16115 ../../server/server_reagent.py:282
+#: ../../libraries/entropy.py:16623 ../../server/server_reagent.py:282
 msgid "Statistics"
 msgstr ""
 
-#: ../../libraries/entropy.py:16124 ../../libraries/entropy.py:16378
+#: ../../libraries/entropy.py:16632 ../../libraries/entropy.py:16886
 msgid "Number of checked packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:16134 ../../libraries/entropy.py:16388
+#: ../../libraries/entropy.py:16642 ../../libraries/entropy.py:16896
 msgid "Number of healthy packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:16144 ../../libraries/entropy.py:16398
+#: ../../libraries/entropy.py:16652 ../../libraries/entropy.py:16906
 msgid "Number of broken packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:16197
+#: ../../libraries/entropy.py:16705
 msgid "available"
 msgstr ""
 
-#: ../../libraries/entropy.py:16210
+#: ../../libraries/entropy.py:16718
 msgid "upload/ignored"
 msgstr ""
 
-#: ../../libraries/entropy.py:16221 ../../libraries/entropy.py:22991
-#: ../../libraries/entropy.py:23310
+#: ../../libraries/entropy.py:16729 ../../libraries/entropy.py:25195
+#: ../../libraries/entropy.py:25514
 msgid "download"
 msgstr ""
 
-#: ../../libraries/entropy.py:16245
+#: ../../libraries/entropy.py:16753
 msgid "Starting to download missing files"
 msgstr ""
 
-#: ../../libraries/entropy.py:16255
+#: ../../libraries/entropy.py:16763
 msgid "Trying to search missing or broken files on another mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:16277
+#: ../../libraries/entropy.py:16785
 msgid "All the binary packages have been downloaded successfully."
 msgstr ""
 
-#: ../../libraries/entropy.py:16285
+#: ../../libraries/entropy.py:16793
 msgid "These are the packages that cannot be found online"
 msgstr ""
 
-#: ../../libraries/entropy.py:16301
+#: ../../libraries/entropy.py:16809
 msgid "They won't be checked"
 msgstr ""
 
-#: ../../libraries/entropy.py:16320
+#: ../../libraries/entropy.py:16828
 msgid "checking hash of"
 msgstr ""
 
-#: ../../libraries/entropy.py:16342
+#: ../../libraries/entropy.py:16850
 msgid "is corrupted, stored checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:16408
+#: ../../libraries/entropy.py:16916
 msgid "Number of downloaded packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:16418
+#: ../../libraries/entropy.py:16926
 msgid "Number of failed downloads"
 msgstr ""
 
-#: ../../libraries/entropy.py:16447
+#: ../../libraries/entropy.py:16955
 msgid "Switching selected packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:16470
+#: ../../libraries/entropy.py:16978
 msgid "Ignoring"
 msgstr ""
 
-#: ../../libraries/entropy.py:16472
+#: ../../libraries/entropy.py:16980
 msgid "already in branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:16491
+#: ../../libraries/entropy.py:16999
 msgid "cannot switch, package not found!"
 msgstr ""
 
-#: ../../libraries/entropy.py:16500
+#: ../../libraries/entropy.py:17008
 msgid "configuring package information"
 msgstr ""
 
-#: ../../libraries/entropy.py:16516
+#: ../../libraries/entropy.py:17024
 msgid "moving file locally"
 msgstr ""
 
-#: ../../libraries/entropy.py:16545
+#: ../../libraries/entropy.py:17053
 msgid "cannot find checksum to migrate!"
 msgstr ""
 
-#: ../../libraries/entropy.py:16553
+#: ../../libraries/entropy.py:17061
 msgid "moving file remotely"
 msgstr ""
 
-#: ../../libraries/entropy.py:16576
+#: ../../libraries/entropy.py:17084
 msgid "moving file remotely on"
 msgstr ""
 
-#: ../../libraries/entropy.py:16601
+#: ../../libraries/entropy.py:17109
 msgid "migration loop completed"
 msgstr ""
 
-#: ../../libraries/entropy.py:16631
+#: ../../libraries/entropy.py:17139
 msgid "not connected to database"
 msgstr ""
 
-#: ../../libraries/entropy.py:16634 ../../libraries/entropy.py:18160
+#: ../../libraries/entropy.py:17142 ../../libraries/entropy.py:18721
 msgid "method not implemented"
 msgstr ""
 
-#: ../../libraries/entropy.py:16641
+#: ../../libraries/entropy.py:17149
 msgid "no connection data"
 msgstr ""
 
-#: ../../libraries/entropy.py:16830
+#: ../../libraries/entropy.py:17341
 msgid "not a valid directory path"
 msgstr ""
 
-#: ../../libraries/entropy.py:18146 ../../libraries/entropy.py:18157
+#: ../../libraries/entropy.py:18707 ../../libraries/entropy.py:18718
 msgid "not logged in"
 msgstr ""
 
-#: ../../libraries/entropy.py:18153
+#: ../../libraries/entropy.py:18714
 msgid "no login data"
 msgstr ""
 
-#: ../../libraries/entropy.py:18299
+#: ../../libraries/entropy.py:18860
 msgid "no username specified"
 msgstr ""
 
-#: ../../libraries/entropy.py:18301
+#: ../../libraries/entropy.py:18862
 msgid "no password specified"
 msgstr ""
 
-#: ../../libraries/entropy.py:18304
+#: ../../libraries/entropy.py:18865
 msgid "empty password"
 msgstr ""
 
-#: ../../libraries/entropy.py:18306
+#: ../../libraries/entropy.py:18867
 msgid "empty username"
 msgstr ""
 
-#: ../../libraries/entropy.py:18311
+#: ../../libraries/entropy.py:18872
 msgid "user not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:18315
+#: ../../libraries/entropy.py:18876
 msgid "you need to login on the website to update your password format"
 msgstr ""
 
-#: ../../libraries/entropy.py:18321
+#: ../../libraries/entropy.py:18882
 msgid "wrong password"
 msgstr ""
 
-#: ../../libraries/entropy.py:18325
+#: ../../libraries/entropy.py:18886
 msgid "user inactive"
 msgstr ""
 
-#: ../../libraries/entropy.py:18329
+#: ../../libraries/entropy.py:18890
 msgid "user banned"
 msgstr ""
 
-#: ../../libraries/entropy.py:19237
-msgid "Authentication on repository"
-msgstr ""
-
-#: ../../libraries/entropy.py:19239 ../../libraries/entropy.py:21344
-msgid "Username"
-msgstr ""
-
-#: ../../libraries/entropy.py:19240 ../../libraries/entropy.py:21345
-msgid "Password"
-msgstr ""
-
-#: ../../libraries/entropy.py:19262
-msgid "logged"
-msgstr ""
-
-#. make it larger
-#: ../../libraries/entropy.py:19270 ../../libraries/entropy.py:21364
-msgid "Access denied. Login failed"
-msgstr ""
-
-#: ../../libraries/entropy.py:19683
+#: ../../libraries/entropy.py:19686
 msgid "database does not exist. Locking services for it"
 msgstr ""
 
-#: ../../libraries/entropy.py:19701
+#: ../../libraries/entropy.py:19704
 msgid "database got locked. Locking services for it"
 msgstr ""
 
-#: ../../libraries/entropy.py:19715
+#: ../../libraries/entropy.py:19718
 msgid "unlocking and indexing database"
 msgstr ""
 
-#: ../../libraries/entropy.py:19716
+#: ../../libraries/entropy.py:19719
 msgid "hash"
 msgstr ""
 
-#: ../../libraries/entropy.py:19827
-msgid "A valid RepositorySocketClientInterface based instance is needed"
+#: ../../libraries/entropy.py:19824
+msgid "A valid SystemSocketClientInterface based instance is needed"
 msgstr ""
 
 #: ../../libraries/entropy.py:19837
-msgid "hello world!"
-msgstr ""
-
-#: ../../libraries/entropy.py:19847
 msgid "feature not supported remotely"
 msgstr ""
 
-#: ../../libraries/entropy.py:19850 ../../libraries/entropy.py:19867
-#: ../../libraries/entropy.py:19885 ../../libraries/entropy.py:19901
-#: ../../libraries/entropy.py:19938
+#: ../../libraries/entropy.py:19840 ../../libraries/entropy.py:19857
+#: ../../libraries/entropy.py:19875 ../../libraries/entropy.py:19891
+#: ../../libraries/entropy.py:19928
 msgid "repo"
 msgstr ""
 
-#: ../../libraries/entropy.py:19852 ../../libraries/entropy.py:19869
-#: ../../libraries/entropy.py:19887 ../../libraries/entropy.py:19903
-#: ../../libraries/entropy.py:19940
+#: ../../libraries/entropy.py:19842 ../../libraries/entropy.py:19859
+#: ../../libraries/entropy.py:19877 ../../libraries/entropy.py:19893
+#: ../../libraries/entropy.py:19930
 msgid "arch"
 msgstr ""
 
-#: ../../libraries/entropy.py:19854 ../../libraries/entropy.py:19871
-#: ../../libraries/entropy.py:19889 ../../libraries/entropy.py:19905
-#: ../../libraries/entropy.py:19942
+#: ../../libraries/entropy.py:19844 ../../libraries/entropy.py:19861
+#: ../../libraries/entropy.py:19879 ../../libraries/entropy.py:19895
+#: ../../libraries/entropy.py:19932
 msgid "product"
 msgstr ""
 
-#: ../../libraries/entropy.py:19864
+#: ../../libraries/entropy.py:19854
 msgid "service temporarily not available"
 msgstr ""
 
 #. command failed
-#: ../../libraries/entropy.py:19882
+#: ../../libraries/entropy.py:19872
 msgid "command failed"
 msgstr ""
 
-#: ../../libraries/entropy.py:19898
+#: ../../libraries/entropy.py:19888
 msgid "received wrong answer"
 msgstr ""
 
-#: ../../libraries/entropy.py:19935
+#: ../../libraries/entropy.py:19925
 msgid "cannot convert stream into object"
 msgstr ""
 
-#: ../../libraries/entropy.py:20337 ../../spritz/src/spritz.glade.h:128
+#: ../../libraries/entropy.py:20340 ../../spritz/src/spritz.glade.h:180
 msgid "User Generated Content"
 msgstr ""
 
-#: ../../libraries/entropy.py:20338
+#: ../../libraries/entropy.py:20341
 msgid "sending file"
 msgstr ""
 
-#: ../../libraries/entropy.py:20442
+#: ../../libraries/entropy.py:20422
 msgid "A valid EntropySocketClientCommands based class is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:20544
+#: ../../libraries/entropy.py:20524
 msgid "OpenSSL Python module not available, you need dev-python/pyopenssl"
 msgstr ""
 
-#: ../../libraries/entropy.py:20683
+#: ../../libraries/entropy.py:20663
 msgid "malformed EOS. receive aborted"
 msgstr ""
 
-#: ../../libraries/entropy.py:20719
+#: ../../libraries/entropy.py:20699
 msgid "malformed data. receive aborted"
 msgstr ""
 
-#: ../../libraries/entropy.py:20734
+#: ../../libraries/entropy.py:20714
 msgid "connection timed out while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:20749
+#: ../../libraries/entropy.py:20729
 msgid "connection error while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:20768
+#: ../../libraries/entropy.py:20748
 msgid "syscall error while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:20786
+#: ../../libraries/entropy.py:20766
 msgid "Reconnecting to socket"
 msgstr ""
 
-#: ../../libraries/entropy.py:20801
+#: ../../libraries/entropy.py:20781
 msgid "Not connected to host"
 msgstr ""
 
-#: ../../libraries/entropy.py:20826
+#: ../../libraries/entropy.py:20806
 msgid ""
 "Warning: you are using an emergency SSL interface, SSL certificate can't be "
 "verified. Please install dev-python/pyopenssl"
 msgstr ""
 
-#: ../../libraries/entropy.py:20837
+#: ../../libraries/entropy.py:20817
 msgid "Service issuer"
 msgstr ""
 
-#: ../../libraries/entropy.py:20851
+#: ../../libraries/entropy.py:20831
 msgid "Cannot connect to"
 msgstr ""
 
-#: ../../libraries/entropy.py:20851
+#: ../../libraries/entropy.py:20831
 msgid "on port"
 msgstr ""
 
-#: ../../libraries/entropy.py:20857
+#: ../../libraries/entropy.py:20837
 msgid "Successfully connected to host"
 msgstr ""
 
-#: ../../libraries/entropy.py:20881
+#: ../../libraries/entropy.py:20861
 msgid "Successfully disconnected from host"
 msgstr ""
 
-#: ../../libraries/entropy.py:21000
+#: ../../libraries/entropy.py:22697
+msgid "Get a list of remotely available commands"
+msgstr ""
+
+#: ../../libraries/entropy.py:22703
+msgid "Get current queue content"
+msgstr ""
+
+#: ../../libraries/entropy.py:22709
+msgid "Get queue item using its queue unique identifier"
+msgstr ""
+
+#: ../../libraries/entropy.py:22710 ../../libraries/entropy.py:22716
+#: ../../libraries/entropy.py:22722 ../../libraries/entropy.py:22740
+#: ../../libraries/entropy.py:22747 ../../libraries/entropy.py:22748
+msgid "Queue Identifier"
+msgstr ""
+
+#: ../../libraries/entropy.py:22715
+msgid "Get queue stdout/stderr using its queue unique identifier"
+msgstr ""
+
+#: ../../libraries/entropy.py:22721
+msgid "Get queued command result using its queue unique identifier"
+msgstr ""
+
+#: ../../libraries/entropy.py:22727
+msgid "Remove queued commands using their queue unique identifiers"
+msgstr ""
+
+#: ../../libraries/entropy.py:22728
+msgid "Queue Identifiers"
+msgstr ""
+
+#: ../../libraries/entropy.py:22733
+msgid "Toggle queue pause (True/False)"
+msgstr ""
+
+#: ../../libraries/entropy.py:22734
+msgid "Pause or not"
+msgstr ""
+
+#: ../../libraries/entropy.py:22739
+msgid "Kill a running process through its queue id"
+msgstr ""
+
+#: ../../libraries/entropy.py:22745
+msgid "Swap items in queue using their queue ids"
+msgstr ""
+
+#: ../../libraries/entropy.py:22754
+msgid "Get pinboard content"
+msgstr ""
+
+#: ../../libraries/entropy.py:22760
+msgid "Add item to pinboard"
+msgstr ""
+
+#: ../../libraries/entropy.py:22763
+msgid "Extended text"
+msgstr ""
+
+#: ../../libraries/entropy.py:22769
+msgid "Remove item from pinboard"
+msgstr ""
+
+#: ../../libraries/entropy.py:22770 ../../libraries/entropy.py:22777
+msgid "Pinboard identifiers"
+msgstr ""
+
+#: ../../libraries/entropy.py:22775
+msgid "Set pinboard items status (done/not done)"
+msgstr ""
+
+#: ../../libraries/entropy.py:22778
+msgid "Done status"
+msgstr ""
+
+#: ../../libraries/entropy.py:22830
+msgid "Update Spm Repository (emerge --sync)"
+msgstr ""
+
+#: ../../libraries/entropy.py:22836
+msgid "Compile specified atoms with specified parameters"
+msgstr ""
+
+#: ../../libraries/entropy.py:22838 ../../libraries/entropy.py:22853
+#: ../../libraries/entropy.py:22876 ../../libraries/entropy.py:22885
+#: ../../libraries/entropy.py:22893
+msgid "Atoms"
+msgstr ""
+
+#: ../../libraries/entropy.py:22839 ../../libraries/entropy.py:22854
+#: ../../spritz/src/dialogs.py:1141 ../../spritz/src/dialogs.py:1199
+msgid "Pretend"
+msgstr ""
+
+#: ../../libraries/entropy.py:22840 ../../spritz/src/dialogs.py:1200
+msgid "Oneshot"
+msgstr ""
+
+#: ../../libraries/entropy.py:22841 ../../libraries/entropy.py:22855
+#: ../../spritz/src/dialogs.py:1142 ../../spritz/src/dialogs.py:1201
+msgid "Verbose"
+msgstr ""
+
+#: ../../libraries/entropy.py:22842 ../../libraries/entropy.py:22856
+#: ../../spritz/src/dialogs.py:1143 ../../spritz/src/dialogs.py:1202
+msgid "No color"
+msgstr ""
+
+#: ../../libraries/entropy.py:22843
+msgid "Custom USE"
+msgstr ""
+
+#: ../../libraries/entropy.py:22844 ../../spritz/src/dialogs.py:1206
+msgid "Custom LDFLAGS"
+msgstr ""
+
+#: ../../libraries/entropy.py:22845 ../../spritz/src/dialogs.py:1207
+msgid "Custom CFLAGS"
+msgstr ""
+
+#: ../../libraries/entropy.py:22851
+msgid "Remove specified atoms with specified parameters"
+msgstr ""
+
+#: ../../libraries/entropy.py:22862
+msgid "Get SPM updates for the specified categories"
+msgstr ""
+
+#: ../../libraries/entropy.py:22863 ../../libraries/entropy.py:22869
+#: ../../spritz/src/views.py:44
+msgid "Categories"
+msgstr ""
+
+#: ../../libraries/entropy.py:22868
+msgid "Get SPM installed packages for the specified categories"
+msgstr ""
+
+#: ../../libraries/entropy.py:22874
+msgid "Enable USE flags for the specified atoms"
+msgstr ""
+
+#. print use flags
+#: ../../libraries/entropy.py:22877 ../../libraries/entropy.py:22886
+#: ../../client/text_query.py:1085 ../../spritz/src/dialogs.py:2108
+msgid "USE flags"
+msgstr ""
+
+#: ../../libraries/entropy.py:22883
+msgid "Disable USE flags for the specified atoms"
+msgstr ""
+
+#: ../../libraries/entropy.py:22892
+msgid "Get info for the specified atoms"
+msgstr ""
+
+#: ../../libraries/entropy.py:22898
+msgid "Run SPM info command"
+msgstr ""
+
+#: ../../libraries/entropy.py:22904
+msgid "Run custom shell command"
+msgstr ""
+
+#. command col
+#: ../../libraries/entropy.py:22906 ../../spritz/src/dialogs.py:213
+#: ../../spritz/src/dialogs.py:254
+msgid "Command"
+msgstr ""
+
+#: ../../libraries/entropy.py:22912
+msgid "Get Spm security updates information"
+msgstr ""
+
+#: ../../libraries/entropy.py:22914
+msgid "List type (affected,new,all)"
+msgstr ""
+
+#: ../../libraries/entropy.py:22990
+msgid "A valid SystemManagerClientCommands class/subclass is needed"
+msgstr ""
+
+#: ../../libraries/entropy.py:22998
+msgid "A valid SystemManagerMethodsInterface class/subclass is needed"
+msgstr ""
+
+#: ../../libraries/entropy.py:23018 ../../libraries/entropy.py:23020
+#: ../../libraries/entropy.py:23022
+msgid "not a string"
+msgstr ""
+
+#: ../../libraries/entropy.py:23018 ../../libraries/entropy.py:23020
+#: ../../libraries/entropy.py:23022 ../../libraries/entropy.py:23024
+#: ../../libraries/entropy.py:23026
+msgid "Please use setup_connection() properly"
+msgstr ""
+
+#: ../../libraries/entropy.py:23024
+msgid "not an int"
+msgstr ""
+
+#: ../../libraries/entropy.py:23026
+msgid "not a bool"
+msgstr ""
+
+#: ../../libraries/entropy.py:23196
 msgid "A valid UGCClientInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:21072
+#: ../../libraries/entropy.py:23274
 msgid "Cannot setup cache directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:21074
+#: ../../libraries/entropy.py:23276
 msgid "Cannot write to cache directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:21080
+#: ../../libraries/entropy.py:23282
 msgid "Cannot remove cache file"
 msgstr ""
 
-#: ../../libraries/entropy.py:21092
+#: ../../libraries/entropy.py:23294
 msgid "Cannot write to cache file"
 msgstr ""
 
-#: ../../libraries/entropy.py:21253
+#: ../../libraries/entropy.py:23457
 msgid "A valid EquoInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:21268
+#: ../../libraries/entropy.py:23472
 msgid "repository is not available"
 msgstr ""
 
-#: ../../libraries/entropy.py:21275
+#: ../../libraries/entropy.py:23479
 msgid "repository metadata is malformed"
 msgstr ""
 
-#: ../../libraries/entropy.py:21330 ../../libraries/entropy.py:21375
+#: ../../libraries/entropy.py:23534 ../../libraries/entropy.py:23579
 msgid "ok"
 msgstr ""
 
-#: ../../libraries/entropy.py:21334
+#: ../../libraries/entropy.py:23538
 msgid "repository does not support EAPI3"
 msgstr ""
 
-#: ../../libraries/entropy.py:21348
+#: ../../libraries/entropy.py:23548 ../../spritz/src/spritz.glade.h:181
+msgid "Username"
+msgstr ""
+
+#: ../../libraries/entropy.py:23549 ../../spritz/src/spritz.glade.h:101
+msgid "Password"
+msgstr ""
+
+#: ../../libraries/entropy.py:23552
 msgid "Please login against"
 msgstr ""
 
-#: ../../libraries/entropy.py:21348 ../../server/server_reagent.py:82
+#: ../../libraries/entropy.py:23552 ../../server/server_reagent.py:82
 #: ../../server/server_reagent.py:85 ../../server/server_reagent.py:94
 #: ../../server/server_reagent.py:97 ../../server/server_reagent.py:123
 msgid "repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:21353
+#: ../../libraries/entropy.py:23557
 msgid "login abort"
 msgstr ""
 
-#: ../../libraries/entropy.py:21358
+#: ../../libraries/entropy.py:23562
 msgid "connection issues"
 msgstr ""
 
-#: ../../libraries/entropy.py:21371
+#: ../../libraries/entropy.py:23568
+msgid "Access denied. Login failed"
+msgstr ""
+
+#: ../../libraries/entropy.py:23575
 msgid "Login successful. Do you want to save these credentials ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:21537
+#: ../../libraries/entropy.py:23741
 msgid "A valid ServerInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:21544
+#: ../../libraries/entropy.py:23748
 msgid "Entropy Server Mirrors Interface loaded"
 msgstr ""
 
-#: ../../libraries/entropy.py:21551 ../../libraries/entropy.py:21582
+#: ../../libraries/entropy.py:23755 ../../libraries/entropy.py:23786
 msgid "mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:21575 ../../libraries/entropy.py:21650
+#: ../../libraries/entropy.py:23779 ../../libraries/entropy.py:23854
 msgid "unlocking"
 msgstr ""
 
-#: ../../libraries/entropy.py:21576 ../../libraries/entropy.py:21651
-#: ../../libraries/entropy.py:22722 ../../libraries/entropy.py:22742
+#: ../../libraries/entropy.py:23780 ../../libraries/entropy.py:23855
+#: ../../libraries/entropy.py:24926 ../../libraries/entropy.py:24946
 msgid "locking"
 msgstr ""
 
-#: ../../libraries/entropy.py:21598 ../../libraries/entropy.py:22723
+#: ../../libraries/entropy.py:23802 ../../libraries/entropy.py:24927
 msgid "mirror already locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:21611
+#: ../../libraries/entropy.py:23815
 msgid "mirror already unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:21657
+#: ../../libraries/entropy.py:23861
 msgid "mirror for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:21673
+#: ../../libraries/entropy.py:23877
 msgid "mirror already locked for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:21686
+#: ../../libraries/entropy.py:23890
 msgid "mirror already unlocked for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:21724
+#: ../../libraries/entropy.py:23928
 msgid "for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:21734
+#: ../../libraries/entropy.py:23938
 msgid "mirror successfully locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:21748
+#: ../../libraries/entropy.py:23952
 msgid "mirror not locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:21786
+#: ../../libraries/entropy.py:23990
 msgid "mirror successfully unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:21801
+#: ../../libraries/entropy.py:24005
 msgid "unlock error"
 msgstr ""
 
-#: ../../libraries/entropy.py:21803
+#: ../../libraries/entropy.py:24007
 msgid "mirror not unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:21870
+#: ../../libraries/entropy.py:24074
 msgid "connecting to download package"
 msgstr ""
 
-#: ../../libraries/entropy.py:21888
+#: ../../libraries/entropy.py:24092
 msgid "downloading package"
 msgstr ""
 
-#: ../../libraries/entropy.py:21925
+#: ../../libraries/entropy.py:24129
 msgid "is not listed in the current repository database!!"
 msgstr ""
 
-#: ../../libraries/entropy.py:21940
+#: ../../libraries/entropy.py:24144
 msgid "verifying checksum of package"
 msgstr ""
 
-#: ../../libraries/entropy.py:21959
+#: ../../libraries/entropy.py:24163
 msgid "downloaded successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:21974
+#: ../../libraries/entropy.py:24178
 msgid "checksum does not match. re-downloading..."
 msgstr ""
 
-#: ../../libraries/entropy.py:21993
+#: ../../libraries/entropy.py:24197
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr ""
 
-#: ../../libraries/entropy.py:22019
+#: ../../libraries/entropy.py:24223
 msgid "mirror doesn't have a valid directory structure"
 msgstr ""
 
-#: ../../libraries/entropy.py:22030
+#: ../../libraries/entropy.py:24234
 msgid "Wrong database compression method passed"
 msgstr ""
 
-#: ../../libraries/entropy.py:22051
+#: ../../libraries/entropy.py:24255
 msgid "mirror doesn't have a valid database revision file"
 msgstr ""
 
-#: ../../libraries/entropy.py:22280
+#: ../../libraries/entropy.py:24484
 msgid "uris must be a list instance"
 msgstr ""
 
-#: ../../libraries/entropy.py:22283
+#: ../../libraries/entropy.py:24487
 msgid "files_to_upload must be a list or dict instance"
 msgstr ""
 
-#: ../../libraries/entropy.py:22324
+#: ../../libraries/entropy.py:24528
 msgid "verifying upload (if supported)"
 msgstr ""
 
-#: ../../libraries/entropy.py:22345 ../../libraries/entropy.py:22361
-#: ../../libraries/entropy.py:22380 ../../libraries/entropy.py:22396
-#: ../../libraries/entropy.py:22412
+#: ../../libraries/entropy.py:24549 ../../libraries/entropy.py:24565
+#: ../../libraries/entropy.py:24584 ../../libraries/entropy.py:24600
+#: ../../libraries/entropy.py:24616
 msgid "digest verification"
 msgstr ""
 
-#: ../../libraries/entropy.py:22363
+#: ../../libraries/entropy.py:24567
 msgid "file not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:22382
+#: ../../libraries/entropy.py:24586
 msgid "so far, so good!"
 msgstr ""
 
-#: ../../libraries/entropy.py:22398
+#: ../../libraries/entropy.py:24602
 msgid "invalid checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:22414
+#: ../../libraries/entropy.py:24618
 msgid "unknown data returned"
 msgstr ""
 
-#: ../../libraries/entropy.py:22440
+#: ../../libraries/entropy.py:24644
 msgid "connecting to mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:22451
+#: ../../libraries/entropy.py:24655
 msgid "changing directory to"
 msgstr ""
 
-#: ../../libraries/entropy.py:22513
+#: ../../libraries/entropy.py:24717
 msgid "successful"
 msgstr ""
 
-#: ../../libraries/entropy.py:22530
+#: ../../libraries/entropy.py:24734
 msgid "failed, retrying"
 msgstr ""
 
-#: ../../libraries/entropy.py:22564
+#: ../../libraries/entropy.py:24768
 msgid "not critical"
 msgstr ""
 
-#: ../../libraries/entropy.py:22566
+#: ../../libraries/entropy.py:24770
 msgid "continuing"
 msgstr ""
 
-#: ../../libraries/entropy.py:22593
+#: ../../libraries/entropy.py:24797
 msgid "preparing uncompressed database for the upload"
 msgstr ""
 
-#: ../../libraries/entropy.py:22600 ../../libraries/entropy.py:22624
-#: ../../libraries/entropy.py:22664
+#: ../../libraries/entropy.py:24804 ../../libraries/entropy.py:24828
+#: ../../libraries/entropy.py:24868
 msgid "database path"
 msgstr ""
 
-#: ../../libraries/entropy.py:22617
+#: ../../libraries/entropy.py:24821
 msgid "creating compressed database dump + checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:22630
+#: ../../libraries/entropy.py:24834
 msgid "dump"
 msgstr ""
 
-#: ../../libraries/entropy.py:22636
+#: ../../libraries/entropy.py:24840
 msgid "dump checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:22642 ../../libraries/entropy.py:22682
+#: ../../libraries/entropy.py:24846 ../../libraries/entropy.py:24886
 msgid "opener"
 msgstr ""
 
-#: ../../libraries/entropy.py:22656
+#: ../../libraries/entropy.py:24860
 msgid "compressing database + checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:22670
+#: ../../libraries/entropy.py:24874
 msgid "compressed database path"
 msgstr ""
 
-#: ../../libraries/entropy.py:22676
+#: ../../libraries/entropy.py:24880
 msgid "compressed checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:22699
+#: ../../libraries/entropy.py:24903
 msgid "cannot create mirror directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:22724
+#: ../../libraries/entropy.py:24928
 msgid "waiting up to 2 minutes before giving up"
 msgstr ""
 
-#: ../../libraries/entropy.py:22743
+#: ../../libraries/entropy.py:24947
 msgid "mirror unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:22794
+#: ../../libraries/entropy.py:24998
 msgid "Troubles with treeupdates"
 msgstr ""
 
-#: ../../libraries/entropy.py:22797
+#: ../../libraries/entropy.py:25001
 msgid "Bumping old data back"
 msgstr ""
 
-#: ../../libraries/entropy.py:22835 ../../libraries/entropy.py:22976
+#: ../../libraries/entropy.py:25039 ../../libraries/entropy.py:25180
 msgid "wrong database compression method passed"
 msgstr ""
 
-#: ../../libraries/entropy.py:22856 ../../libraries/entropy.py:23296
+#: ../../libraries/entropy.py:25060 ../../libraries/entropy.py:25500
 msgid "upload"
 msgstr ""
 
-#: ../../libraries/entropy.py:22857
+#: ../../libraries/entropy.py:25061
 msgid "preparing to upload database to mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:22917 ../../libraries/entropy.py:23031
+#: ../../libraries/entropy.py:25121 ../../libraries/entropy.py:25235
 msgid "errors"
 msgstr ""
 
-#: ../../libraries/entropy.py:22918
+#: ../../libraries/entropy.py:25122
 msgid "failed to upload to mirror, not unlocking and continuing"
 msgstr ""
 
-#: ../../libraries/entropy.py:22927 ../../libraries/entropy.py:23041
-#: ../../libraries/entropy.py:23750 ../../libraries/entropy.py:23811
-#: ../../libraries/entropy.py:24230
+#: ../../libraries/entropy.py:25131 ../../libraries/entropy.py:25245
+#: ../../libraries/entropy.py:25954 ../../libraries/entropy.py:26015
+#: ../../libraries/entropy.py:26434
 msgid "reason"
 msgstr ""
 
-#: ../../libraries/entropy.py:22992
+#: ../../libraries/entropy.py:25196
 msgid "preparing to download database from mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:23002
+#: ../../libraries/entropy.py:25206
 msgid "download path"
 msgstr ""
 
-#: ../../libraries/entropy.py:23032
+#: ../../libraries/entropy.py:25236
 msgid "failed to download from mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:23121
+#: ../../libraries/entropy.py:25325
 msgid "Mirrors are not locked remotely but the local database is"
 msgstr ""
 
-#: ../../libraries/entropy.py:23122
+#: ../../libraries/entropy.py:25326
 msgid "It is a nonsense"
 msgstr ""
 
-#: ../../libraries/entropy.py:23123
+#: ../../libraries/entropy.py:25327
 msgid "Please remove the lock file"
 msgstr ""
 
-#: ../../libraries/entropy.py:23130
+#: ../../libraries/entropy.py:25334
 msgid ""
 "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 
-#: ../../libraries/entropy.py:23131
+#: ../../libraries/entropy.py:25335
 msgid "try again later"
 msgstr ""
 
-#: ../../libraries/entropy.py:23142 ../../libraries/entropy.py:23162
-#: ../../libraries/entropy.py:23180 ../../libraries/entropy.py:23200
-#: ../../libraries/entropy.py:23214 ../../libraries/entropy.py:23667
-#: ../../libraries/entropy.py:23807 ../../libraries/entropy.py:23823
-#: ../../libraries/entropy.py:23843 ../../libraries/entropy.py:23870
-#: ../../libraries/entropy.py:23891 ../../libraries/entropy.py:23908
-#: ../../libraries/entropy.py:23944 ../../libraries/entropy.py:23991
-#: ../../libraries/entropy.py:24008 ../../libraries/entropy.py:24033
+#: ../../libraries/entropy.py:25346 ../../libraries/entropy.py:25366
+#: ../../libraries/entropy.py:25384 ../../libraries/entropy.py:25404
+#: ../../libraries/entropy.py:25418 ../../libraries/entropy.py:25871
+#: ../../libraries/entropy.py:26011 ../../libraries/entropy.py:26027
+#: ../../libraries/entropy.py:26047 ../../libraries/entropy.py:26074
+#: ../../libraries/entropy.py:26095 ../../libraries/entropy.py:26112
+#: ../../libraries/entropy.py:26148 ../../libraries/entropy.py:26195
+#: ../../libraries/entropy.py:26212 ../../libraries/entropy.py:26237
 msgid "sync"
 msgstr ""
 
 #. something short please
-#: ../../libraries/entropy.py:23143
+#: ../../libraries/entropy.py:25347
 msgid "database already in sync"
 msgstr ""
 
-#: ../../libraries/entropy.py:23163 ../../libraries/entropy.py:23201
+#: ../../libraries/entropy.py:25367 ../../libraries/entropy.py:25405
 msgid "database sync failed"
 msgstr ""
 
-#: ../../libraries/entropy.py:23164
+#: ../../libraries/entropy.py:25368
 msgid "download issues"
 msgstr ""
 
-#: ../../libraries/entropy.py:23181
+#: ../../libraries/entropy.py:25385
 msgid "database sync forbidden"
 msgstr ""
 
-#: ../../libraries/entropy.py:23182
+#: ../../libraries/entropy.py:25386
 msgid "dependencies_test() reported errors"
 msgstr ""
 
-#: ../../libraries/entropy.py:23202
+#: ../../libraries/entropy.py:25406
 msgid "upload issues"
 msgstr ""
 
-#: ../../libraries/entropy.py:23215
+#: ../../libraries/entropy.py:25419
 msgid "database sync completed successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:23259
+#: ../../libraries/entropy.py:25463
 msgid "Local statistics"
 msgstr ""
 
-#: ../../libraries/entropy.py:23266
+#: ../../libraries/entropy.py:25470
 msgid "upload directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:23268 ../../libraries/entropy.py:23279
+#: ../../libraries/entropy.py:25472 ../../libraries/entropy.py:25483
 msgid "files ready"
 msgstr ""
 
-#: ../../libraries/entropy.py:23277
+#: ../../libraries/entropy.py:25481
 msgid "packages directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:23324
+#: ../../libraries/entropy.py:25528
 msgid "copy"
 msgstr ""
 
-#: ../../libraries/entropy.py:23349
+#: ../../libraries/entropy.py:25553
 msgid "Packages to be removed"
 msgstr ""
 
-#: ../../libraries/entropy.py:23358
+#: ../../libraries/entropy.py:25562
 msgid "Packages to be moved locally"
 msgstr ""
 
-#: ../../libraries/entropy.py:23367
+#: ../../libraries/entropy.py:25571
 msgid "Packages to be uploaded"
 msgstr ""
 
-#: ../../libraries/entropy.py:23377
+#: ../../libraries/entropy.py:25581
 msgid "Total removal size"
 msgstr ""
 
-#: ../../libraries/entropy.py:23387
+#: ../../libraries/entropy.py:25591
 msgid "Total upload size"
 msgstr ""
 
-#: ../../libraries/entropy.py:23396
+#: ../../libraries/entropy.py:25600
 msgid "Total download size"
 msgstr ""
 
-#: ../../libraries/entropy.py:23447
+#: ../../libraries/entropy.py:25651
 msgid "Remote statistics for"
 msgstr ""
 
-#: ../../libraries/entropy.py:23459
+#: ../../libraries/entropy.py:25663
 msgid "remote packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:23461
+#: ../../libraries/entropy.py:25665
 msgid "files stored"
 msgstr ""
 
-#: ../../libraries/entropy.py:23468
+#: ../../libraries/entropy.py:25672
 msgid "Calculating queues"
 msgstr ""
 
-#: ../../libraries/entropy.py:23650
+#: ../../libraries/entropy.py:25854
 msgid "removing package+hash"
 msgstr ""
 
-#: ../../libraries/entropy.py:23694
+#: ../../libraries/entropy.py:25898
 msgid "copying file+hash to repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:23748
+#: ../../libraries/entropy.py:25952
 msgid "upload errors"
 msgstr ""
 
-#: ../../libraries/entropy.py:23762
+#: ../../libraries/entropy.py:25966
 msgid "upload completed successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:23809
+#: ../../libraries/entropy.py:26013
 msgid "download errors"
 msgstr ""
 
-#: ../../libraries/entropy.py:23825
+#: ../../libraries/entropy.py:26029
 msgid "download completed successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:23844
+#: ../../libraries/entropy.py:26048
 msgid "starting packages sync"
 msgstr ""
 
-#: ../../libraries/entropy.py:23872
+#: ../../libraries/entropy.py:26076
 msgid "packages sync"
 msgstr ""
 
-#: ../../libraries/entropy.py:23893
+#: ../../libraries/entropy.py:26097
 msgid "socket error"
 msgstr ""
 
-#: ../../libraries/entropy.py:23895
+#: ../../libraries/entropy.py:26099
 msgid "on"
 msgstr ""
 
-#: ../../libraries/entropy.py:23910
+#: ../../libraries/entropy.py:26114
 msgid "nothing to do on"
 msgstr ""
 
-#: ../../libraries/entropy.py:23922
+#: ../../libraries/entropy.py:26126
 msgid "Expanding queues"
 msgstr ""
 
-#: ../../libraries/entropy.py:23946
+#: ../../libraries/entropy.py:26150
 msgid "nothing to sync for"
 msgstr ""
 
-#: ../../libraries/entropy.py:23964
+#: ../../libraries/entropy.py:26168
 msgid "Would you like to run the steps above ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:23993
+#: ../../libraries/entropy.py:26197
 msgid "keyboard interrupt !"
 msgstr ""
 
-#: ../../libraries/entropy.py:24010
+#: ../../libraries/entropy.py:26214
 msgid "exception caught"
 msgstr ""
 
-#: ../../libraries/entropy.py:24035
+#: ../../libraries/entropy.py:26239
 msgid "at least one mirror has been sync'd properly, hooray!"
 msgstr ""
 
-#: ../../libraries/entropy.py:24111
+#: ../../libraries/entropy.py:26315
 msgid "tidy"
 msgstr ""
 
-#: ../../libraries/entropy.py:24113
+#: ../../libraries/entropy.py:26317
 msgid "collecting expired packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:24131
+#: ../../libraries/entropy.py:26335
 msgid "collecting expired packages in the selected branches"
 msgstr ""
 
-#: ../../libraries/entropy.py:24156
+#: ../../libraries/entropy.py:26360
 msgid "nothing to remove on this branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:24167
+#: ../../libraries/entropy.py:26371
 msgid "these are the expired packages"
 msgstr ""
 
-#: ../../libraries/entropy.py:24203
+#: ../../libraries/entropy.py:26407
 msgid "removing packages remotely"
 msgstr ""
 
-#: ../../libraries/entropy.py:24228
+#: ../../libraries/entropy.py:26432
 msgid "remove errors"
 msgstr ""
 
-#: ../../libraries/entropy.py:24243
+#: ../../libraries/entropy.py:26447
 msgid "removing packages locally"
 msgstr ""
 
-#: ../../libraries/entropy.py:24260
+#: ../../libraries/entropy.py:26464
 msgid "removing"
 msgstr ""
 
-#: ../../libraries/entropy.py:24295
+#: ../../libraries/entropy.py:26499
 msgid "valid database path needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:24391
+#: ../../libraries/entropy.py:26595
 msgid "Mirrors have not been unlocked. Remember to sync them."
 msgstr ""
 
-#: ../../libraries/entropy.py:24478
+#: ../../libraries/entropy.py:26682
 msgid "can't do that on a readonly database"
 msgstr ""
 
-#: ../../libraries/entropy.py:24555 ../../libraries/entropy.py:24624
-#: ../../libraries/entropy.py:24955 ../../libraries/entropy.py:25019
-#: ../../libraries/entropy.py:28096 ../../libraries/entropy.py:28115
+#: ../../libraries/entropy.py:26759 ../../libraries/entropy.py:26828
+#: ../../libraries/entropy.py:27159 ../../libraries/entropy.py:27223
+#: ../../libraries/entropy.py:30277 ../../libraries/entropy.py:30296
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
 #: ../../client/text_ui.py:348 ../../client/text_ui.py:908
 msgid "ATTENTION"
 msgstr ""
 
-#: ../../libraries/entropy.py:24556
+#: ../../libraries/entropy.py:26760
 msgid "forcing package updates"
 msgstr ""
 
-#: ../../libraries/entropy.py:24557
+#: ../../libraries/entropy.py:26761
 msgid "Syncing with"
 msgstr ""
 
-#: ../../libraries/entropy.py:24625
+#: ../../libraries/entropy.py:26829
 msgid "forcing packages metadata update"
 msgstr ""
 
-#: ../../libraries/entropy.py:24626
+#: ../../libraries/entropy.py:26830
 msgid "Updating system database using repository id"
 msgstr ""
 
-#: ../../libraries/entropy.py:24715 ../../libraries/entropy.py:25054
+#: ../../libraries/entropy.py:26919 ../../libraries/entropy.py:27258
 msgid "SPM"
 msgstr ""
 
-#: ../../libraries/entropy.py:24716
+#: ../../libraries/entropy.py:26920
 msgid "Running fixpackages"
 msgstr ""
 
-#: ../../libraries/entropy.py:24717
+#: ../../libraries/entropy.py:26921
 msgid "it could take a while"
 msgstr ""
 
-#: ../../libraries/entropy.py:24739
+#: ../../libraries/entropy.py:26943
 msgid "ENTROPY"
 msgstr ""
 
-#: ../../libraries/entropy.py:24740
+#: ../../libraries/entropy.py:26944
 msgid "action"
 msgstr ""
 
-#: ../../libraries/entropy.py:24763
+#: ../../libraries/entropy.py:26967
 msgid "Cannot complete quickpkg for atoms"
 msgstr ""
 
-#: ../../libraries/entropy.py:24765 ../../libraries/entropy.py:25003
+#: ../../libraries/entropy.py:26969 ../../libraries/entropy.py:27207
 msgid "do it manually"
 msgstr ""
 
-#: ../../libraries/entropy.py:24781
+#: ../../libraries/entropy.py:26985
 msgid "Cannot run SPM cleanup, error"
 msgstr ""
 
-#: ../../libraries/entropy.py:24832 ../../libraries/entropy.py:24905
+#: ../../libraries/entropy.py:27036 ../../libraries/entropy.py:27109
 msgid "INJECT"
 msgstr ""
 
-#: ../../libraries/entropy.py:24834 ../../libraries/entropy.py:24907
+#: ../../libraries/entropy.py:27038 ../../libraries/entropy.py:27111
 msgid "has been injected"
 msgstr ""
 
-#: ../../libraries/entropy.py:24835 ../../libraries/entropy.py:24908
+#: ../../libraries/entropy.py:27039 ../../libraries/entropy.py:27112
 msgid "You need to quickpkg it manually to update the embedded database"
 msgstr ""
 
-#: ../../libraries/entropy.py:24836 ../../libraries/entropy.py:24909
+#: ../../libraries/entropy.py:27040 ../../libraries/entropy.py:27113
 msgid "Repository database will be updated anyway"
 msgstr ""
 
-#: ../../libraries/entropy.py:24945
+#: ../../libraries/entropy.py:27149
 msgid "Would you like to continue with the default branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:24952
+#: ../../libraries/entropy.py:27156
 msgid "Type your branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:24956
+#: ../../libraries/entropy.py:27160
 msgid "the specified branch does not exist"
 msgstr ""
 
 #. ask to confirm
-#: ../../libraries/entropy.py:24967
+#: ../../libraries/entropy.py:27171
 msgid "Do you confirm"
 msgstr ""
 
-#: ../../libraries/entropy.py:24985
+#: ../../libraries/entropy.py:27189
 msgid "repackaging"
 msgstr ""
 
-#: ../../libraries/entropy.py:25001
+#: ../../libraries/entropy.py:27205
 msgid "Cannot complete quickpkg for atom"
 msgstr ""
 
-#: ../../libraries/entropy.py:25020
+#: ../../libraries/entropy.py:27224
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr ""
 
-#: ../../libraries/entropy.py:25021
+#: ../../libraries/entropy.py:27225
 msgid "Please update packages manually"
 msgstr ""
 
-#: ../../libraries/entropy.py:25055
+#: ../../libraries/entropy.py:27259
 msgid "Moving old entry"
 msgstr ""
 
-#: ../../libraries/entropy.py:25057 ../../client/text_configuration.py:113
-msgid "to"
-msgstr ""
-
-#: ../../libraries/entropy.py:27431 ../../libraries/entropy.py:27462
-#: ../../libraries/entropy.py:27495 ../../client/text_rescue.py:421
+#: ../../libraries/entropy.py:29611 ../../libraries/entropy.py:29642
+#: ../../libraries/entropy.py:29675 ../../client/text_rescue.py:421
 msgid "Entropy database"
 msgstr ""
 
-#: ../../libraries/entropy.py:27431
+#: ../../libraries/entropy.py:29611
 msgid "regenerating indexes after migration"
 msgstr ""
 
-#: ../../libraries/entropy.py:27462
+#: ../../libraries/entropy.py:29642
 msgid "migrating table"
 msgstr ""
 
-#: ../../libraries/entropy.py:27496
+#: ../../libraries/entropy.py:29676
 msgid "fixing KDE dep strings on"
 msgstr ""
 
-#: ../../libraries/entropy.py:27498 ../../client/text_rescue.py:277
+#: ../../libraries/entropy.py:29678 ../../client/text_rescue.py:277
+#: ../../spritz/src/dialogs.py:408
 msgid "Please wait"
 msgstr ""
 
-#: ../../libraries/entropy.py:27566
+#: ../../libraries/entropy.py:29746
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 
-#: ../../libraries/entropy.py:27571
+#: ../../libraries/entropy.py:29751
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 
-#: ../../libraries/entropy.py:27597
+#: ../../libraries/entropy.py:29777
 msgid "Syncing current database"
 msgstr ""
 
-#: ../../libraries/entropy.py:27609
+#: ../../libraries/entropy.py:29789
 msgid "Removing entry"
 msgstr ""
 
-#: ../../libraries/entropy.py:27624
+#: ../../libraries/entropy.py:29804
 msgid "Adding entry"
 msgstr ""
 
-#: ../../libraries/entropy.py:27662
+#: ../../libraries/entropy.py:29842
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr ""
 
-#: ../../libraries/entropy.py:27681
+#: ../../libraries/entropy.py:29861
 msgid "Exporting database table"
 msgstr ""
 
-#: ../../libraries/entropy.py:27720
+#: ../../libraries/entropy.py:29900
 msgid "Database Export completed."
 msgstr ""
 
-#: ../../libraries/entropy.py:28097
+#: ../../libraries/entropy.py:30278
 msgid "cannot open Spm counter file for"
 msgstr ""
 
-#: ../../libraries/entropy.py:28116
+#: ../../libraries/entropy.py:30297
 msgid "counter for atom is duplicated, ignoring"
 msgstr ""
 
-#: ../../libraries/entropy.py:28838
+#: ../../libraries/entropy.py:31032
 msgid "comparison between"
 msgstr ""
 
-#: ../../libraries/entropy.py:28840
+#: ../../libraries/entropy.py:31034
 msgid "and"
 msgstr ""
 
-#: ../../libraries/entropy.py:28842 ../../libraries/entropy.py:28854
+#: ../../libraries/entropy.py:31036 ../../libraries/entropy.py:31048
 msgid "failed"
 msgstr ""
 
-#: ../../libraries/entropy.py:28843
+#: ../../libraries/entropy.py:31037
 msgid "Wrong syntax for"
 msgstr ""
 
-#: ../../libraries/entropy.py:28851
+#: ../../libraries/entropy.py:31045
 msgid "from atom"
 msgstr ""
 
@@ -2832,7 +3047,7 @@ msgid "Ok"
 msgstr ""
 
 #: ../../libraries/managerTools.py:221 ../../libraries/managerTools.py:247
-#: ../../spritz/src/dialogs.py:1837
+#: ../../spritz/src/dialogs.py:3693
 msgid "Cancel"
 msgstr ""
 
@@ -2850,6 +3065,10 @@ msgstr ""
 
 #: ../../libraries/outputTools.py:502
 msgid "Interrupted"
+msgstr ""
+
+#: ../../libraries/outputTools.py:539
+msgid "Selected number"
 msgstr ""
 
 #: ../../client/equo.py:56 ../../server/activator.py:39
@@ -3835,12 +4054,12 @@ msgstr ""
 msgid "Depends Search"
 msgstr ""
 
-#: ../../client/text_query.py:261 ../../client/text_ui.py:1205
+#: ../../client/text_query.py:261 ../../client/text_ui.py:1224
 msgid "Matched"
 msgstr ""
 
 #: ../../client/text_query.py:265 ../../client/text_query.py:1062
-#: ../../spritz/src/spritz.glade.h:62
+#: ../../spritz/src/spritz.glade.h:87
 msgid "Masked"
 msgstr ""
 
@@ -3856,7 +4075,8 @@ msgstr ""
 msgid "Needed Search"
 msgstr ""
 
-#: ../../client/text_query.py:317
+#. atom
+#: ../../client/text_query.py:317 ../../spritz/src/dialogs.py:839
 msgid "Atom"
 msgstr ""
 
@@ -3877,8 +4097,8 @@ msgid "Eclass Search"
 msgstr ""
 
 #: ../../client/text_query.py:447 ../../client/text_query.py:1058
-#: ../../spritz/src/dialogs.py:1313 ../../spritz/src/dialogs.py:1319
-#: ../../spritz/src/spritz.py:1567 ../../spritz/src/views.py:491
+#: ../../spritz/src/dialogs.py:2443 ../../spritz/src/dialogs.py:3100
+#: ../../spritz/src/dialogs.py:3106 ../../spritz/src/views.py:491
 msgid "Package"
 msgstr ""
 
@@ -3943,7 +4163,7 @@ msgid "Removal Search"
 msgstr ""
 
 #: ../../client/text_query.py:602 ../../client/text_ui.py:360
-#: ../../client/text_ui.py:917 ../../server/server_reagent.py:354
+#: ../../client/text_ui.py:936 ../../server/server_reagent.py:354
 #: ../../server/server_reagent.py:399 ../../server/server_reagent.py:448
 msgid "No packages found"
 msgstr ""
@@ -3959,7 +4179,7 @@ msgstr ""
 #: ../../client/text_query.py:627 ../../client/text_smart.py:109
 #: ../../client/text_smart.py:258 ../../client/text_smart.py:391
 #: ../../client/text_ui.py:477 ../../client/text_ui.py:618
-#: ../../client/text_ui.py:785 ../../client/text_ui.py:998
+#: ../../client/text_ui.py:785 ../../client/text_ui.py:1017
 msgid "from"
 msgstr ""
 
@@ -4003,7 +4223,8 @@ msgid "Not installed"
 msgstr ""
 
 #: ../../client/text_query.py:1043 ../../client/text_query.py:1044
-#: ../../spritz/src/dialogs.py:115 ../../spritz/src/dialogs.py:118
+#: ../../spritz/src/dialogs.py:1572 ../../spritz/src/dialogs.py:1621
+#: ../../spritz/src/dialogs.py:1733 ../../spritz/src/dialogs.py:1736
 msgid "N/A"
 msgstr ""
 
@@ -4015,9 +4236,9 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: ../../client/text_query.py:1063
+#: ../../client/text_query.py:1063 ../../spritz/src/dialogs.py:747
 #: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
-#: ../../spritz/src/spritz.glade.h:12
+#: ../../spritz/src/spritz.glade.h:14
 msgid "Available"
 msgstr ""
 
@@ -4025,20 +4246,22 @@ msgstr ""
 msgid "version"
 msgstr ""
 
-#: ../../client/text_query.py:1065 ../../spritz/src/spritz.glade.h:53
+#: ../../client/text_query.py:1065 ../../spritz/src/dialogs.py:745
+#: ../../spritz/src/spritz.glade.h:77
 msgid "Installed"
 msgstr ""
 
-#: ../../client/text_query.py:1067 ../../spritz/src/spritz.glade.h:104
+#: ../../client/text_query.py:1067 ../../spritz/src/dialogs.py:752
+#: ../../spritz/src/spritz.glade.h:152
 msgid "Slot"
 msgstr ""
 
-#: ../../client/text_query.py:1068 ../../spritz/src/dialogs.py:128
-#: ../../spritz/src/spritz.glade.h:103
+#: ../../client/text_query.py:1068 ../../client/text_ugc.py:556
+#: ../../spritz/src/dialogs.py:1746 ../../spritz/src/spritz.glade.h:151
 msgid "Size"
 msgstr ""
 
-#: ../../client/text_query.py:1069
+#: ../../client/text_query.py:1069 ../../client/text_ugc.py:563
 msgid "Download"
 msgstr ""
 
@@ -4046,7 +4269,7 @@ msgstr ""
 msgid "Checksum"
 msgstr ""
 
-#: ../../client/text_query.py:1072 ../../spritz/src/dialogs.py:506
+#: ../../client/text_query.py:1072 ../../spritz/src/dialogs.py:2124
 msgid "Dependencies"
 msgstr ""
 
@@ -4059,26 +4282,24 @@ msgid "Homepage"
 msgstr ""
 
 #. print description
+#. desc col
 #: ../../client/text_query.py:1083 ../../client/text_security.py:89
-#: ../../spritz/src/dialogs.py:135 ../../spritz/src/views.py:1002
-#: ../../spritz/src/views.py:1210 ../../spritz/src/spritz.glade.h:29
+#: ../../client/text_ugc.py:363 ../../spritz/src/dialogs.py:215
+#: ../../spritz/src/dialogs.py:228 ../../spritz/src/dialogs.py:758
+#: ../../spritz/src/dialogs.py:1753 ../../spritz/src/views.py:1009
+#: ../../spritz/src/views.py:1217 ../../spritz/src/spritz.glade.h:42
 msgid "Description"
 msgstr ""
 
-#. print use flags
-#: ../../client/text_query.py:1085 ../../spritz/src/dialogs.py:490
-msgid "USE flags"
-msgstr ""
-
-#: ../../client/text_query.py:1089 ../../spritz/src/spritz.glade.h:18
+#: ../../client/text_query.py:1089 ../../spritz/src/spritz.glade.h:20
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1090 ../../spritz/src/spritz.glade.h:17
+#: ../../client/text_query.py:1090 ../../spritz/src/spritz.glade.h:19
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1091 ../../spritz/src/spritz.glade.h:20
+#: ../../client/text_query.py:1091 ../../spritz/src/spritz.glade.h:22
 msgid "CXXFLAGS"
 msgstr ""
 
@@ -4086,7 +4307,7 @@ msgstr ""
 msgid "Gentoo eclasses"
 msgstr ""
 
-#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:466
+#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:2084
 msgid "Sources"
 msgstr ""
 
@@ -4102,8 +4323,9 @@ msgstr ""
 msgid "Compiled with"
 msgstr ""
 
-#: ../../client/text_query.py:1103 ../../spritz/src/dialogs.py:137
-#: ../../spritz/src/dialogs.py:482 ../../spritz/src/spritz.glade.h:55
+#: ../../client/text_query.py:1103 ../../client/text_ugc.py:368
+#: ../../client/text_ugc.py:551 ../../spritz/src/dialogs.py:1755
+#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/spritz.glade.h:80
 msgid "Keywords"
 msgstr ""
 
@@ -4112,7 +4334,7 @@ msgid "Created"
 msgstr ""
 
 #: ../../client/text_query.py:1105 ../../client/text_ui.py:781
-#: ../../spritz/src/dialogs.py:1923
+#: ../../spritz/src/dialogs.py:3779
 msgid "License"
 msgstr ""
 
@@ -4162,7 +4384,9 @@ msgstr ""
 msgid "never synced"
 msgstr ""
 
-#: ../../client/text_repositories.py:136 ../../spritz/src/views.py:979
+#: ../../client/text_repositories.py:136 ../../spritz/src/dialogs.py:246
+#: ../../spritz/src/dialogs.py:271 ../../spritz/src/dialogs.py:680
+#: ../../spritz/src/views.py:986
 msgid "Status"
 msgstr ""
 
@@ -4178,16 +4402,16 @@ msgstr ""
 msgid "Repository database checksum"
 msgstr ""
 
-#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1726
+#: ../../client/text_repositories.py:162 ../../spritz/src/spritz.py:1596
 #: ../../entropy-notification-applet/src/etp_applet.py:614
 msgid "No repositories specified in"
 msgstr ""
 
-#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1730
+#: ../../client/text_repositories.py:165 ../../spritz/src/spritz.py:1600
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1733
+#: ../../client/text_repositories.py:168 ../../spritz/src/spritz.py:1603
 #: ../../entropy-notification-applet/src/etp_applet.py:622
 msgid "Unhandled exception"
 msgstr ""
@@ -4506,12 +4730,14 @@ msgid "GLSA Identifier"
 msgstr ""
 
 #. title
-#: ../../client/text_security.py:85 ../../spritz/src/dialogs.py:133
-#: ../../spritz/src/spritz.glade.h:111
+#. glsa title
+#: ../../client/text_security.py:85 ../../client/text_ugc.py:358
+#: ../../client/text_ugc.py:542 ../../spritz/src/dialogs.py:691
+#: ../../spritz/src/dialogs.py:1751 ../../spritz/src/spritz.glade.h:162
 msgid "Title"
 msgstr ""
 
-#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:13
+#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:15
 msgid "Background"
 msgstr ""
 
@@ -4519,7 +4745,7 @@ msgstr ""
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:47
+#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:71
 msgid "Impact"
 msgstr ""
 
@@ -4527,19 +4753,19 @@ msgstr ""
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:93
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:140
 msgid "Revised"
 msgstr ""
 
-#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:10
+#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:12
 msgid "Announced"
 msgstr ""
 
-#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:108
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:159
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:82
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:123
 msgid "References"
 msgstr ""
 
@@ -4559,11 +4785,11 @@ msgstr ""
 msgid "unaffected versions"
 msgstr ""
 
-#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:132
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:185
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:91
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:138
 msgid "Resolution"
 msgstr ""
 
@@ -4625,7 +4851,7 @@ msgid "directory does not exist"
 msgstr ""
 
 #: ../../client/text_smart.py:156 ../../client/text_ui.py:344
-#: ../../spritz/src/spritz.py:621
+#: ../../spritz/src/spritz.py:623
 msgid "is not a valid Entropy package"
 msgstr ""
 
@@ -4719,8 +4945,182 @@ msgstr ""
 msgid "Compressing smart application"
 msgstr ""
 
+#: ../../client/text_ugc.py:58 ../../client/text_ugc.py:102
+msgid "Invalid repository"
+msgstr ""
+
+#: ../../client/text_ugc.py:67
+msgid "Already logged in as"
+msgstr ""
+
+#: ../../client/text_ugc.py:69
+msgid "Please logout first"
+msgstr ""
+
+#: ../../client/text_ugc.py:83
+msgid "Successfully logged in as"
+msgstr ""
+
+#: ../../client/text_ugc.py:85
+msgid "From now on, any UGC action will be committed as this user"
+msgstr ""
+
+#: ../../client/text_ugc.py:93
+msgid "Login error. Not logged in."
+msgstr ""
+
+#: ../../client/text_ugc.py:110 ../../spritz/src/spritz.py:1221
+msgid "Not logged in"
+msgstr ""
+
+#: ../../client/text_ugc.py:118
+msgid "User"
+msgstr ""
+
+#: ../../client/text_ugc.py:120
+msgid "has been logged out"
+msgstr ""
+
+#: ../../client/text_ugc.py:146 ../../client/text_ugc.py:185
+#: ../../client/text_ugc.py:197 ../../client/text_ugc.py:228
+#: ../../client/text_ugc.py:264 ../../client/text_ugc.py:403
+#: ../../client/text_ugc.py:454 ../../client/text_ugc.py:468
+#: ../../client/text_ugc.py:488 ../../client/text_ugc.py:501
+msgid "UGC error"
+msgstr ""
+
+#: ../../client/text_ugc.py:160
+msgid "Add vote"
+msgstr ""
+
+#: ../../client/text_ugc.py:165
+msgid "Insert your vote (from 1 to 5)"
+msgstr ""
+
+#: ../../client/text_ugc.py:167
+msgid "Entropy UGC vote submission"
+msgstr ""
+
+#: ../../client/text_ugc.py:186
+msgid "Vote not valid"
+msgstr ""
+
+#: ../../client/text_ugc.py:198
+msgid "Vote not in range"
+msgstr ""
+
+#: ../../client/text_ugc.py:209 ../../client/text_ugc.py:354
+#: ../../client/text_ugc.py:436
+msgid "Please review your submission"
+msgstr ""
+
+#: ../../client/text_ugc.py:213
+msgid "Vote"
+msgstr ""
+
+#: ../../client/text_ugc.py:239
+msgid "Vote added, thank you!"
+msgstr ""
+
+#: ../../client/text_ugc.py:279 ../../spritz/src/dialogs.py:2268
+msgid "Number of downloads"
+msgstr ""
+
+#: ../../client/text_ugc.py:286
+msgid "No User Generated Content available"
+msgstr ""
+
+#: ../../client/text_ugc.py:296
+msgid "Add document"
+msgstr ""
+
+#: ../../client/text_ugc.py:300
+msgid "text comment"
+msgstr ""
+
+#: ../../client/text_ugc.py:301
+msgid "simple file"
+msgstr ""
+
+#: ../../client/text_ugc.py:302
+msgid "simple image"
+msgstr ""
+
+#: ../../client/text_ugc.py:303
+msgid "youtube video"
+msgstr ""
+
+#: ../../client/text_ugc.py:319
+msgid "Insert document title"
+msgstr ""
+
+#: ../../client/text_ugc.py:320
+msgid "Insert document description/comment"
+msgstr ""
+
+#: ../../client/text_ugc.py:321
+msgid "Insert document's keywords (space separated)"
+msgstr ""
+
+#: ../../client/text_ugc.py:322
+msgid "Choose document type"
+msgstr ""
+
+#: ../../client/text_ugc.py:324 ../../client/text_ugc.py:341
+msgid "Entropy UGC document submission"
+msgstr ""
+
+#: ../../client/text_ugc.py:340
+msgid "Insert document path"
+msgstr ""
+
+#: ../../client/text_ugc.py:374
+msgid "Document path"
+msgstr ""
+
+#: ../../client/text_ugc.py:379 ../../spritz/src/spritz.glade.h:46
+msgid "Document type"
+msgstr ""
+
+#: ../../client/text_ugc.py:421
+msgid "Document added, thank you!"
+msgstr ""
+
+#: ../../client/text_ugc.py:430
+msgid "Documents removal"
+msgstr ""
+
+#: ../../client/text_ugc.py:440
+msgid "Document identifiers"
+msgstr ""
+
+#: ../../client/text_ugc.py:455
+msgid "No valid identifiers"
+msgstr ""
+
+#: ../../client/text_ugc.py:511
+msgid "UGC status"
+msgstr ""
+
+#: ../../client/text_ugc.py:523
+msgid "No title"
+msgstr ""
+
+#: ../../client/text_ugc.py:530
+msgid "Unknown type"
+msgstr ""
+
+#: ../../client/text_ugc.py:548 ../../spritz/src/dialogs.py:2183
+#: ../../spritz/src/spritz.glade.h:34
+msgid "Content"
+msgstr ""
+
+#: ../../client/text_ugc.py:573
+msgid "Current package vote"
+msgstr ""
+
 #: ../../client/text_ui.py:102 ../../client/text_ui.py:112
-#: ../../client/text_ui.py:486 ../../client/text_ui.py:962
+#: ../../client/text_ui.py:486 ../../client/text_ui.py:981
 msgid "Nothing to do"
 msgstr ""
 
@@ -4751,12 +5151,12 @@ msgstr ""
 
 #. None or {}
 #: ../../client/text_ui.py:175 ../../client/text_ui.py:723
-#: ../../client/text_ui.py:1049
+#: ../../client/text_ui.py:1068
 msgid "Nothing to resume"
 msgstr ""
 
 #: ../../client/text_ui.py:186 ../../client/text_ui.py:736
-#: ../../client/text_ui.py:1057
+#: ../../client/text_ui.py:1076
 msgid "Resume cache corrupted"
 msgstr ""
 
@@ -4810,19 +5210,19 @@ msgstr ""
 msgid "in repositories"
 msgstr ""
 
-#: ../../client/text_ui.py:322
+#: ../../client/text_ui.py:322 ../../client/text_ui.py:920
 msgid "When you wrote"
 msgstr ""
 
-#: ../../client/text_ui.py:324
+#: ../../client/text_ui.py:324 ../../client/text_ui.py:922
 msgid "You Meant(tm)"
 msgstr ""
 
-#: ../../client/text_ui.py:325
+#: ../../client/text_ui.py:325 ../../client/text_ui.py:923
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:346 ../../spritz/src/spritz.py:623
+#: ../../client/text_ui.py:346 ../../spritz/src/spritz.py:625
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
@@ -4831,7 +5231,7 @@ msgid "Skipped"
 msgstr ""
 
 #. now print the selected packages
-#: ../../client/text_ui.py:366 ../../client/text_ui.py:924
+#: ../../client/text_ui.py:366 ../../client/text_ui.py:943
 msgid "These are the chosen packages"
 msgstr ""
 
@@ -4848,11 +5248,11 @@ msgid "Switch repo"
 msgstr ""
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
-#: ../../spritz/src/spritz.glade.h:83
+#: ../../spritz/src/spritz.glade.h:125
 msgid "Reinstall"
 msgstr ""
 
-#: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:48
+#: ../../client/text_ui.py:433 ../../spritz/src/spritz.glade.h:72
 msgid "Install"
 msgstr ""
 
@@ -4868,7 +5268,7 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: ../../client/text_ui.py:441 ../../client/text_ui.py:959
+#: ../../client/text_ui.py:441 ../../client/text_ui.py:978
 msgid "Packages involved"
 msgstr ""
 
@@ -4965,7 +5365,7 @@ msgstr ""
 msgid "Would you like to execute the queue ?"
 msgstr ""
 
-#: ../../client/text_ui.py:734 ../../client/text_ui.py:1055
+#: ../../client/text_ui.py:734 ../../client/text_ui.py:1074
 msgid "Resuming previous operations"
 msgstr ""
 
@@ -5031,85 +5431,85 @@ msgid "is not installed"
 msgstr ""
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:943
+#: ../../client/text_ui.py:962
 msgid "vital package"
 msgstr ""
 
-#: ../../client/text_ui.py:944
+#: ../../client/text_ui.py:963
 msgid "Removal forbidden"
 msgstr ""
 
-#: ../../client/text_ui.py:954
+#: ../../client/text_ui.py:973
 msgid "Disk size"
 msgstr ""
 
-#: ../../client/text_ui.py:955
+#: ../../client/text_ui.py:974
 msgid "Installed from"
 msgstr ""
 
-#: ../../client/text_ui.py:967
+#: ../../client/text_ui.py:986
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:970 ../../server/server_reagent.py:225
+#: ../../client/text_ui.py:989 ../../server/server_reagent.py:225
 msgid "Would you like to remove them now ?"
 msgstr ""
 
-#: ../../client/text_ui.py:986
+#: ../../client/text_ui.py:1005
 msgid "This is the new removal queue"
 msgstr ""
 
-#: ../../client/text_ui.py:1011
+#: ../../client/text_ui.py:1030
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1013
+#: ../../client/text_ui.py:1032
 msgid "Would you like to proceed with a selective removal ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1020
+#: ../../client/text_ui.py:1039
 msgid "Would you like to skip this step then ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1025
+#: ../../client/text_ui.py:1044
 msgid "Starting removal in"
 msgstr ""
 
-#: ../../client/text_ui.py:1086
+#: ../../client/text_ui.py:1105
 msgid "Remove this one ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1122
+#: ../../client/text_ui.py:1141
 msgid "All done"
 msgstr ""
 
-#: ../../client/text_ui.py:1128
+#: ../../client/text_ui.py:1147
 msgid "Running dependency test"
 msgstr ""
 
-#: ../../client/text_ui.py:1153
+#: ../../client/text_ui.py:1172
 msgid "Would you like to install the available packages ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1158 ../../client/text_ui.py:1234
+#: ../../client/text_ui.py:1177 ../../client/text_ui.py:1253
 msgid "Installing available packages in"
 msgstr ""
 
-#: ../../client/text_ui.py:1159 ../../client/text_ui.py:1235
+#: ../../client/text_ui.py:1178 ../../client/text_ui.py:1254
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/text_ui.py:1200
+#: ../../client/text_ui.py:1219
 msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/text_ui.py:1202
+#: ../../client/text_ui.py:1221
 msgid "Not matched"
 msgstr ""
 
-#: ../../client/text_ui.py:1228
+#: ../../client/text_ui.py:1247
 msgid "Would you like to install them ?"
 msgstr ""
 
@@ -5254,7 +5654,7 @@ msgstr ""
 msgid "Enabling"
 msgstr ""
 
-#: ../../server/server_reagent.py:85 ../../spritz/src/dialogs.py:1151
+#: ../../server/server_reagent.py:85 ../../spritz/src/dialogs.py:2938
 msgid "Enabled"
 msgstr ""
 
@@ -5346,7 +5746,7 @@ msgid "Entries handled"
 msgstr ""
 
 #: ../../server/server_reagent.py:308 ../../server/server_reagent.py:333
-#: ../../server/server_reagent.py:384
+#: ../../server/server_reagent.py:384 ../../spritz/src/dialogs.py:1032
 msgid "Not enough parameters"
 msgstr ""
 
@@ -5398,205 +5798,385 @@ msgstr ""
 msgid "Bumping Repository database"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:113
+#: ../../spritz/src/dialogs.py:105 ../../spritz/src/dialogs.py:379
+msgid "Connection Error"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:226
+msgid "None"
+msgstr ""
+
+#. description col
+#: ../../spritz/src/dialogs.py:230 ../../spritz/src/dialogs.py:256
+msgid "Parameters"
+msgstr ""
+
+#. date col
+#. date
+#: ../../spritz/src/dialogs.py:258 ../../spritz/src/dialogs.py:279
+#: ../../spritz/src/spritz.glade.h:40
+msgid "Date"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:370
+msgid "No connection to host, please check your data"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:373
+msgid "Unable to create a remote session. Try again later."
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:377
+msgid "Login failed. Please retry."
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:415
+msgid "Ready"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:433
+msgid "Communication error"
+msgstr ""
+
+#. Package information
+#: ../../spritz/src/dialogs.py:658
+msgid "Packages information"
+msgstr ""
+
+#. GLSA information button
+#: ../../spritz/src/dialogs.py:666 ../../spritz/src/spritz.glade.h:10
+msgid "Advisory information"
+msgstr ""
+
+#. glsa id
+#: ../../spritz/src/dialogs.py:688
+msgid "GLSA Id."
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:750
+msgid "Key"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:760
+msgid "USE Flags"
+msgstr ""
+
+#. Compile
+#: ../../spritz/src/dialogs.py:809
+msgid "Compile selected"
+msgstr ""
+
+#. Add USE flag
+#: ../../spritz/src/dialogs.py:817 ../../spritz/src/spritz.glade.h:6
+msgid "Add USE"
+msgstr ""
+
+#. Remove USE flag
+#: ../../spritz/src/dialogs.py:825 ../../spritz/src/spritz.glade.h:130
+msgid "Remove USE"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:919 ../../spritz/src/dialogs.py:974
+msgid "Categories, space separated"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:925
+msgid "Insert categories"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:980
+msgid "Insert categories (if you want)"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1013
+msgid "Invalid Command"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1013 ../../spritz/src/dialogs.py:1032
+#: ../../spritz/src/dialogs.py:1038
+msgid "Custom command Error"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1038
+msgid "Error executing call"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1139 ../../spritz/src/dialogs.py:1197
+#: ../../spritz/src/dialogs.py:1269 ../../spritz/src/dialogs.py:1329
+msgid "Atoms, space separated"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1146
+msgid "Insert packages removal parameters"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1203
+msgid "Fetch only"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1204
+msgid "Build only"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1205
+msgid "Custom USE flags"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1210
+msgid "Insert compilation parameters"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1271
+msgid "USE flags, space separated"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1274
+msgid "Insert command parameters"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1332
+msgid "Insert Package Information parameters"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1404
+msgid "Full output"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1407
+msgid "Insert output parameters"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1434 ../../spritz/src/spritz.glade.h:60
+msgid "Extended note"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1437
+msgid "Insert your new pinboard item"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1529
+msgid "List type"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1532
+msgid "Choose what kind of list you want to see"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1731
 msgid "Expand to browse"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:126 ../../spritz/src/spritz.glade.h:45
+#: ../../spritz/src/dialogs.py:1744 ../../spritz/src/spritz.glade.h:69
 msgid "Identifier"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:130 ../../spritz/src/spritz.glade.h:11
+#: ../../spritz/src/dialogs.py:1748 ../../spritz/src/spritz.glade.h:13
 msgid "Author"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:443 ../../spritz/src/views.py:551
+#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/views.py:551
 msgid "Vote registered successfully"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:445 ../../spritz/src/views.py:553
+#: ../../spritz/src/dialogs.py:2063 ../../spritz/src/views.py:553
 msgid "Error registering vote"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:458
+#: ../../spritz/src/dialogs.py:2076
 msgid "License name"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:474 ../../spritz/src/spritz.glade.h:65
+#: ../../spritz/src/dialogs.py:2092 ../../spritz/src/spritz.glade.h:90
 msgid "Mirrors"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:498
+#: ../../spritz/src/dialogs.py:2116
 msgid "Eclasses"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:514
+#: ../../spritz/src/dialogs.py:2132
 msgid "Depends"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:522
+#: ../../spritz/src/dialogs.py:2140
 msgid "Needed libraries"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:530
+#: ../../spritz/src/dialogs.py:2148
 msgid "Protected item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:533 ../../spritz/src/dialogs.py:545
-#: ../../spritz/src/dialogs.py:557
+#: ../../spritz/src/dialogs.py:2151 ../../spritz/src/dialogs.py:2163
+#: ../../spritz/src/dialogs.py:2175
 msgid "Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:541
+#: ../../spritz/src/dialogs.py:2159
 msgid "File"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:565 ../../spritz/src/spritz.glade.h:24
-msgid "Content"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:645
+#: ../../spritz/src/dialogs.py:2263
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:646
+#: ../../spritz/src/dialogs.py:2264
 msgid "Be part of our Community!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:650
-msgid "Number of downloads"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:681
+#: ../../spritz/src/dialogs.py:2299
 msgid "From your Operating System"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:841
+#: ../../spritz/src/dialogs.py:2451
+msgid "Bug"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2459
+msgid "Reference"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2529
+msgid "impact"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2531
+msgid "access"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2545
+msgid "Vulnerables"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2549
+msgid "Unaffected"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2628
 msgid "Id"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:918
+#: ../../spritz/src/dialogs.py:2705
 msgid "Write your"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:921
+#: ../../spritz/src/dialogs.py:2708
 msgid "Select your"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:928
+#: ../../spritz/src/dialogs.py:2715
 msgid "Submit issue"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:941
+#: ../../spritz/src/dialogs.py:2728
 msgid "Empty Document"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:945
+#: ../../spritz/src/dialogs.py:2732
 msgid "Invalid Description"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:951
+#: ../../spritz/src/dialogs.py:2738
 msgid "Invalid Document Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:954
+#: ../../spritz/src/dialogs.py:2741
 msgid "Invalid Title"
 msgstr ""
 
 #. confirm ?
-#: ../../spritz/src/dialogs.py:958
+#: ../../spritz/src/dialogs.py:2745
 msgid "Do you confirm your submission?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:978
+#: ../../spritz/src/dialogs.py:2765
 msgid "UGC Error"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:982
+#: ../../spritz/src/dialogs.py:2769
 msgid "Document added successfully. Thank you"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:982
+#: ../../spritz/src/dialogs.py:2769
 msgid "Success!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1002
+#: ../../spritz/src/dialogs.py:2789
 msgid "Write your document"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1009
+#: ../../spritz/src/dialogs.py:2796
 msgid "Select your file"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1020
+#: ../../spritz/src/dialogs.py:2807
 msgid "On repository"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1074
+#: ../../spritz/src/dialogs.py:2861
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1076
+#: ../../spritz/src/dialogs.py:2863
 msgid "Some packages are masked"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1143
+#: ../../spritz/src/dialogs.py:2930
 msgid "Masked package"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1221 ../../spritz/src/dialogs.py:1384
-#: ../../spritz/src/dialogs.py:1395 ../../spritz/src/dialogs.py:1406
-#: ../../spritz/src/dialogs.py:1417 ../../spritz/src/views.py:597
-#: ../../spritz/src/views.py:883
+#: ../../spritz/src/dialogs.py:3008 ../../spritz/src/dialogs.py:3171
+#: ../../spritz/src/dialogs.py:3182 ../../spritz/src/dialogs.py:3193
+#: ../../spritz/src/dialogs.py:3204 ../../spritz/src/views.py:604
+#: ../../spritz/src/views.py:890
 msgid "No description"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1275
+#: ../../spritz/src/dialogs.py:3062
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1336 ../../spritz/src/dialogs.py:1378
+#: ../../spritz/src/dialogs.py:3123 ../../spritz/src/dialogs.py:3165
 msgid "To be reinstalled"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1342 ../../spritz/src/dialogs.py:1389
+#: ../../spritz/src/dialogs.py:3129 ../../spritz/src/dialogs.py:3176
 msgid "To be installed"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1348 ../../spritz/src/dialogs.py:1400
+#: ../../spritz/src/dialogs.py:3135 ../../spritz/src/dialogs.py:3187
 msgid "To be updated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1354
+#: ../../spritz/src/dialogs.py:3141
 msgid "To be downgraded"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1360 ../../spritz/src/dialogs.py:1411
+#: ../../spritz/src/dialogs.py:3147 ../../spritz/src/dialogs.py:3198
 msgid "To be removed"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1550
+#: ../../spritz/src/dialogs.py:3334
 msgid "About"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1670
+#: ../../spritz/src/dialogs.py:3454
 msgid "Spritz Question"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1675
+#: ../../spritz/src/dialogs.py:3459
 msgid "Hey!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1717
+#: ../../spritz/src/dialogs.py:3502
 msgid "Please fill the following form"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1773
+#: ../../spritz/src/dialogs.py:3629
 msgid "Invalid entry"
 msgstr ""
 
 #. new
-#: ../../spritz/src/dialogs.py:1926
+#: ../../spritz/src/dialogs.py:3782
 msgid "Accepted"
 msgstr ""
 
@@ -5621,7 +6201,7 @@ msgid "Show Masked Packages"
 msgstr ""
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/gui.py:304 ../../spritz/src/views.py:790
+#: ../../spritz/src/gui.py:304 ../../spritz/src/views.py:797
 msgid "Packages"
 msgstr ""
 
@@ -5703,8 +6283,8 @@ msgstr ""
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:441
-#: ../../spritz/src/spritz.py:474
+#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:443
+#: ../../spritz/src/spritz.py:476
 msgid "Update Repositories"
 msgstr ""
 
@@ -5716,408 +6296,380 @@ msgstr ""
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:146
+#: ../../spritz/src/spritz.py:148
 msgid "The chosen package is not vulnerable"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:154
+#: ../../spritz/src/spritz.py:156
 msgid "Packages in Advisory have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:169
+#: ../../spritz/src/spritz.py:171
 msgid "Packages in all Advisories have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:181
+#: ../../spritz/src/spritz.py:183
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:267
+#: ../../spritz/src/spritz.py:269
 msgid "Branch switching"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:267
+#: ../../spritz/src/spritz.py:269
 msgid "Enter a valid branch you want to switch to"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:270
+#: ../../spritz/src/spritz.py:272
 msgid "The selected branch is not available."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:273
+#: ../../spritz/src/spritz.py:275
 msgid "New branch is"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:273
+#: ../../spritz/src/spritz.py:275
 msgid "It is suggested to synchronize repositories"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:317 ../../spritz/src/spritz.py:339
+#: ../../spritz/src/spritz.py:319 ../../spritz/src/spritz.py:341
 msgid "Insert URL"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:317 ../../spritz/src/spritz.py:339
+#: ../../spritz/src/spritz.py:319 ../../spritz/src/spritz.py:341
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:322
+#: ../../spritz/src/spritz.py:324
 msgid "You must enter either a HTTP or a FTP url."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:376 ../../spritz/src/spritz.py:444
+#: ../../spritz/src/spritz.py:378 ../../spritz/src/spritz.py:446
 msgid "Wrong entries, errors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:388 ../../spritz/src/spritz.py:441
-#: ../../spritz/src/views.py:1168
+#: ../../spritz/src/spritz.py:390 ../../spritz/src/spritz.py:443
+#: ../../spritz/src/views.py:1175
 msgid "You should press the button"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:388 ../../spritz/src/spritz.py:474
-#: ../../spritz/src/views.py:1168
+#: ../../spritz/src/spritz.py:390 ../../spritz/src/spritz.py:476
+#: ../../spritz/src/views.py:1175
 msgid "Regenerate Cache"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:388 ../../spritz/src/spritz.py:441
-#: ../../spritz/src/spritz.py:474 ../../spritz/src/views.py:1168
+#: ../../spritz/src/spritz.py:390 ../../spritz/src/spritz.py:443
+#: ../../spritz/src/spritz.py:476 ../../spritz/src/views.py:1175
 msgid "now"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:394
+#: ../../spritz/src/spritz.py:396
 msgid "No Repository Identifier"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:397
+#: ../../spritz/src/spritz.py:399
 msgid "Duplicated Repository Identifier"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:401
+#: ../../spritz/src/spritz.py:403
 msgid "No download mirrors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:403
+#: ../../spritz/src/spritz.py:405
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:411
+#: ../../spritz/src/spritz.py:413
 msgid "Repository Services Port not valid"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:419
+#: ../../spritz/src/spritz.py:421
 msgid "Secure Services Port not valid"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:454
+#: ../../spritz/src/spritz.py:456
 msgid "Insert Repository"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:454
+#: ../../spritz/src/spritz.py:456
 msgid "Insert Repository identification string"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:460
+#: ../../spritz/src/spritz.py:462
 msgid "This Repository identification string is malformed"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:470
+#: ../../spritz/src/spritz.py:472
 msgid "You! Why do you want to remove the main repository ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:474
+#: ../../spritz/src/spritz.py:476
 msgid "You must now either press the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:474
+#: ../../spritz/src/spritz.py:476
 msgid "or the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:504
+#: ../../spritz/src/spritz.py:506
 msgid "Are you sure ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:517
+#: ../../spritz/src/spritz.py:519
 msgid "Error saving parameter"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:518 ../../spritz/src/spritz.py:1414
+#: ../../spritz/src/spritz.py:520 ../../spritz/src/spritz.py:1310
 msgid "An issue occured while saving a preference"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:519 ../../spritz/src/spritz.py:1389
-#: ../../spritz/src/spritz.py:1415
+#: ../../spritz/src/spritz.py:521 ../../spritz/src/spritz.py:1285
+#: ../../spritz/src/spritz.py:1311
 msgid "Parameter"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:519
+#: ../../spritz/src/spritz.py:521
 msgid "not saved"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:531 ../../spritz/src/spritz.py:537
-#: ../../spritz/src/spritz.py:543 ../../spritz/src/spritz.py:567
-#: ../../spritz/src/spritz.py:577 ../../spritz/src/spritz.py:587
+#: ../../spritz/src/spritz.py:533 ../../spritz/src/spritz.py:539
+#: ../../spritz/src/spritz.py:545 ../../spritz/src/spritz.py:569
+#: ../../spritz/src/spritz.py:579 ../../spritz/src/spritz.py:589
 msgid "New"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:531 ../../spritz/src/spritz.py:537
-#: ../../spritz/src/spritz.py:543
+#: ../../spritz/src/spritz.py:533 ../../spritz/src/spritz.py:539
+#: ../../spritz/src/spritz.py:545
 msgid "Please insert a new path"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:567 ../../spritz/src/spritz.py:577
-#: ../../spritz/src/spritz.py:587
+#: ../../spritz/src/spritz.py:569 ../../spritz/src/spritz.py:579
+#: ../../spritz/src/spritz.py:589
 msgid "Please edit the selected path"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:607
+#: ../../spritz/src/spritz.py:609
 msgid "You have chosen to install this package"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:609
+#: ../../spritz/src/spritz.py:611
 msgid "Are you supa sure?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:627
+#: ../../spritz/src/spritz.py:629
 msgid "Cannot install"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:710
+#: ../../spritz/src/spritz.py:712
 msgid "Please select at least one repository"
 msgstr ""
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:746
+#: ../../spritz/src/spritz.py:748
 msgid "No packages in queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:790
+#: ../../spritz/src/spritz.py:792
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:857
-msgid "impact"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:859
-msgid "access"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:873
-msgid "Vulnerables"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:877
-msgid "Unaffected"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:1008
+#: ../../spritz/src/spritz.py:894
 msgid ""
 "You have chosen to interrupt the queue processing. Doing so could be risky "
 "and you should let Entropy to close all its tasks. Are you sure you want it?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1016
+#: ../../spritz/src/spritz.py:902
 msgid "Aborting queue tasks."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1022
+#: ../../spritz/src/spritz.py:908
 msgid "Skipping current mirror."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1092
+#: ../../spritz/src/spritz.py:978
 msgid "Cleaning UGC cache of"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1093
+#: ../../spritz/src/spritz.py:979
 msgid "UGC cache cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1102
+#: ../../spritz/src/spritz.py:988
 msgid "UGC credentials cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1127
+#: ../../spritz/src/spritz.py:1018
 msgid "Entropy resources are locked and not accessible. "
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1152
+#: ../../spritz/src/spritz.py:1043
 msgid "Entropy Config Setup"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1164
+#: ../../spritz/src/spritz.py:1055
 msgid "GUI Setup Completed"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1194
+#: ../../spritz/src/spritz.py:1084
 msgid "Advertisement"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1292 ../../spritz/src/spritz.py:1301
-#: ../../spritz/src/spritz.py:1310
+#: ../../spritz/src/spritz.py:1188 ../../spritz/src/spritz.py:1197
+#: ../../spritz/src/spritz.py:1206
 msgid "Item"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1325
-msgid "Not logged in"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:1357
+#: ../../spritz/src/spritz.py:1253
 msgid "Logged in as"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1364
+#: ../../spritz/src/spritz.py:1260
 msgid "UGC Status"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1387 ../../spritz/src/spritz.py:1413
+#: ../../spritz/src/spritz.py:1283 ../../spritz/src/spritz.py:1309
 msgid "Error setting parameter"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1388
+#: ../../spritz/src/spritz.py:1284
 msgid "An issue occured while loading a preference"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1389 ../../spritz/src/spritz.py:1415
+#: ../../spritz/src/spritz.py:1285 ../../spritz/src/spritz.py:1311
 msgid "must be of type"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1389 ../../spritz/src/spritz.py:1415
+#: ../../spritz/src/spritz.py:1285 ../../spritz/src/spritz.py:1311
 msgid "got"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1554
+#: ../../spritz/src/spritz.py:1450
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1575
-msgid "Bug"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:1583
-msgid "Reference"
-msgstr ""
-
-#: ../../spritz/src/spritz.py:1641
+#: ../../spritz/src/spritz.py:1511
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1649
+#: ../../spritz/src/spritz.py:1519
 msgid "Error during list population"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1651
+#: ../../spritz/src/spritz.py:1521
 msgid "Retrying in 1 second."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1685
+#: ../../spritz/src/spritz.py:1555
 msgid "Error loading advisories"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1717
+#: ../../spritz/src/spritz.py:1587
 msgid "Initializing Repository module..."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1723
+#: ../../spritz/src/spritz.py:1593
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1738
+#: ../../spritz/src/spritz.py:1608
 msgid "Errors updating repositories."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1739
+#: ../../spritz/src/spritz.py:1609
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1742
+#: ../../spritz/src/spritz.py:1612
 msgid "Repositories updated successfully"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1745
+#: ../../spritz/src/spritz.py:1615
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1747
+#: ../../spritz/src/spritz.py:1617
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1750
+#: ../../spritz/src/spritz.py:1620
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1755
+#: ../../spritz/src/spritz.py:1625
 msgid "Nothing to do. I am idle."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1756
+#: ../../spritz/src/spritz.py:1626
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1757
+#: ../../spritz/src/spritz.py:1627
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1800
+#: ../../spritz/src/spritz.py:1670
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1801
+#: ../../spritz/src/spritz.py:1671
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1802
+#: ../../spritz/src/spritz.py:1672
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1804 ../../spritz/src/spritz.py:1810
+#: ../../spritz/src/spritz.py:1674 ../../spritz/src/spritz.py:1680
 msgid "Calculating"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1822
+#: ../../spritz/src/spritz.py:1692
 msgid "Showing"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1822
+#: ../../spritz/src/spritz.py:1692
 msgid "items"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1841
+#: ../../spritz/src/spritz.py:1711
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1846
+#: ../../spritz/src/spritz.py:1716
 msgid "Running tasks"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1853
+#: ../../spritz/src/spritz.py:1723
 msgid "Processing Packages in queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1869
+#: ../../spritz/src/spritz.py:1739
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1893
+#: ../../spritz/src/spritz.py:1763
 msgid "No packages selected"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1951
+#: ../../spritz/src/spritz.py:1824
 msgid "Exception caught"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1952
+#: ../../spritz/src/spritz.py:1825
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1961
+#: ../../spritz/src/spritz.py:1834
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1963
+#: ../../spritz/src/spritz.py:1836
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -6133,10 +6685,6 @@ msgstr ""
 msgid "Dedicated to:"
 msgstr ""
 
-#: ../../spritz/src/views.py:44
-msgid "Categories"
-msgstr ""
-
 #: ../../spritz/src/views.py:65
 msgid "Selection"
 msgstr ""
@@ -6145,69 +6693,69 @@ msgstr ""
 msgid "Rating"
 msgstr ""
 
-#: ../../spritz/src/views.py:846
+#: ../../spritz/src/views.py:853
 msgid "Packages To Reinstall"
 msgstr ""
 
-#: ../../spritz/src/views.py:850
+#: ../../spritz/src/views.py:857
 msgid "Packages To Update"
 msgstr ""
 
-#: ../../spritz/src/views.py:854
+#: ../../spritz/src/views.py:861
 msgid "Packages To Install"
 msgstr ""
 
-#: ../../spritz/src/views.py:858
+#: ../../spritz/src/views.py:865
 msgid "Packages To Remove"
 msgstr ""
 
-#: ../../spritz/src/views.py:923
+#: ../../spritz/src/views.py:930
 msgid "Proposed"
 msgstr ""
 
-#: ../../spritz/src/views.py:930
+#: ../../spritz/src/views.py:937
 msgid "Destination"
 msgstr ""
 
-#: ../../spritz/src/views.py:937
+#: ../../spritz/src/views.py:944
 msgid "Rev."
 msgstr ""
 
-#: ../../spritz/src/views.py:986
+#: ../../spritz/src/views.py:993
 msgid "GLSA id."
 msgstr ""
 
-#: ../../spritz/src/views.py:994
+#: ../../spritz/src/views.py:1001
 msgid "Package key"
 msgstr ""
 
-#: ../../spritz/src/views.py:1087
+#: ../../spritz/src/views.py:1094
 msgid "No advisories"
 msgstr ""
 
-#: ../../spritz/src/views.py:1088
+#: ../../spritz/src/views.py:1095
 msgid "There are no items to show"
 msgstr ""
 
-#: ../../spritz/src/views.py:1148
+#: ../../spritz/src/views.py:1155
 msgid "Filename"
 msgstr ""
 
-#: ../../spritz/src/views.py:1188
+#: ../../spritz/src/views.py:1195
 msgid "Active"
 msgstr ""
 
-#: ../../spritz/src/views.py:1198 ../../spritz/src/spritz.glade.h:125
+#: ../../spritz/src/views.py:1205 ../../spritz/src/spritz.glade.h:176
 msgid "Update"
 msgstr ""
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1206 ../../spritz/src/spritz.glade.h:94
+#: ../../spritz/src/views.py:1213 ../../spritz/src/spritz.glade.h:141
 msgid "Revision"
 msgstr ""
 
 #. Setup reponame & repofile column's
-#: ../../spritz/src/views.py:1209
+#: ../../spritz/src/views.py:1216
 msgid "Repository Identifier"
 msgstr ""
 
@@ -6430,520 +6978,760 @@ msgstr ""
 msgid "Add Document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:6
-msgid "Add/Edit Repository"
-msgstr ""
-
 #: ../../spritz/src/spritz.glade.h:7
-msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgid "Add USE flags on atoms"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:8
-msgid "Advisory information"
+msgid "Add/Edit Repository"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:9
+msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:11
 msgid "Affected packages"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:14
+#: ../../spritz/src/spritz.glade.h:16
 msgid "Backup configuration files"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:15
+#: ../../spritz/src/spritz.glade.h:17
 msgid "Branch"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:16
+#: ../../spritz/src/spritz.glade.h:18
 msgid "Bugs"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:19
+#: ../../spritz/src/spritz.glade.h:21
 msgid "CONFIG_PROTECT"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:21
+#: ../../spritz/src/spritz.glade.h:23
 msgid "C_hanges"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:22
-msgid "Collision protection"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:23
-msgid "Compression"
+#: ../../spritz/src/spritz.glade.h:24
+msgid "Call"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:25
-msgid "Creation date"
+msgid "Collision protection"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:26
-msgid "D_ependencies"
+msgid "Command arguments"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:27
-msgid "Date"
+msgid "Command description"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:28
-msgid "Dele_te all"
+msgid "Command name"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:29
+msgid "Commands"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:30
+msgid "Compile atoms"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:31
+msgid "Compile packages on the remote server"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:32
+msgid "Completed at"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:33
+msgid "Compression"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:35
+msgid "Creation date"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:36
+msgid "Custom command"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:37
+msgid "Custom shell command"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:38
+msgid "D_ependencies"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:39
+msgid "Data View"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:41
+msgid "Dele_te all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:43
 msgid ""
 "Disabled\n"
 "Removal only\n"
 "Install+Removal"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:33
-msgid "Document type"
+#: ../../spritz/src/spritz.glade.h:47
+msgid "Done"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:34
+#: ../../spritz/src/spritz.glade.h:48
 msgid "Download Path"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:35
+#: ../../spritz/src/spritz.glade.h:49
 msgid "Download speed limit"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:36
+#: ../../spritz/src/spritz.glade.h:50
 msgid "Enable"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:37
+#: ../../spritz/src/spritz.glade.h:51
 msgid "Enable _all"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:38
+#: ../../spritz/src/spritz.glade.h:52
 msgid "Entropy API"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:39
-msgid "Entropy can keep a backup of your updated configuration files"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:41
-msgid "Example: http://proxy:1234"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:42
-msgid "External Trigger"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:43
-msgid "FTP Proxy"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:44
-msgid "HTTP Proxy"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:46
-msgid "Ignored protected files"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:49
-msgid "Install Size"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:50
-msgid "Install a stand-alone package file"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:51
-msgid "Install from binary package..."
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:52
-msgid "Install the selected package"
+#: ../../spritz/src/spritz.glade.h:53
+msgid "Entropy Repositories"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:54
-msgid "Kernel Tag"
+msgid "Entropy Repository Manager"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:55
+msgid "Entropy Service Connection Manager"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:56
-msgid "Keywords (space separated)"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:57
-msgid "Load User Generated Content"
+msgid "Entropy can keep a backup of your updated configuration files"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:58
-msgid "Load content"
+msgid "Errored at"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:59
-msgid "Location"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:60
-msgid "MD5 Signature"
+msgid "Example: http://proxy:1234"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:61
-msgid "M_erge"
+msgid "External Trigger"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:62
+msgid "FTP Proxy"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:63
-msgid "Merge all"
+msgid "Get Spm environment information"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:64
-msgid "Messages"
+msgid "Get output"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:65
+msgid "Get package information"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:66
-msgid "Networking"
+msgid "Get updates related to the chosen categories"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:67
-msgid "O_ther"
+msgid "HTTP Proxy"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:68
-msgid "Package Info."
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:69
-msgid "Package Information"
+msgid "Hostname"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:70
+msgid "Ignored protected files"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:73
+msgid "Install Size"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:74
+msgid "Install a stand-alone package file"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:75
+msgid "Install from binary package..."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:76
+msgid "Install the selected package"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:78
+msgid "Installed Packages"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:79
+msgid "Kernel Tag"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:81
+msgid "Keywords (space separated)"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:82
+msgid "Load User Generated Content"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:83
+msgid "Load content"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:84
+msgid "Location"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:85
+msgid "MD5 Signature"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:86
+msgid "M_erge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:88
+msgid "Merge all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:89
+msgid "Messages"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:91
+msgid "Networking"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:92
+msgid "Not done"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:94
+msgid "O_ther"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:95
+msgid "Online Sync"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:96
+msgid "Output View"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:97
+msgid "Package Info"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:98
+msgid "Package Info."
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:99
+msgid "Package Information"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:100
 msgid "Package Size"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:71
+#: ../../spritz/src/spritz.glade.h:102
+msgid "Pinboard Id"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:103
+msgid "Pinboard Item Information"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:104
+msgid "Pinboard View"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:105
 msgid "Please Confirm"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:72
+#: ../../spritz/src/spritz.glade.h:106
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:73
+#: ../../spritz/src/spritz.glade.h:107
+msgid "Port"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:108
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:74
+#: ../../spritz/src/spritz.glade.h:109
 msgid "Process priority (nice)"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:75
-msgid "Protected files and directories"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:76
-msgid "Protected files and directories mask"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:77
-msgid "Proxy Password"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:78
-msgid "Proxy Username"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:79
-msgid "Purge"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:80
-msgid "Q_ueue packages in selected Advisory"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:81
-msgid "R_egenerate Cache"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:84
-msgid "Reinstall the selected package"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:85
-msgid "Remove"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:86
-msgid "Remove Selected"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:87
-msgid "Remove the selected package"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:88
-msgid "Remove the selected package and its configuration"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:89
-msgid "Repositories options"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:90
-msgid "Repository information"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:92
-msgid "Restore"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:95
-msgid "S_end Error Report"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:96
-msgid "Save"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:97
-msgid "Secure Services Port"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:98
-msgid "Services Port"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:99
-msgid "Show Selected"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:100
-msgid "Show all"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:101
-msgid "Show applied"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:102
-msgid "Show unapplied"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:105
-msgid "Socket settings"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:106
-msgid "Spritz Package Manager"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:107
-msgid "Submit a new document"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:109
-msgid "System"
-msgstr ""
-
 #: ../../spritz/src/spritz.glade.h:110
-msgid "This is what they call \"nice level\""
+msgid "Process result"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:111
+msgid "Processing at"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:112
-msgid "UGC Entry Information"
+msgid "Protected files and directories"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:113
-msgid "URI"
+msgid "Protected files and directories mask"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:114
-msgid "Undo Install"
+msgid "Proxy Password"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:115
-msgid "Undo Install action"
+msgid "Proxy Username"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:116
-msgid "Undo Purge"
+msgid "Purge"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:117
-msgid "Undo Purge action"
+msgid "Q_ueue packages in selected Advisory"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:118
-msgid "Undo Reinstall"
+msgid "Queue Id"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:119
-msgid "Undo Reinstall action"
+msgid "Queue Item Information"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:120
-msgid "Undo Remove"
+msgid "Queue View"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:121
-msgid "Undo Remove action"
+msgid "Queued at"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:122
-msgid "Undo Update"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:123
-msgid "Undo Update action"
+msgid "R_egenerate Cache"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:124
-msgid "Unmask this package"
+msgid "Refresh"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:126
-msgid "Update the selected package"
+msgid "Reinstall the selected package"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:127
-msgid "Updates"
+msgid "Remote stdout file"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:128
+msgid "Remove"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:129
-msgid "Version"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:130
-msgid "Website"
+msgid "Remove Selected"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:131
-msgid "What you were doing"
+msgid "Remove USE flags on atoms"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:132
+msgid "Remove atoms"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:133
+msgid "Remove packages on the remote server"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:134
+msgid "Remove the selected package"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:135
+msgid "Remove the selected package and its configuration"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:136
+msgid "Repositories options"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:137
+msgid "Repository information"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:139
+msgid "Restore"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:142
+msgid "S_end Error Report"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:143
+msgid "Save"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:144
+msgid "Secure Services Port"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:145
+msgid "Security updates"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:146
+msgid "Services Port"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:147
+msgid "Show Selected"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:148
+msgid "Show all"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:149
+msgid "Show applied"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:150
+msgid "Show unapplied"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:153
+msgid "Socket settings"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:154
+msgid "Source Package Manager"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:155
+msgid "Spm Info"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:156
+msgid "Spm Sync"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:157
+msgid "Spritz Package Manager"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:158
+msgid "Submit a new document"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:160
+msgid "System"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:161
+msgid "This is what they call \"nice level\""
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:163
+msgid "UGC Entry Information"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:164
+msgid "URI"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:165
+msgid "Undo Install"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:166
+msgid "Undo Install action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:167
+msgid "Undo Purge"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:168
+msgid "Undo Purge action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:169
+msgid "Undo Reinstall"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:170
+msgid "Undo Reinstall action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:171
+msgid "Undo Remove"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:172
+msgid "Undo Remove action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:173
+msgid "Undo Update"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:174
+msgid "Undo Update action"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:175
+msgid "Unmask this package"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:177
+msgid "Update the selected package"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:178
+msgid "Updates"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:179
+msgid "User / Group"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:182
+msgid "Version"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:183
+msgid "Website"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:184
+msgid "What you were doing"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:186
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:135
+#: ../../spritz/src/spritz.glade.h:188
 msgid "Your E-mail"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:136
+#: ../../spritz/src/spritz.glade.h:189
 msgid "Your Full Name"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:137
+#: ../../spritz/src/spritz.glade.h:190
 msgid "_Abort queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:138
+#: ../../spritz/src/spritz.glade.h:191
 msgid "_Accept License"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:139
+#: ../../spritz/src/spritz.glade.h:192
 msgid "_Add All"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:140
+#: ../../spritz/src/spritz.glade.h:193
 msgid "_Branch ..."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:141
+#: ../../spritz/src/spritz.glade.h:194
 msgid "_Clear all cache"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:142
+#: ../../spritz/src/spritz.glade.h:195
 msgid "_Clear all credentials"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:143
+#: ../../spritz/src/spritz.glade.h:196
 msgid "_Details"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:144
+#: ../../spritz/src/spritz.glade.h:197
 msgid "_Enable"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:145
+#: ../../spritz/src/spritz.glade.h:198
 msgid "_File"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:146
+#: ../../spritz/src/spritz.glade.h:199
 msgid "_Force repositories update"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:147
+#: ../../spritz/src/spritz.glade.h:200
 msgid "_Generate Login"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:148
+#: ../../spritz/src/spritz.glade.h:201
 msgid "_Help"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:149
+#: ../../spritz/src/spritz.glade.h:202
 msgid "_Insert String"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:150
+#: ../../spritz/src/spritz.glade.h:203
 msgid "_More"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:151
+#: ../../spritz/src/spritz.glade.h:204
 msgid "_Open Document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:152
+#: ../../spritz/src/spritz.glade.h:205
 msgid "_Overview"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:153
+#: ../../spritz/src/spritz.glade.h:206
 msgid "_Process Queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:154
+#: ../../spritz/src/spritz.glade.h:207
 msgid "_Properties"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:155
+#: ../../spritz/src/spritz.glade.h:208
 msgid "_Queue all vulnerable packages"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:156
+#: ../../spritz/src/spritz.glade.h:209
 msgid "_Read License"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:157
+#: ../../spritz/src/spritz.glade.h:210
 msgid "_References"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:158
+#: ../../spritz/src/spritz.glade.h:211
+msgid "_Remote Repository Manager"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:212
 msgid "_Remove All"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:159
+#: ../../spritz/src/spritz.glade.h:213
 msgid "_Remove Login"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:160
+#: ../../spritz/src/spritz.glade.h:214
+msgid "_SSL Connection"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:215
+msgid "_Services"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:216
 msgid "_Skip mirror"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:161
+#: ../../spritz/src/spritz.glade.h:217
 msgid "_Submit Document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:162
+#: ../../spritz/src/spritz.glade.h:218
 msgid "_Update Repositories"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:163
+#: ../../spritz/src/spritz.glade.h:219
+msgid "emerge --sync"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:220
+msgid "emerge --sync ? (o;"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:221
+msgid "gtk-add"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:222
+msgid "gtk-cancel"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:223
+msgid "gtk-clear"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:224
+msgid "gtk-connect"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:225
+msgid "gtk-execute"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:226
+msgid "gtk-media-pause"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:227
+msgid "gtk-refresh"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:228
+msgid "gtk-remove"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:229
+msgid "gtk-stop"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:230
 msgid "kb/sec"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:165
+#: ../../spritz/src/spritz.glade.h:231
+msgid "localhost"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:233
+msgid "root"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:234
 msgid "type your password here"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:166
+#: ../../spritz/src/spritz.glade.h:235
 msgid "type your username here"
 msgstr ""

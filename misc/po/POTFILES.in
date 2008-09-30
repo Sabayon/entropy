@@ -15,9 +15,9 @@
 ../client/text_rescue.py
 ../client/text_security.py
 ../client/text_smart.py
+../client/text_ugc.py
 ../client/text_ui.py
 ../server/activator.py
-../server/electron.py
 ../server/reagent.py
 ../server/server_activator.py
 ../server/server_query.py
