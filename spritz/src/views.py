@@ -511,16 +511,14 @@ class EntropyPackageView:
         if not obj: return
         try:
             voted = int(getattr( obj, 'voted' ))
-        except self.Equo.dbapi2.ProgrammingError:
-            self.do_refresh_view = True
+        except:
             return
         #if voted:
         #    cell.value_voted = int(voted)
         #    return
         try:
             mydata = int(getattr( obj, 'vote' ))
-        except self.Equo.dbapi2.ProgrammingError:
-            self.do_refresh_view = True
+        except:
             return
         cell.value = int(mydata)
         cell.value_voted = int(voted)

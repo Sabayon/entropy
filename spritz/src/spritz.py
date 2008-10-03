@@ -1689,6 +1689,7 @@ class SpritzApplication(SpritzController,SpritzGUI):
             allpkgs = self.etpbase.getPackages('fake_updates')
             empty = True
 
+        if bootstrap: time.sleep(3)
         self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
 
         self.pkgView.populate(allpkgs, empty = empty)
