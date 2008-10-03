@@ -21050,6 +21050,10 @@ class SystemManagerExecutorServerRepositoryInterface:
             'run_entropy_mirror_updates': {
                 'func': self.run_entropy_mirror_updates,
                 'args': 2,
+            },
+            'run_entropy_checksum_test': {
+                'func': self.run_entropy_checksum_test,
+                'args': 3,
             }
         }
 
@@ -21548,6 +21552,36 @@ class SystemManagerExecutorServerRepositoryInterface:
         if not result:
             result = set()
         return status,result
+
+    def run_entropy_checksum_test(self, queue_id, repoid, mode):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"a+")
+
+        def myupdateprogress(*myargs, **mykwargs):
+            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+
+        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
+        old_updprogress = Entropy.updateProgress
+        old_client_updprogress = Entropy.ClientService.updateProgress
+        Entropy.updateProgress = myupdateprogress
+        Entropy.ClientService.updateProgress = myupdateprogress
+        try:
+            if mode == "local":
+                data = Entropy.verify_local_packages([], ask = False, repo = repoid)
+            else:
+                data = Entropy.verify_remote_packages([], ask = False, repo = repoid)
+        finally:
+            stdout_err.write("\n### Done ###\n")
+            Entropy.updateProgress = old_updprogress
+            Entropy.ClientService.updateProgress = old_client_updprogress
+            stdout_err.flush()
+            stdout_err.close()
+
+        return True,data
 
     def run_entropy_treeupdates(self, queue_id, repoid):
 
@@ -22130,6 +22164,16 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_mirror_updates <xml data, properly formatted>",
                 'from': str(self)
             },
+            'srvrepo:run_entropy_checksum_test':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_run_entropy_checksum_test,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "run Entropy packages checksum verification tool",
+                'syntax': "<SESSION_ID> srvrepo:run_entropy_checksum_test <repoid> <mode>",
+                'from': str(self)
+            },
         }
 
     def docmd_sync_spm(self, cmd, myargs, authenticator):
@@ -22263,8 +22307,6 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         return True, queue_id
 
     def docmd_get_spm_categories_installed(self, cmd, myargs, authenticator):
-        if not myargs:
-            return False,'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -22512,6 +22554,20 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_library_test', [], {}, True, True)
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_run_entropy_checksum_test(self, cmd, myargs, authenticator):
+        if len(myargs) < 2:
+            return False,'wrong arguments'
+        repoid = myargs[0]
+        mode = myargs[1]
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_checksum_test', [repoid,mode], {}, True, False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -23404,9 +23460,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                 return queue_id
 
     def get_item_by_queue_id(self, queue_id):
-        for key in self.ManagerQueue:
-            if key not in self.dict_queue_keys:
-                continue
+        for key in self.dict_queue_keys:
             item = self.ManagerQueue[key].get(queue_id)
             if item != None:
                 return item, key
@@ -23939,6 +23993,16 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
+    def run_entropy_checksum_test(self, session_id, repoid, mode):
+
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'srvrepo:run_entropy_checksum_test',
+            repoid,
+            mode,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
 class SystemManagerMethodsInterface:
 
     def __init__(self, SystemManagerClientInstance):
@@ -24281,6 +24345,15 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
                 'call': self.run_entropy_mirror_updates,
                 'private': False,
             },
+            'run_entropy_checksum_test': {
+                'desc': _("Run Entropy packages digest verification test"),
+                'params': [
+                    ('repoid',basestring,_('Repository Identifier'),True,),
+                    ('mode',basestring,_('Check mode'),False,),
+                ],
+                'call': self.run_entropy_mirror_updates,
+                'private': False,
+            },
         })
 
     def sync_spm(self):
@@ -24382,6 +24455,9 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
     def run_entropy_mirror_updates(self, repository_data):
         return self.Manager.do_cmd(True, "run_entropy_mirror_updates", [repository_data], {})
 
+    def run_entropy_checksum_test(self, repoid, mode = "local"):
+        return self.Manager.do_cmd(True, "run_entropy_checksum_test", [repoid, mode], {})
+
 class SystemManagerClientInterface:
 
     ssl_connection = True
@@ -24422,12 +24498,15 @@ class SystemManagerClientInterface:
         self.connection_cache = {}
         self.CacheLock = thread.allocate_lock()
         self.shutdown = False
-        self.connection_killer = self.entropyTools.parallelTask(self.connection_killer_handler)
+        self.connection_killer = self.entropyTools.TimeScheduled(self.connection_killer_handler, 2)
         self.connection_killer.start()
 
     def __del__(self):
         if hasattr(self,'shutdown'):
             self.shutdown = True
+        if hasattr(self,'connection_killer'):
+            if self.connection_killer != None:
+                self.connection_killer.kill()
 
     def _validate_credentials(self):
         if not isinstance(self.hostname,basestring):
@@ -24461,31 +24540,35 @@ class SystemManagerClientInterface:
             return
         self.connection_cache[key]['ts'] = self.get_ts()
 
-    def connection_killer_handler(self):
-        while 1:
-
-            time.sleep(2)
-
-            if self.shutdown:
-                break
-
-            if not self.connection_cache:
-                continue
-
+    def kill_all_connections(self):
+        self.CacheLock.acquire()
+        try:
             keys = self.connection_cache.keys()
             for key in keys:
-                curr_ts = self.get_ts()
-                ts = self.connection_cache[key]['ts']
-                delta = curr_ts - ts
-                if delta.seconds < 60:
-                    continue
-                self.CacheLock.acquire()
-                try:
-                    data = self.connection_cache.pop(key)
-                finally:
-                    self.CacheLock.release()
-                srv = data['conn']
-                srv.disconnect()
+                data = self.connection_cache.pop(key)
+                data['conn'].disconnect()
+        finally:
+            self.CacheLock.release()
+
+    def connection_killer_handler(self):
+
+        if self.shutdown: return
+        if not self.connection_cache: return
+
+        keys = self.connection_cache.keys()
+        for key in keys:
+            curr_ts = self.get_ts()
+            ts = self.connection_cache[key]['ts']
+            delta = curr_ts - ts
+            if delta.seconds < 60:
+                continue
+            self.CacheLock.acquire()
+            try:
+                data = self.connection_cache.pop(key)
+            finally:
+                self.CacheLock.release()
+            srv = data['conn']
+            srv.disconnect()
 
     def get_ts(self):
         from datetime import datetime
