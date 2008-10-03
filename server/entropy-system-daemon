@@ -13,8 +13,12 @@ if "--ssl" in sys.argv:
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
+from entropyConstants import *
+
 import entropyTools, exceptionTools
 from entropy import SystemManagerServerInterface, SystemManagerExecutorServerRepositoryInterface, SystemManagerRepositoryCommands, ServerInterface
+
+etpConst['community']['mode'] = True
 
 def run_srv(s):
     try:
@@ -28,7 +32,8 @@ srv = SystemManagerServerInterface(
         do_ssl = do_ssl,
         stdout_logging = do_stdout_logging,
         external_cmd_classes = [SystemManagerRepositoryCommands],
-        external_executor_cmd_classes = [(SystemManagerExecutorServerRepositoryInterface,[],{},)]
+        external_executor_cmd_classes = [(SystemManagerExecutorServerRepositoryInterface,[],{},)],
+        entropy_interface_kwargs = {'community_repo': etpConst['community']['mode']}
     )
 
 thread_names = ["system_socket"]
