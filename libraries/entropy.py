@@ -21652,7 +21652,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                         try:
                             upload_queue, download_queue, removal_queue, \
                                 fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, mybranch, repoid)
-                        except socket.error, e:
+                        except socket.error:
                             self.entropyTools.printTraceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...")+"\n")
                             continue

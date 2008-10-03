@@ -4394,7 +4394,7 @@ class MaskedPackagesDialog:
     def set_pixbuf_to_cell(self, cell, do):
         if do:
             cell.set_property( 'stock-id', 'gtk-apply' )
-        elif do == False:
+        elif (not do) and isinstance(do,bool):
             cell.set_property( 'stock-id', 'gtk-cancel' )
         else:
             cell.set_property( 'stock-id', None )
@@ -4415,7 +4415,7 @@ class MaskedPackagesDialog:
 
     def show_pkg( self, column, cell, model, iterator ):
         obj = model.get_value( iterator, 0 )
-        mydata = getattr( obj, 'namedesc' )
+        mydata = obj.namedesc
         cell.set_property('markup', mydata )
         self.set_line_status(obj, cell)
 
@@ -5237,7 +5237,7 @@ class LicenseDialog:
     def set_pixbuf_to_cell(self, cell, do):
         if do:
             cell.set_property( 'stock-id', 'gtk-apply' )
-        elif do == False:
+        elif (not do) and isinstance(do,bool):
             cell.set_property( 'stock-id', 'gtk-cancel' )
         else:
             cell.set_property( 'stock-id', None )

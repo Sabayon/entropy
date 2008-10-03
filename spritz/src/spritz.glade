@@ -34,7 +34,7 @@
                         <signal name="activate" handler="on_installPackageItem_activate"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="menu-item-image13">
-                            <property name="stock">gtk-add</property>
+                            <property name="stock" translatable="no">gtk-add</property>
                           </widget>
                         </child>
                       </widget>
@@ -320,7 +320,7 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="can_default">True</property>
-                                <property name="label">gtk-add</property>
+                                <property name="label" translatable="no">gtk-add</property>
                                 <property name="use_stock">True</property>
                                 <property name="response_id">0</property>
                                 <signal name="clicked" handler="on_addRepo_clicked"/>
@@ -482,7 +482,7 @@
                                     <child>
                                       <widget class="GtkImage" id="image222">
                                         <property name="visible">True</property>
-                                        <property name="stock">gtk-refresh</property>
+                                        <property name="stock" translatable="no">gtk-refresh</property>
                                       </widget>
                                       <packing>
                                         <property name="expand">False</property>
@@ -937,7 +937,7 @@
                                         <child>
                                           <widget class="GtkImage" id="image84">
                                             <property name="visible">True</property>
-                                            <property name="stock">gtk-add</property>
+                                            <property name="stock" translatable="no">gtk-add</property>
                                           </widget>
                                           <packing>
                                             <property name="expand">False</property>
@@ -2253,7 +2253,7 @@
                                     <child>
                                       <widget class="GtkImage" id="image17">
                                         <property name="visible">True</property>
-                                        <property name="stock">gtk-execute</property>
+                                        <property name="stock" translatable="no">gtk-execute</property>
                                       </widget>
                                       <packing>
                                         <property name="expand">False</property>
@@ -3152,7 +3152,7 @@ Install+Removal</property>
                                                 <child>
                                                   <widget class="GtkImage" id="image31">
                                                     <property name="visible">True</property>
-                                                    <property name="stock">gtk-connect</property>
+                                                    <property name="stock" translatable="no">gtk-connect</property>
                                                   </widget>
                                                 </child>
                                                 <child>
@@ -3224,7 +3224,7 @@ Install+Removal</property>
                                                 <child>
                                                   <widget class="GtkImage" id="image34">
                                                     <property name="visible">True</property>
-                                                    <property name="stock">gtk-clear</property>
+                                                    <property name="stock" translatable="no">gtk-clear</property>
                                                   </widget>
                                                 </child>
                                                 <child>
@@ -4021,7 +4021,7 @@ Install+Removal</property>
     <child>
       <widget class="GtkImageMenuItem" id="ClearTerminal">
         <property name="visible">True</property>
-        <property name="label">gtk-clear</property>
+        <property name="label" translatable="no">gtk-clear</property>
         <property name="use_underline">True</property>
         <property name="use_stock">True</property>
         <signal name="activate" handler="on_terminal_clear_activate"/>
@@ -4156,7 +4156,7 @@ Install+Removal</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="can_default">True</property>
-                                            <property name="label">gtk-add</property>
+                                            <property name="label" translatable="no">gtk-add</property>
                                             <property name="use_stock">True</property>
                                             <property name="response_id">0</property>
                                             <signal name="clicked" handler="on_repoMirrorAdd_clicked"/>
@@ -4496,7 +4496,7 @@ gz</property>
                 <property name="has_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
-                <property name="label">gtk-add</property>
+                <property name="label" translatable="no">gtk-add</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
                 <signal name="clicked" handler="on_repoSubmit_clicked"/>
@@ -4540,7 +4540,7 @@ gz</property>
         <child internal-child="image">
           <widget class="GtkImage" id="image266">
             <property name="visible">True</property>
-            <property name="stock">gtk-refresh</property>
+            <property name="stock" translatable="no">gtk-refresh</property>
             <property name="icon_size">1</property>
           </widget>
         </child>
@@ -4655,7 +4655,7 @@ gz</property>
         <child internal-child="image">
           <widget class="GtkImage" id="image281">
             <property name="visible">True</property>
-            <property name="stock">gtk-refresh</property>
+            <property name="stock" translatable="no">gtk-refresh</property>
             <property name="icon_size">1</property>
           </widget>
         </child>
@@ -4689,7 +4689,7 @@ gz</property>
         <child internal-child="image">
           <widget class="GtkImage" id="image287">
             <property name="visible">True</property>
-            <property name="stock">gtk-refresh</property>
+            <property name="stock" translatable="no">gtk-refresh</property>
             <property name="icon_size">1</property>
           </widget>
         </child>
@@ -6009,7 +6009,7 @@ gz</property>
                                         <child>
                                           <widget class="GtkImage" id="refreshImage">
                                             <property name="visible">True</property>
-                                            <property name="stock">gtk-refresh</property>
+                                            <property name="stock" translatable="no">gtk-refresh</property>
                                             <property name="icon_size">6</property>
                                           </widget>
                                         </child>
@@ -6079,7 +6079,7 @@ gz</property>
                                                 <child>
                                                   <widget class="GtkImage" id="image22">
                                                     <property name="visible">True</property>
-                                                    <property name="stock">gtk-add</property>
+                                                    <property name="stock" translatable="no">gtk-add</property>
                                                   </widget>
                                                 </child>
                                                 <child>
@@ -6418,7 +6418,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="label">gtk-stop</property>
+                <property name="label" translatable="no">gtk-stop</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">1</property>
               </widget>
@@ -6539,7 +6539,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
               <widget class="GtkImage" id="waitImage">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="stock">gtk-refresh</property>
+                <property name="stock" translatable="no">gtk-refresh</property>
                 <property name="icon_size">6</property>
               </widget>
             </child>
@@ -8151,7 +8151,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <child>
                                   <widget class="GtkImage" id="image38">
                                     <property name="visible">True</property>
-                                    <property name="stock">gtk-refresh</property>
+                                    <property name="stock" translatable="no">gtk-refresh</property>
                                   </widget>
                                 </child>
                                 <child>
@@ -8444,7 +8444,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <child>
                                   <widget class="GtkImage" id="image47">
                                     <property name="visible">True</property>
-                                    <property name="stock">gtk-add</property>
+                                    <property name="stock" translatable="no">gtk-add</property>
                                   </widget>
                                 </child>
                                 <child>
@@ -8479,7 +8479,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <child>
                                   <widget class="GtkImage" id="image48">
                                     <property name="visible">True</property>
-                                    <property name="stock">gtk-add</property>
+                                    <property name="stock" translatable="no">gtk-add</property>
                                   </widget>
                                 </child>
                                 <child>
@@ -8694,7 +8694,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                     <child>
                                       <widget class="GtkImage" id="image62">
                                         <property name="visible">True</property>
-                                        <property name="stock">gtk-refresh</property>
+                                        <property name="stock" translatable="no">gtk-refresh</property>
                                       </widget>
                                     </child>
                                     <child>
@@ -8970,7 +8970,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="label" translatable="yes">gtk-execute</property>
+                        <property name="label" translatable="no">gtk-execute</property>
                         <property name="use_stock">True</property>
                         <property name="response_id">0</property>
                         <signal name="clicked" handler="on_repoManagerCustomRunButton_clicked"/>
@@ -9087,7 +9087,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-stop</property>
+                            <property name="label" translatable="no">gtk-stop</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_repoManagerStopButton_clicked"/>
@@ -9112,7 +9112,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-clear</property>
+                            <property name="label" translatable="no">gtk-clear</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_repoManagerCleanQueue_clicked"/>
@@ -9126,7 +9126,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-media-pause</property>
+                            <property name="label" translatable="no">gtk-media-pause</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="toggled" handler="on_repoManagerPauseQueueButton_toggled"/>
@@ -9148,7 +9148,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <child>
                                   <widget class="GtkImage" id="image44">
                                     <property name="visible">True</property>
-                                    <property name="stock">gtk-refresh</property>
+                                    <property name="stock" translatable="no">gtk-refresh</property>
                                   </widget>
                                 </child>
                                 <child>
@@ -9255,7 +9255,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-execute</property>
+                            <property name="label" translatable="no">gtk-execute</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_repoManagerRunButton_clicked"/>
@@ -9381,7 +9381,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-clear</property>
+                            <property name="label" translatable="no">gtk-clear</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_repoManagerOutputCleanButton_clicked"/>
@@ -9392,7 +9392,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-media-pause</property>
+                            <property name="label" translatable="no">gtk-media-pause</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="toggled" handler="on_repoManagerOutputPauseButton_toggled"/>
@@ -9452,7 +9452,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-add</property>
+                            <property name="label" translatable="no">gtk-add</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_repoManagerPinboardAddButton_clicked"/>
@@ -9551,7 +9551,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-refresh</property>
+                            <property name="label" translatable="no">gtk-refresh</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_repoManagerPinboardRefreshButton_clicked"/>
@@ -9815,7 +9815,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                 <child>
                                   <widget class="GtkImage" id="image67">
                                     <property name="visible">True</property>
-                                    <property name="stock">gtk-add</property>
+                                    <property name="stock" translatable="no">gtk-add</property>
                                   </widget>
                                 </child>
                               </widget>
@@ -9879,7 +9879,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="can_focus">True</property>
                             <property name="is_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-connect</property>
+                            <property name="label" translatable="no">gtk-connect</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_connManagerConnectButton_clicked"/>
