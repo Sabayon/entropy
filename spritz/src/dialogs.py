@@ -999,7 +999,10 @@ class RepositoryManagerMenu(MenuSkel):
 
         item = self.wait_queue_id_to_complete(queue_id)
         if item == None: return
-        status, data = item['result']
+        try:
+            status, data = item['result']
+        except TypeError:
+            status = False
         if not status: return
 
         self.clear_data_view()

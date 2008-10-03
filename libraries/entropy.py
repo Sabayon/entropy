@@ -23605,7 +23605,10 @@ class SystemManagerServerInterface(SocketHostInterface):
                 command_data['result'] = copy_obj(result)
 
             if not done:
-                self.ManagerQueue['processing'].pop(queue_id)
+                try:
+                    self.ManagerQueue['processing'].pop(queue_id)
+                except KeyError:
+                    pass
                 self.ManagerQueue['processing_order'].remove(queue_id)
                 command_data['errored_ts'] = "%s" % (self.get_ts(),)
                 self.ManagerQueue['errored'][queue_id] = command_data
@@ -23633,6 +23636,9 @@ class SystemManagerServerInterface(SocketHostInterface):
             self.ManagerQueue['processed'][queue_id] = command_data
             self.ManagerQueue['processed_order'].append(queue_id)
             do_store_and_free()
+
+            if fork_data:
+                break
 
 
     def killall(self):
