@@ -21370,7 +21370,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         try:
 
             for repoid in self.SystemManagerExecutor.SystemInterface.Entropy.get_available_repositories():
-                self.run_entropy_treeupdates(self, queue_id, repoid)
+                self.run_entropy_treeupdates(queue_id, repoid)
 
             to_add, to_remove, to_inject = self.SystemManagerExecutor.SystemInterface.Entropy.scan_package_changes()
             mydict = { 'add': to_add, 'remove': to_remove, 'inject': to_inject }
