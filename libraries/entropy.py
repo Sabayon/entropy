@@ -21091,7 +21091,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                         pretend = False, oneshot = False,
                         verbose = True, nocolor = True,
                         fetchonly = False, buildonly = False,
-                        custom_use = '', ldflags = '', cflags = ''
+                        nodeps = False, custom_use = '', ldflags = '', cflags = ''
         ):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
@@ -21120,6 +21120,8 @@ class SystemManagerExecutorServerRepositoryInterface:
             cmd.append(etpConst['spm']['fetchonly_cmd'])
         if buildonly:
             cmd.append(etpConst['spm']['buildonly_cmd'])
+        if nodeps:
+            cmd.append(etpConst['spm']['nodeps_cmd'])
 
         stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
         stdout_err.flush()
@@ -22201,11 +22203,12 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         if not ( mydict.has_key('atoms') and mydict.has_key('pretend') and \
                  mydict.has_key('oneshot') and  mydict.has_key('verbose') and \
                  mydict.has_key('fetchonly') and  mydict.has_key('buildonly') and \
+                 mydict.has_key('nodeps') and \
                  mydict.has_key('nocolor') and  mydict.has_key('custom_use') and \
                  mydict.has_key('ldflags') and  mydict.has_key('cflags') ):
             return None,'wrong dict arguments, xml must have 10 items with attr value' + \
                         ' -> atoms, pretend, oneshot, verbose, nocolor, fetchonly, ' + \
-                        'buildonly, custom_use, ldflags, cflags'
+                        'buildonly, nodeps, custom_use, ldflags, cflags'
 
         atoms = mydict.get('atoms')
         if atoms: atoms = atoms.split()
@@ -22215,6 +22218,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         nocolor = mydict.get('nocolor')
         fetchonly = mydict.get('fetchonly')
         buildonly = mydict.get('buildonly')
+        nodeps = mydict.get('nodeps')
         custom_use = mydict.get('custom_use')
         ldflags = mydict.get('ldflags')
         cflags = mydict.get('cflags')
@@ -22231,6 +22235,8 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         else: fetchonly = False
         if buildonly == "1": buildonly = True
         else: buildonly = False
+        if nodeps == "1": nodeps = True
+        else: nodeps = False
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -22243,6 +22249,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'nocolor': nocolor,
             'fetchonly': fetchonly,
             'buildonly': buildonly,
+            'nodeps': nodeps,
             'custom_use': custom_use,
             'ldflags': ldflags,
             'cflags': cflags,
@@ -23722,7 +23729,7 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def compile_atoms(self, session_id, atoms, pretend = False, oneshot = False, verbose = False, nocolor = True, fetchonly = False, buildonly = False, custom_use = '', ldflags = '', cflags = ''):
+    def compile_atoms(self, session_id, atoms, pretend = False, oneshot = False, verbose = False, nocolor = True, fetchonly = False, buildonly = False, nodeps = False, custom_use = '', ldflags = '', cflags = ''):
 
         s_pretend = "0"
         s_oneshot = "0"
@@ -23730,12 +23737,14 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
         s_nocolor = "0"
         s_fetchonly = "0"
         s_buildonly = "0"
+        s_nodeps = "0"
         if pretend: s_pretend = "1"
         if oneshot: s_oneshot = "1"
         if verbose: s_verbose = "1"
         if nocolor: s_nocolor = "1"
         if fetchonly: s_fetchonly = "1"
         if buildonly: s_buildonly = "1"
+        if nodeps: s_nodeps = "1"
         mydict = {
             'atoms': ' '.join(atoms),
             'pretend': s_pretend,
@@ -23744,6 +23753,7 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
             'nocolor': s_nocolor,
             'fetchonly': s_fetchonly,
             'buildonly': s_buildonly,
+            'nodeps': s_nodeps,
             'custom_use': custom_use,
             'ldflags': ldflags,
             'cflags': cflags,
@@ -24157,6 +24167,9 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
                     ('oneshot',bool,_('Oneshot'),False,),
                     ('verbose',bool,_('Verbose'),False,),
                     ('nocolor',bool,_('No color'),False,),
+                    ('fetchonly',bool,_('Fetch only'),False,),
+                    ('buildonly',bool,_('Build only'),False,),
+                    ('nodeps',bool,_('No dependencies'),False,),
                     ('custom_use',basestring,_('Custom USE'),False,),
                     ('ldflags',basestring,_('Custom LDFLAGS'),False,),
                     ('cflags',basestring,_('Custom CFLAGS'),False,),
@@ -24359,7 +24372,7 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
     def sync_spm(self):
         return self.Manager.do_cmd(True, "sync_spm", [], {})
 
-    def compile_atoms(self, atoms, pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, custom_use = '', ldflags = '', cflags = ''):
+    def compile_atoms(self, atoms, pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, nodeps = False, custom_use = '', ldflags = '', cflags = ''):
         return self.Manager.do_cmd(
             True,
             "compile_atoms",
@@ -24371,6 +24384,7 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
                 'nocolor': nocolor,
                 'fetchonly': fetchonly,
                 'buildonly': buildonly,
+                'nodeps': nodeps,
                 'custom_use': custom_use,
                 'ldflags': ldflags,
                 'cflags': cflags,
@@ -24617,7 +24631,7 @@ class SystemManagerClientInterface:
         try:
             srv = self.get_connection_cache()
             if srv == None:
-                srv = self.get_service_connection()
+                srv = self.get_service_connection(timeout = 20)
                 if srv != None: self.cache_connection(srv)
             else:
                 srv = srv['conn']

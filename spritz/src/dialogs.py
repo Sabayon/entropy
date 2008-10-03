@@ -1130,6 +1130,19 @@ class RepositoryManagerMenu(MenuSkel):
         if status and reload_func:
             reload_func()
 
+    def run_spm_categories_updates(self, categories, expand):
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.get_spm_categories_updates(categories)
+            if status:
+                t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, categories, expand)
+                t.start()
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
     def run_entropy_deptest(self):
 
         self.wait_channel_call()
@@ -2178,18 +2191,8 @@ class RepositoryManagerMenu(MenuSkel):
                 data['categories'] = data['categories'].split()
 
         if data['categories']:
-            self.wait_channel_call()
-            try:
-                status, queue_id = self.Service.Methods.get_spm_categories_updates(data['categories'])
-                if status:
-                    t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, data['categories'], expand)
-                    t.start()
-            except Exception, e:
-                self.service_status_message(e)
-                return
-            finally:
-                self.release_channel_call()
-
+            t = self.entropyTools.parallelTask(self.run_spm_categories_updates, data['categories'], expand)
+            t.start()
 
     def on_repoManagerCustomRunButton_clicked(self, widget):
         command = self.sm_ui.repoManagerCustomCmdEntry.get_text().strip()
@@ -2422,7 +2425,7 @@ class RepositoryManagerMenu(MenuSkel):
                 self.release_channel_call()
 
 
-    def on_compileAtom_clicked(self, widget, atoms = [], pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, custom_use = '', ldflags = '', cflags = ''):
+    def on_compileAtom_clicked(self, widget, atoms = [], pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, nodeps = False, custom_use = '', ldflags = '', cflags = ''):
 
         def fake_callback(s):
             return s
@@ -2440,6 +2443,7 @@ class RepositoryManagerMenu(MenuSkel):
         data['nocolor'] = nocolor
         data['fetchonly'] = fetchonly
         data['buildonly'] = buildonly
+        data['nodeps'] = nodeps
         data['custom_use'] = custom_use
         data['ldflags'] = ldflags
         data['cflags'] = cflags
@@ -2450,8 +2454,9 @@ class RepositoryManagerMenu(MenuSkel):
             ('oneshot',('checkbox',_('Oneshot'),),fake_bool_cb,oneshot,),
             ('verbose',('checkbox',_('Verbose'),),fake_bool_cb,verbose,),
             ('nocolor',('checkbox',_('No color'),),fake_bool_cb,nocolor,),
-            ('fetchonly',('checkbox',_('Fetch only'),),fake_bool_cb,nocolor,),
-            ('buildonly',('checkbox',_('Build only'),),fake_bool_cb,nocolor,),
+            ('fetchonly',('checkbox',_('Fetch only'),),fake_bool_cb,fetchonly,),
+            ('buildonly',('checkbox',_('Build only'),),fake_bool_cb,buildonly,),
+            ('nodeps',('checkbox',_('No dependencies'),),fake_bool_cb,nodeps,),
             ('custom_use',_('Custom USE flags'),fake_true_callback,False),
             ('ldflags',_('Custom LDFLAGS'),fake_true_callback,False),
             ('cflags',_('Custom CFLAGS'),fake_true_callback,False),
@@ -2477,6 +2482,7 @@ class RepositoryManagerMenu(MenuSkel):
                     data['nocolor'],
                     data['fetchonly'],
                     data['buildonly'],
+                    data['nodeps'],
                     data['custom_use'],
                     data['ldflags'],
                     data['cflags'],
