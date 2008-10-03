@@ -21932,22 +21932,25 @@ class SystemManagerExecutorServerRepositoryInterface:
         data = {}
         data['atom'] = matched_atom
         data['key'] = self.entropyTools.dep_getkey(matched_atom)
-        if from_installed:
-            data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_slot(matched_atom)
-            portage_matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom("%s:%s" % (data['key'],data['slot'],))
-            # get installed package description
-            data['available_atom'] = portage_matched_atom
-            if portage_matched_atom:
-                data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(portage_matched_atom)
+        try:
+            if from_installed:
+                data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_slot(matched_atom)
+                portage_matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom("%s:%s" % (data['key'],data['slot'],))
+                # get installed package description
+                data['available_atom'] = portage_matched_atom
+                if portage_matched_atom:
+                    data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(portage_matched_atom)
+                else:
+                    # get use flags of the installed package
+                    data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_useflags(matched_atom)
+                data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_description(matched_atom)
             else:
-                # get use flags of the installed package
-                data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_useflags(matched_atom)
-            data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_description(matched_atom)
-        else:
-            data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_slot(matched_atom)
-            data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
-            data['installed_atom'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_atom("%s:%s" % (data['key'],data['slot'],))
-            data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_description(matched_atom)
+                data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_slot(matched_atom)
+                data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
+                data['installed_atom'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_atom("%s:%s" % (data['key'],data['slot'],))
+                data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_description(matched_atom)
+        except KeyError:
+            pass
 
         return data
 

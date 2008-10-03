@@ -569,7 +569,10 @@ class RepositoryManagerMenu(MenuSkel):
                 cell.set_property('stock-id','gtk-cancel')
 
     def spm_package_obj_to_cell(self, obj, cell):
-        use_data = obj['use']['use_string'].split()
+        use_data = []
+        if obj.has_key('use'):
+            if obj['use'].has_key('use_string'):
+                use_data = obj['use']['use_string'].split()
         max_chars = 100
         use_string = []
         for use in use_data:
@@ -585,18 +588,24 @@ class RepositoryManagerMenu(MenuSkel):
             installed_string = '<b>%s</b>: %s\n' % (_("Installed"),cleanMarkupString(str(obj['installed_atom'])),)
         if obj.has_key('available_atom'):
             available_string = '<b>%s</b>: %s\n' % (_("Available"),cleanMarkupString(str(obj['available_atom'])),)
+
+        atom = obj.get('atom')
+        key = obj.get('key')
+        slot = obj.get('slot')
+        description = obj.get('description')
+
         txt = "<i>%s</i>\n<small><b>%s</b>: %s, <b>%s</b>: %s\n" % (
-            cleanMarkupString(obj['atom']),
+            cleanMarkupString(atom),
             _("Key"),
-            cleanMarkupString(obj['key']),
+            cleanMarkupString(key),
             _("Slot"),
-            cleanMarkupString(obj['slot']),
+            cleanMarkupString(slot),
         )
         txt += installed_string
         txt += available_string
         txt += "<b>%s</b>: %s\n<b>%s</b>: %s</small>" % (
             _("Description"),
-            cleanMarkupString(obj['description']),
+            cleanMarkupString(description),
             _("USE Flags"),
             cleanMarkupString(use_string),
         )
