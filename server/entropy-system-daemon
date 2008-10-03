@@ -8,17 +8,21 @@ sys.path.insert(0,'../client')
 sys.argv.append("--no-pid-handling")
 do_ssl = False
 do_stdout_logging = True
+do_port = 1027
 if "--ssl" in sys.argv:
     do_ssl = True
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
+if "--port" in sys.argv:
+    idx = sys.argv.index("--port")+1
+    try:
+        do_port = int(sys.argv[idx])
+    except (IndexError, ValueError,):
+        pass
 
 from entropyConstants import *
-
 import entropyTools, exceptionTools
 from entropy import SystemManagerServerInterface, SystemManagerExecutorServerRepositoryInterface, SystemManagerRepositoryCommands, ServerInterface
-
-etpConst['community']['mode'] = True
 
 def run_srv(s):
     try:
@@ -26,7 +30,6 @@ def run_srv(s):
     except (KeyboardInterrupt, SystemExit,):
         s.killall()
 
-srv_ssl = None
 srv = SystemManagerServerInterface(
         ServerInterface,
         do_ssl = do_ssl,
@@ -35,6 +38,7 @@ srv = SystemManagerServerInterface(
         external_executor_cmd_classes = [(SystemManagerExecutorServerRepositoryInterface,[],{},)],
         entropy_interface_kwargs = {'community_repo': etpConst['community']['mode']}
     )
+srv.port = do_port
 
 thread_names = ["system_socket"]
 task = entropyTools.parallelTask(run_srv, srv)
