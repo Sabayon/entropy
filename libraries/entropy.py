@@ -23162,7 +23162,6 @@ class SystemManagerServerInterface(SocketHostInterface):
             self.ExecutorCommandClasses += kwargs.pop('external_executor_cmd_classes')
         self.handle_executor_command_classes_initialization()
 
-        self.stdout_logging = stdout_logging
         self.QueueProcessor = None
         self.QueueProcessorParallel = None
         self.QueueLock = thread.allocate_lock()
@@ -23202,6 +23201,7 @@ class SystemManagerServerInterface(SocketHostInterface):
             ssl = do_ssl,
             **kwargs
         )
+        self.stdout_logging = stdout_logging
         self.fork_requests = fork_requests
         self.load_queue_processors()
         # here we can put anything that must be loaded before the queue processor execution
