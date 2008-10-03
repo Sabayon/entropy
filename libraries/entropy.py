@@ -21360,25 +21360,43 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        to_add, to_remove, to_inject = self.SystemManagerExecutor.SystemInterface.Entropy.scan_package_changes()
-        mydict = { 'add': to_add, 'remove': to_remove, 'inject': to_inject }
+        stdout_err = open(queue_data['stdout'],"aw")
 
-        # setup add data
-        mydict['add_data'] = {}
-        for portage_atom, portage_counter in to_add:
-            mydict['add_data'][(portage_atom, portage_counter,)] = self._get_spm_pkginfo(portage_atom,from_installed = True)
+        def myupdateprogress(*myargs, **mykwargs):
+            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
 
-        mydict['remove_data'] = {}
-        for idpackage, repoid in to_remove:
-            dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-            mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-            dbconn.closeDB()
+        old_updprogress = self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress
+        self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = myupdateprogress
+        try:
 
-        mydict['inject_data'] = {}
-        for idpackage, repoid in to_inject:
-            dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-            mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-            dbconn.closeDB()
+            for repoid in self.SystemManagerExecutor.SystemInterface.Entropy.get_available_repositories():
+                self.run_entropy_treeupdates(self, queue_id, repoid)
+
+            to_add, to_remove, to_inject = self.SystemManagerExecutor.SystemInterface.Entropy.scan_package_changes()
+            mydict = { 'add': to_add, 'remove': to_remove, 'inject': to_inject }
+
+            # setup add data
+            mydict['add_data'] = {}
+            for portage_atom, portage_counter in to_add:
+                mydict['add_data'][(portage_atom, portage_counter,)] = self._get_spm_pkginfo(portage_atom,from_installed = True)
+
+            mydict['remove_data'] = {}
+            for idpackage, repoid in to_remove:
+                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
+                dbconn.closeDB()
+
+            mydict['inject_data'] = {}
+            for idpackage, repoid in to_inject:
+                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
+                dbconn.closeDB()
+
+        finally:
+            stdout_err.write("\n### Done ###\n")
+            self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = old_updprogress
+            stdout_err.flush()
+            stdout_err.close()
 
         return True,mydict
 
