@@ -1506,13 +1506,13 @@ def extractDuplicatedEntries(inputlist):
     mycache = {}
     newlist = set()
     for x in inputlist:
-	z = mycache.get(x)
-	if z:
-	    newlist.add(x)
-	    continue
-	mycache[x] = 1
+        z = mycache.get(x)
+        if z:
+            newlist.add(x)
+            continue
+        mycache[x] = 1
     return newlist
-	
+
 
 # Tool to run commands
 def spawnCommand(command, redirect = None):
@@ -2054,6 +2054,20 @@ def open_buffer():
     except ImportError:
         import StringIO as stringio
     return stringio.StringIO()
+
+def seek_till_newline(f):
+    count = 0
+    f.seek(count,2)
+    size = f.tell()
+    while count > (size*-1):
+        count -= 1
+        f.seek(count,2)
+        myc = f.read(1)
+        if myc == "\n":
+            break
+    f.seek(count+1,2)
+    pos = f.tell()
+    f.truncate(pos)
 
 def read_elf_class(elf_file):
     import struct
