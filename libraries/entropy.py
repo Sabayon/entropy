@@ -14344,6 +14344,7 @@ class SocketHostInterface:
         )
 
         # settings
+        self.SessionsLock = thread.allocate_lock()
         self.fork_requests = True # used by the command processor
         self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
@@ -14655,20 +14656,24 @@ class SocketHostInterface:
         if not self.sessions:
             return
 
-        for session_id in self.sessions.keys():
-            sess_time = self.sessions[session_id]['t']
-            is_running = self.sessions[session_id]['running']
-            auth_uid = self.sessions[session_id]['auth_uid'] # is kept alive?
-            if (is_running) or (auth_uid == -1):
-                if auth_uid == -1:
-                    self.updateProgress('not killing session %s, since it is kept alive by auth_uid=-1' % (session_id,) )
-                continue
-            cur_time = time.time()
-            ttl = self.session_ttl
-            check_time = sess_time + ttl
-            if cur_time > check_time:
-                self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id,ttl,) )
-                self.destroy_session(session_id)
+        self.SessionsLock.acquire()
+        try:
+            for session_id in self.sessions.keys():
+                sess_time = self.sessions[session_id]['t']
+                is_running = self.sessions[session_id]['running']
+                auth_uid = self.sessions[session_id]['auth_uid'] # is kept alive?
+                if (is_running) or (auth_uid == -1):
+                    if auth_uid == -1:
+                        self.updateProgress('not killing session %s, since it is kept alive by auth_uid=-1' % (session_id,) )
+                    continue
+                cur_time = time.time()
+                ttl = self.session_ttl
+                check_time = sess_time + ttl
+                if cur_time > check_time:
+                    self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id,ttl,) )
+                    self.destroy_session(session_id)
+        finally:
+            self.SessionsLock.release()
 
     def setup_hostname(self):
         if self.hostname:
@@ -14684,50 +14689,70 @@ class SocketHostInterface:
         return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
     def get_new_session(self, ip_address = None):
-        if len(self.sessions) > self.threads:
-            # fuck!
-            return "0"
-        rng = str(abs(hash(os.urandom(20))))
-        while rng in self.sessions:
+        self.SessionsLock.acquire()
+        try:
+            if len(self.sessions) > self.threads:
+                # fuck!
+                return "0"
             rng = str(abs(hash(os.urandom(20))))
-        self.sessions[rng] = {}
-        self.sessions[rng]['running'] = False
-        self.sessions[rng]['auth_uid'] = None
-        self.sessions[rng]['admin'] = False
-        self.sessions[rng]['moderator'] = False
-        self.sessions[rng]['user'] = False
-        self.sessions[rng]['developer'] = False
-        self.sessions[rng]['compression'] = None
-        self.sessions[rng]['stream_mode'] = False
-        self.sessions[rng]['stream_path'] = self.entropyTools.getRandomTempFile()
-        self.sessions[rng]['t'] = time.time()
-        self.sessions[rng]['ip_address'] = ip_address
-        return rng
+            while rng in self.sessions:
+                rng = str(abs(hash(os.urandom(20))))
+            self.sessions[rng] = {}
+            self.sessions[rng]['running'] = False
+            self.sessions[rng]['auth_uid'] = None
+            self.sessions[rng]['admin'] = False
+            self.sessions[rng]['moderator'] = False
+            self.sessions[rng]['user'] = False
+            self.sessions[rng]['developer'] = False
+            self.sessions[rng]['compression'] = None
+            self.sessions[rng]['stream_mode'] = False
+            self.sessions[rng]['stream_path'] = self.entropyTools.getRandomTempFile()
+            self.sessions[rng]['t'] = time.time()
+            self.sessions[rng]['ip_address'] = ip_address
+            return rng
+        finally:
+            self.SessionsLock.release()
 
     def update_session_time(self, session):
-        if self.sessions.has_key(session):
-            self.sessions[session]['t'] = time.time()
-            self.updateProgress('session time updated for %s' % (session,) )
+        self.SessionsLock.acquire()
+        try:
+            if self.sessions.has_key(session):
+                self.sessions[session]['t'] = time.time()
+                self.updateProgress('session time updated for %s' % (session,) )
+        finally:
+            self.SessionsLock.release()
 
     def set_session_running(self, session):
-        if self.sessions.has_key(session):
-            self.sessions[session]['running'] = True
+        self.SessionsLock.acquire()
+        try:
+            if self.sessions.has_key(session):
+                self.sessions[session]['running'] = True
+        finally:
+            self.SessionsLock.release()
 
     def unset_session_running(self, session):
-        if self.sessions.has_key(session):
-            self.sessions[session]['running'] = False
+        self.SessionsLock.acquire()
+        try:
+            if self.sessions.has_key(session):
+                self.sessions[session]['running'] = False
+        finally:
+            self.SessionsLock.release()
 
     def destroy_session(self, session):
-        if self.sessions.has_key(session):
-            stream_path = self.sessions[session]['stream_path']
-            del self.sessions[session]
-            if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
-                try:
-                    os.remove(stream_path)
-                except OSError:
-                    pass
-            return True
-        return False
+        self.SessionsLock.acquire()
+        try:
+            if self.sessions.has_key(session):
+                stream_path = self.sessions[session]['stream_path']
+                del self.sessions[session]
+                if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
+                    try:
+                        os.remove(stream_path)
+                    except OSError:
+                        pass
+                return True
+            return False
+        finally:
+            self.SessionsLock.release()
 
     def go(self):
         self.socket.setdefaulttimeout(self.timeout)
@@ -14753,16 +14778,26 @@ class SocketHostInterface:
         self.Gc.kill()
 
     def store_rc(self, rc, session):
-        if type(rc) in (list,tuple,):
-            rc_item = rc[:]
-        elif type(rc) in (set,frozenset,dict,):
-            rc_item = rc.copy()
-        else:
-            rc_item = rc
-        self.sessions[session]['rc'] = rc_item
+        self.SessionsLock.acquire()
+        try:
+            if session in self.sessions:
+                if type(rc) in (list,tuple,):
+                    rc_item = rc[:]
+                elif type(rc) in (set,frozenset,dict,):
+                    rc_item = rc.copy()
+                else:
+                    rc_item = rc
+                self.sessions[session]['rc'] = rc_item
+        finally:
+            self.SessionsLock.release()
 
     def get_rc(self, session):
-        return self.sessions[session]['rc']
+        self.SessionsLock.acquire()
+        try:
+            if session in self.sessions:
+                return self.sessions[session]['rc']
+        finally:
+            self.SessionsLock.release()
 
     def transmit(self, channel, data):
         if self.SSL:
