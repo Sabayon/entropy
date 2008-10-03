@@ -56,8 +56,11 @@ class MenuSkel:
 
 class RemoteConnectionMenu(MenuSkel):
 
-    def __init__( self, verification_callback, window ):
+    import dumpTools
+    store_path = 'connection_manager'
+    def __init__( self, Entropy, verification_callback, window ):
 
+        self.Entropy = Entropy
         # hostname, port, username, password, ssl will be passed as parameters
         self.verification_callback = verification_callback
         self.window = window
@@ -65,9 +68,123 @@ class RemoteConnectionMenu(MenuSkel):
         self.cm_ui.signal_autoconnect(self._getAllMethods())
         self.cm_ui.remoteConnManager.set_transient_for(self.window)
         self.cm_ui.remoteConnManager.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.connStore = gtk.ListStore( gobject.TYPE_PYOBJECT )
+        self.connView = self.cm_ui.connManagerConnView
+        self.connView.set_model(self.connStore)
         self.button_pressed = False
         self.loaded = False
         self.parameters = None
+        self.connection_data = self.get_stored_connection_data()
+        self.setup_view()
+
+    def on_connManagerAddConnButton_clicked(self, widget):
+
+        def fake_callback(s):
+            return s
+
+        def fake_callback_cb(s):
+            return True
+
+        input_params = [
+            ('name',_("Connection name"),fake_callback,False),
+            ('hostname',_("Hostname"),fake_callback,False),
+            ('port',_("Port"),fake_callback,False),
+            ('user',_("Username"),fake_callback,False),
+            ('ssl',('checkbox',_('SSL Connection'),),fake_callback_cb,False),
+        ]
+        data = self.Entropy.inputBox(
+            _('Choose what kind of test you would like to run'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        self.store_connection_data_item(data)
+        self.fill_connection_view()
+        self.store_connection_data()
+
+    def on_connManagerSetConnButton_clicked(self, widget):
+        model, myiter = self.connView.get_selection().get_selected()
+        if not myiter: return
+        obj = model.get_value(myiter, 0)
+        self.cm_ui.connManagerHostnameEntry.set_text(obj['hostname'])
+        self.cm_ui.connManagerPortSpinButton.set_value(float(obj['port']))
+        self.cm_ui.connManagerUsernameEntry.set_text(obj['user'])
+        self.cm_ui.connManagerPasswordEntry.set_text('')
+        self.cm_ui.connManagerSSLCheckButton.set_active(obj['ssl'])
+        #self.cm_ui.remoteConnEventBox.queue_draw()
+
+    def on_connManagerRemoveConnButton_clicked(self, widget):
+        model, myiter = self.connView.get_selection().get_selected()
+        if not myiter: return
+        obj = model.get_value(myiter, 0)
+        self.remove_connection_data_item(obj)
+        self.fill_connection_view()
+        self.store_connection_data()
+
+    def get_stored_connection_data(self):
+        obj = self.dumpTools.loadobj(self.store_path)
+        if not obj: return []
+        return obj
+
+    def remove_connection_data_item(self, item):
+        if item in self.connection_data:
+            self.connection_data.remove(item)
+
+    def store_connection_data_item(self, item):
+        self.connection_data.append(item)
+
+    def store_connection_data(self):
+        self.dumpTools.dumpobj(self.store_path, self.connection_data)
+
+    def fill_connection_view(self):
+        self.connStore.clear()
+        for item in self.connection_data:
+            self.connStore.append( (item,) )
+        self.connView.queue_draw()
+
+    def setup_view(self):
+
+        self.create_text_column( self.connView, _( "Connection" ), 'name', size = 200, expand = True)
+        self.create_text_column( self.connView, _( "Hostname" ), 'hostname', size = 100)
+        self.create_text_column( self.connView, _( "Port" ), 'port', size = 50)
+
+        # SSL
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _("SSL"), cell ) # Document Type
+        column.set_cell_data_func( cell, self.ssl_pixbuf )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 50 )
+        column.set_sort_column_id( -1 )
+        self.connView.append_column( column )
+
+        self.fill_connection_view()
+
+
+    def ssl_pixbuf( self, column, cell, model, myiter ):
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            if obj['ssl']:
+                cell.set_property( 'stock-id', 'gtk-apply' )
+                return
+        cell.set_property( 'stock-id', 'gtk-cancel' )
+
+    def get_data_text( self, column, cell, model, myiter, property ):
+        obj = model.get_value( myiter, 0 )
+        if obj: cell.set_property('markup',obj[property])
+
+    def create_text_column( self, view, hdr, property, size, sortcol = None, expand = False, set_height = 0, cell_data_func = None, sort_col_id = -1):
+        if cell_data_func == None: cell_data_func = self.get_data_text
+        cell = gtk.CellRendererText()
+        if set_height: cell.set_property('height', set_height)
+        column = gtk.TreeViewColumn( hdr, cell )
+        column.set_resizable( True )
+        column.set_cell_data_func( cell, cell_data_func, property )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( size )
+        column.set_expand(expand)
+        column.set_sort_column_id( sort_col_id )
+        view.append_column( column )
+        return column
 
     def load( self ):
         bold_items = [
@@ -139,6 +256,7 @@ class RemoteConnectionMenu(MenuSkel):
 
 class RepositoryManagerMenu(MenuSkel):
 
+    import threading
     def __init__(self, Entropy, window):
         self.BufferLock = thread.allocate_lock()
         import entropyTools
@@ -157,7 +275,8 @@ class RepositoryManagerMenu(MenuSkel):
         self.PinboardData = {}
         self.Queue = {}
         self.QueueLock = thread.allocate_lock()
-        self.UpdatesLock = thread.allocate_lock()
+        self.OutputLock = thread.allocate_lock()
+        self.EventLock = self.threading.RLock()
         self.Output = None
         self.output_pause = False
         self.queue_pause = False
@@ -181,6 +300,8 @@ class RepositoryManagerMenu(MenuSkel):
         self.DataView = self.sm_ui.repoManagerDataView
         self.DataView.set_model(self.DataStore)
         self.DataViewBox = self.sm_ui.repoManagerDataViewBox
+        self.DataViewButtons = {}
+        self.setup_data_view_buttons()
         self.data_tree_selection_mode = self.DataView.get_selection().get_mode()
 
         from entropy import SystemManagerClientInterface, \
@@ -195,8 +316,21 @@ class RepositoryManagerMenu(MenuSkel):
         self.setup_commands_view()
         self.fill_commands_view(self.Service.get_available_client_commands())
         self.ServiceStatus = True
+        self.connection_done = False
 
         self.setup_available_repositories()
+
+    def __del__(self):
+        if hasattr(self,'connection_done'):
+            if self.connection_done:
+                self.Service.kill_all_connections()
+
+    def on_repoManagerEvent_event(self, widget, event):
+        self.EventLock.acquire()
+        return False
+
+    def on_repoManagerEvent_event_after(self, widget, event):
+        self.EventLock.release()
 
     def set_notebook_page(self, page):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
@@ -204,6 +338,118 @@ class RepositoryManagerMenu(MenuSkel):
     def rescroll_output(self, adj, scroll):
         adj.set_value(adj.upper-adj.page_size)
         scroll.set_vadjustment(adj)
+
+    def setup_data_view_buttons(self):
+
+        glsa_package_info_button = gtk.Button(label = _("Packages information"))
+        glsa_package_info_image = gtk.Image()
+        glsa_package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
+        glsa_package_info_button.set_image(glsa_package_info_image)
+
+        glsa_adv_info_button = gtk.Button(label = _("Advisory information"))
+        glsa_adv_info_image = gtk.Image()
+        glsa_adv_info_image.set_from_stock(gtk.STOCK_EDIT, 4)
+        glsa_adv_info_button.set_image(glsa_adv_info_image)
+
+        #
+
+        mirror_updates_execute_button = gtk.Button(label = _("Execute"))
+        mirror_updates_execute_button_image = gtk.Image()
+        mirror_updates_execute_button_image.set_from_stock(gtk.STOCK_EXECUTE, 4)
+        mirror_updates_execute_button.set_image(mirror_updates_execute_button_image)
+
+        #
+
+        database_updates_package_info_button = gtk.Button(label = _("Packages information"))
+        database_updates_package_info_image = gtk.Image()
+        database_updates_package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
+        database_updates_package_info_button.set_image(database_updates_package_info_image)
+
+        database_updates_change_repo_button = gtk.Button(label = _("Destination repository"))
+        database_updates_change_repo_image = gtk.Image()
+        database_updates_change_repo_image.set_from_stock(gtk.STOCK_CONVERT, 4)
+        database_updates_change_repo_button.set_image(database_updates_change_repo_image)
+
+        database_updates_execute_button = gtk.Button(label = _("Execute"))
+        database_updates_execute_button_image = gtk.Image()
+        database_updates_execute_button_image.set_from_stock(gtk.STOCK_EXECUTE, 4)
+        database_updates_execute_button.set_image(database_updates_execute_button_image)
+
+        #
+
+        available_packages_package_info_button = gtk.Button(label = _("Packages information"))
+        available_packages_package_info_image = gtk.Image()
+        available_packages_package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
+        available_packages_package_info_button.set_image(available_packages_package_info_image)
+
+        available_packages_remove_package_button = gtk.Button(label = _("Remove packages"))
+        available_packages_remove_package_image = gtk.Image()
+        available_packages_remove_package_image.set_from_stock(gtk.STOCK_REMOVE, 4)
+        available_packages_remove_package_button.set_image(available_packages_remove_package_image)
+
+        available_packages_move_package_button = gtk.Button(label = _("Copy/move packages"))
+        available_packages_move_package_image = gtk.Image()
+        available_packages_move_package_image.set_from_stock(gtk.STOCK_COPY, 4)
+        available_packages_move_package_button.set_image(available_packages_move_package_image)
+
+        categories_updates_compile_button = gtk.Button(label = _("Compile selected"))
+        categories_updates_compile_image = gtk.Image()
+        categories_updates_compile_image.set_from_stock(gtk.STOCK_GOTO_BOTTOM, 4)
+        categories_updates_compile_button.set_image(categories_updates_compile_image)
+
+        categories_updates_add_use_button = gtk.Button(label = _("Add USE"))
+        categories_updates_add_use_image = gtk.Image()
+        categories_updates_add_use_image.set_from_stock(gtk.STOCK_ADD, 4)
+        categories_updates_add_use_button.set_image(categories_updates_add_use_image)
+
+        categories_updates_remove_use_button = gtk.Button(label = _("Remove USE"))
+        categories_updates_remove_use_image = gtk.Image()
+        categories_updates_remove_use_image.set_from_stock(gtk.STOCK_REMOVE, 4)
+        categories_updates_remove_use_button.set_image(categories_updates_remove_use_image)
+
+        self.DataViewButtons = {
+            'glsa': {
+                'package_info_button': glsa_package_info_button,
+                'adv_info_button': glsa_adv_info_button,
+                'order': ['package_info_button','adv_info_button']
+            },
+            'mirror_updates': {
+                'execute_button': mirror_updates_execute_button,
+                'order': ['execute_button']
+            },
+            'database_updates': {
+                'package_info_button': database_updates_package_info_button,
+                'change_repo_button': database_updates_change_repo_button,
+                'execute_button': database_updates_execute_button,
+                'order': ['package_info_button','change_repo_button','execute_button']
+            },
+            'available_packages': {
+                'package_info_button': available_packages_package_info_button,
+                'remove_package_button': available_packages_remove_package_button,
+                'move_package_button': available_packages_move_package_button,
+                'order': ['package_info_button','remove_package_button','move_package_button']
+            },
+            'categories_updates': {
+                'compile_button': categories_updates_compile_button,
+                'add_use_button': categories_updates_add_use_button,
+                'remove_use_button': categories_updates_remove_use_button,
+                'order': ['compile_button','add_use_button','remove_use_button']
+            },
+        }
+
+        for cat in self.DataViewButtons:
+            for w_id in self.DataViewButtons[cat]['order']:
+                self.DataViewBox.pack_start(self.DataViewButtons[cat][w_id], False, False, 1)
+
+    def show_data_view_buttons_cat(self, cat):
+        if cat in self.DataViewButtons:
+            for w_id in self.DataViewButtons[cat]['order']:
+                self.DataViewButtons[cat][w_id].show()
+
+    def hide_all_data_view_buttons(self):
+        for cat in self.DataViewButtons:
+            for w_id in self.DataViewButtons[cat]['order']:
+                self.DataViewButtons[cat][w_id].hide()
 
     def setup_available_repositories(self):
         self.EntropyRepositories = {}
@@ -306,13 +552,6 @@ class RepositoryManagerMenu(MenuSkel):
         column.set_sort_column_id( sort_col_id )
         view.append_column( column )
         return column
-
-    def set_pixbuf_to_cell(self, cell, filename):
-        try:
-            pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
-            cell.set_property( 'pixbuf', pixbuf )
-        except gobject.GError:
-            pass
 
     def queue_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
@@ -445,22 +684,19 @@ class RepositoryManagerMenu(MenuSkel):
             return False, "%s: %s" % (_("Connection Error"),e,)
         srv.close_session(session)
         srv.disconnect()
+        self.connection_done = True
         return True, None
 
     def load(self):
 
-        my = RemoteConnectionMenu(self.connection_verification_callback, self.window)
+        my = RemoteConnectionMenu(self.Entropy, self.connection_verification_callback, self.window)
         my.load()
         login_data = my.run()
         if not login_data:
             return False
 
-        bold_items = []
-        for item in bold_items:
-            t = item.get_text()
-            item.set_markup("<b>%s</b>" % (t,))
-
         self.sm_ui.repositoryManager.show_all()
+        self.hide_all_data_view_buttons()
 
         # spawn parallel tasks
         self.QueueUpdater.start()
@@ -472,18 +708,21 @@ class RepositoryManagerMenu(MenuSkel):
 
     def wait_channel_call(self):
         self.BufferLock.acquire()
-        context_id = self.sm_ui.repoManagerStatusbar.get_context_id( "Status" )
+        '''
+        # what a mess are gtk statusbars? crashy as hell
         gtk.gdk.threads_enter()
-        self.sm_ui.repoManagerStatusbar.push(context_id, _("Please wait"))
+        self.sm_ui.repoManagerStatusbar.push(0, _("Please wait"))
         self.sm_ui.repoManagerStatusbar.queue_draw()
         gtk.gdk.threads_leave()
+        '''
 
     def release_channel_call(self):
-        context_id = self.sm_ui.repoManagerStatusbar.get_context_id( "Status" )
+        '''
         gtk.gdk.threads_enter()
-        self.sm_ui.repoManagerStatusbar.push(context_id, _("Ready"))
+        self.sm_ui.repoManagerStatusbar.push(0, _("Ready"))
         self.sm_ui.repoManagerStatusbar.queue_draw()
         gtk.gdk.threads_leave()
+        '''
         self.BufferLock.release()
 
     def get_item_by_queue_id(self, queue_id):
@@ -505,6 +744,7 @@ class RepositoryManagerMenu(MenuSkel):
         gtk.gdk.threads_leave()
 
     def load_available_repositories(self):
+
         self.wait_channel_call()
         try:
             status, repo_info = self.Service.Methods.get_available_repositories()
@@ -538,7 +778,6 @@ class RepositoryManagerMenu(MenuSkel):
             gtk.gdk.threads_leave()
 
     def update_queue_view(self):
-        self.UpdatesLock.acquire()
         self.wait_channel_call()
         try:
 
@@ -559,9 +798,7 @@ class RepositoryManagerMenu(MenuSkel):
             return
 
         finally:
-            self.UpdatesLock.release()
             self.release_channel_call()
-
 
 
     def fill_queue_view(self, queue):
@@ -615,25 +852,21 @@ class RepositoryManagerMenu(MenuSkel):
         gtk.gdk.threads_leave()
 
     def update_pinboard_view(self, force = False):
-        self.UpdatesLock.acquire()
+        self.wait_channel_call()
+        pindata = None
         try:
-            self.wait_channel_call()
-            pindata = None
-            try:
-                status, pindata = self.Service.Methods.get_pinboard_data()
-            except Exception, e:
-                self.service_status_message(e)
-                return
-            finally:
-                self.release_channel_call()
-            if (pindata == self.PinboardData) and (not force):
-                return
-
-            if isinstance(pindata,dict):
-                self.fill_pinboard_view(pindata)
-                self.PinboardData = pindata.copy()
+            status, pindata = self.Service.Methods.get_pinboard_data()
+        except Exception, e:
+            self.service_status_message(e)
+            return
         finally:
-            self.UpdatesLock.release()
+            self.release_channel_call()
+        if (pindata == self.PinboardData) and (not force):
+            return
+
+        if isinstance(pindata,dict):
+            self.fill_pinboard_view(pindata)
+            self.PinboardData = pindata.copy()
 
     def fill_pinboard_view(self, pinboard_data):
         if isinstance(pinboard_data,dict):
@@ -657,8 +890,10 @@ class RepositoryManagerMenu(MenuSkel):
                 s += x
             return s
 
-        self.UpdatesLock.acquire()
+        self.OutputLock.acquire()
+
         try:
+
             if self.output_pause and not force: return
 
             if not queue_id:
@@ -681,14 +916,15 @@ class RepositoryManagerMenu(MenuSkel):
             stdout = stdout[-1*n_bytes:]
             if stdout == self.Output: return
             self.Output = stdout
+
             gtk.gdk.threads_enter()
             self.OutputBuffer.set_text(clean_output(stdout).encode('utf-8'))
             self.sm_ui.repoOutputView.queue_draw()
-            while gtk.events_pending():
-                gtk.main_iteration()
             gtk.gdk.threads_leave()
+
         finally:
-            self.UpdatesLock.release()
+
+            self.OutputLock.release()
 
     def load_queue_info_menu(self, obj):
         my = SmQueueMenu(self.window)
@@ -705,16 +941,17 @@ class RepositoryManagerMenu(MenuSkel):
 
         for col in self.DataView.get_columns():
             self.DataView.remove_column(col)
-        children = self.DataViewBox.get_children()
 
+        '''
+        children = self.DataViewBox.get_children()
         for child in children:
             self.DataViewBox.remove(child)
+        '''
+
         gtk.gdk.threads_leave()
 
     def collect_data_view_iters(self):
-        gtk.gdk.threads_enter()
         model, paths = self.DataView.get_selection().get_selected_rows()
-        gtk.gdk.threads_leave()
         if not model:
             return [], model
         data = []
@@ -758,6 +995,8 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.clear_data_view()
         gtk.gdk.threads_enter()
+        self.hide_all_data_view_buttons()
+        self.show_data_view_buttons_cat('glsa')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
         gtk.gdk.threads_leave()
@@ -811,26 +1050,14 @@ class RepositoryManagerMenu(MenuSkel):
                 item = obj['number'], is_affected(obj), obj
                 my.load(item)
 
+
         # Package information
-        package_info_button = gtk.Button(label = _("Packages information"))
-        package_info_image = gtk.Image()
-        package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
-        package_info_button.set_image(package_info_image)
-        package_info_button.connect('clicked',package_info_clicked)
-        package_info_button.show()
+        self.DataViewButtons['glsa']['package_info_button'].connect('clicked',package_info_clicked)
 
         # GLSA information button
-        adv_info_button = gtk.Button(label = _("Advisory information"))
-        adv_info_image = gtk.Image()
-        adv_info_image.set_from_stock(gtk.STOCK_EDIT, 4)
-        adv_info_button.set_image(adv_info_image)
-        adv_info_button.connect('clicked',adv_info_button_clicked)
-        adv_info_button.show()
+        self.DataViewButtons['glsa']['adv_info_button'].connect('clicked',adv_info_button_clicked)
 
         gtk.gdk.threads_enter()
-        self.DataViewBox.pack_start(package_info_button, False, False, 1)
-        self.DataViewBox.pack_start(adv_info_button, False, False, 1)
-        self.DataViewBox.show_all()
 
         # selection pixmap
         cell = gtk.CellRendererPixbuf()
@@ -926,29 +1153,11 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['output'])
         gtk.gdk.threads_leave()
 
-    def run_entropy_treeupdates(self):
-
-        avail_repos = self.EntropyRepositories['available'].keys()
-        if not avail_repos: return
-
-        def fake_callback_cb(s):
-            return True
-
-        input_params = [
-            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback_cb,False),
-        ]
-
-        data = self.Entropy.inputBox(
-            _('Choose the repository'),
-            input_params,
-            cancel_button = True
-        )
-        if data == None: return
-        data['repoid'] = data['repoid'][1]
+    def run_entropy_treeupdates(self, repoid):
 
         self.wait_channel_call()
         try:
-            status, queue_id = self.Service.Methods.run_entropy_treeupdates(data['repoid'])
+            status, queue_id = self.Service.Methods.run_entropy_treeupdates(repoid)
             if not status:
                 self.service_status_message(queue_id)
                 return
@@ -965,29 +1174,29 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['output'])
         gtk.gdk.threads_leave()
 
-    def run_entropy_mirror_updates(self):
+    def run_entropy_checksum_test(self, repoid, mode):
 
-        avail_repos = self.EntropyRepositories['available'].keys()
-        if not avail_repos: return
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.run_entropy_checksum_test(repoid, mode)
+            if not status:
+                self.service_status_message(queue_id)
+                return
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
 
-        def fake_callback_cb(s):
-            return True
+        # enable output
+        self.is_writing_output = True
+        self.is_processing = {'queue_id': queue_id }
+        gtk.gdk.threads_enter()
+        self.set_notebook_page(self.notebook_pages['output'])
+        gtk.gdk.threads_leave()
 
-        input_params = []
-        for repo in avail_repos:
-            input_params.append((repo,('checkbox',"%s: %s" % (_('Repository'),repo,),),fake_callback_cb,False))
 
-        data = self.Entropy.inputBox(
-            _('Choose the repositories you want to scan'),
-            input_params,
-            cancel_button = True
-        )
-        if data == None: return
-        repos = []
-        for key in data:
-            if data[key]:
-                repos.append(key)
-        if not repos: return
+    def run_entropy_mirror_updates(self, repos):
 
         self.wait_channel_call()
         try:
@@ -1006,38 +1215,6 @@ class RepositoryManagerMenu(MenuSkel):
 
     def execute_entropy_mirror_updates(self, repo_data):
 
-        gtk.gdk.threads_enter()
-
-        def fake_callback_cb(s):
-            return True
-
-        def fake_callback(s):
-            return True
-
-        # now ask for mirrors
-        for repoid in repo_data.keys():
-
-            input_params = [
-                ('commit_msg',_("Commit message"),fake_callback,False,),
-                ('do_pretend',('checkbox',_("Pretend mode"),),fake_callback_cb,False,),
-                ('pkg_check',('checkbox',_("Packages check"),),fake_callback_cb,False,),
-            ]
-
-            data = self.Entropy.inputBox(
-                "[%s] %s" % (repoid,_('Choose sync options'),),
-                input_params,
-                cancel_button = True
-            )
-            if data == None:
-                repo_data.pop(repoid)
-                continue
-
-            repo_data[repoid]['pretend'] = data['do_pretend']
-            repo_data[repoid]['pkg_check'] = data['pkg_check']
-            repo_data[repoid]['commit_msg'] = data['commit_msg']
-
-        gtk.gdk.threads_leave()
-        self.clear_data_view()
 
         self.wait_channel_call()
         try:
@@ -1051,10 +1228,13 @@ class RepositoryManagerMenu(MenuSkel):
         finally:
             self.release_channel_call()
 
+
         # enable output
         self.is_writing_output = True
         self.is_processing = {'queue_id': queue_id }
+        gtk.gdk.threads_enter()
         self.set_notebook_page(self.notebook_pages['output'])
+        gtk.gdk.threads_leave()
 
 
     def run_entropy_libtest(self):
@@ -1081,6 +1261,7 @@ class RepositoryManagerMenu(MenuSkel):
         gtk.gdk.threads_leave()
 
     def run_package_search(self, search_type, search_string, repoid):
+
         self.wait_channel_call()
         status = False
         data = {}
@@ -1094,8 +1275,10 @@ class RepositoryManagerMenu(MenuSkel):
             return
         finally:
             self.release_channel_call()
+
         def reload_func():
             self.run_package_search(search_type, search_string, repoid)
+
         self.entropy_available_packages_data_view(data, repoid, reload_func = reload_func)
 
     def move_entropy_packages(self, matches, reload_function):
@@ -1203,7 +1386,9 @@ class RepositoryManagerMenu(MenuSkel):
         # enable output
         self.is_writing_output = True
         self.is_processing = {'queue_id': queue_id }
+        gtk.gdk.threads_enter()
         self.set_notebook_page(self.notebook_pages['output'])
+        gtk.gdk.threads_leave()
         self.reload_after_package_move(queue_id, reload_func)
 
     def entropy_mirror_updates_data_view(self, queue_id):
@@ -1213,8 +1398,11 @@ class RepositoryManagerMenu(MenuSkel):
         status, repo_data = item['result']
         if not status: return
 
+
         self.clear_data_view()
         gtk.gdk.threads_enter()
+        self.hide_all_data_view_buttons()
+        self.show_data_view_buttons_cat('mirror_updates')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
         gtk.gdk.threads_leave()
@@ -1294,20 +1482,40 @@ class RepositoryManagerMenu(MenuSkel):
                 }
             if not run_data: return
 
-            # I am soooooooo coool
-            t = self.entropyTools.parallelTask(self.execute_entropy_mirror_updates, run_data)
-            t.start()
+            def fake_callback_cb(s):
+                return True
+
+            def fake_callback(s):
+                return True
+
+            # now ask for mirrors
+            for repoid in run_data.keys():
+
+                input_params = [
+                    ('commit_msg',_("Commit message"),fake_callback,False,),
+                    ('do_pretend',('checkbox',_("Pretend mode"),),fake_callback_cb,False,),
+                    ('pkg_check',('checkbox',_("Packages check"),),fake_callback_cb,False,),
+                ]
+
+                data = self.Entropy.inputBox(
+                    "[%s] %s" % (repoid,_('Choose sync options'),),
+                    input_params,
+                    cancel_button = True
+                )
+                if data == None:
+                    run_data.pop(repoid)
+                    continue
+
+                run_data[repoid]['pretend'] = data['do_pretend']
+                run_data[repoid]['pkg_check'] = data['pkg_check']
+                run_data[repoid]['commit_msg'] = data['commit_msg']
+
+            if run_data:
+                t = self.entropyTools.parallelTask(self.execute_entropy_mirror_updates, run_data)
+                t.start()
 
         gtk.gdk.threads_enter()
-        execute_button = gtk.Button(label = _("Execute"))
-        execute_button_image = gtk.Image()
-        execute_button_image.set_from_stock(gtk.STOCK_EXECUTE, 4)
-        execute_button.set_image(execute_button_image)
-        execute_button.connect('clicked',execute_button_clicked)
-        execute_button.show()
-
-        self.DataViewBox.pack_start(execute_button, False, False, 1)
-        self.DataViewBox.show_all()
+        self.DataViewButtons['mirror_updates']['execute_button'].connect('clicked',execute_button_clicked)
         self.create_text_column( self.DataView, _( "Mirror updates information" ), 'info', size = 300, cell_data_func = my_data_text, expand = True)
         gtk.gdk.threads_leave()
         self.fill_mirror_updates_view(repo_data)
@@ -1324,6 +1532,8 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.clear_data_view()
         gtk.gdk.threads_enter()
+        self.hide_all_data_view_buttons()
+        self.show_data_view_buttons_cat('database_updates')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
         gtk.gdk.threads_leave()
@@ -1442,33 +1652,10 @@ class RepositoryManagerMenu(MenuSkel):
                 t.start()
 
         gtk.gdk.threads_enter()
-        # Package information
-        package_info_button = gtk.Button(label = _("Packages information"))
-        package_info_image = gtk.Image()
-        package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
-        package_info_button.set_image(package_info_image)
-        package_info_button.connect('clicked',package_info_clicked)
-        package_info_button.show()
 
-        # Change repo button
-        change_repo_button = gtk.Button(label = _("Destination repository"))
-        change_repo_image = gtk.Image()
-        change_repo_image.set_from_stock(gtk.STOCK_CONVERT, 4)
-        change_repo_button.set_image(change_repo_image)
-        change_repo_button.connect('clicked',change_repo_clicked)
-        change_repo_button.show()
-
-        execute_button = gtk.Button(label = _("Execute"))
-        execute_button_image = gtk.Image()
-        execute_button_image.set_from_stock(gtk.STOCK_EXECUTE, 4)
-        execute_button.set_image(execute_button_image)
-        execute_button.connect('clicked',execute_button_clicked)
-        execute_button.show()
-
-        self.DataViewBox.pack_start(package_info_button, False, False, 1)
-        self.DataViewBox.pack_start(change_repo_button, False, False, 1)
-        self.DataViewBox.pack_start(execute_button, False, False, 1)
-        self.DataViewBox.show_all()
+        self.DataViewButtons['database_updates']['change_repo_button'].connect('clicked',change_repo_clicked)
+        self.DataViewButtons['database_updates']['package_info_button'].connect('clicked',package_info_clicked)
+        self.DataViewButtons['database_updates']['execute_button'].connect('clicked',execute_button_clicked)
 
         cell_height = 80
 
@@ -1481,6 +1668,7 @@ class RepositoryManagerMenu(MenuSkel):
         gtk.gdk.threads_enter()
         self.set_notebook_page(self.notebook_pages['data'])
         gtk.gdk.threads_leave()
+
 
     def fill_db_updates_view(self, data):
 
@@ -1717,6 +1905,8 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.clear_data_view()
         gtk.gdk.threads_enter()
+        self.hide_all_data_view_buttons()
+        self.show_data_view_buttons_cat('available_packages')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
         gtk.gdk.threads_leave()
@@ -1771,34 +1961,9 @@ class RepositoryManagerMenu(MenuSkel):
 
         gtk.gdk.threads_enter()
 
-        # Package information
-        package_info_button = gtk.Button(label = _("Packages information"))
-        package_info_image = gtk.Image()
-        package_info_image.set_from_stock(gtk.STOCK_INFO, 4)
-        package_info_button.set_image(package_info_image)
-        package_info_button.connect('clicked',package_info_clicked)
-        package_info_button.show()
-
-        # Remove package button
-        remove_package_button = gtk.Button(label = _("Remove packages"))
-        remove_package_image = gtk.Image()
-        remove_package_image.set_from_stock(gtk.STOCK_REMOVE, 4)
-        remove_package_button.set_image(remove_package_image)
-        remove_package_button.connect('clicked',remove_package_button_clicked)
-        remove_package_button.show()
-
-        # Move package button
-        move_package_button = gtk.Button(label = _("Copy/move packages"))
-        move_package_image = gtk.Image()
-        move_package_image.set_from_stock(gtk.STOCK_COPY, 4)
-        move_package_button.set_image(move_package_image)
-        move_package_button.connect('clicked',move_package_button_clicked)
-        move_package_button.show()
-
-        self.DataViewBox.pack_start(package_info_button, False, False, 1)
-        self.DataViewBox.pack_start(remove_package_button, False, False, 1)
-        self.DataViewBox.pack_start(move_package_button, False, False, 1)
-        self.DataViewBox.show_all()
+        self.DataViewButtons['available_packages']['package_info_button'].connect('clicked',package_info_clicked)
+        self.DataViewButtons['available_packages']['remove_package_button'].connect('clicked',remove_package_button_clicked)
+        self.DataViewButtons['available_packages']['move_package_button'].connect('clicked',move_package_button_clicked)
 
         # glsa id
         self.create_text_column( self.DataView, _( "Package" ), 'package', size = 300, set_height = 60, cell_data_func = my_data_text, expand = True)
@@ -1838,6 +2003,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['data'])
         gtk.gdk.threads_leave()
 
+
     def categories_updates_data_view(self, queue_id, categories, expand = False, reload_function = None):
 
         if reload_function == None:
@@ -1851,6 +2017,8 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.clear_data_view()
         gtk.gdk.threads_enter()
+        self.hide_all_data_view_buttons()
+        self.show_data_view_buttons_cat('categories_updates')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
         gtk.gdk.threads_leave()
@@ -1909,35 +2077,9 @@ class RepositoryManagerMenu(MenuSkel):
 
         gtk.gdk.threads_enter()
 
-        # Compile
-        compile_button = gtk.Button(label = _("Compile selected"))
-        compile_image = gtk.Image()
-        compile_image.set_from_stock(gtk.STOCK_GOTO_BOTTOM, 4)
-        compile_button.set_image(compile_image)
-        compile_button.connect('clicked',compile_button_clicked)
-        compile_button.show()
-
-        # Add USE flag
-        add_use_button = gtk.Button(label = _("Add USE"))
-        add_use_image = gtk.Image()
-        add_use_image.set_from_stock(gtk.STOCK_ADD, 4)
-        add_use_button.set_image(add_use_image)
-        add_use_button.connect('clicked',add_use_button_clicked)
-        add_use_button.show()
-
-        # Remove USE flag
-        remove_use_button = gtk.Button(label = _("Remove USE"))
-        remove_use_image = gtk.Image()
-        remove_use_image.set_from_stock(gtk.STOCK_REMOVE, 4)
-        remove_use_button.set_image(remove_use_image)
-        remove_use_button.connect('clicked',remove_use_button_clicked)
-        remove_use_button.show()
-
-
-        self.DataViewBox.pack_start(compile_button, False, False, 1)
-        self.DataViewBox.pack_start(add_use_button, False, False, 1)
-        self.DataViewBox.pack_start(remove_use_button, False, False, 1)
-        self.DataViewBox.show_all()
+        self.DataViewButtons['categories_updates']['compile_button'].connect('clicked',compile_button_clicked)
+        self.DataViewButtons['categories_updates']['add_use_button'].connect('clicked',add_use_button_clicked)
+        self.DataViewButtons['categories_updates']['remove_use_button'].connect('clicked',remove_use_button_clicked)
 
         # atom
         self.create_text_column( self.DataView, _( "Atom" ), 'atom', size = 220, cell_data_func = my_data_text, set_height = 110, expand = True)
@@ -2354,15 +2496,15 @@ class RepositoryManagerMenu(MenuSkel):
         self.wait_channel_call()
         try:
             status, queue_id = self.Service.Methods.run_spm_info()
-            if status:
-                self.is_writing_output = True
-                self.is_processing = {'queue_id': queue_id}
-                self.set_notebook_page(self.notebook_pages['output'])
         except Exception, e:
             self.service_status_message(e)
             return
         finally:
             self.release_channel_call()
+        if status:
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id}
+            self.set_notebook_page(self.notebook_pages['output'])
 
     def handle_uses_for_atoms(self, atoms, use):
 
@@ -2766,11 +2908,80 @@ class RepositoryManagerMenu(MenuSkel):
         t.start()
 
     def on_repoManagerSpmTreeupdatesButton_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_entropy_treeupdates)
+
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+
+        def fake_callback_cb(s):
+            return True
+
+        input_params = [
+            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback_cb,False),
+        ]
+
+        data = self.Entropy.inputBox(
+            _('Choose the repository'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        data['repoid'] = data['repoid'][1]
+
+        t = self.entropyTools.parallelTask(self.run_entropy_treeupdates, data['repoid'])
         t.start()
 
     def on_repoManagerMirrorUpdatesButton_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_entropy_mirror_updates)
+
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+
+        def fake_callback_cb(s):
+            return True
+
+        input_params = []
+        for repo in avail_repos:
+            input_params.append((repo,('checkbox',"%s: %s" % (_('Repository'),repo,),),fake_callback_cb,False))
+
+        data = self.Entropy.inputBox(
+            _('Choose the repositories you want to scan'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        repos = []
+        for key in data:
+            if data[key]:
+                repos.append(key)
+        if not repos: return
+
+        t = self.entropyTools.parallelTask(self.run_entropy_mirror_updates, repos)
+        t.start()
+
+    def on_repoManagerChecksumTestButton_clicked(self, widget):
+
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+
+        def fake_callback(s):
+            return s
+
+        input_params = [
+            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False),
+            ('mode',('combo',(_('Choose mode'),[_("Server check"),_("Mirrors check")]),),fake_callback,False),
+        ]
+        data = self.Entropy.inputBox(
+            _('Choose what kind of test you would like to run'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        if data['mode'][0] == 0:
+            mode = "local"
+        else:
+            mode = "remote"
+        data['repoid'] = data['repoid'][1]
+
+        t = self.entropyTools.parallelTask(self.run_entropy_checksum_test, data['repoid'], mode)
         t.start()
 
     def destroy(self):
