@@ -22964,25 +22964,26 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         def docmd_get_queue(self, myargs):
 
-            extended = False
-            if myargs:
-                extended = myargs[0]
-
-            if extended:
-                return True, self.HostInterface.ManagerQueue.copy()
-            else:
-                # FUCK YEAH BITCH!
+            self.HostInterface.queue_lock_acquire()
+            try:
                 import copy
                 myqueue = copy.deepcopy(self.HostInterface.ManagerQueue)
-                for key in myqueue:
-                    if key not in self.HostInterface.done_queue_keys:
-                        continue
-                    for queue_id in myqueue.get(key):
-                        item = myqueue[key].get(queue_id)
-                        if not item.has_key('extended_result'):
-                            continue
-                        item['extended_result'] = None
+
+                extended = False
+                if myargs:
+                    extended = myargs[0]
+
+                if not extended:
+                    for key in self.HostInterface.done_queue_keys:
+                        for queue_id in myqueue.get(key):
+                            item = myqueue[key].get(queue_id)
+                            if not item.has_key('extended_result'):
+                                continue
+                            item['extended_result'] = None
+
                 return True, myqueue
+            finally:
+                self.HostInterface.queue_lock_release()
 
         def docmd_get_queue_item_by_id(self, myargs):
 
@@ -23540,7 +23541,7 @@ class SystemManagerServerInterface(SocketHostInterface):
             self.queue_lock_release()
         return None, None
 
-    def queue_processor(self, parallel_mode):
+    def queue_processor(self, parallel_mode, fork_data = None):
 
         def do_store_and_free():
             self.store_queue()
@@ -23558,27 +23559,36 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         while 1:
 
-            if self.ManagerQueue['pause']:
-                time.sleep(0.1)
-                continue
+            if not fork_data:
+                if self.ManagerQueue['pause']:
+                    time.sleep(0.1)
+                    continue
 
-            if not self.ManagerQueue['queue_order']:
-                time.sleep(0.1)
-                continue
+                if not self.ManagerQueue['queue_order']:
+                    time.sleep(0.1)
+                    continue
 
-            command_data, queue_id = self._pop_item_from_queue_by_parallel(parallel_mode)
-            if not command_data:
-                time.sleep(0.5)
-                continue
+                command_data, queue_id = self._pop_item_from_queue_by_parallel(parallel_mode)
+                if not command_data:
+                    time.sleep(0.5)
+                    continue
 
-            wait_and_takeover()
-            command_data['processing_ts'] = "%s" % (self.get_ts(),)
-            self.ManagerQueue['processing'][queue_id] = command_data
-            self.ManagerQueue['processing_order'].append(queue_id)
-            do_store_and_free()
+                wait_and_takeover()
+                command_data['processing_ts'] = "%s" % (self.get_ts(),)
+                self.ManagerQueue['processing'][queue_id] = command_data
+                self.ManagerQueue['processing_order'].append(queue_id)
+                do_store_and_free()
+
+            else:
+                command_data, queue_id = fork_data
 
             try:
-                done, result = self.SystemExecutor.execute_task(command_data)
+                if parallel_mode:
+                    t = self.entropyTools.parallelTask(self.queue_processor, False, fork_data = (command_data, queue_id,))
+                    t.start()
+                    continue
+                else:
+                    done, result = self.SystemExecutor.execute_task(command_data)
             except:
                 self.queue_lock_release()
                 raise
