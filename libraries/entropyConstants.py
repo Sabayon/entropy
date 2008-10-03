@@ -632,7 +632,7 @@ def const_defaultSettings(rootdir):
         'supportedarchs': etpSys['archs'], # Entropy supported Archs
 
         'branches': [], # available branches, this only exists for the server part, these settings will be overridden by server.conf ones
-        'branch': "3.5", # default choosen branch (overridden by setting in repositories.conf)
+        'branch': "4", # default choosen branch (overridden by setting in repositories.conf)
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]), # default allowed package keywords
         'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
         'edbcounter': edbCOUNTER,
