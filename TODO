@@ -1,6 +1,7 @@
 TODO list
   - implement notice board RSS
   - text ADS
+  - p2p way to fight security attacks (through UGC and triple md5 verification)
   - force a package to keep the current version
   - server-side messages collection
   - community repos: add repository handling on dependencies to avoid library breakages
