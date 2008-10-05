@@ -12351,7 +12351,13 @@ class PortageInterface:
         use = metadata['USE'].split()
         raw_use = use
         metadata['USE_MASK'] = self.get_useflags_mask()
-        iuse = set(metadata['IUSE'].split())
+        iuse = set()
+        for myiuse in metadata['IUSE'].split():
+            if myiuse.startswith("+"):
+                myiuse = myiuse[1:]
+            elif myiuse.startswith("-"):
+                continue
+            iuse.add(iuse)
         use = sorted([f for f in use if f in iuse])
         metadata['USE'] = " ".join(use)
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
