@@ -23257,7 +23257,7 @@ class SystemManagerServerInterface(SocketHostInterface):
 
             txt = ' '.join(myargs[1:])
             item, key = self.HostInterface.get_item_by_queue_id(queue_id)
-            if key != self.HostInterface.processing_queue_keys:
+            if key not in self.HostInterface.processing_queue_keys:
                 return False,'not running'
             mypipe = self.HostInterface.ManagerQueueStdInOut.get(queue_id)
             if mypipe == None:
