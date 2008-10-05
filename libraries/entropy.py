@@ -13473,8 +13473,7 @@ class SocketHostInterface:
 
                     try:
                         dobreak = self.data_receiver()
-                        if dobreak:
-                            break
+                        if dobreak: break
                     except Exception, e:
                         self.server.processor.HostInterface.updateProgress(
                             'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
@@ -14327,7 +14326,7 @@ class SocketHostInterface:
 
             return rc
 
-    import gc
+    import gc, threading
     def __init__(self, service_interface, *args, **kwds):
 
         self.Server = None
@@ -14344,7 +14343,7 @@ class SocketHostInterface:
         )
 
         # settings
-        self.SessionsLock = thread.allocate_lock()
+        self.SessionsLock = self.threading.Lock()
         self.fork_requests = True # used by the command processor
         self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
@@ -14671,7 +14670,7 @@ class SocketHostInterface:
                 check_time = sess_time + ttl
                 if cur_time > check_time:
                     self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id,ttl,) )
-                    self.destroy_session(session_id)
+                    self.destroy_session(session_id, lock = False)
         finally:
             self.SessionsLock.release()
 
@@ -14738,8 +14737,9 @@ class SocketHostInterface:
         finally:
             self.SessionsLock.release()
 
-    def destroy_session(self, session):
-        self.SessionsLock.acquire()
+    def destroy_session(self, session, lock = True):
+        if lock:
+            self.SessionsLock.acquire()
         try:
             if self.sessions.has_key(session):
                 stream_path = self.sessions[session]['stream_path']
@@ -14752,7 +14752,7 @@ class SocketHostInterface:
                 return True
             return False
         finally:
-            self.SessionsLock.release()
+            if lock: self.SessionsLock.release()
 
     def go(self):
         self.socket.setdefaulttimeout(self.timeout)
@@ -20489,6 +20489,7 @@ class SystemSocketClientInterface:
     import dumpTools
     import entropyTools
     import zlib
+    import select
     def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25): #, server_ca_cert = None, server_cert = None):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
@@ -20656,6 +20657,7 @@ class SystemSocketClientInterface:
 
     def transmit(self, data):
         self.check_socket_connection()
+        self.sock_conn.settimeout(self.socket_timeout)
         data = self.append_eos(data)
         try:
 
@@ -20683,7 +20685,11 @@ class SystemSocketClientInterface:
                         continue
 
         except self.SSL_exceptions['Error'], e:
+            self.disconnect()
             raise exceptionTools.SSLError('SSLError: %s' % (e,))
+        except:
+            self.disconnect()
+            raise
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -20712,6 +20718,8 @@ class SystemSocketClientInterface:
 
     def receive(self):
 
+        self.check_socket_connection()
+        self.sock_conn.settimeout(self.socket_timeout)
         self.ssl_prepending = True
 
         def do_receive():
@@ -20729,6 +20737,7 @@ class SystemSocketClientInterface:
             return data
 
         myeos = self.answers['eos']
+        ssl_error_loop_count = 0
         while 1:
 
             try:
@@ -20818,6 +20827,22 @@ class SystemSocketClientInterface:
                     )
                 return None
             except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],):
+                ssl_error_loop_count += 1
+                if ssl_error_loop_count > 3000000:
+                    if not self.quiet:
+                        mytxt = _("too many WantReadError error while receiving data")
+                        self.Entropy.updateProgress(
+                            "[%s:%s] %s: %s" % (
+                                    brown(self.hostname),
+                                    bold(str(self.hostport)),
+                                    blue(mytxt),
+                                    e,
+                            ),
+                            importance = 1,
+                            type = "warning",
+                            header = self.output_header
+                        )
+                    return None
                 continue
             except self.SSL_exceptions['ZeroReturnError']:
                 break
@@ -21406,6 +21431,9 @@ class SystemManagerExecutorServerRepositoryInterface:
 
             for repoid in self.SystemManagerExecutor.SystemInterface.Entropy.get_available_repositories():
                 self.run_entropy_treeupdates(queue_id, repoid)
+
+            stdout_err.write("\n"+_("Calculating updates...")+"\n")
+            stdout_err.flush()
 
             to_add, to_remove, to_inject = self.SystemManagerExecutor.SystemInterface.Entropy.scan_package_changes()
             mydict = { 'add': to_add, 'remove': to_remove, 'inject': to_inject }
@@ -24547,7 +24575,7 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 class SystemManagerClientInterface:
 
     ssl_connection = True
-    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False):
+    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False):
 
         if not isinstance(EntropyInstance, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInstance, (EquoInterface, ServerInterface)):
@@ -24578,14 +24606,17 @@ class SystemManagerClientInterface:
         self.username = None
         self.password = None
         self.quiet = quiet
+        self.do_cache_connection = do_cache_connection
         self.show_progress = show_progress
         self.ClientCommandsInterface = ClientCommandsInterface
         self.Methods = self.MethodsInterface(self)
         self.connection_cache = {}
         self.CacheLock = thread.allocate_lock()
         self.shutdown = False
-        self.connection_killer = self.entropyTools.TimeScheduled(self.connection_killer_handler, 2)
-        self.connection_killer.start()
+        self.connection_killer = None
+        if self.do_cache_connection:
+            self.connection_killer = self.entropyTools.TimeScheduled(self.connection_killer_handler, 2)
+            self.connection_killer.start()
 
     def __del__(self):
         if hasattr(self,'shutdown'):
@@ -24610,34 +24641,39 @@ class SystemManagerClientInterface:
         return hash((self.hostname, self.hostport, self.username, self.password, self.ssl_connection,))
 
     def get_connection_cache(self):
-        key = self.get_connection_cache_key()
-        return self.connection_cache.get(key)
+        if self.do_cache_connection:
+            key = self.get_connection_cache_key()
+            return self.connection_cache.get(key)
 
     def cache_connection(self, srv):
-        key = self.get_connection_cache_key()
-        self.connection_cache[key] = {
-            'conn': srv,
-            'ts': self.get_ts(),
-        }
+        if self.do_cache_connection:
+            key = self.get_connection_cache_key()
+            self.connection_cache[key] = {
+                'conn': srv,
+                'ts': self.get_ts(),
+            }
 
     def update_connection_ts(self):
-        key = self.get_connection_cache_key()
-        if key not in self.connection_cache:
-            return
-        self.connection_cache[key]['ts'] = self.get_ts()
+        if self.do_cache_connection:
+            key = self.get_connection_cache_key()
+            if key not in self.connection_cache:
+                return
+            self.connection_cache[key]['ts'] = self.get_ts()
 
     def kill_all_connections(self):
-        self.CacheLock.acquire()
-        try:
-            keys = self.connection_cache.keys()
-            for key in keys:
-                data = self.connection_cache.pop(key)
-                data['conn'].disconnect()
-        finally:
-            self.CacheLock.release()
+        if self.do_cache_connection:
+            self.CacheLock.acquire()
+            try:
+                keys = self.connection_cache.keys()
+                for key in keys:
+                    data = self.connection_cache.pop(key)
+                    data['conn'].disconnect()
+            finally:
+                self.CacheLock.release()
 
     def connection_killer_handler(self):
 
+        if not self.do_cache_connection: return
         if self.shutdown: return
         if not self.connection_cache: return
 
@@ -24703,7 +24739,7 @@ class SystemManagerClientInterface:
         try:
             srv = self.get_connection_cache()
             if srv == None:
-                srv = self.get_service_connection(timeout = 20)
+                srv = self.get_service_connection(timeout = 10)
                 if srv != None: self.cache_connection(srv)
             else:
                 srv = srv['conn']
@@ -24721,14 +24757,16 @@ class SystemManagerClientInterface:
                 logged, error = self.login(srv, session)
                 if not logged:
                     srv.close_session(session)
-                    #srv.disconnect()
+                    if not self.do_cache_connection:
+                        srv.disconnect()
                     return False, error
 
             rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
             if login_required:
                 self.logout(srv, session)
             srv.close_session(session)
-            #srv.disconnect()
+            if not self.do_cache_connection:
+                srv.disconnect()
             return rslt
         finally:
             self.CacheLock.release()
