@@ -22339,7 +22339,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'cflags': cflags,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms][:], add_dict.copy(), False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms[:]], add_dict.copy(), False, False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22381,7 +22381,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'nocolor': nocolor,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms][:], add_dict.copy(), False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms[:]], add_dict.copy(), False, False)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -23228,8 +23228,8 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         nocolor()
         self.queue_loaded = False
-        import entropyTools, dumpTools
-        self.entropyTools, self.dumpTools = entropyTools, dumpTools
+        import entropyTools, dumpTools, copy
+        self.entropyTools, self.dumpTools, self.copy = entropyTools, dumpTools, copy
 
         self.setup_stdout_storage_dir()
 
@@ -23454,8 +23454,8 @@ class SystemManagerServerInterface(SocketHostInterface):
                 'command_desc': self.valid_commands[command_name]['desc'],
                 'command_text': command_text,
                 'call': function,
-                'args': args,
-                'kwargs': kwargs,
+                'args': self.copy.deepcopy(args),
+                'kwargs': self.copy.deepcopy(kwargs),
                 'user_id': user_id,
                 'group_id': group_id,
                 'stdout': self.assign_unique_stdout_file(queue_id),
@@ -23617,9 +23617,11 @@ class SystemManagerServerInterface(SocketHostInterface):
                     continue
                 else:
                     done, result = self.SystemExecutor.execute_task(command_data)
-            except:
+            except Exception, e:
                 self.queue_lock_release()
-                raise
+                self.entropyTools.printTraceback()
+                done = False
+                result = (False, str(e),)
 
             wait_and_takeover()
             if command_data.has_key('extended_result') and done:
@@ -23637,7 +23639,8 @@ class SystemManagerServerInterface(SocketHostInterface):
                     self.ManagerQueue['processing'].pop(queue_id)
                 except KeyError:
                     pass
-                self.ManagerQueue['processing_order'].remove(queue_id)
+                if queue_id in self.ManagerQueue['processing_order']:
+                    self.ManagerQueue['processing_order'].remove(queue_id)
                 command_data['errored_ts'] = "%s" % (self.get_ts(),)
                 self.ManagerQueue['errored'][queue_id] = command_data
                 self.ManagerQueue['errored_order'].append(queue_id)
@@ -24575,7 +24578,7 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 class SystemManagerClientInterface:
 
     ssl_connection = True
-    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False):
+    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = True):
 
         if not isinstance(EntropyInstance, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInstance, (EquoInterface, ServerInterface)):
@@ -28172,7 +28175,7 @@ class ServerMirrorsInterface:
 
 class EntropyDatabaseInterface:
 
-    import entropyTools, dumpTools
+    import entropyTools, dumpTools, threading
     def __init__(
             self,
             readOnly = False,
@@ -28193,7 +28196,7 @@ class EntropyDatabaseInterface:
         if dbFile == None:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (_("valid database path needed"),) )
 
-        self.WriteLock = thread.allocate_lock()
+        self.WriteLock = self.threading.Lock()
         self.dbapi2 = dbapi2
         # setup output interface
         self.OutputInterface = OutputInterface
@@ -29099,7 +29102,7 @@ class EntropyDatabaseInterface:
         ]
 
         myidpackage_string = 'NULL'
-        if type(idpackage) is int:
+        if isinstance(idpackage,int):
             myidpackage_string = '?'
             mybaseinfo_data.insert(0,idpackage)
         else:
@@ -29866,7 +29869,7 @@ class EntropyDatabaseInterface:
                     )
                 )
             except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
-                self.migrateCountersTable()
+                self.migrateCountersTable(lock = False)
                 self.cursor.execute(
                 'INSERT into counters VALUES '
                 '(?,?,?)'
@@ -32369,8 +32372,8 @@ class EntropyDatabaseInterface:
     # FIXME: remove these when 1.0 will be out
     #
 
-    def migrateCountersTable(self):
-        self.WriteLock.acquire()
+    def migrateCountersTable(self, lock = True):
+        if lock: self.WriteLock.acquire()
         try:
             self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
             self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER, branch VARCHAR, PRIMARY KEY(idpackage,branch) );')
@@ -32381,7 +32384,7 @@ class EntropyDatabaseInterface:
             self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
             self.commitChanges()
         finally:
-            self.WriteLock.release()
+            if lock: self.WriteLock.release()
 
     def createCategoriesdescriptionTable(self):
         self.WriteLock.acquire()
@@ -32629,7 +32632,7 @@ class EntropyDatabaseInterface:
                     self.cursor.executemany('INSERT into counters VALUES (?,?,?)', counters_data)
                 except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
                     if migrated: raise
-                    self.migrateCountersTable()
+                    self.migrateCountersTable(lock = False)
                     migrated = True
                     continue
                 break
