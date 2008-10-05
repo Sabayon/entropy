@@ -21924,7 +21924,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
     def _get_stdin(self, queue_id):
         mystdin = None
-        std_data = self.SystemManagerExecutor.SystemInterface.ManagerStdInOut.get(queue_id)
+        std_data = self.SystemManagerExecutor.SystemInterface.ManagerQueueStdInOut.get(queue_id)
         if std_data != None: mystdin = std_data[0]
         return mystdin
 
