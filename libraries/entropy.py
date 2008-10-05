@@ -21143,10 +21143,11 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         cmd = ["emerge", "--sync"]
         try:
-            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
+            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -21175,7 +21176,8 @@ class SystemManagerExecutorServerRepositoryInterface:
         if cflags:
             cmd += ['export CFLAGS="']+custom_use.strip().split()+['"','&&']
         cmd += [etpConst['spm']['exec']]+atoms
-        if pretend: cmd.append(etpConst['spm']['pretend_cmd'])
+        if pretend:
+            cmd.append(etpConst['spm']['pretend_cmd'])
         if verbose:
             cmd.append(etpConst['spm']['verbose_cmd'])
         if oneshot:
@@ -21193,10 +21195,11 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, shell = True)
+            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -21224,10 +21227,11 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, shell = True)
+            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -21349,10 +21353,11 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err)
+            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -21375,10 +21380,11 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, shell = True)
+            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
+            stdout_err.write('Stdin: %s\n' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -21410,6 +21416,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                 do_copy = do_copy
             )
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = old_updprogress
             stdout_err.flush()
@@ -21462,6 +21469,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                 dbconn.closeDB()
 
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = old_updprogress
             stdout_err.flush()
@@ -21567,6 +21575,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self.entropyTools.printTraceback(f = stdout_err)
             return False,str(e)
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21598,6 +21607,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self.entropyTools.printTraceback(f = stdout_err)
             return False,str(e)
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21629,6 +21639,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self.entropyTools.printTraceback(f = stdout_err)
             return False,str(e)
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21664,6 +21675,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             else:
                 data = Entropy.verify_remote_packages([], ask = False, repo = repoid)
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21693,6 +21705,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             dbconn = Entropy.openServerDatabase(repo = repoid, do_cache = False, ask_treeupdates = False, read_only = True)
             dbconn.closeDB()
         finally:
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21775,6 +21788,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         finally:
 
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21886,6 +21900,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         finally:
 
+            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             Entropy.updateProgress = old_updprogress
             Entropy.ClientService.updateProgress = old_client_updprogress
@@ -21906,6 +21921,12 @@ class SystemManagerExecutorServerRepositoryInterface:
         for myid in glsa_ids:
             data[myid] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_glsa_id_information(myid)
         return True,data
+
+    def _get_stdin(self, queue_id):
+        mystdin = None
+        std_data = self.SystemManagerExecutor.SystemInterface.ManagerStdInOut.get(queue_id)
+        if std_data != None: mystdin = std_data[0]
+        return mystdin
 
     def _file_updateProgress(self, f, *myargs, **mykwargs):
 
@@ -22345,7 +22366,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'cflags': cflags,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms[:]], add_dict.copy(), False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms[:]], add_dict.copy(), False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22387,7 +22408,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'nocolor': nocolor,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms[:]], add_dict.copy(), False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms[:]], add_dict.copy(), False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22494,7 +22515,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         gid = userdata.get('gid')
         command = ' '.join(myargs)
 
-        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {}, False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {}, False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22677,7 +22698,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_treeupdates', [myargs[0]], {}, False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_treeupdates', [myargs[0]], {}, False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22709,7 +22730,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, '<raw data>', uid, gid, 'run_entropy_mirror_updates', [mydict], {}, False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, '<raw data>', uid, gid, 'run_entropy_mirror_updates', [mydict], {}, False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22750,7 +22771,11 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_database_updates', [to_add,to_remove,to_inject], {}, False, True)
+        queue_id = self.HostInterface.add_to_queue(
+            cmd, ' '.join(myargs), uid, gid,
+            'run_entropy_database_updates', [to_add,to_remove,to_inject],
+            {}, False, True, interactive = True
+        )
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22871,7 +22896,10 @@ class SystemManagerServerInterface(SocketHostInterface):
         def __init__(self, HostInterface):
 
             SocketCommandsSkel.__init__(self, HostInterface, inst_name = "systemsrv")
-            self.raw_commands = ['systemsrv:add_to_pinboard']
+            self.raw_commands = [
+                'systemsrv:add_to_pinboard',
+                'systemsrv:write_to_running_command_pipe'
+            ]
 
             self.valid_commands = {
                 'systemsrv:get_queue':    {
@@ -22992,6 +23020,16 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "set pinboard items status using their pinboard identifiers",
                     'syntax': "<SESSION_ID> systemsrv:set_pinboard_items_done <pinboard identifier 1> <pinboard identifier 2> <...> <status (True/False)>",
+                    'from': str(self),
+                },
+                'systemsrv:write_to_running_command_pipe':    {
+                    'auth': True,
+                    'built_in': False,
+                    'cb': self.docmd_write_to_running_command_pipe,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "write text to stdin of a running command",
+                    'syntax': "<SESSION_ID> systemsrv:write_to_running_command_pipe <queue_id> <txt ...>",
                     'from': str(self),
                 },
             }
@@ -23207,6 +23245,37 @@ class SystemManagerServerInterface(SocketHostInterface):
                 self.HostInterface.set_pinboard_item_status(pinboard_id, status)
             return True,'ok'
 
+        def docmd_write_to_running_command_pipe(self, myargs):
+
+            if len(myargs) < 2:
+                return False, 'wrong arguments'
+
+            try:
+                queue_id = int(myargs[0])
+            except ValueError:
+                return False,'invalid queue id'
+
+            txt = ' '.join(myargs[1:])
+            item, key = self.HostInterface.get_item_by_queue_id(queue_id)
+            if key != self.HostInterface.processing_queue_keys:
+                return False,'not running'
+            mypipe = self.HostInterface.ManagerQueueStdInOut.get(queue_id)
+            if mypipe == None:
+                return False,'pipe not available'
+            try:
+                w_fd = mypipe[1]
+            except (IndexError, ValueError,):
+                return False,'pipe vanished'
+            if not isinstance(w_fd,int):
+                return False,'stdout fd not an int'
+            try:
+                os.write(w_fd,txt)
+            except OSError, e:
+                return False,'OSError: %s' % (e,)
+
+            return True,'ok'
+
+
     class FakeServiceInterface:
         def __init__(self, *args, **kwargs):
             pass
@@ -23232,7 +23301,7 @@ class SystemManagerServerInterface(SocketHostInterface):
     STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'],'system_manager_stdout')
     def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, fork_requests = False, entropy_interface_kwargs = {}, **kwargs):
 
-        nocolor()
+        #nocolor()
         self.queue_loaded = False
         import entropyTools, dumpTools, copy
         self.entropyTools, self.dumpTools, self.copy = entropyTools, dumpTools, copy
@@ -23267,6 +23336,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.removable_queue_keys = ['processed','errored','queue']
         self.processing_queue_keys = ['processing']
         self.dict_queue_keys = ['queue','processing','processed','errored']
+        self.ManagerQueueStdInOut = {}
         self.ManagerQueue = {
             'queue': {},
             'queue_order': [],
@@ -23446,7 +23516,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         return True
 
 
-    def add_to_queue(self, command_name, command_text, user_id, group_id, function, args, kwargs, do_parallel, extended_result):
+    def add_to_queue(self, command_name, command_text, user_id, group_id, function, args, kwargs, do_parallel, extended_result, interactive = False):
 
         if function not in self.SystemExecutor.available_commands:
             return -1
@@ -23454,6 +23524,8 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.queue_lock_acquire()
         try:
             queue_id = self.generate_unique_queue_id()
+            if interactive:
+                self.ManagerQueueStdInOut[queue_id] = os.pipe()
             myqueue_dict = {
                 'queue_id': queue_id,
                 'command_name': command_name,
@@ -23469,6 +23541,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                 'kill': False,
                 'processing_pid': None,
                 'do_parallel': do_parallel,
+                'interactive': False,
             }
             if extended_result:
                 myqueue_dict['extended_result'] = None
@@ -23493,7 +23566,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     except KeyError:
                         continue
                     if item:
-                        self.flush_item(item)
+                        self.flush_item(item, queue_id)
                         if queue_id in self.ManagerQueue[key+"_order"]:
                             self.ManagerQueue[key+"_order"].remove(queue_id)
                     removed = True
@@ -23526,14 +23599,19 @@ class SystemManagerServerInterface(SocketHostInterface):
         finally:
             self.queue_lock_release()
 
-    def flush_item(self, item):
+    def flush_item(self, item, queue_id):
         if not isinstance(item,dict):
             return False
         if item.has_key('stdout'):
             stdout = item['stdout']
             if (os.path.isfile(stdout) and os.access(stdout,os.W_OK)):
                 os.remove(stdout)
-            return True
+        if item.has_key('interactive'):
+            if item['interactive'] and (queue_id in self.ManagerQueueStdInOut):
+                stdin, stdout = self.ManagerQueueStdInOut.pop(queue_id)
+                os.close(stdin)
+                os.close(stdout)
+        return True
 
     def assign_unique_stdout_file(self, queue_id):
         stdout = os.path.join(self.STDOUT_STORAGE_DIR,"%d.%s" % (queue_id,"stdout",))
@@ -23823,6 +23901,15 @@ class SystemManagerClientCommands(EntropySocketClientCommands):
             'systemsrv:set_pinboard_items_done',
             ' '.join([str(x) for x in pinboard_ids]),
             status,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def write_to_running_command_pipe(self, session_id, queue_id, txt):
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'systemsrv:write_to_running_command_pipe',
+            queue_id,
+            txt,
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -24216,6 +24303,15 @@ class SystemManagerMethodsInterface:
                 'call': self.set_pinboard_items_done,
                 'private': True,
             },
+            'write_to_running_command_pipe': {
+                'desc': _("Write to a remote running command stdin"),
+                'params': [
+                    ('queue_id',int,_('Queue Identifier'),True,),
+                    ('txt',basestring,_('Text'),True,),
+                ],
+                'call': self.write_to_running_command_pipe,
+                'private': True,
+            },
         }
 
     def get_available_commands(self):
@@ -24256,6 +24352,9 @@ class SystemManagerMethodsInterface:
 
     def set_pinboard_items_done(self, pinboard_ids, done_status):
         return self.Manager.do_cmd(True, "set_pinboard_items_done", [pinboard_ids,done_status], {})
+
+    def write_to_running_command_pipe(self, queue_id, txt):
+        return self.Manager.do_cmd(True, "write_to_running_command_pipe", [queue_id, txt], {})
 
 class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 
