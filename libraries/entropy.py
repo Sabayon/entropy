@@ -12357,7 +12357,7 @@ class PortageInterface:
                 myiuse = myiuse[1:]
             elif myiuse.startswith("-"):
                 continue
-            iuse.add(iuse)
+            iuse.add(myiuse)
         use = sorted([f for f in use if f in iuse])
         metadata['USE'] = " ".join(use)
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
