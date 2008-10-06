@@ -33130,6 +33130,10 @@ class EntropyDatabaseInterface:
 
         # use match
         scan_atom = self.entropyTools.remove_usedeps(atom)
+        if not scan_atom:
+            # completely broken atom
+            scan_atom = atom
+            atomUse = []
         if (not matchUse) and (atomUse):
             matchUse = atomUse
 
