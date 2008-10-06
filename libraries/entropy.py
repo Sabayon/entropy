@@ -12369,7 +12369,8 @@ class PortageInterface:
                     deps = self.paren_license_choose(deps)
                 else:
                     deps = self.paren_choose(deps)
-                if k.endswith("DEPEND"): deps = self.usedeps_reduce(deps)
+                if k.endswith("DEPEND"):
+                    deps = self.usedeps_reduce(deps)
                 deps = ' '.join(deps)
             except Exception, e:
                 self.entropyTools.printTraceback()
@@ -12395,8 +12396,10 @@ class PortageInterface:
             use_deps = self.entropyTools.dep_getusedeps(dependency)
             if use_deps:
                 use_deps = [x for x in use_deps if (x[0] not in ("!",)) and (x[-1] not in ("=","?",))]
-                if use_deps: dependency = "%s[%s]" % (self.entropyTools.remove_usedeps(dependency),','.join(use_deps),)
-                else: dependency = self.entropyTools.remove_usedeps(dependency)
+                if use_deps:
+                    dependency = "%s[%s]" % (self.entropyTools.remove_usedeps(dependency),','.join(use_deps),)
+                else:
+                    dependency = self.entropyTools.remove_usedeps(dependency)
             newlist.append(dependency)
         return newlist
 
@@ -33118,7 +33121,10 @@ class EntropyDatabaseInterface:
                 return cached
 
         atomTag = self.entropyTools.dep_gettag(atom)
-        atomUse = self.entropyTools.dep_getusedeps(atom)
+        try:
+            atomUse = self.entropyTools.dep_getusedeps(atom)
+        except exceptionTools.InvalidAtom:
+            atomUse = ()
         atomSlot = self.entropyTools.dep_getslot(atom)
         atomRev = self.entropyTools.dep_get_entropy_revision(atom)
 
