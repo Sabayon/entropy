@@ -20,7 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-import shutil, commands, urllib2, time, thread
+import shutil, commands, urllib2, time, thread, copy
 from entropyConstants import *
 from outputTools import TextInterface, \
     print_info, print_warning, print_error, \
@@ -12369,6 +12369,7 @@ class PortageInterface:
                     deps = self.paren_license_choose(deps)
                 else:
                     deps = self.paren_choose(deps)
+                if k.endswith("DEPEND"): deps = self.usedeps_reduce(deps)
                 deps = ' '.join(deps)
             except Exception, e:
                 self.entropyTools.printTraceback()
@@ -12387,6 +12388,17 @@ class PortageInterface:
                 continue
             metadata[k] = deps
         return metadata
+
+    def usedeps_reduce(self, dependencies):
+        newlist = []
+        for dependency in dependencies:
+            use_deps = self.entropyTools.dep_getusedeps(dependency)
+            if use_deps:
+                use_deps = [x for x in use_deps if (x[0] not in ("!",)) and (x[-1] not in ("=","?",))]
+                if use_deps: dependency = "%s[%s]" % (self.entropyTools.remove_usedeps(dependency),','.join(use_deps),)
+                else: dependency = self.entropyTools.remove_usedeps(dependency)
+            newlist.append(dependency)
+        return newlist
 
     def paren_reduce(self, mystr,tokenize=1):
         """
@@ -21026,7 +21038,6 @@ class SystemManagerExecutorInterface:
                     killed = True
         if killed:
             return False, 'killed by user'
-
         return True, t.result
 
 
@@ -21034,6 +21045,13 @@ class SystemManagerExecutorServerRepositoryInterface:
 
     import entropyTools
     def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
+
+        try:
+            import cPickle as pickle
+        except ImportError:
+            import pickle
+        self.pickle = pickle
+
         import subprocess, entropyTools
         self.subprocess = subprocess
         self.entropyTools = entropyTools
@@ -21403,24 +21421,29 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         stdout_err = open(queue_data['stdout'],"aw")
 
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                switched = self.SystemManagerExecutor.SystemInterface.Entropy.move_packages(
+                    matches, to_repo,
+                    from_repo = from_repo,
+                    ask = False,
+                    do_copy = do_copy
+                )
+                return switched
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        old_updprogress = self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress
-        self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = myupdateprogress
-        try:
-            switched = self.SystemManagerExecutor.SystemInterface.Entropy.move_packages(
-                matches, to_repo,
-                from_repo = from_repo,
-                ask = False,
-                do_copy = do_copy
-            )
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = old_updprogress
-            stdout_err.flush()
-            stdout_err.close()
+        switched = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
 
         rc = 1
         if len(switched) == len(idpackages):
@@ -21592,29 +21615,28 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         stdout_err = open(queue_data['stdout'],"a+")
 
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
+                return deps_not_matched
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,str(e)
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
-
-        try:
-            deps_not_matched = Entropy.dependencies_test()
-        except Exception, e:
-            self.entropyTools.printTraceback(f = stdout_err)
-            return False,str(e)
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
-
-        return True,deps_not_matched
+        data = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return data
 
     def run_entropy_library_test(self, queue_id):
 
@@ -21624,34 +21646,31 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         stdout_err = open(queue_data['stdout'],"a+")
 
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                return self.SystemManagerExecutor.SystemInterface.Entropy.libraries_test()
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,str(e)
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
+        status, result = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
 
-        try:
-            status, result = Entropy.libraries_test()
-        except Exception, e:
-            self.entropyTools.printTraceback(f = stdout_err)
-            return False,str(e)
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
-
-        status = False
-        if status == 0:
-            status = True
-        if not result:
-            result = set()
-        return status,result
+        mystatus = False
+        if status == 0: mystatus = True
+        if not result: result = set()
+        return mystatus,result
 
     def run_entropy_checksum_test(self, queue_id, repoid, mode):
 
@@ -21661,28 +21680,31 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         stdout_err = open(queue_data['stdout'],"a+")
 
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                if mode == "local":
+                    data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_local_packages([], ask = False, repo = repoid)
+                else:
+                    data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_remote_packages([], ask = False, repo = repoid)
+                return True, data
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,str(e)
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
-        try:
-            if mode == "local":
-                data = Entropy.verify_local_packages([], ask = False, repo = repoid)
-            else:
-                data = Entropy.verify_remote_packages([], ask = False, repo = repoid)
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
-
-        return True,data
+        mydata = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return mydata
 
     def run_entropy_treeupdates(self, queue_id, repoid):
 
@@ -21692,27 +21714,32 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         stdout_err = open(queue_data['stdout'],"a+")
 
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                sys.stdout.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.")+"\n")
+                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(
+                    repo = repoid, do_cache = False,
+                    ask_treeupdates = False, read_only = True
+                )
+                dbconn.closeDB()
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,str(e)
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
-        try:
-            stdout_err.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.")+"\n")
-            dbconn = Entropy.openServerDatabase(repo = repoid, do_cache = False, ask_treeupdates = False, read_only = True)
-            dbconn.closeDB()
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
-
-        return True,0
+        self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return True, 0
 
     def scan_entropy_mirror_updates(self, queue_id, repositories):
 
@@ -21721,81 +21748,84 @@ class SystemManagerExecutorServerRepositoryInterface:
             return False,'no item in queue'
 
         stdout_err = open(queue_data['stdout'],"a+")
-
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
-
-        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
         import socket
+        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
-        try:
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
 
-            stdout_err.write(_("Scanning")+"\n")
-            repo_data = {}
-            for repoid in repositories:
+                sys.stdout.write(_("Scanning")+"\n")
+                repo_data = {}
+                for repoid in repositories:
 
-                repo_data[repoid] = {}
+                    repo_data[repoid] = {}
 
-                for uri in Entropy.get_remote_mirrors(repoid):
+                    for uri in Entropy.get_remote_mirrors(repoid):
 
-                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
-                    repo_data[repoid][crippled_uri] = {}
-                    repo_data[repoid][crippled_uri]['packages'] = {}
+                        repo_data[repoid][crippled_uri] = {}
+                        repo_data[repoid][crippled_uri]['packages'] = {}
 
-                    for mybranch in etpConst['branches']:
+                        for mybranch in etpConst['branches']:
 
-                        try:
-                            upload_queue, download_queue, removal_queue, \
-                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, mybranch, repoid)
-                        except socket.error:
-                            self.entropyTools.printTraceback(f = stdout_err)
-                            stdout_err.write("\n"+_("Socket error, continuing...")+"\n")
-                            continue
+                            try:
+                                upload_queue, download_queue, removal_queue, \
+                                    fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, mybranch, repoid)
+                            except socket.error:
+                                self.entropyTools.printTraceback(f = stdout_err)
+                                stdout_err.write("\n"+_("Socket error, continuing...")+"\n")
+                                continue
 
-                        if (upload_queue or download_queue or removal_queue):
-                            upload, download, removal, copy, metainfo = Entropy.MirrorsService.expand_queues(
-                                upload_queue,
-                                download_queue,
-                                removal_queue,
-                                remote_packages_data,
-                                mybranch,
-                                repoid
-                            )
-                            if len(upload)+len(download)+len(removal)+len(copy):
-                                repo_data[repoid][crippled_uri]['packages'][mybranch] = {
-                                    'upload': upload,
-                                    'download': download,
-                                    'removal': removal,
-                                    'copy': copy,
-                                }
+                            if (upload_queue or download_queue or removal_queue):
+                                upload, download, removal, copy, metainfo = Entropy.MirrorsService.expand_queues(
+                                    upload_queue,
+                                    download_queue,
+                                    removal_queue,
+                                    remote_packages_data,
+                                    mybranch,
+                                    repoid
+                                )
+                                if len(upload)+len(download)+len(removal)+len(copy):
+                                    repo_data[repoid][crippled_uri]['packages'][mybranch] = {
+                                        'upload': upload,
+                                        'download': download,
+                                        'removal': removal,
+                                        'copy': copy,
+                                    }
 
-                    # now the db
-                    current_revision = Entropy.get_local_database_revision(repoid)
-                    remote_revision = Entropy.get_remote_database_revision(repoid)
-                    download_latest, upload_queue = Entropy.MirrorsService.calculate_database_sync_queues(repoid)
+                        # now the db
+                        current_revision = Entropy.get_local_database_revision(repoid)
+                        remote_revision = Entropy.get_remote_database_revision(repoid)
+                        download_latest, upload_queue = Entropy.MirrorsService.calculate_database_sync_queues(repoid)
 
-                    repo_data[repoid][crippled_uri]['database'] = {
-                        'current_revision': current_revision,
-                        'remote_revision': remote_revision,
-                        'download_latest': download_latest,
-                        'upload_queue': [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1],) for x in upload_queue]
-                    }
+                        repo_data[repoid][crippled_uri]['database'] = {
+                            'current_revision': current_revision,
+                            'remote_revision': remote_revision,
+                            'download_latest': download_latest,
+                            'upload_queue': [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1],) for x in upload_queue]
+                        }
 
-        finally:
+                return True, repo_data
 
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,str(e)
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        return True,repo_data
+        data = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return data
 
     def run_entropy_mirror_updates(self, queue_id, repository_data):
 
@@ -21804,15 +21834,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             return False,'no item in queue'
 
         stdout_err = open(queue_data['stdout'],"a+")
-
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
-
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
 
         def sync_remote_databases(repoid, pretend):
 
@@ -21838,76 +21860,87 @@ class SystemManagerExecutorServerRepositoryInterface:
 
             return errors, fine_uris, broken_uris
 
-        repo_data = {}
-        try:
 
-            for repoid in repository_data:
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
 
-                # avoid __default__
-                if repoid == etpConst['clientserverrepoid']: continue
+                repo_data = {}
+                for repoid in repository_data:
 
-                successfull_mirrors = set()
-                mirrors_errors = False
-                mirrors_tainted = False
-                broken_mirrors = set()
-                check_data = []
+                    # avoid __default__
+                    if repoid == etpConst['clientserverrepoid']: continue
 
-                repo_data[repoid] = {
-                    'mirrors_tainted': mirrors_tainted,
-                    'mirrors_errors': mirrors_errors,
-                    'successfull_mirrors': successfull_mirrors.copy(),
-                    'broken_mirrors': broken_mirrors.copy(),
-                    'check_data': check_data,
-                    'db_errors': 0,
-                    'db_fine': set(),
-                    'db_broken': set(),
-                }
+                    successfull_mirrors = set()
+                    mirrors_errors = False
+                    mirrors_tainted = False
+                    broken_mirrors = set()
+                    check_data = []
 
-                if repository_data[repoid]['pkg']:
+                    repo_data[repoid] = {
+                        'mirrors_tainted': mirrors_tainted,
+                        'mirrors_errors': mirrors_errors,
+                        'successfull_mirrors': successfull_mirrors.copy(),
+                        'broken_mirrors': broken_mirrors.copy(),
+                        'check_data': check_data,
+                        'db_errors': 0,
+                        'db_fine': set(),
+                        'db_broken': set(),
+                    }
 
-                    mirrors_tainted, mirrors_errors, \
-                    successfull_mirrors, broken_mirrors, \
-                    check_data = Entropy.MirrorsService.sync_packages(
-                        ask = False, pretend = repository_data[repoid]['pretend'],
-                        packages_check = repository_data[repoid]['pkg_check'], repo = repoid)
+                    if repository_data[repoid]['pkg']:
 
-                    repo_data[repoid]['mirrors_tainted'] = mirrors_tainted
-                    repo_data[repoid]['mirrors_errors'] = mirrors_errors
-                    repo_data[repoid]['successfull_mirrors'] = successfull_mirrors
-                    repo_data[repoid]['broken_mirrors'] = broken_mirrors
-                    repo_data[repoid]['check_data'] = check_data
+                        mirrors_tainted, mirrors_errors, \
+                        successfull_mirrors, broken_mirrors, \
+                        check_data = Entropy.MirrorsService.sync_packages(
+                            ask = False, pretend = repository_data[repoid]['pretend'],
+                            packages_check = repository_data[repoid]['pkg_check'], repo = repoid)
 
-                    if (not successfull_mirrors) and (not repository_data[repoid]['pretend']): continue
+                        repo_data[repoid]['mirrors_tainted'] = mirrors_tainted
+                        repo_data[repoid]['mirrors_errors'] = mirrors_errors
+                        repo_data[repoid]['successfull_mirrors'] = successfull_mirrors
+                        repo_data[repoid]['broken_mirrors'] = broken_mirrors
+                        repo_data[repoid]['check_data'] = check_data
 
-                if (not mirrors_errors) and repository_data[repoid]['db']:
+                        if (not successfull_mirrors) and (not repository_data[repoid]['pretend']): continue
 
-                    if mirrors_tainted and etpConst['rss-feed']:
-                        commit_msg = repository_data[repoid]['commit_msg']
-                        if not commit_msg: commit_msg = "Autodriven update"
-                        etpRSSMessages['commitmessage'] = commit_msg
+                    if (not mirrors_errors) and repository_data[repoid]['db']:
 
-                    errors, fine, broken = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
-                    repo_data[repoid]['db_errors'] = errors
-                    repo_data[repoid]['db_fine'] = fine.copy()
-                    repo_data[repoid]['db_broken'] = broken.copy()
-                    if errors: continue
-                    Entropy.MirrorsService.lock_mirrors(lock = False, repo = repoid)
-                    Entropy.MirrorsService.tidy_mirrors(
-                        repo = repoid, ask = False,
-                        pretend = repository_data[repoid]['pretend']
-                    )
+                        if mirrors_tainted and etpConst['rss-feed']:
+                            commit_msg = repository_data[repoid]['commit_msg']
+                            if not commit_msg: commit_msg = "Autodriven update"
+                            etpRSSMessages['commitmessage'] = commit_msg
 
+                        errors, fine, broken = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
+                        repo_data[repoid]['db_errors'] = errors
+                        repo_data[repoid]['db_fine'] = fine.copy()
+                        repo_data[repoid]['db_broken'] = broken.copy()
+                        if errors: continue
+                        Entropy.MirrorsService.lock_mirrors(lock = False, repo = repoid)
+                        Entropy.MirrorsService.tidy_mirrors(
+                            repo = repoid, ask = False,
+                            pretend = repository_data[repoid]['pretend']
+                        )
 
-        finally:
+                return True, repo_data
 
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,str(e)
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        return True,repo_data
+        data = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return data
 
     def get_spm_glsa_data(self, queue_id, list_type):
 
@@ -22295,7 +22328,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'sync_spm', [], {}, False, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'sync_spm', [], {}, False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22420,7 +22453,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_updates', [myargs], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_updates', [myargs], {}, True, True, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22430,7 +22463,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_installed', [myargs], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_installed', [myargs], {}, True, True, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22502,7 +22535,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_spm_info', [], {}, True, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_spm_info', [], {}, True, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22515,7 +22548,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         gid = userdata.get('gid')
         command = ' '.join(myargs)
 
-        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {}, False, False, interactive = True)
+        queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {}, True, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22640,7 +22673,8 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         queue_id = self.HostInterface.add_to_queue(
             cmd, ' '.join([str(x) for x in myargs]),
             uid, gid, 'move_entropy_packages_to_repository',
-            [from_repo,to_repo,idpackages,do_copy], {}, False, True
+            [from_repo,to_repo,idpackages,do_copy], {}, False, True,
+            interactive = True
         )
         if queue_id < 0: return False, queue_id
         return True, queue_id
@@ -22651,7 +22685,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'scan_entropy_packages_database_changes', [], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'scan_entropy_packages_database_changes', [], {}, True, True, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22661,7 +22695,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_dependency_test', [], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_dependency_test', [], {}, True, True, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22671,7 +22705,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_library_test', [], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_library_test', [], {}, True, True, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22685,7 +22719,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_checksum_test', [repoid,mode], {}, True, False)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_checksum_test', [repoid,mode], {}, True, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -22711,7 +22745,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'scan_entropy_mirror_updates', [myargs], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'scan_entropy_mirror_updates', [myargs], {}, True, True, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
@@ -23038,7 +23072,6 @@ class SystemManagerServerInterface(SocketHostInterface):
 
             self.HostInterface.queue_lock_acquire()
             try:
-                import copy
                 myqueue = copy.deepcopy(self.HostInterface.ManagerQueue)
 
                 extended = False
@@ -23255,7 +23288,7 @@ class SystemManagerServerInterface(SocketHostInterface):
             except ValueError:
                 return False,'invalid queue id'
 
-            txt = ' '.join(myargs[1:])
+            txt = ' '.join(myargs[1:])+'\n'
             item, key = self.HostInterface.get_item_by_queue_id(queue_id)
             if key not in self.HostInterface.processing_queue_keys:
                 return False,'not running'
@@ -23268,10 +23301,18 @@ class SystemManagerServerInterface(SocketHostInterface):
                 return False,'pipe vanished'
             if not isinstance(w_fd,int):
                 return False,'stdout fd not an int'
+
+            stdout = open(item['stdout'],"a+")
             try:
                 os.write(w_fd,txt)
+                stdout.write(txt)
             except OSError, e:
                 return False,'OSError: %s' % (e,)
+            except IOError, e:
+                return False,'IOError: %s' % (e,)
+            finally:
+                stdout.flush()
+                stdout.close()
 
             return True,'ok'
 
@@ -23303,8 +23344,8 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         #nocolor()
         self.queue_loaded = False
-        import entropyTools, dumpTools, copy
-        self.entropyTools, self.dumpTools, self.copy = entropyTools, dumpTools, copy
+        import entropyTools, dumpTools
+        self.entropyTools, self.dumpTools = entropyTools, dumpTools
 
         self.setup_stdout_storage_dir()
 
@@ -23532,8 +23573,8 @@ class SystemManagerServerInterface(SocketHostInterface):
                 'command_desc': self.valid_commands[command_name]['desc'],
                 'command_text': command_text,
                 'call': function,
-                'args': self.copy.deepcopy(args),
-                'kwargs': self.copy.deepcopy(kwargs),
+                'args': copy.deepcopy(args),
+                'kwargs': copy.deepcopy(kwargs),
                 'user_id': user_id,
                 'group_id': group_id,
                 'stdout': self.assign_unique_stdout_file(queue_id),
@@ -23671,89 +23712,110 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         while 1:
 
-            if not fork_data:
-                if self.ManagerQueue['pause']:
-                    time.sleep(0.1)
-                    continue
+            try:
 
-                if not self.ManagerQueue['queue_order']:
-                    time.sleep(0.1)
-                    continue
+                if not fork_data:
+                    if self.ManagerQueue['pause']:
+                        time.sleep(0.1)
+                        continue
 
-                command_data, queue_id = self._pop_item_from_queue_by_parallel(parallel_mode)
-                if not command_data:
-                    time.sleep(0.5)
-                    continue
+                    if not self.ManagerQueue['queue_order']:
+                        time.sleep(0.1)
+                        continue
+
+                    command_data, queue_id = self._pop_item_from_queue_by_parallel(parallel_mode)
+                    if not command_data:
+                        time.sleep(0.5)
+                        continue
+
+                    wait_and_takeover()
+                    command_data['processing_ts'] = "%s" % (self.get_ts(),)
+                    self.ManagerQueue['processing'][queue_id] = command_data
+                    self.ManagerQueue['processing_order'].append(queue_id)
+                    do_store_and_free()
+
+                else:
+                    command_data, queue_id = fork_data
+
+                try:
+                    if parallel_mode:
+                        t = self.entropyTools.parallelTask(self.queue_processor, False, fork_data = (command_data, queue_id,))
+                        t.start()
+                        continue
+                    else:
+                        done, result = self.SystemExecutor.execute_task(command_data)
+                except Exception, e:
+                    self.queue_lock_release()
+                    self.entropyTools.printTraceback()
+                    done = False
+                    result = (False, str(e),)
 
                 wait_and_takeover()
-                command_data['processing_ts'] = "%s" % (self.get_ts(),)
-                self.ManagerQueue['processing'][queue_id] = command_data
-                self.ManagerQueue['processing_order'].append(queue_id)
-                do_store_and_free()
-
-            else:
-                command_data, queue_id = fork_data
-
-            try:
-                if parallel_mode:
-                    t = self.entropyTools.parallelTask(self.queue_processor, False, fork_data = (command_data, queue_id,))
-                    t.start()
-                    continue
+                if command_data.has_key('extended_result') and done:
+                    try:
+                        command_data['result'], command_data['extended_result'] = copy_obj(result)
+                    except TypeError:
+                        done = False
+                        command_data['result'] = 'wrong tuple split from queue processor (1)'
+                        command_data['extended_result'] = None
                 else:
-                    done, result = self.SystemExecutor.execute_task(command_data)
-            except Exception, e:
-                self.queue_lock_release()
-                self.entropyTools.printTraceback()
-                done = False
-                result = (False, str(e),)
+                    command_data['result'] = copy_obj(result)
 
-            wait_and_takeover()
-            if command_data.has_key('extended_result') and done:
+                if not done:
+                    try:
+                        self.ManagerQueue['processing'].pop(queue_id)
+                    except KeyError:
+                        pass
+                    if queue_id in self.ManagerQueue['processing_order']:
+                        self.ManagerQueue['processing_order'].remove(queue_id)
+                    command_data['errored_ts'] = "%s" % (self.get_ts(),)
+                    self.ManagerQueue['errored'][queue_id] = command_data
+                    self.ManagerQueue['errored_order'].append(queue_id)
+                    do_store_and_free()
+                    if fork_data:
+                        break
+                    continue
+
                 try:
-                    command_data['result'], command_data['extended_result'] = copy_obj(result)
+                    done, cmd_result = result
                 except TypeError:
                     done = False
-                    command_data['result'] = 'wrong tuple split from queue processor (1)'
-                    command_data['extended_result'] = None
-            else:
-                command_data['result'] = copy_obj(result)
+                    command_data['result'] = 'wrong tuple split from queue processor (2)'
+                if not done:
+                    try:
+                        self.ManagerQueue['processing'].pop(queue_id)
+                    except KeyError:
+                        pass
+                    if queue_id in self.ManagerQueue['processing_order']:
+                        self.ManagerQueue['processing_order'].remove(queue_id)
+                    command_data['errored_ts'] = "%s" % (self.get_ts(),)
+                    self.ManagerQueue['errored'][queue_id] = command_data
+                    self.ManagerQueue['errored_order'].append(queue_id)
+                    do_store_and_free()
+                    if fork_data:
+                        break
+                    continue
 
-            if not done:
                 try:
                     self.ManagerQueue['processing'].pop(queue_id)
                 except KeyError:
                     pass
                 if queue_id in self.ManagerQueue['processing_order']:
                     self.ManagerQueue['processing_order'].remove(queue_id)
-                command_data['errored_ts'] = "%s" % (self.get_ts(),)
-                self.ManagerQueue['errored'][queue_id] = command_data
-                self.ManagerQueue['errored_order'].append(queue_id)
+                command_data['processed_ts'] = "%s" % (self.get_ts(),)
+                self.ManagerQueue['processed'][queue_id] = command_data
+                self.ManagerQueue['processed_order'].append(queue_id)
                 do_store_and_free()
-                continue
 
-            try:
-                done, cmd_result = result
-            except TypeError:
-                done = False
-                command_data['result'] = 'wrong tuple split from queue processor (2)'
-            if not done:
-                self.ManagerQueue['processing'].pop(queue_id)
-                self.ManagerQueue['processing_order'].remove(queue_id)
-                command_data['errored_ts'] = "%s" % (self.get_ts(),)
-                self.ManagerQueue['errored'][queue_id] = command_data
-                self.ManagerQueue['errored_order'].append(queue_id)
-                do_store_and_free()
-                continue
+                if fork_data:
+                    break
 
-            self.ManagerQueue['processing'].pop(queue_id)
-            self.ManagerQueue['processing_order'].remove(queue_id)
-            command_data['processed_ts'] = "%s" % (self.get_ts(),)
-            self.ManagerQueue['processed'][queue_id] = command_data
-            self.ManagerQueue['processed_order'].append(queue_id)
-            do_store_and_free()
-
-            if fork_data:
-                break
+            except:
+                try:
+                    self.queue_lock_release()
+                except thread.error:
+                    pass
+                raise
 
 
     def killall(self):
