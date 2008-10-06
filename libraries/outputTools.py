@@ -407,11 +407,12 @@ def readtext(request, password = False):
         text = my_raw_input()
     return text
 
-def my_raw_input(txt):
-    try:
-        print darkgreen(txt),
-    except UnicodeEncodeError:
-        print darkgreen(txt.encode('utf-8')),
+def my_raw_input(txt = ''):
+    if txt:
+        try:
+            print darkgreen(txt),
+        except UnicodeEncodeError:
+            print darkgreen(txt.encode('utf-8')),
     flush_stdouterr()
     response = ''
     while 1:
