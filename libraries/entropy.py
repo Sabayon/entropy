@@ -33132,8 +33132,7 @@ class EntropyDatabaseInterface:
         scan_atom = self.entropyTools.remove_usedeps(atom)
         if not scan_atom:
             # completely broken atom
-            scan_atom = atom
-            atomUse = []
+            return -1,1
         if (not matchUse) and (atomUse):
             matchUse = atomUse
 
@@ -33164,8 +33163,7 @@ class EntropyDatabaseInterface:
 
             # get version
             data = self.entropyTools.catpkgsplit(strippedAtom)
-            if data == None:
-                return -1,1 # atom is badly formatted
+            if data == None: return -1,1 # atom is badly formatted
             pkgversion = data[2]+"-"+data[3]
 
         pkgkey = self.entropyTools.dep_getkey(strippedAtom)
