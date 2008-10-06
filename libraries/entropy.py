@@ -15209,10 +15209,11 @@ class ServerInterface(TextInterface):
 
                         crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
                         self.updateProgress(
-                            bold("%s: ") + red("[") + brown("DATABASE: %s") + red("] [") + \
-                            brown("DOWNLOAD: %s")+red("]") % (
-                                crippled_uri,
+                            "%s: [%s: %s] [%s: %s]" % (
+                                bold(crippled_uri),
+                                brown(_("database")),
                                 db[1],
+                                brown(_("download")),
                                 db[2],
                             ),
                             importance = 1,
