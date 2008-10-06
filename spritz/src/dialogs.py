@@ -360,6 +360,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.console.set_scroll_on_output(True)
         self.console.set_pty(self.pty[0])
         self.console.connect("button-press-event", self.on_console_click)
+        self.console.connect("commit",self.on_console_commit)
         termScroll = gtk.VScrollbar(self.console.get_adjustment())
         self.sm_ui.repoManagerVteBox.pack_start(self.console, True, True)
         self.sm_ui.repoManagerTermScrollBox.pack_start(termScroll, False)
@@ -370,14 +371,6 @@ class RepositoryManagerMenu(MenuSkel):
         self.std_input.text_read = ''
         self.console.reset()
 
-    def on_repoManagerConsoleEvent_key_release_event(self, widget, event):
-        if event.string == "\r":
-            self.on_repoManagerStdinEntry_activate(None, self.std_input.text_read)
-            self.std_input.text_read = ''
-        else:
-            self.std_input.text_read += event.string
-        return False
-
     def on_repoManagerConsoleEvent_enter_notify_event(self, widget, event):
         self.console.grab_focus()
 
@@ -385,6 +378,15 @@ class RepositoryManagerMenu(MenuSkel):
         if event.button == 3:
             self.console_menu.popup( None, None, None, event.button, event.time )
         return True
+
+    def on_console_commit(self, widget, txt, txtlen):
+        if txt == "\r":
+            self.on_repoManagerStdinEntry_activate(None, self.std_input.text_read)
+            self.std_input.text_read = ''
+        elif txt == '\x7f':
+            self.std_input.text_read = self.std_input.text_read[:-1]
+        else:
+            self.std_input.text_read += txt
 
     def on_terminal_clear_activate(self, widget):
         self.clear_console()
@@ -876,7 +878,6 @@ class RepositoryManagerMenu(MenuSkel):
             for queue_id in queue['processing_order']:
                 item = queue['processing'].get(queue_id)
                 if item == None: continue
-                #self.is_processing = item.copy()
                 item = item.copy()
                 item['from'] = "processing"
                 self.QueueStore.append((item,item['queue_ts'],))
@@ -981,7 +982,7 @@ class RepositoryManagerMenu(MenuSkel):
 
             if not status: return
             stdout = stdout[-1*n_bytes:]
-            if stdout == self.Output: return
+            if (stdout == self.Output) and (not force): return
             self.Output = stdout
 
             gtk.gdk.threads_enter()
@@ -4354,6 +4355,7 @@ class UGCInfoMenu(MenuSkel):
 
 class UGCAddMenu(MenuSkel):
 
+    import entropyTools
     def __init__(self, Entropy, pkgkey, repository, window, refresh_cb):
 
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
@@ -4424,6 +4426,28 @@ class UGCAddMenu(MenuSkel):
             return False
 
         self.show_loading()
+
+        t = self.entropyTools.parallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
+        t.start()
+        while 1:
+            if not t.isAlive(): break
+            while gtk.events_pending():
+                gtk.main_iteration()
+            time.sleep(0.1)
+        rslt, data = t.result
+
+        self.hide_loading()
+        if not rslt:
+            txt = "<small><span foreground='#FF0000'><b>%s</b></span>: %s | %s</small>" % (_("UGC Error"),rslt,data,)
+            self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
+            return False
+        else:
+            okDialog(self.window, _("Document added successfully. Thank you"), title = _("Success!"))
+            self.on_closeAdd_clicked(None,None)
+            self.refresh_cb()
+            return True
+
+    def do_send_document_autosense(self, doc_type, doc_path, title, description, keywords_text):
         try:
             rslt, data = self.Entropy.UGC.send_document_autosense(
                 self.repository,
@@ -4437,16 +4461,7 @@ class UGCAddMenu(MenuSkel):
         except Exception, e:
             rslt = False
             data = e
-        self.hide_loading()
-        if not rslt:
-            txt = "<small><span foreground='#FF0000'><b>%s</b></span>: %s | %s</small>" % (_("UGC Error"),rslt,data,)
-            self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
-            return False
-        else:
-            okDialog(self.window, _("Document added successfully. Thank you"), title = _("Success!"))
-            self.on_closeAdd_clicked(None,None)
-            self.refresh_cb()
-            return True
+        return rslt, data
 
     def show_loading(self):
         self.ugcadd_ui.ugcAddButtonBox.hide()
