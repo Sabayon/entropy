@@ -1073,11 +1073,16 @@ def dep_getusedeps(depend):
     return tuple(use_list)
 
 def remove_usedeps(depend):
-    open_bracket = depend.find('[')
-    close_bracket = depend.find(']')
-    if open_bracket == -1:
-        return depend
-    return depend[:open_bracket]+depend[close_bracket+1:]
+    mydepend = depend[:]
+
+    close_bracket = mydepend.find(']')
+    after_closebracket = ''
+    if close_bracket != -1: after_closebracket = mydepend[close_bracket+1:]
+
+    open_bracket = mydepend.find('[')
+    if open_bracket != -1: mydepend = mydepend[:open_bracket]
+
+    return mydepend+after_closebracket
 
 def remove_slot(mydep):
     """
