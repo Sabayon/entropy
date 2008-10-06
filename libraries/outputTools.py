@@ -399,14 +399,27 @@ def readtext(request, password = False):
         except UnicodeEncodeError:
             text = getpass(request.encode('utf-8')+" ")
     else:
-        import readline
         try:
             print request,
         except UnicodeEncodeError:
             print request.encode('utf-8'),
         flush_stdouterr()
-        text = raw_input() # using readline module
+        text = my_raw_input()
     return text
+
+def my_raw_input(txt):
+    try:
+        print darkgreen(txt),
+    except UnicodeEncodeError:
+        print darkgreen(txt.encode('utf-8')),
+    flush_stdouterr()
+    response = ''
+    while 1:
+        y = sys.stdin.read(1)
+        if y in ('\n','\r',): break
+        response += y
+        flush_stdouterr()
+    return response
 
 class TextInterface:
 
@@ -482,10 +495,13 @@ class TextInterface:
             print darkgreen(question),
         except UnicodeEncodeError:
             print darkgreen(question.encode('utf-8')),
+        flush_stdouterr()
         try:
             while True:
                 xtermTitle(_("Entropy got a question for you"))
-                response = raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
+                flush_stdouterr()
+                response = my_raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
+                flush_stdouterr()
                 for key in responses:
                     # An empty response will match the first value in responses.
                     if response.upper() == key[:len(response)].upper():
