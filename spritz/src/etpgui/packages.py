@@ -54,6 +54,9 @@ class EntropyPackage:
         self.color = SpritzConf.color_normal
         self.remote = remote
 
+        self.matched_atom = matched_atom
+        self.installed_match = None
+
         if self.remote:
             self.dbconn = EquoConnection.openMemoryDatabase()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
@@ -66,9 +69,6 @@ class EntropyPackage:
             else:
                 self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
                 self.from_installed = False
-
-        self.matched_atom = matched_atom
-        self.installed_match = None
 
     def __del__(self):
         if hasattr(self,'remote'):

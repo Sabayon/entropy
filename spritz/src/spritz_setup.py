@@ -194,7 +194,7 @@ class fakeoutfile:
         pass
 
     def flush(self):
-        self.close()
+        pass
 
     def fileno(self):
         return self.fn
@@ -213,6 +213,7 @@ class fakeoutfile:
 
     def write(self, s):
         os.write(self.fn,s)
+        #os.fsync(self.fn)
         self.text_written.append(s)
         # cut at 1024 entries
         if len(self.text_written) > 1024:
@@ -240,11 +241,13 @@ class fakeinfile:
     """
     def __init__(self, fn):
         self.fn = fn
+        self.text_read = ''
 
     def close(self):
         pass
 
-    flush = close
+    def flush(self):
+        pass
 
     def fileno(self):
         return self.fn
@@ -256,15 +259,18 @@ class fakeinfile:
         return self.readline(count = a)
 
     def readline(self, count = 2048):
-        return os.read(self.fn,count)
+        x = os.read(self.fn,count)
+        self.text_read += x
+        return x
 
-    def readlines(self): return []
+    def readlines(self):
+        return self.readline().split("\n")
 
     def write(self, s):
-        return None
+        raise IOError, (29, 'Illegal seek')
 
     def writelines(self, l):
-        return None
+        raise IOError, (29, 'Illegal seek')
 
     def seek(self, a):
         raise IOError, (29, 'Illegal seek')
