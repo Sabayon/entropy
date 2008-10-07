@@ -18104,7 +18104,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         srv.password = self.connection_data['google_password']
         if self.connection_data.has_key('google_developer_key'):
             srv.developer_key = self.connection_data['google_developer_key']
-        #srv.client_id = self.connection_data['google_clientid']
+        if self.connection_data.has_key('google_client_id'):
+            srv.client_id = self.connection_data['google_client_id']
         srv.source = 'Entropy'
         srv.ProgrammaticLogin()
         return srv
