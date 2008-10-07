@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Sabayon Linux Entropy\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-03 16:34+0200\n"
+"POT-Creation-Date: 2008-10-07 14:22+0200\n"
 "PO-Revision-Date: 2008-09-20 14:33-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: NL <LL@li.org>\n"
@@ -158,7 +158,7 @@ msgstr ""
 msgid "Error"
 msgstr "Fout"
 
-#: ../../libraries/entropy.py:271 ../../libraries/entropy.py:14806
+#: ../../libraries/entropy.py:271 ../../libraries/entropy.py:14862
 msgid "Fetch"
 msgstr "Ophalen"
 
@@ -178,11 +178,11 @@ msgstr "oneindig"
 #. glsa title
 #: ../../libraries/entropy.py:424 ../../libraries/entropy.py:432
 #: ../../server/server_reagent.py:88 ../../server/server_reagent.py:100
-#: ../../spritz/src/dialogs.py:1428 ../../spritz/src/dialogs.py:1601
-#: ../../spritz/src/dialogs.py:1678 ../../spritz/src/dialogs.py:1985
-#: ../../spritz/src/dialogs.py:2840 ../../spritz/src/dialogs.py:2889
-#: ../../spritz/src/dialogs.py:2925 ../../spritz/src/dialogs.py:2949
-#: ../../spritz/src/dialogs.py:2975 ../../spritz/src/spritz.py:1245
+#: ../../spritz/src/dialogs.py:1799 ../../spritz/src/dialogs.py:1972
+#: ../../spritz/src/dialogs.py:2049 ../../spritz/src/dialogs.py:2354
+#: ../../spritz/src/dialogs.py:3057 ../../spritz/src/dialogs.py:3108
+#: ../../spritz/src/dialogs.py:3144 ../../spritz/src/dialogs.py:3168
+#: ../../spritz/src/dialogs.py:3194 ../../spritz/src/spritz.py:1245
 #: ../../spritz/src/views.py:505 ../../spritz/src/views.py:1153
 msgid "Repository"
 msgstr "Repository"
@@ -313,11 +313,11 @@ msgstr "Opzoeken van beschadigde opstartbestanden"
 #: ../../libraries/entropy.py:1172 ../../libraries/entropy.py:7180
 #: ../../libraries/entropy.py:7217 ../../libraries/entropy.py:7232
 #: ../../libraries/entropy.py:7244 ../../libraries/entropy.py:7259
-#: ../../libraries/entropy.py:9633 ../../libraries/entropy.py:16456
+#: ../../libraries/entropy.py:9633 ../../libraries/entropy.py:16513
 #: ../../client/text_rescue.py:285 ../../client/text_rescue.py:296
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:688
 #: ../../client/text_ui.py:690 ../../client/text_ui.py:691
-#: ../../spritz/src/dialogs.py:4929 ../../spritz/src/misc.py:91
+#: ../../spritz/src/dialogs.py:5206 ../../spritz/src/misc.py:91
 #: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:1449
 msgid "Attention"
 msgstr "Attentie"
@@ -364,7 +364,7 @@ msgstr "Berekenen wereld pakketten"
 msgid "not a valid method"
 msgstr "geen geldige methode"
 
-#: ../../libraries/entropy.py:3225 ../../libraries/entropy.py:16650
+#: ../../libraries/entropy.py:3225 ../../libraries/entropy.py:16707
 msgid "Mirror"
 msgstr "Mirror"
 
@@ -412,8 +412,8 @@ msgstr "onbekende reden"
 msgid "Extracting package metadata"
 msgstr "Uitpakken van pakket metadata"
 
-#: ../../libraries/entropy.py:3631 ../../libraries/entropy.py:16598
-#: ../../libraries/entropy.py:26129
+#: ../../libraries/entropy.py:3631 ../../libraries/entropy.py:16655
+#: ../../libraries/entropy.py:26425
 msgid "not supported"
 msgstr "niet ondersteund"
 
@@ -489,8 +489,8 @@ msgstr "Aanvaring gevonden tijdens verwijderen van"
 msgid "cannot overwrite"
 msgstr "kan niet overschrijven"
 
-#: ../../libraries/entropy.py:4271 ../../libraries/entropy.py:27120
-#: ../../libraries/entropy.py:27966
+#: ../../libraries/entropy.py:4271 ../../libraries/entropy.py:27416
+#: ../../libraries/entropy.py:28262
 msgid "remove"
 msgstr "verwijder"
 
@@ -827,7 +827,7 @@ msgstr "Pakket verwijdering compleet"
 msgid "Database checksum doesn't match remote."
 msgstr "Database controlesom komt niet overeen met externe."
 
-#: ../../libraries/entropy.py:6827 ../../libraries/entropy.py:16714
+#: ../../libraries/entropy.py:6827 ../../libraries/entropy.py:16771
 msgid "local"
 msgstr "lokaal"
 
@@ -908,8 +908,8 @@ msgstr "Probeer opnieuw in een paar minuten"
 msgid "Injecting downloaded dump"
 msgstr "Injecteren van gedownloade dump"
 
-#: ../../libraries/entropy.py:7295 ../../libraries/entropy.py:31583
-#: ../../spritz/src/spritz.glade.h:234
+#: ../../libraries/entropy.py:7295 ../../libraries/entropy.py:31879
+#: ../../spritz/src/spritz.glade.h:236
 msgid "please wait"
 msgstr "even wachten"
 
@@ -991,8 +991,8 @@ msgstr "Indexeren van Repository metadata"
 msgid "Repositories synchronization"
 msgstr "Repositories synchronisatie"
 
-#: ../../libraries/entropy.py:7561 ../../libraries/entropy.py:19863
-#: ../../libraries/entropy.py:20461 ../../libraries/entropy.py:24482
+#: ../../libraries/entropy.py:7561 ../../libraries/entropy.py:19922
+#: ../../libraries/entropy.py:20521 ../../libraries/entropy.py:24768
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
 msgstr ""
 "Een geldige EquoInterface/ServerInterface gebaseerde instantie is nodig"
@@ -1239,7 +1239,7 @@ msgstr "Updaten van werkomgeving"
 msgid "Setting system VM to"
 msgstr "Systeem VM zetten naar"
 
-#: ../../libraries/entropy.py:9635 ../../libraries/entropy.py:25685
+#: ../../libraries/entropy.py:9635 ../../libraries/entropy.py:25981
 #: ../../client/text_security.py:73 ../../client/text_smart.py:85
 msgid "does not exist"
 msgstr "bestaat niet"
@@ -1385,9 +1385,9 @@ msgstr "installeren"
 msgid "Invalid backend"
 msgstr "Ongeldig backend-type"
 
-#: ../../libraries/entropy.py:11984 ../../libraries/entropy.py:26332
-#: ../../libraries/entropy.py:26483 ../../libraries/entropy.py:26577
-#: ../../libraries/entropy.py:27794
+#: ../../libraries/entropy.py:11984 ../../libraries/entropy.py:26628
+#: ../../libraries/entropy.py:26779 ../../libraries/entropy.py:26873
+#: ../../libraries/entropy.py:28090
 msgid "error"
 msgstr "fout"
 
@@ -1396,129 +1396,139 @@ msgstr "fout"
 msgid "not found"
 msgstr "niet gevonden"
 
-#: ../../libraries/entropy.py:12371
+#: ../../libraries/entropy.py:12379
 msgid "Error calculating dependencies"
 msgstr "Fout tijdens het calculeren van afhankelijkheden"
 
-#: ../../libraries/entropy.py:12423
+#: ../../libraries/entropy.py:12444
 msgid "missing right parenthesis"
 msgstr "de juiste haakjes ontbreken"
 
-#: ../../libraries/entropy.py:12489
+#: ../../libraries/entropy.py:12510
 msgid "missing atom list in"
 msgstr "ontbrekende atoom lijst in"
 
-#: ../../libraries/entropy.py:12492
+#: ../../libraries/entropy.py:12513
 msgid "Conditional without target in"
 msgstr "Voorwaardelijke zonder doel in"
 
-#: ../../libraries/entropy.py:12522
+#: ../../libraries/entropy.py:12543
 msgid "Conditional with no target"
 msgstr "Voorwaardelijke zonder doel"
 
-#: ../../libraries/entropy.py:12527
+#: ../../libraries/entropy.py:12548
 msgid "Empty target in string"
 msgstr "Leeg doel in tekenreeks"
 
-#: ../../libraries/entropy.py:12527 ../../libraries/entropy.py:12536
+#: ../../libraries/entropy.py:12548 ../../libraries/entropy.py:12557
 msgid "Deprecated"
 msgstr "Achterhaald"
 
-#: ../../libraries/entropy.py:12536
+#: ../../libraries/entropy.py:12557
 msgid "Nested use flags without parenthesis"
 msgstr "Ingebedde 'use' vlaggen zonder haakjes"
 
-#: ../../libraries/entropy.py:12576
+#: ../../libraries/entropy.py:12597
 msgid "Conditional without flag"
 msgstr "Voorwaardelijke zonder vlag"
 
-#: ../../libraries/entropy.py:12592
+#: ../../libraries/entropy.py:12613
 msgid "Conditional without parenthesis"
 msgstr "Voorwaardelijke zonder haakjes"
 
-#: ../../libraries/entropy.py:13283
+#: ../../libraries/entropy.py:13304
 msgid "Cannot bind the service"
 msgstr "Kan de service niet koppelen"
 
-#: ../../libraries/entropy.py:14815
+#: ../../libraries/entropy.py:14871
 msgid "Entropy ServerInterface must be run as root"
 msgstr "Entropy ServerInterface moet gestart worden als root"
 
-#: ../../libraries/entropy.py:14843 ../../libraries/entropy.py:14931
+#: ../../libraries/entropy.py:14899 ../../libraries/entropy.py:14987
 msgid "repository not configured"
 msgstr "repository niet geconfigureerd"
 
-#: ../../libraries/entropy.py:14849
+#: ../../libraries/entropy.py:14905
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr "beveiligde repository ID, kan deze niet gebruiken, sorry dude..."
 
-#: ../../libraries/entropy.py:14954
+#: ../../libraries/entropy.py:15010
 msgid "Your default repository is not initialized"
 msgstr "Je standaard repository is niet geïnitialiseerd"
 
-#: ../../libraries/entropy.py:14965
+#: ../../libraries/entropy.py:15021
 msgid "Do you want to initialize your default repository ?"
 msgstr "Wilt u de standaard repository initialiseren ?"
 
-#: ../../libraries/entropy.py:14967
+#: ../../libraries/entropy.py:15023
 msgid "You have taken the risk to continue with an uninitialized repository"
 msgstr ""
 "Je hebt het risico genomen om door te gaan met een ongeïnitialiseerde "
 "repository"
 
-#: ../../libraries/entropy.py:14987
+#: ../../libraries/entropy.py:15043
 msgid "server-side repository"
 msgstr "server-side repository"
 
-#: ../../libraries/entropy.py:14989
+#: ../../libraries/entropy.py:15045
 msgid "community repository"
 msgstr "communiteit repository"
 
-#: ../../libraries/entropy.py:14990
+#: ../../libraries/entropy.py:15046
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Entropy Server Interface Instantie op de repository"
 
-#: ../../libraries/entropy.py:14995
+#: ../../libraries/entropy.py:15051
 #, fuzzy
 msgid "current branch"
 msgstr "Al reeds in branche"
 
-#: ../../libraries/entropy.py:14997
+#: ../../libraries/entropy.py:15053
 msgid "type"
 msgstr "type"
 
-#: ../../libraries/entropy.py:15006
+#: ../../libraries/entropy.py:15062
 msgid "Currently configured repositories"
 msgstr "Huidig geconfigureerde repositories"
 
-#: ../../libraries/entropy.py:15122
+#: ../../libraries/entropy.py:15178
 msgid "Entropy database is already locked by you :-)"
 msgstr "Entropy database is reeds geblokkeerd door jouw :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy.py:15129
+#: ../../libraries/entropy.py:15185
 msgid "Locking and Syncing Entropy database"
 msgstr "Blokkeren en Synchroniseren van Entropy database"
 
-#: ../../libraries/entropy.py:15141 ../../server/server_activator.py:180
+#: ../../libraries/entropy.py:15197 ../../server/server_activator.py:180
 msgid "Mirrors status table"
 msgstr "Mirrors status tabel"
 
-#: ../../libraries/entropy.py:15150 ../../libraries/entropy.py:15153
+#: ../../libraries/entropy.py:15206 ../../libraries/entropy.py:15209
 #: ../../server/server_activator.py:186 ../../server/server_activator.py:190
 msgid "Unlocked"
 msgstr "Vrijgemaakt"
 
-#: ../../libraries/entropy.py:15152 ../../libraries/entropy.py:15155
+#: ../../libraries/entropy.py:15208 ../../libraries/entropy.py:15211
 #: ../../server/server_activator.py:184 ../../server/server_activator.py:188
 msgid "Locked"
 msgstr "geblokkeerd"
 
-#: ../../libraries/entropy.py:15171
+#: ../../libraries/entropy.py:15217 ../../libraries/entropy.py:15319
+msgid "database"
+msgstr "database"
+
+#: ../../libraries/entropy.py:15219 ../../libraries/entropy.py:16830
+#: ../../libraries/entropy.py:27069 ../../libraries/entropy.py:27388
+#: ../../spritz/src/dialogs.py:1821
+msgid "download"
+msgstr "download"
+
+#: ../../libraries/entropy.py:15228
 msgid "cannot lock mirror"
 msgstr "kan mirror niet blokkeren"
 
-#: ../../libraries/entropy.py:15249
+#: ../../libraries/entropy.py:15306
 msgid ""
 "Entropy database is probably empty. If you don't agree with what I'm saying, "
 "then it's probably corrupted! I won't stop you here btw..."
@@ -1526,103 +1536,99 @@ msgstr ""
 "Entropy database is waarschijnlijk leeg. Als je het niet met mij eens bent, "
 "is hij waarschijnlijk corrupt! Maar ik zal je hier niet stoppen..."
 
-#: ../../libraries/entropy.py:15262
-msgid "database"
-msgstr "database"
-
-#: ../../libraries/entropy.py:15263
+#: ../../libraries/entropy.py:15320
 msgid "indexing database"
 msgstr "indexeren van database"
 
-#: ../../libraries/entropy.py:15280
+#: ../../libraries/entropy.py:15337
 msgid "branch copy"
 msgstr ""
 
-#: ../../libraries/entropy.py:15281
+#: ../../libraries/entropy.py:15338
 msgid "copying counters from"
 msgstr ""
 
-#: ../../libraries/entropy.py:15283 ../../libraries/entropy.py:28848
+#: ../../libraries/entropy.py:15340 ../../libraries/entropy.py:29144
 #: ../../client/text_configuration.py:113
 msgid "to"
 msgstr "naar"
 
-#: ../../libraries/entropy.py:15321
+#: ../../libraries/entropy.py:15378
 msgid "Checking"
 msgstr "Controleren"
 
-#: ../../libraries/entropy.py:15349
+#: ../../libraries/entropy.py:15406
 msgid "Running dependencies test"
 msgstr "Uitvoeren van afhankelijkheden test"
 
-#: ../../libraries/entropy.py:15377 ../../client/text_ui.py:1163
+#: ../../libraries/entropy.py:15434 ../../client/text_ui.py:1163
 msgid "These are the dependencies not found"
 msgstr "Deze afhankelijkheden zijn niet gevonden"
 
-#: ../../libraries/entropy.py:15384 ../../client/text_ui.py:1167
+#: ../../libraries/entropy.py:15441 ../../client/text_ui.py:1167
 msgid "Needed by"
 msgstr "Nodig voor"
 
-#: ../../libraries/entropy.py:15401
+#: ../../libraries/entropy.py:15458
 msgid "by repo"
 msgstr "bij repo"
 
-#: ../../libraries/entropy.py:15408
+#: ../../libraries/entropy.py:15465
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "Alle afhankelijkheden zijn voldaan. Alles zit goed."
 
-#: ../../libraries/entropy.py:15430 ../../client/text_ui.py:1213
+#: ../../libraries/entropy.py:15487 ../../client/text_ui.py:1213
 msgid "System is healthy"
 msgstr "Systeem is gezond"
 
-#: ../../libraries/entropy.py:15439
+#: ../../libraries/entropy.py:15496
 msgid "Matching libraries with Spm"
 msgstr "Vergelijken van bibliotheken met Spm"
 
-#: ../../libraries/entropy.py:15448 ../../libraries/entropy.py:21637
+#: ../../libraries/entropy.py:15505 ../../libraries/entropy.py:21767
 msgid "Scanning"
 msgstr "Scannen"
 
-#: ../../libraries/entropy.py:15460
+#: ../../libraries/entropy.py:15517
 msgid "These are the matched packages"
 msgstr "Dit zijn de overeenkomende pakketten"
 
-#: ../../libraries/entropy.py:15476
+#: ../../libraries/entropy.py:15533
 msgid "No matched packages"
 msgstr "Geen overeenkomende pakketten"
 
-#: ../../libraries/entropy.py:15498
+#: ../../libraries/entropy.py:15555
 msgid "Initializing an empty database file with Entropy structure"
 msgstr "Initialiseren van een leeg database bestand met Entropy structuur"
 
-#: ../../libraries/entropy.py:15510
+#: ../../libraries/entropy.py:15567
 msgid "Entropy database file"
 msgstr "Entropy database bestand"
 
-#: ../../libraries/entropy.py:15510
+#: ../../libraries/entropy.py:15567
 msgid "successfully initialized"
 msgstr "succesvol geïnitialiseerd"
 
-#: ../../libraries/entropy.py:15526
+#: ../../libraries/entropy.py:15583
 msgid "You cannot switch packages from/to your system database"
 msgstr "Je kan geen pakketten van/naar je systeem database verplaatsen"
 
-#: ../../libraries/entropy.py:15542
+#: ../../libraries/entropy.py:15599
 msgid "Preparing to move selected packages to"
 msgstr "Voorbereiden van verplaatsen van geselecteerde pakketten naar"
 
-#: ../../libraries/entropy.py:15544
+#: ../../libraries/entropy.py:15601
 msgid "Preparing to copy selected packages to"
 msgstr "Voorbereiden van kopiëren van geselecteerde pakketten naar"
 
 #. note
-#: ../../libraries/entropy.py:15556 ../../libraries/entropy.py:24089
-#: ../../spritz/src/dialogs.py:540 ../../spritz/src/dialogs.py:2691
-#: ../../spritz/src/spritz.glade.h:100
+#: ../../libraries/entropy.py:15613 ../../libraries/entropy.py:24362
+#: ../../spritz/src/dialogs.py:596 ../../spritz/src/dialogs.py:2918
+#: ../../spritz/src/spritz.glade.h:101
 msgid "Note"
 msgstr "Notitie"
 
-#: ../../libraries/entropy.py:15557
+#: ../../libraries/entropy.py:15614
 msgid ""
 "all the old packages with conflicting scope will be removed from the "
 "destination repo unless injected"
@@ -1631,112 +1637,112 @@ msgstr ""
 "bestemming repo behalve geïnjecteerde"
 
 #. ask to continue
-#: ../../libraries/entropy.py:15581 ../../libraries/entropy.py:16545
-#: ../../libraries/entropy.py:16784 ../../libraries/entropy.py:27978
+#: ../../libraries/entropy.py:15638 ../../libraries/entropy.py:16602
+#: ../../libraries/entropy.py:16841 ../../libraries/entropy.py:28274
 #: ../../server/server_reagent.py:362 ../../server/server_reagent.py:409
 #: ../../server/server_reagent.py:459
 msgid "Would you like to continue ?"
 msgstr "Wilt u doorgaan ?"
 
-#: ../../libraries/entropy.py:15597
+#: ../../libraries/entropy.py:15654
 msgid "switching"
 msgstr "Veranderen"
 
-#: ../../libraries/entropy.py:15615
+#: ../../libraries/entropy.py:15672
 msgid "cannot switch, package not found, skipping"
 msgstr "Kan niet wisselen, pakket niet gevonden, overslaan"
 
-#: ../../libraries/entropy.py:15641
+#: ../../libraries/entropy.py:15698
 msgid "moving file"
 msgstr "Bestand verplaatsen"
 
-#: ../../libraries/entropy.py:15657
+#: ../../libraries/entropy.py:15714
 msgid "loading data from source database"
 msgstr "laden van data vanaf source database"
 
-#: ../../libraries/entropy.py:15674
+#: ../../libraries/entropy.py:15731
 msgid "injecting data to destination database"
 msgstr "injecteren van data naar locatie van database"
 
-#: ../../libraries/entropy.py:15692
+#: ../../libraries/entropy.py:15749
 msgid "removing entry from source database"
 msgstr "verwijderen van ingang van de source database"
 
-#: ../../libraries/entropy.py:15710
+#: ../../libraries/entropy.py:15767
 msgid "successfully handled atom"
 msgstr "succesvol behandeld atoom"
 
-#: ../../libraries/entropy.py:15735 ../../libraries/entropy.py:15829
+#: ../../libraries/entropy.py:15792 ../../libraries/entropy.py:15886
 msgid "adding package"
 msgstr "pakket toevoegen"
 
-#: ../../libraries/entropy.py:15773 ../../libraries/entropy.py:16420
+#: ../../libraries/entropy.py:15830 ../../libraries/entropy.py:16477
 msgid "added package"
 msgstr "toegevoegd pakket"
 
-#: ../../libraries/entropy.py:15775
+#: ../../libraries/entropy.py:15832
 msgid "rev"
 msgstr "rev"
 
-#: ../../libraries/entropy.py:15851
+#: ../../libraries/entropy.py:15908
 msgid "Exception caught, running injection and RDEPEND check before raising"
 msgstr ""
 "Exceptie gevonden, uitvoeren van injectie en RDEPEND check voor de opkomst"
 
-#: ../../libraries/entropy.py:15912
+#: ../../libraries/entropy.py:15969
 msgid "Injecting entropy metadata into built packages"
 msgstr "Injecteren van entropy metadata in de gebouwde pakketten"
 
-#: ../../libraries/entropy.py:15927
+#: ../../libraries/entropy.py:15984
 msgid "injecting entropy metadata"
 msgstr "injecteren van Entropy metadata"
 
-#: ../../libraries/entropy.py:15947
+#: ../../libraries/entropy.py:16004
 msgid "injection complete"
 msgstr "invoeren compleet"
 
-#: ../../libraries/entropy.py:15971
+#: ../../libraries/entropy.py:16028
 msgid "removing package"
 msgstr "Pakket verwijderen"
 
-#: ../../libraries/entropy.py:15983 ../../libraries/entropy.py:27451
+#: ../../libraries/entropy.py:16040 ../../libraries/entropy.py:27747
 msgid "removal complete"
 msgstr "verwijderen compleet"
 
-#: ../../libraries/entropy.py:16097
+#: ../../libraries/entropy.py:16154
 msgid "invalid database revision"
 msgstr "database revisie lijkt ongeldig."
 
-#: ../../libraries/entropy.py:16099
+#: ../../libraries/entropy.py:16156
 msgid "defaulting to 0"
 msgstr "terugzetten naar 0"
 
-#: ../../libraries/entropy.py:16254
+#: ../../libraries/entropy.py:16311
 msgid "Initializing Entropy database"
 msgstr "Initialiseren van Entropy database"
 
-#: ../../libraries/entropy.py:16287 ../../libraries/entropy.py:28552
-#: ../../libraries/entropy.py:28570 ../../libraries/entropy.py:28791
+#: ../../libraries/entropy.py:16344 ../../libraries/entropy.py:28848
+#: ../../libraries/entropy.py:28866 ../../libraries/entropy.py:29087
 msgid "WARNING"
 msgstr "WAARSCHUWING"
 
-#: ../../libraries/entropy.py:16288
+#: ../../libraries/entropy.py:16345
 msgid "database already exists"
 msgstr "database bestaat al"
 
-#: ../../libraries/entropy.py:16298
+#: ../../libraries/entropy.py:16355
 msgid "Do you want to continue ?"
 msgstr "Wilt u doorgaan?"
 
-#: ../../libraries/entropy.py:16315
+#: ../../libraries/entropy.py:16372
 msgid "Dumping current revisions to file"
 msgstr "Huidige revisies in bestand opslaan"
 
-#: ../../libraries/entropy.py:16332
+#: ../../libraries/entropy.py:16389
 msgid "Dumping current 'treeupdates' actions to file"
 msgstr "Dumpen van huidige 'boomupdates' acties naar bestand"
 
-#: ../../libraries/entropy.py:16344
+#: ../../libraries/entropy.py:16401
 msgid ""
 "Would you like to sync packages first (important if you don't have them "
 "synced) ?"
@@ -1744,343 +1750,343 @@ msgstr ""
 "Wil je de pakketten eerst synchroniseren (belangrijk als je ze nog niet hebt "
 "gesynchroniseerd) ?"
 
-#: ../../libraries/entropy.py:16368
+#: ../../libraries/entropy.py:16425
 msgid "Reinitializing Entropy database for branch"
 msgstr "Herinitialiseer Entropy database voor branche"
 
-#: ../../libraries/entropy.py:16370
+#: ../../libraries/entropy.py:16427
 msgid "using Packages in the repository"
 msgstr "Pakketten in de repository worden gebruikt"
 
-#: ../../libraries/entropy.py:16387
+#: ../../libraries/entropy.py:16444
 msgid "analyzing"
 msgstr "analyseren"
 
-#: ../../libraries/entropy.py:16422 ../../client/text_query.py:1063
+#: ../../libraries/entropy.py:16479 ../../client/text_query.py:1063
 #: ../../client/text_query.py:1065
 msgid "revision"
 msgstr "Herziening"
 
-#: ../../libraries/entropy.py:16456
+#: ../../libraries/entropy.py:16513
 msgid "cannot match"
 msgstr "Kan niet overeenkomen"
 
-#: ../../libraries/entropy.py:16508 ../../libraries/entropy.py:16715
+#: ../../libraries/entropy.py:16565 ../../libraries/entropy.py:16772
 msgid "Integrity verification of the selected packages"
 msgstr "Integriteit verificatie van de geselecteerde pakketten"
 
-#: ../../libraries/entropy.py:16520 ../../libraries/entropy.py:16727
+#: ../../libraries/entropy.py:16577 ../../libraries/entropy.py:16784
 msgid "All the packages in the Entropy Packages repository will be checked."
 msgstr ""
 "Alle pakketten in de Entropy Pakketten repository zullen worden gecheckt."
 
-#: ../../libraries/entropy.py:16526
+#: ../../libraries/entropy.py:16583
 msgid "This is the list of the packages that would be checked"
 msgstr "De volgende pakketten zullen worden gecheckt."
 
-#: ../../libraries/entropy.py:16559
+#: ../../libraries/entropy.py:16616
 msgid "Working on mirror"
 msgstr "Bestanden op mirror"
 
-#: ../../libraries/entropy.py:16580
+#: ../../libraries/entropy.py:16637
 msgid "checking hash"
 msgstr "checken van hash"
 
-#: ../../libraries/entropy.py:16596 ../../libraries/entropy.py:16611
+#: ../../libraries/entropy.py:16653 ../../libraries/entropy.py:16668
 msgid "digest verification of"
 msgstr "'digest' controle voor"
 
-#: ../../libraries/entropy.py:16613
+#: ../../libraries/entropy.py:16670
 msgid "failed for unknown reasons"
 msgstr "mislukt om onbekende reden"
 
-#: ../../libraries/entropy.py:16628 ../../libraries/entropy.py:16892
-#: ../../libraries/entropy.py:25683 ../../libraries/entropy.py:25702
-#: ../../libraries/entropy.py:25736 ../../libraries/entropy.py:25751
-#: ../../libraries/entropy.py:25770
+#: ../../libraries/entropy.py:16685 ../../libraries/entropy.py:16949
+#: ../../libraries/entropy.py:25979 ../../libraries/entropy.py:25998
+#: ../../libraries/entropy.py:26032 ../../libraries/entropy.py:26047
+#: ../../libraries/entropy.py:26066
 msgid "package"
 msgstr "pakket"
 
-#: ../../libraries/entropy.py:16630
+#: ../../libraries/entropy.py:16687
 msgid "NOT healthy"
 msgstr "NIET gezond"
 
-#: ../../libraries/entropy.py:16642 ../../libraries/entropy.py:16904
+#: ../../libraries/entropy.py:16699 ../../libraries/entropy.py:16961
 msgid "This is the list of broken packages"
 msgstr "Dit is de lijst met gebroken pakketten"
 
-#: ../../libraries/entropy.py:16667 ../../server/server_reagent.py:282
+#: ../../libraries/entropy.py:16724 ../../server/server_reagent.py:282
 msgid "Statistics"
 msgstr "Statistieken"
 
-#: ../../libraries/entropy.py:16676 ../../libraries/entropy.py:16930
+#: ../../libraries/entropy.py:16733 ../../libraries/entropy.py:16987
 msgid "Number of checked packages"
 msgstr "Aantal gecheckte pakketten"
 
-#: ../../libraries/entropy.py:16686 ../../libraries/entropy.py:16940
+#: ../../libraries/entropy.py:16743 ../../libraries/entropy.py:16997
 msgid "Number of healthy packages"
 msgstr "Aantal gezonde pakketten"
 
-#: ../../libraries/entropy.py:16696 ../../libraries/entropy.py:16950
+#: ../../libraries/entropy.py:16753 ../../libraries/entropy.py:17007
 msgid "Number of broken packages"
 msgstr "Aantal beschadigde pakketten"
 
-#: ../../libraries/entropy.py:16749
+#: ../../libraries/entropy.py:16806
 msgid "available"
 msgstr "Beschikbaar"
 
-#: ../../libraries/entropy.py:16762
+#: ../../libraries/entropy.py:16819
 msgid "upload/ignored"
 msgstr "upload/genegeerd"
 
-#: ../../libraries/entropy.py:16773 ../../libraries/entropy.py:26773
-#: ../../libraries/entropy.py:27092 ../../spritz/src/dialogs.py:1450
-msgid "download"
-msgstr "download"
-
-#: ../../libraries/entropy.py:16797
+#: ../../libraries/entropy.py:16854
 msgid "Starting to download missing files"
 msgstr "Start downloaden van missende bestanden"
 
-#: ../../libraries/entropy.py:16807
+#: ../../libraries/entropy.py:16864
 msgid "Trying to search missing or broken files on another mirror"
 msgstr "Aan het zoeken naar missend of beschadigde bestanden op andere mirror"
 
-#: ../../libraries/entropy.py:16829
+#: ../../libraries/entropy.py:16886
 msgid "All the binary packages have been downloaded successfully."
 msgstr "Alle binaire pakketten zijn succesvol gedownload"
 
-#: ../../libraries/entropy.py:16837
+#: ../../libraries/entropy.py:16894
 msgid "These are the packages that cannot be found online"
 msgstr "De volgende pakketten kunnen niet online worden gevonden"
 
-#: ../../libraries/entropy.py:16853
+#: ../../libraries/entropy.py:16910
 msgid "They won't be checked"
 msgstr "Ze zullen niet worden gechecked"
 
-#: ../../libraries/entropy.py:16872
+#: ../../libraries/entropy.py:16929
 msgid "checking hash of"
 msgstr "checken van hash voor"
 
-#: ../../libraries/entropy.py:16894
+#: ../../libraries/entropy.py:16951
 msgid "is corrupted, stored checksum"
 msgstr "is corrupt, controlesom opgeslagen"
 
-#: ../../libraries/entropy.py:16960
+#: ../../libraries/entropy.py:17017
 msgid "Number of downloaded packages"
 msgstr "Aantal gedownloade pakketten"
 
-#: ../../libraries/entropy.py:16970
+#: ../../libraries/entropy.py:17027
 msgid "Number of failed downloads"
 msgstr "Aantal gefaalde downloads"
 
-#: ../../libraries/entropy.py:16999
+#: ../../libraries/entropy.py:17056
 msgid "Switching selected packages"
 msgstr "Wisselen van geselecteerde pakketten"
 
-#: ../../libraries/entropy.py:17022
+#: ../../libraries/entropy.py:17079
 msgid "Ignoring"
 msgstr "negeren"
 
-#: ../../libraries/entropy.py:17024
+#: ../../libraries/entropy.py:17081
 msgid "already in branch"
 msgstr "Al reeds in branche"
 
-#: ../../libraries/entropy.py:17043
+#: ../../libraries/entropy.py:17100
 msgid "cannot switch, package not found!"
 msgstr "kan niet wisselen, pakket niet gevonden!"
 
-#: ../../libraries/entropy.py:17052
+#: ../../libraries/entropy.py:17109
 msgid "configuring package information"
 msgstr "configureren van pakket informatie"
 
-#: ../../libraries/entropy.py:17068
+#: ../../libraries/entropy.py:17125
 msgid "moving file locally"
 msgstr "bestand wordt lokaal verplaatst"
 
-#: ../../libraries/entropy.py:17097
+#: ../../libraries/entropy.py:17154
 msgid "cannot find checksum to migrate!"
 msgstr "kan controlesom voor migratie niet vinden!"
 
-#: ../../libraries/entropy.py:17105
+#: ../../libraries/entropy.py:17162
 msgid "moving file remotely"
 msgstr "bestand wordt extern verplaatst"
 
-#: ../../libraries/entropy.py:17128
+#: ../../libraries/entropy.py:17185
 msgid "moving file remotely on"
 msgstr "bestand wordt extern verplaatst op"
 
-#: ../../libraries/entropy.py:17153
+#: ../../libraries/entropy.py:17210
 msgid "migration loop completed"
 msgstr "migratie loop compleet"
 
-#: ../../libraries/entropy.py:17183
+#: ../../libraries/entropy.py:17240
 msgid "not connected to database"
 msgstr "Niet verbonden met de database"
 
-#: ../../libraries/entropy.py:17186 ../../libraries/entropy.py:18765
+#: ../../libraries/entropy.py:17243 ../../libraries/entropy.py:18824
 msgid "method not implemented"
 msgstr "optie niet geïmplementeerd"
 
-#: ../../libraries/entropy.py:17193
+#: ../../libraries/entropy.py:17250
 msgid "no connection data"
 msgstr "geen verbindings data"
 
-#: ../../libraries/entropy.py:17385
+#: ../../libraries/entropy.py:17442
 msgid "not a valid directory path"
 msgstr "geen geldig mappen pad"
 
-#: ../../libraries/entropy.py:18751 ../../libraries/entropy.py:18762
+#: ../../libraries/entropy.py:18810 ../../libraries/entropy.py:18821
 msgid "not logged in"
 msgstr "niet ingelogd"
 
-#: ../../libraries/entropy.py:18758
+#: ../../libraries/entropy.py:18817
 msgid "no login data"
 msgstr "geen log in data"
 
-#: ../../libraries/entropy.py:18904
+#: ../../libraries/entropy.py:18963
 msgid "no username specified"
 msgstr "geen gebruikersnaam opgegeven"
 
-#: ../../libraries/entropy.py:18906
+#: ../../libraries/entropy.py:18965
 msgid "no password specified"
 msgstr "geen wachtwoord opgegeven"
 
-#: ../../libraries/entropy.py:18909
+#: ../../libraries/entropy.py:18968
 msgid "empty password"
 msgstr "leeg wachtwoord"
 
-#: ../../libraries/entropy.py:18911
+#: ../../libraries/entropy.py:18970
 msgid "empty username"
 msgstr "lege gebruikersnaam"
 
-#: ../../libraries/entropy.py:18916
+#: ../../libraries/entropy.py:18975
 msgid "user not found"
 msgstr "gebruiker niet gevonden"
 
-#: ../../libraries/entropy.py:18920
+#: ../../libraries/entropy.py:18979
 msgid "you need to login on the website to update your password format"
 msgstr "u moet inloggen op de website om uw wachtwoord formaat up-te-daten"
 
-#: ../../libraries/entropy.py:18926
+#: ../../libraries/entropy.py:18985
 msgid "wrong password"
 msgstr "verkeerd wachtwoord"
 
-#: ../../libraries/entropy.py:18930
+#: ../../libraries/entropy.py:18989
 msgid "user inactive"
 msgstr "gebruiker inactief"
 
-#: ../../libraries/entropy.py:18934
+#: ../../libraries/entropy.py:18993
 msgid "user banned"
 msgstr "gebruiker gebanned"
 
-#: ../../libraries/entropy.py:19730
+#: ../../libraries/entropy.py:19789
 msgid "database does not exist. Locking services for it"
 msgstr "database bestaat niet. Blokkeren van services voor hem"
 
-#: ../../libraries/entropy.py:19748
+#: ../../libraries/entropy.py:19807
 msgid "database got locked. Locking services for it"
 msgstr "Database is geblokkeerd. Blokkeren van services voor hem"
 
-#: ../../libraries/entropy.py:19762
+#: ../../libraries/entropy.py:19821
 msgid "unlocking and indexing database"
 msgstr "deblokkeren en indexeren van database"
 
-#: ../../libraries/entropy.py:19763
+#: ../../libraries/entropy.py:19822
 msgid "hash"
 msgstr "hash"
 
-#: ../../libraries/entropy.py:19868
+#: ../../libraries/entropy.py:19927
 #, fuzzy
 msgid "A valid SystemSocketClientInterface based instance is needed"
 msgstr ""
 "Een geldige RepositorySocketClientInterface gebaseerde instantie is nodig"
 
-#: ../../libraries/entropy.py:19881
+#: ../../libraries/entropy.py:19940
 msgid "feature not supported remotely"
 msgstr "functie niet ondersteund op afstand"
 
-#: ../../libraries/entropy.py:19884 ../../libraries/entropy.py:19901
-#: ../../libraries/entropy.py:19919 ../../libraries/entropy.py:19935
-#: ../../libraries/entropy.py:19972
+#: ../../libraries/entropy.py:19943 ../../libraries/entropy.py:19960
+#: ../../libraries/entropy.py:19978 ../../libraries/entropy.py:19994
+#: ../../libraries/entropy.py:20031
 msgid "repo"
 msgstr "repo"
 
-#: ../../libraries/entropy.py:19886 ../../libraries/entropy.py:19903
-#: ../../libraries/entropy.py:19921 ../../libraries/entropy.py:19937
-#: ../../libraries/entropy.py:19974
+#: ../../libraries/entropy.py:19945 ../../libraries/entropy.py:19962
+#: ../../libraries/entropy.py:19980 ../../libraries/entropy.py:19996
+#: ../../libraries/entropy.py:20033
 msgid "arch"
 msgstr "arch"
 
-#: ../../libraries/entropy.py:19888 ../../libraries/entropy.py:19905
-#: ../../libraries/entropy.py:19923 ../../libraries/entropy.py:19939
-#: ../../libraries/entropy.py:19976
+#: ../../libraries/entropy.py:19947 ../../libraries/entropy.py:19964
+#: ../../libraries/entropy.py:19982 ../../libraries/entropy.py:19998
+#: ../../libraries/entropy.py:20035
 msgid "product"
 msgstr "product"
 
-#: ../../libraries/entropy.py:19898
+#: ../../libraries/entropy.py:19957
 msgid "service temporarily not available"
 msgstr "service is tijdelijk niet beschikbaar"
 
 #. command failed
-#: ../../libraries/entropy.py:19916
+#: ../../libraries/entropy.py:19975
 msgid "command failed"
 msgstr "commando mislukt"
 
-#: ../../libraries/entropy.py:19932
+#: ../../libraries/entropy.py:19991
 msgid "received wrong answer"
 msgstr "verkeerd antwoord ontvangen"
 
-#: ../../libraries/entropy.py:19969
+#: ../../libraries/entropy.py:20028
 msgid "cannot convert stream into object"
 msgstr "Kan stroom niet converteren naar object"
 
-#: ../../libraries/entropy.py:20384 ../../spritz/src/spritz.glade.h:189
+#: ../../libraries/entropy.py:20443 ../../spritz/src/spritz.glade.h:190
 msgid "User Generated Content"
 msgstr "Gebruiker Gedefinieerde Inhoud"
 
-#: ../../libraries/entropy.py:20385
+#: ../../libraries/entropy.py:20444
 msgid "sending file"
 msgstr "verzenden van bestand"
 
-#: ../../libraries/entropy.py:20465
+#: ../../libraries/entropy.py:20525
 msgid "A valid EntropySocketClientCommands based class is needed"
 msgstr "Een geldige EntropySocketClientCommands gebaseerde klasse is nodig"
 
-#: ../../libraries/entropy.py:20567
+#: ../../libraries/entropy.py:20627
 msgid "OpenSSL Python module not available, you need dev-python/pyopenssl"
 msgstr ""
 "OpenSSL Python module niet beschikbaar, je hebt nodig: dev-python/pyopenssl"
 
-#: ../../libraries/entropy.py:20706
+#: ../../libraries/entropy.py:20774
 msgid "malformed EOS. receive aborted"
 msgstr "misvormde EOS. ontvangst afgebroken"
 
-#: ../../libraries/entropy.py:20742
+#: ../../libraries/entropy.py:20810
 msgid "malformed data. receive aborted"
 msgstr "misvormde data. ontvangst afgebroken"
 
-#: ../../libraries/entropy.py:20757
+#: ../../libraries/entropy.py:20825
 msgid "connection timed out while receiving data"
 msgstr "verbinding time-out tijdens het ontvangen van data"
 
-#: ../../libraries/entropy.py:20772
+#: ../../libraries/entropy.py:20840
 msgid "connection error while receiving data"
 msgstr "verbindings fout tijdens het ontvangen van data"
 
-#: ../../libraries/entropy.py:20791
+#: ../../libraries/entropy.py:20857
+#, fuzzy
+msgid "too many WantReadError error while receiving data"
+msgstr "verbindings fout tijdens het ontvangen van data"
+
+#: ../../libraries/entropy.py:20875
 msgid "syscall error while receiving data"
 msgstr "syscall fout tijdens het ontvangen van data"
 
-#: ../../libraries/entropy.py:20809
+#: ../../libraries/entropy.py:20893
 msgid "Reconnecting to socket"
 msgstr "Herstel verbinding met socket"
 
-#: ../../libraries/entropy.py:20824
+#: ../../libraries/entropy.py:20908
 msgid "Not connected to host"
 msgstr "Niet verbonden met host"
 
-#: ../../libraries/entropy.py:20849
+#: ../../libraries/entropy.py:20933
 msgid ""
 "Warning: you are using an emergency SSL interface, SSL certificate can't be "
 "verified. Please install dev-python/pyopenssl"
@@ -2088,1280 +2094,1286 @@ msgstr ""
 "Waarschuwing: u gebruikt een gevaarlijke SSL interface, SSL certificaat kan "
 "niet worden geverifieerd. Installeer dev-python/pyopenssl"
 
-#: ../../libraries/entropy.py:20860
+#: ../../libraries/entropy.py:20944
 msgid "Service issuer"
 msgstr "Service instelling"
 
-#: ../../libraries/entropy.py:20874
+#: ../../libraries/entropy.py:20958
 msgid "Cannot connect to"
 msgstr "Kan niet verbinden met"
 
-#: ../../libraries/entropy.py:20874
+#: ../../libraries/entropy.py:20958
 msgid "on port"
 msgstr "op poort"
 
-#: ../../libraries/entropy.py:20880
+#: ../../libraries/entropy.py:20964
 msgid "Successfully connected to host"
 msgstr "Succesvol verbonden met host"
 
-#: ../../libraries/entropy.py:20904
+#: ../../libraries/entropy.py:20988
 msgid "Successfully disconnected from host"
 msgstr "Verbinding succesvol verbroken met de host"
 
-#: ../../libraries/entropy.py:21408
+#: ../../libraries/entropy.py:21477
+#, fuzzy
+msgid "Calculating updates..."
+msgstr "Berekenen beveiliging Updates"
+
+#: ../../libraries/entropy.py:21532
 #, fuzzy
 msgid "Running package injection"
 msgstr "Uitvoeren van fixpackages"
 
-#: ../../libraries/entropy.py:21416
+#: ../../libraries/entropy.py:21540
 #, fuzzy
 msgid "Running package removal"
 msgstr "Uitvoeren van fixpackages"
 
-#: ../../libraries/entropy.py:21431
+#: ../../libraries/entropy.py:21555
 #, fuzzy
 msgid "Running package quickpkg"
 msgstr "Uitvoeren van fixpackages"
 
-#: ../../libraries/entropy.py:21453
+#: ../../libraries/entropy.py:21577
 #, fuzzy
 msgid "Adding packages"
 msgstr "pakket toevoegen"
 
-#: ../../libraries/entropy.py:21605
+#: ../../libraries/entropy.py:21729
 msgid ""
 "Opening database to let it run treeupdates. If you won't see anything below, "
 "it's just fine."
 msgstr ""
 
-#: ../../libraries/entropy.py:21657
+#: ../../libraries/entropy.py:21787
 msgid "Socket error, continuing..."
 msgstr ""
 
-#: ../../libraries/entropy.py:21720 ../../libraries/entropy.py:21733
+#: ../../libraries/entropy.py:21849 ../../libraries/entropy.py:21862
 #: ../../server/server_activator.py:227 ../../server/server_activator.py:241
 msgid "Remote Entropy Database Repository Status"
 msgstr "Externe Entropy Database Repository Status"
 
-#: ../../libraries/entropy.py:21724 ../../libraries/entropy.py:21735
+#: ../../libraries/entropy.py:21853 ../../libraries/entropy.py:21864
 #: ../../server/server_activator.py:229 ../../server/server_activator.py:243
 msgid "Host"
 msgstr "Host"
 
-#: ../../libraries/entropy.py:21725 ../../libraries/entropy.py:21736
+#: ../../libraries/entropy.py:21854 ../../libraries/entropy.py:21865
 #: ../../server/server_activator.py:230 ../../server/server_activator.py:244
 msgid "Database revision"
 msgstr "Database revisie"
 
-#: ../../libraries/entropy.py:21727 ../../server/server_activator.py:233
+#: ../../libraries/entropy.py:21856 ../../server/server_activator.py:233
 msgid "Database local revision currently at"
 msgstr "Lokale database revisie is op dit moment"
 
-#: ../../libraries/entropy.py:24022
+#: ../../libraries/entropy.py:24295
 msgid "Get a list of remotely available commands"
 msgstr ""
 
-#: ../../libraries/entropy.py:24028
+#: ../../libraries/entropy.py:24301
 msgid "Get current queue content"
 msgstr ""
 
-#: ../../libraries/entropy.py:24030
+#: ../../libraries/entropy.py:24303
 #, fuzzy
 msgid "Extended results"
 msgstr "Uitgebreide Opties"
 
-#: ../../libraries/entropy.py:24036
+#: ../../libraries/entropy.py:24309
 msgid "Get queue item using its queue unique identifier"
 msgstr ""
 
-#: ../../libraries/entropy.py:24037 ../../libraries/entropy.py:24043
-#: ../../libraries/entropy.py:24049 ../../libraries/entropy.py:24067
-#: ../../libraries/entropy.py:24074 ../../libraries/entropy.py:24075
+#: ../../libraries/entropy.py:24310 ../../libraries/entropy.py:24316
+#: ../../libraries/entropy.py:24322 ../../libraries/entropy.py:24340
+#: ../../libraries/entropy.py:24347 ../../libraries/entropy.py:24348
+#: ../../libraries/entropy.py:24386
 #, fuzzy
 msgid "Queue Identifier"
 msgstr "Identifier"
 
-#: ../../libraries/entropy.py:24042
+#: ../../libraries/entropy.py:24315
 msgid "Get queue stdout/stderr using its queue unique identifier"
 msgstr ""
 
-#: ../../libraries/entropy.py:24048
+#: ../../libraries/entropy.py:24321
 msgid "Get queued command result using its queue unique identifier"
 msgstr ""
 
-#: ../../libraries/entropy.py:24054
+#: ../../libraries/entropy.py:24327
 #, fuzzy
 msgid "Remove queued commands using their queue unique identifiers"
 msgstr ""
 "verwijder documenten van de database door middel van hun "
 "identificatiemiddelen"
 
-#: ../../libraries/entropy.py:24055
+#: ../../libraries/entropy.py:24328
 #, fuzzy
 msgid "Queue Identifiers"
 msgstr "Identifier"
 
-#: ../../libraries/entropy.py:24060
+#: ../../libraries/entropy.py:24333
 msgid "Toggle queue pause (True/False)"
 msgstr ""
 
-#: ../../libraries/entropy.py:24061
+#: ../../libraries/entropy.py:24334
 #, fuzzy
 msgid "Pause or not"
 msgstr "Rapporteer het alsjeblieft"
 
-#: ../../libraries/entropy.py:24066
+#: ../../libraries/entropy.py:24339
 msgid "Kill a running process through its queue id"
 msgstr ""
 
-#: ../../libraries/entropy.py:24072
+#: ../../libraries/entropy.py:24345
 msgid "Swap items in queue using their queue ids"
 msgstr ""
 
-#: ../../libraries/entropy.py:24081
+#: ../../libraries/entropy.py:24354
 #, fuzzy
 msgid "Get pinboard content"
 msgstr "Laad inhoud"
 
-#: ../../libraries/entropy.py:24087
+#: ../../libraries/entropy.py:24360
 msgid "Add item to pinboard"
 msgstr ""
 
-#: ../../libraries/entropy.py:24090
+#: ../../libraries/entropy.py:24363
 #, fuzzy
 msgid "Extended text"
 msgstr "Uitgebreide Opties"
 
-#: ../../libraries/entropy.py:24096
+#: ../../libraries/entropy.py:24369
 #, fuzzy
 msgid "Remove item from pinboard"
 msgstr "Verwijderen van Entropy"
 
-#: ../../libraries/entropy.py:24097 ../../libraries/entropy.py:24104
+#: ../../libraries/entropy.py:24370 ../../libraries/entropy.py:24377
 #, fuzzy
 msgid "Pinboard identifiers"
 msgstr "Repository identifier"
 
-#: ../../libraries/entropy.py:24102
+#: ../../libraries/entropy.py:24375
 msgid "Set pinboard items status (done/not done)"
 msgstr ""
 
-#: ../../libraries/entropy.py:24105
+#: ../../libraries/entropy.py:24378
 #, fuzzy
 msgid "Done status"
 msgstr "Download Status"
 
-#: ../../libraries/entropy.py:24157
+#: ../../libraries/entropy.py:24384
+msgid "Write to a remote running command stdin"
+msgstr ""
+
+#: ../../libraries/entropy.py:24387
+#, fuzzy
+msgid "Write to stdout?"
+msgstr "Schrijf jouw document"
+
+#: ../../libraries/entropy.py:24388
+msgid "Text"
+msgstr ""
+
+#: ../../libraries/entropy.py:24443
 #, fuzzy
 msgid "Update Spm Repository (emerge --sync)"
 msgstr "Update Repositories"
 
-#: ../../libraries/entropy.py:24163
+#: ../../libraries/entropy.py:24449
 msgid "Compile specified atoms with specified parameters"
 msgstr ""
 
-#: ../../libraries/entropy.py:24165 ../../libraries/entropy.py:24183
-#: ../../libraries/entropy.py:24206 ../../libraries/entropy.py:24215
-#: ../../libraries/entropy.py:24223
+#: ../../libraries/entropy.py:24451 ../../libraries/entropy.py:24469
+#: ../../libraries/entropy.py:24492 ../../libraries/entropy.py:24501
+#: ../../libraries/entropy.py:24509
 #, fuzzy
 msgid "Atoms"
 msgstr "Atoom"
 
-#: ../../libraries/entropy.py:24166 ../../libraries/entropy.py:24184
-#: ../../spritz/src/dialogs.py:2394 ../../spritz/src/dialogs.py:2453
+#: ../../libraries/entropy.py:24452 ../../libraries/entropy.py:24470
+#: ../../spritz/src/dialogs.py:2725 ../../spritz/src/dialogs.py:2769
 #, fuzzy
 msgid "Pretend"
 msgstr "Aangemaakt"
 
-#: ../../libraries/entropy.py:24167 ../../spritz/src/dialogs.py:2454
+#: ../../libraries/entropy.py:24453 ../../spritz/src/dialogs.py:2770
 msgid "Oneshot"
 msgstr ""
 
-#: ../../libraries/entropy.py:24168 ../../libraries/entropy.py:24185
-#: ../../spritz/src/dialogs.py:2395 ../../spritz/src/dialogs.py:2455
+#: ../../libraries/entropy.py:24454 ../../libraries/entropy.py:24471
+#: ../../spritz/src/dialogs.py:2726 ../../spritz/src/dialogs.py:2771
 #, fuzzy
 msgid "Verbose"
 msgstr "Versies"
 
-#: ../../libraries/entropy.py:24169 ../../libraries/entropy.py:24186
-#: ../../spritz/src/dialogs.py:2396 ../../spritz/src/dialogs.py:2456
+#: ../../libraries/entropy.py:24455 ../../libraries/entropy.py:24472
+#: ../../spritz/src/dialogs.py:2727 ../../spritz/src/dialogs.py:2772
 #, fuzzy
 msgid "No color"
 msgstr "Geen overeenkomst voor"
 
-#: ../../libraries/entropy.py:24170 ../../spritz/src/dialogs.py:2457
+#: ../../libraries/entropy.py:24456 ../../spritz/src/dialogs.py:2773
 #, fuzzy
 msgid "Fetch only"
 msgstr "Ophalen"
 
-#: ../../libraries/entropy.py:24171 ../../spritz/src/dialogs.py:2458
+#: ../../libraries/entropy.py:24457 ../../spritz/src/dialogs.py:2774
 msgid "Build only"
 msgstr ""
 
-#: ../../libraries/entropy.py:24172 ../../spritz/src/dialogs.py:2459
+#: ../../libraries/entropy.py:24458 ../../spritz/src/dialogs.py:2775
 #, fuzzy
 msgid "No dependencies"
 msgstr "Afhankelijkheden"
 
-#: ../../libraries/entropy.py:24173
+#: ../../libraries/entropy.py:24459
 msgid "Custom USE"
 msgstr ""
 
-#: ../../libraries/entropy.py:24174 ../../spritz/src/dialogs.py:2461
+#: ../../libraries/entropy.py:24460 ../../spritz/src/dialogs.py:2777
 #, fuzzy
 msgid "Custom LDFLAGS"
 msgstr "CFLAGS"
 
-#: ../../libraries/entropy.py:24175 ../../spritz/src/dialogs.py:2462
+#: ../../libraries/entropy.py:24461 ../../spritz/src/dialogs.py:2778
 #, fuzzy
 msgid "Custom CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../libraries/entropy.py:24181
+#: ../../libraries/entropy.py:24467
 msgid "Remove specified atoms with specified parameters"
 msgstr ""
 
-#: ../../libraries/entropy.py:24192
+#: ../../libraries/entropy.py:24478
 #, fuzzy
 msgid "Get SPM updates for the specified categories"
 msgstr "verpak de gespecificeerde atomen opnieuw"
 
-#: ../../libraries/entropy.py:24193 ../../libraries/entropy.py:24199
+#: ../../libraries/entropy.py:24479 ../../libraries/entropy.py:24485
 #: ../../spritz/src/views.py:44
 msgid "Categories"
 msgstr "Categorieën"
 
-#: ../../libraries/entropy.py:24198
+#: ../../libraries/entropy.py:24484
 #, fuzzy
 msgid "Get SPM installed packages for the specified categories"
 msgstr "sla nieuwe pakketten op in de gespecificeerde map"
 
-#: ../../libraries/entropy.py:24204
+#: ../../libraries/entropy.py:24490
 #, fuzzy
 msgid "Enable USE flags for the specified atoms"
 msgstr "verpak de gespecificeerde atomen opnieuw"
 
 #. print use flags
-#: ../../libraries/entropy.py:24207 ../../libraries/entropy.py:24216
-#: ../../client/text_query.py:1085 ../../spritz/src/dialogs.py:3550
+#: ../../libraries/entropy.py:24493 ../../libraries/entropy.py:24502
+#: ../../client/text_query.py:1085 ../../spritz/src/dialogs.py:3783
 msgid "USE flags"
 msgstr "USE flags"
 
-#: ../../libraries/entropy.py:24213
+#: ../../libraries/entropy.py:24499
 #, fuzzy
 msgid "Disable USE flags for the specified atoms"
 msgstr "verpak de gespecificeerde atomen opnieuw"
 
-#: ../../libraries/entropy.py:24222
+#: ../../libraries/entropy.py:24508
 #, fuzzy
 msgid "Get info for the specified atoms"
 msgstr "Geef de verwijderings boom-lijst voor de gespecificeerde atomen"
 
-#: ../../libraries/entropy.py:24228
+#: ../../libraries/entropy.py:24514
 msgid "Run SPM info command"
 msgstr ""
 
-#: ../../libraries/entropy.py:24234
+#: ../../libraries/entropy.py:24520
 msgid "Run custom shell command"
 msgstr ""
 
 #. command col
-#: ../../libraries/entropy.py:24236 ../../spritz/src/dialogs.py:472
-#: ../../spritz/src/dialogs.py:513
+#: ../../libraries/entropy.py:24522 ../../spritz/src/dialogs.py:528
+#: ../../spritz/src/dialogs.py:569
 #, fuzzy
 msgid "Command"
 msgstr "Commentaar"
 
-#: ../../libraries/entropy.py:24242
+#: ../../libraries/entropy.py:24528
 #, fuzzy
 msgid "Get Spm security updates information"
 msgstr "Repository informatie"
 
-#: ../../libraries/entropy.py:24244
+#: ../../libraries/entropy.py:24530
 #, fuzzy
 msgid "List type (affected,new,all)"
 msgstr "laat alleen geïnfecteerde zien"
 
-#: ../../libraries/entropy.py:24250
+#: ../../libraries/entropy.py:24536
 #, fuzzy
 msgid "Get information about available Entropy repositories"
 msgstr "Zoeken binnen beschikbare repositories"
 
-#: ../../libraries/entropy.py:24256
+#: ../../libraries/entropy.py:24542
 #, fuzzy
 msgid "Set default Entropy Server repository"
 msgstr "standaard repository instellen"
 
 #. Setup reponame & repofile column's
-#: ../../libraries/entropy.py:24258 ../../libraries/entropy.py:24266
-#: ../../libraries/entropy.py:24275 ../../libraries/entropy.py:24293
-#: ../../libraries/entropy.py:24340 ../../libraries/entropy.py:24364
+#: ../../libraries/entropy.py:24544 ../../libraries/entropy.py:24552
+#: ../../libraries/entropy.py:24561 ../../libraries/entropy.py:24579
+#: ../../libraries/entropy.py:24626 ../../libraries/entropy.py:24650
 #: ../../spritz/src/views.py:1214
 #, fuzzy
 msgid "Repository Identifier"
 msgstr "Repository Identifier"
 
-#: ../../libraries/entropy.py:24264
+#: ../../libraries/entropy.py:24550
 #, fuzzy
 msgid "Get available packages inside the specified repository"
 msgstr "sla nieuwe metadata op naar de gespecificeerde map"
 
-#: ../../libraries/entropy.py:24272
+#: ../../libraries/entropy.py:24558
 #, fuzzy
 msgid "Get idpackage metadata using its idpackage in the specified repository"
 msgstr "sla nieuwe metadata op naar de gespecificeerde map"
 
-#: ../../libraries/entropy.py:24274
+#: ../../libraries/entropy.py:24560
 #, fuzzy
 msgid "Package Identifier"
 msgstr "Pakket info."
 
-#: ../../libraries/entropy.py:24281
+#: ../../libraries/entropy.py:24567
 msgid "Remove the specified Entropy package matches (idpackage,repoid)"
 msgstr ""
 
-#: ../../libraries/entropy.py:24283
+#: ../../libraries/entropy.py:24569
 #, fuzzy
 msgid "Matched atoms"
 msgstr "Overeenkomend"
 
-#: ../../libraries/entropy.py:24289
+#: ../../libraries/entropy.py:24575
 msgid ""
 "Search Entropy packages using a defined set of search types in the specified "
 "repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:24291 ../../spritz/src/dialogs.py:2890
+#: ../../libraries/entropy.py:24577 ../../spritz/src/dialogs.py:3109
 #, fuzzy
 msgid "Search type"
 msgstr "Inslag type"
 
-#: ../../libraries/entropy.py:24292 ../../spritz/src/dialogs.py:2891
+#: ../../libraries/entropy.py:24578 ../../spritz/src/dialogs.py:3110
 #, fuzzy
 msgid "Search string"
 msgstr "Zoekend"
 
-#: ../../libraries/entropy.py:24299
+#: ../../libraries/entropy.py:24585
 #, fuzzy
 msgid "Move or copy a package from a repository to another"
 msgstr "kopieer pakketten van de ene repository naar de andere"
 
-#: ../../libraries/entropy.py:24301
+#: ../../libraries/entropy.py:24587
 #, fuzzy
 msgid "Package identifiers"
 msgstr "Repository identifier"
 
-#: ../../libraries/entropy.py:24302
+#: ../../libraries/entropy.py:24588
 #, fuzzy
 msgid "From repository"
 msgstr "vanaf repositorie"
 
-#: ../../libraries/entropy.py:24303 ../../spritz/src/dialogs.py:1324
+#: ../../libraries/entropy.py:24589 ../../spritz/src/dialogs.py:1688
 #, fuzzy
 msgid "To repository"
 msgstr "Repository"
 
-#: ../../libraries/entropy.py:24304
+#: ../../libraries/entropy.py:24590
 msgid "Copy instead of move?"
 msgstr ""
 
-#: ../../libraries/entropy.py:24310
+#: ../../libraries/entropy.py:24596
 msgid ""
 "Scan Spm package changes and retrieve a list of action that should be run on "
 "the repositories"
 msgstr ""
 
-#: ../../libraries/entropy.py:24316
+#: ../../libraries/entropy.py:24602
 #, fuzzy
 msgid "Run Entropy database updates"
 msgstr "Entropy database bestand"
 
-#: ../../libraries/entropy.py:24318
+#: ../../libraries/entropy.py:24604
 msgid "Matches to add from Spm"
 msgstr ""
 
-#: ../../libraries/entropy.py:24319
+#: ../../libraries/entropy.py:24605
 #, fuzzy
 msgid "Matches to remove from repository database"
 msgstr "doe een zoek actie in de repository databases"
 
-#: ../../libraries/entropy.py:24320
+#: ../../libraries/entropy.py:24606
 #, fuzzy
 msgid "Matches to inject on repository database"
 msgstr "doe een zoek actie in de repository databases"
 
-#: ../../libraries/entropy.py:24326
+#: ../../libraries/entropy.py:24612
 #, fuzzy
 msgid "Run Entropy dependency test"
 msgstr "Start afhankelijkheids test"
 
-#: ../../libraries/entropy.py:24332
+#: ../../libraries/entropy.py:24618
 msgid "Run Entropy library test"
 msgstr ""
 
-#: ../../libraries/entropy.py:24338
+#: ../../libraries/entropy.py:24624
 #, fuzzy
 msgid "Run Entropy tree updates"
 msgstr "Problemen met boomupdates"
 
-#: ../../libraries/entropy.py:24346
+#: ../../libraries/entropy.py:24632
 msgid ""
 "Scan for Mirror updates and retrieve a list of action that should be run"
 msgstr ""
 
-#: ../../libraries/entropy.py:24348
+#: ../../libraries/entropy.py:24634
 #, fuzzy
 msgid "list of repository identifiers"
 msgstr "Repository Identifier"
 
-#: ../../libraries/entropy.py:24354
+#: ../../libraries/entropy.py:24640
 msgid "Run Mirror updates for the provided repositories and its data"
 msgstr ""
 
-#: ../../libraries/entropy.py:24356
+#: ../../libraries/entropy.py:24642
 #, fuzzy
 msgid "composed repository data"
 msgstr "Downloaden van repository database"
 
-#: ../../libraries/entropy.py:24362
+#: ../../libraries/entropy.py:24648
 msgid "Run Entropy packages digest verification test"
 msgstr ""
 
-#: ../../libraries/entropy.py:24365
+#: ../../libraries/entropy.py:24651
 #, fuzzy
 msgid "Check mode"
 msgstr "Controlesom"
 
-#: ../../libraries/entropy.py:24487
+#: ../../libraries/entropy.py:24773
 #, fuzzy
 msgid "A valid SystemManagerClientCommands class/subclass is needed"
 msgstr "Een geldige EntropySocketClientCommands gebaseerde klasse is nodig"
 
-#: ../../libraries/entropy.py:24495
+#: ../../libraries/entropy.py:24781
 #, fuzzy
 msgid "A valid SystemManagerMethodsInterface class/subclass is needed"
 msgstr "Een geldige EquoInterface instantie of subklasse is nodig"
 
-#: ../../libraries/entropy.py:24527 ../../libraries/entropy.py:24529
-#: ../../libraries/entropy.py:24531
+#: ../../libraries/entropy.py:24816 ../../libraries/entropy.py:24818
+#: ../../libraries/entropy.py:24820
 #, fuzzy
 msgid "not a string"
 msgstr "Niet ingesteld"
 
-#: ../../libraries/entropy.py:24527 ../../libraries/entropy.py:24529
-#: ../../libraries/entropy.py:24531 ../../libraries/entropy.py:24533
-#: ../../libraries/entropy.py:24535
+#: ../../libraries/entropy.py:24816 ../../libraries/entropy.py:24818
+#: ../../libraries/entropy.py:24820 ../../libraries/entropy.py:24822
+#: ../../libraries/entropy.py:24824
 msgid "Please use setup_connection() properly"
 msgstr ""
 
-#: ../../libraries/entropy.py:24533
+#: ../../libraries/entropy.py:24822
 #, fuzzy
 msgid "not an int"
 msgstr "niet ingelogd"
 
-#: ../../libraries/entropy.py:24535
+#: ../../libraries/entropy.py:24824
 #, fuzzy
 msgid "not a bool"
 msgstr "niet beschikbaar"
 
-#: ../../libraries/entropy.py:24771
+#: ../../libraries/entropy.py:25067
 msgid "A valid UGCClientInterface based instance is needed"
 msgstr "Een geldige GGCClientInterface gebaseerde instantie is nodig"
 
-#: ../../libraries/entropy.py:24849
+#: ../../libraries/entropy.py:25145
 msgid "Cannot setup cache directory"
 msgstr "Kan cache map niet op zetten"
 
-#: ../../libraries/entropy.py:24851
+#: ../../libraries/entropy.py:25147
 msgid "Cannot write to cache directory"
 msgstr "Kan niet schrijven naar de cache map"
 
-#: ../../libraries/entropy.py:24857
+#: ../../libraries/entropy.py:25153
 msgid "Cannot remove cache file"
 msgstr "Kan cache bestand niet verwijderen"
 
-#: ../../libraries/entropy.py:24869
+#: ../../libraries/entropy.py:25165
 msgid "Cannot write to cache file"
 msgstr "Kan niet schrijven naar cache bestand"
 
-#: ../../libraries/entropy.py:25032
+#: ../../libraries/entropy.py:25328
 msgid "A valid EquoInterface based instance is needed"
 msgstr "Een geldige EquoInterface gebaseerde instantie is nodig"
 
-#: ../../libraries/entropy.py:25047
+#: ../../libraries/entropy.py:25343
 msgid "repository is not available"
 msgstr "repository is niet beschikbaar"
 
-#: ../../libraries/entropy.py:25054
+#: ../../libraries/entropy.py:25350
 msgid "repository metadata is malformed"
 msgstr "repository metadata is misvormd"
 
-#: ../../libraries/entropy.py:25109 ../../libraries/entropy.py:25154
+#: ../../libraries/entropy.py:25405 ../../libraries/entropy.py:25450
 msgid "ok"
 msgstr "ok"
 
-#: ../../libraries/entropy.py:25113
+#: ../../libraries/entropy.py:25409
 msgid "repository does not support EAPI3"
 msgstr "repository ondersteund geen EAPI3"
 
-#: ../../libraries/entropy.py:25123 ../../spritz/src/dialogs.py:92
-#: ../../spritz/src/spritz.glade.h:190
+#: ../../libraries/entropy.py:25419 ../../spritz/src/dialogs.py:93
+#: ../../spritz/src/spritz.glade.h:191
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: ../../libraries/entropy.py:25124 ../../spritz/src/spritz.glade.h:107
+#: ../../libraries/entropy.py:25420 ../../spritz/src/spritz.glade.h:108
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: ../../libraries/entropy.py:25127
+#: ../../libraries/entropy.py:25423
 msgid "Please login against"
 msgstr "A.u.b. inloggen op"
 
-#: ../../libraries/entropy.py:25127 ../../server/server_reagent.py:82
+#: ../../libraries/entropy.py:25423 ../../server/server_reagent.py:82
 #: ../../server/server_reagent.py:85 ../../server/server_reagent.py:94
 #: ../../server/server_reagent.py:97 ../../server/server_reagent.py:123
 msgid "repository"
 msgstr "Repository"
 
-#: ../../libraries/entropy.py:25132
+#: ../../libraries/entropy.py:25428
 msgid "login abort"
 msgstr "inloggen afbreken"
 
-#: ../../libraries/entropy.py:25137
+#: ../../libraries/entropy.py:25433
 msgid "connection issues"
 msgstr "verbindings problemen"
 
-#: ../../libraries/entropy.py:25143
+#: ../../libraries/entropy.py:25439
 msgid "Access denied. Login failed"
 msgstr "Toegang geweigerd. inloggen mislukt"
 
-#: ../../libraries/entropy.py:25150
+#: ../../libraries/entropy.py:25446
 msgid "Login successful. Do you want to save these credentials ?"
 msgstr "Inloggen succesvol. Wilt u deze gegevens opslaan ?"
 
-#: ../../libraries/entropy.py:25316
+#: ../../libraries/entropy.py:25612
 msgid "A valid ServerInterface based instance is needed"
 msgstr "Een geldige ServerInterface gebaseerde instantie is nodig"
 
-#: ../../libraries/entropy.py:25323
+#: ../../libraries/entropy.py:25619
 msgid "Entropy Server Mirrors Interface loaded"
 msgstr "Entropy Server Mirrors Interface geladen"
 
-#: ../../libraries/entropy.py:25330 ../../libraries/entropy.py:25361
+#: ../../libraries/entropy.py:25626 ../../libraries/entropy.py:25657
 msgid "mirror"
 msgstr "mirror"
 
-#: ../../libraries/entropy.py:25354 ../../libraries/entropy.py:25429
+#: ../../libraries/entropy.py:25650 ../../libraries/entropy.py:25725
 msgid "unlocking"
 msgstr "ontgrendelen"
 
-#: ../../libraries/entropy.py:25355 ../../libraries/entropy.py:25430
-#: ../../libraries/entropy.py:26504 ../../libraries/entropy.py:26524
+#: ../../libraries/entropy.py:25651 ../../libraries/entropy.py:25726
+#: ../../libraries/entropy.py:26800 ../../libraries/entropy.py:26820
 msgid "locking"
 msgstr "vergrendelen"
 
-#: ../../libraries/entropy.py:25377 ../../libraries/entropy.py:26505
+#: ../../libraries/entropy.py:25673 ../../libraries/entropy.py:26801
 msgid "mirror already locked"
 msgstr "mirror is reeds vergrendeld"
 
-#: ../../libraries/entropy.py:25390
+#: ../../libraries/entropy.py:25686
 msgid "mirror already unlocked"
 msgstr "mirror is al vrijgemaakt"
 
-#: ../../libraries/entropy.py:25436
+#: ../../libraries/entropy.py:25732
 msgid "mirror for download"
 msgstr "mirror voor download"
 
-#: ../../libraries/entropy.py:25452
+#: ../../libraries/entropy.py:25748
 msgid "mirror already locked for download"
 msgstr "mirror is al afgesloten voor download"
 
-#: ../../libraries/entropy.py:25465
+#: ../../libraries/entropy.py:25761
 msgid "mirror already unlocked for download"
 msgstr "mirror is al vrijgegeven voor download"
 
-#: ../../libraries/entropy.py:25503
+#: ../../libraries/entropy.py:25799
 msgid "for download"
 msgstr "voor download"
 
-#: ../../libraries/entropy.py:25513
+#: ../../libraries/entropy.py:25809
 msgid "mirror successfully locked"
 msgstr "mirror succesvol vergrendeld"
 
-#: ../../libraries/entropy.py:25527
+#: ../../libraries/entropy.py:25823
 msgid "mirror not locked"
 msgstr "mirror niet vergrendeld"
 
-#: ../../libraries/entropy.py:25565
+#: ../../libraries/entropy.py:25861
 msgid "mirror successfully unlocked"
 msgstr "mirror succesvol vrijgemaakt"
 
-#: ../../libraries/entropy.py:25580
+#: ../../libraries/entropy.py:25876
 msgid "unlock error"
 msgstr "deblokkeer fout"
 
-#: ../../libraries/entropy.py:25582
+#: ../../libraries/entropy.py:25878
 msgid "mirror not unlocked"
 msgstr "mirror niet vergrendeld"
 
-#: ../../libraries/entropy.py:25649
+#: ../../libraries/entropy.py:25945
 msgid "connecting to download package"
 msgstr "verbinden om pakket te downloaden"
 
-#: ../../libraries/entropy.py:25667
+#: ../../libraries/entropy.py:25963
 msgid "downloading package"
 msgstr "pakket wordt gedownload"
 
-#: ../../libraries/entropy.py:25704
+#: ../../libraries/entropy.py:26000
 msgid "is not listed in the current repository database!!"
 msgstr "staat niet in de lijst van de huidige repository database!!"
 
-#: ../../libraries/entropy.py:25719
+#: ../../libraries/entropy.py:26015
 msgid "verifying checksum of package"
 msgstr "verifiëren van controlesom van het pakket"
 
-#: ../../libraries/entropy.py:25738
+#: ../../libraries/entropy.py:26034
 msgid "downloaded successfully"
 msgstr "succesvol gedownload"
 
-#: ../../libraries/entropy.py:25753
+#: ../../libraries/entropy.py:26049
 msgid "checksum does not match. re-downloading..."
 msgstr "controlesom komt niet overeen. opnieuw downloaden..."
 
-#: ../../libraries/entropy.py:25772
+#: ../../libraries/entropy.py:26068
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr ""
 "blijkt gebroken. Denk er aan om het opnieuw in te pakken. Ik geef het op!"
 
-#: ../../libraries/entropy.py:25801
+#: ../../libraries/entropy.py:26097
 msgid "mirror doesn't have a valid directory structure"
 msgstr "mirror heeft geen geldige mappen structuur"
 
-#: ../../libraries/entropy.py:25812
+#: ../../libraries/entropy.py:26108
 msgid "Wrong database compression method passed"
 msgstr "Verkeerde database compressie methode gepasseerd"
 
-#: ../../libraries/entropy.py:25833
+#: ../../libraries/entropy.py:26129
 msgid "mirror doesn't have a valid database revision file"
 msgstr "mirror heeft geen geldige database revisie bestand"
 
-#: ../../libraries/entropy.py:26062
+#: ../../libraries/entropy.py:26358
 msgid "uris must be a list instance"
 msgstr "uris moeten een lijst instantie zijn"
 
-#: ../../libraries/entropy.py:26065
+#: ../../libraries/entropy.py:26361
 msgid "files_to_upload must be a list or dict instance"
 msgstr "files_to_upload moet een lijst of 'dict' instantie zijn"
 
-#: ../../libraries/entropy.py:26106
+#: ../../libraries/entropy.py:26402
 msgid "verifying upload (if supported)"
 msgstr "upload verifiëren (wanneer gesupport)"
 
-#: ../../libraries/entropy.py:26127 ../../libraries/entropy.py:26143
-#: ../../libraries/entropy.py:26162 ../../libraries/entropy.py:26178
-#: ../../libraries/entropy.py:26194
+#: ../../libraries/entropy.py:26423 ../../libraries/entropy.py:26439
+#: ../../libraries/entropy.py:26458 ../../libraries/entropy.py:26474
+#: ../../libraries/entropy.py:26490
 msgid "digest verification"
 msgstr "'digest' verificatie"
 
-#: ../../libraries/entropy.py:26145
+#: ../../libraries/entropy.py:26441
 msgid "file not found"
 msgstr "bestand niet gevonden"
 
-#: ../../libraries/entropy.py:26164
+#: ../../libraries/entropy.py:26460
 msgid "so far, so good!"
 msgstr "tot zo ver, alles OK!"
 
-#: ../../libraries/entropy.py:26180
+#: ../../libraries/entropy.py:26476
 msgid "invalid checksum"
 msgstr "onjuiste controlesom"
 
-#: ../../libraries/entropy.py:26196
+#: ../../libraries/entropy.py:26492
 msgid "unknown data returned"
 msgstr "onbekende data teruggekregen"
 
-#: ../../libraries/entropy.py:26222
+#: ../../libraries/entropy.py:26518
 msgid "connecting to mirror"
 msgstr "verbinden met mirror"
 
-#: ../../libraries/entropy.py:26233
+#: ../../libraries/entropy.py:26529
 msgid "changing directory to"
 msgstr "veranderen van map naar"
 
-#: ../../libraries/entropy.py:26295
+#: ../../libraries/entropy.py:26591
 msgid "successful"
 msgstr "succesvol"
 
-#: ../../libraries/entropy.py:26312
+#: ../../libraries/entropy.py:26608
 msgid "failed, retrying"
 msgstr "gefaald, opnieuw proberen"
 
-#: ../../libraries/entropy.py:26346
+#: ../../libraries/entropy.py:26642
 msgid "not critical"
 msgstr "Niet kritisch"
 
-#: ../../libraries/entropy.py:26348
+#: ../../libraries/entropy.py:26644
 msgid "continuing"
 msgstr "verder gaan"
 
-#: ../../libraries/entropy.py:26375
+#: ../../libraries/entropy.py:26671
 msgid "preparing uncompressed database for the upload"
 msgstr "voorbereiden van gedecomprimeerde database voor de upload"
 
-#: ../../libraries/entropy.py:26382 ../../libraries/entropy.py:26406
-#: ../../libraries/entropy.py:26446
+#: ../../libraries/entropy.py:26678 ../../libraries/entropy.py:26702
+#: ../../libraries/entropy.py:26742
 msgid "database path"
 msgstr "database pad"
 
-#: ../../libraries/entropy.py:26399
+#: ../../libraries/entropy.py:26695
 msgid "creating compressed database dump + checksum"
 msgstr "gecomprimeerde database dump + controlesom creëren"
 
-#: ../../libraries/entropy.py:26412
+#: ../../libraries/entropy.py:26708
 msgid "dump"
 msgstr "dump"
 
-#: ../../libraries/entropy.py:26418
+#: ../../libraries/entropy.py:26714
 msgid "dump checksum"
 msgstr "dump controlesom"
 
-#: ../../libraries/entropy.py:26424 ../../libraries/entropy.py:26464
+#: ../../libraries/entropy.py:26720 ../../libraries/entropy.py:26760
 msgid "opener"
 msgstr "opener"
 
-#: ../../libraries/entropy.py:26438
+#: ../../libraries/entropy.py:26734
 msgid "compressing database + checksum"
 msgstr "comprimeren van database + controlesom"
 
-#: ../../libraries/entropy.py:26452
+#: ../../libraries/entropy.py:26748
 msgid "compressed database path"
 msgstr "gecomprimeerde database pad"
 
-#: ../../libraries/entropy.py:26458
+#: ../../libraries/entropy.py:26754
 msgid "compressed checksum"
 msgstr "gecomprimeerde controlesom"
 
-#: ../../libraries/entropy.py:26481
+#: ../../libraries/entropy.py:26777
 msgid "cannot create mirror directory"
 msgstr "Kan geen mirror map aanmaken"
 
-#: ../../libraries/entropy.py:26506
+#: ../../libraries/entropy.py:26802
 msgid "waiting up to 2 minutes before giving up"
 msgstr "wacht nog 2 minuten voor opgeven"
 
-#: ../../libraries/entropy.py:26525
+#: ../../libraries/entropy.py:26821
 msgid "mirror unlocked"
 msgstr "mirror vrijgemaakt"
 
-#: ../../libraries/entropy.py:26576
+#: ../../libraries/entropy.py:26872
 msgid "Troubles with treeupdates"
 msgstr "Problemen met boomupdates"
 
-#: ../../libraries/entropy.py:26579
+#: ../../libraries/entropy.py:26875
 msgid "Bumping old data back"
 msgstr "Terug zetten van de oude gegevens"
 
-#: ../../libraries/entropy.py:26617 ../../libraries/entropy.py:26758
+#: ../../libraries/entropy.py:26913 ../../libraries/entropy.py:27054
 msgid "wrong database compression method passed"
 msgstr "verkeerde database compressie methode gepasseerd"
 
-#: ../../libraries/entropy.py:26638 ../../libraries/entropy.py:27078
-#: ../../spritz/src/dialogs.py:1448
+#: ../../libraries/entropy.py:26934 ../../libraries/entropy.py:27374
+#: ../../spritz/src/dialogs.py:1819
 msgid "upload"
 msgstr "upload"
 
-#: ../../libraries/entropy.py:26639
+#: ../../libraries/entropy.py:26935
 msgid "preparing to upload database to mirror"
 msgstr "Bezig met het versturen van database naar mirror"
 
-#: ../../libraries/entropy.py:26699 ../../libraries/entropy.py:26813
+#: ../../libraries/entropy.py:26995 ../../libraries/entropy.py:27109
 msgid "errors"
 msgstr "fouten"
 
-#: ../../libraries/entropy.py:26700
+#: ../../libraries/entropy.py:26996
 msgid "failed to upload to mirror, not unlocking and continuing"
 msgstr "upload naar mirror gefaald, niet deblokkeren en doorgaan"
 
-#: ../../libraries/entropy.py:26709 ../../libraries/entropy.py:26823
-#: ../../libraries/entropy.py:27532 ../../libraries/entropy.py:27593
-#: ../../libraries/entropy.py:28019
+#: ../../libraries/entropy.py:27005 ../../libraries/entropy.py:27119
+#: ../../libraries/entropy.py:27828 ../../libraries/entropy.py:27889
+#: ../../libraries/entropy.py:28315
 msgid "reason"
 msgstr "reden"
 
-#: ../../libraries/entropy.py:26774
+#: ../../libraries/entropy.py:27070
 msgid "preparing to download database from mirror"
 msgstr "Bezig met binnenhalen van database vanaf de mirror"
 
-#: ../../libraries/entropy.py:26784
+#: ../../libraries/entropy.py:27080
 msgid "download path"
 msgstr "download pad"
 
-#: ../../libraries/entropy.py:26814
+#: ../../libraries/entropy.py:27110
 msgid "failed to download from mirror"
 msgstr "download vanaf mirror gefaald"
 
-#: ../../libraries/entropy.py:26903
+#: ../../libraries/entropy.py:27199
 msgid "Mirrors are not locked remotely but the local database is"
 msgstr "Mirrors zijn niet geblokkeerd maar de lokale database wel"
 
-#: ../../libraries/entropy.py:26904
+#: ../../libraries/entropy.py:27200
 msgid "It is a nonsense"
 msgstr "Het is onnodig"
 
-#: ../../libraries/entropy.py:26905
+#: ../../libraries/entropy.py:27201
 msgid "Please remove the lock file"
 msgstr "Verwijder a.u.b. het slot bestand"
 
-#: ../../libraries/entropy.py:26912
+#: ../../libraries/entropy.py:27208
 msgid ""
 "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 "Op dit moment is iemand bezig in de databases, mirrors zijn geblokkeerd"
 
-#: ../../libraries/entropy.py:26913
+#: ../../libraries/entropy.py:27209
 msgid "try again later"
 msgstr "probeer later opnieuw"
 
-#: ../../libraries/entropy.py:26924 ../../libraries/entropy.py:26944
-#: ../../libraries/entropy.py:26962 ../../libraries/entropy.py:26982
-#: ../../libraries/entropy.py:26996 ../../libraries/entropy.py:27449
-#: ../../libraries/entropy.py:27589 ../../libraries/entropy.py:27605
-#: ../../libraries/entropy.py:27625 ../../libraries/entropy.py:27652
-#: ../../libraries/entropy.py:27673 ../../libraries/entropy.py:27690
-#: ../../libraries/entropy.py:27726 ../../libraries/entropy.py:27773
-#: ../../libraries/entropy.py:27790 ../../libraries/entropy.py:27815
+#: ../../libraries/entropy.py:27220 ../../libraries/entropy.py:27240
+#: ../../libraries/entropy.py:27258 ../../libraries/entropy.py:27278
+#: ../../libraries/entropy.py:27292 ../../libraries/entropy.py:27745
+#: ../../libraries/entropy.py:27885 ../../libraries/entropy.py:27901
+#: ../../libraries/entropy.py:27921 ../../libraries/entropy.py:27948
+#: ../../libraries/entropy.py:27969 ../../libraries/entropy.py:27986
+#: ../../libraries/entropy.py:28022 ../../libraries/entropy.py:28069
+#: ../../libraries/entropy.py:28086 ../../libraries/entropy.py:28111
 msgid "sync"
 msgstr "sync"
 
 #. something short please
-#: ../../libraries/entropy.py:26925
+#: ../../libraries/entropy.py:27221
 msgid "database already in sync"
 msgstr "database al reeds in sync"
 
-#: ../../libraries/entropy.py:26945 ../../libraries/entropy.py:26983
+#: ../../libraries/entropy.py:27241 ../../libraries/entropy.py:27279
 msgid "database sync failed"
 msgstr "database sync gefaald"
 
-#: ../../libraries/entropy.py:26946
+#: ../../libraries/entropy.py:27242
 msgid "download issues"
 msgstr "download problemen"
 
-#: ../../libraries/entropy.py:26963
+#: ../../libraries/entropy.py:27259
 msgid "database sync forbidden"
 msgstr "database sync niet toegestaan"
 
-#: ../../libraries/entropy.py:26964
+#: ../../libraries/entropy.py:27260
 msgid "dependencies_test() reported errors"
 msgstr "dependencies_test() heeft fouten gerapporteerd"
 
-#: ../../libraries/entropy.py:26984
+#: ../../libraries/entropy.py:27280
 msgid "upload issues"
 msgstr "upload problemen"
 
-#: ../../libraries/entropy.py:26997
+#: ../../libraries/entropy.py:27293
 msgid "database sync completed successfully"
 msgstr "database sync met succes voltooid"
 
-#: ../../libraries/entropy.py:27041
+#: ../../libraries/entropy.py:27337
 msgid "Local statistics"
 msgstr "Lokale statistieken"
 
-#: ../../libraries/entropy.py:27048
+#: ../../libraries/entropy.py:27344
 msgid "upload directory"
 msgstr "upload map"
 
-#: ../../libraries/entropy.py:27050 ../../libraries/entropy.py:27061
+#: ../../libraries/entropy.py:27346 ../../libraries/entropy.py:27357
 msgid "files ready"
 msgstr "bestanden gereed"
 
-#: ../../libraries/entropy.py:27059
+#: ../../libraries/entropy.py:27355
 msgid "packages directory"
 msgstr "pakketten map"
 
-#: ../../libraries/entropy.py:27106
+#: ../../libraries/entropy.py:27402
 msgid "copy"
 msgstr "kopie"
 
-#: ../../libraries/entropy.py:27131
+#: ../../libraries/entropy.py:27427
 msgid "Packages to be removed"
 msgstr "Pakketten voor verwijdering"
 
-#: ../../libraries/entropy.py:27140
+#: ../../libraries/entropy.py:27436
 msgid "Packages to be moved locally"
 msgstr "Pakketten die lokaal verplaatst worden"
 
-#: ../../libraries/entropy.py:27149
+#: ../../libraries/entropy.py:27445
 msgid "Packages to be uploaded"
 msgstr "Pakketten die worden geüpload"
 
-#: ../../libraries/entropy.py:27159
+#: ../../libraries/entropy.py:27455
 msgid "Total removal size"
 msgstr "Totale grootte van verwijdering"
 
-#: ../../libraries/entropy.py:27169
+#: ../../libraries/entropy.py:27465
 msgid "Total upload size"
 msgstr "Totale grootte van upload"
 
-#: ../../libraries/entropy.py:27178
+#: ../../libraries/entropy.py:27474
 msgid "Total download size"
 msgstr "Totale grootte van download"
 
-#: ../../libraries/entropy.py:27229
+#: ../../libraries/entropy.py:27525
 msgid "Remote statistics for"
 msgstr "Externe statistieken voor"
 
-#: ../../libraries/entropy.py:27241
+#: ../../libraries/entropy.py:27537
 msgid "remote packages"
 msgstr "externe pakketten"
 
-#: ../../libraries/entropy.py:27243
+#: ../../libraries/entropy.py:27539
 msgid "files stored"
 msgstr "bestanden opgeslagen"
 
-#: ../../libraries/entropy.py:27250
+#: ../../libraries/entropy.py:27546
 msgid "Calculating queues"
 msgstr "Bereken queues"
 
-#: ../../libraries/entropy.py:27432
+#: ../../libraries/entropy.py:27728
 msgid "removing package+hash"
 msgstr "pakket+hash worden verwijderd"
 
-#: ../../libraries/entropy.py:27476
+#: ../../libraries/entropy.py:27772
 msgid "copying file+hash to repository"
 msgstr "kopiëren van bestand+hash naar repository"
 
-#: ../../libraries/entropy.py:27530
+#: ../../libraries/entropy.py:27826
 msgid "upload errors"
 msgstr "upload fouten"
 
-#: ../../libraries/entropy.py:27544
+#: ../../libraries/entropy.py:27840
 msgid "upload completed successfully"
 msgstr "upload met succes voltooid"
 
-#: ../../libraries/entropy.py:27591
+#: ../../libraries/entropy.py:27887
 msgid "download errors"
 msgstr "download fouten"
 
-#: ../../libraries/entropy.py:27607
+#: ../../libraries/entropy.py:27903
 msgid "download completed successfully"
 msgstr "download met succes voltooid"
 
-#: ../../libraries/entropy.py:27626
+#: ../../libraries/entropy.py:27922
 msgid "starting packages sync"
 msgstr "starten van pakketten sync"
 
-#: ../../libraries/entropy.py:27654
+#: ../../libraries/entropy.py:27950
 msgid "packages sync"
 msgstr "pakketten sync"
 
-#: ../../libraries/entropy.py:27675
+#: ../../libraries/entropy.py:27971
 msgid "socket error"
 msgstr "socket fout"
 
-#: ../../libraries/entropy.py:27677
+#: ../../libraries/entropy.py:27973
 msgid "on"
 msgstr "aan"
 
-#: ../../libraries/entropy.py:27692
+#: ../../libraries/entropy.py:27988
 msgid "nothing to do on"
 msgstr "Niets te doen voor"
 
-#: ../../libraries/entropy.py:27704
+#: ../../libraries/entropy.py:28000
 msgid "Expanding queues"
 msgstr "Uitbreidende wachtrijen"
 
-#: ../../libraries/entropy.py:27728
+#: ../../libraries/entropy.py:28024
 msgid "nothing to sync for"
 msgstr "niets te synchroniseren voor"
 
-#: ../../libraries/entropy.py:27746
+#: ../../libraries/entropy.py:28042
 msgid "Would you like to run the steps above ?"
 msgstr "Wilt u de gegeven stappen volgen ?"
 
-#: ../../libraries/entropy.py:27775
+#: ../../libraries/entropy.py:28071
 msgid "keyboard interrupt !"
 msgstr "toetsenbord onderbreking !"
 
-#: ../../libraries/entropy.py:27792
+#: ../../libraries/entropy.py:28088
 msgid "exception caught"
 msgstr "exceptie opgevangen"
 
-#: ../../libraries/entropy.py:27817
+#: ../../libraries/entropy.py:28113
 msgid "at least one mirror has been sync'd properly, hooray!"
 msgstr "op z'n minst is een mirror juist gesynced, Hoera! "
 
-#: ../../libraries/entropy.py:27900
+#: ../../libraries/entropy.py:28196
 msgid "tidy"
 msgstr "geordend"
 
-#: ../../libraries/entropy.py:27902
+#: ../../libraries/entropy.py:28198
 msgid "collecting expired packages"
 msgstr "verzamelen van verlopen pakketten"
 
-#: ../../libraries/entropy.py:27920
+#: ../../libraries/entropy.py:28216
 msgid "collecting expired packages in the selected branches"
 msgstr "verzamelen van verlopen pakketten in de geselecteerde branche's"
 
-#: ../../libraries/entropy.py:27945
+#: ../../libraries/entropy.py:28241
 msgid "nothing to remove on this branch"
 msgstr "Niets te verwijderen in deze branche"
 
-#: ../../libraries/entropy.py:27956
+#: ../../libraries/entropy.py:28252
 msgid "these are the expired packages"
 msgstr "dit zijn de verlopen pakketten"
 
-#: ../../libraries/entropy.py:27992
+#: ../../libraries/entropy.py:28288
 msgid "removing packages remotely"
 msgstr "verwijderen van pakketten op afstand"
 
-#: ../../libraries/entropy.py:28017
+#: ../../libraries/entropy.py:28313
 msgid "remove errors"
 msgstr "verwijder fouten"
 
-#: ../../libraries/entropy.py:28032
+#: ../../libraries/entropy.py:28328
 msgid "removing packages locally"
 msgstr "verwijderen van lokale pakketten"
 
-#: ../../libraries/entropy.py:28049
+#: ../../libraries/entropy.py:28345
 msgid "removing"
 msgstr "verwijderen"
 
-#: ../../libraries/entropy.py:28084
+#: ../../libraries/entropy.py:28380
 msgid "valid database path needed"
 msgstr "geldig database pad is nodig"
 
-#: ../../libraries/entropy.py:28181
+#: ../../libraries/entropy.py:28477
 msgid "Mirrors have not been unlocked. Remember to sync them."
 msgstr "Mirrors zijn niet gedeblokkeerd. Vergeet ze niet te synchroniseren."
 
-#: ../../libraries/entropy.py:28268
+#: ../../libraries/entropy.py:28564
 msgid "can't do that on a readonly database"
 msgstr "kan niet op een alleen-lezen database"
 
-#: ../../libraries/entropy.py:28345 ../../libraries/entropy.py:28414
-#: ../../libraries/entropy.py:28746 ../../libraries/entropy.py:28810
-#: ../../libraries/entropy.py:32201 ../../libraries/entropy.py:32221
+#: ../../libraries/entropy.py:28641 ../../libraries/entropy.py:28710
+#: ../../libraries/entropy.py:29042 ../../libraries/entropy.py:29106
+#: ../../libraries/entropy.py:32497 ../../libraries/entropy.py:32517
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
 #: ../../client/text_ui.py:348 ../../client/text_ui.py:908
 msgid "ATTENTION"
 msgstr "ATTENTIE"
 
-#: ../../libraries/entropy.py:28346
+#: ../../libraries/entropy.py:28642
 msgid "forcing package updates"
 msgstr "forceren van pakket updates"
 
-#: ../../libraries/entropy.py:28347
+#: ../../libraries/entropy.py:28643
 msgid "Syncing with"
 msgstr "Synchroniseren met"
 
-#: ../../libraries/entropy.py:28415
+#: ../../libraries/entropy.py:28711
 msgid "forcing packages metadata update"
 msgstr "forceren van pakketten metadata update"
 
-#: ../../libraries/entropy.py:28416
+#: ../../libraries/entropy.py:28712
 msgid "Updating system database using repository id"
 msgstr "Updaten van systeem database middels repository id"
 
-#: ../../libraries/entropy.py:28505 ../../libraries/entropy.py:28845
+#: ../../libraries/entropy.py:28801 ../../libraries/entropy.py:29141
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy.py:28506
+#: ../../libraries/entropy.py:28802
 msgid "Running fixpackages"
 msgstr "Uitvoeren van fixpackages"
 
-#: ../../libraries/entropy.py:28507
+#: ../../libraries/entropy.py:28803
 msgid "it could take a while"
 msgstr "Het kan even duren"
 
-#: ../../libraries/entropy.py:28529
+#: ../../libraries/entropy.py:28825
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy.py:28530
+#: ../../libraries/entropy.py:28826
 msgid "action"
 msgstr "actie"
 
-#: ../../libraries/entropy.py:28553
+#: ../../libraries/entropy.py:28849
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Kan quickpkg voor atomen niet afronden"
 
-#: ../../libraries/entropy.py:28555 ../../libraries/entropy.py:28794
+#: ../../libraries/entropy.py:28851 ../../libraries/entropy.py:29090
 msgid "do it manually"
 msgstr "doe het handmatig"
 
-#: ../../libraries/entropy.py:28571
+#: ../../libraries/entropy.py:28867
 msgid "Cannot run SPM cleanup, error"
 msgstr "Kan SPM opruiming niet starten, fout"
 
-#: ../../libraries/entropy.py:28622 ../../libraries/entropy.py:28695
+#: ../../libraries/entropy.py:28918 ../../libraries/entropy.py:28991
 msgid "INJECT"
 msgstr "INJECTEREN"
 
-#: ../../libraries/entropy.py:28624 ../../libraries/entropy.py:28697
+#: ../../libraries/entropy.py:28920 ../../libraries/entropy.py:28993
 msgid "has been injected"
 msgstr "is geïnjecteerd"
 
-#: ../../libraries/entropy.py:28625 ../../libraries/entropy.py:28698
+#: ../../libraries/entropy.py:28921 ../../libraries/entropy.py:28994
 msgid "You need to quickpkg it manually to update the embedded database"
 msgstr "Je moet handmatig quickpkg doen om de embedded database bij te werken"
 
-#: ../../libraries/entropy.py:28626 ../../libraries/entropy.py:28699
+#: ../../libraries/entropy.py:28922 ../../libraries/entropy.py:28995
 msgid "Repository database will be updated anyway"
 msgstr "Repository database zal toch worden geüpdate"
 
-#: ../../libraries/entropy.py:28735
+#: ../../libraries/entropy.py:29031
 msgid "Would you like to continue with the default branch"
 msgstr "Wil je doorgaan met de standaard branche"
 
-#: ../../libraries/entropy.py:28743
+#: ../../libraries/entropy.py:29039
 msgid "Type your branch"
 msgstr "Toets uw branche in"
 
-#: ../../libraries/entropy.py:28747
+#: ../../libraries/entropy.py:29043
 msgid "the specified branch does not exist"
 msgstr "de opgegeven branche bestaat niet"
 
 #. ask to confirm
-#: ../../libraries/entropy.py:28758
+#: ../../libraries/entropy.py:29054
 msgid "Do you confirm"
 msgstr "Wilt u bevestigen"
 
-#: ../../libraries/entropy.py:28776
+#: ../../libraries/entropy.py:29072
 msgid "repackaging"
 msgstr "opnieuw verpakken"
 
-#: ../../libraries/entropy.py:28792
+#: ../../libraries/entropy.py:29088
 msgid "Cannot complete quickpkg for atom"
 msgstr "Kan quickpkg voor atoom niet afronden"
 
-#: ../../libraries/entropy.py:28811
+#: ../../libraries/entropy.py:29107
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr "runTreeUpdatesQuickpkgAction is niet juist uitgevoerd"
 
-#: ../../libraries/entropy.py:28812
+#: ../../libraries/entropy.py:29108
 msgid "Please update packages manually"
 msgstr "update de pakketten handmatig a.u.b."
 
-#: ../../libraries/entropy.py:28846
+#: ../../libraries/entropy.py:29142
 msgid "Moving old entry"
 msgstr "Verplaatsen van oude ingang"
 
-#: ../../libraries/entropy.py:31409 ../../libraries/entropy.py:31440
-#: ../../libraries/entropy.py:31477 ../../client/text_rescue.py:421
+#: ../../libraries/entropy.py:31705 ../../libraries/entropy.py:31736
+#: ../../libraries/entropy.py:31773 ../../client/text_rescue.py:421
 msgid "Entropy database"
 msgstr "Entropy database"
 
-#: ../../libraries/entropy.py:31409
+#: ../../libraries/entropy.py:31705
 msgid "regenerating indexes after migration"
 msgstr "Hergenereren van indexen na migratie"
 
-#: ../../libraries/entropy.py:31440
+#: ../../libraries/entropy.py:31736
 msgid "migrating table"
 msgstr "tabel migreren"
 
-#: ../../libraries/entropy.py:31478
+#: ../../libraries/entropy.py:31774
 msgid "fixing KDE dep strings on"
 msgstr "repareren van KDE dep reeksen in"
 
-#: ../../libraries/entropy.py:31480 ../../client/text_rescue.py:277
+#: ../../libraries/entropy.py:31776 ../../client/text_rescue.py:277
 msgid "Please wait"
 msgstr "Een moment a.u.b."
 
-#: ../../libraries/entropy.py:31552
+#: ../../libraries/entropy.py:31848
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 "baseinfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy.py:31557
+#: ../../libraries/entropy.py:31853
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 "extrainfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy.py:31583
+#: ../../libraries/entropy.py:31879
 msgid "Syncing current database"
 msgstr "Synchroniseren van huidige database"
 
-#: ../../libraries/entropy.py:31595
+#: ../../libraries/entropy.py:31891
 msgid "Removing entry"
 msgstr "Verwijderen van ingang"
 
-#: ../../libraries/entropy.py:31610
+#: ../../libraries/entropy.py:31906
 msgid "Adding entry"
 msgstr "Toevoegen van ingang"
 
-#: ../../libraries/entropy.py:31648
+#: ../../libraries/entropy.py:31944
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr "Repository EAPI > Entropy EAPI. update Equo/Entropy zo snel mogelijk !"
 
-#: ../../libraries/entropy.py:31667
+#: ../../libraries/entropy.py:31963
 msgid "Exporting database table"
 msgstr "Database tabel exporteren"
 
-#: ../../libraries/entropy.py:31706
+#: ../../libraries/entropy.py:32002
 msgid "Database Export completed."
 msgstr "Database Export voltooid."
 
-#: ../../libraries/entropy.py:32202
+#: ../../libraries/entropy.py:32498
 msgid "cannot open Spm counter file for"
 msgstr "kan Spm teller bestand niet openen voor"
 
-#: ../../libraries/entropy.py:32222
+#: ../../libraries/entropy.py:32518
 msgid "counter for atom is duplicated, ignoring"
 msgstr "teller voor atoom is gedupliceerd, negeren"
 
-#: ../../libraries/entropy.py:33095
+#: ../../libraries/entropy.py:33396
 msgid "comparison between"
 msgstr "vergelijking tussen"
 
-#: ../../libraries/entropy.py:33097
+#: ../../libraries/entropy.py:33398
 msgid "and"
 msgstr "en"
 
-#: ../../libraries/entropy.py:33099 ../../libraries/entropy.py:33111
+#: ../../libraries/entropy.py:33400 ../../libraries/entropy.py:33412
 msgid "failed"
 msgstr "mislukt"
 
-#: ../../libraries/entropy.py:33100
+#: ../../libraries/entropy.py:33401
 msgid "Wrong syntax for"
 msgstr "verkeerde invoer voor"
 
-#: ../../libraries/entropy.py:33108
+#: ../../libraries/entropy.py:33409
 msgid "from atom"
 msgstr "van atoom"
-
-#: ../../libraries/managerTools.py:47
-msgid "(CTRL+E Menu | CTRL+X Exit)"
-msgstr "(CTRL+E Menu | CTRL+X Sluiten)"
-
-#: ../../libraries/managerTools.py:220 ../../libraries/managerTools.py:245
-msgid "Ok"
-msgstr "Oké"
-
-#: ../../libraries/managerTools.py:221 ../../libraries/managerTools.py:247
-#: ../../spritz/src/dialogs.py:5138
-msgid "Cancel"
-msgstr "Annuleer"
 
 #: ../../libraries/outputTools.py:394 ../../spritz/src/entropyapi.py:252
 msgid "Entropy needs your attention"
 msgstr "Entropy vraagt om uw aandacht"
 
-#: ../../libraries/outputTools.py:480
+#: ../../libraries/outputTools.py:494
 msgid "maximum responses length"
 msgstr "maximale lengte van reacties"
 
-#: ../../libraries/outputTools.py:487
+#: ../../libraries/outputTools.py:502
 msgid "Entropy got a question for you"
 msgstr "Entropy heeft een vraag voor u"
 
-#: ../../libraries/outputTools.py:502
+#: ../../libraries/outputTools.py:519
 msgid "Interrupted"
 msgstr "Onderbroken"
 
-#: ../../libraries/outputTools.py:539
+#: ../../libraries/outputTools.py:556
 #, fuzzy
 msgid "Selected number"
 msgstr "Geselecteerd bestand"
@@ -4412,7 +4424,7 @@ msgid "Matched"
 msgstr "Overeenkomend"
 
 #: ../../client/text_query.py:265 ../../client/text_query.py:1062
-#: ../../spritz/src/spritz.glade.h:93
+#: ../../spritz/src/spritz.glade.h:94
 msgid "Masked"
 msgstr "Afgeschermd"
 
@@ -4429,8 +4441,8 @@ msgid "Needed Search"
 msgstr "Zoeken op Benodigde"
 
 #. atom
-#: ../../client/text_query.py:317 ../../spritz/src/dialogs.py:2098
-#: ../../spritz/src/dialogs.py:2886
+#: ../../client/text_query.py:317 ../../spritz/src/dialogs.py:2466
+#: ../../spritz/src/dialogs.py:3105
 #, fuzzy
 msgid "Atom"
 msgstr "Atoom"
@@ -4454,9 +4466,9 @@ msgstr "Zoeken op Eclass"
 #. package
 #. glsa id
 #: ../../client/text_query.py:447 ../../client/text_query.py:1058
-#: ../../spritz/src/dialogs.py:1676 ../../spritz/src/dialogs.py:1982
-#: ../../spritz/src/dialogs.py:3888 ../../spritz/src/dialogs.py:4545
-#: ../../spritz/src/dialogs.py:4551 ../../spritz/src/views.py:491
+#: ../../spritz/src/dialogs.py:2047 ../../spritz/src/dialogs.py:2351
+#: ../../spritz/src/dialogs.py:4121 ../../spritz/src/dialogs.py:4822
+#: ../../spritz/src/dialogs.py:4828 ../../spritz/src/views.py:491
 msgid "Package"
 msgstr "Pakket"
 
@@ -4581,8 +4593,8 @@ msgid "Not installed"
 msgstr "niet geïnstalleerd"
 
 #: ../../client/text_query.py:1043 ../../client/text_query.py:1044
-#: ../../spritz/src/dialogs.py:3014 ../../spritz/src/dialogs.py:3063
-#: ../../spritz/src/dialogs.py:3175 ../../spritz/src/dialogs.py:3178
+#: ../../spritz/src/dialogs.py:3247 ../../spritz/src/dialogs.py:3296
+#: ../../spritz/src/dialogs.py:3408 ../../spritz/src/dialogs.py:3411
 msgid "N/A"
 msgstr "N/B"
 
@@ -4594,7 +4606,7 @@ msgstr "Categorie"
 msgid "Name"
 msgstr "Naam"
 
-#: ../../client/text_query.py:1063 ../../spritz/src/dialogs.py:587
+#: ../../client/text_query.py:1063 ../../spritz/src/dialogs.py:646
 #: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
 #: ../../spritz/src/spritz.glade.h:14
 msgid "Available"
@@ -4604,19 +4616,19 @@ msgstr "Beschikbaar"
 msgid "version"
 msgstr "versie"
 
-#: ../../client/text_query.py:1065 ../../spritz/src/dialogs.py:585
+#: ../../client/text_query.py:1065 ../../spritz/src/dialogs.py:644
 #: ../../spritz/src/spritz.glade.h:82
 msgid "Installed"
 msgstr "Geïnstalleerd"
 
-#: ../../client/text_query.py:1067 ../../spritz/src/dialogs.py:592
-#: ../../spritz/src/dialogs.py:613 ../../spritz/src/spritz.glade.h:159
+#: ../../client/text_query.py:1067 ../../spritz/src/dialogs.py:657
+#: ../../spritz/src/dialogs.py:678 ../../spritz/src/spritz.glade.h:160
 msgid "Slot"
 msgstr "Slot"
 
 #: ../../client/text_query.py:1068 ../../client/text_ugc.py:556
-#: ../../spritz/src/dialogs.py:609 ../../spritz/src/dialogs.py:3188
-#: ../../spritz/src/spritz.glade.h:158
+#: ../../spritz/src/dialogs.py:674 ../../spritz/src/dialogs.py:3421
+#: ../../spritz/src/spritz.glade.h:159
 msgid "Size"
 msgstr "Grootte"
 
@@ -4628,7 +4640,7 @@ msgstr "Download"
 msgid "Checksum"
 msgstr "Controlesom"
 
-#: ../../client/text_query.py:1072 ../../spritz/src/dialogs.py:3566
+#: ../../client/text_query.py:1072 ../../spritz/src/dialogs.py:3799
 msgid "Dependencies"
 msgstr "Afhankelijkheden"
 
@@ -4636,16 +4648,16 @@ msgstr "Afhankelijkheden"
 msgid "Conflicts"
 msgstr "Conflicten"
 
-#: ../../client/text_query.py:1079 ../../spritz/src/dialogs.py:619
+#: ../../client/text_query.py:1079 ../../spritz/src/dialogs.py:684
 msgid "Homepage"
 msgstr "Thuispagina"
 
 #. print description
 #. desc col
 #: ../../client/text_query.py:1083 ../../client/text_security.py:89
-#: ../../client/text_ugc.py:363 ../../spritz/src/dialogs.py:474
-#: ../../spritz/src/dialogs.py:487 ../../spritz/src/dialogs.py:598
-#: ../../spritz/src/dialogs.py:2886 ../../spritz/src/dialogs.py:3195
+#: ../../client/text_ugc.py:363 ../../spritz/src/dialogs.py:530
+#: ../../spritz/src/dialogs.py:543 ../../spritz/src/dialogs.py:663
+#: ../../spritz/src/dialogs.py:3105 ../../spritz/src/dialogs.py:3428
 #: ../../spritz/src/views.py:1007 ../../spritz/src/views.py:1215
 #: ../../spritz/src/spritz.glade.h:47
 msgid "Description"
@@ -4668,7 +4680,7 @@ msgstr "CXXFLAGS"
 msgid "Gentoo eclasses"
 msgstr "Gentoo eclasses"
 
-#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:3526
+#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:3759
 msgid "Sources"
 msgstr "Broncode"
 
@@ -4685,8 +4697,8 @@ msgid "Compiled with"
 msgstr "gecompileerd met"
 
 #: ../../client/text_query.py:1103 ../../client/text_ugc.py:368
-#: ../../client/text_ugc.py:551 ../../spritz/src/dialogs.py:3197
-#: ../../spritz/src/dialogs.py:3542 ../../spritz/src/spritz.glade.h:85
+#: ../../client/text_ugc.py:551 ../../spritz/src/dialogs.py:3430
+#: ../../spritz/src/dialogs.py:3775 ../../spritz/src/spritz.glade.h:86
 msgid "Keywords"
 msgstr "Keywords"
 
@@ -4696,7 +4708,7 @@ msgid "Created"
 msgstr "Aangemaakt"
 
 #: ../../client/text_query.py:1105 ../../client/text_ui.py:781
-#: ../../spritz/src/dialogs.py:5224
+#: ../../spritz/src/dialogs.py:5501
 msgid "License"
 msgstr "Licentie"
 
@@ -4748,8 +4760,8 @@ msgstr "actief"
 msgid "never synced"
 msgstr "nooit gesynchroniseerd"
 
-#: ../../client/text_repositories.py:136 ../../spritz/src/dialogs.py:505
-#: ../../spritz/src/dialogs.py:530 ../../spritz/src/dialogs.py:1064
+#: ../../client/text_repositories.py:136 ../../spritz/src/dialogs.py:561
+#: ../../spritz/src/dialogs.py:586 ../../spritz/src/dialogs.py:1130
 #: ../../spritz/src/views.py:984
 msgid "Status"
 msgstr "Status"
@@ -5109,8 +5121,8 @@ msgstr "GLSA Identifier"
 #. title
 #. glsa title
 #: ../../client/text_security.py:85 ../../client/text_ugc.py:358
-#: ../../client/text_ugc.py:542 ../../spritz/src/dialogs.py:1075
-#: ../../spritz/src/dialogs.py:3193 ../../spritz/src/spritz.glade.h:171
+#: ../../client/text_ugc.py:542 ../../spritz/src/dialogs.py:1141
+#: ../../spritz/src/dialogs.py:3426 ../../spritz/src/spritz.glade.h:172
 msgid "Title"
 msgstr "Titel"
 
@@ -5130,7 +5142,7 @@ msgstr "Inslag"
 msgid "Impact type"
 msgstr "Inslag type"
 
-#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:146
+#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:147
 msgid "Revised"
 msgstr "Herzien"
 
@@ -5138,11 +5150,11 @@ msgstr "Herzien"
 msgid "Announced"
 msgstr "Aangekondigd"
 
-#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:168
+#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:169
 msgid "Synopsis"
 msgstr "Samenvatting"
 
-#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:129
+#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:130
 msgid "References"
 msgstr "Referenties"
 
@@ -5162,11 +5174,11 @@ msgstr "kwetsbare versies"
 msgid "unaffected versions"
 msgstr "onaangetast versies"
 
-#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:194
+#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:195
 msgid "Workaround"
 msgstr "Omzeiling"
 
-#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:144
+#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:145
 msgid "Resolution"
 msgstr "Resolutie"
 
@@ -5411,7 +5423,7 @@ msgstr "Notitie"
 msgid "Vote added, thank you!"
 msgstr ""
 
-#: ../../client/text_ugc.py:279 ../../spritz/src/dialogs.py:3710
+#: ../../client/text_ugc.py:279 ../../spritz/src/dialogs.py:3943
 msgid "Number of downloads"
 msgstr "Aantal downloads"
 
@@ -5514,7 +5526,7 @@ msgstr "Notitie"
 msgid "Unknown type"
 msgstr "onbekende reden"
 
-#: ../../client/text_ugc.py:548 ../../spritz/src/dialogs.py:3625
+#: ../../client/text_ugc.py:548 ../../spritz/src/dialogs.py:3858
 #: ../../spritz/src/spritz.glade.h:35
 msgid "Content"
 msgstr "Inhoud"
@@ -5657,7 +5669,7 @@ msgid "Switch repo"
 msgstr "Wissel repo"
 
 #: ../../client/text_ui.py:428 ../../client/text_ui.py:430
-#: ../../spritz/src/spritz.glade.h:131
+#: ../../spritz/src/spritz.glade.h:132
 msgid "Reinstall"
 msgstr "Herinstalleer"
 
@@ -5673,7 +5685,7 @@ msgstr "Upgrade"
 msgid "Downgrade"
 msgstr "Downgrade"
 
-#: ../../client/text_ui.py:438 ../../spritz/src/dialogs.py:1430
+#: ../../client/text_ui.py:438 ../../spritz/src/dialogs.py:1801
 msgid "Action"
 msgstr "Actie"
 
@@ -6050,7 +6062,7 @@ msgstr "Geen juiste repositories opgegeven."
 msgid "Enabling"
 msgstr "Inschakelen"
 
-#: ../../server/server_reagent.py:85 ../../spritz/src/dialogs.py:4383
+#: ../../server/server_reagent.py:85 ../../spritz/src/dialogs.py:4660
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
@@ -6144,7 +6156,7 @@ msgid "Entries handled"
 msgstr "Invoer behandeld"
 
 #: ../../server/server_reagent.py:308 ../../server/server_reagent.py:333
-#: ../../server/server_reagent.py:384 ../../spritz/src/dialogs.py:2282
+#: ../../server/server_reagent.py:384 ../../spritz/src/dialogs.py:2630
 msgid "Not enough parameters"
 msgstr "Onvoldoende parameters"
 
@@ -6200,652 +6212,661 @@ msgstr "Dit zijn de pakketten die zullen worden verwijderd"
 msgid "Bumping Repository database"
 msgstr "Bijwerken Repository database"
 
-#: ../../spritz/src/dialogs.py:89
+#: ../../spritz/src/dialogs.py:90
 #, fuzzy
 msgid "Connection name"
 msgstr "verbinden met mirror"
 
-#: ../../spritz/src/dialogs.py:90 ../../spritz/src/dialogs.py:148
+#: ../../spritz/src/dialogs.py:91 ../../spritz/src/dialogs.py:154
 #: ../../spritz/src/spritz.glade.h:73
 #, fuzzy
 msgid "Hostname"
 msgstr "Host"
 
-#: ../../spritz/src/dialogs.py:91 ../../spritz/src/dialogs.py:149
-#: ../../spritz/src/spritz.glade.h:113
+#: ../../spritz/src/dialogs.py:92 ../../spritz/src/dialogs.py:155
+#: ../../spritz/src/spritz.glade.h:114
 #, fuzzy
 msgid "Port"
 msgstr "of de"
 
-#: ../../spritz/src/dialogs.py:93
+#: ../../spritz/src/dialogs.py:94
 #, fuzzy
 msgid "SSL Connection"
 msgstr "verbinden met mirror"
 
-#: ../../spritz/src/dialogs.py:96 ../../spritz/src/dialogs.py:2979
+#: ../../spritz/src/dialogs.py:97 ../../spritz/src/dialogs.py:3198
 msgid "Choose what kind of test you would like to run"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:147
+#: ../../spritz/src/dialogs.py:153
 #, fuzzy
 msgid "Connection"
 msgstr "verbinden met mirror"
 
-#: ../../spritz/src/dialogs.py:153
+#: ../../spritz/src/dialogs.py:159
 msgid "SSL"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:222 ../../spritz/src/dialogs.py:684
+#: ../../spritz/src/dialogs.py:228 ../../spritz/src/dialogs.py:749
 #, fuzzy
 msgid "Connection Error"
 msgstr "verbinden met mirror"
 
 #.
-#: ../../spritz/src/dialogs.py:344 ../../spritz/src/dialogs.py:363
-#: ../../spritz/src/dialogs.py:380
+#: ../../spritz/src/dialogs.py:400 ../../spritz/src/dialogs.py:419
+#: ../../spritz/src/dialogs.py:436
 #, fuzzy
 msgid "Packages information"
 msgstr "Pakket Informatie"
 
-#: ../../spritz/src/dialogs.py:349 ../../spritz/src/spritz.glade.h:10
+#: ../../spritz/src/dialogs.py:405 ../../spritz/src/spritz.glade.h:10
 msgid "Advisory information"
 msgstr "Advisory informatie"
 
 #.
-#: ../../spritz/src/dialogs.py:356 ../../spritz/src/dialogs.py:373
+#: ../../spritz/src/dialogs.py:412 ../../spritz/src/dialogs.py:429
 msgid "Execute"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:368
+#: ../../spritz/src/dialogs.py:424
 #, fuzzy
 msgid "Destination repository"
 msgstr "Authenticatie in repository"
 
-#: ../../spritz/src/dialogs.py:385
+#: ../../spritz/src/dialogs.py:441
 #, fuzzy
 msgid "Remove packages"
 msgstr "externe pakketten"
 
-#: ../../spritz/src/dialogs.py:390
+#: ../../spritz/src/dialogs.py:446
 #, fuzzy
 msgid "Copy/move packages"
 msgstr "externe pakketten"
 
-#: ../../spritz/src/dialogs.py:395
+#: ../../spritz/src/dialogs.py:451
 #, fuzzy
 msgid "Compile selected"
 msgstr "Geen pakketten geselecteerd"
 
-#: ../../spritz/src/dialogs.py:400 ../../spritz/src/spritz.glade.h:6
+#: ../../spritz/src/dialogs.py:456 ../../spritz/src/spritz.glade.h:6
 msgid "Add USE"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:405 ../../spritz/src/spritz.glade.h:136
+#: ../../spritz/src/dialogs.py:461 ../../spritz/src/spritz.glade.h:137
 #, fuzzy
 msgid "Remove USE"
 msgstr "Verwijderen"
 
-#: ../../spritz/src/dialogs.py:485
+#: ../../spritz/src/dialogs.py:541
 #, fuzzy
 msgid "None"
 msgstr "Notitie"
 
 #. description col
-#: ../../spritz/src/dialogs.py:489 ../../spritz/src/dialogs.py:515
+#: ../../spritz/src/dialogs.py:545 ../../spritz/src/dialogs.py:571
 #, fuzzy
 msgid "Parameters"
 msgstr "Parameter"
 
 #. date col
 #. date
-#: ../../spritz/src/dialogs.py:517 ../../spritz/src/dialogs.py:538
+#: ../../spritz/src/dialogs.py:573 ../../spritz/src/dialogs.py:594
 #: ../../spritz/src/spritz.glade.h:43
 msgid "Date"
 msgstr "Datum"
 
-#: ../../spritz/src/dialogs.py:590
+#: ../../spritz/src/dialogs.py:655
 #, fuzzy
 msgid "Key"
 msgstr "Sleutelwoord"
 
-#: ../../spritz/src/dialogs.py:600
+#: ../../spritz/src/dialogs.py:665
 #, fuzzy
 msgid "USE Flags"
 msgstr "USE flags"
 
-#: ../../spritz/src/dialogs.py:611 ../../spritz/src/dialogs.py:1434
+#: ../../spritz/src/dialogs.py:676 ../../spritz/src/dialogs.py:1805
 #: ../../spritz/src/spritz.glade.h:17
 msgid "Branch"
 msgstr "Branche"
 
-#: ../../spritz/src/dialogs.py:615 ../../spritz/src/dialogs.py:2886
+#: ../../spritz/src/dialogs.py:680 ../../spritz/src/dialogs.py:3105
 msgid "Tag"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:617
+#: ../../spritz/src/dialogs.py:682
 #, fuzzy
 msgid "Injected"
 msgstr "Onaangetast"
 
-#: ../../spritz/src/dialogs.py:675
+#: ../../spritz/src/dialogs.py:740
 #, fuzzy
 msgid "No connection to host, please check your data"
 msgstr "verbinding time-out tijdens het ontvangen van data"
 
-#: ../../spritz/src/dialogs.py:678
+#: ../../spritz/src/dialogs.py:743
 msgid "Unable to create a remote session. Try again later."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:682
+#: ../../spritz/src/dialogs.py:747
 msgid "Login failed. Please retry."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:743
+#: ../../spritz/src/dialogs.py:809
 msgid "Communication error"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:767
+#: ../../spritz/src/dialogs.py:835
 msgid "Current"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:769
+#: ../../spritz/src/dialogs.py:837
 msgid "c.mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:771
+#: ../../spritz/src/dialogs.py:839
 #, fuzzy
 msgid "branch"
 msgstr "Branche"
 
-#: ../../spritz/src/dialogs.py:773
+#: ../../spritz/src/dialogs.py:841
 #, fuzzy
 msgid "repositories"
 msgstr "in repositories"
 
 #. glsa id
-#: ../../spritz/src/dialogs.py:1072
+#: ../../spritz/src/dialogs.py:1138
 #, fuzzy
 msgid "GLSA Id."
 msgstr "GLSA id."
 
-#: ../../spritz/src/dialogs.py:1110
+#: ../../spritz/src/dialogs.py:1179
 #, fuzzy
 msgid "Are you sure you want to remove the selected packages ? (For EVA!)"
 msgstr "Wil je de geselecteerde pakketten her-composeren ?"
 
-#: ../../spritz/src/dialogs.py:1113
+#: ../../spritz/src/dialogs.py:1182
 msgid "This is your last chance, are you really really really sure?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1306
-#, fuzzy
-msgid "Cannot move/copy packages from different repositories"
-msgstr "zoek naar pakketten in repositories"
-
-#: ../../spritz/src/dialogs.py:1325
-msgid "Execute copy"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:1328
-#, fuzzy
-msgid "Entropy packages move/copy"
-msgstr "verwijderen van pakketten op afstand"
-
-#: ../../spritz/src/dialogs.py:1432
-#, fuzzy
-msgid "Server"
-msgstr "Services Poort"
-
-#: ../../spritz/src/dialogs.py:1436
-msgid "Yes"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:1437
-#, fuzzy
-msgid "No"
-msgstr "Notitie"
-
-#: ../../spritz/src/dialogs.py:1443
-#, fuzzy
-msgid "Database"
-msgstr "database"
-
-#: ../../spritz/src/dialogs.py:1444
-#, fuzzy
-msgid "current revision"
-msgstr "Al reeds in branche"
-
-#: ../../spritz/src/dialogs.py:1446
-#, fuzzy
-msgid "remote revision"
-msgstr "Repository herziening"
-
-#: ../../spritz/src/dialogs.py:1466 ../../spritz/src/dialogs.py:1630
-#, fuzzy
-msgid "Execution mode"
-msgstr "Uitzondering"
-
-#: ../../spritz/src/dialogs.py:1466 ../../spritz/src/dialogs.py:1630
-#, fuzzy
-msgid "Execute all"
-msgstr "Fout bij instellen waarde"
-
-#: ../../spritz/src/dialogs.py:1466 ../../spritz/src/dialogs.py:1630
-#, fuzzy
-msgid "Execute only selected"
-msgstr "laat alleen desinfecteerde zien"
-
-#: ../../spritz/src/dialogs.py:1469 ../../spritz/src/dialogs.py:1633
-msgid "Choose the execution mode"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:1508
-#, fuzzy
-msgid "Commit message"
-msgstr "Compilatie berichten"
-
-#: ../../spritz/src/dialogs.py:1509
-#, fuzzy
-msgid "Pretend mode"
-msgstr "Aangemaakt"
-
-#: ../../spritz/src/dialogs.py:1510
-#, fuzzy
-msgid "Packages check"
-msgstr "Pakketten"
-
-#: ../../spritz/src/dialogs.py:1514
-#, fuzzy
-msgid "Choose sync options"
-msgstr "Repositories opties"
-
-#: ../../spritz/src/dialogs.py:1532
-#, fuzzy
-msgid "Mirror updates information"
-msgstr "Repository informatie"
-
-#: ../../spritz/src/dialogs.py:1613
-#, fuzzy
-msgid "Choose the destination repository"
-msgstr "standaard repository instellen"
-
-#: ../../spritz/src/dialogs.py:1693
-#, fuzzy
-msgid "To be added"
-msgstr "Gemarkeerd voor update"
-
-#: ../../spritz/src/dialogs.py:1700 ../../spritz/src/dialogs.py:4592
-#: ../../spritz/src/dialogs.py:4643
-msgid "To be removed"
-msgstr "Gemarkeerd voor verwijdering"
-
-#: ../../spritz/src/dialogs.py:1707
-#, fuzzy
-msgid "To be injected"
-msgstr "is geïnjecteerd"
-
-#: ../../spritz/src/dialogs.py:2178 ../../spritz/src/dialogs.py:2223
-msgid "Categories, space separated"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:2184
-#, fuzzy
-msgid "Insert categories"
-msgstr "Categorieën"
-
-#: ../../spritz/src/dialogs.py:2229
-msgid "Insert categories (if you want)"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:2262
-#, fuzzy
-msgid "Invalid Command"
-msgstr "Ongeldig backend-type"
-
-#: ../../spritz/src/dialogs.py:2262 ../../spritz/src/dialogs.py:2282
-#: ../../spritz/src/dialogs.py:2290
-msgid "Custom command Error"
-msgstr ""
-
-#: ../../spritz/src/dialogs.py:2290
-#, fuzzy
-msgid "Error executing call"
-msgstr "Fout bij instellen waarde"
-
-#: ../../spritz/src/dialogs.py:2392 ../../spritz/src/dialogs.py:2451
-#: ../../spritz/src/dialogs.py:2525 ../../spritz/src/dialogs.py:2585
+#: ../../spritz/src/dialogs.py:1211 ../../spritz/src/dialogs.py:2723
+#: ../../spritz/src/dialogs.py:2767 ../../spritz/src/dialogs.py:2828
 #, fuzzy
 msgid "Atoms, space separated"
 msgstr "Sleutel woorden (met spaties gescheiden)"
 
-#: ../../spritz/src/dialogs.py:2399
-#, fuzzy
-msgid "Insert packages removal parameters"
-msgstr "Pakket verwijdering compleet"
-
-#: ../../spritz/src/dialogs.py:2460
-#, fuzzy
-msgid "Custom USE flags"
-msgstr "USE flags"
-
-#: ../../spritz/src/dialogs.py:2465
-#, fuzzy
-msgid "Insert compilation parameters"
-msgstr "Fout bij instellen waarde"
-
-#: ../../spritz/src/dialogs.py:2527
+#: ../../spritz/src/dialogs.py:1213
 msgid "USE flags, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2530
+#: ../../spritz/src/dialogs.py:1216
 #, fuzzy
 msgid "Insert command parameters"
 msgstr "Onvoldoende parameters"
 
+#: ../../spritz/src/dialogs.py:1670
+#, fuzzy
+msgid "Cannot move/copy packages from different repositories"
+msgstr "zoek naar pakketten in repositories"
+
+#: ../../spritz/src/dialogs.py:1689
+msgid "Execute copy"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1692
+#, fuzzy
+msgid "Entropy packages move/copy"
+msgstr "verwijderen van pakketten op afstand"
+
+#: ../../spritz/src/dialogs.py:1803
+#, fuzzy
+msgid "Server"
+msgstr "Services Poort"
+
+#: ../../spritz/src/dialogs.py:1807
+msgid "Yes"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1808
+#, fuzzy
+msgid "No"
+msgstr "Notitie"
+
+#: ../../spritz/src/dialogs.py:1814
+#, fuzzy
+msgid "Database"
+msgstr "database"
+
+#: ../../spritz/src/dialogs.py:1815
+#, fuzzy
+msgid "current revision"
+msgstr "Al reeds in branche"
+
+#: ../../spritz/src/dialogs.py:1817
+#, fuzzy
+msgid "remote revision"
+msgstr "Repository herziening"
+
+#: ../../spritz/src/dialogs.py:1837 ../../spritz/src/dialogs.py:2001
+#, fuzzy
+msgid "Execution mode"
+msgstr "Uitzondering"
+
+#: ../../spritz/src/dialogs.py:1837 ../../spritz/src/dialogs.py:2001
+#, fuzzy
+msgid "Execute all"
+msgstr "Fout bij instellen waarde"
+
+#: ../../spritz/src/dialogs.py:1837 ../../spritz/src/dialogs.py:2001
+#, fuzzy
+msgid "Execute only selected"
+msgstr "laat alleen desinfecteerde zien"
+
+#: ../../spritz/src/dialogs.py:1840 ../../spritz/src/dialogs.py:2004
+msgid "Choose the execution mode"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:1879
+#, fuzzy
+msgid "Commit message"
+msgstr "Compilatie berichten"
+
+#: ../../spritz/src/dialogs.py:1880
+#, fuzzy
+msgid "Pretend mode"
+msgstr "Aangemaakt"
+
+#: ../../spritz/src/dialogs.py:1881
+#, fuzzy
+msgid "Packages check"
+msgstr "Pakketten"
+
+#: ../../spritz/src/dialogs.py:1885
+#, fuzzy
+msgid "Choose sync options"
+msgstr "Repositories opties"
+
+#: ../../spritz/src/dialogs.py:1903
+#, fuzzy
+msgid "Mirror updates information"
+msgstr "Repository informatie"
+
+#: ../../spritz/src/dialogs.py:1984
+#, fuzzy
+msgid "Choose the destination repository"
+msgstr "standaard repository instellen"
+
+#: ../../spritz/src/dialogs.py:2064
+#, fuzzy
+msgid "To be added"
+msgstr "Gemarkeerd voor update"
+
+#: ../../spritz/src/dialogs.py:2071 ../../spritz/src/dialogs.py:4869
+#: ../../spritz/src/dialogs.py:4920
+msgid "To be removed"
+msgstr "Gemarkeerd voor verwijdering"
+
+#: ../../spritz/src/dialogs.py:2078
+#, fuzzy
+msgid "To be injected"
+msgstr "is geïnjecteerd"
+
+#: ../../spritz/src/dialogs.py:2548 ../../spritz/src/dialogs.py:2582
+msgid "Categories, space separated"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2554
+#, fuzzy
+msgid "Insert categories"
+msgstr "Categorieën"
+
 #: ../../spritz/src/dialogs.py:2588
+msgid "Insert categories (if you want)"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2610
+#, fuzzy
+msgid "Invalid Command"
+msgstr "Ongeldig backend-type"
+
+#: ../../spritz/src/dialogs.py:2610 ../../spritz/src/dialogs.py:2630
+#: ../../spritz/src/dialogs.py:2638
+msgid "Custom command Error"
+msgstr ""
+
+#: ../../spritz/src/dialogs.py:2638
+#, fuzzy
+msgid "Error executing call"
+msgstr "Fout bij instellen waarde"
+
+#: ../../spritz/src/dialogs.py:2730
+#, fuzzy
+msgid "Insert packages removal parameters"
+msgstr "Pakket verwijdering compleet"
+
+#: ../../spritz/src/dialogs.py:2776
+#, fuzzy
+msgid "Custom USE flags"
+msgstr "USE flags"
+
+#: ../../spritz/src/dialogs.py:2781
+#, fuzzy
+msgid "Insert compilation parameters"
+msgstr "Fout bij instellen waarde"
+
+#: ../../spritz/src/dialogs.py:2831
 #, fuzzy
 msgid "Insert Package Information parameters"
 msgstr "Pakket Informatie"
 
-#: ../../spritz/src/dialogs.py:2660
+#: ../../spritz/src/dialogs.py:2878
 #, fuzzy
 msgid "Full output"
 msgstr "deze uitvoer"
 
-#: ../../spritz/src/dialogs.py:2663
+#: ../../spritz/src/dialogs.py:2881
+#, fuzzy
+msgid "Auto refresh"
+msgstr "Referenties"
+
+#: ../../spritz/src/dialogs.py:2883
 #, fuzzy
 msgid "Insert output parameters"
 msgstr "Onvoldoende parameters"
 
-#: ../../spritz/src/dialogs.py:2692 ../../spritz/src/spritz.glade.h:65
+#: ../../spritz/src/dialogs.py:2919 ../../spritz/src/spritz.glade.h:65
 #, fuzzy
 msgid "Extended note"
 msgstr "Uitgebreide Opties"
 
-#: ../../spritz/src/dialogs.py:2695
+#: ../../spritz/src/dialogs.py:2922
 msgid "Insert your new pinboard item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2786
+#: ../../spritz/src/dialogs.py:2999
 #, fuzzy
 msgid "List type"
 msgstr "type"
 
-#: ../../spritz/src/dialogs.py:2789
+#: ../../spritz/src/dialogs.py:3002
 msgid "Choose what kind of list you want to see"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2844
+#: ../../spritz/src/dialogs.py:3061
 #, fuzzy
 msgid "Choose from which repository"
 msgstr "vanaf repositorie"
 
-#: ../../spritz/src/dialogs.py:2886
+#: ../../spritz/src/dialogs.py:3105
 #, fuzzy
 msgid "Needed Libraries"
 msgstr "Benodigde bibliotheken"
 
-#: ../../spritz/src/dialogs.py:2886
+#: ../../spritz/src/dialogs.py:3105
 #, fuzzy
 msgid "Reverse dependencies"
 msgstr "Sorteren van afhankelijkheden"
 
-#: ../../spritz/src/dialogs.py:2886 ../../spritz/src/dialogs.py:3601
+#: ../../spritz/src/dialogs.py:3105 ../../spritz/src/dialogs.py:3834
 msgid "File"
 msgstr "Bestand"
 
-#: ../../spritz/src/dialogs.py:2886
+#: ../../spritz/src/dialogs.py:3105
 #, fuzzy
 msgid "Eclass"
 msgstr "Eclassen"
 
-#: ../../spritz/src/dialogs.py:2894
+#: ../../spritz/src/dialogs.py:3113
 #, fuzzy
 msgid "Entropy Search"
 msgstr "gooi Entropy cache leeg"
 
-#: ../../spritz/src/dialogs.py:2929
+#: ../../spritz/src/dialogs.py:3148
 #, fuzzy
 msgid "Choose the repository"
 msgstr "standaard repository instellen"
 
-#: ../../spritz/src/dialogs.py:2952
+#: ../../spritz/src/dialogs.py:3171
 #, fuzzy
 msgid "Choose the repositories you want to scan"
 msgstr "Geen repositories online gevonden"
 
-#: ../../spritz/src/dialogs.py:2976
+#: ../../spritz/src/dialogs.py:3195
 msgid "Choose mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2976
+#: ../../spritz/src/dialogs.py:3195
 msgid "Server check"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2976
+#: ../../spritz/src/dialogs.py:3195
 #, fuzzy
 msgid "Mirrors check"
 msgstr "Mirrors"
 
-#: ../../spritz/src/dialogs.py:3173
+#: ../../spritz/src/dialogs.py:3406
 msgid "Expand to browse"
 msgstr "Uitvouwen om te doorzoeken"
 
-#: ../../spritz/src/dialogs.py:3186 ../../spritz/src/spritz.glade.h:74
+#: ../../spritz/src/dialogs.py:3419 ../../spritz/src/spritz.glade.h:74
 #, fuzzy
 msgid "Identifier"
 msgstr "GLSA Identifier"
 
-#: ../../spritz/src/dialogs.py:3190 ../../spritz/src/spritz.glade.h:13
+#: ../../spritz/src/dialogs.py:3423 ../../spritz/src/spritz.glade.h:13
 msgid "Author"
 msgstr "Auteur"
 
-#: ../../spritz/src/dialogs.py:3503 ../../spritz/src/views.py:549
+#: ../../spritz/src/dialogs.py:3736 ../../spritz/src/views.py:549
 msgid "Vote registered successfully"
 msgstr "Stem registratie succesvol"
 
-#: ../../spritz/src/dialogs.py:3505 ../../spritz/src/views.py:551
+#: ../../spritz/src/dialogs.py:3738 ../../spritz/src/views.py:551
 msgid "Error registering vote"
 msgstr "Fout bij het registreren van je stem"
 
-#: ../../spritz/src/dialogs.py:3518
+#: ../../spritz/src/dialogs.py:3751
 msgid "License name"
 msgstr "Licentie naam"
 
-#: ../../spritz/src/dialogs.py:3534 ../../spritz/src/spritz.glade.h:97
+#: ../../spritz/src/dialogs.py:3767 ../../spritz/src/spritz.glade.h:98
 msgid "Mirrors"
 msgstr "Mirrors"
 
-#: ../../spritz/src/dialogs.py:3558
+#: ../../spritz/src/dialogs.py:3791
 msgid "Eclasses"
 msgstr "Eclassen"
 
-#: ../../spritz/src/dialogs.py:3574
+#: ../../spritz/src/dialogs.py:3807
 msgid "Depends"
 msgstr "Afhankelijk van"
 
-#: ../../spritz/src/dialogs.py:3582
+#: ../../spritz/src/dialogs.py:3815
 msgid "Needed libraries"
 msgstr "Benodigde bibliotheken"
 
-#: ../../spritz/src/dialogs.py:3590
+#: ../../spritz/src/dialogs.py:3823
 msgid "Protected item"
 msgstr "Beschermd item"
 
-#: ../../spritz/src/dialogs.py:3593 ../../spritz/src/dialogs.py:3605
-#: ../../spritz/src/dialogs.py:3617
+#: ../../spritz/src/dialogs.py:3826 ../../spritz/src/dialogs.py:3838
+#: ../../spritz/src/dialogs.py:3850
 msgid "Type"
 msgstr "Type"
 
-#: ../../spritz/src/dialogs.py:3705
+#: ../../spritz/src/dialogs.py:3938
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr "Deel jouw mening, jouw documenten, jouw screenshots!"
 
-#: ../../spritz/src/dialogs.py:3706
+#: ../../spritz/src/dialogs.py:3939
 msgid "Be part of our Community!"
 msgstr "Word lid van onze Community!"
 
-#: ../../spritz/src/dialogs.py:3741
+#: ../../spritz/src/dialogs.py:3974
 msgid "From your Operating System"
 msgstr "Van je Besturings Systeem"
 
-#: ../../spritz/src/dialogs.py:3744
+#: ../../spritz/src/dialogs.py:3977
 #, fuzzy
 msgid "Remotely"
 msgstr "op afstand"
 
-#: ../../spritz/src/dialogs.py:3896
+#: ../../spritz/src/dialogs.py:4129
 msgid "Bug"
 msgstr "Bug"
 
-#: ../../spritz/src/dialogs.py:3904
+#: ../../spritz/src/dialogs.py:4137
 msgid "Reference"
 msgstr "Referentie"
 
-#: ../../spritz/src/dialogs.py:3974
+#: ../../spritz/src/dialogs.py:4207
 msgid "impact"
 msgstr "impact"
 
-#: ../../spritz/src/dialogs.py:3976
+#: ../../spritz/src/dialogs.py:4209
 msgid "access"
 msgstr "toegang"
 
-#: ../../spritz/src/dialogs.py:3990
+#: ../../spritz/src/dialogs.py:4223
 msgid "Vulnerables"
 msgstr "Kwetsbaarheden"
 
-#: ../../spritz/src/dialogs.py:3994
+#: ../../spritz/src/dialogs.py:4227
 msgid "Unaffected"
 msgstr "Onaangetast"
 
-#: ../../spritz/src/dialogs.py:4073
+#: ../../spritz/src/dialogs.py:4306
 msgid "Id"
 msgstr "ID"
 
-#: ../../spritz/src/dialogs.py:4150
+#: ../../spritz/src/dialogs.py:4384
 msgid "Write your"
 msgstr "Schrijf jouw"
 
-#: ../../spritz/src/dialogs.py:4153
+#: ../../spritz/src/dialogs.py:4387
 msgid "Select your"
 msgstr "Selecteer uw"
 
-#: ../../spritz/src/dialogs.py:4160
+#: ../../spritz/src/dialogs.py:4394
 msgid "Submit issue"
 msgstr "Voeg melding toe"
 
-#: ../../spritz/src/dialogs.py:4173
+#: ../../spritz/src/dialogs.py:4407
 msgid "Empty Document"
 msgstr "Leeg Document"
 
-#: ../../spritz/src/dialogs.py:4177
+#: ../../spritz/src/dialogs.py:4411
 msgid "Invalid Description"
 msgstr "Ongeldige Omschrijving"
 
-#: ../../spritz/src/dialogs.py:4183
+#: ../../spritz/src/dialogs.py:4417
 msgid "Invalid Document Type"
 msgstr "Ongeldig Document Soort"
 
-#: ../../spritz/src/dialogs.py:4186
+#: ../../spritz/src/dialogs.py:4420
 msgid "Invalid Title"
 msgstr "Ongeldige Titel"
 
 #. confirm ?
-#: ../../spritz/src/dialogs.py:4190
+#: ../../spritz/src/dialogs.py:4424
 #, fuzzy
 msgid "Do you confirm your submission?"
 msgstr "Wilt u bevestigen"
 
-#: ../../spritz/src/dialogs.py:4210
+#: ../../spritz/src/dialogs.py:4450
 #, fuzzy
 msgid "UGC Error"
 msgstr "GGI Fout"
 
-#: ../../spritz/src/dialogs.py:4214
+#: ../../spritz/src/dialogs.py:4454
 #, fuzzy
 msgid "Document added successfully. Thank you"
 msgstr "Document succesvol toegevoegd. Dank u"
 
-#: ../../spritz/src/dialogs.py:4214
+#: ../../spritz/src/dialogs.py:4454
 msgid "Success!"
 msgstr "Gelukt!"
 
-#: ../../spritz/src/dialogs.py:4234
+#: ../../spritz/src/dialogs.py:4509
 msgid "Write your document"
 msgstr "Schrijf jouw document"
 
-#: ../../spritz/src/dialogs.py:4241
+#: ../../spritz/src/dialogs.py:4517
 msgid "Select your file"
 msgstr "selecteer jouw bestand"
 
-#: ../../spritz/src/dialogs.py:4252
+#: ../../spritz/src/dialogs.py:4529
 #, fuzzy
 msgid "On repository"
 msgstr "Repository"
 
-#: ../../spritz/src/dialogs.py:4306
+#: ../../spritz/src/dialogs.py:4583
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
 "Dit zijn de pakketten die moeten geactiveerd worden om aan je vraag te "
 "voldoen"
 
-#: ../../spritz/src/dialogs.py:4308
+#: ../../spritz/src/dialogs.py:4585
 msgid "Some packages are masked"
 msgstr "Sommige pakketten zijn gemaskeerd"
 
-#: ../../spritz/src/dialogs.py:4375
+#: ../../spritz/src/dialogs.py:4652
 msgid "Masked package"
 msgstr "Gemaskeerde Pakketten"
 
-#: ../../spritz/src/dialogs.py:4453 ../../spritz/src/dialogs.py:4616
-#: ../../spritz/src/dialogs.py:4627 ../../spritz/src/dialogs.py:4638
-#: ../../spritz/src/dialogs.py:4649 ../../spritz/src/views.py:602
+#: ../../spritz/src/dialogs.py:4730 ../../spritz/src/dialogs.py:4893
+#: ../../spritz/src/dialogs.py:4904 ../../spritz/src/dialogs.py:4915
+#: ../../spritz/src/dialogs.py:4926 ../../spritz/src/views.py:602
 #: ../../spritz/src/views.py:888
 msgid "No description"
 msgstr "Geen omschrijving"
 
-#: ../../spritz/src/dialogs.py:4507
+#: ../../spritz/src/dialogs.py:4784
 msgid "Please confirm the actions above"
 msgstr "Bevestig bovenstaande actie"
 
-#: ../../spritz/src/dialogs.py:4568 ../../spritz/src/dialogs.py:4610
+#: ../../spritz/src/dialogs.py:4845 ../../spritz/src/dialogs.py:4887
 msgid "To be reinstalled"
 msgstr "Gemarkeerd voor Herinstallatie"
 
-#: ../../spritz/src/dialogs.py:4574 ../../spritz/src/dialogs.py:4621
+#: ../../spritz/src/dialogs.py:4851 ../../spritz/src/dialogs.py:4898
 msgid "To be installed"
 msgstr "Gemarkeerd voor Installatie"
 
-#: ../../spritz/src/dialogs.py:4580 ../../spritz/src/dialogs.py:4632
+#: ../../spritz/src/dialogs.py:4857 ../../spritz/src/dialogs.py:4909
 msgid "To be updated"
 msgstr "Gemarkeerd voor update"
 
-#: ../../spritz/src/dialogs.py:4586
+#: ../../spritz/src/dialogs.py:4863
 msgid "To be downgraded"
 msgstr "Gemarkeerd voor downgrade"
 
-#: ../../spritz/src/dialogs.py:4779
+#: ../../spritz/src/dialogs.py:5056
 msgid "About"
 msgstr "Over"
 
-#: ../../spritz/src/dialogs.py:4899
+#: ../../spritz/src/dialogs.py:5176
 msgid "Spritz Question"
 msgstr "Spritz Vraag"
 
-#: ../../spritz/src/dialogs.py:4904
+#: ../../spritz/src/dialogs.py:5181
 msgid "Hey!"
 msgstr "Hey!"
 
-#: ../../spritz/src/dialogs.py:4947
+#: ../../spritz/src/dialogs.py:5224
 msgid "Please fill the following form"
 msgstr "Vul het volgende formulier in aub."
 
-#: ../../spritz/src/dialogs.py:5074
+#: ../../spritz/src/dialogs.py:5351
 msgid "Invalid entry"
 msgstr "Ongeldige invoer"
 
+#: ../../spritz/src/dialogs.py:5415
+msgid "Cancel"
+msgstr "Annuleer"
+
 #. new
-#: ../../spritz/src/dialogs.py:5227
+#: ../../spritz/src/dialogs.py:5504
 msgid "Accepted"
 msgstr "Geaccepteerd"
 
@@ -7433,12 +7454,12 @@ msgstr "Bestandsnaam"
 msgid "Active"
 msgstr "Actief"
 
-#: ../../spritz/src/views.py:1203 ../../spritz/src/spritz.glade.h:185
+#: ../../spritz/src/views.py:1203 ../../spritz/src/spritz.glade.h:186
 msgid "Update"
 msgstr "Update"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1211 ../../spritz/src/spritz.glade.h:147
+#: ../../spritz/src/views.py:1211 ../../spritz/src/spritz.glade.h:148
 msgid "Revision"
 msgstr "Herziening"
 
@@ -7924,401 +7945,405 @@ msgid "Installed Packages"
 msgstr "Toon geïnstalleerde pakketten"
 
 #: ../../spritz/src/spritz.glade.h:84
+msgid "Interactivity"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:85
 msgid "Kernel Tag"
 msgstr "Kernel Tag"
 
-#: ../../spritz/src/spritz.glade.h:86
+#: ../../spritz/src/spritz.glade.h:87
 #, fuzzy
 msgid "Keywords (space separated)"
 msgstr "Sleutel woorden (met spaties gescheiden)"
 
-#: ../../spritz/src/spritz.glade.h:87
+#: ../../spritz/src/spritz.glade.h:88
 #, fuzzy
 msgid "Library test"
 msgstr "Bibliotheken test"
 
-#: ../../spritz/src/spritz.glade.h:88
+#: ../../spritz/src/spritz.glade.h:89
 #, fuzzy
 msgid "Load User Generated Content"
 msgstr "Gebruiker Gedefinieerde Inhoud"
 
-#: ../../spritz/src/spritz.glade.h:89
+#: ../../spritz/src/spritz.glade.h:90
 #, fuzzy
 msgid "Load content"
 msgstr "Laad inhoud"
 
-#: ../../spritz/src/spritz.glade.h:90
+#: ../../spritz/src/spritz.glade.h:91
 msgid "Location"
 msgstr "Locatie"
 
-#: ../../spritz/src/spritz.glade.h:91
+#: ../../spritz/src/spritz.glade.h:92
 msgid "MD5 Signature"
 msgstr "MD5 Sleutel"
 
-#: ../../spritz/src/spritz.glade.h:92
+#: ../../spritz/src/spritz.glade.h:93
 msgid "M_erge"
 msgstr "_Samenvoegen"
 
-#: ../../spritz/src/spritz.glade.h:94
+#: ../../spritz/src/spritz.glade.h:95
 msgid "Merge all"
 msgstr "Alles samenvoegen"
 
-#: ../../spritz/src/spritz.glade.h:95
+#: ../../spritz/src/spritz.glade.h:96
 msgid "Messages"
 msgstr "Meldingen"
 
-#: ../../spritz/src/spritz.glade.h:96
+#: ../../spritz/src/spritz.glade.h:97
 #, fuzzy
 msgid "Mirror updates"
 msgstr "Mirrors"
 
-#: ../../spritz/src/spritz.glade.h:98
+#: ../../spritz/src/spritz.glade.h:99
 msgid "Networking"
 msgstr "Netwerken"
 
-#: ../../spritz/src/spritz.glade.h:99
+#: ../../spritz/src/spritz.glade.h:100
 #, fuzzy
 msgid "Not done"
 msgstr "Niet gevonden"
 
-#: ../../spritz/src/spritz.glade.h:101
+#: ../../spritz/src/spritz.glade.h:102
 msgid "O_ther"
 msgstr "_Overig"
 
-#: ../../spritz/src/spritz.glade.h:102
+#: ../../spritz/src/spritz.glade.h:103
 #, fuzzy
 msgid "Output View"
 msgstr "Output"
 
-#: ../../spritz/src/spritz.glade.h:103
+#: ../../spritz/src/spritz.glade.h:104
 #, fuzzy
 msgid "Package Info"
 msgstr "Pakket info."
 
-#: ../../spritz/src/spritz.glade.h:104
+#: ../../spritz/src/spritz.glade.h:105
 msgid "Package Info."
 msgstr "Pakket info."
 
-#: ../../spritz/src/spritz.glade.h:105
+#: ../../spritz/src/spritz.glade.h:106
 #, fuzzy
 msgid "Package Information"
 msgstr "Pakket Informatie"
 
-#: ../../spritz/src/spritz.glade.h:106
+#: ../../spritz/src/spritz.glade.h:107
 msgid "Package Size"
 msgstr "Pakket grootte"
 
-#: ../../spritz/src/spritz.glade.h:108
+#: ../../spritz/src/spritz.glade.h:109
 #, fuzzy
 msgid "Pinboard Id"
 msgstr "Repository identifier"
 
-#: ../../spritz/src/spritz.glade.h:109
+#: ../../spritz/src/spritz.glade.h:110
 #, fuzzy
 msgid "Pinboard Item Information"
 msgstr "systeem informatie weergeven"
 
-#: ../../spritz/src/spritz.glade.h:110
+#: ../../spritz/src/spritz.glade.h:111
 #, fuzzy
 msgid "Pinboard View"
 msgstr "Repository identifier"
 
-#: ../../spritz/src/spritz.glade.h:111
+#: ../../spritz/src/spritz.glade.h:112
 msgid "Please Confirm"
 msgstr "Bevestig alstublieft"
 
-#: ../../spritz/src/spritz.glade.h:112
+#: ../../spritz/src/spritz.glade.h:113
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr "Stuur deze fout a.u.b. naar ons op met zoveel mogelijk informatie."
 
-#: ../../spritz/src/spritz.glade.h:114
+#: ../../spritz/src/spritz.glade.h:115
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 "Beschermd bestanden behorende tot een pakket tegen overschrijving door een "
 "ander"
 
-#: ../../spritz/src/spritz.glade.h:115
+#: ../../spritz/src/spritz.glade.h:116
 msgid "Process priority (nice)"
 msgstr "Prioriteit van processen (nice)"
 
-#: ../../spritz/src/spritz.glade.h:116
+#: ../../spritz/src/spritz.glade.h:117
 #, fuzzy
 msgid "Process result"
 msgstr "_Installeer alles in Wachtrij"
 
-#: ../../spritz/src/spritz.glade.h:117
+#: ../../spritz/src/spritz.glade.h:118
 msgid "Processing at"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:118
+#: ../../spritz/src/spritz.glade.h:119
 msgid "Protected files and directories"
 msgstr "Beschermde bestanden en mappen"
 
-#: ../../spritz/src/spritz.glade.h:119
+#: ../../spritz/src/spritz.glade.h:120
 msgid "Protected files and directories mask"
 msgstr "Beschermde bestanden en mappen gemaskeerd"
 
-#: ../../spritz/src/spritz.glade.h:120
+#: ../../spritz/src/spritz.glade.h:121
 msgid "Proxy Password"
 msgstr "Proxy Wachtwoord"
 
-#: ../../spritz/src/spritz.glade.h:121
+#: ../../spritz/src/spritz.glade.h:122
 msgid "Proxy Username"
 msgstr "Proxy Gebruikersnaam"
 
-#: ../../spritz/src/spritz.glade.h:122
+#: ../../spritz/src/spritz.glade.h:123
 msgid "Purge"
 msgstr "Volledig verwijderen"
 
-#: ../../spritz/src/spritz.glade.h:123
+#: ../../spritz/src/spritz.glade.h:124
 msgid "Q_ueue packages in selected Advisory"
 msgstr "_Zet geselecteerde Advisory pakketten in de wachtrij"
 
-#: ../../spritz/src/spritz.glade.h:124
+#: ../../spritz/src/spritz.glade.h:125
 #, fuzzy
 msgid "Queue Id"
 msgstr "Identifier"
 
-#: ../../spritz/src/spritz.glade.h:125
+#: ../../spritz/src/spritz.glade.h:126
 #, fuzzy
 msgid "Queue Item Information"
 msgstr "systeem informatie weergeven"
 
-#: ../../spritz/src/spritz.glade.h:126
+#: ../../spritz/src/spritz.glade.h:127
 #, fuzzy
 msgid "Queue View"
 msgstr "Identifier"
 
-#: ../../spritz/src/spritz.glade.h:127
+#: ../../spritz/src/spritz.glade.h:128
 msgid "Queued at"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:128
+#: ../../spritz/src/spritz.glade.h:129
 msgid "R_egenerate Cache"
 msgstr "Hergenereer Cache"
 
-#: ../../spritz/src/spritz.glade.h:130
+#: ../../spritz/src/spritz.glade.h:131
 #, fuzzy
 msgid "Refresh"
 msgstr "Referenties"
 
-#: ../../spritz/src/spritz.glade.h:132
+#: ../../spritz/src/spritz.glade.h:133
 msgid "Reinstall the selected package"
 msgstr "Herinstalleer geselecteerd pakket"
 
-#: ../../spritz/src/spritz.glade.h:133
+#: ../../spritz/src/spritz.glade.h:134
 #, fuzzy
 msgid "Remote stdout file"
 msgstr "Externe statistieken voor"
 
-#: ../../spritz/src/spritz.glade.h:134
+#: ../../spritz/src/spritz.glade.h:135
 #, fuzzy
 msgid "Remove"
 msgstr "verwijder"
 
-#: ../../spritz/src/spritz.glade.h:135
+#: ../../spritz/src/spritz.glade.h:136
 msgid "Remove Selected"
 msgstr "Verwijder Geselecteerde"
 
-#: ../../spritz/src/spritz.glade.h:137
+#: ../../spritz/src/spritz.glade.h:138
 msgid "Remove USE flags on atoms"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:138
+#: ../../spritz/src/spritz.glade.h:139
 #, fuzzy
 msgid "Remove atoms"
 msgstr "Verwijderen ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:139
+#: ../../spritz/src/spritz.glade.h:140
 #, fuzzy
 msgid "Remove packages on the remote server"
 msgstr "verwijderen van pakketten op afstand"
 
-#: ../../spritz/src/spritz.glade.h:140
+#: ../../spritz/src/spritz.glade.h:141
 msgid "Remove the selected package"
 msgstr "Verwijder geselecteerd pakket"
 
-#: ../../spritz/src/spritz.glade.h:141
+#: ../../spritz/src/spritz.glade.h:142
 msgid "Remove the selected package and its configuration"
 msgstr "Verwijder geselecteerde en configuratie"
 
-#: ../../spritz/src/spritz.glade.h:142
+#: ../../spritz/src/spritz.glade.h:143
 msgid "Repositories options"
 msgstr "Repositories opties"
 
-#: ../../spritz/src/spritz.glade.h:143
+#: ../../spritz/src/spritz.glade.h:144
 #, fuzzy
 msgid "Repository information"
 msgstr "repositories informatie weergeven"
 
-#: ../../spritz/src/spritz.glade.h:145
+#: ../../spritz/src/spritz.glade.h:146
 msgid "Restore"
 msgstr "Herstel"
 
-#: ../../spritz/src/spritz.glade.h:148
+#: ../../spritz/src/spritz.glade.h:149
 msgid "S_end Error Report"
 msgstr "_Fout melden"
 
-#: ../../spritz/src/spritz.glade.h:149
+#: ../../spritz/src/spritz.glade.h:150
 msgid "Save"
 msgstr "Opslaan"
 
-#: ../../spritz/src/spritz.glade.h:150
+#: ../../spritz/src/spritz.glade.h:151
 #, fuzzy
 msgid "Search"
 msgstr "arch"
 
-#: ../../spritz/src/spritz.glade.h:151
+#: ../../spritz/src/spritz.glade.h:152
 msgid "Secure Services Port"
 msgstr "Beveiligde Services Poort"
 
-#: ../../spritz/src/spritz.glade.h:152
+#: ../../spritz/src/spritz.glade.h:153
 #, fuzzy
 msgid "Security updates"
 msgstr "Beveiligings Adviesen"
 
-#: ../../spritz/src/spritz.glade.h:153
+#: ../../spritz/src/spritz.glade.h:154
 msgid "Services Port"
 msgstr "Services Poort"
 
-#: ../../spritz/src/spritz.glade.h:154
+#: ../../spritz/src/spritz.glade.h:155
 msgid "Show Selected"
 msgstr "Geeft Geselecteerde Weer"
 
-#: ../../spritz/src/spritz.glade.h:155
+#: ../../spritz/src/spritz.glade.h:156
 msgid "Show all"
 msgstr "geef alles weer"
 
-#: ../../spritz/src/spritz.glade.h:156
+#: ../../spritz/src/spritz.glade.h:157
 msgid "Show applied"
 msgstr "Toegepaste weergeven"
 
-#: ../../spritz/src/spritz.glade.h:157
+#: ../../spritz/src/spritz.glade.h:158
 msgid "Show unapplied"
 msgstr "Niet toegepaste weergeven"
 
-#: ../../spritz/src/spritz.glade.h:160
+#: ../../spritz/src/spritz.glade.h:161
 msgid "Socket settings"
 msgstr "Socket Instellingen"
 
-#: ../../spritz/src/spritz.glade.h:161
+#: ../../spritz/src/spritz.glade.h:162
 #, fuzzy
 msgid "Source Package Manager"
 msgstr "Start Pakketten Beheerder"
 
-#: ../../spritz/src/spritz.glade.h:162
+#: ../../spritz/src/spritz.glade.h:163
 msgid "Spm Info"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:163
+#: ../../spritz/src/spritz.glade.h:164
 msgid "Spm Sync"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:164
+#: ../../spritz/src/spritz.glade.h:165
 #, fuzzy
 msgid "Spm tree updates"
 msgstr "Beveiligings Adviesen"
 
-#: ../../spritz/src/spritz.glade.h:165
+#: ../../spritz/src/spritz.glade.h:166
 msgid "Spritz Package Manager"
 msgstr "Spritz Pakketten Beheerder"
 
-#: ../../spritz/src/spritz.glade.h:166
+#: ../../spritz/src/spritz.glade.h:167
 msgid "Submit a new document"
 msgstr "Voeg een nieuw document toe"
 
-#: ../../spritz/src/spritz.glade.h:167
+#: ../../spritz/src/spritz.glade.h:168
 #, fuzzy
 msgid "Switch to"
 msgstr "Wissel repo"
 
-#: ../../spritz/src/spritz.glade.h:169
+#: ../../spritz/src/spritz.glade.h:170
 msgid "System"
 msgstr "Systeem"
 
-#: ../../spritz/src/spritz.glade.h:170
+#: ../../spritz/src/spritz.glade.h:171
 msgid "This is what they call \"nice level\""
 msgstr "Dit is wat ze noemen, \"nice level\""
 
-#: ../../spritz/src/spritz.glade.h:172
+#: ../../spritz/src/spritz.glade.h:173
 msgid "UGC Entry Information"
 msgstr "GGI Invoer Informatie"
 
-#: ../../spritz/src/spritz.glade.h:173
+#: ../../spritz/src/spritz.glade.h:174
 msgid "URI"
 msgstr "URI"
 
-#: ../../spritz/src/spritz.glade.h:174
+#: ../../spritz/src/spritz.glade.h:175
 msgid "Undo Install"
 msgstr "Installatie ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:175
+#: ../../spritz/src/spritz.glade.h:176
 msgid "Undo Install action"
 msgstr "Installatie actie ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:176
+#: ../../spritz/src/spritz.glade.h:177
 msgid "Undo Purge"
 msgstr "Installatie ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:177
+#: ../../spritz/src/spritz.glade.h:178
 msgid "Undo Purge action"
 msgstr "Installatie actie ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:178
+#: ../../spritz/src/spritz.glade.h:179
 msgid "Undo Reinstall"
 msgstr "Herinstallatie ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:179
+#: ../../spritz/src/spritz.glade.h:180
 msgid "Undo Reinstall action"
 msgstr "Herinstallatie actie ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:180
+#: ../../spritz/src/spritz.glade.h:181
 msgid "Undo Remove"
 msgstr "Verwijderen ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:181
+#: ../../spritz/src/spritz.glade.h:182
 msgid "Undo Remove action"
 msgstr "Verwijderen ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:182
+#: ../../spritz/src/spritz.glade.h:183
 msgid "Undo Update"
 msgstr "Update ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:183
+#: ../../spritz/src/spritz.glade.h:184
 msgid "Undo Update action"
 msgstr "Update ongedaan maken"
 
-#: ../../spritz/src/spritz.glade.h:184
+#: ../../spritz/src/spritz.glade.h:185
 msgid "Unmask this package"
 msgstr "Demaskeer dit pakket"
 
-#: ../../spritz/src/spritz.glade.h:186
+#: ../../spritz/src/spritz.glade.h:187
 msgid "Update the selected package"
 msgstr "Update geselecteerd pakket"
 
-#: ../../spritz/src/spritz.glade.h:187
+#: ../../spritz/src/spritz.glade.h:188
 msgid "Updates"
 msgstr "Updates"
 
-#: ../../spritz/src/spritz.glade.h:188
+#: ../../spritz/src/spritz.glade.h:189
 msgid "User / Group"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:191
+#: ../../spritz/src/spritz.glade.h:192
 #, fuzzy
 msgid "Version"
 msgstr "Versie"
 
-#: ../../spritz/src/spritz.glade.h:192
+#: ../../spritz/src/spritz.glade.h:193
 msgid "Website"
 msgstr "Website"
 
-#: ../../spritz/src/spritz.glade.h:193
+#: ../../spritz/src/spritz.glade.h:194
 msgid "What you were doing"
 msgstr "Waar was je mee bezig"
 
-#: ../../spritz/src/spritz.glade.h:195
+#: ../../spritz/src/spritz.glade.h:196
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
@@ -8326,174 +8351,184 @@ msgstr ""
 "Je <b>moet</b> onderstaande licentie accepteren.\n"
 "Lees goed door <b>en maak een keuze</b>."
 
-#: ../../spritz/src/spritz.glade.h:197
+#: ../../spritz/src/spritz.glade.h:198
 msgid "Your E-mail"
 msgstr "Je e-mail"
 
-#: ../../spritz/src/spritz.glade.h:198
+#: ../../spritz/src/spritz.glade.h:199
 msgid "Your Full Name"
 msgstr "Je volledige naam"
 
-#: ../../spritz/src/spritz.glade.h:199
+#: ../../spritz/src/spritz.glade.h:200
 msgid "_Abort queue"
 msgstr "_Breek wachtrij af"
 
-#: ../../spritz/src/spritz.glade.h:200
+#: ../../spritz/src/spritz.glade.h:201
 msgid "_Accept License"
 msgstr "_Accepteer Licentie"
 
-#: ../../spritz/src/spritz.glade.h:201
+#: ../../spritz/src/spritz.glade.h:202
 msgid "_Add All"
 msgstr "_Alles toevoegen"
 
-#: ../../spritz/src/spritz.glade.h:202
+#: ../../spritz/src/spritz.glade.h:203
 msgid "_Branch ..."
 msgstr "_Branche ..."
 
-#: ../../spritz/src/spritz.glade.h:203
+#: ../../spritz/src/spritz.glade.h:204
 msgid "_Clear all cache"
 msgstr "_Alle cache opruimen"
 
-#: ../../spritz/src/spritz.glade.h:204
+#: ../../spritz/src/spritz.glade.h:205
 msgid "_Clear all credentials"
 msgstr "_Alle gegevens opruimen"
 
-#: ../../spritz/src/spritz.glade.h:205
+#: ../../spritz/src/spritz.glade.h:206
 msgid "_Details"
 msgstr "_Details"
 
-#: ../../spritz/src/spritz.glade.h:206
+#: ../../spritz/src/spritz.glade.h:207
 msgid "_Enable"
 msgstr "_Activeer"
 
-#: ../../spritz/src/spritz.glade.h:207
+#: ../../spritz/src/spritz.glade.h:208
 msgid "_File"
 msgstr "_Bestand"
 
-#: ../../spritz/src/spritz.glade.h:208
+#: ../../spritz/src/spritz.glade.h:209
 msgid "_Force repositories update"
 msgstr "_Forseer repositories update"
 
-#: ../../spritz/src/spritz.glade.h:209
+#: ../../spritz/src/spritz.glade.h:210
 msgid "_Generate Login"
 msgstr "_Genereer Log in"
 
-#: ../../spritz/src/spritz.glade.h:210
+#: ../../spritz/src/spritz.glade.h:211
 msgid "_Help"
 msgstr "_Help"
 
-#: ../../spritz/src/spritz.glade.h:211
+#: ../../spritz/src/spritz.glade.h:212
 msgid "_Insert String"
 msgstr "_Voer Reeks in"
 
-#: ../../spritz/src/spritz.glade.h:212
+#: ../../spritz/src/spritz.glade.h:213
 msgid "_More"
 msgstr "_Meer"
 
-#: ../../spritz/src/spritz.glade.h:213
+#: ../../spritz/src/spritz.glade.h:214
 msgid "_Open Document"
 msgstr "_Open Document"
 
-#: ../../spritz/src/spritz.glade.h:214
+#: ../../spritz/src/spritz.glade.h:215
 msgid "_Overview"
 msgstr "_Overzicht"
 
-#: ../../spritz/src/spritz.glade.h:215
+#: ../../spritz/src/spritz.glade.h:216
 msgid "_Process Queue"
 msgstr "_Installeer alles in Wachtrij"
 
-#: ../../spritz/src/spritz.glade.h:216
+#: ../../spritz/src/spritz.glade.h:217
 msgid "_Properties"
 msgstr "_Eigenschappen"
 
-#: ../../spritz/src/spritz.glade.h:217
+#: ../../spritz/src/spritz.glade.h:218
 msgid "_Queue all vulnerable packages"
 msgstr "_Som alle kwetsbare pakketten op"
 
-#: ../../spritz/src/spritz.glade.h:218
+#: ../../spritz/src/spritz.glade.h:219
 msgid "_Read License"
 msgstr "_Accepteer Licentie"
 
-#: ../../spritz/src/spritz.glade.h:219
+#: ../../spritz/src/spritz.glade.h:220
 msgid "_References"
 msgstr "_Afhankelijkheden"
 
-#: ../../spritz/src/spritz.glade.h:220
+#: ../../spritz/src/spritz.glade.h:221
 #, fuzzy
 msgid "_Remote Repository Manager"
 msgstr "Repository naam"
 
-#: ../../spritz/src/spritz.glade.h:221
+#: ../../spritz/src/spritz.glade.h:222
 msgid "_Remove All"
 msgstr "_Verwijder Alles"
 
-#: ../../spritz/src/spritz.glade.h:222
+#: ../../spritz/src/spritz.glade.h:223
 msgid "_Remove Login"
 msgstr "_Verwijderen Log in"
 
-#: ../../spritz/src/spritz.glade.h:223
+#: ../../spritz/src/spritz.glade.h:224
 #, fuzzy
 msgid "_SSL Connection"
 msgstr "verbinden met mirror"
 
-#: ../../spritz/src/spritz.glade.h:224
+#: ../../spritz/src/spritz.glade.h:225
 #, fuzzy
 msgid "_Services"
 msgstr "Services Poort"
 
-#: ../../spritz/src/spritz.glade.h:225
+#: ../../spritz/src/spritz.glade.h:226
 msgid "_Skip mirror"
 msgstr "_Sla mirror over"
 
-#: ../../spritz/src/spritz.glade.h:226
+#: ../../spritz/src/spritz.glade.h:227
 msgid "_Submit Document"
 msgstr "_Voeg Document toe"
 
-#: ../../spritz/src/spritz.glade.h:227
+#: ../../spritz/src/spritz.glade.h:228
 #, fuzzy
 msgid "_Update Repositories"
 msgstr "_Update Repositories"
 
-#: ../../spritz/src/spritz.glade.h:228
+#: ../../spritz/src/spritz.glade.h:229
 #, fuzzy
 msgid "emerge --sync"
 msgstr "nooit gesynchroniseerd"
 
-#: ../../spritz/src/spritz.glade.h:229
+#: ../../spritz/src/spritz.glade.h:230
 msgid "emerge --sync ? (o;"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:230
+#: ../../spritz/src/spritz.glade.h:231
 #, fuzzy
 msgid "gtk-cancel"
 msgstr "Annuleer"
 
-#: ../../spritz/src/spritz.glade.h:231
+#: ../../spritz/src/spritz.glade.h:232
+msgid "gtk-execute"
+msgstr ""
+
+#: ../../spritz/src/spritz.glade.h:233
 #, fuzzy
 msgid "gtk-remove"
 msgstr "verwijder"
 
-#: ../../spritz/src/spritz.glade.h:232
+#: ../../spritz/src/spritz.glade.h:234
 msgid "kb/sec"
 msgstr "kb/sec"
 
-#: ../../spritz/src/spritz.glade.h:233
+#: ../../spritz/src/spritz.glade.h:235
 #, fuzzy
 msgid "localhost"
 msgstr "lokaal"
 
-#: ../../spritz/src/spritz.glade.h:235
+#: ../../spritz/src/spritz.glade.h:237
 #, fuzzy
 msgid "root"
 msgstr "op afstand"
 
-#: ../../spritz/src/spritz.glade.h:236
+#: ../../spritz/src/spritz.glade.h:238
 msgid "type your password here"
 msgstr "voer uw password hier in"
 
-#: ../../spritz/src/spritz.glade.h:237
+#: ../../spritz/src/spritz.glade.h:239
 msgid "type your username here"
 msgstr "voer uw gebruikersnaam hier in"
+
+#~ msgid "(CTRL+E Menu | CTRL+X Exit)"
+#~ msgstr "(CTRL+E Menu | CTRL+X Sluiten)"
+
+#~ msgid "Ok"
+#~ msgstr "Oké"
 
 #~ msgid "Ready"
 #~ msgstr "Klaar"

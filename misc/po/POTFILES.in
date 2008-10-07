@@ -5,7 +5,6 @@
 ../libraries/entropyTools.py
 ../libraries/etpXpak.py
 ../libraries/exceptionTools.py
-../libraries/managerTools.py
 ../libraries/outputTools.py
 ../client/equo.py
 ../client/text_cache.py
