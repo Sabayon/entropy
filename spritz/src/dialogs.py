@@ -381,7 +381,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_console_commit(self, widget, txt, txtlen):
         if txt == "\r":
-            self.on_repoManagerStdinEntry_activate(None, self.std_input.text_read)
+            self.on_repoManagerStdinEntry_activate(None, False, self.std_input.text_read)
             self.std_input.text_read = ''
         elif txt == '\x7f':
             self.std_input.text_read = self.std_input.text_read[:-1]
@@ -1225,10 +1225,10 @@ class RepositoryManagerMenu(MenuSkel):
                 data['use'] = data['use'].split()
         return data
 
-    def run_write_to_running_command_pipe(self, queue_id, txt):
+    def run_write_to_running_command_pipe(self, queue_id, write_to_stdout, txt):
         self.wait_channel_call()
         try:
-            status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, txt)
+            status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, write_to_stdout, txt)
         except Exception, e:
             self.service_status_message(e)
             return
@@ -3212,7 +3212,7 @@ class RepositoryManagerMenu(MenuSkel):
     def on_repoManagerStdinExecButton_clicked(self, widget):
         self.sm_ui.repoManagerStdinEntry.activate()
 
-    def on_repoManagerStdinEntry_activate(self, widget, txt = ''):
+    def on_repoManagerStdinEntry_activate(self, widget, write_to_stdout = True, txt = ''):
         if not self.is_processing: return
         try: queue_id = self.is_processing.get('queue_id')
         except: return
@@ -3220,7 +3220,7 @@ class RepositoryManagerMenu(MenuSkel):
             txt = self.sm_ui.repoManagerStdinEntry.get_text()
         if not txt: return
         self.sm_ui.repoManagerStdinEntry.set_text('')
-        t = self.entropyTools.parallelTask(self.run_write_to_running_command_pipe, queue_id, txt)
+        t = self.entropyTools.parallelTask(self.run_write_to_running_command_pipe, queue_id, write_to_stdout, txt)
         t.start()
 
     def destroy(self):
@@ -4427,14 +4427,23 @@ class UGCAddMenu(MenuSkel):
 
         self.show_loading()
 
-        t = self.entropyTools.parallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
-        t.start()
-        while 1:
-            if not t.isAlive(): break
-            while gtk.events_pending():
-                gtk.main_iteration()
-            time.sleep(0.1)
-        rslt, data = t.result
+        old_show_progress = self.Entropy.UGC.show_progress
+        self.Entropy.UGC.show_progress = True
+        bck_updateProgress = self.Entropy.updateProgress
+        self.Entropy.updateProgress = self.do_label_update_progress
+        try:
+            t = self.entropyTools.parallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
+            t.start()
+            while 1:
+                if not t.isAlive(): break
+                while gtk.events_pending():
+                    gtk.main_iteration()
+                time.sleep(0.06)
+            rslt, data = t.result
+        finally:
+            self.Entropy.UGC.show_progress = old_show_progress
+            self.Entropy.updateProgress = bck_updateProgress
+
 
         self.hide_loading()
         if not rslt:
@@ -4446,6 +4455,25 @@ class UGCAddMenu(MenuSkel):
             self.on_closeAdd_clicked(None,None)
             self.refresh_cb()
             return True
+
+    def do_label_update_progress(self, *myargs, **mykwargs):
+
+        count = mykwargs.get("count")
+        percent = mykwargs.get("percent")
+        text = myargs[0].encode('utf-8')
+
+        count_str = ""
+        if count:
+            if len(count) > 1:
+                if percent:
+                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
+                else:
+                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+
+        txt = count_str+text
+        gtk.gdk.threads_enter()
+        self.ugcadd_ui.ugcAddStatusLabel.set_markup(cleanMarkupString(txt))
+        gtk.gdk.threads_leave()
 
     def do_send_document_autosense(self, doc_type, doc_path, title, description, keywords_text):
         try:
@@ -4483,6 +4511,7 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAddFrame.show()
         self.ugcadd_ui.ugcAddDescLabel.hide()
         self.ugcadd_ui.ugcAddDescEntry.hide()
+        self.ugcadd_ui.ugcAddTitleEntry.set_max_length(255)
         self.ugcadd_ui.ugcAddInsertLabel.set_markup(txt)
 
     def setup_file_insert(self, txt = _("Select your file")):
@@ -4490,6 +4519,7 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAddFrame.hide()
         self.ugcadd_ui.ugcAddDescLabel.show()
         self.ugcadd_ui.ugcAddDescEntry.show()
+        self.ugcadd_ui.ugcAddTitleEntry.set_max_length(60)
         self.ugcadd_ui.ugcAddInsertLabel.set_markup(txt)
 
     def load(self):
