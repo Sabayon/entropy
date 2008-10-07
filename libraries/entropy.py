@@ -18102,7 +18102,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         srv = self.YouTubeService.YouTubeService()
         srv.email = self.connection_data['google_email']
         srv.password = self.connection_data['google_password']
-        #srv.developer_key = self.connection_data['google_devkey']
+        if self.connection_data.has_key('google_developer_key'):
+            srv.developer_key = self.connection_data['google_developer_key']
         #srv.client_id = self.connection_data['google_clientid']
         srv.source = 'Entropy'
         srv.ProgrammaticLogin()
@@ -23067,7 +23068,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'args': ["myargs"],
                     'as_user': False,
                     'desc': "write text to stdin of a running command",
-                    'syntax': "<SESSION_ID> systemsrv:write_to_running_command_pipe <queue_id> <txt ...>",
+                    'syntax': "<SESSION_ID> systemsrv:write_to_running_command_pipe <queue_id> <write stdout (True/False)> <txt ...>",
                     'from': str(self),
                 },
             }
@@ -23292,7 +23293,12 @@ class SystemManagerServerInterface(SocketHostInterface):
             except ValueError:
                 return False,'invalid queue id'
 
-            txt = ' '.join(myargs[1:])+'\n'
+            try:
+                write_stdout = bool(myargs[1])
+            except ValueError:
+                write_stdout = False
+
+            txt = ' '.join(myargs[2:])+'\n'
             item, key = self.HostInterface.get_item_by_queue_id(queue_id)
             if key not in self.HostInterface.processing_queue_keys:
                 return False,'not running'
@@ -23306,17 +23312,20 @@ class SystemManagerServerInterface(SocketHostInterface):
             if not isinstance(w_fd,int):
                 return False,'stdout fd not an int'
 
-            stdout = open(item['stdout'],"a+")
+            if write_stdout:
+                stdout = open(item['stdout'],"a+")
             try:
                 os.write(w_fd,txt)
-                stdout.write(txt)
+                if write_stdout:
+                    stdout.write(txt)
             except OSError, e:
                 return False,'OSError: %s' % (e,)
             except IOError, e:
                 return False,'IOError: %s' % (e,)
             finally:
-                stdout.flush()
-                stdout.close()
+                if write_stdout:
+                    stdout.flush()
+                    stdout.close()
 
             return True,'ok'
 
@@ -23970,11 +23979,12 @@ class SystemManagerClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def write_to_running_command_pipe(self, session_id, queue_id, txt):
-        cmd = "%s %s %s %s" % (
+    def write_to_running_command_pipe(self, session_id, queue_id, write_to_stdout, txt):
+        cmd = "%s %s %s %s %s" % (
             session_id,
             'systemsrv:write_to_running_command_pipe',
             queue_id,
+            write_to_stdout,
             txt,
         )
         return self.do_generic_handler(cmd, session_id)
@@ -24373,6 +24383,7 @@ class SystemManagerMethodsInterface:
                 'desc': _("Write to a remote running command stdin"),
                 'params': [
                     ('queue_id',int,_('Queue Identifier'),True,),
+                    ('write_to_stdout',bool,_('Write to stdout?'),True,),
                     ('txt',basestring,_('Text'),True,),
                 ],
                 'call': self.write_to_running_command_pipe,
@@ -24419,8 +24430,8 @@ class SystemManagerMethodsInterface:
     def set_pinboard_items_done(self, pinboard_ids, done_status):
         return self.Manager.do_cmd(True, "set_pinboard_items_done", [pinboard_ids,done_status], {})
 
-    def write_to_running_command_pipe(self, queue_id, txt):
-        return self.Manager.do_cmd(True, "write_to_running_command_pipe", [queue_id, txt], {})
+    def write_to_running_command_pipe(self, queue_id, write_to_stdout, txt):
+        return self.Manager.do_cmd(True, "write_to_running_command_pipe", [queue_id, write_to_stdout, txt], {})
 
 class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 
