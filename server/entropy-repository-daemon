@@ -31,6 +31,7 @@ ugc_connection_data = {
   'dbname': 'entropy',
   'google_email': 'your@gmail.com', # valid google account
   'google_password': 'yourgmailpassword', # valid google e-mail
+  'google_developer_key': 'xxxxx', # valid google developer key
 }
 ugc_store_path = "/path/to/your/ugc/store"
 ugc_store_url = "http://www.yoursite.com"
