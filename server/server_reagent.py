@@ -322,28 +322,16 @@ def database(options):
             print_error(brown(" * ")+red(_("Not enough parameters")))
             return 1
 
-        switchbranch = options[1]
+        from_branch = options[1]
+        to_branch = options[2]
         print_info(darkgreen(" * ")+red(_("Switching branch, be sure to have your packages in sync.")))
-        print_info(darkgreen(" * ")+red("%s %s..." % (_("Collecting packages that would be marked"),switchbranch,) ), back = True)
+        print_info(darkgreen(" * ")+red("%s %s..." % (_("Collecting packages that would be marked"),to_branch,) ), back = True)
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
-        pkglist = set()
-        myatoms = options[2:]
-        if "world" in myatoms:
-            pkglist |= dbconn.listAllIdpackages()
-        else:
-            for atom in myatoms:
-                match = dbconn.atomMatch(atom)
-                if match == -1:
-                    print_warning(brown(" * ")+red("%s: " % (_("Cannot match"),) )+bold(atom))
-                else:
-                    pkglist.add(match[0])
+        pkglist = dbconn.listAllIdpackages(branch = from_branch)
+        myatoms = options[3:]
 
-        if not pkglist:
-            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
-            return 3
-
-        print_info(darkgreen(" * ")+red("%s %s:" % (_("These are the packages that would be marked"),switchbranch,)))
+        print_info(darkgreen(" * ")+red("%s %s:" % (_("These are the packages that would be marked"),to_branch,)))
         for idpackage in pkglist:
             atom = dbconn.retrieveAtom(idpackage)
             print_info(red("   # ")+bold(atom))
@@ -352,7 +340,10 @@ def database(options):
         if rc == "No":
             return 4
 
-        switched, already_switched, ignored, not_found, no_checksum = Entropy.switch_packages_branch(pkglist, to_branch = switchbranch)
+        status = Entropy.switch_packages_branch(pkglist, from_branch, to_branch)
+        if status == None:
+            return 1
+        switched, already_switched, ignored, not_found, no_checksum = status
         if not_found or no_checksum:
             return 1
         return 0

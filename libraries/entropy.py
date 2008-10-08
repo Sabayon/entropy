@@ -14962,7 +14962,6 @@ class ServerInterface(TextInterface):
             os.makedirs(my_branched_dir)
             const_setup_perms(my_branched_dir,etpConst['entropygid'])
 
-            # get_local_database_dir
             for repo_file in repo_files:
                 repo_filename = os.path.basename(repo_file)
                 shutil.move(repo_file,os.path.join(my_branched_dir,repo_filename))
@@ -15304,7 +15303,8 @@ class ServerInterface(TextInterface):
             indexing = True,
             warnings = True,
             do_cache = True,
-            use_branch = None
+            use_branch = None,
+            lock_remote = True
         ):
 
         if repo == None:
@@ -15332,6 +15332,7 @@ class ServerInterface(TextInterface):
                                 repo,
                                 t_ident,
                                 use_branch,
+                                lock_remote,
                             )
             )
             if cached != None:
@@ -15340,7 +15341,7 @@ class ServerInterface(TextInterface):
         if not os.path.isdir(os.path.dirname(local_dbfile)):
             os.makedirs(os.path.dirname(local_dbfile))
 
-        if not read_only:
+        if (not read_only) and (lock_remote):
             self.doServerDatabaseSyncLock(repo, no_upload)
 
         conn = EntropyDatabaseInterface(
@@ -15349,7 +15350,9 @@ class ServerInterface(TextInterface):
             noUpload = no_upload,
             OutputInterface = self,
             ServiceInterface = self,
-            dbname = etpConst['serverdbid']+repo
+            dbname = etpConst['serverdbid']+repo,
+            useBranch = use_branch,
+            lockRemote = lock_remote
         )
 
         valid = True
@@ -15400,6 +15403,7 @@ class ServerInterface(TextInterface):
                 repo,
                 t_ident,
                 use_branch,
+                lock_remote
             )] = conn
         return conn
 
@@ -17064,19 +17068,41 @@ class ServerInterface(TextInterface):
         return fine, failed, downloaded_fine, downloaded_errors
 
 
-    def switch_packages_branch(self, idpackages, to_branch, repo = None):
+    def switch_packages_branch(self, idpackages, from_branch, to_branch, repo = None):
 
         if repo == None:
             repo = self.default_repository
 
-        mytxt = red("%s ...") % (_("Switching selected packages"),)
+        if to_branch != etpConst['branch']:
+            mytxt = "%s: %s %s" % (blue(_("Please setup your branch to")),bold(to_branch),blue(_("and retry")),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = darkred(" !! ")
+            )
+            return None
+
+        mytxt = red("%s ...") % (_("Moving database (if not exists)"),)
         self.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = darkgreen(" @@ ")
         )
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        branch_dbdir = self.get_local_database_dir(repo)
+        old_branch_dbdir = self.get_local_database_dir(repo, from_branch)
+        if (not os.path.isdir(branch_dbdir)) and os.path.isdir(old_branch_dbdir):
+            shutil.copytree(old_branch_dbdir,branch_dbdir)
+
+        mytxt = red("%s ...") % (_("Switching packages"),)
+        self.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = darkgreen(" @@ ")
+        )
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo, lock_remote = False)
 
         already_switched = set()
         not_found = set()
@@ -17118,7 +17144,10 @@ class ServerInterface(TextInterface):
                 header = darkgreen(" @@ "),
                 back = True
             )
-            dbconn.switchBranch(idpackage,to_branch)
+            switch_status = dbconn.switchBranch(idpackage,to_branch)
+            if not switch_status:
+                # remove idpackage
+                dbconn.removePackage(idpackage)
             dbconn.commitChanges()
             switched.add(idpackage)
 
@@ -27354,7 +27383,7 @@ class ServerMirrorsInterface:
             header = blue(" @@ ")
         )
         self.Entropy.updateProgress(
-            "%s:\t%s" % (
+            "%s:\t\t%s" % (
                 darkgreen(_("Packages to be moved locally")),
                 darkgreen(str(len(copy))),
             ),
@@ -28270,9 +28299,11 @@ class EntropyDatabaseInterface:
             OutputInterface = None,
             ServiceInterface = None,
             skipChecks = False, # dangerous!
-            useBranch = None
+            useBranch = None,
+            lockRemote = True
         ):
 
+        self.lockRemote = lockRemote
         self.db_branch = etpConst['branch']
         if useBranch != None: self.db_branch = useBranch
 
@@ -28553,7 +28584,8 @@ class EntropyDatabaseInterface:
                     header = brown(" * ")
                 )
                 # lock database
-                self.ServiceInterface.doServerDatabaseSyncLock(self.server_repo, self.noUpload)
+                if self.lockRemote:
+                    self.ServiceInterface.doServerDatabaseSyncLock(self.server_repo, self.noUpload)
                 # now run queue
                 try:
                     self.runTreeUpdatesActions(update_actions)
@@ -31467,17 +31499,17 @@ class EntropyDatabaseInterface:
 
         # if there are entries already, remove idpackage directly
         my_idpackage, result = self.atomMatch(key, matchSlot = slot, matchBranches = (tobranch,))
-        if my_idpackage != -1:
-            self.removePackage(idpackage) # remove the one with the old branch
-        else:
-            # otherwise, update the old one (set the new branch)
-            self.WriteLock.acquire()
-            try:
-                self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
-                self.commitChanges()
-                self.clearCache()
-            finally:
-                self.WriteLock.release()
+        if my_idpackage != -1: return False
+
+        # otherwise, update the old one (set the new branch)
+        self.WriteLock.acquire()
+        try:
+            self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
+            self.commitChanges()
+            self.clearCache()
+        finally:
+            self.WriteLock.release()
+        return True
 
     def databaseStructureUpdates(self):
 

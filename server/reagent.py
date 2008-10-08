@@ -74,7 +74,7 @@ myopts = [
     (2,'remove',4,_('remove the provided atoms from the current repository database')),
     (2,'multiremove',3,_('remove the provided injected atoms (all if no atom specified)')),
     (2,'create-empty-database',2,_('create an empty repository database in the provided path')),
-    (2,'switchbranch <new_branch>',3,_('switch to the specified branch the provided atoms (or world)')),
+    (2,'switchbranch <from branch> <to branch>',3,_('switch to the specified branch the repository')),
     (2,'md5check',3,_('verify integrity of the provided atoms (or world)')),
     (2,'md5remote',3,_('verify remote integrity of the provided atoms (or world)')),
     None,
