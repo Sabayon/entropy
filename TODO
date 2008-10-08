@@ -17,12 +17,8 @@ TODO list
   - documentation + man page
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - server-side: packages upload through socket?
+  - ease branch stuff, since we split databases
 
   Spritz:
     - Remote System Manager
-    - improve filters.py layout
-    - Category <-> Image dictionary (for the properties menu)
-    - allow package remasking?
-
-Notes:
-- when supporting more than one ":" in atoms, remember to fix treeupdates functions accordingly
+    - allow package remasking
