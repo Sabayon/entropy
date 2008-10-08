@@ -17110,7 +17110,10 @@ class ServerInterface(TextInterface):
         ignored = set()
         no_checksum = set()
 
+        maxcount = len(idpackages)
+        count = 0
         for idpackage in idpackages:
+            count += 1
 
             cur_branch = dbconn.retrieveBranch(idpackage)
             atom = dbconn.retrieveAtom(idpackage)
@@ -17126,7 +17129,8 @@ class ServerInterface(TextInterface):
                     ),
                     importance = 0,
                     type = "info",
-                    header = darkgreen(" @@ ")
+                    header = darkgreen(" @@ "),
+                    count = (count,maxcount,)
                 )
                 ignored.add(idpackage)
                 continue
