@@ -17146,7 +17146,8 @@ class ServerInterface(TextInterface):
                 importance = 0,
                 type = "info",
                 header = darkgreen(" @@ "),
-                back = True
+                back = True,
+                count = (count,maxcount,)
             )
             switch_status = dbconn.switchBranch(idpackage,to_branch)
             if not switch_status:
@@ -21729,7 +21730,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
                         try:
                             upload_queue, download_queue, removal_queue, \
-                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, repoid)
+                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, etpConst['branch'], repoid)
                         except socket.error:
                             self.entropyTools.printTraceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")
@@ -21741,6 +21742,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                                 download_queue,
                                 removal_queue,
                                 remote_packages_data,
+                                etpConst['branch'],
                                 repoid
                             )
                             if len(upload)+len(download)+len(removal)+len(copy):
@@ -27257,10 +27259,10 @@ class ServerMirrorsInterface:
         return 0, set(), set()
 
 
-    def calculate_local_upload_files(self, repo = None):
+    def calculate_local_upload_files(self, branch, repo = None):
         upload_files = 0
         upload_packages = set()
-        upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'])
+        upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
 
         for package in os.listdir(upload_dir):
             if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
@@ -27270,10 +27272,10 @@ class ServerMirrorsInterface:
 
         return upload_files, upload_packages
 
-    def calculate_local_package_files(self, repo = None):
+    def calculate_local_package_files(self, branch, repo = None):
         local_files = 0
         local_packages = set()
-        packages_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
+        packages_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
 
         if not os.path.isdir(packages_dir):
             os.makedirs(packages_dir)
@@ -27317,7 +27319,7 @@ class ServerMirrorsInterface:
             header = red(" @@ ")
         )
 
-    def _show_sync_queues(self, upload, download, removal, copy, metainfo):
+    def _show_sync_queues(self, upload, download, removal, copy, metainfo, branch):
 
         # show stats
         for itemdata in upload:
@@ -27325,7 +27327,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(etpConst['branch']),
+                    brown(branch),
                     blue(_("upload")),
                     darkgreen(package),
                     size,
@@ -27339,7 +27341,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(etpConst['branch']),
+                    brown(branch),
                     darkred(_("download")),
                     blue(package),
                     size,
@@ -27353,7 +27355,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(etpConst['branch']),
+                    brown(branch),
                     darkgreen(_("copy")),
                     brown(package),
                     size,
@@ -27367,7 +27369,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(etpConst['branch']),
+                    brown(branch),
                     red(_("remove")),
                     red(package),
                     size,
@@ -27435,13 +27437,13 @@ class ServerMirrorsInterface:
         )
 
 
-    def calculate_remote_package_files(self, uri, ftp_connection = None, repo = None):
+    def calculate_remote_package_files(self, uri, branch, ftp_connection = None, repo = None):
 
         remote_files = 0
         close_conn = False
         remote_packages_data = {}
 
-        my_path = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
+        my_path = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         if ftp_connection == None:
             close_conn = True
             ftp_connection = self.FtpInterface(uri, self.Entropy)
@@ -27461,14 +27463,14 @@ class ServerMirrorsInterface:
 
         return remote_files, remote_packages, remote_packages_data
 
-    def calculate_packages_to_sync(self, uri, repo = None):
+    def calculate_packages_to_sync(self, uri, branch, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-        upload_files, upload_packages = self.calculate_local_upload_files(repo)
-        local_files, local_packages = self.calculate_local_package_files(repo)
+        upload_files, upload_packages = self.calculate_local_upload_files(branch, repo)
+        local_files, local_packages = self.calculate_local_package_files(branch, repo)
         self._show_local_sync_stats(upload_files, local_files)
 
         self.Entropy.updateProgress(
@@ -27479,6 +27481,7 @@ class ServerMirrorsInterface:
         )
         remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(
             uri,
+            branch,
             repo = repo
         )
         self.Entropy.updateProgress(
@@ -27505,6 +27508,7 @@ class ServerMirrorsInterface:
                 local_packages,
                 remote_packages,
                 remote_packages_data,
+                branch,
                 repo
         )
         return uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data
@@ -27515,6 +27519,7 @@ class ServerMirrorsInterface:
             local_packages,
             remote_packages,
             remote_packages_data,
+            branch,
             repo = None
         ):
 
@@ -27525,7 +27530,7 @@ class ServerMirrorsInterface:
 
         for local_package in upload_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],local_package)
+                local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,local_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
@@ -27543,7 +27548,7 @@ class ServerMirrorsInterface:
         # we have local_packages and remotePackages
         for local_package in local_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],local_package)
+                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,local_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
@@ -27560,7 +27565,7 @@ class ServerMirrorsInterface:
         # Fill downloadQueue and removalQueue
         for remote_package in remote_packages:
             if remote_package in local_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],remote_package)
+                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remote_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size == None:
@@ -27580,8 +27585,8 @@ class ServerMirrorsInterface:
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
         dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
-        db_files = dbconn.listBranchPackagesTbz2(etpConst['branch'], do_sort = False, full_path = True)
-        db_files = set([os.path.basename(x) for x in db_files if (self.Entropy.get_branch_from_download_relative_uri(x) == etpConst['branch'])])
+        db_files = dbconn.listBranchPackagesTbz2(branch, do_sort = False, full_path = True)
+        db_files = set([os.path.basename(x) for x in db_files if (self.Entropy.get_branch_from_download_relative_uri(x) == branch)])
 
         exclude = set()
         for myfile in downloadQueue:
@@ -27606,7 +27611,7 @@ class ServerMirrorsInterface:
         return uploadQueue, downloadQueue, removalQueue, fineQueue
 
 
-    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, repo):
+    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, branch, repo):
 
         metainfo = {
             'removal': 0,
@@ -27621,7 +27626,7 @@ class ServerMirrorsInterface:
         for item in removalQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],item)
+            local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
             size = int(os.stat(local_filepath)[6])
             metainfo['removal'] += size
             removal.append((local_filepath,size))
@@ -27629,7 +27634,7 @@ class ServerMirrorsInterface:
         for item in downloadQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],item)
+            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
             if not os.path.isfile(local_filepath):
                 size = remote_packages_data.get(item)
                 if size == None:
@@ -27644,8 +27649,8 @@ class ServerMirrorsInterface:
         for item in uploadQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],item)
-            local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],item)
+            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
+            local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
             if os.path.isfile(local_filepath):
                 size = int(os.stat(local_filepath)[6])
                 upload.append((local_filepath,size))
@@ -27658,7 +27663,7 @@ class ServerMirrorsInterface:
         return upload, download, removal, copy, metainfo
 
 
-    def _sync_run_removal_queue(self, removal_queue, repo = None):
+    def _sync_run_removal_queue(self, removal_queue, branch, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27666,13 +27671,13 @@ class ServerMirrorsInterface:
         for itemdata in removal_queue:
 
             remove_filename = itemdata[0]
-            remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],remove_filename)
+            remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remove_filename)
             remove_filepath_hash = remove_filepath+etpConst['packageshashfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
                         brown(repo),
                         red("sync"),
-                        brown(etpConst['branch']),
+                        brown(branch),
                         blue(_("removing package+hash")),
                         darkgreen(remove_filename),
                         blue(self.entropyTools.bytesIntoHuman(itemdata[1])),
@@ -27691,7 +27696,7 @@ class ServerMirrorsInterface:
             "[repo:%s|%s|%s] %s" % (
                     brown(repo),
                     red(_("sync")),
-                    brown(etpConst['branch']),
+                    brown(branch),
                     blue(_("removal complete")),
             ),
             importance = 0,
@@ -27700,7 +27705,7 @@ class ServerMirrorsInterface:
         )
 
 
-    def _sync_run_copy_queue(self, copy_queue, repo = None):
+    def _sync_run_copy_queue(self, copy_queue, branch, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27709,14 +27714,14 @@ class ServerMirrorsInterface:
 
             from_file = itemdata[0]
             from_file_hash = from_file+etpConst['packageshashfileext']
-            to_file = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],os.path.basename(from_file))
+            to_file = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,os.path.basename(from_file))
             to_file_hash = to_file+etpConst['packageshashfileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s" % (
                         brown(repo),
                         red("sync"),
-                        brown(etpConst['branch']),
+                        brown(branch),
                         blue(_("copying file+hash to repository")),
                         darkgreen(from_file),
                 ),
@@ -27738,7 +27743,7 @@ class ServerMirrorsInterface:
                 os.remove(expiration_file)
 
 
-    def _sync_run_upload_queue(self, uri, upload_queue, repo = None):
+    def _sync_run_upload_queue(self, uri, upload_queue, branch, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27753,7 +27758,7 @@ class ServerMirrorsInterface:
             myqueue.append(hash_file)
             myqueue.append(x)
 
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         uploader = self.FileTransceiver(    self.FtpInterface,
                                             self.Entropy,
                                             [uri],
@@ -27761,7 +27766,7 @@ class ServerMirrorsInterface:
                                             critical_files = myqueue,
                                             use_handlers = True,
                                             ftp_basedir = ftp_basedir,
-                                            handlers_data = {'branch': etpConst['branch'] },
+                                            handlers_data = {'branch': branch },
                                             repo = repo
                                         )
         errors, m_fine_uris, m_broken_uris = uploader.go()
@@ -27770,7 +27775,7 @@ class ServerMirrorsInterface:
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[branch:%s] %s: %s, %s: %s" % (
-                            brown(etpConst['branch']),
+                            brown(branch),
                             blue(_("upload errors")),
                             red(crippled_uri),
                             blue(_("reason")),
@@ -27784,7 +27789,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[branch:%s] %s: %s" % (
-                        brown(etpConst['branch']),
+                        brown(branch),
                         blue(_("upload completed successfully")),
                         red(crippled_uri),
             ),
@@ -27795,7 +27800,7 @@ class ServerMirrorsInterface:
         return errors, m_fine_uris, m_broken_uris
 
 
-    def _sync_run_download_queue(self, uri, download_queue, repo = None):
+    def _sync_run_download_queue(self, uri, download_queue, branch, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27808,8 +27813,8 @@ class ServerMirrorsInterface:
             myqueue.append(x)
             myqueue.append(hash_file)
 
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
-        local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
+        local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
         downloader = self.FileTransceiver(
             self.FtpInterface,
             self.Entropy,
@@ -27819,7 +27824,7 @@ class ServerMirrorsInterface:
             use_handlers = True,
             ftp_basedir = ftp_basedir,
             local_basedir = local_basedir,
-            handlers_data = {'branch': etpConst['branch'] },
+            handlers_data = {'branch': branch },
             download = True,
             repo = repo
         )
@@ -27831,7 +27836,7 @@ class ServerMirrorsInterface:
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
                     brown(repo),
                     red(_("sync")),
-                    brown(etpConst['branch']),
+                    brown(branch),
                     blue(_("download errors")),
                     darkgreen(crippled_uri),
                     blue(_("reason")),
@@ -27847,7 +27852,7 @@ class ServerMirrorsInterface:
             "[repo:%s|%s|%s] %s: %s" % (
                 brown(repo),
                 red(_("sync")),
-                brown(etpConst['branch']),
+                brown(branch),
                 blue(_("download completed successfully")),
                 darkgreen(crippled_uri),
             ),
@@ -27901,7 +27906,7 @@ class ServerMirrorsInterface:
             )
 
             try:
-                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, repo)
+                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, etpConst['branch'], repo)
                 del fineQueue
             except self.socket.error, e:
                 self.Entropy.updateProgress(
@@ -27948,10 +27953,11 @@ class ServerMirrorsInterface:
                         downloadQueue,
                         removalQueue,
                         remote_packages_data,
+                        etpConst['branch'],
                         repo
             )
             del uploadQueue, downloadQueue, removalQueue, remote_packages_data
-            self._show_sync_queues(upload, download, removal, copy, metainfo)
+            self._show_sync_queues(upload, download, removal, copy, metainfo, etpConst['branch'])
 
             if not len(upload)+len(download)+len(removal)+len(copy):
 
@@ -27983,16 +27989,16 @@ class ServerMirrorsInterface:
             try:
 
                 if removal:
-                    self._sync_run_removal_queue(removal, repo)
+                    self._sync_run_removal_queue(removal, etpConst['branch'], repo)
                 if copy:
-                    self._sync_run_copy_queue(copy, repo)
+                    self._sync_run_copy_queue(copy, etpConst['branch'], repo)
                 if upload or download:
                     mirrors_tainted = True
                 if upload:
-                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, repo)
+                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, etpConst['branch'], repo)
                     if d_errors: mirror_errors = True
                 if download:
-                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, repo)
+                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, etpConst['branch'], repo)
                     if d_errors: mirror_errors = True
                 if not mirror_errors:
                     successfull_mirrors.add(uri)
@@ -28011,9 +28017,10 @@ class ServerMirrorsInterface:
                     type = "info",
                     header = darkgreen(" * ")
                 )
-                return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
+                continue
 
             except Exception, e:
+
                 self.entropyTools.printTraceback()
                 mirrors_errors = True
                 broken_mirrors.add(uri)
@@ -28057,23 +28064,23 @@ class ServerMirrorsInterface:
 
         # if at least one server has been synced successfully, move files
         if (len(successfull_mirrors) > 0) and not pretend:
-            self.remove_expiration_files(repo)
+            self.remove_expiration_files(etpConst['branch'], repo)
 
         if packages_check:
             check_data = self.Entropy.verify_local_packages([], ask = ask, repo = repo)
 
         return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
 
-    def remove_expiration_files(self, repo = None):
+    def remove_expiration_files(self, branch, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
 
-        branch_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'])
+        branch_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
         branchcontent = os.listdir(branch_dir)
         for xfile in branchcontent:
-            source = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],xfile)
-            destdir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
+            source = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,xfile)
+            destdir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
             if not os.path.isdir(destdir):
                 os.makedirs(destdir)
             dest = os.path.join(destdir,xfile)
@@ -28084,8 +28091,8 @@ class ServerMirrorsInterface:
                 os.remove(dest_expiration)
 
 
-    def is_package_expired(self, package_file, repo = None):
-        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package_file)
+    def is_package_expired(self, package_file, branch, repo = None):
+        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
         pkg_path += etpConst['packagesexpirationfileext']
         if not os.path.isfile(pkg_path):
             return False
@@ -28097,8 +28104,8 @@ class ServerMirrorsInterface:
             return True
         return False
 
-    def create_expiration_file(self, package_file, repo = None, gentle = False):
-        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package_file)
+    def create_expiration_file(self, package_file, branch, repo = None, gentle = False):
+        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
@@ -28107,17 +28114,16 @@ class ServerMirrorsInterface:
         f.close()
 
 
-    def collect_expiring_packages(self, repo = None):
+    def collect_expiring_packages(self, branch, repo = None):
         dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
-        database_bins = dbconn.listBranchPackagesTbz2(etpConst['branch'], do_sort = False, full_path = True)
-        bins_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
+        database_bins = dbconn.listBranchPackagesTbz2(branch, do_sort = False, full_path = True)
+        bins_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
         repo_bins = set()
         if os.path.isdir(bins_dir):
             repo_bins = os.listdir(bins_dir)
-            repo_bins = set([os.path.join('packages',etpSys['arch'],etpConst['branch'],x) for x in repo_bins if x.endswith(etpConst['packagesext'])])
+            repo_bins = set([os.path.join('packages',etpSys['arch'],branch,x) for x in repo_bins if x.endswith(etpConst['packagesext'])])
         repo_bins -= database_bins
         return set([os.path.basename(x) for x in repo_bins])
-
 
 
     def tidy_mirrors(self, ask = True, pretend = False, repo = None):
@@ -28126,7 +28132,7 @@ class ServerMirrorsInterface:
             repo = self.Entropy.default_repository
 
         self.Entropy.updateProgress(
-            "[repo:%s|%s|branches:%s] %s" % (
+            "[repo:%s|%s|branch:%s] %s" % (
                 brown(repo),
                 red(_("tidy")),
                 blue(etpConst['branch']),
@@ -28142,6 +28148,19 @@ class ServerMirrorsInterface:
 
         branch_data['errors'] = False
 
+        if etpConst['branch'] != etpConst['branches'][-1]:
+            self.Entropy.updateProgress(
+                "[branch:%s] %s" % (
+                    brown(etpConst['branch']),
+                    blue(_("not the latest branch, skipping tidy for consistence. This branch entered the maintenance mode.")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            branch_data['errors'] = True
+            return True, branch_data
+
         self.Entropy.updateProgress(
             "[branch:%s] %s" % (
                 brown(etpConst['branch']),
@@ -28153,15 +28172,15 @@ class ServerMirrorsInterface:
         )
 
         # collect removed packages
-        expiring_packages = self.collect_expiring_packages(repo)
+        expiring_packages = self.collect_expiring_packages(etpConst['branch'], repo)
 
         removal = []
         for package in expiring_packages:
-            expired = self.is_package_expired(package, repo)
+            expired = self.is_package_expired(package, etpConst['branch'], repo)
             if expired:
                 removal.append(package)
             else:
-                self.create_expiration_file(package, repo, gentle = True)
+                self.create_expiration_file(package, etpConst['branch'], repo, gentle = True)
 
         # fill returning data
         branch_data['removal'] = removal[:]
