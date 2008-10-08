@@ -598,28 +598,28 @@ except exceptionTools.SystemDatabaseError:
     print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
     sys.exit(101)
 except exceptionTools.OnlineMirrorError, e:
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.RepositoryError, e:
     reset_cache()
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.FtpError, e:
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(101)
 except exceptionTools.PermissionDenied, e:
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
 except exceptionTools.FileNotFound, e:
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
 except exceptionTools.SPMError, e:
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue"),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     sys.exit(1)
 except dbapi2Exceptions['OperationalError'], e:
-    if str(e).find("disk I/O error") == -1:
+    if unicode(e).find("disk I/O error") == -1:
         raise
-    print_error(darkred(" * ")+red(str(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
+    print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
     sys.exit(101)
 except SystemExit:
     pass
@@ -666,7 +666,7 @@ except:
         ferror = open("/tmp/equoerror.txt","aw")
         ferror.write("\n\n")
         for x in exception_data:
-            ferror.write(str(x)+"\n")
+            ferror.write(unicode(x)+"\n")
         ferror.flush()
         ferror.close()
     except Exception, e:
@@ -694,7 +694,7 @@ except:
     description = readtext(_("What you were doing:"))
     errorText = ''.join(errorText)
     error = ErrorReportInterface()
-    error.prepare(errorText, name, email, '\n'.join([str(x) for x in exception_data]), description)
+    error.prepare(errorText, name, email, '\n'.join([unicode(x) for x in exception_data]), description)
     result = error.submit()
     if (result):
         print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
