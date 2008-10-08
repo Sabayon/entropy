@@ -1396,6 +1396,7 @@ def const_readServerSettings():
                 etpConst['branches'].append(branch)
             if etpConst['branch'] not in etpConst['branches']:
                 etpConst['branches'].append(etpConst['branch'])
+            etpConst['branches'] = sorted(etpConst['branches'])
 
         elif (line.find("officialserverrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
             etpConst['officialserverrepositoryid'] = line.split("|")[1].strip()
