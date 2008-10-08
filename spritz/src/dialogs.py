@@ -508,7 +508,10 @@ class RepositoryManagerMenu(MenuSkel):
                 self.DataViewButtons[cat][w_id].hide()
 
     def setup_available_repositories(self):
-        self.EntropyRepositories = {}
+        self.EntropyRepositories = {
+            'available': [],
+            'current': ''
+        }
         self.EntropyRepositoryCombo = self.sm_ui.repoManagerRepositoryCombo
         self.EntropyRepositoryStore = gtk.ListStore( gobject.TYPE_STRING )
         self.EntropyRepositoryCombo.set_model(self.EntropyRepositoryStore)
@@ -738,19 +741,22 @@ class RepositoryManagerMenu(MenuSkel):
         srv = self.Service.get_service_connection(timeout = 5)
         if srv == None:
             return False, _("No connection to host, please check your data")
-        session = srv.open_session()
-        if session == None:
-            return False, _("Unable to create a remote session. Try again later.")
         try:
-            logged, error = self.Service.login(srv, session)
-            if not logged:
-                return False, _("Login failed. Please retry.")
-        except Exception, e:
-            return False, "%s: %s" % (_("Connection Error"),e,)
-        srv.close_session(session)
-        srv.disconnect()
-        self.connection_done = True
-        return True, None
+            session = srv.open_session()
+            if session == None:
+                return False, _("Unable to create a remote session. Try again later.")
+            try:
+                logged, error = self.Service.login(srv, session)
+                if not logged:
+                    return False, _("Login failed. Please retry.")
+            except Exception, e:
+                return False, "%s: %s" % (_("Connection Error"),e,)
+            srv.close_session(session)
+            srv.disconnect()
+            self.connection_done = True
+            return True, None
+        except exceptionTools.SSLError:
+            return False,_("SSL Error, are you sure the server supports SSL?")
 
     def load(self):
 
@@ -1801,8 +1807,6 @@ class RepositoryManagerMenu(MenuSkel):
                         cell.set_property('markup',"<b>%s</b>: <i>%s</i>" % (_("Action"),cleanMarkupString(obj['text']),))
                     elif obj['from'] == "uri":
                         cell.set_property('markup',"<b>%s</b>: <u>%s</u>" % (_("Server"),cleanMarkupString(obj['text']),))
-                    elif obj['from'] == "branch":
-                        cell.set_property('markup',"<b>%s</b>: %s" % (_("Branch"),cleanMarkupString(obj['text']),))
                     elif obj['from'] == "db":
                         yes = _("Yes")
                         no = _("No")
@@ -2237,40 +2241,30 @@ class RepositoryManagerMenu(MenuSkel):
 
                 self.DataStore.append( uri_parent, (db_item,))
                 if data[repoid][uri].has_key('packages'):
-                    for mybranch in data[repoid][uri]['packages']:
 
-                        branch_master = {
-                            'is_master': True,
-                            'text': mybranch,
-                            'from': "branch",
-                            'color': color,
-                            'repoid': repoid,
-                            'run': (repoid,False,True,) # repoid, dbsync, pkgsync
-                        }
-                        branch_parent = self.DataStore.append( uri_parent, (branch_master,))
+                    for action in data[repoid][uri]['packages']:
 
-                        for action in data[repoid][uri]['packages'][mybranch]:
+                        if data[repoid][uri]['packages'][action]:
+                            pkgmaster = {
+                                'is_master': True,
+                                'text': action,
+                                'from': "pkg_master",
+                                'color': color,
+                                'repoid': repoid,
+                                'run': (repoid,False,True,)
+                            }
+                            pkg_parent = self.DataStore.append( uri_parent, (pkgmaster,))
 
-                            if data[repoid][uri]['packages'][mybranch][action]:
-                                pkgmaster = {
-                                    'is_master': True,
-                                    'text': action,
-                                    'from': "pkg_master",
-                                    'color': color,
-                                    'repoid': repoid,
-                                    'run': (repoid,False,True,)
-                                }
-                                pkg_parent = self.DataStore.append( branch_parent, (pkgmaster,))
-                            for mypath, mysize in data[repoid][uri]['packages'][mybranch][action]:
-                                pkg_item = {
-                                    'from': "pkg",
-                                    'filename': os.path.basename(mypath),
-                                    'size': self.entropyTools.bytesIntoHuman(mysize),
-                                    'color': color,
-                                    'repoid': repoid,
-                                    'run': (repoid,False,True,)
-                                }
-                                self.DataStore.append( pkg_parent, (pkg_item,))
+                        for mypath, mysize in data[repoid][uri]['packages'][action]:
+                            pkg_item = {
+                                'from': "pkg",
+                                'filename': os.path.basename(mypath),
+                                'size': self.entropyTools.bytesIntoHuman(mysize),
+                                'color': color,
+                                'repoid': repoid,
+                                'run': (repoid,False,True,)
+                            }
+                            self.DataStore.append( pkg_parent, (pkg_item,))
 
         self.DataView.expand_all()
         gtk.gdk.threads_leave()

@@ -6924,7 +6924,7 @@ class RepoInterface:
                     except self.socket.error, e:
                         mytxt = "%s: %s" % (
                             blue(_("EAPI3 Service error")),
-                            darkred(str(e)),
+                            darkred(unicode(e)),
                         )
                         self.Entropy.updateProgress(
                             mytxt,
@@ -13943,7 +13943,7 @@ class SocketHostInterface:
                                                   # needs auth = True
                                 'desc': "instantiate a session", # description
                                 'syntax': "begin", # syntax
-                                'from': str(self), # from what class
+                                'from': unicode(self), # from what class
                             },
                 'end':      {
                                 'auth': False,
@@ -13953,7 +13953,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "end a session",
                                 'syntax': "<SESSION_ID> end",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'session_config':      {
                                 'auth': False,
@@ -13963,7 +13963,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "set session configuration options",
                                 'syntax': "<SESSION_ID> session_config <option> [parameters]",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'rc':       {
                                 'auth': False,
@@ -13973,7 +13973,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "get data returned by the last valid command (streamed python object)",
                                 'syntax': "<SESSION_ID> rc",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'hello':    {
                                 'auth': False,
@@ -13983,7 +13983,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "get server status",
                                 'syntax': "hello",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'alive':    {
                                 'auth': True,
@@ -13993,7 +13993,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "check if a session is still alive",
                                 'syntax': "<SESSION_ID> alive",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'login':    {
                                 'auth': False,
@@ -14003,7 +14003,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "login on the running server (allows running extra commands)",
                                 'syntax': "<SESSION_ID> login <authenticator parameters, default: <user> <auth_type> <password> >",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'user_data':    {
                                 'auth': True,
@@ -14013,7 +14013,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "get general user information, user must be logged in",
                                 'syntax': "<SESSION_ID> user_data",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'logout':   {
                                 'auth': True,
@@ -14023,7 +14023,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "logout on the running server",
                                 'syntax': "<SESSION_ID> logout <USER>",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'help':   {
                                 'auth': False,
@@ -14033,7 +14033,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "this output",
                                 'syntax': "help",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'available_commands':   {
                                 'auth': False,
@@ -14043,7 +14043,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "get info about available commands (you must retrieve this using the 'rc' command)",
                                 'syntax': "available_commands",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
                 'stream':   {
                                 'auth': True,
@@ -14053,7 +14053,7 @@ class SocketHostInterface:
                                 'as_user': False,
                                 'desc': "send a chunk of data to be saved on the session temp file path (will be removed on session expiration)",
                                 'syntax': "<SESSION_ID> stream <chunk of byte-string to write to file>",
-                                'from': str(self),
+                                'from': unicode(self),
                             },
             }
 
@@ -14877,6 +14877,8 @@ class ServerInterface(TextInterface):
             header = "[server]"
         )
 
+        self.migrate_repository_databases_to_new_branched_path()
+
         self.community_repo = community_repo
         self.dbapi2 = dbapi2 # export for third parties
         # settings
@@ -14912,6 +14914,55 @@ class ServerInterface(TextInterface):
 
     def __del__(self):
         self.close_server_databases()
+
+    # FIXME: this will be removed in future, creation date: 2008-10-08
+    def migrate_repository_databases_to_new_branched_path(self):
+        migrated_filename = '.branch_migrated'
+        for repoid in etpConst['server_repositories'].keys():
+
+            if repoid == etpConst['clientserverrepoid']: continue
+            mydir = etpConst['server_repositories'][repoid]['database_dir']
+            if not os.path.isdir(mydir): # empty ?
+                continue
+
+            migrated_filepath = os.path.join(mydir,migrated_filename)
+            if os.path.isfile(migrated_filepath):
+                continue
+
+            my_branched_dir = self.get_local_database_dir(repoid)
+            if os.path.isdir(my_branched_dir): # wtf? do not touch
+                continue
+
+            self.updateProgress(
+                "[%s:%s] %s: %s, %s: %s" % (
+                        brown("repo"),
+                        purple(repoid),
+                        _("migrating database path from"),
+                        brown(mydir),
+                        _('to'),
+                        brown(my_branched_dir),
+                ),
+                importance = 1,
+                type = "info",
+                header = bold(" @@ ")
+            )
+
+            repo_files = [os.path.join(mydir,x) for x in os.listdir(mydir) if \
+                (os.path.isfile(os.path.join(mydir,x)) and \
+                os.access(os.path.join(mydir,x),os.W_OK))
+            ]
+            os.makedirs(my_branched_dir)
+            const_setup_perms(my_branched_dir,etpConst['entropygid'])
+
+            # get_local_database_dir
+            for repo_file in repo_files:
+                repo_filename = os.path.basename(repo_file)
+                shutil.move(repo_file,os.path.join(my_branched_dir,repo_filename))
+
+        f = open(migrated_filepath,"w")
+        f.write("done\n")
+        f.flush()
+        f.close()
 
     def add_client_database_to_repositories(self):
         etpConst['server_repositories'][etpConst['clientserverrepoid']] = {}
@@ -15146,7 +15197,6 @@ class ServerInterface(TextInterface):
         for setting in self.settings_to_backup:
             self.ClientService.backup_setting(setting)
 
-
     def is_repository_initialized(self, repo):
 
         def do_validate(dbc):
@@ -15243,7 +15293,7 @@ class ServerInterface(TextInterface):
             indexing = True,
             warnings = True,
             do_cache = True,
-            ask_treeupdates = True
+            use_branch = None
         ):
 
         if repo == None:
@@ -15260,7 +15310,7 @@ class ServerInterface(TextInterface):
             self.ClientService.parse_masking_settings()
 
         t_ident = 1 # thread.get_ident() disabled for now
-        local_dbfile = self.get_local_database_file(repo)
+        local_dbfile = self.get_local_database_file(repo, use_branch)
         if do_cache:
             cached = self.serverDbCache.get(
                             (   etpConst['systemroot'],
@@ -15270,6 +15320,7 @@ class ServerInterface(TextInterface):
                                 just_reading,
                                 repo,
                                 t_ident,
+                                use_branch,
                             )
             )
             if cached != None:
@@ -15301,7 +15352,7 @@ class ServerInterface(TextInterface):
         if (repo not in etpConst['server_treeupdatescalled']) and (not just_reading):
             # sometimes, when filling a new server db, we need to avoid tree updates
             if valid:
-                conn.serverUpdatePackagesData(ask = ask_treeupdates)
+                conn.serverUpdatePackagesData()
             elif warnings:
                 mytxt = _( "Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw...")
                 self.updateProgress(
@@ -15326,29 +15377,6 @@ class ServerInterface(TextInterface):
             )
             conn.createAllIndexes()
 
-        # check if we need to setup the counters table
-        current_branch = etpConst['branch']
-        all_branches = sorted(list(conn.listAllBranchesFromCounters()))
-        if (current_branch not in all_branches) and all_branches:
-            from_branch = all_branches[-1]
-            self.updateProgress(
-                "[repo:%s|%s] %s %s %s %s" % (
-                            blue(repo),
-                            red(_("branch copy")),
-                            blue(_("copying counters from")),
-                            red(from_branch),
-                            blue(_("to")),
-                            red(current_branch),
-                    ),
-                importance = 1,
-                type = "info",
-                header = brown(" @@ "),
-                back = True
-            )
-            # force r/w
-            conn.readOnly = False
-            conn.copyCountersToBranch(from_branch,current_branch)
-
         if do_cache:
             # !!! also cache just_reading otherwise there will be
             # real issues if the connection is opened several times
@@ -15360,6 +15388,7 @@ class ServerInterface(TextInterface):
                 just_reading,
                 repo,
                 t_ident,
+                use_branch,
             )] = conn
         return conn
 
@@ -15572,7 +15601,7 @@ class ServerInterface(TextInterface):
             header = darkgreen(" * ")
         )
 
-    def move_packages(self, matches, to_repo, from_repo = None, branch = etpConst['branch'], ask = True, do_copy = False):
+    def move_packages(self, matches, to_repo, from_repo = None, ask = True, do_copy = False):
 
         switched = set()
 
@@ -15625,7 +15654,7 @@ class ServerInterface(TextInterface):
                 "[%s=>%s|%s] %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(dbconn.retrieveAtom(match[0])),
                 ),
                 importance = 0,
@@ -15650,7 +15679,7 @@ class ServerInterface(TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("switching")),
                         darkgreen(match_atom),
                 ),
@@ -15668,7 +15697,7 @@ class ServerInterface(TextInterface):
                     "[%s=>%s|%s] %s: %s -> %s" % (
                             darkgreen(repo),
                             darkred(to_repo),
-                            brown(branch),
+                            brown(etpConst['branch']),
                             bold(_("cannot switch, package not found, skipping")),
                             darkgreen(),
                             red(from_file),
@@ -15694,7 +15723,7 @@ class ServerInterface(TextInterface):
                         "[%s=>%s|%s] %s: %s" % (
                                 darkgreen(repo),
                                 darkred(to_repo),
-                                brown(branch),
+                                brown(etpConst['branch']),
                                 blue(_("moving file")),
                                 darkgreen(os.path.basename(from_item)),
                         ),
@@ -15710,7 +15739,7 @@ class ServerInterface(TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("loading data from source database")),
                         darkgreen(repo),
                 ),
@@ -15727,7 +15756,7 @@ class ServerInterface(TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("injecting data to destination database")),
                         darkgreen(to_repo),
                 ),
@@ -15745,7 +15774,7 @@ class ServerInterface(TextInterface):
                     "[%s=>%s|%s] %s: %s" % (
                             darkgreen(repo),
                             darkred(to_repo),
-                            brown(branch),
+                            brown(etpConst['branch']),
                             blue(_("removing entry from source database")),
                             darkgreen(repo),
                     ),
@@ -15763,7 +15792,7 @@ class ServerInterface(TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("successfully handled atom")),
                         darkgreen(match_atom),
                 ),
@@ -15776,12 +15805,12 @@ class ServerInterface(TextInterface):
         return switched
 
 
-    def package_injector(self, package_file, branch = etpConst['branch'], inject = False, repo = None):
+    def package_injector(self, package_file, inject = False, repo = None):
 
         if repo == None:
             repo = self.default_repository
 
-        upload_dir = os.path.join(self.get_local_upload_directory(repo),branch)
+        upload_dir = os.path.join(self.get_local_upload_directory(repo),etpConst['branch'])
         if not os.path.isdir(upload_dir):
             os.makedirs(upload_dir)
 
@@ -15798,7 +15827,7 @@ class ServerInterface(TextInterface):
             header = brown(" * "),
             back = True
         )
-        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = branch, inject = inject)
+        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = etpConst['branch'], inject = inject)
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
         # set trashed counters
@@ -15810,7 +15839,7 @@ class ServerInterface(TextInterface):
                     mydata['name'],
                     mydata['category'],
                     mydata['slot'],
-                    branch,
+                    etpConst['branch'],
                     mydata['injected']
             )
             for myitem in mylist:
@@ -15874,12 +15903,9 @@ class ServerInterface(TextInterface):
         to_be_injected = set()
         myQA = self.QA()
         missing_deps_taint = False
-        for packagedata in packages_data:
+        for package_filepath, inject in packages_data:
 
             mycount += 1
-            package_filepath = packagedata[0]
-            requested_branch = packagedata[1]
-            inject = packagedata[2]
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
                             darkgreen(repo),
@@ -15895,9 +15921,8 @@ class ServerInterface(TextInterface):
             try:
                 # add to database
                 idpackage, destination_path = self.package_injector(
-                                    package_filepath,
-                                    branch = requested_branch,
-                                    inject = inject
+                    package_filepath,
+                    inject = inject
                 )
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage,destination_path))
@@ -15906,7 +15931,7 @@ class ServerInterface(TextInterface):
                     "[repo:%s] %s: %s" % (
                                 darkgreen(repo),
                                 darkred(_("Exception caught, running injection and RDEPEND check before raising")),
-                                darkgreen(str(e)),
+                                darkgreen(unicode(e)),
                             ),
                     importance = 1,
                     type = "error",
@@ -16065,10 +16090,10 @@ class ServerInterface(TextInterface):
             repo = self.default_repository
         return etpConst['server_repositories'][repo]['database_relative_path']
 
-    def get_local_database_file(self, repo = None):
+    def get_local_database_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],etpConst['etpdatabasefile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasefile'])
 
     def get_local_store_directory(self, repo = None):
         if repo == None:
@@ -16085,55 +16110,57 @@ class ServerInterface(TextInterface):
             repo = self.default_repository
         return etpConst['server_repositories'][repo]['packages_dir']
 
-    def get_local_database_taint_file(self, repo = None):
+    def get_local_database_taint_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasetaintfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasetaintfile'])
 
-    def get_local_database_revision_file(self, repo = None):
+    def get_local_database_revision_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaserevisionfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaserevisionfile'])
 
-    def get_local_database_ca_cert_file(self, repo = None):
+    def get_local_database_ca_cert_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasecacertfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasecacertfile'])
 
-    def get_local_database_server_cert_file(self, repo = None):
+    def get_local_database_server_cert_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaseservercertfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseservercertfile'])
 
-    def get_local_database_mask_file(self, repo = None):
+    def get_local_database_mask_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabasemaskfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemaskfile'])
 
-    def get_local_database_licensewhitelist_file(self, repo = None):
+    def get_local_database_licensewhitelist_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaselicwhitelistfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaselicwhitelistfile'])
 
-    def get_local_database_rss_file(self, repo = None):
+    def get_local_database_rss_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['rss-name'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-name'])
 
-    def get_local_database_rsslight_file(self, repo = None):
+    def get_local_database_rsslight_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['rss-light-name'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-light-name'])
 
-    def get_local_database_treeupdates_file(self, repo = None):
+    def get_local_database_treeupdates_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo),etpConst['etpdatabaseupdatefile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseupdatefile'])
 
-    def get_local_database_dir(self, repo = None):
+    def get_local_database_dir(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return etpConst['server_repositories'][repo]['database_dir']
+        if branch == None:
+            branch = etpConst['branch']
+        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],branch)
 
     def get_local_database_revision(self, repo = None):
 
@@ -16177,6 +16204,8 @@ class ServerInterface(TextInterface):
 
         return remote_revision
 
+    def get_branch_from_download_relative_uri(self, mypath):
+        return mypath.split("/")[2]
 
     def atomMatch(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
@@ -16200,7 +16229,7 @@ class ServerInterface(TextInterface):
             for server_repo in server_repos:
                 installed_counters.add(x[1])
                 server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
-                counter = server_dbconn.isCounterAvailable(x[1], branch = etpConst['branch'])#, branch_operator = "<="
+                counter = server_dbconn.isCounterAvailable(x[1], branch = etpConst['branch'])
                 if counter:
                     found = True
                     break
@@ -16211,11 +16240,7 @@ class ServerInterface(TextInterface):
         database_counters = {}
         for server_repo in server_repos:
             server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
-            database_counters[server_repo] = \
-                    server_dbconn.listAllCounters(
-                                                    branch = etpConst['branch'],
-                                                    branch_operator = "<="
-                                                 )
+            database_counters[server_repo] = server_dbconn.listAllCounters(branch = etpConst['branch'])
 
         ordered_counters = set()
         for server_repo in database_counters:
@@ -16353,9 +16378,11 @@ class ServerInterface(TextInterface):
             )
 
             rc = self.askQuestion(_("Do you want to continue ?"))
-            if rc == "No":
-                return
-            os.remove(self.get_local_database_file(repo))
+            if rc == "No": return
+            try:
+                os.remove(self.get_local_database_file(repo))
+            except OSError:
+                pass
 
 
         # initialize
@@ -16407,23 +16434,17 @@ class ServerInterface(TextInterface):
                 dbconn.bumpTreeUpdatesActions(treeupdates_actions)
 
             # now fill the database
-            pkgbranches = etpConst['branches']
+            pkg_branch_dir = os.path.join(self.get_local_packages_directory(repo),etpConst['branch'])
+            pkglist = os.listdir(pkg_branch_dir)
+            # filter .md5 and .expired packages
+            pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not \
+                os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
 
-            for mybranch in pkgbranches:
-
-                pkg_branch_dir = os.path.join(self.get_local_packages_directory(repo),mybranch)
-                pkglist = os.listdir(pkg_branch_dir)
-                # filter .md5 and .expired packages
-                pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not \
-                    os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
-
-                if not pkglist:
-                    continue
-
+            if pkglist:
                 self.updateProgress(
                     "%s '%s' %s %s" % (
                         red(_("Reinitializing Entropy database for branch")),
-                        bold(mybranch),
+                        bold(etpConst['branch']),
                         red(_("using Packages in the repository")),
                         red("..."),
                     ),
@@ -16432,58 +16453,58 @@ class ServerInterface(TextInterface):
                     header = darkgreen(" * ")
                 )
 
-                counter = 0
-                maxcount = len(pkglist)
-                for pkg in pkglist:
-                    counter += 1
+            counter = 0
+            maxcount = len(pkglist)
+            for pkg in pkglist:
+                counter += 1
 
-                    self.updateProgress(
-                        "[repo:%s|%s] %s: %s" % (
-                                darkgreen(repo),
-                                brown(mybranch),
-                                blue(_("analyzing")),
-                                bold(pkg),
-                            ),
-                        importance = 1,
-                        type = "info",
-                        header = " ",
-                        back = True,
-                        count = (counter,maxcount,)
-                    )
+                self.updateProgress(
+                    "[repo:%s|%s] %s: %s" % (
+                            darkgreen(repo),
+                            brown(etpConst['branch']),
+                            blue(_("analyzing")),
+                            bold(pkg),
+                        ),
+                    importance = 1,
+                    type = "info",
+                    header = " ",
+                    back = True,
+                    count = (counter,maxcount,)
+                )
 
-                    doinject = False
-                    if pkg in injected_packages:
-                        doinject = True
+                doinject = False
+                if pkg in injected_packages:
+                    doinject = True
 
-                    pkg_path = os.path.join(self.get_local_packages_directory(repo),mybranch,pkg)
-                    mydata = self.ClientService.extract_pkg_metadata(pkg_path, mybranch, inject = doinject)
+                pkg_path = os.path.join(self.get_local_packages_directory(repo),etpConst['branch'],pkg)
+                mydata = self.ClientService.extract_pkg_metadata(pkg_path, etpConst['branch'], inject = doinject)
 
-                    # get previous revision
-                    revision_avail = revisions_match.get(pkg)
-                    addRevision = 0
-                    if (revision_avail != None):
-                        if mybranch == revision_avail[0]:
-                            addRevision = revision_avail[1]
+                # get previous revision
+                revision_avail = revisions_match.get(pkg)
+                addRevision = 0
+                if (revision_avail != None):
+                    if etpConst['branch'] == revision_avail[0]:
+                        addRevision = revision_avail[1]
 
-                    idpackage, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
-                    idpackages_added.add(idpackage)
+                idpackage, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
+                idpackages_added.add(idpackage)
 
-                    self.updateProgress(
-                        "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
-                                    repo,
-                                    brown(mybranch),
-                                    darkgreen(str(counter)),
-                                    blue(str(maxcount)),
-                                    red(_("added package")),
-                                    darkgreen(pkg),
-                                    red(_("revision")),
-                                    brown(str(revision)),
-                            ),
-                        importance = 1,
-                        type = "info",
-                        header = " ",
-                        back = True
-                    )
+                self.updateProgress(
+                    "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
+                                repo,
+                                brown(etpConst['branch']),
+                                darkgreen(str(counter)),
+                                blue(str(maxcount)),
+                                red(_("added package")),
+                                darkgreen(pkg),
+                                red(_("revision")),
+                                brown(str(revision)),
+                        ),
+                    importance = 1,
+                    type = "info",
+                    header = " ",
+                    back = True
+                )
 
             self.depends_table_initialize(repo)
 
@@ -16506,7 +16527,7 @@ class ServerInterface(TextInterface):
         else:
             idpackages = set()
             for package in packages:
-                matches = dbconn.atomMatch(package, multiMatch = True, matchBranches = etpConst['branches'])
+                matches = dbconn.atomMatch(package, multiMatch = True)
                 if matches[1] == 0:
                     idpackages |= matches[0]
                 else:
@@ -16589,10 +16610,9 @@ class ServerInterface(TextInterface):
             )
             for idpackage in idpackages:
                 pkgatom = dbconn.retrieveAtom(idpackage)
-                pkgbranch = dbconn.retrieveBranch(idpackage)
                 pkgfile = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
                 self.updateProgress(
-                    red(pkgatom)+" -> "+bold(os.path.join(pkgbranch,pkgfile)),
+                    red(pkgatom)+" -> "+bold(os.path.join(etpConst['branch'],pkgfile)),
                     importance = 1,
                     type = "info",
                     header = darkgreen("   - ")
@@ -16628,14 +16648,13 @@ class ServerInterface(TextInterface):
 
                 currentcounter += 1
                 pkgfile = dbconn.retrieveDownloadURL(idpackage)
-                pkgbranch = dbconn.retrieveBranch(idpackage)
-                pkgfilename = os.path.basename(pkgfile)
+                orig_branch = self.get_branch_from_download_relative_uri(pkgfile)
 
                 self.updateProgress(
                     "[%s] %s: %s" % (
                             brown(crippled_uri),
                             blue(_("checking hash")),
-                            darkgreen(os.path.join(pkgbranch,pkgfilename)),
+                            darkgreen(pkgfile),
                     ),
                     importance = 1,
                     type = "info",
@@ -16645,13 +16664,13 @@ class ServerInterface(TextInterface):
                 )
 
                 ckOk = False
-                ck = self.get_remote_package_checksum(repo, pkgfilename, pkgbranch)
+                ck = self.get_remote_package_checksum(repo, os.path.basename(pkgfile), orig_branch)
                 if ck == None:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
                             brown(crippled_uri),
                             blue(_("digest verification of")),
-                            bold(pkgfilename),
+                            bold(pkgfile),
                             blue(_("not supported")),
                         ),
                         importance = 1,
@@ -16666,7 +16685,7 @@ class ServerInterface(TextInterface):
                         "[%s] %s: %s %s" % (
                             brown(crippled_uri),
                             blue(_("digest verification of")),
-                            bold(pkgfilename),
+                            bold(pkgfile),
                             blue(_("failed for unknown reasons")),
                         ),
                         importance = 1,
@@ -16683,7 +16702,7 @@ class ServerInterface(TextInterface):
                         "[%s] %s: %s %s" % (
                             brown(crippled_uri),
                             blue(_("package")),
-                            bold(pkgfilename),
+                            bold(pkgfile),
                             red(_("NOT healthy")),
                         ),
                         importance = 1,
@@ -16693,7 +16712,7 @@ class ServerInterface(TextInterface):
                     )
                     if not broken_packages.has_key(crippled_uri):
                         broken_packages[crippled_uri] = []
-                    broken_packages[crippled_uri].append(os.path.join(pkgbranch,pkgfilename))
+                    broken_packages[crippled_uri].append(pkgfile)
 
             if broken_packages:
                 mytxt = blue("%s:") % (_("This is the list of broken packages"),)
@@ -16758,7 +16777,7 @@ class ServerInterface(TextInterface):
                 header = brown("   # ")
             )
 
-        return match,not_match,broken_packages
+        return match, not_match, broken_packages
 
 
     def verify_local_packages(self, packages, ask = True, repo = None):
@@ -16792,12 +16811,11 @@ class ServerInterface(TextInterface):
         for idpackage in idpackages:
 
             pkgatom = dbconn.retrieveAtom(idpackage)
-            pkgbranch = dbconn.retrieveBranch(idpackage)
-            pkgfile = dbconn.retrieveDownloadURL(idpackage)
-            pkgfile = os.path.basename(pkgfile)
+            pkg_path = dbconn.retrieveDownloadURL(idpackage)
+            pkg_rel_path = '/'.join(pkg_path.split("/")[2:])
 
-            bindir_path = os.path.join(self.get_local_packages_directory(repo),pkgbranch,pkgfile)
-            uploaddir_path = os.path.join(self.get_local_upload_directory(repo),pkgbranch,pkgfile)
+            bindir_path = os.path.join(self.get_local_packages_directory(repo),pkg_rel_path)
+            uploaddir_path = os.path.join(self.get_local_upload_directory(repo),pkg_rel_path)
 
             if os.path.isfile(bindir_path):
                 if not world:
@@ -16805,7 +16823,7 @@ class ServerInterface(TextInterface):
                         "[%s] %s :: %s" % (
                                 darkgreen(_("available")),
                                 blue(pkgatom),
-                                darkgreen(pkgfile),
+                                darkgreen(pkg_rel_path),
                         ),
                         importance = 0,
                         type = "info",
@@ -16818,7 +16836,7 @@ class ServerInterface(TextInterface):
                         "[%s] %s :: %s" % (
                                 darkred(_("upload/ignored")),
                                 blue(pkgatom),
-                                darkgreen(pkgfile),
+                                darkgreen(pkg_rel_path),
                         ),
                         importance = 0,
                         type = "info",
@@ -16829,13 +16847,13 @@ class ServerInterface(TextInterface):
                     "[%s] %s :: %s" % (
                             brown(_("download")),
                             blue(pkgatom),
-                            darkgreen(pkgfile),
+                            darkgreen(pkg_rel_path),
                     ),
                     importance = 0,
                     type = "info",
                     header = darkgreen("   # ")
                 )
-                to_download.add((idpackage,pkgfile,pkgbranch))
+                to_download.add((idpackage,pkg_path,))
 
         if ask:
             rc = self.askQuestion(_("Would you like to continue ?"))
@@ -16871,15 +16889,13 @@ class ServerInterface(TextInterface):
                     to_download = not_downloaded.copy()
                     not_downloaded = set()
 
-                for pkg in to_download:
-                    rc = self.MirrorsService.download_package(uri,pkg[1],pkg[2], repo = repo)
-                    if rc == None:
-                        not_downloaded.add((pkg[1],pkg[2]))
-                    elif not rc:
-                        not_downloaded.add((pkg[1],pkg[2]))
-                    elif rc:
-                        downloaded_fine.add(pkg[0])
-                        available.add(pkg[0])
+                for idpackage, pkg_path in to_download: # idpackage, pkgfile, branch
+                    rc = self.MirrorsService.download_package(uri, pkg_path, repo = repo)
+                    if rc:
+                        downloaded_fine.add(idpackage)
+                        available.add(idpackage)
+                    else:
+                        not_downloaded.add(pkg_path)
 
                 if not not_downloaded:
                     self.updateProgress(
@@ -16898,15 +16914,15 @@ class ServerInterface(TextInterface):
                     type = "info",
                     header = "   "
                 )
-                for i in not_downloaded:
-                    downloaded_errors.add(i[0])
+                for pkg_path in not_downloaded:
+                    downloaded_errors.add(pkg_path)
                     self.updateProgress(
-                            brown(i[0])+" in "+blue(i[1]),
+                            brown(pkg_path),
                             importance = 1,
                             type = "warning",
                             header = red("    * ")
                     )
-                    downloaded_errors.add(i[0])
+                downloaded_errors |= not_downloaded
                 mytxt = "%s." % (_("They won't be checked"),)
                 self.updateProgress(
                     mytxt,
@@ -16919,13 +16935,13 @@ class ServerInterface(TextInterface):
         currentcounter = 0
         for idpackage in available:
             currentcounter += 1
-            pkgfile = dbconn.retrieveDownloadURL(idpackage)
-            pkgbranch = dbconn.retrieveBranch(idpackage)
-            pkgfile = os.path.basename(pkgfile)
+            pkg_path = dbconn.retrieveDownloadURL(idpackage)
+            orig_branch = self.get_branch_from_download_relative_uri(pkg_path)
+            pkgfile = os.path.basename(pkg_path)
 
             self.updateProgress(
                 "[branch:%s] %s %s" % (
-                        brown(pkgbranch),
+                        brown(orig_branch),
                         blue(_("checking hash of")),
                         darkgreen(pkgfile),
                 ),
@@ -16937,7 +16953,7 @@ class ServerInterface(TextInterface):
             )
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
-            pkgpath = os.path.join(self.get_local_packages_directory(repo),pkgbranch,pkgfile)
+            pkgpath = os.path.join(self.get_local_packages_directory(repo),orig_branch,pkgfile)
             result = self.entropyTools.compareMd5(pkgpath,storedmd5)
             if result:
                 fine.add(idpackage)
@@ -16945,9 +16961,9 @@ class ServerInterface(TextInterface):
                 failed.add(idpackage)
                 self.updateProgress(
                     "[branch:%s] %s %s %s: %s" % (
-                            brown(pkgbranch),
+                            brown(orig_branch),
                             blue(_("package")),
-                            darkgreen(pkgfile),
+                            darkgreen(pkg_path),
                             blue(_("is corrupted, stored checksum")), # package -blah- is corrupted...
                             brown(storedmd5),
                     ),
@@ -16966,10 +16982,10 @@ class ServerInterface(TextInterface):
                     header =  darkred("  # ")
             )
             for idpackage in failed:
-                branch = dbconn.retrieveBranch(idpackage)
-                dp = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                atom = dbconn.retrieveAtom(idpackage)
+                dp = dbconn.retrieveDownloadURL(idpackage)
                 self.updateProgress(
-                        blue("[branch:%s] %s" % (branch,dp,)),
+                        blue("[atom:%s] %s" % (atom,dp,)),
                         importance = 0,
                         type = "warning",
                         header =  brown("    # ")
@@ -17037,17 +17053,6 @@ class ServerInterface(TextInterface):
         return fine, failed, downloaded_fine, downloaded_errors
 
 
-    def list_all_branches(self, repo = None):
-        dbconn = self.openServerDatabase(just_reading = True, repo = repo)
-        branches = dbconn.listAllBranches()
-        for branch in branches:
-            branch_path = os.path.join(self.get_local_upload_directory(repo),branch)
-            if not os.path.isdir(branch_path):
-                os.makedirs(branch_path)
-            branch_path = os.path.join(self.get_local_packages_directory(repo),branch)
-            if not os.path.isdir(branch_path):
-                os.makedirs(branch_path)
-
     def switch_packages_branch(self, idpackages, to_branch, repo = None):
 
         if repo == None:
@@ -17088,23 +17093,6 @@ class ServerInterface(TextInterface):
                 )
                 ignored.add(idpackage)
                 continue
-            old_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
-            # check if file exists
-            frompath = os.path.join(self.get_local_packages_directory(repo),cur_branch,old_filename)
-            if not os.path.isfile(frompath):
-                self.updateProgress(
-                    "[%s=>%s] %s, %s" % (
-                        brown(cur_branch),
-                        bold(to_branch),
-                        darkgreen(atom),
-                        blue(_("cannot switch, package not found!")),
-                    ),
-                    importance = 0,
-                    type = "warning",
-                    header = darkred(" !!! ")
-                )
-                not_found.add(idpackage)
-                continue
 
             mytxt = blue("%s ...") % (_("configuring package information"),)
             self.updateProgress(
@@ -17121,88 +17109,6 @@ class ServerInterface(TextInterface):
             )
             dbconn.switchBranch(idpackage,to_branch)
             dbconn.commitChanges()
-
-            mytxt = blue("%s ...") % (_("moving file locally"),)
-            # LOCAL
-            self.updateProgress(
-                "[%s=>%s] %s, %s" % (
-                        brown(cur_branch),
-                        bold(to_branch),
-                        darkgreen(atom),
-                        mytxt,
-                ),
-                importance = 0,
-                type = "info",
-                header = darkgreen(" @@ "),
-                back = True
-            )
-            new_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
-            topath = os.path.join(self.get_local_packages_directory(repo),to_branch)
-            if not os.path.isdir(topath):
-                os.makedirs(topath)
-
-            topath = os.path.join(topath,new_filename)
-            shutil.move(frompath,topath)
-            if os.path.isfile(frompath+etpConst['packageshashfileext']):
-                shutil.move(frompath+etpConst['packageshashfileext'],topath+etpConst['packageshashfileext'])
-            else:
-                self.updateProgress(
-                    "[%s=>%s] %s, %s" % (
-                            brown(cur_branch),
-                            bold(to_branch),
-                            darkgreen(atom),
-                            blue(_("cannot find checksum to migrate!")),
-                    ),
-                    importance = 0,
-                    type = "warning",
-                    header = darkred(" !!! ")
-                )
-                no_checksum.add(idpackage)
-
-            mytxt = blue("%s ...") % (_("moving file remotely"),)
-            # REMOTE
-            self.updateProgress(
-                "[%s=>%s] %s, %s" % (
-                        brown(cur_branch),
-                        bold(to_branch),
-                        darkgreen(atom),
-                        mytxt,
-                ),
-                importance = 0,
-                type = "info",
-                header = darkgreen(" @@ "),
-                back = True
-            )
-
-            for uri in self.get_remote_mirrors(repo):
-
-                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-                self.updateProgress(
-                    "[%s=>%s] %s, %s: %s" % (
-                            brown(cur_branch),
-                            bold(to_branch),
-                            darkgreen(atom),
-                            blue(_("moving file remotely on")), # on... servername
-                            darkgreen(crippled_uri),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = darkgreen(" @@ "),
-                    back = True
-                )
-
-                ftp = self.FtpInterface(uri, self)
-                ftp.setCWD(self.get_remote_packages_relative_path(repo))
-                # create directory if it doesn't exist
-                if not ftp.isFileAvailable(to_branch):
-                    ftp.mkdir(to_branch)
-
-                fromuri = os.path.join(cur_branch,old_filename)
-                touri = os.path.join(to_branch,new_filename)
-                ftp.renameFile(fromuri,touri)
-                ftp.renameFile(fromuri+etpConst['packageshashfileext'],touri+etpConst['packageshashfileext'])
-                ftp.closeConnection()
-
             switched.add(idpackage)
 
         dbconn.commitChanges()
@@ -18136,7 +18042,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the comments of the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_comments app-foo/foo",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_comments_by_identifiers':    {
                 'auth': False,
@@ -18146,7 +18052,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the comments belonging to the provided identifiers",
                 'syntax': "<SESSION_ID> ugc:get_comments_by_identifiers <identifier1> <identifier2> <identifier3>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_documents_by_identifiers':    {
                 'auth': False,
@@ -18156,7 +18062,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the documents belonging to the provided identifiers",
                 'syntax': "<SESSION_ID> ugc:get_documents_by_identifiers <identifier1> <identifier2> <identifier3>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_vote':    {
                 'auth': False,
@@ -18166,7 +18072,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the vote of the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_vote app-foo/foo",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_downloads':    {
                 'auth': False,
@@ -18176,7 +18082,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the number of downloads of the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_downloads app-foo/foo",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_textdocs':    {
                 'auth': False,
@@ -18186,7 +18092,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_textdocs app-foo/foo",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_textdocs_by_identifiers':    {
                 'auth': False,
@@ -18196,7 +18102,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided identifiers",
                 'syntax': "<SESSION_ID> ugc:get_textdocs_by_identifiers <identifier1> <identifier2> <identifier3>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_alldocs':    {
                 'auth': False,
@@ -18206,7 +18112,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get the all the documents belonging to the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_alldocs app-foo/foo",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_allvotes':    {
                 'auth': False,
@@ -18216,7 +18122,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get vote information for every available package key",
                 'syntax': "<SESSION_ID> ugc:get_allvotes",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:get_alldownloads':    {
                 'auth': False,
@@ -18226,7 +18132,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get download information for every available package key",
                 'syntax': "<SESSION_ID> ugc:get_alldownloads",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:do_vote':    {
                 'auth': True,
@@ -18236,7 +18142,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "vote the specified application (from 0 to 5)",
                 'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:do_download':    {
                 'auth': False,
@@ -18246,7 +18152,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "inform the system of a downloaded application",
                 'syntax': "<SESSION_ID> ugc:do_download app-foo/foo",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:add_comment':    {
                 'auth': True,
@@ -18256,7 +18162,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "insert a comment related to a package key",
                 'syntax': "<SESSION_ID> ugc:add_comment app-foo/foo <valid xml formatted data>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:remove_comment':    {
                 'auth': True,
@@ -18266,7 +18172,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove a comment (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_comment <iddoc>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:edit_comment':    {
                 'auth': True,
@@ -18276,7 +18182,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "edit a comment related to a package key (you need its iddoc, mod/admin privs or being the author)",
                 'syntax': "<SESSION_ID> ugc:edit_comment <iddoc> <valid xml formatted data>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:register_stream':    {
                 'auth': True,
@@ -18286,7 +18192,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "register an uploaded file (through stream cmd) to the relative place (image, file, videos)",
                 'syntax': "<SESSION_ID> ugc:register_stream app-foo/foo <valid xml formatted data>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:remove_image':    {
                 'auth': True,
@@ -18296,7 +18202,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove an image (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_image <iddoc>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:remove_file':    {
                 'auth': True,
@@ -18306,7 +18212,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove a file (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_file <iddoc>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'ugc:remove_youtube_video':    {
                 'auth': True,
@@ -18316,7 +18222,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove a youtube video (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_youtube_video <iddoc>",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
         }
 
@@ -19492,7 +19398,7 @@ class phpbb3Commands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to a simple user",
                 'syntax': "<SESSION_ID> is_user",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'is_developer':    {
                 'auth': True,
@@ -19502,7 +19408,7 @@ class phpbb3Commands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to a developer",
                 'syntax': "<SESSION_ID> is_developer",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'is_moderator':    {
                 'auth': True,
@@ -19512,7 +19418,7 @@ class phpbb3Commands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to a moderator",
                 'syntax': "<SESSION_ID> is_moderator",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
             'is_administrator':    {
                 'auth': True,
@@ -19522,7 +19428,7 @@ class phpbb3Commands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to an administrator",
                 'syntax': "<SESSION_ID> is_administrator",
-                'from': str(self), # from what class
+                'from': unicode(self), # from what class
             },
         }
 
@@ -19558,7 +19464,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "returns idpackage differences against the latest available repository",
                     'syntax': "<SESSION_ID> dbdiff <repository> <arch> <product> [idpackages]",
-                    'from': str(self), # from what class
+                    'from': unicode(self), # from what class
                 },
                 'pkginfo':    {
                     'auth': False,
@@ -19568,7 +19474,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "returns idpackage differences against the latest available repository",
                     'syntax': "<SESSION_ID> pkginfo <content fmt True/False> <repository> <arch> <product> <idpackage>",
-                    'from': str(self), # from what class
+                    'from': unicode(self), # from what class
                 },
                 'treeupdates':    {
                     'auth': False,
@@ -19578,7 +19484,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "returns repository treeupdates metadata",
                     'syntax': "<SESSION_ID> treeupdates <repository> <arch> <product>",
-                    'from': str(self), # from what class
+                    'from': unicode(self), # from what class
                 },
             }
 
@@ -21463,48 +21369,54 @@ class SystemManagerExecutorServerRepositoryInterface:
             return False,'no item in queue'
 
         stdout_err = open(queue_data['stdout'],"aw")
+        Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
 
-        old_updprogress = self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress
-        self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = myupdateprogress
-        try:
+                for repoid in Entropy.get_available_repositories():
+                    self.run_entropy_treeupdates(queue_id, repoid)
 
-            for repoid in self.SystemManagerExecutor.SystemInterface.Entropy.get_available_repositories():
-                self.run_entropy_treeupdates(queue_id, repoid)
+                stdout_err.write("\n"+_("Calculating updates...").encode('utf-8')+"\n")
+                stdout_err.flush()
 
-            stdout_err.write("\n"+_("Calculating updates...")+"\n")
-            stdout_err.flush()
+                to_add, to_remove, to_inject = Entropy.scan_package_changes()
+                mydict = { 'add': to_add, 'remove': to_remove, 'inject': to_inject }
 
-            to_add, to_remove, to_inject = self.SystemManagerExecutor.SystemInterface.Entropy.scan_package_changes()
-            mydict = { 'add': to_add, 'remove': to_remove, 'inject': to_inject }
+                # setup add data
+                mydict['add_data'] = {}
+                for portage_atom, portage_counter in to_add:
+                    mydict['add_data'][(portage_atom, portage_counter,)] = self._get_spm_pkginfo(portage_atom,from_installed = True)
 
-            # setup add data
-            mydict['add_data'] = {}
-            for portage_atom, portage_counter in to_add:
-                mydict['add_data'][(portage_atom, portage_counter,)] = self._get_spm_pkginfo(portage_atom,from_installed = True)
+                mydict['remove_data'] = {}
+                for idpackage, repoid in to_remove:
+                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
+                    dbconn.closeDB()
 
-            mydict['remove_data'] = {}
-            for idpackage, repoid in to_remove:
-                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-                mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                dbconn.closeDB()
+                mydict['inject_data'] = {}
+                for idpackage, repoid in to_inject:
+                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
+                    dbconn.closeDB()
 
-            mydict['inject_data'] = {}
-            for idpackage, repoid in to_inject:
-                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-                mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                dbconn.closeDB()
+                return True,mydict
 
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            self.SystemManagerExecutor.SystemInterface.Entropy.updateProgress = old_updprogress
-            stdout_err.flush()
-            stdout_err.close()
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        return True,mydict
+        data = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return data
 
     def run_entropy_database_updates(self, queue_id, to_add, to_remove, to_inject):
 
@@ -21513,105 +21425,99 @@ class SystemManagerExecutorServerRepositoryInterface:
             return False,'no item in queue'
 
         stdout_err = open(queue_data['stdout'],"a+")
-
-        def myupdateprogress(*myargs, **mykwargs):
-            self._file_updateProgress(stdout_err, *myargs, **mykwargs)
-
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
-        old_updprogress = Entropy.updateProgress
-        old_client_updprogress = Entropy.ClientService.updateProgress
-        Entropy.updateProgress = myupdateprogress
-        Entropy.ClientService.updateProgress = myupdateprogress
-        try:
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
 
-            atoms_removed = []
-            matches_injected = set()
+                atoms_removed = []
+                matches_injected = set()
 
-            if to_inject:
-                Entropy.updateProgress(_("Running package injection"))
+                if to_inject: Entropy.updateProgress(_("Running package injection"))
 
-            # run inject
-            for idpackage, repoid in to_inject:
-                matches_injected.add((idpackage,repoid,))
-                Entropy.transform_package_into_injected(idpackage, repo = repoid)
+                # run inject
+                for idpackage, repoid in to_inject:
+                    matches_injected.add((idpackage,repoid,))
+                    Entropy.transform_package_into_injected(idpackage, repo = repoid)
 
-            if to_remove:
-                Entropy.updateProgress(_("Running package removal"))
+                if to_remove: Entropy.updateProgress(_("Running package removal"))
 
-            # run remove
-            remdata = {}
-            for idpackage,repoid in to_remove:
-                dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-                atoms_removed.append(dbconn.retrieveAtom(idpackage))
-                dbconn.closeDB()
-                if not remdata.has_key(repoid):
-                    remdata[repoid] = set()
-                remdata[repoid].add(idpackage)
-            for repoid in remdata:
-                Entropy.remove_packages(remdata[repoid], repo = repoid)
+                # run remove
+                remdata = {}
+                for idpackage,repoid in to_remove:
+                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    atoms_removed.append(dbconn.retrieveAtom(idpackage))
+                    dbconn.closeDB()
+                    if not remdata.has_key(repoid):
+                        remdata[repoid] = set()
+                    remdata[repoid].add(idpackage)
+                for repoid in remdata:
+                    Entropy.remove_packages(remdata[repoid], repo = repoid)
 
-            if to_add:
-                Entropy.updateProgress(_("Running package quickpkg"))
+                if to_add: Entropy.updateProgress(_("Running package quickpkg"))
 
-            # run quickpkg
-            for repoid in to_add:
-                store_dir = Entropy.get_local_store_directory(repo = repoid)
-                for atom in to_add[repoid]:
-                    Entropy.quickpkg(atom,store_dir)
+                # run quickpkg
+                for repoid in to_add:
+                    store_dir = Entropy.get_local_store_directory(repo = repoid)
+                    for atom in to_add[repoid]:
+                        Entropy.quickpkg(atom,store_dir)
 
-            # inject new into db
-            avail_repos = Entropy.get_available_repositories()
-            if etpConst['clientserverrepoid'] in avail_repos:
-                avail_repos.pop(etpConst['clientserverrepoid'])
-            matches_added = set()
-            for repoid in avail_repos:
-                store_dir = Entropy.get_local_store_directory(repo = repoid)
-                package_files = os.listdir(store_dir)
-                if not package_files: continue
-                package_files = [(os.path.join(store_dir,x),etpConst['branch'],False) for x in package_files]
+                # inject new into db
+                avail_repos = Entropy.get_available_repositories()
+                if etpConst['clientserverrepoid'] in avail_repos:
+                    avail_repos.pop(etpConst['clientserverrepoid'])
+                matches_added = set()
+                for repoid in avail_repos:
+                    store_dir = Entropy.get_local_store_directory(repo = repoid)
+                    package_files = os.listdir(store_dir)
+                    if not package_files: continue
+                    package_files = [(os.path.join(store_dir,x),False) for x in package_files]
 
-                Entropy.updateProgress( "[%s|%s] %s" % (
-                        repoid,
-                        etpConst['branch'],
-                        _("Adding packages"),
+                    Entropy.updateProgress( "[%s|%s] %s" % (
+                            repoid,
+                            etpConst['branch'],
+                            _("Adding packages"),
+                        )
                     )
-                )
-                for package_file, branch, inject in package_files:
-                    Entropy.updateProgress("    %s" % (package_file,))
+                    for package_file, inject in package_files:
+                        Entropy.updateProgress("    %s" % (package_file,))
 
-                idpackages = Entropy.add_packages_to_repository(package_files, ask = False, repo = repoid)
-                matches_added |= set([(x,repoid,) for x in idpackages])
+                    idpackages = Entropy.add_packages_to_repository(package_files, ask = False, repo = repoid)
+                    matches_added |= set([(x,repoid,) for x in idpackages])
 
 
-            Entropy.dependencies_test()
+                Entropy.dependencies_test()
 
-            mydict = {
-                'added_data': {},
-                'remove_data': atoms_removed,
-                'inject_data': {}
-            }
-            for idpackage, repoid in matches_added:
-                dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-                mydict['added_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                dbconn.closeDB()
-            for idpackage, repoid in matches_injected:
-                dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-                mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                dbconn.closeDB()
+                mydict = {
+                    'added_data': {},
+                    'remove_data': atoms_removed,
+                    'inject_data': {}
+                }
+                for idpackage, repoid in matches_added:
+                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    mydict['added_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
+                    dbconn.closeDB()
+                for idpackage, repoid in matches_injected:
+                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
+                    dbconn.closeDB()
+                return True, mydict
 
-        except Exception, e:
-            self.entropyTools.printTraceback(f = stdout_err)
-            return False,str(e)
-        finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
-            stdout_err.write("\n### Done ###\n")
-            Entropy.updateProgress = old_updprogress
-            Entropy.ClientService.updateProgress = old_client_updprogress
-            stdout_err.flush()
-            stdout_err.close()
+            finally:
+                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
 
-        return True,mydict
+        data = self.entropyTools.spawnFunction(myfunc)
+        stdout_err.close()
+        return data
 
     def run_entropy_dependency_test(self, queue_id):
 
@@ -21631,7 +21537,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                 return deps_not_matched
             except Exception, e:
                 self.entropyTools.printTraceback()
-                return False,str(e)
+                return False,unicode(e)
             finally:
                 sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
@@ -21661,7 +21567,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.libraries_test()
             except Exception, e:
                 self.entropyTools.printTraceback()
-                return False,str(e)
+                return False,unicode(e)
             finally:
                 sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
@@ -21699,7 +21605,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                 return True, data
             except Exception, e:
                 self.entropyTools.printTraceback()
-                return False,str(e)
+                return False,unicode(e)
             finally:
                 sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
@@ -21726,15 +21632,15 @@ class SystemManagerExecutorServerRepositoryInterface:
             mystdin = self._get_stdin(queue_id)
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                sys.stdout.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.")+"\n")
+                sys.stdout.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.").encode('utf-8')+"\n")
                 dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(
                     repo = repoid, do_cache = False,
-                    ask_treeupdates = False, read_only = True
+                    read_only = True
                 )
                 dbconn.closeDB()
             except Exception, e:
                 self.entropyTools.printTraceback()
-                return False,str(e)
+                return False,unicode(e)
             finally:
                 sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
@@ -21764,7 +21670,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
 
-                sys.stdout.write(_("Scanning")+"\n")
+                sys.stdout.write(_("Scanning").encode('utf-8')+"\n")
                 repo_data = {}
                 for repoid in repositories:
 
@@ -21777,32 +21683,29 @@ class SystemManagerExecutorServerRepositoryInterface:
                         repo_data[repoid][crippled_uri] = {}
                         repo_data[repoid][crippled_uri]['packages'] = {}
 
-                        for mybranch in etpConst['branches']:
+                        try:
+                            upload_queue, download_queue, removal_queue, \
+                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, repoid)
+                        except socket.error:
+                            self.entropyTools.printTraceback(f = stdout_err)
+                            stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")
+                            continue
 
-                            try:
-                                upload_queue, download_queue, removal_queue, \
-                                    fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, mybranch, repoid)
-                            except socket.error:
-                                self.entropyTools.printTraceback(f = stdout_err)
-                                stdout_err.write("\n"+_("Socket error, continuing...")+"\n")
-                                continue
-
-                            if (upload_queue or download_queue or removal_queue):
-                                upload, download, removal, copy, metainfo = Entropy.MirrorsService.expand_queues(
-                                    upload_queue,
-                                    download_queue,
-                                    removal_queue,
-                                    remote_packages_data,
-                                    mybranch,
-                                    repoid
-                                )
-                                if len(upload)+len(download)+len(removal)+len(copy):
-                                    repo_data[repoid][crippled_uri]['packages'][mybranch] = {
-                                        'upload': upload,
-                                        'download': download,
-                                        'removal': removal,
-                                        'copy': copy,
-                                    }
+                        if (upload_queue or download_queue or removal_queue):
+                            upload, download, removal, copy, metainfo = Entropy.MirrorsService.expand_queues(
+                                upload_queue,
+                                download_queue,
+                                removal_queue,
+                                remote_packages_data,
+                                repoid
+                            )
+                            if len(upload)+len(download)+len(removal)+len(copy):
+                                repo_data[repoid][crippled_uri]['packages'] = {
+                                    'upload': upload,
+                                    'download': download,
+                                    'removal': removal,
+                                    'copy': copy,
+                                }
 
                         # now the db
                         current_revision = Entropy.get_local_database_revision(repoid)
@@ -21820,7 +21723,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
             except Exception, e:
                 self.entropyTools.printTraceback()
-                return False,str(e)
+                return False,unicode(e)
             finally:
                 sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
@@ -21935,7 +21838,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
             except Exception, e:
                 self.entropyTools.printTraceback()
-                return False,str(e)
+                return False,unicode(e)
             finally:
                 sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
@@ -22074,7 +21977,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "spawn portage sync (emerge --sync)",
                 'syntax': "<SESSION_ID> srvrepo:sync_spm",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:compile_atoms':    {
                 'auth': True,
@@ -22084,7 +21987,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "compile specified atoms using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:compile_atoms <xml string containing atoms and compile options>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:spm_remove_atoms':    {
                 'auth': True,
@@ -22094,7 +21997,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove specified atoms using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:spm_remove_atoms <xml string containing atoms and remove options>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_spm_categories_updates':    {
                 'auth': True,
@@ -22104,7 +22007,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get SPM updates for the specified package categories",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_categories_updates <category 1> <category 2> <...>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_spm_categories_installed':    {
                 'auth': True,
@@ -22114,7 +22017,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get SPM installed packages for the specified package categories",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_categories_installed <category 1> <category 2> <...>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:enable_uses_for_atoms':    {
                 'auth': True,
@@ -22124,7 +22027,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "enable use flags for the specified atom",
                 'syntax': "<SESSION_ID> srvrepo:enable_uses_for_atom <xml string containing atoms and use flags>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:disable_uses_for_atoms':    {
                 'auth': True,
@@ -22134,7 +22037,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "enable use flags for the specified atom",
                 'syntax': "<SESSION_ID> srvrepo:disable_uses_for_atom <xml string containing atoms and use flags>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_spm_atoms_info':    {
                 'auth': True,
@@ -22144,7 +22047,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get info from SPM for the specified atoms",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_atoms_info <atom1> <atom2> <atom3>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_spm_info':    {
                 'auth': True,
@@ -22154,7 +22057,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run SPM info command",
                 'syntax': "<SESSION_ID> srvrepo:run_spm_info",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_custom_shell_command':    {
                 'auth': True,
@@ -22164,7 +22067,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run custom shell command",
                 'syntax': "<SESSION_ID> srvrepo:run_custom_shell_command <shell command blah blah>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_spm_glsa_data':    {
                 'auth': True,
@@ -22174,7 +22077,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get SPM security updates info",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_glsa_data <list_type string (affected,new,all)>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_available_repositories':    {
                 'auth': True,
@@ -22184,7 +22087,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get information about available Entropy repositories",
                 'syntax': "<SESSION_ID> srvrepo:get_available_repositories",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:set_default_repository':    {
                 'auth': True,
@@ -22194,7 +22097,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "set a new default Entropy Server repository",
                 'syntax': "<SESSION_ID> srvrepo:set_default_repository <repoid>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_available_entropy_packages':    {
                 'auth': True,
@@ -22204,7 +22107,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get available Entropy packages from the chosen repository id",
                 'syntax': "<SESSION_ID> srvrepo:get_available_entropy_packages <repoid>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:get_entropy_idpackage_information':    {
                 'auth': True,
@@ -22214,7 +22117,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "get Entropy package metadata using its idpackage and repository id",
                 'syntax': "<SESSION_ID> srvrepo:get_entropy_idpackage_information <idpackage> <repoid>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:remove_entropy_packages':    {
                 'auth': True,
@@ -22224,7 +22127,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove Entropy packages using their match -> (idpackage,repo)",
                 'syntax': "<SESSION_ID> srvrepo:remove_entropy_packages idpackage:repoid,idpackage,repoid,...",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:search_entropy_packages':    {
                 'auth': True,
@@ -22234,7 +22137,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "search Entropy packages using a defined search type, search string inside the specified repository",
                 'syntax': "<SESSION_ID> srvrepo:search_entropy_packages <repoid> <search_type> <search string...>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:move_entropy_packages_to_repository':    {
                 'auth': True,
@@ -22244,7 +22147,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "move or copy Entropy packages from a repository to another",
                 'syntax': "<SESSION_ID> srvrepo:move_entropy_packages_to_repository <from_repo> <to_repo> <do_copy (True: copy, False: move)> <idpackages...>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:scan_entropy_packages_database_changes':    {
                 'auth': True,
@@ -22254,7 +22157,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "scan Spm package changes to retrieve a list of action that should be run on the repositories",
                 'syntax': "<SESSION_ID> srvrepo:scan_entropy_packages_database_changes",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_entropy_database_updates':    {
                 'auth': True,
@@ -22264,7 +22167,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run Entropy database updates",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_database_updates <to_add: atom:counter:repoid,atom:counter:repoid,...> <to_remove: idpackage:repoid,idpackage:repoid,...> <to_inject: idpackage:repoid,idpackage:repoid,...>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_entropy_dependency_test':    {
                 'auth': True,
@@ -22274,7 +22177,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run Entropy dependency test",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_dependency_test",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_entropy_library_test':    {
                 'auth': True,
@@ -22284,7 +22187,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run Entropy dependency test",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_library_test",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_entropy_treeupdates':    {
                 'auth': True,
@@ -22294,7 +22197,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run Entropy database treeupdates",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_treeupdates <repoid>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:scan_entropy_mirror_updates':    {
                 'auth': True,
@@ -22304,7 +22207,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "scan mirror updates for the specified repository identifiers",
                 'syntax': "<SESSION_ID> srvrepo:scan_entropy_mirror_updates <repoid 1> <repoid 2> <...>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_entropy_mirror_updates':    {
                 'auth': True,
@@ -22314,7 +22217,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run mirror updates for the provided repositories",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_mirror_updates <xml data, properly formatted>",
-                'from': str(self)
+                'from': unicode(self)
             },
             'srvrepo:run_entropy_checksum_test':    {
                 'auth': True,
@@ -22324,7 +22227,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run Entropy packages checksum verification tool",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_checksum_test <repoid> <mode>",
-                'from': str(self)
+                'from': unicode(self)
             },
         }
 
@@ -22595,7 +22498,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             self.HostInterface.Entropy.switch_default_repository(repoid, save = True, handle_uninitialized = False)
         except Exception, e:
             status = False
-            msg = str(e)
+            msg = unicode(e)
         return status, msg
 
     def docmd_get_available_entropy_packages(self, myargs):
@@ -22658,7 +22561,7 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 self.HostInterface.Entropy.remove_packages(repo_data[repoid],repo = repoid)
         except Exception, e:
             status = False
-            msg = str(e)
+            msg = unicode(e)
 
         return status, msg
 
@@ -22863,9 +22766,9 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
 
             mysearchlist = search_string.split()
             for mystring in mysearchlist:
-                match = dbconn.atomMatch(mystring)
-                if match[0] == -1: continue
-                idpackages = dbconn.retrieveDepends(match[0])
+                m_idpackage, m_result = dbconn.atomMatch(mystring)
+                if m_idpackage == -1: continue
+                idpackages = dbconn.retrieveDepends(m_idpackage)
                 for idpackage in idpackages:
                     search_results['ordered_idpackages'].add(idpackage)
                     search_results['data'][idpackage] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
@@ -22950,7 +22853,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "get current queue",
                     'syntax': "<SESSION_ID> systemsrv:get_queue",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:get_queue_item_by_id':    {
                     'auth': True,
@@ -22960,7 +22863,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "get current queue item through its queue id",
                     'syntax': "<SESSION_ID> systemsrv:get_queue_item_by_id <queue_id>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:get_queue_id_stdout':    {
                     'auth': True,
@@ -22970,7 +22873,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "get current queue item stdout/stderr output",
                     'syntax': "<SESSION_ID> systemsrv:get_queue_id_stdout <queue_id> <how many bytes (from tail)>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:get_queue_id_result':    {
                     'auth': True,
@@ -22980,7 +22883,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "get current queue item result output",
                     'syntax': "<SESSION_ID> systemsrv:get_queue_id_result <queue_id>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:remove_queue_ids':    {
                     'auth': True,
@@ -22990,7 +22893,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "remove queue items using their queue ids",
                     'syntax': "<SESSION_ID> systemsrv:remove_queue_ids <queue_id 1> <queue_id 2> <...>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:pause_queue':    {
                     'auth': True,
@@ -23000,7 +22903,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "toggle queue pause (understood?)",
                     'syntax': "<SESSION_ID> systemsrv:pause_queue <True/False>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:kill_processing_queue_id':    {
                     'auth': True,
@@ -23010,7 +22913,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "kill a running process using its queue id",
                     'syntax': "<SESSION_ID> systemsrv:kill_processing_queue_id <queue_id>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:swap_items_in_queue':    {
                     'auth': True,
@@ -23020,7 +22923,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "swap items in queue to change their order",
                     'syntax': "<SESSION_ID> systemsrv:swap_items_in_queue <queue_id1> <queue_id1>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:get_pinboard_data':    {
                     'auth': True,
@@ -23030,7 +22933,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "get pinboard content",
                     'syntax': "<SESSION_ID> systemsrv:get_pinboard_data",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:add_to_pinboard':    {
                     'auth': True,
@@ -23040,7 +22943,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "add item to pinboard",
                     'syntax': "<SESSION_ID> systemsrv:add_to_pinboard <xml string containing pinboard note and extended text>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:remove_from_pinboard':    {
                     'auth': True,
@@ -23050,7 +22953,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "remove item from pinboard",
                     'syntax': "<SESSION_ID> systemsrv:remove_from_pinboard <pinboard identifier 1> <pinboard identifier 2> <...>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:set_pinboard_items_done':    {
                     'auth': True,
@@ -23060,7 +22963,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "set pinboard items status using their pinboard identifiers",
                     'syntax': "<SESSION_ID> systemsrv:set_pinboard_items_done <pinboard identifier 1> <pinboard identifier 2> <...> <status (True/False)>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
                 'systemsrv:write_to_running_command_pipe':    {
                     'auth': True,
@@ -23070,7 +22973,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     'as_user': False,
                     'desc': "write text to stdin of a running command",
                     'syntax': "<SESSION_ID> systemsrv:write_to_running_command_pipe <queue_id> <write stdout (True/False)> <txt ...>",
-                    'from': str(self),
+                    'from': unicode(self),
                 },
             }
 
@@ -23762,7 +23665,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                     self.queue_lock_release()
                     self.entropyTools.printTraceback()
                     done = False
-                    result = (False, str(e),)
+                    result = (False, unicode(e),)
 
                 wait_and_takeover()
                 if command_data.has_key('extended_result') and done:
@@ -25663,7 +25566,8 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
+            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+            ftp.setCWD(my_path, dodir = True)
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabaselockfile']):
                 self.Entropy.updateProgress(
@@ -25738,7 +25642,8 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
+            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+            ftp.setCWD(my_path, dodir = True)
 
             if lock and ftp.isFileAvailable(etpConst['etpdatabasedownloadlockfile']):
                 self.Entropy.updateProgress(
@@ -25781,14 +25686,15 @@ class ServerMirrorsInterface:
         if repo == None:
             repo = self.Entropy.default_repository
 
+        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
-            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
+            ftp_connection.setCWD(my_path, dodir = True)
         else:
             mycwd = ftp_connection.getCWD()
-            if mycwd != self.Entropy.get_remote_database_relative_path(repo):
+            if mycwd != my_path:
                 ftp_connection.setBasedir()
-                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
+                ftp_connection.setCWD(my_path, dodir = True)
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         lock_string = ''
@@ -25837,14 +25743,15 @@ class ServerMirrorsInterface:
         if repo == None:
             repo = self.Entropy.default_repository
 
+        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
         if not ftp_connection:
             ftp_connection = self.FtpInterface(uri, self.Entropy)
-            ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+            ftp_connection.setCWD(my_path)
         else:
             mycwd = ftp_connection.getCWD()
-            if mycwd != self.Entropy.get_remote_database_relative_path(repo):
+            if mycwd != my_path:
                 ftp_connection.setBasedir()
-                ftp_connection.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+                ftp_connection.setCWD(my_path)
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
 
@@ -25926,7 +25833,7 @@ class ServerMirrorsInterface:
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
-    def download_package(self, uri, pkgfile, branch, repo = None):
+    def download_package(self, uri, pkg_relative_path, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -25937,13 +25844,17 @@ class ServerMirrorsInterface:
         while tries < 5:
             tries += 1
 
+            pkg_to_join_path = '/'.join(pkg_relative_path.split('/')[2:])
+            pkg_to_join_dirpath = os.path.dirname(pkg_to_join_path)
+            pkgfile = os.path.basename(pkg_relative_path)
+
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
                     brown(repo),
                     darkgreen(crippled_uri),
                     brown(tries),
                     blue(_("connecting to download package")), # connecting to download package xyz
-                    darkgreen(pkgfile),
+                    darkgreen(pkg_to_join_path),
                 ),
                 importance = 1,
                 type = "info",
@@ -25952,8 +25863,8 @@ class ServerMirrorsInterface:
             )
 
             ftp = self.FtpInterface(uri, self.Entropy)
-            dirpath = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
-            ftp.setCWD(dirpath)
+            dirpath = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),pkg_to_join_dirpath)
+            ftp.setCWD(dirpath, dodir = True)
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|#%s] %s: %s" % (
@@ -25961,14 +25872,16 @@ class ServerMirrorsInterface:
                     darkgreen(crippled_uri),
                     brown(tries),
                     blue(_("downloading package")),
-                    darkgreen(pkgfile),
+                    darkgreen(pkg_to_join_path),
                 ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
             )
 
-            download_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
+            download_path = os.path.join(self.Entropy.get_local_packages_directory(repo),pkg_to_join_dirpath)
+            if (not os.path.isdir(download_path)) and (not os.access(download_path,os.R_OK)):
+                os.makedirs(download_path)
             rc = ftp.downloadFile(pkgfile,download_path)
             if not rc:
                 self.Entropy.updateProgress(
@@ -25977,7 +25890,7 @@ class ServerMirrorsInterface:
                         darkgreen(crippled_uri),
                         brown(tries),
                         blue(_("package")),
-                        darkgreen(pkgfile),
+                        darkgreen(pkg_to_join_path),
                         blue(_("does not exist")),
                     ),
                     importance = 1,
@@ -25988,7 +25901,7 @@ class ServerMirrorsInterface:
                 return rc
 
             dbconn = self.Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-            idpackage = dbconn.getIDPackageFromDownload(pkgfile,branch)
+            idpackage = dbconn.getIDPackageFromDownload(pkg_relative_path)
             if idpackage == -1:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (
@@ -26087,7 +26000,8 @@ class ServerMirrorsInterface:
 
             ftp = self.FtpInterface(uri, self.Entropy)
             try:
-                ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+                ftp.setCWD(my_path)
             except ftp.ftplib.error_perm:
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.Entropy.updateProgress(
@@ -26158,7 +26072,8 @@ class ServerMirrorsInterface:
             data = [uri,False,False]
             ftp = FtpInterface(uri, self.Entropy)
             try:
-                ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo))
+                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+                ftp.setCWD(my_path)
             except ftp.ftplib.error_perm:
                 ftp.closeConnection()
                 continue
@@ -26251,7 +26166,7 @@ class ServerMirrorsInterface:
             pass
         f_out.close()
 
-    def get_files_to_sync(self, cmethod, branch, download = False, repo = None):
+    def get_files_to_sync(self, cmethod, download = False, repo = None):
 
         critical = []
         data = {}
@@ -26319,7 +26234,7 @@ class ServerMirrorsInterface:
         ]
         for myfile,myname in spm_files:
             if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
-                data[myname] = (branch,myfile,)
+                data[myname] = myfile
 
         make_profile = etpConst['spm']['global_make_profile']
         if os.path.islink(make_profile):
@@ -26330,7 +26245,7 @@ class ServerMirrorsInterface:
             f.write(mylink)
             f.flush()
             f.close()
-            data['global_make_profile'] = (branch,mytmpfile,)
+            data['global_make_profile'] = mytmpfile
 
         return data, critical
 
@@ -26378,14 +26293,15 @@ class ServerMirrorsInterface:
                 self.use_handlers = False
             if not ftp_basedir:
                 # default to database directory
-                self.ftp_basedir = str(self.Entropy.get_remote_database_relative_path(self.repo))
+                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+                self.ftp_basedir = unicode(my_path)
             else:
-                self.ftp_basedir = str(ftp_basedir)
+                self.ftp_basedir = unicode(ftp_basedir)
             if not local_basedir:
                 # default to database directory
                 self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file(self.repo))
             else:
-                self.local_basedir = str(local_basedir)
+                self.local_basedir = unicode(local_basedir)
             self.critical_files = critical_files
             self.handlers_data = handlers_data.copy()
 
@@ -26522,12 +26438,13 @@ class ServerMirrorsInterface:
                     header = blue(" @@ ")
                 )
                 ftp = self.FtpInterface(uri, self.Entropy)
+                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo),etpConst['branch'])
                 self.Entropy.updateProgress(
                     "[%s|%s] %s %s..." % (
                         blue(crippled_uri),
                         brown(action),
                         blue(_("changing directory to")),
-                        darkgreen(self.Entropy.get_remote_database_relative_path(self.repo)),
+                        darkgreen(my_path),
                     ),
                     importance = 0,
                     type = "info",
@@ -26771,7 +26688,7 @@ class ServerMirrorsInterface:
                 try:
                     ftp_connection.mkdir(bdir)
                 except Exception, e:
-                    error = str(e)
+                    error = unicode(e)
                     if (error.find("550") == -1) and (error.find("File exist") == -1):
                         mytxt = "%s %s, %s: %s" % (
                             _("cannot create mirror directory"),
@@ -26789,7 +26706,8 @@ class ServerMirrorsInterface:
         gave_up = False
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
         ftp = self.FtpInterface(uri, self.Entropy)
-        ftp.setCWD(self.Entropy.get_remote_database_relative_path(repo), dodir = True)
+        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+        ftp.setCWD(my_path, dodir = True)
 
         lock_file = self.get_database_lockfile(repo)
         if not os.path.isfile(lock_file) and ftp.isFileAvailable(os.path.basename(lock_file)):
@@ -26885,7 +26803,7 @@ class ServerMirrorsInterface:
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
 
-    def upload_database(self, uris, branch, lock_check = False, pretend = False, repo = None):
+    def upload_database(self, uris, lock_check = False, pretend = False, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -26916,7 +26834,7 @@ class ServerMirrorsInterface:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
-            upload_data, critical = self.get_files_to_sync(cmethod, branch, repo = repo)
+            upload_data, critical = self.get_files_to_sync(cmethod, repo = repo)
 
             if lock_check:
                 given_up = self.mirror_lock_check(uri, repo = repo)
@@ -27029,7 +26947,7 @@ class ServerMirrorsInterface:
         return upload_errors, broken_uris, fine_uris
 
 
-    def download_database(self, uris, branch, lock_check = False, pretend = False, repo = None):
+    def download_database(self, uris, lock_check = False, pretend = False, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27058,7 +26976,7 @@ class ServerMirrorsInterface:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
-            download_data, critical = self.get_files_to_sync(cmethod, branch, download = True, repo = repo)
+            download_data, critical = self.get_files_to_sync(cmethod, download = True, repo = repo)
             mytmpdir = self.entropyTools.getRandomTempFile()
             os.makedirs(mytmpdir)
 
@@ -27073,8 +26991,7 @@ class ServerMirrorsInterface:
                 type = "info",
                 header = darkgreen(" * ")
             )
-            files_to_sync = download_data.keys()
-            files_to_sync.sort()
+            files_to_sync = sorted(download_data.keys())
             for myfile in files_to_sync:
                 self.Entropy.updateProgress(
                     "%s: %s" % (blue(_("download path")),brown(unicode(download_data[myfile])),),
@@ -27228,11 +27145,7 @@ class ServerMirrorsInterface:
 
         if download_latest:
             download_uri = download_latest[0]
-            download_errors, fine_uris, broken_uris = self.download_database(
-                [download_uri],
-                etpConst['branch'],
-                repo = repo
-            )
+            download_errors, fine_uris, broken_uris = self.download_database([download_uri], repo = repo)
             if download_errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
@@ -27266,11 +27179,7 @@ class ServerMirrorsInterface:
                 return 3,set(),set()
 
             uris = [x[0] for x in upload_queue]
-            errors, fine_uris, broken_uris = self.upload_database(
-                uris,
-                etpConst['branch'],
-                repo = repo
-            )
+            errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)
             if errors:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
@@ -27302,10 +27211,10 @@ class ServerMirrorsInterface:
         return 0, set(), set()
 
 
-    def calculate_local_upload_files(self, branch, repo = None):
+    def calculate_local_upload_files(self, repo = None):
         upload_files = 0
         upload_packages = set()
-        upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
+        upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'])
 
         for package in os.listdir(upload_dir):
             if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
@@ -27315,10 +27224,10 @@ class ServerMirrorsInterface:
 
         return upload_files, upload_packages
 
-    def calculate_local_package_files(self, branch, repo = None):
+    def calculate_local_package_files(self, repo = None):
         local_files = 0
         local_packages = set()
-        packages_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
+        packages_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
 
         if not os.path.isdir(packages_dir):
             os.makedirs(packages_dir)
@@ -27362,7 +27271,7 @@ class ServerMirrorsInterface:
             header = red(" @@ ")
         )
 
-    def _show_sync_queues(self, upload, download, removal, copy, metainfo, branch):
+    def _show_sync_queues(self, upload, download, removal, copy, metainfo):
 
         # show stats
         for itemdata in upload:
@@ -27370,7 +27279,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(branch),
+                    brown(etpConst['branch']),
                     blue(_("upload")),
                     darkgreen(package),
                     size,
@@ -27384,7 +27293,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(branch),
+                    brown(etpConst['branch']),
                     darkred(_("download")),
                     blue(package),
                     size,
@@ -27398,7 +27307,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(branch),
+                    brown(etpConst['branch']),
                     darkgreen(_("copy")),
                     brown(package),
                     size,
@@ -27412,7 +27321,7 @@ class ServerMirrorsInterface:
             size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
-                    brown(branch),
+                    brown(etpConst['branch']),
                     red(_("remove")),
                     red(package),
                     size,
@@ -27480,22 +27389,17 @@ class ServerMirrorsInterface:
         )
 
 
-    def calculate_remote_package_files(self, uri, branch, ftp_connection = None, repo = None):
+    def calculate_remote_package_files(self, uri, ftp_connection = None, repo = None):
 
         remote_files = 0
         close_conn = False
         remote_packages_data = {}
 
-        def do_cwd():
-            ftp_connection.setCWD(self.Entropy.get_remote_packages_relative_path(repo), dodir = True)
-            if not ftp_connection.isFileAvailable(branch):
-                ftp_connection.mkdir(branch)
-            ftp_connection.setCWD(branch)
-
+        my_path = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
         if ftp_connection == None:
             close_conn = True
             ftp_connection = self.FtpInterface(uri, self.Entropy)
-        do_cwd()
+        ftp_connection.setCWD(my_path, dodir = True)
 
         remote_packages = ftp_connection.listDir()
         remote_packages_info = ftp_connection.getRoughList()
@@ -27511,14 +27415,14 @@ class ServerMirrorsInterface:
 
         return remote_files, remote_packages, remote_packages_data
 
-    def calculate_packages_to_sync(self, uri, branch, repo = None):
+    def calculate_packages_to_sync(self, uri, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
 
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-        upload_files, upload_packages = self.calculate_local_upload_files(branch, repo)
-        local_files, local_packages = self.calculate_local_package_files(branch, repo)
+        upload_files, upload_packages = self.calculate_local_upload_files(repo)
+        local_files, local_packages = self.calculate_local_package_files(repo)
         self._show_local_sync_stats(upload_files, local_files)
 
         self.Entropy.updateProgress(
@@ -27529,7 +27433,6 @@ class ServerMirrorsInterface:
         )
         remote_files, remote_packages, remote_packages_data = self.calculate_remote_package_files(
             uri,
-            branch,
             repo = repo
         )
         self.Entropy.updateProgress(
@@ -27556,7 +27459,6 @@ class ServerMirrorsInterface:
                 local_packages,
                 remote_packages,
                 remote_packages_data,
-                branch,
                 repo
         )
         return uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data
@@ -27567,7 +27469,6 @@ class ServerMirrorsInterface:
             local_packages,
             remote_packages,
             remote_packages_data,
-            branch,
             repo = None
         ):
 
@@ -27578,7 +27479,7 @@ class ServerMirrorsInterface:
 
         for local_package in upload_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,local_package)
+                local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],local_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
@@ -27596,7 +27497,7 @@ class ServerMirrorsInterface:
         # we have local_packages and remotePackages
         for local_package in local_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,local_package)
+                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],local_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
@@ -27613,7 +27514,7 @@ class ServerMirrorsInterface:
         # Fill downloadQueue and removalQueue
         for remote_package in remote_packages:
             if remote_package in local_packages:
-                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remote_package)
+                local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],remote_package)
                 local_size = int(os.stat(local_filepath)[6])
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size == None:
@@ -27633,7 +27534,8 @@ class ServerMirrorsInterface:
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
         dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
-        db_files = dbconn.listBranchPackagesTbz2(branch)
+        db_files = dbconn.listBranchPackagesTbz2(etpConst['branch'], do_sort = False, full_path = True)
+        db_files = set([os.path.basename(x) for x in db_files if (self.Entropy.get_branch_from_download_relative_uri(x) == etpConst['branch'])])
 
         exclude = set()
         for myfile in downloadQueue:
@@ -27658,7 +27560,7 @@ class ServerMirrorsInterface:
         return uploadQueue, downloadQueue, removalQueue, fineQueue
 
 
-    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, branch, repo):
+    def expand_queues(self, uploadQueue, downloadQueue, removalQueue, remote_packages_data, repo):
 
         metainfo = {
             'removal': 0,
@@ -27673,7 +27575,7 @@ class ServerMirrorsInterface:
         for item in removalQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
+            local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],item)
             size = int(os.stat(local_filepath)[6])
             metainfo['removal'] += size
             removal.append((local_filepath,size))
@@ -27681,7 +27583,7 @@ class ServerMirrorsInterface:
         for item in downloadQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
+            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],item)
             if not os.path.isfile(local_filepath):
                 size = remote_packages_data.get(item)
                 if size == None:
@@ -27696,8 +27598,8 @@ class ServerMirrorsInterface:
         for item in uploadQueue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
-            local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
+            local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],item)
+            local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],item)
             if os.path.isfile(local_filepath):
                 size = int(os.stat(local_filepath)[6])
                 upload.append((local_filepath,size))
@@ -27710,7 +27612,7 @@ class ServerMirrorsInterface:
         return upload, download, removal, copy, metainfo
 
 
-    def _sync_run_removal_queue(self, removal_queue, branch, repo = None):
+    def _sync_run_removal_queue(self, removal_queue, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27718,13 +27620,13 @@ class ServerMirrorsInterface:
         for itemdata in removal_queue:
 
             remove_filename = itemdata[0]
-            remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remove_filename)
+            remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],remove_filename)
             remove_filepath_hash = remove_filepath+etpConst['packageshashfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
                         brown(repo),
                         red("sync"),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("removing package+hash")),
                         darkgreen(remove_filename),
                         blue(self.entropyTools.bytesIntoHuman(itemdata[1])),
@@ -27743,7 +27645,7 @@ class ServerMirrorsInterface:
             "[repo:%s|%s|%s] %s" % (
                     brown(repo),
                     red(_("sync")),
-                    brown(branch),
+                    brown(etpConst['branch']),
                     blue(_("removal complete")),
             ),
             importance = 0,
@@ -27752,7 +27654,7 @@ class ServerMirrorsInterface:
         )
 
 
-    def _sync_run_copy_queue(self, copy_queue, branch, repo = None):
+    def _sync_run_copy_queue(self, copy_queue, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27761,14 +27663,14 @@ class ServerMirrorsInterface:
 
             from_file = itemdata[0]
             from_file_hash = from_file+etpConst['packageshashfileext']
-            to_file = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,os.path.basename(from_file))
+            to_file = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],os.path.basename(from_file))
             to_file_hash = to_file+etpConst['packageshashfileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s" % (
                         brown(repo),
                         red("sync"),
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("copying file+hash to repository")),
                         darkgreen(from_file),
                 ),
@@ -27790,7 +27692,7 @@ class ServerMirrorsInterface:
                 os.remove(expiration_file)
 
 
-    def _sync_run_upload_queue(self, uri, upload_queue, branch, repo = None):
+    def _sync_run_upload_queue(self, uri, upload_queue, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27805,7 +27707,7 @@ class ServerMirrorsInterface:
             myqueue.append(hash_file)
             myqueue.append(x)
 
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
         uploader = self.FileTransceiver(    self.FtpInterface,
                                             self.Entropy,
                                             [uri],
@@ -27813,7 +27715,7 @@ class ServerMirrorsInterface:
                                             critical_files = myqueue,
                                             use_handlers = True,
                                             ftp_basedir = ftp_basedir,
-                                            handlers_data = {'branch': branch },
+                                            handlers_data = {'branch': etpConst['branch'] },
                                             repo = repo
                                         )
         errors, m_fine_uris, m_broken_uris = uploader.go()
@@ -27822,11 +27724,11 @@ class ServerMirrorsInterface:
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[branch:%s] %s: %s, %s: %s" % (
-                            brown(branch),
+                            brown(etpConst['branch']),
                             blue(_("upload errors")),
                             red(crippled_uri),
                             blue(_("reason")),
-                            darkgreen(str(reason)),
+                            darkgreen(unicode(reason)),
                 ),
                 importance = 1,
                 type = "error",
@@ -27836,7 +27738,7 @@ class ServerMirrorsInterface:
 
         self.Entropy.updateProgress(
             "[branch:%s] %s: %s" % (
-                        brown(branch),
+                        brown(etpConst['branch']),
                         blue(_("upload completed successfully")),
                         red(crippled_uri),
             ),
@@ -27847,7 +27749,7 @@ class ServerMirrorsInterface:
         return errors, m_fine_uris, m_broken_uris
 
 
-    def _sync_run_download_queue(self, uri, download_queue, branch, repo = None):
+    def _sync_run_download_queue(self, uri, download_queue, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -27860,8 +27762,8 @@ class ServerMirrorsInterface:
             myqueue.append(x)
             myqueue.append(hash_file)
 
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
-        local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
+        local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
         downloader = self.FileTransceiver(
             self.FtpInterface,
             self.Entropy,
@@ -27871,7 +27773,7 @@ class ServerMirrorsInterface:
             use_handlers = True,
             ftp_basedir = ftp_basedir,
             local_basedir = local_basedir,
-            handlers_data = {'branch': branch },
+            handlers_data = {'branch': etpConst['branch'] },
             download = True,
             repo = repo
         )
@@ -27883,7 +27785,7 @@ class ServerMirrorsInterface:
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
                     brown(repo),
                     red(_("sync")),
-                    brown(branch),
+                    brown(etpConst['branch']),
                     blue(_("download errors")),
                     darkgreen(crippled_uri),
                     blue(_("reason")),
@@ -27899,7 +27801,7 @@ class ServerMirrorsInterface:
             "[repo:%s|%s|%s] %s: %s" % (
                 brown(repo),
                 red(_("sync")),
-                brown(branch),
+                brown(etpConst['branch']),
                 blue(_("download completed successfully")),
                 darkgreen(crippled_uri),
             ),
@@ -27927,7 +27829,6 @@ class ServerMirrorsInterface:
             back = True
         )
 
-        pkgbranches = etpConst['branches']
         successfull_mirrors = set()
         broken_mirrors = set()
         check_data = ()
@@ -27940,204 +27841,193 @@ class ServerMirrorsInterface:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             mirror_errors = False
 
-            for mybranch in pkgbranches:
+            self.Entropy.updateProgress(
+                "[repo:%s|%s|branch:%s] %s: %s" % (
+                    repo,
+                    red(_("sync")),
+                    brown(etpConst['branch']),
+                    blue(_("packages sync")),
+                    bold(crippled_uri),
+                ),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
 
+            try:
+                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, repo)
+                del fineQueue
+            except self.socket.error, e:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
+                        repo,
+                        red(_("sync")),
+                        etpConst['branch'],
+                        darkred(_("socket error")),
+                        e,
+                        darkred(_("on")),
+                        crippled_uri,
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkgreen(" * ")
+                )
+                continue
+
+            if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|branch:%s] %s: %s" % (
                         repo,
                         red(_("sync")),
-                        brown(mybranch),
-                        blue(_("packages sync")),
-                        bold(crippled_uri),
+                        etpConst['branch'],
+                        darkgreen(_("nothing to do on")),
+                        crippled_uri,
                     ),
                     importance = 1,
                     type = "info",
-                    header = red(" @@ ")
+                    header = darkgreen(" * ")
                 )
+                successfull_mirrors.add(uri)
+                continue
 
-                try:
-                    uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(
-                        uri,
-                        mybranch,
+            self.Entropy.updateProgress(
+                "%s:" % (blue(_("Expanding queues")),),
+                importance = 1,
+                type = "info",
+                header = red(" ** ")
+            )
+
+            upload, download, removal, copy, metainfo = self.expand_queues(
+                        uploadQueue,
+                        downloadQueue,
+                        removalQueue,
+                        remote_packages_data,
                         repo
-                    )
-                    del fineQueue
-                except self.socket.error, e:
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
-                            repo,
-                            red(_("sync")),
-                            mybranch,
-                            darkred(_("socket error")),
-                            e,
-                            darkred(_("on")),
-                            crippled_uri,
-                        ),
-                        importance = 1,
-                        type = "error",
-                        header = darkgreen(" * ")
-                    )
-                    continue
+            )
+            del uploadQueue, downloadQueue, removalQueue, remote_packages_data
+            self._show_sync_queues(upload, download, removal, copy, metainfo)
 
-                if (not uploadQueue) and (not downloadQueue) and (not removalQueue):
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s|branch:%s] %s: %s" % (
-                            repo,
-                            red(_("sync")),
-                            mybranch,
-                            darkgreen(_("nothing to do on")),
-                            crippled_uri,
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = darkgreen(" * ")
-                    )
-                    if pkgbranches[-1] == mybranch:
-                        successfull_mirrors.add(uri)
-                    continue
+            if not len(upload)+len(download)+len(removal)+len(copy):
 
                 self.Entropy.updateProgress(
-                    "%s:" % (blue(_("Expanding queues")),),
+                    "[repo:%s|%s|branch:%s] %s %s" % (
+                        self.Entropy.default_repository,
+                        red(_("sync")),
+                        etpConst['branch'],
+                        blue(_("nothing to sync for")),
+                        crippled_uri,
+                    ),
                     importance = 1,
                     type = "info",
-                    header = red(" ** ")
+                    header = darkgreen(" @@ ")
                 )
 
-                upload, download, removal, copy, metainfo = self.expand_queues(
-                            uploadQueue,
-                            downloadQueue,
-                            removalQueue,
-                            remote_packages_data,
-                            mybranch,
-                            repo
+                successfull_mirrors.add(uri)
+                continue
+
+            if pretend:
+                successfull_mirrors.add(uri)
+                continue
+
+            if ask:
+                rc = self.Entropy.askQuestion(_("Would you like to run the steps above ?"))
+                if rc == "No":
+                    continue
+
+            try:
+
+                if removal:
+                    self._sync_run_removal_queue(removal, repo)
+                if copy:
+                    self._sync_run_copy_queue(copy, repo)
+                if upload or download:
+                    mirrors_tainted = True
+                if upload:
+                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, repo)
+                    if d_errors: mirror_errors = True
+                if download:
+                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, repo)
+                    if d_errors: mirror_errors = True
+                if not mirror_errors:
+                    successfull_mirrors.add(uri)
+                else:
+                    mirrors_errors = True
+
+            except KeyboardInterrupt:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|branch:%s] %s" % (
+                        repo,
+                        red(_("sync")),
+                        etpConst['branch'],
+                        darkgreen(_("keyboard interrupt !")),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
                 )
-                del uploadQueue, downloadQueue, removalQueue, remote_packages_data
-                self._show_sync_queues(upload, download, removal, copy, metainfo, mybranch)
+                return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
 
-                if not len(upload)+len(download)+len(removal)+len(copy):
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                mirrors_errors = True
+                broken_mirrors.add(uri)
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
+                        repo,
+                        red(_("sync")),
+                        etpConst['branch'],
+                        darkred(_("exception caught")),
+                        Exception,
+                        _("error"),
+                        e,
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
 
+                exc_txt = self.Entropy.entropyTools.printException(returndata = True)
+                for line in exc_txt:
                     self.Entropy.updateProgress(
-                        "[repo:%s|%s|branch:%s] %s %s" % (
-                            self.Entropy.default_repository,
-                            red(_("sync")),
-                            mybranch,
-                            blue(_("nothing to sync for")),
-                            crippled_uri,
-                        ),
+                        unicode(line),
                         importance = 1,
-                        type = "info",
-                        header = darkgreen(" @@ ")
+                        type = "error",
+                        header = darkred(":  ")
                     )
 
-                    if pkgbranches[-1] == mybranch:
-                        successfull_mirrors.add(uri)
-                    continue
-
-                if pretend:
-                    if pkgbranches[-1] == mybranch:
-                        successfull_mirrors.add(uri)
-                    continue
-
-                if ask:
-                    rc = self.Entropy.askQuestion(_("Would you like to run the steps above ?"))
-                    if rc == "No":
-                        break
-
-                try:
-
-                    if removal:
-                        self._sync_run_removal_queue(removal, mybranch, repo)
-                    if copy:
-                        self._sync_run_copy_queue(copy, mybranch, repo)
-                    if upload or download:
-                        mirrors_tainted = True
-                    if upload:
-                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, mybranch, repo)
-                        if d_errors: mirror_errors = True
-                    if download:
-                        d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, mybranch, repo)
-                        if d_errors: mirror_errors = True
-                    if (pkgbranches[-1] == mybranch) and not mirror_errors:
-                        successfull_mirrors.add(uri)
-                    if mirror_errors:
-                        mirrors_errors = True
-
-                except KeyboardInterrupt:
+                if len(successfull_mirrors) > 0:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|branch:%s] %s" % (
                             repo,
                             red(_("sync")),
-                            mybranch,
-                            darkgreen(_("keyboard interrupt !")),
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = darkgreen(" * ")
-                    )
-                    return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
-
-                except Exception, e:
-                    self.entropyTools.printTraceback()
-                    mirrors_errors = True
-                    broken_mirrors.add(uri)
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
-                            repo,
-                            red(_("sync")),
-                            mybranch,
-                            darkred(_("exception caught")),
-                            Exception,
-                            _("error"),
-                            e,
+                            etpConst['branch'],
+                            darkred(_("at least one mirror has been sync'd properly, hooray!")),
                         ),
                         importance = 1,
                         type = "error",
                         header = darkred(" !!! ")
                     )
-
-                    exc_txt = self.Entropy.entropyTools.printException(returndata = True)
-                    for line in exc_txt:
-                        self.Entropy.updateProgress(
-                            str(line),
-                            importance = 1,
-                            type = "error",
-                            header = darkred(":  ")
-                        )
-
-                    if len(successfull_mirrors) > 0:
-                        self.Entropy.updateProgress(
-                            "[repo:%s|%s|branch:%s] %s" % (
-                                repo,
-                                red(_("sync")),
-                                mybranch,
-                                darkred(_("at least one mirror has been sync'd properly, hooray!")),
-                            ),
-                            importance = 1,
-                            type = "error",
-                            header = darkred(" !!! ")
-                        )
-                    continue
+                continue
 
         # if at least one server has been synced successfully, move files
         if (len(successfull_mirrors) > 0) and not pretend:
-            for branch in pkgbranches:
-                self.remove_expiration_files(branch, repo)
+            self.remove_expiration_files(repo)
 
         if packages_check:
             check_data = self.Entropy.verify_local_packages([], ask = ask, repo = repo)
 
         return mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data
 
-    def remove_expiration_files(self, branch, repo = None):
+    def remove_expiration_files(self, repo = None):
 
         if repo == None:
             repo = self.Entropy.default_repository
 
-        branch_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
+        branch_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'])
         branchcontent = os.listdir(branch_dir)
         for xfile in branchcontent:
-            source = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,xfile)
-            destdir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
+            source = os.path.join(self.Entropy.get_local_upload_directory(repo),etpConst['branch'],xfile)
+            destdir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
             if not os.path.isdir(destdir):
                 os.makedirs(destdir)
             dest = os.path.join(destdir,xfile)
@@ -28148,8 +28038,8 @@ class ServerMirrorsInterface:
                 os.remove(dest_expiration)
 
 
-    def is_package_expired(self, package_file, branch, repo = None):
-        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
+    def is_package_expired(self, package_file, repo = None):
+        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package_file)
         pkg_path += etpConst['packagesexpirationfileext']
         if not os.path.isfile(pkg_path):
             return False
@@ -28161,8 +28051,8 @@ class ServerMirrorsInterface:
             return True
         return False
 
-    def create_expiration_file(self, package_file, branch, repo = None, gentle = False):
-        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,package_file)
+    def create_expiration_file(self, package_file, repo = None, gentle = False):
+        pkg_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package_file)
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
@@ -28171,16 +28061,16 @@ class ServerMirrorsInterface:
         f.close()
 
 
-    def collect_expiring_packages(self, branch, repo = None):
+    def collect_expiring_packages(self, repo = None):
         dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
-        database_bins = set(dbconn.listBranchPackagesTbz2(branch, do_sort = False))
-        bins_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
-        repo_bins = []
+        database_bins = dbconn.listBranchPackagesTbz2(etpConst['branch'], do_sort = False, full_path = True)
+        bins_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'])
+        repo_bins = set()
         if os.path.isdir(bins_dir):
             repo_bins = os.listdir(bins_dir)
-        repo_bins = set([x for x in repo_bins if x.endswith(etpConst['packagesext'])])
+            repo_bins = set([os.path.join('packages',etpSys['arch'],etpConst['branch'],x) for x in repo_bins if x.endswith(etpConst['packagesext'])])
         repo_bins -= database_bins
-        return repo_bins
+        return set([os.path.basename(x) for x in repo_bins])
 
 
 
@@ -28189,12 +28079,11 @@ class ServerMirrorsInterface:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        pkgbranches = etpConst['branches']
         self.Entropy.updateProgress(
             "[repo:%s|%s|branches:%s] %s" % (
                 brown(repo),
                 red(_("tidy")),
-                blue(str(','.join(pkgbranches))),
+                blue(etpConst['branch']),
                 blue(_("collecting expired packages")),
             ),
             importance = 1,
@@ -28205,152 +28094,149 @@ class ServerMirrorsInterface:
         branch_data = {}
         errors = False
 
-        for mybranch in pkgbranches:
+        branch_data['errors'] = False
 
-            branch_data[mybranch] = {}
-            branch_data[mybranch]['errors'] = False
+        self.Entropy.updateProgress(
+            "[branch:%s] %s" % (
+                brown(etpConst['branch']),
+                blue(_("collecting expired packages in the selected branches")),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
+        )
 
+        # collect removed packages
+        expiring_packages = self.collect_expiring_packages(repo)
+
+        removal = []
+        for package in expiring_packages:
+            expired = self.is_package_expired(package, repo)
+            if expired:
+                removal.append(package)
+            else:
+                self.create_expiration_file(package, repo, gentle = True)
+
+        # fill returning data
+        branch_data['removal'] = removal[:]
+
+        if not removal:
             self.Entropy.updateProgress(
                 "[branch:%s] %s" % (
-                    brown(mybranch),
-                    blue(_("collecting expired packages in the selected branches")),
+                        brown(etpConst['branch']),
+                        blue(_("nothing to remove on this branch")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            return errors, branch_data
+        else:
+            self.Entropy.updateProgress(
+                "[branch:%s] %s:" % (
+                    brown(etpConst['branch']),
+                    blue(_("these are the expired packages")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            for package in removal:
+                self.Entropy.updateProgress(
+                    "[branch:%s] %s: %s" % (
+                                brown(etpConst['branch']),
+                                blue(_("remove")),
+                                darkgreen(package),
+                        ),
+                    importance = 1,
+                    type = "info",
+                    header = brown("    # ")
+                )
+
+        if pretend:
+            return errors,branch_data
+
+        if ask:
+            rc = self.Entropy.askQuestion(_("Would you like to continue ?"))
+            if rc == "No":
+                return errors, branch_data
+
+        myqueue = []
+        for package in removal:
+            myqueue.append(package+etpConst['packageshashfileext'])
+            myqueue.append(package)
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
+        for uri in self.Entropy.get_remote_mirrors(repo):
+
+            self.Entropy.updateProgress(
+                "[branch:%s] %s..." % (
+                    brown(etpConst['branch']),
+                    blue(_("removing packages remotely")),
                 ),
                 importance = 1,
                 type = "info",
                 header = blue(" @@ ")
             )
 
-            # collect removed packages
-            expiring_packages = self.collect_expiring_packages(mybranch, repo)
-
-            removal = []
-            for package in expiring_packages:
-                expired = self.is_package_expired(package, mybranch, repo)
-                if expired:
-                    removal.append(package)
-                else:
-                    self.create_expiration_file(package, mybranch, repo, gentle = True)
-
-            # fill returning data
-            branch_data[mybranch]['removal'] = removal[:]
-
-            if not removal:
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            destroyer = self.FileTransceiver(
+                self.FtpInterface,
+                self.Entropy,
+                [uri],
+                myqueue,
+                critical_files = [],
+                ftp_basedir = ftp_basedir,
+                remove = True,
+                repo = repo
+            )
+            errors, m_fine_uris, m_broken_uris = destroyer.go()
+            if errors:
+                my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+                reason = my_broken_uris[0][1]
                 self.Entropy.updateProgress(
-                    "[branch:%s] %s" % (
-                            brown(mybranch),
-                            blue(_("nothing to remove on this branch")),
+                    "[branch:%s] %s: %s, %s: %s" % (
+                        brown(etpConst['branch']),
+                        blue(_("remove errors")),
+                        red(crippled_uri),
+                        blue(_("reason")),
+                        reason,
                     ),
                     importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
+                    type = "warning",
+                    header = brown(" !!! ")
                 )
-                continue
-            else:
-                self.Entropy.updateProgress(
-                    "[branch:%s] %s:" % (
-                        brown(mybranch),
-                        blue(_("these are the expired packages")),
+                branch_data['errors'] = True
+                errors = True
+
+            self.Entropy.updateProgress(
+                "[branch:%s] %s..." % (
+                        brown(etpConst['branch']),
+                        blue(_("removing packages locally")),
                     ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-                for package in removal:
-                    self.Entropy.updateProgress(
-                        "[branch:%s] %s: %s" % (
-                                    brown(mybranch),
-                                    blue(_("remove")),
-                                    darkgreen(package),
-                            ),
-                        importance = 1,
-                        type = "info",
-                        header = brown("    # ")
-                    )
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
 
-            if pretend:
-                continue
-
-            if ask:
-                rc = self.Entropy.askQuestion(_("Would you like to continue ?"))
-                if rc == "No":
-                    continue
-
-            myqueue = []
+            branch_data['removed'] = set()
             for package in removal:
-                myqueue.append(package+etpConst['packageshashfileext'])
-                myqueue.append(package)
-            ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),mybranch)
-            for uri in self.Entropy.get_remote_mirrors(repo):
-
-                self.Entropy.updateProgress(
-                    "[branch:%s] %s..." % (
-                        brown(mybranch),
-                        blue(_("removing packages remotely")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-
-                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-                destroyer = self.FileTransceiver(
-                    self.FtpInterface,
-                    self.Entropy,
-                    [uri],
-                    myqueue,
-                    critical_files = [],
-                    ftp_basedir = ftp_basedir,
-                    remove = True,
-                    repo = repo
-                )
-                errors, m_fine_uris, m_broken_uris = destroyer.go()
-                if errors:
-                    my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
-                    reason = my_broken_uris[0][1]
-                    self.Entropy.updateProgress(
-                        "[branch:%s] %s: %s, %s: %s" % (
-                            brown(mybranch),
-                            blue(_("remove errors")),
-                            red(crippled_uri),
-                            blue(_("reason")),
-                            reason,
-                        ),
-                        importance = 1,
-                        type = "warning",
-                        header = brown(" !!! ")
-                    )
-                    branch_data[mybranch]['errors'] = True
-                    errors = True
-
-                self.Entropy.updateProgress(
-                    "[branch:%s] %s..." % (
-                            brown(mybranch),
-                            blue(_("removing packages locally")),
-                        ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-
-                branch_data[mybranch]['removed'] = set()
-                for package in removal:
-                    package_path = os.path.join(self.Entropy.get_local_packages_directory(repo),mybranch,package)
-                    package_path_hash = package_path+etpConst['packageshashfileext']
-                    package_path_expired = package_path+etpConst['packagesexpirationfileext']
-                    for myfile in [package_path_hash,package_path,package_path_expired]:
-                        if os.path.isfile(myfile):
-                            self.Entropy.updateProgress(
-                                "[branch:%s] %s: %s" % (
-                                            brown(mybranch),
-                                            blue(_("removing")),
-                                            darkgreen(myfile),
-                                    ),
-                                importance = 1,
-                                type = "info",
-                                header = brown(" @@ ")
-                            )
-                            os.remove(myfile)
-                            branch_data[mybranch]['removed'].add(myfile)
+                package_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package)
+                package_path_hash = package_path+etpConst['packageshashfileext']
+                package_path_expired = package_path+etpConst['packagesexpirationfileext']
+                for myfile in [package_path_hash,package_path,package_path_expired]:
+                    if os.path.isfile(myfile):
+                        self.Entropy.updateProgress(
+                            "[branch:%s] %s: %s" % (
+                                        brown(etpConst['branch']),
+                                        blue(_("removing")),
+                                        darkgreen(myfile),
+                                ),
+                            importance = 1,
+                            type = "info",
+                            header = brown(" @@ ")
+                        )
+                        os.remove(myfile)
+                        branch_data['removed'].add(myfile)
 
 
         return errors, branch_data
@@ -28370,8 +28256,12 @@ class EntropyDatabaseInterface:
             indexing = True,
             OutputInterface = None,
             ServiceInterface = None,
-            skipChecks = False # dangerous!
+            skipChecks = False, # dangerous!
+            useBranch = None
         ):
+
+        self.db_branch = etpConst['branch']
+        if useBranch != None: self.db_branch = useBranch
 
         if OutputInterface == None:
             OutputInterface = TextInterface()
@@ -28566,7 +28456,7 @@ class EntropyDatabaseInterface:
             )
 
     # check for /usr/portage/profiles/updates changes
-    def serverUpdatePackagesData(self, ask = True):
+    def serverUpdatePackagesData(self):
 
         etpConst['server_treeupdatescalled'].add(self.server_repo)
 
@@ -28653,7 +28543,7 @@ class EntropyDatabaseInterface:
                 self.ServiceInterface.doServerDatabaseSyncLock(self.server_repo, self.noUpload)
                 # now run queue
                 try:
-                    self.runTreeUpdatesActions(update_actions, ask = ask)
+                    self.runTreeUpdatesActions(update_actions)
                 except:
                     # destroy digest
                     self.setRepositoryUpdatesDigest(self.server_repo, "-1")
@@ -28792,7 +28682,7 @@ class EntropyDatabaseInterface:
         return new_actions
 
     # this is the place to add extra actions support
-    def runTreeUpdatesActions(self, actions, ask = True):
+    def runTreeUpdatesActions(self, actions):
 
         # just run fixpackages if gentoo-compat is enabled
         if etpConst['gentoo-compat']:
@@ -28841,7 +28731,7 @@ class EntropyDatabaseInterface:
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
             try:
-                self.runTreeUpdatesQuickpkgAction(quickpkg_atoms, ask = ask)
+                self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
             except:
                 self.entropyTools.printTraceback()
                 mytxt = "%s: %s: %s, %s." % (
@@ -29023,38 +28913,7 @@ class EntropyDatabaseInterface:
             quickpkg_queue.add(myatom)
         return quickpkg_queue
 
-    def runTreeUpdatesQuickpkgAction(self, atoms, ask = True):
-
-        branch = etpConst['branch']
-        # ask branch question
-        mytxt = "%s '%s' ?" % (
-            _("Would you like to continue with the default branch"), # it is a question
-            branch,
-        )
-        if ask:
-            rc = self.askQuestion(mytxt)
-            if rc == "No":
-                # ask which
-                while 1:
-                    branch = readtext("%s: " % (_("Type your branch"),)) # use the keyboard!
-                    if branch not in self.listAllBranches():
-                        mytxt = "%s: %s: %s" % (
-                            bold(_("ATTENTION")),
-                            red(_("the specified branch does not exist")),
-                            blue(branch),
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning",
-                            header = darkred(" * ")
-                        )
-                        continue
-                    # ask to confirm
-                    mytxt = "%s '%s' ?" % (_("Do you confirm"),branch,)
-                    rc = self.askQuestion(mytxt)
-                    if rc == "Yes":
-                        break
+    def runTreeUpdatesQuickpkgAction(self, atoms):
 
         self.commitChanges()
 
@@ -29097,7 +28956,7 @@ class EntropyDatabaseInterface:
                 )
                 continue
             package_paths.add(mypath)
-        packages_data = [(x,branch,False) for x in package_paths]
+        packages_data = [(x,False) for x in package_paths]
         idpackages = self.ServiceInterface.add_packages_to_repository(packages_data, repo = self.server_repo)
 
         if not idpackages:
@@ -29232,7 +29091,7 @@ class EntropyDatabaseInterface:
                             etpData['name'],
                             etpData['category'],
                             etpData['slot'],
-                            etpConst['branch'],
+                            self.db_branch,
                             etpData['injected']
             )
             for pkg in removelist:
@@ -30083,7 +29942,7 @@ class EntropyDatabaseInterface:
     def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
         if not branch:
-            branch = etpConst['branch']
+            branch = self.db_branch
         self.WriteLock.acquire()
         try:
             self.cursor.execute('DELETE FROM counters WHERE (counter = (?) OR idpackage = (?)) AND branch = (?)', (counter,idpackage,branch,))
@@ -30112,7 +29971,7 @@ class EntropyDatabaseInterface:
             branchstring = ', branch = (?)'
             insertdata.insert(1,branch)
         else:
-            branch = etpConst['branch']
+            branch = self.db_branch
 
         self.WriteLock.acquire()
         try:
@@ -30234,7 +30093,8 @@ class EntropyDatabaseInterface:
             return {}
         return self.ServiceInterface.SpmService.get_category_description_data(category)
 
-    def getIDPackage(self, atom, branch = etpConst['branch']):
+    def getIDPackage(self, atom, branch = None):
+        if branch == None: branch = self.db_branch
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
         idpackage = -1
         idpackage = self.cursor.fetchone()
@@ -30244,8 +30104,12 @@ class EntropyDatabaseInterface:
             idpackage = -1
         return idpackage
 
-    def getIDPackageFromDownload(self, file, branch = etpConst['branch']):
-        self.cursor.execute('SELECT baseinfo.idpackage FROM content,baseinfo WHERE content.file = (?) and baseinfo.branch = (?)', (file,branch,))
+    def getIDPackageFromDownload(self, download_relative_path, branch = None, endswith = False):
+        if branch == None: branch = self.db_branch
+        if endswith:
+            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download LIKE (?) and baseinfo.branch = (?)', ("%"+download_relative_path,branch,))
+        else:
+            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download = (?) and baseinfo.branch = (?)', (download_relative_path,branch,))
         idpackage = self.cursor.fetchone()
         if idpackage:
             idpackage = idpackage[0]
@@ -30506,7 +30370,8 @@ class EntropyDatabaseInterface:
             self.cursor.execute('SELECT * FROM treeupdatesactions')
         return self.cursor.fetchall()
 
-    def retrieveTreeUpdatesActions(self, repository, forbranch = etpConst['branch']):
+    def retrieveTreeUpdatesActions(self, repository, forbranch = None):
+        if forbranch == None: forbranch = self.db_branch
         if not self.doesTableExist("treeupdatesactions"):
             return set()
         self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) and branch = (?) order by date', (repository,forbranch))
@@ -30555,7 +30420,8 @@ class EntropyDatabaseInterface:
         finally:
             self.WriteLock.release()
 
-    def addRepositoryUpdatesActions(self, repository, actions, forbranch = etpConst['branch']):
+    def addRepositoryUpdatesActions(self, repository, actions, forbranch = None):
+        if forbranch == None: forbranch = self.db_branch
         self.checkReadOnly()
         mytime = str(self.entropyTools.getCurrentUnixTime())
         self.WriteLock.acquire()
@@ -31076,8 +30942,7 @@ class EntropyDatabaseInterface:
 
     def isCounterAvailable(self, counter, branch = None, branch_operator = "="):
         result = False
-        if not branch:
-            branch = etpConst['branch']
+        if not branch: branch = self.db_branch
         self.cursor.execute('SELECT counter FROM counters WHERE counter = (?) and branch '+branch_operator+' (?)', (counter,branch,))
         result = self.cursor.fetchone()
         if result:
@@ -31092,8 +30957,7 @@ class EntropyDatabaseInterface:
         return False
 
     def getIDPackageFromCounter(self, counter, branch = None, branch_operator = "="):
-        if not branch:
-            branch = etpConst['branch']
+        if not branch: branch = self.db_branch
         self.cursor.execute('SELECT idpackage FROM counters WHERE counter = (?) and branch '+branch_operator+' (?)', (counter,branch,))
         result = self.cursor.fetchone()
         if not result:
@@ -31507,6 +31371,8 @@ class EntropyDatabaseInterface:
             return self.cursor.fetchall()
 
     def listAllBranchesFromCounters(self):
+        if not self.doesTableExist('counters'):
+            return set()
         self.cursor.execute('SELECT distinct branch FROM counters')
         return self.fetchall2set(self.cursor.fetchall())
 
@@ -31530,16 +31396,14 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT dependenciesreference.iddependency,dependenciesreference.dependency FROM dependenciesreference,dependencies WHERE dependencies.idpackage = (?) AND dependenciesreference.iddependency = dependencies.iddependency', (idpackage,))
         return set(self.cursor.fetchall())
 
-    def listBranchPackagesTbz2(self, branch, do_sort = True):
+    def listBranchPackagesTbz2(self, branch, do_sort = True, full_path = False):
         self.cursor.execute('SELECT extrainfo.download FROM baseinfo,extrainfo WHERE baseinfo.branch = (?) AND baseinfo.idpackage = extrainfo.idpackage', (branch,))
-        result = self.fetchall2set(self.cursor.fetchall())
-        sorted_result = []
-        for package in result:
-            if package:
-                sorted_result.append(os.path.basename(package))
+        results = self.fetchall2set(self.cursor.fetchall())
+        if not full_path:
+            results = set([os.path.basename(x) for x in results])
         if do_sort:
-            sorted_result.sort()
-        return sorted_result
+            results = sorted(list(results))
+        return results
 
     def listBranchPackages(self, branch):
         self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))
@@ -31586,28 +31450,21 @@ class EntropyDatabaseInterface:
     def switchBranch(self, idpackage, tobranch):
         self.checkReadOnly()
 
-        mycat = self.retrieveCategory(idpackage)
-        myname = self.retrieveName(idpackage)
-        myslot = self.retrieveSlot(idpackage)
-        mybranch = self.retrieveBranch(idpackage)
-        mydownload = self.retrieveDownloadURL(idpackage)
-        import re
-        out = re.subn('/'+mybranch+'/','/'+tobranch+'/',mydownload)
-        newdownload = out[0]
+        key, slot = self.retrieveKeySlot(idpackage)
 
-        # remove package with the same key+slot and tobranch if exists
-        match = self.atomMatch(mycat+"/"+myname, matchSlot = myslot, matchBranches = (tobranch,))
-        if match[0] != -1:
-            self.removePackage(match[0])
-
-        # now switch selected idpackage to the new branch
-        self.WriteLock.acquire()
-        try:
-            self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
-            self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (newdownload,idpackage,))
-            self.commitChanges()
-        finally:
-            self.WriteLock.release()
+        # if there are entries already, remove idpackage directly
+        my_idpackage, result = self.atomMatch(key, matchSlot = slot, matchBranches = (tobranch,))
+        if my_idpackage != -1:
+            self.removePackage(idpackage) # remove the one with the old branch
+        else:
+            # otherwise, update the old one (set the new branch)
+            self.WriteLock.acquire()
+            try:
+                self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
+                self.commitChanges()
+                self.clearCache()
+            finally:
+                self.WriteLock.release()
 
     def databaseStructureUpdates(self):
 
@@ -32638,7 +32495,7 @@ class EntropyDatabaseInterface:
         self.WriteLock.acquire()
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
-            self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (str(etpConst['branch']),))
+            self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (self.db_branch,))
         except:
             pass
         finally:
@@ -33194,16 +33051,20 @@ class EntropyDatabaseInterface:
             if self.dbname == etpConst['clientdbid']:
                 # collect all available branches
                 myBranchIndex = tuple(self.listAllBranches())
+            else:
+                myBranchIndex = (self.db_branch,)
+            '''
             elif self.dbname.startswith(etpConst['dbnamerepoprefix']) or self.dbname.startswith(etpConst['serverdbid']):
                 # repositories should match to any branch <= than the current if none specified
-                allbranches = set([x for x in self.listAllBranches() if x <= etpConst['branch']])
+                allbranches = set([x for x in self.listAllBranches() if x <= self.db_branch])
                 allbranches = list(allbranches)
                 allbranches.reverse()
-                if etpConst['branch'] not in allbranches:
-                    allbranches.insert(0,etpConst['branch'])
+                if self.db_branch not in allbranches:
+                    allbranches.insert(0,self.db_branch)
                 myBranchIndex = tuple(allbranches)
             else:
-                myBranchIndex = (etpConst['branch'],)
+                myBranchIndex = (self.db_branch,)
+            '''
 
         # IDs found in the database that match our search
         foundIDs = set()

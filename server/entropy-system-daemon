@@ -23,6 +23,7 @@ if "--port" in sys.argv:
 from entropyConstants import *
 import entropyTools, exceptionTools
 from entropy import SystemManagerServerInterface, SystemManagerExecutorServerRepositoryInterface, SystemManagerRepositoryCommands, ServerInterface
+etpConst['community']['mode'] = True
 
 def run_srv(s):
     try:

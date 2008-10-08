@@ -28,22 +28,18 @@ Entropy = ServerInterface(community_repo = etpConst['community']['mode'])
 
 def inject(options):
 
-    branch = etpConst['branch']
     mytbz2s = []
     for opt in options:
-        if opt.startswith("--branch=") and len(opt.split("=")) == 2:
-            branch = opt.split("=")[1]
-        else:
-            if not os.path.isfile(opt) or not opt.endswith(etpConst['packagesext']):
-                print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
-                return 1
-            mytbz2s.append(opt)
+        if not os.path.isfile(opt) or not opt.endswith(etpConst['packagesext']):
+            print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
+            return 1
+        mytbz2s.append(opt)
 
     if not mytbz2s:
         print_error(red(_("no package specified.")))
         return 2
 
-    mytbz2s = [(x,branch,True) for x in mytbz2s]
+    mytbz2s = [(x,True,) for x in mytbz2s]
     idpackages = Entropy.add_packages_to_repository(mytbz2s)
     if idpackages:
         # checking dependencies and print issues
@@ -259,20 +255,13 @@ def update(options):
                 entropyTools.printTraceback()
                 print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))
 
-    requested_branch = etpConst['branch']
-    for i in options:
-        if ( i.startswith("--branch=") and len(i.split("=")) == 2 ):
-            mybranch = i.split("=")[1]
-            if (mybranch):
-                requested_branch = mybranch
-
     tbz2files = os.listdir(Entropy.get_local_store_directory())
     if not tbz2files:
         print_info(brown(" * ")+red(_("Nothing to do, check later.")))
         # then exit gracefully
         return 0
 
-    tbz2files = [(os.path.join(Entropy.get_local_store_directory(),x),requested_branch,False) for x in tbz2files]
+    tbz2files = [(os.path.join(Entropy.get_local_store_directory(),x),False,) for x in tbz2files]
     idpackages = Entropy.add_packages_to_repository(tbz2files)
 
     if idpackages:
@@ -373,12 +362,8 @@ def database(options):
 
         print_info(darkgreen(" * ")+red("%s..." % (_("Matching packages to remove"),) ), back = True)
         myopts = []
-        branch = None
         for opt in options[1:]:
-            if (opt.startswith("--branch=")) and (len(opt.split("=")) == 2):
-                branch = opt.split("=")[1]
-            else:
-                myopts.append(opt)
+            myopts.append(opt)
 
         if not myopts:
             print_error(brown(" * ")+red(_("Not enough parameters")))
@@ -387,10 +372,7 @@ def database(options):
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
         pkglist = set()
         for atom in myopts:
-            if branch:
-                pkg = dbconn.atomMatch(atom, matchBranches = (branch,), multiMatch = True)
-            else:
-                pkg = dbconn.atomMatch(atom, multiMatch = True)
+            pkg = dbconn.atomMatch(atom, multiMatch = True)
             if pkg[1] == 0:
                 for idpackage in pkg[0]:
                     pkglist.add(idpackage)
@@ -420,13 +402,9 @@ def database(options):
 
         print_info(darkgreen(" * ")+red("%s..." % (_("Searching injected packages to remove"),) ), back = True)
 
-        branch = etpConst['branch']
         atoms = []
         for opt in options[1:]:
-            if (opt.startswith("--branch=")) and (len(opt.split("=")) == 2):
-                branch = opt.split("=")[1]
-            else:
-                atoms.append(opt)
+            atoms.append(opt)
 
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
@@ -438,7 +416,7 @@ def database(options):
                     idpackages.add(idpackage)
         else:
             for atom in atoms:
-                match = dbconn.atomMatch(atom, matchBranches = (branch,), multiMatch = True)
+                match = dbconn.atomMatch(atom, multiMatch = True)
                 if match[1] == 0:
                     for x in match[0]:
                         if dbconn.isInjected(x):
@@ -452,8 +430,7 @@ def database(options):
 
         for idpackage in idpackages:
             pkgatom = dbconn.retrieveAtom(idpackage)
-            branch = dbconn.retrieveBranch(idpackage)
-            print_info(darkred("    # ")+blue("[")+red(branch)+blue("] ")+brown(pkgatom))
+            print_info(darkred("    # ")+brown(pkgatom))
 
         # ask to continue
         rc = Entropy.askQuestion(_("Would you like to continue ?"))
