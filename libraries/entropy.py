@@ -1256,13 +1256,8 @@ class EquoInterface(TextInterface):
         return packagesMatched,plain_brokenexecs,0
 
     def move_to_branch(self, branch, pretend = False):
-        availbranches = self.listAllAvailableBranches()
-        if branch not in availbranches:
-            return 1
-        if pretend:
-            return 0
+        if pretend: return 0
         if branch != etpConst['branch']:
-            etpConst['branch'] = branch
             # update configuration
             self.entropyTools.writeNewBranch(branch)
             # reset treeupdatesactions
@@ -1270,10 +1265,10 @@ class EquoInterface(TextInterface):
             # clean cache
             self.purge_cache(showProgress = False)
             # reopen Client Database, this will make treeupdates to be re-read
-            self.reopenClientDbconn()
             self.closeAllRepositoryDatabases()
-            self.validate_repositories()
+            etpConst['branch'] = branch
             initConfig_entropyConstants(etpSys['rootdir'])
+            self.reopenClientDbconn()
         return 0
 
     # tell if a new equo release is available, returns True or False
@@ -17157,6 +17152,10 @@ class ServerInterface(TextInterface):
             switched.add(idpackage)
 
         dbconn.commitChanges()
+
+        # now migrate counters
+        dbconn.moveCountersToBranch(to_branch)
+
         self.close_server_database(dbconn)
         mytxt = blue("%s.") % (_("migration loop completed"),)
         self.updateProgress(
@@ -29114,7 +29113,7 @@ class EntropyDatabaseInterface:
                 category = category,
                 sensitive = True
             )
-        else: # server supports multiple branches inside a db
+        else: # server doesn't support multiple branches inside a db but this is ininfluent
             searchsimilar = self.searchPackagesByNameAndCategory(
                 name = name,
                 category = category,
@@ -32744,6 +32743,15 @@ class EntropyDatabaseInterface:
                     migrated = True
                     continue
                 break
+            self.commitChanges()
+            self.clearCache()
+        finally:
+            self.WriteLock.release()
+
+    def moveCountersToBranch(self, to_branch):
+        self.WriteLock.acquire()
+        try:
+            self.cursor.execute('UPDATE counters SET branch = (?)', to_branch)
             self.commitChanges()
             self.clearCache()
         finally:
