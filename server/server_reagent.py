@@ -331,10 +331,7 @@ def database(options):
         pkglist = dbconn.listAllIdpackages(branch = from_branch)
         myatoms = options[3:]
 
-        print_info(darkgreen(" * ")+red("%s %s:" % (_("These are the packages that would be marked"),to_branch,)))
-        for idpackage in pkglist:
-            atom = dbconn.retrieveAtom(idpackage)
-            print_info(red("   # ")+bold(atom))
+        print_info(darkgreen(" * ")+red("%s %s: %s %s" % (_("These are the packages that would be marked"),to_branch,len(pkglist),_("packages"),)))
 
         rc = Entropy.askQuestion(_("Would you like to continue ?"))
         if rc == "No":
