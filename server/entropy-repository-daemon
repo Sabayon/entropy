@@ -40,8 +40,8 @@ ugc_args = [ugc_connection_data,ugc_store_path,ugc_store_url]
 
 # configure my repositories
 repositories = {
-    ('sabayonlinux.org','amd64','standard',): {
-        'dbpath': '/home/fabio/new.sabayonlinux.org/standard/amd64',
+    ('sabayonlinux.org','amd64','standard','3.5',): {
+        'dbpath': '/home/fabio/new.sabayonlinux.org/standard/amd64/3.5',
         'cmethod': 'bz2',
     },
 }

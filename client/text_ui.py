@@ -136,12 +136,32 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                     red(" %s." % (_("is not available"),) )
                 )
                 return 1,-2
-            branch = upgradeTo
-        else:
-            branch = etpConst['branch']
+            elif not etpUi['pretend']:
+                old_branch = etpConst['branch'][:]
+                status = True
+                try:
+                    repoConn = Equo.Repositories([], False)
+                except exceptionTools.PermissionDenied:
+                    mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
+                    print_error("\t"+mytxt)
+                    status = False
+                except exceptionTools.MissingParameter:
+                    print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
+                    status = False
+                except exceptionTools.OnlineMirrorError:
+                    print_error(darkred(" @@ ")+red(_("You are not connected to the Internet. You should.")))
+                    status = False
+                except Exception, e:
+                    print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
+                    status = False
+                rc = repoConn.sync()
+                if rc: status = False
+                if not status:
+                    Equo.move_to_branch(old_branch, pretend = etpUi['pretend'])
+                    return 1,-2
 
         print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
-        update, remove, fine = Equo.calculate_world_updates(empty_deps = replay, branch = branch)
+        update, remove, fine = Equo.calculate_world_updates(empty_deps = replay)
 
         if (etpUi['verbose'] or etpUi['pretend']):
             print_info(red(" @@ ")+darkgreen("%s:\t\t" % (_("Packages matching update"),) )+bold(str(len(update))))

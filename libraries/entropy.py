@@ -6500,15 +6500,14 @@ class RepoInterface:
                 mydbconn = None
         return mydbconn
 
-    def get_eapi3_database_differences(self, repo, idpackages, compression, session):
+    def get_eapi3_database_differences(self, repo, idpackages, session):
 
         data = self.eapi3_socket.CmdInterface.differential_packages_comparison(
+                session,
                 idpackages,
                 repo,
                 etpConst['currentarch'],
-                etpConst['product'],
-                session_id = session,
-                compression = compression
+                etpConst['product']
         )
         if isinstance(data,bool): # then it's probably == False
             return False,False,False
@@ -6520,14 +6519,13 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def get_eapi3_database_treeupdates(self, repo, compression, session):
+    def get_eapi3_database_treeupdates(self, repo, session):
         self.socket.setdefaulttimeout(self.big_socket_timeout)
         data = self.eapi3_socket.CmdInterface.get_repository_treeupdates(
+                session,
                 repo,
                 etpConst['currentarch'],
-                etpConst['product'],
-                session_id = session,
-                compression = compression
+                etpConst['product']
         )
         if not isinstance(data,dict):
             return None,None
@@ -6539,7 +6537,7 @@ class RepoInterface:
             else:
                 return data['digest'],data['actions']
 
-    def handle_eapi3_database_sync(self, repo, compression = True, threshold = 1500, chunk_size = 12):
+    def handle_eapi3_database_sync(self, repo, threshold = 1500, chunk_size = 12):
 
         session = self.eapi3_socket.open_session()
         mydbconn = None
@@ -6552,14 +6550,9 @@ class RepoInterface:
             return False
         myidpackages = mydbconn.listAllIdpackages()
 
-        # enable compression
-        if compression:
-            self.eapi3_socket.CmdInterface.set_gzip_compression(session, True)
-
         added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
             repo,
             myidpackages,
-            compression,
             session
         )
         if None in (added_ids,removed_ids,checksum):
@@ -6606,7 +6599,7 @@ class RepoInterface:
             return False
 
         # get treeupdates stuff
-        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(repo, compression, session)
+        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(repo, session)
         if dbdigest == None:
             mydbconn.closeDB()
             self.eapi3_socket.close_session(session)
@@ -6676,12 +6669,11 @@ class RepoInterface:
             while 1:
                 fetch_count += 1
                 pkgdata = self.eapi3_socket.CmdInterface.get_package_information(
+                    session,
                     segment,
                     repo,
                     etpConst['currentarch'],
-                    etpConst['product'],
-                    session_id = session,
-                    compression = compression
+                    etpConst['product']
                 )
                 if pkgdata == None:
                     mytxt = "%s: %s" % (
@@ -6739,10 +6731,6 @@ class RepoInterface:
                     )
                 break
         del added_segments
-
-        # disable compression
-        if compression:
-            self.eapi3_socket.CmdInterface.set_gzip_compression(session, False)
 
         # I don't need you anymore
         self.eapi3_socket.close_session(session)
@@ -19497,37 +19485,37 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
         def __init__(self, HostInterface):
 
-            SocketCommandsSkel.__init__(self, HostInterface, inst_name = "repository-server")
+            SocketCommandsSkel.__init__(self, HostInterface, inst_name = "repository_server")
 
             self.valid_commands = {
-                'dbdiff':    {
+                'repository_server:dbdiff':    {
                     'auth': False,
                     'built_in': False,
                     'cb': self.docmd_dbdiff,
                     'args': ["myargs"],
                     'as_user': False,
                     'desc': "returns idpackage differences against the latest available repository",
-                    'syntax': "<SESSION_ID> dbdiff <repository> <arch> <product> [idpackages]",
+                    'syntax': "<SESSION_ID> repository_server:dbdiff <repository> <arch> <product> <branch> [idpackages]",
                     'from': unicode(self), # from what class
                 },
-                'pkginfo':    {
+                'repository_server:pkginfo':    {
                     'auth': False,
                     'built_in': False,
                     'cb': self.docmd_pkginfo,
                     'args': ["myargs"],
                     'as_user': False,
                     'desc': "returns idpackage differences against the latest available repository",
-                    'syntax': "<SESSION_ID> pkginfo <content fmt True/False> <repository> <arch> <product> <idpackage>",
+                    'syntax': "<SESSION_ID> repository_server:pkginfo <content fmt True/False> <repository> <arch> <product> <branch> <idpackage>",
                     'from': unicode(self), # from what class
                 },
-                'treeupdates':    {
+                'repository_server:treeupdates':    {
                     'auth': False,
                     'built_in': False,
                     'cb': self.docmd_treeupdates,
                     'args': ["myargs"],
                     'as_user': False,
                     'desc': "returns repository treeupdates metadata",
-                    'syntax': "<SESSION_ID> treeupdates <repository> <arch> <product>",
+                    'syntax': "<SESSION_ID> repository_server:treeupdates <repository> <arch> <product> <branch>",
                     'from': unicode(self), # from what class
                 },
             }
@@ -19541,19 +19529,20 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
             self.trash_old_databases()
 
-            if len(myargs) < 4:
+            if len(myargs) < 5:
                 return None
             repository = myargs[0]
             arch = myargs[1]
             product = myargs[2]
-            foreign_idpackages = myargs[3:]
-            x = (repository,arch,product,)
+            branch = myargs[3]
+            foreign_idpackages = myargs[4:]
+            x = (repository,arch,product,branch,)
 
             valid = self.HostInterface.is_repository_available(x)
             if not valid:
                 return valid
 
-            dbpath = self.get_database_path(repository, arch, product)
+            dbpath = self.get_database_path(repository, arch, product, branch)
             dbconn = self.HostInterface.open_db(dbpath, docache = False)
             mychecksum = dbconn.database_checksum(do_order = True, strict = False, strings = True)
             myids = dbconn.listAllIdpackages()
@@ -19569,22 +19558,23 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
             self.trash_old_databases()
 
-            if len(myargs) < 3:
+            if len(myargs) < 4:
                 return None
             repository = myargs[0]
             arch = myargs[1]
             product = myargs[2]
+            branch = myargs[3]
 
-            x = (repository,arch,product,)
+            x = (repository,arch,product,branch,)
             valid = self.HostInterface.is_repository_available(x)
             if not valid:
                 return valid
 
-            cached = self.HostInterface.get_dcache((repository, arch, product, 'docmd_treeupdates'), repository)
+            cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_treeupdates'), repository)
             if cached != None:
                 return cached
 
-            dbpath = self.get_database_path(repository, arch, product)
+            dbpath = self.get_database_path(repository, arch, product, branch)
             dbconn = self.HostInterface.open_db(dbpath, docache = False)
 
             # get data
@@ -19592,7 +19582,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             data['actions'] = dbconn.listAllTreeUpdatesActions()
             data['digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
 
-            self.HostInterface.set_dcache((repository, arch, product, 'docmd_treeupdates'), data, repository)
+            self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_treeupdates'), data, repository)
             dbconn.closeDB()
 
             return data
@@ -19602,7 +19592,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
             self.trash_old_databases()
 
-            if len(myargs) < 5:
+            if len(myargs) < 6:
                 return None
             format_content_for_insert = myargs[0]
             if type(format_content_for_insert) is not bool:
@@ -19610,7 +19600,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
             repository = myargs[1]
             arch = myargs[2]
             product = myargs[3]
-            zidpackages = myargs[4:]
+            branch = myargs[4]
+            zidpackages = myargs[5:]
             idpackages = []
             for idpackage in zidpackages:
                 if type(idpackage) is int:
@@ -19618,20 +19609,20 @@ class RepositorySocketServerInterface(SocketHostInterface):
             if not idpackages:
                 return None
             idpackages = tuple(sorted(idpackages))
-            x = (repository,arch,product,)
+            x = (repository,arch,product,branch,)
 
             valid = self.HostInterface.is_repository_available(x)
             if not valid:
                 return valid
 
             cached = self.HostInterface.get_dcache(
-                (repository, arch, product, idpackages, 'docmd_pkginfo'),
+                (repository, arch, product, branch, idpackages, 'docmd_pkginfo'),
                 repository
             )
             if cached != None:
                 return cached
 
-            dbpath = self.get_database_path(repository, arch, product)
+            dbpath = self.get_database_path(repository, arch, product, branch)
             dbconn = self.HostInterface.open_db(dbpath, docache = False)
 
             result = {}
@@ -19650,15 +19641,15 @@ class RepositorySocketServerInterface(SocketHostInterface):
                 result[idpackage] = mydata.copy()
 
             self.HostInterface.set_dcache(
-                (repository, arch, product, idpackages, 'docmd_pkginfo'),
+                (repository, arch, product, branch, idpackages, 'docmd_pkginfo'),
                 result,
                 repository
             )
             dbconn.closeDB()
             return result
 
-        def get_database_path(self, repository, arch, product):
-            repoitems = (repository,arch,product)
+        def get_database_path(self, repository, arch, product, branch):
+            repoitems = (repository,arch,product,branch,)
             mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
             dbpath = os.path.join(mydbroot,etpConst['etpdatabasefile'])
             return dbpath
@@ -19729,8 +19720,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
     def lock_scan(self):
         do_clear = set()
-        for repository,arch,product in self.repositories:
-            x = (repository,arch,product)
+        for repository,arch,product,branch in self.repositories:
+            x = (repository,arch,product,branch,)
             self.set_repository_db_availability(x)
             if not self.repositories[x]['enabled']:
                 if x in self.syscache['dbs_not_available']:
@@ -19795,16 +19786,16 @@ class RepositorySocketServerInterface(SocketHostInterface):
         for repo in do_clear:
             self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repo+"/")
 
-    def eapi3_lock_repo(self, repository, arch, product):
-        lock_file = os.path.join(self.repositories[(repository, arch, product,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
+    def eapi3_lock_repo(self, repository, arch, product, branch):
+        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
         if not os.path.lexists(lock_file):
             f = open(lock_file,"w")
             f.write("this repository is EAPI3 locked")
             f.flush()
             f.close()
 
-    def eapi3_unlock_repo(self, repository, arch, product):
-        lock_file = os.path.join(self.repositories[(repository, arch, product,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
+    def eapi3_unlock_repo(self, repository, arch, product, branch):
+        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
@@ -19841,8 +19832,8 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
     def expand_repositories(self):
 
-        for repository,arch,product in self.repositories:
-            x = (repository,arch,product)
+        for repository,arch,product, branch in self.repositories:
+            x = (repository,arch,product,branch,)
             self.repositories[x]['locked'] = True # loading locked
             self.set_repository_db_availability(x)
             mydbpath = self.repositories[x]['dbpath']
@@ -20123,61 +20114,62 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
     def __init__(self, EntropyInterface, ServiceInterface):
         EntropySocketClientCommands.__init__(self, EntropyInterface, ServiceInterface)
 
-    def differential_packages_comparison(self, idpackages, repository, arch, product, session_id = None, compression = False):
-        self.Service.check_socket_connection()
-        close_session = False
-        if session_id == None:
-            close_session = True
-            session_id = self.Service.open_session()
+    def differential_packages_comparison(self, session_id, idpackages, repository, arch, product):
 
         myidlist = ' '.join([str(x) for x in idpackages])
-        cmd = "%s %s %s %s %s %s" % (session_id, 'dbdiff', repository, arch, product, myidlist,)
-
-        data = self.retrieve_command_answer(cmd, session_id, repository, arch, product, compression)
-
-        if close_session:
-            self.Service.close_session(session_id)
-        return data
-
-    def get_repository_treeupdates(self, repository, arch, product, session_id = None, compression = False):
-
-        self.Service.check_socket_connection()
-        close_session = False
-        if session_id == None:
-            close_session = True
-            session_id = self.Service.open_session()
-        """<SESSION_ID> treeupdates <repository> <arch> <product>"""
-        cmd = "%s %s %s %s %s" % (
+        cmd = "%s %s %s %s %s %s %s" % (
             session_id,
-            'treeupdates',
+            'repository_server:dbdiff',
             repository,
             arch,
             product,
+            etpConst['branch'],
+            myidlist,
         )
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
         data = self.do_generic_handler(cmd, session_id, tries = 5, compression = compression)
-        if close_session:
-            self.Service.close_session(session_id)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
         return data
 
-    def get_package_information(self, idpackages, repository, arch, product, session_id = None, compression = False):
+    def get_repository_treeupdates(self, session_id, repository, arch, product):
 
-        self.Service.check_socket_connection()
-        close_session = False
-        if session_id == None:
-            close_session = True
-            session_id = self.Service.open_session()
-        cmd = "%s %s %s %s %s %s %s" % (
+        cmd = "%s %s %s %s %s %s" % (
             session_id,
-            'pkginfo',
+            'repository_server:treeupdates',
+            repository,
+            arch,
+            product,
+            etpConst['branch'],
+        )
+        return self.do_generic_handler(cmd, session_id, tries = 5)
+
+    def get_package_information(self, session_id, idpackages, repository, arch, product):
+
+        cmd = "%s %s %s %s %s %s %s %s" % (
+            session_id,
+            'repository_server:pkginfo',
             True,
             repository,
             arch,
             product,
+            etpConst['branch'],
             ' '.join([str(x) for x in idpackages]),
         )
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
         data = self.do_generic_handler(cmd, session_id, compression = compression)
-        if close_session:
-            self.Service.close_session(session_id)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
         return data
 
     def ugc_do_download(self, session_id, pkgkey):
@@ -28325,9 +28317,13 @@ class EntropyDatabaseInterface:
             lockRemote = True
         ):
 
+        self.dbname = dbname
         self.lockRemote = lockRemote
         self.db_branch = etpConst['branch']
         if useBranch != None: self.db_branch = useBranch
+        # force empty branch if client db
+        if self.dbname == etpConst['clientdbid']:
+            self.db_branch = None
 
         if OutputInterface == None:
             OutputInterface = TextInterface()
@@ -28347,7 +28343,6 @@ class EntropyDatabaseInterface:
         self.noUpload = noUpload
         self.clientDatabase = clientDatabase
         self.xcache = xcache
-        self.dbname = dbname
         self.indexing = indexing
         self.skipChecks = skipChecks
         if not self.skipChecks:
@@ -33120,27 +33115,10 @@ class EntropyDatabaseInterface:
             pkgname = splitkey[0]
             pkgcat = "null"
 
+        myBranchIndex = (self.db_branch,)
         if matchBranches:
             # force to tuple for security
             myBranchIndex = tuple(matchBranches)
-        else:
-            if self.dbname == etpConst['clientdbid']:
-                # collect all available branches
-                myBranchIndex = tuple(self.listAllBranches())
-            else:
-                myBranchIndex = (self.db_branch,)
-            '''
-            elif self.dbname.startswith(etpConst['dbnamerepoprefix']) or self.dbname.startswith(etpConst['serverdbid']):
-                # repositories should match to any branch <= than the current if none specified
-                allbranches = set([x for x in self.listAllBranches() if x <= self.db_branch])
-                allbranches = list(allbranches)
-                allbranches.reverse()
-                if self.db_branch not in allbranches:
-                    allbranches.insert(0,self.db_branch)
-                myBranchIndex = tuple(allbranches)
-            else:
-                myBranchIndex = (self.db_branch,)
-            '''
 
         # IDs found in the database that match our search
         foundIDs = set()
