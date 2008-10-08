@@ -898,12 +898,12 @@ def const_extractClientRepositoryParameters(repostring):
     mydata['description'] = repodesc
     mydata['packages'] = []
     mydata['plain_packages'] = []
-    mydata['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']
+    mydata['dbpath'] = etpConst['etpdatabaseclientdir']+"/"+reponame+"/"+etpConst['product']+"/"+etpConst['currentarch']+"/"+etpConst['branch']
     mydata['dbcformat'] = dbformat
     if not dbformat in etpConst['etpdatabasesupportedcformats']:
         mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
     mydata['plain_database'] = repodatabase
-    mydata['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']
+    mydata['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']+"/"+etpConst['branch']
     mydata['notice_board'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/"+etpConst['rss-notice-board']
     mydata['dbrevision'] = "0"
     dbrevision_file = os.path.join(mydata['dbpath'],etpConst['etpdatabaserevisionfile'])
@@ -933,10 +933,17 @@ def const_readRepositoriesSettings():
         repositoriesconf = f.readlines()
         f.close()
 
-        # setup product first
+        # setup product and branch first
         for line in repositoriesconf:
             if (line.strip().find("product|") != -1) and (not line.strip().startswith("#")) and (len(line.strip().split("|")) == 2):
                 etpConst['product'] = line.strip().split("|")[1]
+            elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+                branch = line.split("|")[1].strip()
+                etpConst['branch'] = branch
+                if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
+                    if etpConst['uid'] == 0:
+                        # check if we have a broken symlink
+                        os.makedirs(etpConst['packagesbindir']+"/"+branch)
 
         for line in repositoriesconf:
 
@@ -966,14 +973,6 @@ def const_readRepositoriesSettings():
                     myRepodata[reponame] = repodata.copy()
                     if not excluded:
                         etpRepositoriesOrder.append(reponame)
-
-            elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
-                branch = line.split("|")[1]
-                etpConst['branch'] = branch
-                if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
-                    if etpConst['uid'] == 0:
-                        # check if we have a broken symlink
-                        os.makedirs(etpConst['packagesbindir']+"/"+branch)
 
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]

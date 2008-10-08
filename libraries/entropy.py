@@ -422,8 +422,15 @@ class EquoInterface(TextInterface):
                 self.validRepositories.append(repoid)
             except exceptionTools.RepositoryError:
                 t = _("Repository") + " " + repoid + " " + _("is not available") + ". " + _("Cannot validate")
+                t2 = _("Please update your repositories now in order to remove this message!")
                 self.updateProgress(
                                     darkred(t),
+                                    importance = 1,
+                                    type = "warning"
+                                   )
+                self.updateProgress(
+                                    purple(t2),
+                                    header = bold("!!! "),
                                     importance = 1,
                                     type = "warning"
                                    )
@@ -1782,11 +1789,13 @@ class EquoInterface(TextInterface):
             etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
             etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['plain_packages']]
             etpRepositories[repodata['repoid']]['plain_database'] = repodata['plain_database']
-            etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + "/" + etpConst['product'] + "/database/" + etpConst['currentarch']
+            etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + \
+                "/" + etpConst['product'] + "/database/" + etpConst['currentarch'] + "/" + etpConst['branch']
             if not repodata['dbcformat'] in etpConst['etpdatabasesupportedcformats']:
                 repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
             etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
-            etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']
+            etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + \
+                "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']  + "/" + etpConst['branch']
             # set dbrevision
             myrev = self.get_repository_revision(repodata['repoid'])
             if myrev == -1:
@@ -6191,27 +6200,27 @@ class RepoInterface:
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
         elif item == "make.conf":
             myfile = os.path.basename(etpConst['spm']['global_make_conf'])
-            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.mask":
             myfile = os.path.basename(etpConst['spm']['global_package_mask'])
-            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.unmask":
             myfile = os.path.basename(etpConst['spm']['global_package_unmask'])
-            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.keywords":
             myfile = os.path.basename(etpConst['spm']['global_package_keywords'])
-            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "package.use":
             myfile = os.path.basename(etpConst['spm']['global_package_use'])
-            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "profile.link":
             myfile = etpConst['spm']['global_make_profile_link_name']
-            url = etpRepositories[repo]['database'] + "/" + etpConst['branch'] + "/" + myfile
+            url = etpRepositories[repo]['database'] + "/" + myfile
             filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
         elif item == "lic_whitelist":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaselicwhitelistfile']
@@ -14878,7 +14887,6 @@ class ServerInterface(TextInterface):
         )
 
         self.migrate_repository_databases_to_new_branched_path()
-
         self.community_repo = community_repo
         self.dbapi2 = dbapi2 # export for third parties
         # settings
@@ -15008,7 +15016,10 @@ class ServerInterface(TextInterface):
     def close_server_databases(self):
         if hasattr(self,'serverDbCache'):
             for item in self.serverDbCache:
-                self.serverDbCache[item].closeDB()
+                try:
+                    self.serverDbCache[item].closeDB()
+                except self.dbapi2.ProgrammingError: # already closed?
+                    pass
         self.serverDbCache.clear()
 
     def close_server_database(self, dbinstance):
@@ -27104,21 +27115,23 @@ class ServerMirrorsInterface:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        db_locked = False
-        if self.is_local_database_locked(repo):
-            db_locked = True
+        while 1:
 
-        lock_data = self.get_mirrors_lock(repo)
-        mirrors_locked = [x for x in lock_data if x[1]]
+            db_locked = False
+            if self.is_local_database_locked(repo):
+                db_locked = True
 
-        if not mirrors_locked and db_locked:
-            mytxt = "%s. %s. %s %s" % (
-                _("Mirrors are not locked remotely but the local database is"),
-                _("It is a nonsense"),
-                _("Please remove the lock file"),
-                self.get_database_lockfile(repo),
-            )
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
+            lock_data = self.get_mirrors_lock(repo)
+            mirrors_locked = [x for x in lock_data if x[1]]
+
+            if not mirrors_locked and db_locked:
+                # mirrors not locked remotely but only locally
+                mylock_file = self.get_database_lockfile(repo)
+                if os.path.isfile(mylock_file) and os.access(mylock_file,os.W_OK):
+                    os.remove(mylock_file)
+                    continue
+
+            break
 
         if mirrors_locked and not db_locked:
             mytxt = "%s, %s %s" % (
