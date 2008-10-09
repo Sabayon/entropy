@@ -31492,8 +31492,11 @@ class EntropyDatabaseInterface:
             else:
                 return self.fetchall2list(self.cursor.fetchall())
 
-    def listAllCategories(self):
-        self.cursor.execute('SELECT idcategory,category FROM categories')
+    def listAllCategories(self, order_by = ''):
+        order_by_string = ''
+        if order_by:
+            order_by_string = ' order by %s' % (order_by,)
+        self.cursor.execute('SELECT idcategory,category FROM categories'+order_by_string)
         return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
