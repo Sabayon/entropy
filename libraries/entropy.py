@@ -30719,7 +30719,7 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False):
+    def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False, order_by = ''):
 
         # like portage does
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -30737,7 +30737,11 @@ class EntropyDatabaseInterface:
             searchkeywords.append(contentType)
             contentstring = ' and type = (?)'
 
-        self.cursor.execute('SELECT '+extstring_idpackage+'file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring, searchkeywords)
+        order_by_string = ''
+        if order_by:
+            order_by_string = ' order by %s' % (order_by,)
+
+        self.cursor.execute('SELECT '+extstring_idpackage+'file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring+order_by_string, searchkeywords)
 
         if extended and insert_formatted:
             fl = self.cursor.fetchall()
