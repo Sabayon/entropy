@@ -30754,7 +30754,10 @@ class EntropyDatabaseInterface:
         elif extended:
             fl = self.cursor.fetchall()
         else:
-            fl = self.fetchall2set(self.cursor.fetchall())
+            if order_by:
+                fl = self.fetchall2list(self.cursor.fetchall())
+            else:
+                fl = self.fetchall2set(self.cursor.fetchall())
 
         return fl
 
