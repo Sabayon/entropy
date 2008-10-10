@@ -28321,9 +28321,6 @@ class EntropyDatabaseInterface:
         self.lockRemote = lockRemote
         self.db_branch = etpConst['branch']
         if useBranch != None: self.db_branch = useBranch
-        # force empty branch if client db
-        if self.dbname == etpConst['clientdbid']:
-            self.db_branch = None
 
         if OutputInterface == None:
             OutputInterface = TextInterface()
@@ -33125,7 +33122,11 @@ class EntropyDatabaseInterface:
             pkgname = splitkey[0]
             pkgcat = "null"
 
-        myBranchIndex = (self.db_branch,)
+        if self.dbname == etpConst['clientdbid']:
+            myBranchIndex = (None,)
+        else:
+            myBranchIndex = (self.db_branch,)
+
         if matchBranches:
             # force to tuple for security
             myBranchIndex = tuple(matchBranches)
