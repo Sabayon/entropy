@@ -14949,10 +14949,10 @@ class ServerInterface(TextInterface):
                 repo_filename = os.path.basename(repo_file)
                 shutil.move(repo_file,os.path.join(my_branched_dir,repo_filename))
 
-        f = open(migrated_filepath,"w")
-        f.write("done\n")
-        f.flush()
-        f.close()
+            f = open(migrated_filepath,"w")
+            f.write("done\n")
+            f.flush()
+            f.close()
 
     def add_client_database_to_repositories(self):
         etpConst['server_repositories'][etpConst['clientserverrepoid']] = {}
