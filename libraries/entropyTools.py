@@ -1554,14 +1554,13 @@ def compat_uncompressTarBz2(filepath, extractPath = None):
 
 def spawnFunction(f, *args, **kwds):
 
-    uid = None
-    gid = None
-    if kwds.has_key('spf_uid'):
-        uid = kwds['spf_uid']
-        kwds.pop('spf_uid')
-    if kwds.has_key('spf_gid'):
-        gid = kwds['spf_gid']
-        kwds.pop('spf_gid')
+    uid = kwds.get('spf_uid')
+    if uid != None: kwds.pop('spf_uid')
+
+    gid = kwds.get('spf_gid')
+    if gid != None: kwds.pop('spf_gid')
+
+    write_pid_func = kwds.get('write_pid_func')
 
     try:
         import cPickle as pickle
@@ -1570,6 +1569,8 @@ def spawnFunction(f, *args, **kwds):
     pread, pwrite = os.pipe()
     pid = os.fork()
     if pid > 0:
+        if write_pid_func != None:
+            write_pid_func(pid)
         os.close(pwrite)
         f = os.fdopen(pread, 'rb')
         status, result = pickle.load(f)

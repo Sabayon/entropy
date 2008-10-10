@@ -4565,8 +4565,6 @@ class PackageInterface:
             header = red("   ## ")
         )
         newidpackage = self._install_package_into_database()
-        # newidpackage = self.Entropy.entropyTools.spawnFunction( self._install_package_into_database )
-        # ^^ it hangs on live systems!
 
         # remove old files and gentoo stuff
         if (self.infoDict['removeidpackage'] != -1):
@@ -21370,7 +21368,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        switched = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        switched = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
 
         rc = 1
@@ -21430,7 +21431,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        data = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return data
 
@@ -21531,7 +21535,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        data = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return data
 
@@ -21562,7 +21569,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        data = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return data
 
@@ -21592,7 +21602,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        status, result = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        status, result = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
 
         mystatus = False
@@ -21630,7 +21643,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        mydata = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return mydata
 
@@ -21665,7 +21681,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return True, 0
 
@@ -21749,7 +21768,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        data = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return data
 
@@ -21864,7 +21886,10 @@ class SystemManagerExecutorServerRepositoryInterface:
                 sys.stderr = sys.__stderr__
                 sys.stdin = sys.__stdin__
 
-        data = self.entropyTools.spawnFunction(myfunc)
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
         stdout_err.close()
         return data
 
