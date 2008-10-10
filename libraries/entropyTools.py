@@ -1702,6 +1702,41 @@ def hideFTPpassword(uri):
     newuri = uri.replace(ftppassword,"xxxxxxxx")
     return newuri
 
+def extract_ftp_data(ftpuri):
+    ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
+    if (ftpuser == ""):
+        ftpuser = "anonymous@"
+        ftppassword = "anonymous"
+    else:
+        ftppassword = ftpuri.split("@")[:-1]
+        if len(ftppassword) > 1:
+            ftppassword = '@'.join(ftppassword)
+            ftppassword = ftppassword.split(":")[-1]
+            if (ftppassword == ""):
+                ftppassword = "anonymous"
+        else:
+            ftppassword = ftppassword[0]
+            ftppassword = ftppassword.split(":")[-1]
+            if (ftppassword == ""):
+                ftppassword = "anonymous"
+
+    ftpport = ftpuri.split(":")[-1]
+    try:
+        ftpport = int(ftpport)
+    except ValueError:
+        ftpport = 21
+
+    ftpdir = '/'
+    if ftpuri.count("/") > 2:
+        ftpdir = ftpuri.split("ftp://")[-1]
+        ftpdir = ftpdir.split("/")[-1]
+        ftpdir = ftpdir.split(":")[0]
+        if ftpdir.endswith("/"):
+            ftpdir = ftpdir[:len(ftpdir)-1]
+        if not ftpdir: ftpdir = "/"
+
+    return ftpuser, ftppassword, ftpport, ftpdir
+
 def getFileUnixMtime(path):
     return os.path.getmtime(path)
 

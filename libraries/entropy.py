@@ -7935,36 +7935,7 @@ class FtpInterface:
         self.ftpuri = ftpuri
         self.ftphost = self.entropyTools.extractFTPHostFromUri(self.ftpuri)
 
-        self.ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
-        if (self.ftpuser == ""):
-            self.ftpuser = "anonymous@"
-            self.ftppassword = "anonymous"
-        else:
-            self.ftppassword = ftpuri.split("@")[:-1]
-            if len(self.ftppassword) > 1:
-                self.ftppassword = '@'.join(self.ftppassword)
-                self.ftppassword = self.ftppassword.split(":")[-1]
-                if (self.ftppassword == ""):
-                    self.ftppassword = "anonymous"
-            else:
-                self.ftppassword = self.ftppassword[0]
-                self.ftppassword = self.ftppassword.split(":")[-1]
-                if (self.ftppassword == ""):
-                    self.ftppassword = "anonymous"
-
-        self.ftpport = ftpuri.split(":")[-1]
-        try:
-            self.ftpport = int(self.ftpport)
-        except ValueError:
-            self.ftpport = 21
-
-        self.ftpdir = ftpuri.split("ftp://")[-1]
-        self.ftpdir = self.ftpdir.split("/")[-1]
-        self.ftpdir = self.ftpdir.split(":")[0]
-        if self.ftpdir.endswith("/"):
-            self.ftpdir = self.ftpdir[:len(self.ftpdir)-1]
-        if not self.ftpdir:
-            self.ftpdir = "/"
+        self.ftpuser, self.ftppassword, self.ftpport, self.ftpdir = self.entropyTools.extract_ftp_data(ftpuri)
 
         count = 10
         while 1:
