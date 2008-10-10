@@ -4670,7 +4670,16 @@ class PackageInterface:
                 if os.path.isdir(destination):
                     shutil.rmtree(destination)
 
-                shutil.copytree(copypath,destination)
+                try:
+                    shutil.copytree(copypath,destination)
+                except (IOError,), e:
+                    mytxt = "%s: %s: %s: %s" % (red(_("QA")),brown(_("Cannot update Portage database to destination")),purple(destination),e,)
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred("   ## ")
+                    )
 
                 # test if /var/cache/edb/counter is fine
                 if os.path.isfile(etpConst['edbcounter']):
