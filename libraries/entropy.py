@@ -30163,7 +30163,7 @@ class EntropyDatabaseInterface:
         if branch:
             branch_string = ' AND branch = (?)'
             params.append(branch)
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch = (?)', params)
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)'+branch_string, params)
         idpackage = self.cursor.fetchone()
         if idpackage: return idpackage[0]
         return -1
