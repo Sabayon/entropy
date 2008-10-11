@@ -28614,7 +28614,7 @@ class EntropyDatabaseInterface:
                     raise
 
                 # store new actions
-                self.addRepositoryUpdatesActions(self.server_repo,update_actions)
+                self.addRepositoryUpdatesActions(self.server_repo, update_actions, self.db_branch)
 
             # store new digest into database
             self.setRepositoryUpdatesDigest(self.server_repo, portage_dirs_digest)
@@ -28679,7 +28679,7 @@ class EntropyDatabaseInterface:
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
 
             # store new actions
-            clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'],update_actions)
+            clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'], update_actions, etpConst['branch'])
 
             # clear client cache
             clientDbconn.clearCache()
@@ -30158,43 +30158,35 @@ class EntropyDatabaseInterface:
         return self.ServiceInterface.SpmService.get_category_description_data(category)
 
     def getIDPackage(self, atom, branch = None):
-        if branch == None: branch = self.db_branch
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = "'+atom+'" AND branch = "'+branch+'"')
-        idpackage = -1
+        branch_string = ''
+        params = [atom]
+        if branch:
+            branch_string = ' AND branch = (?)'
+            params.append(branch)
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch = (?)', params)
         idpackage = self.cursor.fetchone()
-        if idpackage:
-            idpackage = idpackage[0]
-        else:
-            idpackage = -1
-        return idpackage
+        if idpackage: return idpackage[0]
+        return -1
 
-    def getIDPackageFromDownload(self, download_relative_path, branch = None, endswith = False):
+    def getIDPackageFromDownload(self, download_relative_path, endswith = False):
         if branch == None: branch = self.db_branch
         if endswith:
-            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download LIKE (?) and baseinfo.branch = (?)', ("%"+download_relative_path,branch,))
+            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download LIKE (?)', ("%"+download_relative_path,))
         else:
-            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download = (?) and baseinfo.branch = (?)', (download_relative_path,branch,))
+            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download = (?)', (download_relative_path,))
         idpackage = self.cursor.fetchone()
-        if idpackage:
-            idpackage = idpackage[0]
-        else:
-            idpackage = -1
-        return idpackage
+        if idpackage: return idpackage[0]
+        return -1
 
     def getIDPackagesFromFile(self, file):
-        self.cursor.execute('SELECT idpackage FROM content WHERE file = "'+file+'"')
-        idpackages = []
-        for row in self.cursor:
-            idpackages.append(row[0])
-        return idpackages
+        self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (file,))
+        return self.fetchall2list(self.cursor.fetchall())
 
     def getIDCategory(self, category):
-        self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = "'+str(category)+'"')
-        idcat = -1
-        for row in self.cursor:
-            idcat = int(row[0])
-            break
-        return idcat
+        self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = (?)', (category,))
+        idcat = self.cursor.fetchone()
+        if idcat: return idcat[0]
+        return -1
 
     def getStrictData(self, idpackage):
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.version,baseinfo.versiontag,baseinfo.revision,baseinfo.atom FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
@@ -30435,10 +30427,19 @@ class EntropyDatabaseInterface:
         return self.cursor.fetchall()
 
     def retrieveTreeUpdatesActions(self, repository, forbranch = None):
-        if forbranch == None: forbranch = self.db_branch
+
         if not self.doesTableExist("treeupdatesactions"):
             return set()
-        self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) and branch = (?) order by date', (repository,forbranch))
+
+        if forbranch == None:
+            forbranch = self.db_branch
+        params = [repository]
+        branch_string = ''
+        if forbranch:
+            branch_string = 'and branch = (?)'
+            params.append(forbranch)
+
+        self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) '+branch_string+' order by date', params)
         return self.fetchall2list(self.cursor.fetchall())
 
     # mainly used to restore a previous table, used by reagent in --initialize
@@ -30484,15 +30485,15 @@ class EntropyDatabaseInterface:
         finally:
             self.WriteLock.release()
 
-    def addRepositoryUpdatesActions(self, repository, actions, forbranch = None):
-        if forbranch == None: forbranch = self.db_branch
+    def addRepositoryUpdatesActions(self, repository, actions, branch):
         self.checkReadOnly()
+
         mytime = str(self.entropyTools.getCurrentUnixTime())
         self.WriteLock.acquire()
         try:
             for command in actions:
-                if not self.doesTreeupdatesActionExist(repository, command, forbranch):
-                    self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,forbranch,mytime,))
+                if not self.doesTreeupdatesActionExist(repository, command, branch):
+                    self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,branch,mytime,))
             self.commitChanges()
         finally:
             self.WriteLock.release()
@@ -30903,15 +30904,6 @@ class EntropyDatabaseInterface:
             return False
         return True
 
-    # This version is more specific and supports branches
-    def isSpecificPackageAvailable(self, pkgkey, branch, branch_operator = "="):
-        pkgkey = self.entropyTools.removePackageOperators(pkgkey)
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?) AND branch '+branch_operator+' (?)', (pkgkey,branch,))
-        result = self.cursor.fetchone()
-        if not result:
-            return False
-        return True
-
     def isCategoryAvailable(self,category):
         self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
         result = self.cursor.fetchone()
@@ -31012,28 +31004,22 @@ class EntropyDatabaseInterface:
         return result[0]
 
     def isCounterAvailable(self, counter, branch = None, branch_operator = "="):
-        result = False
-        if not branch: branch = self.db_branch
-        self.cursor.execute('SELECT counter FROM counters WHERE counter = (?) and branch '+branch_operator+' (?)', (counter,branch,))
+        params = [counter]
+        branch_string = ''
+        if branch:
+            branch_string = ' and branch '+branch_operator+' (?)'
+            params = [counter,branch]
+
+        self.cursor.execute('SELECT counter FROM counters WHERE counter = (?)'+branch_string, params)
         result = self.cursor.fetchone()
-        if result:
-            result = True
-        return result
+        if result: return True
+        return False
 
     def isCounterTrashed(self, counter):
         self.cursor.execute('SELECT counter FROM trashedcounters WHERE counter = (?)', (counter,))
         result = self.cursor.fetchone()
-        if result:
-            return True
+        if result: return True
         return False
-
-    def getIDPackageFromCounter(self, counter, branch = None, branch_operator = "="):
-        if not branch: branch = self.db_branch
-        self.cursor.execute('SELECT idpackage FROM counters WHERE counter = (?) and branch '+branch_operator+' (?)', (counter,branch,))
-        result = self.cursor.fetchone()
-        if not result:
-            return 0
-        return result[0]
 
     def isLicensedataKeyAvailable(self, license_name):
         if not self.doesTableExist("licensedata"):
@@ -31174,12 +31160,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library LIKE (?) and needed.idneeded = neededreference.idneeded', (keyword,))
         else:
             self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library = (?) and needed.idneeded = neededreference.idneeded', (keyword,))
-	return self.fetchall2set(self.cursor.fetchall())
-
-    # FIXME: deprecate and add functionalities to the function above
-    ''' same as above but with branch support '''
-    def searchNeededInBranch(self, keyword, branch):
-	self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference,baseinfo WHERE library = (?) and needed.idneeded = neededreference.idneeded and baseinfo.branch = (?)', (keyword,branch,))
 	return self.fetchall2set(self.cursor.fetchall())
 
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
@@ -31441,12 +31421,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('SELECT * FROM dependenciesreference')
             return self.cursor.fetchall()
 
-    def listAllBranchesFromCounters(self):
-        if not self.doesTableExist('counters'):
-            return set()
-        self.cursor.execute('SELECT distinct branch FROM counters')
-        return self.fetchall2set(self.cursor.fetchall())
-
     def listAllBranches(self):
 
         cache = self.live_cache.get('listAllBranches')
@@ -31475,10 +31449,6 @@ class EntropyDatabaseInterface:
         if do_sort:
             results = sorted(list(results))
         return results
-
-    def listBranchPackages(self, branch):
-        self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE branch = (?)', (branch,))
-        return self.cursor.fetchall()
 
     def listAllFiles(self, clean = False, count = False):
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -31642,12 +31612,6 @@ class EntropyDatabaseInterface:
             )
             self.createAllIndexes()
 
-        # do manual atoms update
-        # FIXME: remove this ASAP (0.16.x branch)
-        if os.access(self.dbFile,os.W_OK) and \
-            (self.dbname != etpConst['genericdbid']):
-                self.fixKdeDepStrings()
-
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -31692,60 +31656,6 @@ class EntropyDatabaseInterface:
             return True
         finally:
             self.WriteLock.release()
-
-    def fixKdeDepStrings(self):
-
-        # check if we need to do it
-        cur_id = self.getForcedAtomsUpdateId()
-        if cur_id >= etpConst['misc_counters']['forced_atoms_update_ids']['kde']:
-            return
-
-        mytxt = "%s: %s %s. %s %s" % (
-            red(_("Entropy database")),
-            red(_("fixing KDE dep strings on")),
-            blue(self.dbname),
-            red(_("Please wait")),
-            red("..."),
-        )
-        self.updateProgress(
-            mytxt,
-            importance = 1,
-            type = "warning",
-            header = blue(" !!! ")
-        )
-
-        # uhu, let's roooock
-        search_deps = {
-            ">=kde-base/kdelibs-3.0": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.1": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.2": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.3": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.4": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.5": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.0": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.0.0": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.0.5": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.1": 'kde-base/kdelibs:3.5',
-            ">=kde-base/kdelibs-3.1.0": 'kde-base/kdelibs:3.5',
-
-        }
-        self.cursor.execute('select iddependency,dependency from dependenciesreference')
-        depdata = self.cursor.fetchall()
-        for iddepedency, depstring in depdata:
-            if depstring in search_deps:
-                self.setDependency(iddepedency, search_deps[depstring])
-
-        # regenerate depends
-        while 1: # avoid users interruption
-            self.regenerateDependsTable()
-            break
-
-        self.setForcedAtomsUpdateId(etpConst['misc_counters']['forced_atoms_update_ids']['kde'])
-        self.commitChanges()
-        # drop all cache
-        self.clearCache(depends = True)
-
 
     def getForcedAtomsUpdateId(self):
         self.cursor.execute(
@@ -32569,7 +32479,7 @@ class EntropyDatabaseInterface:
         self.WriteLock.acquire()
         try: # if database disk image is malformed, won't raise exception here
             self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
-            self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (self.db_branch,))
+            self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (etpConst['branch'],))
         except:
             pass
         finally:
@@ -32734,26 +32644,6 @@ class EntropyDatabaseInterface:
         del depends
         # now validate dependstable
         self.sanitizeDependsTable()
-
-    def copyCountersToBranch(self, from_branch, to_branch):
-        self.cursor.execute('SELECT counter,idpackage,(?) FROM counters WHERE branch = (?)', (to_branch,from_branch,))
-        counters_data = self.cursor.fetchall()
-        migrated = False
-        self.WriteLock.acquire()
-        try:
-            while 1:
-                try:
-                    self.cursor.executemany('INSERT into counters VALUES (?,?,?)', counters_data)
-                except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
-                    if migrated: raise
-                    self.migrateCountersTable(lock = False)
-                    migrated = True
-                    continue
-                break
-            self.commitChanges()
-            self.clearCache()
-        finally:
-            self.WriteLock.release()
 
     def moveCountersToBranch(self, to_branch):
         self.WriteLock.acquire()
