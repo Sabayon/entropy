@@ -597,6 +597,44 @@ def database(options):
         Equo._resources_run_remove_lock()
         return 0
 
+    elif (options[0] == "backup"):
+
+        status = Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
+        if status:
+            return 0
+        return 1
+
+    elif (options[0] == "restore"):
+
+        dblist = Equo.list_backedup_client_databases()
+        if not dblist:
+            print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
+            return 1
+
+        mydblist = []
+        for mydb in dblist:
+            ts = Equo.entropyTools.getFileUnixMtime(mydb)
+            mytime = Equo.entropyTools.convertUnixTimeToHumanTime(ts)
+            mydblist.append("[%s] %s" % (mytime,mydb,))
+
+        def fake_cb(s):
+            return s
+
+        input_params = [
+            ('db',('combo',(_('Select the database you want to restore'),mydblist),),fake_cb,True)
+        ]
+
+        data = Equo.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
+        if data == None:
+            return 1
+        myid, dbx = data['db']
+        dbpath = dblist[myid]
+
+        status = Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
+        if status:
+            return 0
+        return 1
+
     else:
         return -10
 

@@ -851,6 +851,12 @@ class EquoInterface(TextInterface):
         etpRepositories[repoid]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotect']]
         etpRepositories[repoid]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotectmask']]
 
+    def listAllAvailableBranches(self):
+        branches = set()
+        for repo in self.validRepositories:
+            dbconn = self.openRepositoryDatabase(repo)
+            branches.update(dbconn.listAllBranches())
+        return branches
 
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None, skipChecks = False):
         if xcache == None:
@@ -888,13 +894,114 @@ class EquoInterface(TextInterface):
         dbc.initializeDatabase()
         return dbc
 
-    def listAllAvailableBranches(self):
-        branches = set()
-        for repo in self.validRepositories:
-            dbconn = self.openRepositoryDatabase(repo)
-            branches.update(dbconn.listAllBranches())
-        return branches
+    def backupDatabase(self, dbpath, backup_dir = None, silent = False, compress_level = 9):
 
+        if compress_level not in range(1,10):
+            compress_level = 9
+
+        backup_dir = os.path.dirname(dbpath)
+        if not backup_dir: backup_dir = os.path.dirname(dbpath)
+        dbname = os.path.basename(dbpath)
+        bytes_required = 1024000*300
+        if not (os.access(backup_dir,os.W_OK) and \
+                os.path.isdir(backup_dir) and os.path.isfile(dbpath) and \
+                os.access(dbpath,os.R_OK) and self.entropyTools.check_required_space(backup_dir, bytes_required)):
+            if not silent:
+                mytxt = "%s: %s, %s" % (darkred(_("Cannot backup selected database")),blue(dbpath),darkred(_("permission denied")),)
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "error",
+                    header = red(" @@ ")
+                )
+            return False
+
+        def get_ts():
+            from datetime import datetime
+            ts = datetime.fromtimestamp(time.time())
+            return "%s%s%s_%sh%sm%ss" % (ts.year,ts.month,ts.day,ts.hour,ts.minute,ts.second)
+
+        comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'],dbname,get_ts(),)
+        comp_dbpath = os.path.join(backup_dir,comp_dbname)
+        if not silent:
+            mytxt = "%s: %s ..." % (darkgreen(_("Backing up database to")),blue(comp_dbpath),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
+        import bz2
+        try:
+            self.entropyTools.compress_file(dbpath, comp_dbpath, bz2.BZ2File, compress_level)
+        except:
+            if not silent:
+                self.entropyTools.printTraceback()
+            return False
+
+        if not silent:
+            mytxt = "%s: %s" % (darkgreen(_("Database backed up successfully")),blue(comp_dbpath),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
+        return True
+
+    def restoreDatabase(self, backup_path, db_destination, silent = False):
+
+        bytes_required = 1024000*300
+        if not (os.access(db_destination,os.W_OK) and \
+                os.path.isfile(db_destination) and os.path.isfile(backup_path) and \
+                os.access(backup_path,os.R_OK) and self.entropyTools.check_required_space(os.path.dirname(db_destination), bytes_required)):
+            if not silent:
+                mytxt = "%s: %s, %s" % (darkred(_("Cannot restore selected backup")),blue(backup_path),darkred(_("permission denied")),)
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "error",
+                    header = red(" @@ ")
+                )
+            return False
+
+        if not silent:
+            mytxt = "%s: %s => %s ..." % (darkgreen(_("Restoring backed up database")),blue(os.path.basename(backup_path)),blue(db_destination),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
+
+        import bz2
+        try:
+            self.entropyTools.uncompress_file(backup_path, db_destination, bz2.BZ2File)
+        except:
+            if not silent:
+                self.entropyTools.printTraceback()
+            return False
+
+        if not silent:
+            mytxt = "%s: %s" % (darkgreen(_("Database restored successfully")),blue(db_destination),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
+        return True
+
+    def list_backedup_client_databases(self):
+        client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
+        return [os.path.join(client_dbdir,x) for x in os.listdir(client_dbdir) \
+                    if x.startswith(etpConst['dbbackupprefix']) and \
+                    os.access(os.path.join(client_dbdir,x),os.R_OK)
+        ]
 
     '''
        Cache stuff :: begin
@@ -30169,7 +30276,6 @@ class EntropyDatabaseInterface:
         return -1
 
     def getIDPackageFromDownload(self, download_relative_path, endswith = False):
-        if branch == None: branch = self.db_branch
         if endswith:
             self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download LIKE (?)', ("%"+download_relative_path,))
         else:

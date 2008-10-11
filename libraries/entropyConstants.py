@@ -626,6 +626,7 @@ def const_defaultSettings(rootdir):
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
         'dbnamerepoprefix': "repo_", # prefix of the name of self.dbname in EntropyDatabaseInterface class for the repositories
+        'dbbackupprefix': 'etp_backup_', # prefix of database backups
 
         'etpapi': etpSys['api'], # Entropy database API revision
         'currentarch': etpSys['arch'], # contains the current running architecture

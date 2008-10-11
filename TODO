@@ -3,13 +3,13 @@ TODO list
   - text ADS
   - p2p way to fight security attacks (through UGC and triple md5 verification)
   - force a package to keep the current version
+  - masking/unmasking functions
   - server-side messages collection
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
   - split entropy.py into entropy package
   - UGC: bug report documents?
   - UGC: ads documents/rotation support?
-  - database backup tools
   - implement pdepend support in dependencies sorting
   - implement package sets (meta packages list)
   - use expiration as a base to have and handle multiple packages in repo?

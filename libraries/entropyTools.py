@@ -445,6 +445,21 @@ def uncompress_file(file_path, destination_path, opener):
     f_out.close()
     f_in.close()
 
+def compress_file(file_path, destination_path, opener, compress_level = None):
+    f_in = open(file_path,"rb")
+    if compress_level != None:
+        f_out = opener(destination_path,"wb",compresslevel = compress_level)
+    else:
+        f_out = opener(destination_path,"wb")
+    data = f_in.read(8192)
+    while data:
+        f_out.write(data)
+        data = f_in.read(8192)
+    if hasattr(f_out,'flush'):
+        f_out.flush()
+    f_out.close()
+    f_in.close()
+
 def unpackGzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
