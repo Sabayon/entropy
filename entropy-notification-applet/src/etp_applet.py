@@ -12,24 +12,13 @@
 import gnome
 import gnome.ui
 # from msw to avoid odd bugs in some pygtk builds
-try:
-    from gtk import _disable_gdk_threading
-    _disable_gdk_threading()
-except ImportError:
-    pass
 import gtk
 import gobject
 import gtk.gdk
 import egg.trayicon
 import pynotify
 
-import subprocess
-import os
-import sys
-import math
-import traceback
-import time
-import threading
+import os, sys, math, traceback, time, threading, subprocess
 
 import etp_applet_animation
 from etp_applet_dialogs import \
@@ -40,7 +29,7 @@ from etp_applet_dialogs import \
      rhnAppletErrorDialog, \
      rhnAppletExceptionDialog
 import etp_applet_config
-from etpgui import busyCursor,normalCursor,ProcessGtkEventsThread
+from etpgui import busyCursor,normalCursor
 
 # Entropy imports
 from entropyConstants import *
@@ -74,10 +63,12 @@ class Entropy(EquoInterface):
         self.progress_tooltip_notification.set_hint("y", self.appletY+11)
 
     def appletCreateNotification(self):
+        gtk.gdk.threads_enter()
         pynotify.init("XY")
         self.progress_tooltip_notification = pynotify.Notification(self.progress_tooltip_message_title,"Hello world")
         self.progress_tooltip_notification.set_timeout(3000)
         self.appletSetCoordinates()
+        gtk.gdk.threads_leave()
 
     def appletUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
@@ -97,10 +88,12 @@ class Entropy(EquoInterface):
             self.appletPrintText(message)
 
     def appletPrintText(self, message):
+        gtk.gdk.threads_enter()
         self.appletSetCoordinates()
         self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
         self.progress_tooltip_notification.show()
         self.applet_last_message = message
+        gtk.gdk.threads_leave()
 
 class GuiUrlFetcher(urlFetcher):
 
@@ -114,7 +107,9 @@ class GuiUrlFetcher(urlFetcher):
                                         str(round(self.remotesize,1)),
                                         str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
                                     )
+        gtk.gdk.threads_enter()
         self.progress(message)
+        gtk.gdk.threads_leave()
 
 class rhnApplet:
 
@@ -259,9 +254,6 @@ class rhnApplet:
         self.available_packages = []
         self.last_alert = None
 
-        self.gtkEventThread = ProcessGtkEventsThread()
-        self.gtkEventThread.start()
-
         hide_menu = False
         message = ''
         workdir_perms_issue = False
@@ -365,12 +357,10 @@ class rhnApplet:
     def start_working(self):
         self.isWorking = True
         busyCursor(self.applet_window)
-        self.gtkEventThread.startProcessing()
 
     def end_working(self):
         self.isWorking = False
         normalCursor(self.applet_window)
-        self.gtkEventThread.endProcessing()
 
     def on_do_draw(self, *data):
         self.redraw()
@@ -576,7 +566,9 @@ class rhnApplet:
     # this isn't expensive.  this is done asynchronous to all GUI
     # updates, to try to avoid stalling the UI
     def refresh_handler(self, force = 0):
+        gtk.gdk.threads_enter()
         self.refresh(force)
+        gtk.gdk.threads_leave()
 
     def refresh(self, force=0):
 
@@ -775,9 +767,8 @@ class rhnApplet:
 
 
     def exit_applet(self, *args):
-        self.gtkEventThread.doQuit()
         gtk.main_quit()
-        sys.exit(0)
+        raise SystemExit
 
     def save_yourself(self, *args):
         if self.session:
@@ -920,4 +911,7 @@ class rhnApplet:
         '''
 
     def run(self):
+        gobject.threads_init()
+        gtk.gdk.threads_enter()
         gtk.main()
+        gtk.gdk.threads_leave()

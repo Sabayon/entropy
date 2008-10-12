@@ -24,7 +24,7 @@ class rhnAppletIconPixbuf:
 
         filepath = const.PIXMAPS_PATH + "/applet/" + filename
         if not os.path.isfile(filepath):
-            filename = "../../gfx/applet/" + filename
+            filename = "../gfx/applet/" + filename
         else:
             filename = filepath
 
