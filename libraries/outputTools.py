@@ -400,9 +400,9 @@ def readtext(request, password = False):
             text = getpass(request.encode('utf-8')+" ")
     else:
         try:
-            print request,
+            print request,"",
         except UnicodeEncodeError:
-            print request.encode('utf-8'),
+            print request.encode('utf-8'),"",
         flush_stdouterr()
         text = my_raw_input()
     return text
@@ -536,10 +536,11 @@ class TextInterface:
     '''
     def inputBox(self, title, input_parameters, cancel_button = True):
         results = {}
-        try:
-            print title
-        except UnicodeEncodeError:
-            print title.encode('utf-8')
+        if title:
+            try:
+                print title
+            except UnicodeEncodeError:
+                print title.encode('utf-8')
         flush_stdouterr()
 
         def option_chooser(option_data):

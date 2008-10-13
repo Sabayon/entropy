@@ -271,6 +271,9 @@ def add_proxy_opener(module, data):
 def islive():
     return const_islive()
 
+def get_file_size(file_path):
+    mystat = os.lstat(file_path)
+    return int(mystat.st_size)
 
 def check_required_space(mountpoint, bytes_required):
     import statvfs
@@ -1576,6 +1579,8 @@ def spawnFunction(f, *args, **kwds):
     if gid != None: kwds.pop('spf_gid')
 
     write_pid_func = kwds.get('write_pid_func')
+    if write_pid_func != None:
+        kwds.pop('write_pid_func')
 
     try:
         import cPickle as pickle

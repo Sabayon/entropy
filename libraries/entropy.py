@@ -351,6 +351,7 @@ class EquoInterface(TextInterface):
         self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
                              # and reimplement updateProgress
         self.clientDbconn = None
+        self.safe_mode = 0
         self.FtpInterface = FtpInterface # for convenience
         self.indexing = indexing
         self.repo_validation = repo_validation
@@ -401,10 +402,14 @@ class EquoInterface(TextInterface):
 
 
     def __del__(self):
-        if self.clientDbconn != None:
-            del self.clientDbconn
-        del self.MaskingParser
-        del self.FileUpdates
+        if hasattr(self,'clientDbconn'):
+            if self.clientDbconn != None:
+                del self.clientDbconn
+        if hasattr(self,'MaskingParser'):
+            del self.MaskingParser
+        if hasattr(self,'FileUpdates'):
+            del self.FileUpdates
+
         self.closeAllRepositoryDatabases()
         self.closeAllSecurity()
         self.closeAllQA()
@@ -658,28 +663,44 @@ class EquoInterface(TextInterface):
             etpConst['packagemasking'] = None
 
     def openClientDatabase(self):
+
+        def load_db_from_ram():
+            self.safe_mode = etpConst['safemodeerrors']['clientdb']
+            mytxt = "%s, %s" % (_("System database not found or corrupted"),_("running in safe mode using empty database from RAM"),)
+            self.updateProgress(
+                darkred(mytxt),
+                importance = 1,
+                type = "warning",
+                header = bold("!!!"),
+            )
+            conn = self.openMemoryDatabase(dbname = etpConst['clientdbid'])
+            return conn
+
         if not os.path.isdir(os.path.dirname(etpConst['etpdatabaseclientfilepath'])):
             os.makedirs(os.path.dirname(etpConst['etpdatabaseclientfilepath']))
+
         if (not self.noclientdb) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
-            t = _("System database not found or corrupted")
-            raise exceptionTools.SystemDatabaseError("SystemDatabaseError: %s: %s" % (
-                    t,
-                    etpConst['etpdatabaseclientfilepath'],
-                )
+            conn = load_db_from_ram()
+        else:
+            conn = EntropyDatabaseInterface(
+                readOnly = False,
+                dbFile = etpConst['etpdatabaseclientfilepath'],
+                clientDatabase = True,
+                dbname = etpConst['clientdbid'],
+                xcache = self.xcache,
+                indexing = self.indexing,
+                OutputInterface = self,
+                ServiceInterface = self
             )
-        conn = EntropyDatabaseInterface(
-            readOnly = False,
-            dbFile = etpConst['etpdatabaseclientfilepath'],
-            clientDatabase = True,
-            dbname = etpConst['clientdbid'],
-            xcache = self.xcache,
-            indexing = self.indexing,
-            OutputInterface = self,
-            ServiceInterface = self
-        )
-        # validate database
-        if not self.noclientdb:
-            conn.validateDatabase()
+            # validate database
+            if not self.noclientdb:
+                try:
+                    conn.validateDatabase()
+                except exceptionTools.SystemDatabaseError, e:
+                    try: conn.closeDB()
+                    except: pass
+                    conn = load_db_from_ram()
+
         if not etpConst['dbconfigprotect']:
 
             if conn.doesTableExist('configprotect') and conn.doesTableExist('configprotectreference'):
@@ -914,7 +935,7 @@ class EquoInterface(TextInterface):
                     type = "error",
                     header = red(" @@ ")
                 )
-            return False
+            return False, mytxt
 
         def get_ts():
             from datetime import datetime
@@ -938,7 +959,7 @@ class EquoInterface(TextInterface):
         except:
             if not silent:
                 self.entropyTools.printTraceback()
-            return False
+            return False, _("Unable to compress")
 
         if not silent:
             mytxt = "%s: %s" % (darkgreen(_("Database backed up successfully")),blue(comp_dbpath),)
@@ -949,13 +970,13 @@ class EquoInterface(TextInterface):
                 header = blue(" @@ "),
                 back = True
             )
-        return True
+        return True, _("All fine")
 
     def restoreDatabase(self, backup_path, db_destination, silent = False):
 
         bytes_required = 1024000*300
-        if not (os.access(db_destination,os.W_OK) and \
-                os.path.isfile(db_destination) and os.path.isfile(backup_path) and \
+        if not (os.access(os.path.dirname(db_destination),os.W_OK) and \
+                os.path.isdir(os.path.dirname(db_destination)) and os.path.isfile(backup_path) and \
                 os.access(backup_path,os.R_OK) and self.entropyTools.check_required_space(os.path.dirname(db_destination), bytes_required)):
             if not silent:
                 mytxt = "%s: %s, %s" % (darkred(_("Cannot restore selected backup")),blue(backup_path),darkred(_("permission denied")),)
@@ -965,7 +986,7 @@ class EquoInterface(TextInterface):
                     type = "error",
                     header = red(" @@ ")
                 )
-            return False
+            return False, mytxt
 
         if not silent:
             mytxt = "%s: %s => %s ..." % (darkgreen(_("Restoring backed up database")),blue(os.path.basename(backup_path)),blue(db_destination),)
@@ -983,7 +1004,7 @@ class EquoInterface(TextInterface):
         except:
             if not silent:
                 self.entropyTools.printTraceback()
-            return False
+            return False, _("Unable to unpack")
 
         if not silent:
             mytxt = "%s: %s" % (darkgreen(_("Database restored successfully")),blue(db_destination),)
@@ -994,7 +1015,8 @@ class EquoInterface(TextInterface):
                 header = blue(" @@ "),
                 back = True
             )
-        return True
+        self.purge_cache()
+        return True, _("All fine")
 
     def list_backedup_client_databases(self):
         client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
@@ -3634,7 +3656,7 @@ class EquoInterface(TextInterface):
         data['digest'] = self.entropyTools.md5sum(tbz2File)
         data['datecreation'] = str(self.entropyTools.getFileUnixMtime(tbz2File))
         # .tbz2 byte size
-        data['size'] = str(os.stat(tbz2File)[6])
+        data['size'] = str(self.entropyTools.get_file_size(tbz2File))
 
         # unpack file
         tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
@@ -3788,7 +3810,7 @@ class EquoInterface(TextInterface):
             data['disksize'] = 0
             for item in data['content']:
                 try:
-                    size = os.stat(item)[6]
+                    size = self.entropyTools.get_file_size(item)
                     data['disksize'] += size
                 except:
                     pass
@@ -7543,11 +7565,11 @@ class RepoInterface:
             ),
             (
                 "notice_board",
-                os.path.basename(etpRepositories[repo]['notice_board']),
+                os.path.basename(etpRepositories[repo]['local_notice_board']),
                 True,
                 "%s %s %s" % (
                     red(_("Downloading Notice Board")),
-                    darkgreen(os.path.basename(etpRepositories[repo]['notice_board'])),
+                    darkgreen(os.path.basename(etpRepositories[repo]['local_notice_board'])),
                     red("..."),
                 )
             )
@@ -8277,7 +8299,7 @@ class FtpInterface:
             try:
                 f = open(file,"r")
                 # get file size
-                self.myFileSize = round(float(os.stat(file)[6])/1024,1)
+                self.myFileSize = round(float(self.entropyTools.get_file_size(file))/1024,1)
                 self.mykByteCount = 0
 
                 if self.isFileAvailable(filename+".tmp"):
@@ -8405,11 +8427,11 @@ class FtpInterface:
 class rssFeed:
 
     import entropyTools
-    def __init__(self, filename, maxentries = 100):
+    def __init__(self, filename, title, description, maxentries = 100):
 
-        self.feed_title = etpConst['systemname']+" Online Repository Status"
+        self.feed_title = title
         self.feed_title = self.feed_title.strip()
-        self.feed_description = "Keep you updated on what's going on in the %s Repository." % (etpConst['systemname'],)
+        self.feed_description = description
         self.feed_language = "en-EN"
         self.feed_editor = etpConst['rss-managing-editor']
         self.feed_copyright = "%s - (C) %s" % (
@@ -8430,7 +8452,6 @@ class rssFeed:
             try:
                 self.xmldoc = self.minidom.parse(self.file)
             except:
-                #time.sleep(5)
                 broken = True
 
         if not os.path.isfile(self.file) or broken:
@@ -8444,7 +8465,6 @@ class rssFeed:
             f.write('')
             f.close()
         else:
-            # parse file
             self.rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
             self.channel = self.rssdoc.getElementsByTagName("channel")[0]
             self.title = self.channel.getElementsByTagName("title")[0].firstChild.data.strip()
@@ -8493,9 +8513,10 @@ class rssFeed:
         return self.itemscounter
 
     def removeEntry(self, id):
-        del self.items[id]
-        self.itemscounter -= 1
-        return len(self.itemscounter)
+        if id in self.items:
+            del self.items[id]
+            self.itemscounter -= 1
+        return self.itemscounter
 
     def getEntries(self):
         return self.items, self.itemscounter
@@ -8603,7 +8624,7 @@ class rssFeed:
         rss.appendChild(channel)
         doc.appendChild(rss)
         f = open(self.file,"w")
-        f.writelines(doc.toprettyxml(indent="    "))
+        f.writelines(doc.toprettyxml(indent="    ").encode('utf-8'))
         f.flush()
         f.close()
 
@@ -16233,6 +16254,11 @@ class ServerInterface(TextInterface):
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-light-name'])
 
+    def get_local_database_notice_board_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-notice-board'])
+
     def get_local_database_treeupdates_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
@@ -17649,7 +17675,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             mypath = os.path.join(self.STORE_PATH,myfilename)
             if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
                 try:
-                    mydict['size'] = int(os.stat(mypath)[6])
+                    mydict['size'] = self.entropyTools.get_file_size(mypath)
                 except OSError:
                     pass
             mydict['store_url'] = os.path.join(self.store_url,myfilename)
@@ -20461,7 +20487,7 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
         chunk = f.read(8192)
         base_path = os.path.basename(file_path)
         transferred = len(chunk)
-        max_size = int(os.stat(file_path)[6])
+        max_size = self.entropyTools.get_file_size(file_path)
         while chunk:
 
             if (not self.Service.quiet) or self.Service.show_progress:
@@ -21171,7 +21197,19 @@ class SystemManagerExecutorServerRepositoryInterface:
             'run_entropy_checksum_test': {
                 'func': self.run_entropy_checksum_test,
                 'args': 3,
-            }
+            },
+            'get_notice_board': {
+                'func': self.get_notice_board,
+                'args': 2,
+            },
+            'remove_notice_board_entries': {
+                'func': self.remove_notice_board_entries,
+                'args': 3,
+            },
+            'add_notice_board_entry': {
+                'func': self.add_notice_board_entry,
+                'args': 5,
+            },
         }
 
     def _set_processing_pid(self, queue_id, process_pid):
@@ -21468,7 +21506,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 )
                 return switched
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21531,7 +21568,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 return True,mydict
 
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21635,7 +21671,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 return True, mydict
 
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21669,7 +21704,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21702,7 +21736,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21743,7 +21776,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21781,7 +21813,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21868,7 +21899,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -21986,7 +22016,6 @@ class SystemManagerExecutorServerRepositoryInterface:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
             finally:
-                sys.stdout.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
                 sys.stdout = sys.__stdout__
@@ -22012,6 +22041,109 @@ class SystemManagerExecutorServerRepositoryInterface:
         for myid in glsa_ids:
             data[myid] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_glsa_id_information(myid)
         return True,data
+
+    def get_notice_board(self, queue_id, repoid):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"a+")
+
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.read_notice_board(repo = repoid)
+                if data == None:
+                    return False,None
+                return True,data
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,unicode(e)
+            finally:
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
+
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.close()
+        return mydata
+
+    def remove_notice_board_entries(self, queue_id, repoid, entry_ids):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"a+")
+
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                for entry_id in entry_ids:
+                    data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.remove_from_notice_board(entry_id, repo = repoid)
+                self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.upload_notice_board(repo = repoid)
+                return True,data
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,unicode(e)
+            finally:
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
+
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.close()
+        return mydata
+
+    def add_notice_board_entry(self, queue_id, repoid, title, notice_text, link):
+
+        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
+        if queue_data == None:
+            return False,'no item in queue'
+
+        stdout_err = open(queue_data['stdout'],"a+")
+
+        def myfunc():
+            sys.stdout = stdout_err
+            sys.stderr = stdout_err
+            mystdin = self._get_stdin(queue_id)
+            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            try:
+                data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.update_notice_board(title, notice_text, link = link, repo = repoid)
+                return True,data
+            except Exception, e:
+                self.entropyTools.printTraceback()
+                return False,unicode(e)
+            finally:
+                sys.stdout.write("\n### Done ###\n")
+                sys.stdout.flush()
+                sys.stdout = sys.__stdout__
+                sys.stderr = sys.__stderr__
+                sys.stdin = sys.__stdin__
+
+        def write_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
+        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.close()
+        return mydata
 
     def _get_stdin(self, queue_id):
         mystdin = None
@@ -22115,7 +22247,8 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'srvrepo:remove_entropy_packages',
             'srvrepo:search_entropy_packages',
             'srvrepo:run_entropy_database_updates',
-            'srvrepo:run_entropy_mirror_updates'
+            'srvrepo:run_entropy_mirror_updates',
+            'srvrepo:add_notice_board_entry'
         ]
         self.valid_commands = {
             'srvrepo:sync_spm':    {
@@ -22376,6 +22509,36 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "run Entropy packages checksum verification tool",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_checksum_test <repoid> <mode>",
+                'from': unicode(self)
+            },
+            'srvrepo:get_notice_board':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_get_notice_board,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "get repository notice board",
+                'syntax': "<SESSION_ID> srvrepo:get_notice_board <repoid>",
+                'from': unicode(self)
+            },
+            'srvrepo:remove_notice_board_entries':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_remove_notice_board_entries,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "remove notice board entries",
+                'syntax': "<SESSION_ID> srvrepo:remove_notice_board_entries <repoid> <entry_id1> <entry_id2> <...>",
+                'from': unicode(self)
+            },
+            'srvrepo:add_notice_board_entry':    {
+                'auth': True,
+                'built_in': False,
+                'cb': self.docmd_add_notice_board_entry,
+                'args': ["cmd","myargs","authenticator"],
+                'as_user': False,
+                'desc': "remove notice board entry",
+                'syntax': "<SESSION_ID> srvrepo:add_notice_board_entry <xml formatted data>",
                 'from': unicode(self)
             },
         }
@@ -22962,6 +23125,68 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
 
         dbconn.closeDB()
         return True, search_results
+
+    def docmd_get_notice_board(self, cmd, myargs, authenticator):
+
+        if not myargs:
+            return False,'wrong arguments'
+        repoid = myargs[0]
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_notice_board', [repoid], {}, True, True, interactive = True)
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_remove_notice_board_entries(self, cmd, myargs, authenticator):
+
+        if len(myargs) < 2:
+            return False,'wrong arguments'
+        repoid = myargs[0]
+        entry_ids = myargs[1:]
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(
+            cmd, ' '.join([unicode(x) for x in myargs]), uid, gid,
+            'remove_notice_board_entries', [repoid,entry_ids], {}, True, False, interactive = True
+        )
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
+
+    def docmd_add_notice_board_entry(self, cmd, myargs, authenticator):
+
+        if not myargs:
+            return False,'wrong arguments'
+
+        xml_string = ' '.join(myargs)
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None,"error: %s" % (e,)
+        if not (mydict.has_key('repoid') and mydict.has_key('title') and \
+                mydict.has_key('notice_text') and mydict.has_key('link')):
+            return None,'wrong dict arguments, xml must have 4 items with attr value -> repoid, title, notice_text, link'
+
+        repoid = mydict.get('repoid')
+        title = mydict.get('title')
+        notice_text = mydict.get('notice_text')
+        link = mydict.get('link')
+
+        status, userdata, err_str = authenticator.docmd_userdata()
+        uid = userdata.get('uid')
+        gid = userdata.get('gid')
+
+        queue_id = self.HostInterface.add_to_queue(
+            cmd, ' '.join(myargs), uid, gid,
+            'add_notice_board_entry', [repoid,title,notice_text,link], {}, True, False, interactive = True
+        )
+        if queue_id < 0: return False, queue_id
+        return True, queue_id
 
     def _get_entropy_pkginfo(self, dbconn, idpackage, repoid):
         data = {}
@@ -24338,6 +24563,42 @@ class SystemManagerRepositoryClientCommands(SystemManagerClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
+    def get_notice_board(self, session_id, repoid):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:get_notice_board',
+            repoid,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def remove_notice_board_entries(self, session_id, repoid, entry_ids):
+
+        cmd = "%s %s %s %s" % (
+            session_id,
+            'srvrepo:remove_notice_board_entries',
+            repoid,
+             ' '.join([str(x) for x in entry_ids]),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def add_notice_board_entry(self, session_id, repoid, title, notice_text, link):
+
+        mydict = {
+            'repoid': repoid,
+            'title': title,
+            'notice_text': notice_text,
+            'link': link,
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'srvrepo:add_notice_board_entry',
+            xml_string,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
 class SystemManagerMethodsInterface:
 
     def __init__(self, SystemManagerClientInstance):
@@ -24705,6 +24966,32 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
                 'call': self.run_entropy_mirror_updates,
                 'private': False,
             },
+            'get_notice_board': {
+                'desc': _("Get repository notice board"),
+                'params': [('repoid',basestring,_('Repository Identifier'),True,),],
+                'call': self.get_notice_board,
+                'private': False,
+            },
+            'remove_notice_board_entries': {
+                'desc': _("Remove notice board entry"),
+                'params': [
+                    ('repoid',basestring,_('Repository Identifier'),True,),
+                    ('entry_ids',list,_('Entry Identifiers'),True,),
+                ],
+                'call': self.remove_notice_board_entries,
+                'private': False,
+            },
+            'add_notice_board_entry': {
+                'desc': _("Add notice board entry"),
+                'params': [
+                    ('repoid',basestring,_('Repository Identifier'),True,),
+                    ('title',basestring,_('Title'),True,),
+                    ('notice_text',basestring,_('Text'),True,),
+                    ('link',basestring,_('Notice link'),True,),
+                ],
+                'call': self.add_notice_board_entry,
+                'private': False,
+            },
         })
 
     def sync_spm(self):
@@ -24809,6 +25096,15 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 
     def run_entropy_checksum_test(self, repoid, mode = "local"):
         return self.Manager.do_cmd(True, "run_entropy_checksum_test", [repoid, mode], {})
+
+    def get_notice_board(self, repoid):
+        return self.Manager.do_cmd(True, "get_notice_board", [repoid], {})
+
+    def remove_notice_board_entries(self, repoid, entry_ids):
+        return self.Manager.do_cmd(True, "remove_notice_board_entries", [repoid,entry_ids], {})
+
+    def add_notice_board_entry(self, repoid, title, notice_text, link):
+        return self.Manager.do_cmd(True, "add_notice_board_entry", [repoid,title,notice_text,link], {})
 
 class SystemManagerClientInterface:
 
@@ -26236,6 +26532,140 @@ class ServerMirrorsInterface:
             dbstatus.append(data)
         return dbstatus
 
+    def download_notice_board(self, repo = None):
+
+        if repo == None: repo = self.Entropy.default_repository
+        mirrors = self.Entropy.get_remote_mirrors(repo)
+        rss_path = self.Entropy.get_local_database_notice_board_file(repo)
+        mytmpdir = self.entropyTools.getRandomTempFile()
+        os.makedirs(mytmpdir)
+
+        self.Entropy.updateProgress(
+            "[repo:%s] %s %s" % (
+                    brown(repo),
+                    blue(_("downloading notice board from mirrors to")),
+                    red(rss_path),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+        downloaded = False
+        for uri in mirrors:
+            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            downloader = self.FileTransceiver(
+                self.FtpInterface, self.Entropy, [uri],
+                [rss_path], download = True,
+                local_basedir = mytmpdir, critical_files = [rss_path], repo = repo
+            )
+            errors, m_fine_uris, m_broken_uris = downloader.go()
+            if not errors:
+                self.Entropy.updateProgress(
+                    "[repo:%s] %s: %s" % (
+                            brown(repo),
+                            blue(_("notice board downloaded successfully from")),
+                            red(crippled_uri),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                downloaded = True
+                break
+
+        if downloaded:
+            shutil.move(os.path.join(mytmpdir,os.path.basename(rss_path)),rss_path)
+
+        return downloaded
+
+    def upload_notice_board(self, repo = None):
+
+        if repo == None: repo = self.Entropy.default_repository
+        mirrors = self.Entropy.get_remote_mirrors(repo)
+        rss_path = self.Entropy.get_local_database_notice_board_file(repo)
+
+        self.Entropy.updateProgress(
+            "[repo:%s] %s %s" % (
+                    brown(repo),
+                    blue(_("uploading notice board from")),
+                    red(rss_path),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+        uploader = self.FileTransceiver(
+            self.FtpInterface,
+            self.Entropy,
+            mirrors,
+            [rss_path],
+            critical_files = [rss_path],
+            repo = repo
+        )
+        errors, m_fine_uris, m_broken_uris = uploader.go()
+        if errors:
+            m_broken_uris = sorted(list(m_broken_uris))
+            m_broken_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_broken_uris]
+            self.Entropy.updateProgress(
+                "[repo:%s] %s %s" % (
+                        brown(repo),
+                        blue(_("notice board upload failed on")),
+                        red(', '.join(m_broken_uris)),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            return False
+        self.Entropy.updateProgress(
+            "[repo:%s] %s" % (
+                    brown(repo),
+                    blue(_("notice board upload success")),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
+        )
+        return True
+
+
+    def update_notice_board(self, title, notice_text, link = None, repo = None):
+
+        rss_title = "%s Notice Board" % (etpConst['systemname'],)
+        rss_description = "Inform about important distribution activities."
+        rss_path = self.Entropy.get_local_database_notice_board_file(repo)
+        if not link: link = etpConst['rss-website-url']
+
+        self.download_notice_board(repo)
+        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = 20)
+        Rss.addItem(title, link, description = notice_text)
+        Rss.writeChanges()
+        status = self.upload_notice_board(repo)
+        return status
+
+    def read_notice_board(self, do_download = True, repo = None):
+
+        rss_path = self.Entropy.get_local_database_notice_board_file(repo)
+        if do_download: self.download_notice_board(repo)
+        if not (os.path.isfile(rss_path) and os.access(rss_path,os.R_OK)):
+            return None
+        Rss = self.rssFeed(rss_path, '', '')
+        return Rss.getEntries()
+
+    def remove_from_notice_board(self, identifier, repo = None):
+
+        rss_path = self.Entropy.get_local_database_notice_board_file(repo)
+        rss_title = "%s Notice Board" % (etpConst['systemname'],)
+        rss_description = "Inform about important distribution activities."
+        if not (os.path.isfile(rss_path) and os.access(rss_path,os.R_OK)):
+            return 0
+        Rss = self.rssFeed(rss_path, rss_title, rss_description)
+        data = Rss.removeEntry(identifier)
+        Rss.writeChanges()
+        return data
+
     def update_rss_feed(self, repo = None):
 
         #db_dir = self.Entropy.get_local_database_dir(repo)
@@ -26244,7 +26674,9 @@ class ServerMirrorsInterface:
         rss_dump_name = etpConst['rss-dump-name']
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
-        Rss = self.rssFeed(rss_path, maxentries = etpConst['rss-max-entries'])
+        rss_title = "%s Online Repository Status" % (etpConst['systemname'],)
+        rss_description = "Keep you updated on what's going on in the %s Repository." % (etpConst['systemname'],)
+        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = etpConst['rss-max-entries'])
         # load dump
         db_actions = self.dumpTools.loadobj(rss_dump_name)
         if db_actions:
@@ -26273,7 +26705,7 @@ class ServerMirrorsInterface:
                     Rss.addItem(title = "Removed"+title, link = link, description = description)
             light_items = db_actions.get('light')
             if light_items:
-                rssLight = self.rssFeed(rss_light_path, maxentries = etpConst['rss-light-max-entries'])
+                rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = etpConst['rss-light-max-entries'])
                 for atom in light_items:
                     mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
                     description = light_items[atom]['description']
@@ -27161,7 +27593,11 @@ class ServerMirrorsInterface:
 
             if not pretend:
                 # download
-                downloader = self.FileTransceiver(self.FtpInterface, self.Entropy, [uri], [download_data[x] for x in download_data], download = True, local_basedir = mytmpdir, critical_files = critical, repo = repo)
+                downloader = self.FileTransceiver(
+                    self.FtpInterface, self.Entropy, [uri],
+                    [download_data[x] for x in download_data], download = True,
+                    local_basedir = mytmpdir, critical_files = critical, repo = repo
+                )
                 errors, m_fine_uris, m_broken_uris = downloader.go()
                 if errors:
                     my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
@@ -27634,7 +28070,7 @@ class ServerMirrorsInterface:
         for local_package in upload_packages:
             if local_package in remote_packages:
                 local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,local_package)
-                local_size = int(os.stat(local_filepath)[6])
+                local_size = self.entropyTools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
                     remote_size = 0
@@ -27652,7 +28088,7 @@ class ServerMirrorsInterface:
         for local_package in local_packages:
             if local_package in remote_packages:
                 local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,local_package)
-                local_size = int(os.stat(local_filepath)[6])
+                local_size = self.entropyTools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size == None:
                     remote_size = 0
@@ -27669,7 +28105,7 @@ class ServerMirrorsInterface:
         for remote_package in remote_packages:
             if remote_package in local_packages:
                 local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remote_package)
-                local_size = int(os.stat(local_filepath)[6])
+                local_size = self.entropyTools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size == None:
                     remote_size = 0
@@ -27730,7 +28166,7 @@ class ServerMirrorsInterface:
             if not item.endswith(etpConst['packagesext']):
                 continue
             local_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
-            size = int(os.stat(local_filepath)[6])
+            size = self.entropyTools.get_file_size(local_filepath)
             metainfo['removal'] += size
             removal.append((local_filepath,size))
 
@@ -27746,7 +28182,7 @@ class ServerMirrorsInterface:
                 metainfo['removal'] += size
                 download.append((local_filepath,size))
             else:
-                size = int(os.stat(local_filepath)[6])
+                size = self.entropyTools.get_file_size(local_filepath)
                 copy.append((local_filepath,size))
 
         for item in uploadQueue:
@@ -27755,10 +28191,10 @@ class ServerMirrorsInterface:
             local_filepath = os.path.join(self.Entropy.get_local_upload_directory(repo),branch,item)
             local_filepath_pkgs = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,item)
             if os.path.isfile(local_filepath):
-                size = int(os.stat(local_filepath)[6])
+                size = self.entropyTools.get_file_size(local_filepath)
                 upload.append((local_filepath,size))
             else:
-                size = int(os.stat(local_filepath_pkgs)[6])
+                size = self.entropyTools.get_file_size(local_filepath_pkgs)
                 upload.append((local_filepath_pkgs,size))
             metainfo['upload'] += size
 
@@ -28432,6 +28868,8 @@ class EntropyDatabaseInterface:
         self.dbname = dbname
         self.lockRemote = lockRemote
         self.db_branch = etpConst['branch']
+        if self.dbname == etpConst['clientdbid']:
+            self.db_branch = None
         if useBranch != None: self.db_branch = useBranch
 
         if OutputInterface == None:
@@ -30112,8 +30550,8 @@ class EntropyDatabaseInterface:
 
     def insertCounter(self, idpackage, counter, branch = None):
         self.checkReadOnly()
-        if not branch:
-            branch = self.db_branch
+        if not branch: branch = self.db_branch
+        if not branch: branch = etpConst['branch']
         self.WriteLock.acquire()
         try:
             self.cursor.execute('DELETE FROM counters WHERE (counter = (?) OR idpackage = (?)) AND branch = (?)', (counter,idpackage,branch,))
@@ -30141,8 +30579,6 @@ class EntropyDatabaseInterface:
         if branch:
             branchstring = ', branch = (?)'
             insertdata.insert(1,branch)
-        else:
-            branch = self.db_branch
 
         self.WriteLock.acquire()
         try:
@@ -30534,11 +30970,8 @@ class EntropyDatabaseInterface:
 
     def retrieveTreeUpdatesActions(self, repository, forbranch = None):
 
-        if not self.doesTableExist("treeupdatesactions"):
-            return set()
-
-        if forbranch == None:
-            forbranch = self.db_branch
+        if not self.doesTableExist("treeupdatesactions"): return []
+        if forbranch == None: forbranch = self.db_branch
         params = [repository]
         branch_string = ''
         if forbranch:
@@ -33123,11 +33556,7 @@ class EntropyDatabaseInterface:
             pkgname = splitkey[0]
             pkgcat = "null"
 
-        if self.dbname == etpConst['clientdbid']:
-            myBranchIndex = (None,)
-        else:
-            myBranchIndex = (self.db_branch,)
-
+        myBranchIndex = (self.db_branch,)
         if matchBranches:
             # force to tuple for security
             myBranchIndex = tuple(matchBranches)

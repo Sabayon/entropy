@@ -764,6 +764,13 @@ def const_defaultSettings(rootdir):
             11: _('user live unmask'),
             12: _('user live mask'),
         },
+        'safemodeerrors': {
+            'clientdb': 1,
+        },
+        'safemodereasons': {
+            0: _("All fine"),
+            1: _("Corrupted Entropy installed packages database. Please restore a backup."),
+        },
 
         'misc_counters': {
             'forced_atoms_update_ids': {
@@ -905,7 +912,8 @@ def const_extractClientRepositoryParameters(repostring):
         mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
     mydata['plain_database'] = repodatabase
     mydata['database'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/database/"+etpConst['currentarch']+"/"+etpConst['branch']
-    mydata['notice_board'] = repodatabase+"/"+etpConst['product']+"/"+reponame+"/"+etpConst['rss-notice-board']
+    mydata['notice_board'] = mydata['database']+"/"+etpConst['rss-notice-board']
+    mydata['local_notice_board'] = mydata['dbpath']+"/"+etpConst['rss-notice-board']
     mydata['dbrevision'] = "0"
     dbrevision_file = os.path.join(mydata['dbpath'],etpConst['etpdatabaserevisionfile'])
     if os.path.isfile(dbrevision_file) and os.access(dbrevision_file,os.R_OK):
