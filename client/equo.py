@@ -70,6 +70,7 @@ myopts = [
         (2,'package.keywords [repos]',1,_('show package.keywords for the chosen repositories')),
         (2,'package.use [repos]',2,_('show package.use for the chosen repositories')),
         (2,'profile.link [repos]',2,_('show make.profile link for the chosen repositories')),
+    (1,'notice [repos]',1,_('repository notice board reader')),
     (1,'status',2,_('show respositories status')),
     None,
     (1,'search',2,_('search packages in repositories')),
@@ -251,6 +252,11 @@ myopts = [
             (3,'--verbose',2,_('show more details')),
             (3,'--quiet',3,_('print results in a scriptable way')),
 
+        (2,'notice',2,_('notice board handling functions')),
+            (3,'add',3,_('add a news item to the notice board')),
+            (3,'remove',3,_('remove a news item from the notice board')),
+            (3,'read',3,_('read the current notice board')),
+
         (2,'deptest',2,_('look for unsatisfied dependencies across community repositories')),
         (2,'depends',2,_('regenerate the depends table')),
 
@@ -402,7 +408,7 @@ def load_conf_cache():
 try:
     rc = 0
     # sync mirrors tool
-    if (options[0] == "update") or (options[0] == "repoinfo") or (options[0] == "status"):
+    if options[0] in ("update","repoinfo","status","notice",):
         import text_repositories
         rc = text_repositories.repositories(options)
 
@@ -543,6 +549,17 @@ try:
                     rc = 1
                 else:
                     rc = server_reagent.repositories(myopts[1:])
+
+            elif myopts[0] == "notice":
+                try:
+                    import server_activator
+                    if not hasattr(server_activator,'notice'):
+                        raise ImportError
+                except ImportError:
+                    print_error(darkgreen(_("You need to install/update sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    rc = server_activator.notice(myopts[1:])
 
             elif myopts[0] == "query":
                 try:

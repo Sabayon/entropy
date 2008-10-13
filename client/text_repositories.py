@@ -28,7 +28,7 @@
 from entropyConstants import *
 from outputTools import *
 import exceptionTools
-from entropy import EquoInterface
+from entropy import EquoInterface, rssFeed
 Equo = EquoInterface(noclientdb = True)
 from entropy_i18n import _
 
@@ -61,6 +61,16 @@ def repositories(options):
             rc = -10
         else:
             rc = showRepositoryFile(myopts[0], myopts[1:])
+
+    elif (options[0] == "notice"):
+        myopts = options[1:]
+        myopts = [x for x in myopts if x in etpRepositories]
+        if not myopts:
+            rc = -10
+        else:
+            rc = 0
+            for repoid in myopts:
+                noticeBoardReader(repoid)
     else:
         rc = -10
     return rc
@@ -148,7 +158,6 @@ def showRepositoryInfo(reponame):
 
     return 0
 
-
 def do_sync(reponames = [], forceUpdate = False):
 
     # load repository class
@@ -169,6 +178,124 @@ def do_sync(reponames = [], forceUpdate = False):
         return 2
 
     rc = repoConn.sync()
+    if not rc:
+        for reponame in reponames:
+            showNoticeBoardSummary(reponame)
     return rc
 
+def check_notice_board_availability(reponame):
+    def show_err():
+        print_error(darkred(" @@ ")+blue("%s" % (_("Notice board not available"),) ))
 
+    board_file = etpRepositories[reponame]['local_notice_board']
+    if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
+        show_err()
+        return
+    if Equo.entropyTools.get_file_size(board_file) < 10:
+        show_err()
+        return
+
+    try:
+        myrss = rssFeed(board_file,'','')
+    except:
+        show_err()
+        return None
+    data = myrss.getEntries()
+    if data == None:
+        show_err()
+    return data
+
+def show_notice(key, mydict):
+
+    mytxt = "[%s] [%s] %s: %s" % (
+        blue(str(key)),
+        brown(mydict['pubDate']),
+        _("Title"),
+        darkred(mydict['title']),
+    )
+    print_info(mytxt)
+
+    mytxt = "\t%s: %s" % (
+        darkgreen(_("Content")),
+        blue(mydict['description']),
+    )
+    print_info(mytxt)
+    mytxt = "\t%s: %s" % (
+        darkgreen(_("Link")),
+        blue(mydict['link']),
+    )
+    print_info(mytxt)
+
+    def fake_callback(s):
+        return True
+
+    input_params = [('idx',_('Press Enter to continue'),fake_callback,False)]
+    Equo.inputBox('', input_params, cancel_button = True)
+    return
+
+
+def show_notice_selector(title, mydict):
+    mykeys = sorted(mydict.keys())
+
+    for key in mykeys:
+        mydata = mydict.get(key)
+        mytxt = "[%s] [%s] %s: %s" % (
+            blue(str(key)),
+            brown(mydata['pubDate']),
+            _("Title"),
+            darkred(mydata['title']),
+        )
+        print_info(mytxt)
+
+    mytxt = "[%s] %s" % (
+        blue("-1"),
+        darkred(_("Exit")),
+    )
+    print_info(mytxt)
+
+    def fake_callback(s):
+        return s
+    input_params = [('id',blue(_('Choose one by typing its identifier')),fake_callback,False)]
+    data = Equo.inputBox(title, input_params, cancel_button = True)
+    if not isinstance(data,dict):
+        return -1
+    try:
+        return int(data['id'])
+    except ValueError:
+        return -2
+
+def noticeBoardReader(reponame):
+
+    data = check_notice_board_availability(reponame)
+    if data == None: return
+    items, counter = data
+    while 1:
+        try:
+            sel = show_notice_selector('', items)
+        except KeyboardInterrupt:
+            return 0
+        if (sel >= 0) and (sel <= counter):
+            show_notice(sel, items.get(sel))
+        elif sel == -1:
+            return 0
+
+
+def showNoticeBoardSummary(reponame):
+
+    mytxt = "%s %s: %s" % (darkgreen(" @@ "),brown(_("Notice board")),bold(reponame),)
+    print_info(mytxt)
+
+    data = check_notice_board_availability(reponame)
+    if data == None: return
+
+    mydict, mylen = data
+    mykeys = sorted(mydict.keys())
+    for key in mykeys:
+        mydata = mydict.get(key)
+        mytxt = "    [%s] [%s] %s: %s" % (
+            blue(str(key)),
+            brown(mydata['pubDate']),
+            _("Title"),
+            darkred(mydata['title']),
+        )
+        print_info(mytxt)

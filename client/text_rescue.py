@@ -599,7 +599,7 @@ def database(options):
 
     elif (options[0] == "backup"):
 
-        status = Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
+        status, err_msg = Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
         if status:
             return 0
         return 1
@@ -630,7 +630,7 @@ def database(options):
         myid, dbx = data['db']
         dbpath = dblist[myid]
 
-        status = Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
+        status, err_msg = Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
         if status:
             return 0
         return 1
