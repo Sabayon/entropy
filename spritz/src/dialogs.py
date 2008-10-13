@@ -17,7 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import time, gtk, gobject, pango, thread, pty
+import time, gtk, gobject, pango, thread, pty, sys
 from etpgui.widgets import UI
 from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities, fakeoutfile, fakeinfile
@@ -53,6 +53,109 @@ class MenuSkel:
             result.extend(list(currClass.__bases__))
             i = i + 1
         return result
+
+class NoticeBoardWindow(MenuSkel):
+
+    def __init__( self, window, entropy ):
+
+        from entropy import rssFeed
+        self.rssFeed = rssFeed
+        self.Entropy = entropy
+        self.window = window
+
+        self.nb_ui = UI( const.GLADE_FILE, 'noticeBoardWindow', 'entropy' )
+        self.nb_ui.signal_autoconnect(self._getAllMethods())
+        self.nb_ui.noticeBoardWindow.set_transient_for(self.window)
+
+        mytxt = "<big><b>%s</b></big>\n<small>%s</small>" % (
+            _("Repositories Notice Board"),
+            _("Here below you will find a list of important news directly issued by your applications maintainers. Double click on each item to retrieve detailed info."),
+        )
+        self.nb_ui.noticeBoardLabel.set_markup(mytxt)
+        self.view = self.nb_ui.noticeView
+        self.model = self.setup_view()
+
+
+    def load(self, repoids):
+        self.repoids = repoids
+        self.show_data()
+        self.view.expand_all()
+        self.nb_ui.noticeBoardWindow.show_all()
+
+    def setup_view(self):
+        model = gtk.TreeStore( gobject.TYPE_PYOBJECT )
+        self.view.set_model( model )
+        self.create_text_column( _( "Notice" ), size = 200, expand = True, set_height = 40 )
+        return model
+
+    def text_data_func( self, column, cell, model, iterator ):
+        obj = model.get_value(iterator, 0)
+        if obj:
+            if obj.has_key('is_repo'):
+                cell.set_property('markup',"<big><b>%s</b></big>\n<small>%s</small>" % (cleanMarkupString(obj['name']),cleanMarkupString(obj['desc']),))
+            else:
+                mytxt = '<b><u>%s</u></b>\n<small><b>%s</b>: %s</small>' % (
+                    cleanMarkupString(obj['pubDate']),
+                    _("Title"),
+                    cleanMarkupString(obj['title']),
+                )
+                cell.set_property('markup',mytxt)
+            cell.set_property('cell-background',obj['color'])
+
+    def create_text_column( self, hdr, size = None, expand = False, set_height = 0 ):
+        cell = gtk.CellRendererText()
+        if set_height: cell.set_property('height', set_height)
+        column = gtk.TreeViewColumn( hdr, cell )
+        column.set_cell_data_func( cell, self.text_data_func )
+        if size != None:
+            column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+            column.set_fixed_width( size )
+        column.set_resizable( False )
+        column.set_expand( expand )
+        self.view.append_column( column )
+
+    def on_noticeBoardWindow_delete_event(self, *myargs):
+        self.model.clear()
+        self.nb_ui.noticeBoardWindow.destroy()
+        del self.nb_ui
+
+    def on_closeNoticeBoardButton_clicked(self, widget):
+        self.on_noticeBoardWindow_delete_event(widget)
+
+    def on_noticeView_row_activated(self, widget, iterator, path):
+        ( model, iterator ) = widget.get_selection().get_selected()
+        if model != None and iterator != None:
+            obj = model.get_value(iterator, 0)
+            if not obj.has_key('is_repo'):
+                my = RmNoticeBoardMenu(self.nb_ui.noticeBoardWindow)
+                my.load(obj)
+
+    def show_data(self):
+        self.model.clear()
+        colors = ["#CDEEFF","#AFCBDA"]
+        for repoid in self.repoids:
+            counter = 0
+            master_dict = {
+                'is_repo': True,
+                'name': repoid,
+                'desc': etpRepositories[repoid].get('description'),
+                'path': self.repoids[repoid],
+                'color': colors[0]
+            }
+            parent = self.model.append( None, (master_dict,) )
+            try:
+                myrss = self.rssFeed(self.repoids[repoid],'','')
+            except:
+                continue
+            items, entries_len = myrss.getEntries()
+            items = items.copy()
+            items_keys = sorted(items.keys())
+            for key in items_keys:
+                counter += 1
+                mydict = items[key].copy()
+                mydict['color'] = colors[counter%len(colors)]
+                mydict['id'] = key
+                self.model.append( parent, (mydict,) )
 
 class RemoteConnectionMenu(MenuSkel):
 
@@ -463,6 +566,28 @@ class RepositoryManagerMenu(MenuSkel):
         categories_updates_remove_use_image.set_from_stock(gtk.STOCK_REMOVE, 4)
         categories_updates_remove_use_button.set_image(categories_updates_remove_use_image)
 
+        #
+
+        notice_board_view_button = gtk.Button(label = _("View"))
+        notice_board_view_image = gtk.Image()
+        notice_board_view_image.set_from_stock(gtk.STOCK_ZOOM_IN, 4)
+        notice_board_view_button.set_image(notice_board_view_image)
+
+        notice_board_add_button = gtk.Button(label = _("Add"))
+        notice_board_add_image = gtk.Image()
+        notice_board_add_image.set_from_stock(gtk.STOCK_ADD, 4)
+        notice_board_add_button.set_image(notice_board_add_image)
+
+        notice_board_remove_button = gtk.Button(label = _("Remove"))
+        notice_board_remove_image = gtk.Image()
+        notice_board_remove_image.set_from_stock(gtk.STOCK_REMOVE, 4)
+        notice_board_remove_button.set_image(notice_board_remove_image)
+
+        notice_board_refresh_button = gtk.Button(label = _("Refresh"))
+        notice_board_refresh_image = gtk.Image()
+        notice_board_refresh_image.set_from_stock(gtk.STOCK_REFRESH, 4)
+        notice_board_refresh_button.set_image(notice_board_refresh_image)
+
         self.DataViewButtons = {
             'glsa': {
                 'package_info_button': glsa_package_info_button,
@@ -491,6 +616,13 @@ class RepositoryManagerMenu(MenuSkel):
                 'remove_use_button': categories_updates_remove_use_button,
                 'order': ['compile_button','add_use_button','remove_use_button']
             },
+            'notice_board': {
+                'add_button': notice_board_add_button,
+                'remove_button': notice_board_remove_button,
+                'refresh_button': notice_board_refresh_button,
+                'view_button': notice_board_view_button,
+                'order': ['view_button','add_button','remove_button','refresh_button']
+            }
         }
 
         for cat in self.DataViewButtons:
@@ -1233,6 +1365,20 @@ class RepositoryManagerMenu(MenuSkel):
                 data['use'] = data['use'].split()
         return data
 
+    def run_get_notice_board(self, repoid):
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.get_notice_board(repoid)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+        if status:
+            self.update_notice_board_data_view(queue_id, repoid)
+
+
     def run_write_to_running_command_pipe(self, queue_id, write_to_stdout, txt):
         self.wait_channel_call()
         try:
@@ -1245,6 +1391,9 @@ class RepositoryManagerMenu(MenuSkel):
         return status
 
     def run_remove_from_pinboard(self, remove_ids):
+
+        time.sleep(1)
+
         self.wait_channel_call()
         try:
             status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
@@ -1257,6 +1406,9 @@ class RepositoryManagerMenu(MenuSkel):
             self.on_repoManagerPinboardRefreshButton_clicked(None)
 
     def run_add_to_pinboard(self, note, extended_text):
+
+        time.sleep(1)
+
         self.wait_channel_call()
         try:
             status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
@@ -1762,7 +1914,6 @@ class RepositoryManagerMenu(MenuSkel):
                 pass
 
         self.wait_channel_call()
-        status = False
         try:
             status, queue_id = self.Service.Methods.run_entropy_database_updates(to_add, to_remove, to_inject)
         except Exception, e:
@@ -1782,6 +1933,153 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['output'])
         gtk.gdk.threads_leave()
         self.reload_after_package_move(queue_id, reload_func)
+
+    def run_add_notice_board_entry(self, repoid, title, notice_text, link, reload_func = None):
+
+        time.sleep(1)
+
+        if reload_func == None:
+            def reload_func():
+                pass
+
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.add_notice_board_entry(repoid, title, notice_text, link)
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+        if status:
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, result = item['result']
+            if not status: return
+            reload_func()
+
+    def run_remove_notice_board_entries(self, repoid, ids, reload_func = None):
+
+        time.sleep(1)
+
+        if reload_func == None:
+            def reload_func():
+                pass
+
+        self.wait_channel_call()
+        try:
+            status, queue_id = self.Service.Methods.remove_notice_board_entries(repoid, list(ids))
+        except Exception, e:
+            self.service_status_message(e)
+            return
+        finally:
+            self.release_channel_call()
+
+        if status:
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, result = item['result']
+            if not status: return
+            reload_func()
+
+    def update_notice_board_data_view(self, queue_id, repoid):
+
+        item = self.wait_queue_id_to_complete(queue_id)
+        if item == None: return
+        status, repo_data = item['result']
+        if not status: return
+
+        self.clear_data_view()
+        gtk.gdk.threads_enter()
+        self.hide_all_data_view_buttons()
+        self.show_data_view_buttons_cat('notice_board')
+        self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.DataView.set_rubber_banding(True)
+        gtk.gdk.threads_leave()
+
+        def my_data_text( column, cell, model, myiter, property ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                mytxt = '<b><u>%s</u></b>\n<small><b>%s</b>: %s</small>' % (
+                    cleanMarkupString(obj['pubDate']),
+                    _("Title"),
+                    cleanMarkupString(obj['title']),
+                )
+                cell.set_property('markup',mytxt)
+                cell.set_property('cell-background',obj['color'])
+
+        def add_button_clicked(widget):
+
+            def fake_callback(s):
+                return s
+
+            input_params = [
+                ('title',_('Notice title'),fake_callback,False),
+                ('link',_('Link (URL)'),fake_callback,False),
+                ('notice_text',("text",_('Notice text'),),fake_callback,False),
+            ]
+            data = self.Entropy.inputBox(
+                _('Insert your new notice board entry'),
+                input_params,
+                cancel_button = True
+            )
+            if data == None: return
+            def reload_func():
+                self.on_repoManagerNoticeBoardButton_clicked(None, repoid = repoid)
+            t = self.entropyTools.parallelTask(self.run_add_notice_board_entry, repoid, data['title'], data['notice_text'], data['link'], reload_func)
+            t.start()
+
+        def remove_button_clicked(widget):
+
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+            ids = set()
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                ids.add(obj['id'])
+            if ids:
+                def reload_func():
+                    self.on_repoManagerNoticeBoardButton_clicked(None, repoid = repoid)
+                t = self.entropyTools.parallelTask(self.run_remove_notice_board_entries, repoid, ids, reload_func)
+                t.start()
+
+        def refresh_button_clicked(widget):
+            self.on_repoManagerNoticeBoardButton_clicked(None, repoid = repoid)
+
+        def view_button_clicked(widget):
+
+            myiters, model = self.collect_data_view_iters()
+            if model == None: return
+
+            for myiter in myiters:
+                obj = model.get_value(myiter, 0)
+                my = RmNoticeBoardMenu(self.window)
+                my.load(obj)
+
+        gtk.gdk.threads_enter()
+        self.DataViewButtons['notice_board']['add_button'].connect('clicked',add_button_clicked)
+        self.DataViewButtons['notice_board']['remove_button'].connect('clicked',remove_button_clicked)
+        self.DataViewButtons['notice_board']['refresh_button'].connect('clicked',refresh_button_clicked)
+        self.DataViewButtons['notice_board']['view_button'].connect('clicked',view_button_clicked)
+        self.create_text_column( self.DataView, _( "Notice board" ), 'nb', size = 300, cell_data_func = my_data_text, expand = True, set_height = 36)
+        gtk.gdk.threads_leave()
+        self.fill_notice_board_view(repo_data)
+        gtk.gdk.threads_enter()
+        self.set_notebook_page(self.notebook_pages['data'])
+        gtk.gdk.threads_leave()
+
+    def fill_notice_board_view(self, repo_data):
+        colors = ["#CDEEFF","#AFCBDA"]
+        counter = 0
+        items, lenght = repo_data
+        keys = sorted(items.keys())
+        for key in keys:
+            counter += 1
+            item = items[key].copy()
+            item['color'] = colors[counter%len(colors)]
+            item['id'] = key
+            self.DataStore.append( None, (item,) )
+
 
     def entropy_mirror_updates_data_view(self, queue_id):
 
@@ -3219,6 +3517,32 @@ class RepositoryManagerMenu(MenuSkel):
         t = self.entropyTools.parallelTask(self.run_write_to_running_command_pipe, queue_id, write_to_stdout, txt)
         t.start()
 
+    def on_repoManagerNoticeBoardButton_clicked(self, widget, repoid = None):
+
+        avail_repos = self.EntropyRepositories['available'].keys()
+        if not avail_repos: return
+
+        def fake_callback(s):
+            return s
+
+        input_params = []
+        if not repoid:
+            input_params += [
+                ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False),
+            ]
+        if input_params:
+            data = self.Entropy.inputBox(
+                _('Choose what notice board you want to see'),
+                input_params,
+                cancel_button = True
+            )
+            if data == None: return
+            repoid = data['repoid'][1]
+
+        if repoid in avail_repos:
+            t = self.entropyTools.parallelTask(self.run_get_notice_board, repoid)
+            t.start()
+
     def destroy(self):
         self.sm_ui.repositoryManager.destroy()
 
@@ -3270,6 +3594,65 @@ class SmPinboardMenu(MenuSkel):
             item.set_markup("<small>%s</small>" % (t,))
 
         self.sm_ui.smPinboardInfo.show_all()
+
+
+
+class RmNoticeBoardMenu(MenuSkel):
+
+    def __init__(self, window):
+
+        self.window = window
+        self.rm_ui = UI( const.GLADE_FILE, 'rmNoticeBoardInfo', 'entropy' )
+        self.rm_ui.signal_autoconnect(self._getAllMethods())
+        self.rm_ui.rmNoticeBoardInfo.set_transient_for(self.window)
+        self.rm_ui.rmNoticeBoardInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
+        self.url = None
+        gtk.link_button_set_uri_hook(self.load_url, data=self.url)
+
+    def load_url(self, widget, url, extra):
+        import subprocess
+        f = open("/dev/null","w")
+        subprocess.call(['xdg-open',url], stdout = f, stderr = f)
+        f.close()
+
+    def on_rmNoticeBoardCloseButton_clicked(self, widget):
+        self.rm_ui.rmNoticeBoardInfo.hide()
+        self.rm_ui.rmNoticeBoardInfo.destroy()
+
+    def destroy(self):
+        self.rm_ui.rmNoticeBoardInfo.destroy()
+
+    def load(self, item):
+
+        na = _("N/A")
+        self.rm_ui.rmNoticeBoardIdLabel.set_text(unicode(item['id']))
+        self.rm_ui.rmNoticeBoardDateLabel.set_text(cleanMarkupString(unicode(item['pubDate'])))
+        self.rm_ui.rmNoticeBoardTitleLabel.set_text(cleanMarkupString(item['title']))
+        self.rm_ui.rmNoticeBoardLinkLabel.set_label(item['link'])
+        self.rm_ui.rmNoticeBoardLinkLabel.set_uri(item['link'])
+        self.url = item['link']
+        self.rm_ui.rmNoticeBoardTextLabel.set_text(cleanMarkupString(item['description']))
+
+        bold_items = [
+            self.rm_ui.rmNoticeBoardId,
+            self.rm_ui.rmNoticeBoardDate,
+            self.rm_ui.rmNoticeBoardTitle,
+            self.rm_ui.rmNoticeBoardLink
+        ]
+        small_items = [
+            self.rm_ui.rmNoticeBoardIdLabel,
+            self.rm_ui.rmNoticeBoardDateLabel,
+            self.rm_ui.rmNoticeBoardTitleLabel,
+        ]
+        for item in bold_items:
+            t = item.get_text()
+            item.set_markup("<span foreground='#DE4A4C'><small><b>%s</b></small></span>" % (t,))
+        for item in small_items:
+            t = item.get_text()
+            item.set_markup("<span foreground='#1673DE'><small>%s</small></span>" % (t,))
+        t = self.rm_ui.rmNoticeBoardTextLabel.get_text()
+        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='#837350'><small>%s</small></span>" % (t,))
+        self.rm_ui.rmNoticeBoardInfo.show_all()
 
 class SmQueueMenu(MenuSkel):
 
@@ -4464,7 +4847,7 @@ class UGCAddMenu(MenuSkel):
                 if percent:
                     count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
                 else:
-                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+                    count_str = " (%s/%s) " % (str(count[0]),str(count[1]),)
 
         txt = count_str+text
         gtk.gdk.threads_enter()
@@ -5443,8 +5826,6 @@ class MessageDialog:
         else:
             self.rc = rc
         dialog.destroy()
-
-
 
 class LicenseDialog:
     def __init__( self, parent, licenses, entropy ):

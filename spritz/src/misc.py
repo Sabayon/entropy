@@ -37,8 +37,8 @@ class SpritzQueue:
         self.dialogs = dialogs
 
 
-    def connect_objects(self, EquoConnection, etpbase, pkgView, ui):
-        self.Entropy = EquoConnection
+    def connect_objects(self, equo_conn, etpbase, pkgView, ui):
+        self.Entropy = equo_conn
         self.etpbase = etpbase
         self.pkgView = pkgView
         self.ui = ui
@@ -178,7 +178,7 @@ class SpritzQueue:
         else:
 
             xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
-            toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
+            #toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
             mydepends = set(self.Entropy.retrieveRemovalQueue([x.matched_atom[0] for x in pkgs]))
             mydependencies = set()
             myQA = self.Entropy.QA()

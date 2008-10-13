@@ -38,26 +38,197 @@ from entropyapi import EquoConnection, QueueExecutor
 from entropy import ErrorReportInterface
 from entropy_i18n import _
 
-# GTK Imports
+# Spritz Imports
 import gtk, gobject
-from etpgui.widgets import UI, Controller
+from etpgui.widgets import UI, Controller, SpritzConsole
 from etpgui import *
-from spritz_setup import fakeoutfile, fakeinfile, cleanMarkupString
-
-# spritz imports
+from spritz_setup import SpritzConf, const, fakeoutfile, fakeinfile, cleanMarkupString
+from misc import SpritzQueue
+from views import *
 import filters
-from gui import SpritzGUI
 from dialogs import *
 
 
-class SpritzController(Controller):
-    ''' This class contains all glade signal callbacks '''
+class ProgressTotal:
+    def __init__( self, widget ):
+        self.progress = widget
+        self.steps = []
+        self.nowProgres = 0.0
+        self.numSteps=0
+        self.currentStep=0 
+        self.stepError = False
+        self.lastFrac = -1
+        self.clear()
 
+    def setup( self, steps ):
+        self.steps = steps
+        self.numSteps=len( steps )
+        self.currentStep=0 
+        self.nowProgress = 0.0
+        self.stepError = False
+        self.clear()
 
-    def __init__( self ):
+    def hide( self ):
+        self.progress.hide()
+
+    def show( self ):
+        self.progress.show()
+
+    def next( self ):
+        now = 0.0
+        if self.currentStep < self.numSteps:
+            self.currentStep += 1
+            for i in range( 0, self.currentStep ):
+                now += self.steps[i]
+                self.nowProgress = now
+                self.setAbsProgress( now )
+            return True
+        else:
+            return False
+
+    def _percent( self, total, now ):
+       if total == 0:
+           percent = 0
+       else:
+           percent = ( now*100L )/total
+       return percent
+
+    def clear( self ):
+        self.progress.set_fraction( 0 )
+        self.progress.set_text( " " )
+        self.lastFrac = -1
+
+    def setProgress( self, now, total, prefix=None ):
+        relStep = float( now )/float( total )
+        if self.currentStep < self.numSteps:
+            curStep =self.steps[self.currentStep]
+            absStep = curStep * relStep
+            absProgress = self.nowProgress + absStep
+            self.setAbsProgress( absProgress, prefix )
+        else: # This should not happen but it does sometimes.
+            if not self.stepError:
+                print "=" * 60
+                print "Something stranged has happend in the ProgressTotal: (setProgress)"
+                print "Dumping some vars for debug"
+                print self.steps
+                print self.currentStep
+                print self.numSteps
+                print now
+                print total
+                print "-" * 60
+                traceback.print_stack( file=sys.stdout )
+                print "=" * 60
+                self.stepError = True # Only dump vars first time.
+        return False
+
+    def setAbsProgress( self, now, prefix=None ):
+        if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
+            return
+        while gtk.events_pending():      # process gtk events
+           gtk.main_iteration()
+        self.lastFrac = now+0.01
+        procent = long( self._percent( 1, now ) )
+        self.progress.set_fraction( now )
+        if prefix:
+            text = "%s : %3i%%" % ( prefix, procent )
+        else:
+            text = "%3i%%" % procent
+        self.progress.set_text( text )
+
+class SpritzProgress:
+
+    def __init__( self, ui, set_page_func, parent ):
+        self.ui = ui
+        self.set_page_func = set_page_func
+        self.parent = parent
+        self.ui.progressMainLabel.set_text( "" )
+        self.ui.progressSubLabel.set_text( "" )
+        self.ui.progressExtraLabel.set_text( "" )
+        self.total = ProgressTotal( self.ui.totalProgressBar )
+        self.ui.progressBar.set_fraction( 0 )
+        self.ui.progressBar.set_text( " " )
+        self.lastFrac = -1
+
+    def show( self ):
+        self.ui.progressBox.show()
+        self.set_page_func( 'output' )
+        self.lastFrac = -1
+
+    def reset_progress( self ):
+        self.lastFrac = -1
+        self.ui.progressBar.set_fraction( 0 )
+        self.ui.progressBar.set_text(" ")
+
+    def hide( self, clean=False ):
+        self.ui.progressBox.hide()
+        if clean:
+            self.ui.progressMainLabel.set_text( "" )
+            self.ui.progressSubLabel.set_text( "" )
+            self.ui.progressExtraLabel.set_text( "" )
+            self.ui.progressBar.set_fraction( 0 )
+            self.ui.progressBar.set_text( " " )
+
+    def setTotal( self, now, total ):
+        self.total.setProgress( now, total )
+
+    def set_progress( self, frac, text=None ):
+
+        if frac == self.lastFrac:
+            return
+
+        if self.parent.quitNow:
+            self.parent.exitNow()
+
+        if frac > 1 or frac == 0.0:
+            return
+
+        if frac >= 0 and frac <= 1:
+            self.ui.progressBar.set_fraction( frac )
+        else:
+            self.ui.progressBar.set_fraction( 0 )
+        if text != None:
+            self.ui.progressBar.set_text( text )
+
+        self.lastFrac = frac
+
+        while gtk.events_pending():
+           gtk.main_iteration()
+
+    def set_text(self, text):
+        self.ui.progressBar.set_text( text )
+
+    def set_mainLabel( self, text ):
+        self.ui.progressMainLabel.set_markup( "<b>%s</b>" % text )
+        self.ui.progressSubLabel.set_text( "" )
+        self.ui.progressExtraLabel.set_text( "" )
+
+    def set_subLabel( self, text ):
+        self.ui.progressSubLabel.set_markup( "%s" % text )
+        self.ui.progressExtraLabel.set_text( "" )
+
+    def set_extraLabel( self, text ):
+        self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(text) )
+        self.lastFrac = -1
+
+class SpritzApplication(Controller):
+
+    def __init__(self):
+
+        self.Equo = EquoConnection
+        locked = self.Equo._resources_run_check_lock()
+        if locked:
+            okDialog( None, _("Entropy resources are locked and not accessible. Another Entropy application is running. Sorry, can't load Spritz.") )
+            raise SystemExit(1)
+        self.safe_mode_txt = ''
+        # check if we'are running in safe mode
+        if self.Equo.safe_mode:
+            reason = etpConst['safemodereasons'].get(self.Equo.safe_mode)
+            okDialog( None, "%s: %s. %s" % (_("Entropy is running in safe mode"),reason,_("Please fix as soon as possible"),) )
+            self.safe_mode_txt = _("Safe Mode")
 
         self.isBusy = False
         self.etpbase = EntropyPackages(EquoConnection)
+
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
         addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
@@ -65,20 +236,9 @@ class SpritzController(Controller):
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui, addrepo_ui, wait_ui )
 
-        self.clipboard = gtk.Clipboard()
-        self.pty = pty.openpty()
-        self.output = fakeoutfile(self.pty[1])
-        self.input = fakeinfile(self.pty[1])
-        self.do_debug = False
-        if "--debug" in sys.argv:
-            self.do_debug = True
-        elif os.getenv('SPRITZ_DEBUG') != None:
-            self.do_debug = True
-        if not self.do_debug:
-            sys.stdout = self.output
-            sys.stderr = self.output
-            sys.stdin = self.input
-
+        # Setup GUI
+        self.setupGUI()
+        self.packagesInstall()
 
     def quit(self, widget=None, event=None ):
         if self.ugcTask != None:
@@ -98,9 +258,1075 @@ class SpritzController(Controller):
 
     def exitNow(self):
         try:
-            gtk.main_quit()       # Exit gtk
-        except RuntimeError,e:
+            gtk.main_quit()
+        except RuntimeError:
             pass
+
+    def load_url(self, url):
+        import subprocess
+        subprocess.call(['xdg-open',url])
+
+    def setupGUI(self):
+
+        self.clipboard = gtk.Clipboard()
+        self.pty = pty.openpty()
+        self.output = fakeoutfile(self.pty[1])
+        self.input = fakeinfile(self.pty[1])
+        self.do_debug = False
+        if "--debug" in sys.argv:
+            self.do_debug = True
+        elif os.getenv('SPRITZ_DEBUG') != None:
+            self.do_debug = True
+        if not self.do_debug:
+            sys.stdout = self.output
+            sys.stderr = self.output
+            sys.stdin = self.input
+
+        self.settings = SpritzConf()
+        self.queue = SpritzQueue()
+        self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main)
+        self.filesView = EntropyFilesView(self.ui.filesView)
+        self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView, self.ui, self.etpbase)
+        self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
+        #self.catView = SpritzCategoryView(self.ui.tvCategory)
+        self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
+        self.catsView.etpbase = self.etpbase
+        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase, self.ui.main)
+        self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui)
+        self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
+        # Left Side Toolbar
+        self.pageButtons = {}    # Dict with page buttons
+        self.firstButton = None  # first button
+        self.activePage = 'repos'
+        self.pageBootstrap = True
+        # Progress bars
+        self.progress = SpritzProgress(self.ui,self.setPage,self)
+        # Package Radiobuttons
+        self.packageRB = {}
+        self.lastPkgPB = 'updates'
+        self.tooltip =  gtk.Tooltips()
+
+        # setup add repository window
+        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="entropy" )
+        self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
+        self.console_menu_xml.signal_autoconnect(self)
+
+        ''' Setup the GUI'''
+        self.ui.main.set_title( "%s %s %s" % (self.settings.branding_title, const.__spritz_version__, self.safe_mode_txt) )
+        self.ui.main.connect( "delete_event", self.quit )
+        self.ui.notebook.set_show_tabs( False )
+        self.ui.main.present()
+        self.setupPageButtons()        # Setup left side toolbar
+        self.setPage(self.activePage)
+
+        # put self.console in place
+        self.console = SpritzConsole(self.settings)
+        self.console.set_scrollback_lines(1024)
+        self.console.set_scroll_on_output(True)
+        self.console.connect("button-press-event", self.on_console_click)
+        termScroll = gtk.VScrollbar(self.console.get_adjustment())
+        self.ui.vteBox.pack_start(self.console, True, True)
+        self.ui.termScrollBox.pack_start(termScroll, False)
+        self.ui.termHBox.show_all()
+        self.setupPkgFilter()
+        self.setupAdvisoriesFilter()
+
+        self.setupImages()
+        self.setupLabels()
+
+        # init flags
+        self.disable_ugc = False
+        self.ad_list_url = 'http://www.sabayonlinux.org/entropy_ads/LIST'
+        self.ad_uri_dir = os.path.dirname(self.ad_list_url)
+        self.previous_ad_index = None
+        self.previous_ad_image_path = None
+        self.ad_url = None
+        self.ad_pix = gtk.image_new_from_file(const.plain_ad_pix)
+        self.adTask = None
+        self.ugcTask = None
+        self.spawning_ugc = False
+        self.Preferences = None
+        self.skipMirrorNow = False
+        self.abortQueueNow = False
+        self.doProgress = False
+        self.categoryOn = False
+        self.quitNow = False
+        self.isWorking = False
+        self.lastPkgPB = "updates"
+        self.etpbase.setFilter(filters.spritzFilter.processFilters)
+        self.Equo.connect_to_gui(self)
+        self.setupEditor()
+
+        self.setPage("packages")
+
+        self.setupAdvisories()
+        # setup Repositories
+        self.setupRepoView()
+        self.firstTime = True
+        # calculate updates
+        self.setupSpritz()
+
+        self.console.set_pty(self.pty[0])
+        self.resetProgressText()
+        self.pkgProperties_selected = None
+        self.setupPreferences()
+
+        self.setupUgc()
+        self.setupAds()
+
+    def packagesInstall(self):
+
+        packages_install = os.getenv("SPRITZ_PACKAGES")
+        if packages_install:
+            packages_install = [x for x in packages_install.split(";") if os.path.isfile(x)]
+        for arg in sys.argv:
+            if arg.endswith(etpConst['packagesext']) and os.path.isfile(arg):
+                arg = os.path.realpath(arg)
+                packages_install.append(arg)
+        if packages_install:
+            time.sleep(1)
+            fn = packages_install[0]
+            self.on_installPackageItem_activate(None,fn)
+        else:
+            self.showNoticeBoard()
+
+    def setupAdvisoriesFilter(self):
+        self.advisoryRB = {}
+        widgets = [
+                    (self.ui.rbAdvisories,'affected'),
+                    (self.ui.rbAdvisoriesApplied,'applied'),
+                    (self.ui.rbAdvisoriesAll,'all')
+        ]
+        for w,tag in widgets:
+            w.connect('toggled',self.populateAdvisories,tag)
+            w.set_mode(False)
+            self.advisoryRB[tag] = w
+
+    def setupPkgFilter(self):
+        ''' set callbacks for package radio buttons (all,updates, ...)'''
+        self.setupPkgRadio(self.ui.rbUpdates,"updates",_('Show Package Updates'))
+        self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
+        self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
+        self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
+
+    def setupPkgRadio(self, widget, tag, tip):
+        widget.connect('toggled',self.on_pkgFilter_toggled,tag)
+
+        #widget.set_relief( gtk.RELIEF_NONE )
+        widget.set_mode( False )
+
+        try:
+            p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+tag+".png" )
+            pix = self.ui.rbUpdatesImage
+            if tag == "available":
+                pix = self.ui.rbAvailableImage
+            elif tag == "installed":
+                pix = self.ui.rbInstalledImage
+            elif tag == "masked":
+                pix = self.ui.rbMaskedImage
+            pix.set_from_pixbuf( p )
+            pix.show()
+        except gobject.GError:
+            pass
+
+        self.tooltip.set_tip(widget,tip)
+        self.packageRB[tag] = widget
+
+    def setupPageButtons(self):
+        # Setup Vertical Toolbar
+        self.createButton( _( "Packages" ), "button-packages.png", 'packages',True )
+        self.createButton( _( "Package Categories" ), "button-group.png", 'group')
+        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
+        self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
+        self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
+        self.createButton( _( "Preferences" ), "preferences.png", 'preferences' )
+        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
+        self.createButton( _( "Output" ), "button-output.png", 'output' )
+
+    def createButton( self, text, icon, page,first = None ):
+        if first:
+            button = gtk.RadioButton( None )
+            self.firstButton = button
+        else:
+            button = gtk.RadioButton( self.firstButton )
+        button.connect( "clicked", self.on_PageButton_changed, page )
+        #button.connect( "pressed", self.on_PageButton_pressed, page )
+
+        button.set_relief( gtk.RELIEF_NONE )
+        button.set_mode( False )
+
+        iconpath = os.path.join(const.PIXMAPS_PATH,icon)
+        pix = None
+        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                pix = gtk.Image()
+                pix.set_from_pixbuf( p )
+                pix.show()
+            except gobject.GError:
+                pass
+
+        self.tooltip.set_tip(button,text)
+        if pix != None:
+            button.add(pix)
+        button.show()
+        self.ui.content.pack_start( button, False )
+        self.pageButtons[page] = button
+
+    def setupImages(self):
+        """ setup misc application images """
+
+        # progressImage
+        iconpath = os.path.join(const.PIXMAPS_PATH,"sabayon.png")
+        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                self.ui.progressImage.set_from_pixbuf(p)
+            except gobject.GError:
+                pass
+
+    def setupLabels(self):
+        """ setup misc application labels """
+
+        mytxt = "<span size='x-large' foreground='#8A381B'>%s</span>" % (_("Preferences"),)
+        self.ui.preferencesTitleLabel.set_markup(mytxt)
+        mytxt = "<span foreground='#084670'>%s</span>" % (_("Some configuration options are critical for the health of your System. Be careful."),)
+        self.ui.preferencesLabel.set_markup(mytxt)
+
+    def setupAds(self):
+        self.ui.bannerEventBox.add(self.ad_pix)
+        self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
+        self.ad_url = 'http://www.silkbit.com'
+        self.ui.bannerEventBox.show_all()
+        self.adTask = entropyTools.TimeScheduled(self.spawnAdRotation, 60)
+        self.adTask.start()
+
+    def setupUgc(self):
+        self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
+        self.ugcTask.start()
+
+    def spawnAdRotation(self):
+        try:
+            self.ad_rotation()
+        except:
+            pass
+
+    def ad_rotation(self):
+
+        if self.isWorking or self.disable_ugc:
+            return
+
+        tries = 5
+        while tries:
+
+            ads_data = entropyTools.get_remote_data(self.ad_list_url)
+            if not ads_data:
+                tries -= 1
+                continue
+
+            ads_data = [x.strip() for x in ads_data if x.strip() and x.split() > 1]
+            length = len(ads_data)
+            myrand = int(random.random()*length)
+            while myrand == self.previous_ad_index:
+                myrand = int(random.random()*length)
+
+            mydata = ads_data[myrand].split()
+            mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
+            myurl = ' '.join(mydata[1:])
+
+            pix_tmp_path = entropyTools.getRandomTempFile()
+            fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
+            rc = fetchConn.download()
+            if rc in ("-1","-2","-3"):
+                tries -= 1
+                continue
+
+            # load the image
+            try:
+                myadpix = gtk.image_new_from_file(pix_tmp_path)
+            except:
+                tries -= 1
+                continue
+
+            gtk.gdk.threads_enter()
+
+            self.ui.bannerEventBox.remove(self.ad_pix)
+            self.ad_pix = myadpix
+            self.ui.bannerEventBox.add(self.ad_pix)
+            self.ui.bannerEventBox.show_all()
+            self.ad_url = myurl
+
+            if self.previous_ad_image_path != None:
+                if os.path.isfile(self.previous_ad_image_path) and os.access(self.previous_ad_image_path,os.W_OK):
+                    try:
+                        os.remove(self.previous_ad_image_path)
+                    except (OSError,IOError,):
+                        pass
+            self.previous_ad_image_path = pix_tmp_path
+            self.previous_ad_index = myrand
+
+            gtk.gdk.threads_leave()
+            break
+
+    def spawnUgcUpdate(self):
+        try:
+            self.ugc_update()
+        except:
+            pass
+
+    def ugc_update(self):
+
+        if self.spawning_ugc or self.isWorking or self.disable_ugc:
+            return
+
+        self.isWorking = True
+        self.spawning_ugc = True
+        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+        if (isinstance(connected,bool) and (not connected)) or (self.Equo.UGC == None):
+            self.isWorking = False
+            self.spawning_ugc = False
+            return
+        for repo in self.Equo.validRepositories:
+            self.Equo.update_ugc_cache(repo)
+
+        self.isWorking = False
+        self.spawning_ugc = False
+
+    def fillPreferencesDbBackupPage(self):
+        self.dbBackupStore.clear()
+        backed_up_dbs = self.Equo.list_backedup_client_databases()
+        for mypath in backed_up_dbs:
+            mymtime = self.Equo.entropyTools.getFileUnixMtime(mypath)
+            mytime = self.Equo.entropyTools.convertUnixTimeToHumanTime(mymtime)
+            self.dbBackupStore.append( (mypath,os.path.basename(mypath),mytime,) )
+
+    def on_console_click(self, widget, event):
+        self.console_menu.popup( None, None, None, event.button, event.time )
+        return True
+
+    def on_dbBackupButton_clicked(self, widget):
+        self.startWorking()
+        status, err_msg = self.Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
+        self.endWorking()
+        if not status:
+            okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),err_msg,) )
+            return
+        okDialog( self.ui.main, "%s" % (_("Backup complete"),) )
+        self.fillPreferencesDbBackupPage()
+        self.dbBackupView.queue_draw()
+
+    def on_dbRestoreButton_clicked(self, widget):
+        model, myiter = self.dbBackupView.get_selection().get_selected()
+        if myiter == None: return
+        dbpath = model.get_value(myiter, 0)
+        self.startWorking()
+        status, err_msg = self.Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
+        self.endWorking()
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
+        self.Equo.reopenClientDbconn()
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
+        self.pkgView.clear()
+        self.addPackages()
+        if not status:
+            okDialog( self.ui.main, "%s: %s" % (_("Error during restore"),err_msg,) )
+            return
+        self.fillPreferencesDbBackupPage()
+        self.dbBackupView.queue_draw()
+        okDialog( self.ui.main, "%s" % (_("Restore complete"),) )
+
+    def on_dbDeleteButton_clicked(self, widget):
+        model, myiter = self.dbBackupView.get_selection().get_selected()
+        if myiter == None: return
+        dbpath = model.get_value(myiter, 0)
+        try:
+            if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
+                os.remove(dbpath)
+        except OSError, e:
+            okDialog( self.ui.main, "%s: %s" % (_("Error during removal"),e,) )
+            return
+        self.fillPreferencesDbBackupPage()
+        self.dbBackupView.queue_draw()
+
+    def setupPreferences(self):
+
+        # config protect
+        self.configProtectView = self.ui.configProtectView
+        for mycol in self.configProtectView.get_columns(): self.configProtectView.remove_column(mycol)
+        self.configProtectModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectView.append_column( column )
+        self.configProtectView.set_model( self.configProtectModel )
+
+        # config protect mask
+        self.configProtectMaskView = self.ui.configProtectMaskView
+        for mycol in self.configProtectMaskView.get_columns(): self.configProtectMaskView.remove_column(mycol)
+        self.configProtectMaskModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectMaskView.append_column( column )
+        self.configProtectMaskView.set_model( self.configProtectMaskModel )
+
+        # config protect skip
+        self.configProtectSkipView = self.ui.configProtectSkipView
+        for mycol in self.configProtectSkipView.get_columns(): self.configProtectSkipView.remove_column(mycol)
+        self.configProtectSkipModel = gtk.ListStore( gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
+        self.configProtectSkipView.append_column( column )
+        self.configProtectSkipView.set_model( self.configProtectSkipModel )
+
+        # database backup tool
+        self.dbBackupView = self.ui.dbBackupView
+        self.dbBackupStore = gtk.ListStore( gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Database" ), cell, markup = 1 )
+        self.dbBackupView.append_column( column )
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Date" ), cell, markup = 2 )
+        self.dbBackupView.append_column( column )
+        self.dbBackupView.set_model( self.dbBackupStore )
+        self.fillPreferencesDbBackupPage()
+
+        # UGC repositories
+
+        def get_ugc_repo_text( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                t = "[<b>%s</b>] %s" % (obj['repoid'],obj['description'],)
+                cell.set_property('markup',t)
+
+        def get_ugc_logged_text( column, cell, model, myiter ):
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                t = "<i>%s</i>" % (_("Not logged in"),)
+                if self.Equo.UGC != None:
+                    logged_data = self.Equo.UGC.read_login(obj['repoid'])
+                    if logged_data != None:
+                        t = "<i>%s</i>" % (logged_data[0],)
+                cell.set_property('markup',t)
+
+        def get_ugc_status_pix( column, cell, model, myiter ):
+            if self.Equo.UGC == None:
+                cell.set_property( 'icon-name', 'gtk-cancel' )
+                return
+            obj = model.get_value( myiter, 0 )
+            if obj:
+                if self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']):
+                    cell.set_property( 'icon-name', 'gtk-apply' )
+                else:
+                    cell.set_property( 'icon-name', 'gtk-cancel' )
+                return
+            cell.set_property( 'icon-name', 'gtk-cancel' )
+
+        self.ugcRepositoriesView = self.ui.ugcRepositoriesView
+        self.ugcRepositoriesModel = gtk.ListStore( gobject.TYPE_PYOBJECT )
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Repository" ), cell )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 300 )
+        column.set_expand(True)
+        column.set_cell_data_func( cell, get_ugc_repo_text )
+        self.ugcRepositoriesView.append_column( column )
+
+        cell = gtk.CellRendererText()
+        column = gtk.TreeViewColumn( _( "Logged in as" ), cell )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 150 )
+        column.set_cell_data_func( cell, get_ugc_logged_text )
+        self.ugcRepositoriesView.append_column( column )
+
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _( "UGC Status" ), cell)
+        column.set_cell_data_func( cell, get_ugc_status_pix )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 120 )
+
+        self.ugcRepositoriesView.append_column( column )
+        self.ugcRepositoriesView.set_model( self.ugcRepositoriesModel )
+
+        # prepare generic config to allow filling of data
+        def fillSettingView(model, view, data):
+            model.clear()
+            view.set_model(model)
+            view.set_property('headers-visible',False)
+            for item in data:
+                model.append([item])
+            view.expand_all()
+
+        def fillSetting(name, mytype, wgwrite, data):
+            if not isinstance(data,mytype):
+                if data == None: # empty parameter
+                    return
+                errorMessage(
+                    self.ui.main,
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    _("An issue occured while loading a preference"),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                )
+                return
+            wgwrite(data)
+
+        def saveSettingView(config_file, name, setting, mytype, model, view):
+
+            data = []
+            iterator = model.get_iter_first()
+            while iterator != None:
+                item = model.get_value( iterator, 0 )
+                if item:
+                    data.append(item)
+                iterator = model.iter_next( iterator )
+
+            return saveSetting(config_file, name, setting, mytype, data)
+
+
+        def saveSetting(config_file, name, myvariable, mytype, data):
+            # saving setting
+            writedata = ''
+            if (not isinstance(data,mytype)) and (data != None):
+                errorMessage(
+                    self.ui.main,
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    _("An issue occured while saving a preference"),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                )
+                return False
+
+            if isinstance(data,int):
+                writedata = str(data)
+            elif isinstance(data,list):
+                writedata = ' '.join(data)
+            elif isinstance(data,bool):
+                writedata = "disable"
+                if data: writedata = "enable"
+            elif isinstance(data,basestring):
+                writedata = data
+            return saveParameter(config_file, name, writedata)
+
+        def saveParameter(config_file, name, data):
+            return entropyTools.writeParameterToFile(config_file,name,data)
+
+        self.Preferences = {
+            etpConst['entropyconf']: [
+                (
+                    'ftp-proxy',
+                    etpConst['proxy']['ftp'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.ftpProxyEntry.set_text,
+                    self.ui.ftpProxyEntry.get_text,
+                ),
+                (
+                    'http-proxy',
+                    etpConst['proxy']['http'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.httpProxyEntry.set_text,
+                    self.ui.httpProxyEntry.get_text,
+                ),
+                (
+                    'proxy-username',
+                    etpConst['proxy']['username'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.usernameProxyEntry.set_text,
+                    self.ui.usernameProxyEntry.get_text,
+                ),
+                (
+                    'proxy-password',
+                    etpConst['proxy']['password'],
+                    basestring,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.passwordProxyEntry.set_text,
+                    self.ui.passwordProxyEntry.get_text,
+                ),
+                (
+                    'nice-level',
+                    etpConst['current_nice'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.niceSpinSelect.set_value,
+                    self.ui.niceSpinSelect.get_value_as_int,
+                )
+            ],
+            etpConst['equoconf']: [
+                (
+                    'collisionprotect',
+                    etpConst['collisionprotect'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.collisionProtectionCombo.set_active,
+                    self.ui.collisionProtectionCombo.get_active,
+                ),
+                (
+                    'configprotect',
+                    etpConst['configprotect'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectModel,
+                    self.configProtectView,
+                ),
+                (
+                    'configprotectmask',
+                    etpConst['configprotectmask'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectMaskModel,
+                    self.configProtectMaskView,
+                ),
+                (
+                    'configprotectskip',
+                    etpConst['configprotectskip'],
+                    list,
+                    fillSettingView,
+                    saveSettingView,
+                    self.configProtectSkipModel,
+                    self.configProtectSkipView,
+                ),
+                (
+                    'filesbackup',
+                    etpConst['filesbackup'],
+                    bool,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.filesBackupCheckbutton.set_active,
+                    self.ui.filesBackupCheckbutton.get_active,
+                )
+            ],
+            etpConst['repositoriesconf']: [
+                (
+                    'downloadspeedlimit',
+                    etpConst['downloadspeedlimit'],
+                    int,
+                    fillSetting,
+                    saveSetting,
+                    self.ui.speedLimitSpin.set_value,
+                    self.ui.speedLimitSpin.get_value_as_int,
+                )
+            ],
+        }
+
+        # load data
+        for config_file in self.Preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+                if mytype == list:
+                    fillfunc(wgwrite,wgread,setting)
+                else:
+                    fillfunc(name, mytype, wgwrite, setting)
+
+        self.on_Preferences_toggled(None,False)
+
+    def setupMaskedPackagesWarningBox(self):
+        mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
+            _("Attention"),
+            _("These packages are masked either by default or due to your choice. Please be careful, at least."),
+        )
+        self.ui.maskedWarningLabel.set_markup(mytxt)
+
+    def setupAdvisories(self):
+        self.Advisories = self.Equo.Security()
+
+    def setupEditor(self):
+
+        pathenv = os.getenv("PATH")
+        if os.path.isfile("/etc/profile.env"):
+            f = open("/etc/profile.env")
+            env_file = f.readlines()
+            for line in env_file:
+                line = line.strip()
+                if line.startswith("export PATH='"):
+                    line = line[len("export PATH='"):]
+                    line = line.rstrip("'")
+                    for path in line.split(":"):
+                        pathenv += ":"+path
+                    break
+        os.environ['PATH'] = pathenv
+
+        self.fileEditor = '/usr/bin/xterm -e $EDITOR'
+        de_session = os.getenv('DESKTOP_SESSION')
+        if de_session == None: de_session = ''
+        path = os.getenv('PATH').split(":")
+        if os.access("/usr/bin/xdg-open",os.X_OK):
+            self.fileEditor = "/usr/bin/xdg-open"
+        if de_session.find("kde") != -1:
+            for item in path:
+                itempath = os.path.join(item,'kwrite')
+                itempath2 = os.path.join(item,'kedit')
+                itempath3 = os.path.join(item,'kate')
+                if os.access(itempath,os.X_OK):
+                    self.fileEditor = itempath
+                    break
+                elif os.access(itempath2,os.X_OK):
+                    self.fileEditor = itempath2
+                    break
+                elif os.access(itempath3,os.X_OK):
+                    self.fileEditor = itempath3
+                    break
+        else:
+            if os.access('/usr/bin/gedit',os.X_OK):
+                self.fileEditor = '/usr/bin/gedit'
+
+    def startWorking(self, do_busy = True):
+        self.isWorking = True
+        if do_busy:
+            busyCursor(self.ui.main)
+        self.ui.progressVBox.grab_add()
+        gtkEventThread.startProcessing()
+
+    def endWorking(self):
+        self.isWorking = False
+        self.ui.progressVBox.grab_remove()
+        normalCursor(self.ui.main)
+        gtkEventThread.endProcessing()
+
+    def setupSpritz(self):
+        msg = _('Generating metadata. Please wait.')
+        self.setStatus(msg)
+        count = 30
+        while count:
+            try:
+                self.addPackages()
+            except self.Equo.dbapi2.ProgrammingError, e:
+                self.setStatus("%s: %s, %s" % (
+                        _("Error during list population"),
+                        e,
+                        _("Retrying in 1 second."),
+                    )
+                )
+                time.sleep(1)
+                count -= 1
+                continue
+            break
+        self.populateCategories()
+
+    def cleanEntropyCaches(self, alone = False):
+        if alone:
+            self.progress.total.hide()
+        self.Equo.generate_cache(depcache = True, configcache = False)
+        # clear views
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
+        self.setupSpritz()
+        if alone:
+            self.progress.total.show()
+
+    def populateAdvisories(self, widget, show):
+        self.setBusy()
+        cached = None
+        try:
+            cached = self.Advisories.get_advisories_cache()
+        except (IOError, EOFError):
+            pass
+        except AttributeError:
+            time.sleep(5)
+            cached = self.Advisories.get_advisories_cache()
+        if cached == None:
+            try:
+                cached = self.Advisories.get_advisories_metadata()
+            except Exception, e:
+                okDialog( self.ui.main, "%s: %s" % (_("Error loading advisories"),e) )
+                cached = {}
+        if cached:
+            self.advisoriesView.populate(self.Advisories, cached, show)
+        self.unsetBusy()
+
+    def populateFilesUpdate(self):
+        # load filesUpdate interface and fill self.filesView
+        cached = None
+        try:
+            cached = self.Equo.FileUpdates.load_cache()
+        except exceptionTools.CacheCorruptionError:
+            pass
+        if cached == None:
+            self.setBusy()
+            cached = self.Equo.FileUpdates.scanfs()
+            self.unsetBusy()
+        if cached:
+            self.filesView.populate(cached)
+
+    def showNoticeBoard(self):
+        repoids = {}
+        for repoid in self.Equo.validRepositories:
+            board_file = etpRepositories[repoid]['local_notice_board']
+            if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
+                continue
+            if self.Equo.entropyTools.get_file_size(board_file) < 10:
+                continue
+            repoids[repoid] = board_file
+        if repoids:
+            self.loadNoticeBoard(repoids)
+
+    def loadNoticeBoard(self, repoids):
+        my = NoticeBoardWindow(self.ui.main, self.Equo)
+        my.load(repoids)
+
+    def updateRepositories(self, repos):
+
+        self.disable_ugc = True
+        # set steps
+        progress_step = float(1)/(len(repos))
+        step = progress_step
+        myrange = []
+        while progress_step < 1.0:
+            myrange.append(step)
+            progress_step += step
+        myrange.append(step)
+
+        self.progress.total.setup( myrange )
+        self.progress.set_mainLabel(_('Initializing Repository module...'))
+        forceUpdate = self.ui.forceRepoUpdate.get_active()
+
+        try:
+            repoConn = self.Equo.Repositories(repos, forceUpdate = forceUpdate)
+        except exceptionTools.PermissionDenied:
+            self.progressLog(_('You must run this application as root'), extra = "repositories")
+            self.disable_ugc = False
+            return 1
+        except exceptionTools.MissingParameter:
+            msg = "%s: %s" % (_('No repositories specified in'),etpConst['repositoriesconf'],)
+            self.progressLog( msg, extra = "repositories")
+            self.disable_ugc = False
+            return 127
+        except exceptionTools.OnlineMirrorError:
+            self.progressLog(_('You are not connected to the Internet. You should.'), extra = "repositories")
+            self.disable_ugc = False
+            return 126
+        except Exception, e:
+            msg = "%s: %s" % (_('Unhandled exception'),e,)
+            self.progressLog(msg, extra = "repositories")
+            self.disable_ugc = False
+            return 2
+        rc = repoConn.sync()
+        if repoConn.syncErrors or (rc != 0):
+            self.progress.set_mainLabel(_('Errors updating repositories.'))
+            self.progress.set_subLabel(_('Please check logs below for more info'))
+        else:
+            if repoConn.alreadyUpdated == 0:
+                self.progress.set_mainLabel(_('Repositories updated successfully'))
+            else:
+                if len(repos) == repoConn.alreadyUpdated:
+                    self.progress.set_mainLabel(_('All the repositories were already up to date.'))
+                else:
+                    msg = "%s %s" % (repoConn.alreadyUpdated,_("repositories were already up to date. Others have been updated."),)
+                    self.progress.set_mainLabel(msg)
+            if repoConn.newEquo:
+                self.progress.set_extraLabel(_('sys-apps/entropy needs to be updated as soon as possible.'))
+
+        initConfig_entropyConstants(etpSys['rootdir'])
+
+        self.disable_ugc = False
+        return not repoConn.syncErrors
+
+    def resetProgressText(self):
+        self.progress.set_mainLabel(_('Nothing to do. I am idle.'))
+        self.progress.set_subLabel(_('Really, don\'t waste your time here. This is just a placeholder'))
+        self.progress.set_extraLabel(_('I am still alive and kickin\''))
+
+    def resetQueueProgressBars(self):
+        self.progress.reset_progress()
+        self.progress.total.clear()
+
+    def setupRepoView(self):
+        self.repoView.populate()
+
+    def setBusy(self):
+        self.isBusy = True
+        busyCursor(self.ui.main)
+
+    def unsetBusy(self):
+        self.isBusy = False
+        normalCursor(self.ui.main)
+
+    def setPage( self, page ):
+        self.activePage = page
+        widget = self.pageButtons[page]
+        widget.set_active( True )
+
+    def setPkgRB( self, tag ):
+        self.lastPkgPB = tag
+        widget = self.packageRB[tag]
+        widget.set_active( True )
+
+    def setNotebookPage(self,page):
+        ''' Switch to Page in GUI'''
+        self.ui.notebook.set_current_page(page)
+
+    def setStatus( self, text ):
+        ''' Write Message to Statusbar'''
+        context_id = self.ui.status.get_context_id( "Status" )
+        self.ui.status.push( context_id, text )
+
+    def progressLog(self, msg, extra = None):
+        self.progress.set_subLabel( msg )
+        self.progress.set_progress( 0, " " ) # Blank the progress bar.
+        if extra:
+            self.output.write_line(extra+": "+msg+"\n")
+        else:
+            self.output.write_line(msg+"\n")
+
+    def progressLogWrite(self, msg, extra = None):
+        if extra:
+            self.output.write_line(extra+": "+msg+"\n")
+        else:
+            self.output.write_line(msg+"\n")
+
+    def enableSkipMirror(self):
+        self.ui.skipMirror.show()
+        self.skipMirror = True
+
+    def disableSkipMirror(self):
+        self.ui.skipMirror.hide()
+        self.skipMirror = False
+
+    def addPackages(self):
+
+        action = self.lastPkgPB
+        if action == 'all':
+            masks = ['installed','available']
+        else:
+            masks = [action]
+
+        self.disable_ugc = True
+        self.setBusy()
+        bootstrap = False
+        if (self.Equo.get_world_update_cache(empty_deps = False) == None):
+            bootstrap = True
+            self.setPage('output')
+        elif (self.Equo.get_available_packages_cache() == None) and ('available' in masks):
+            bootstrap = True
+            self.setPage('output')
+        self.progress.total.hide()
+
+        self.etpbase.clearPackages()
+        if bootstrap:
+            self.etpbase.clearCache()
+            self.startWorking()
+
+        allpkgs = []
+        if self.doProgress: self.progress.total.next() # -> Get lists
+        self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
+        self.progress.set_subLabel(_('Entropy is indexing the repositories. It will take a few seconds'))
+        self.progress.set_extraLabel(_('While you are waiting, take a break and look outside. Is it rainy?'))
+        for flt in masks:
+            msg = "%s: %s" % (_('Calculating'),flt,)
+            self.setStatus(msg)
+            allpkgs += self.etpbase.getPackages(flt)
+        if self.doProgress: self.progress.total.next() # -> Sort Lists
+
+        if action == "updates":
+            msg = "%s: available" % (_('Calculating'),)
+            self.setStatus(msg)
+            self.etpbase.getPackages("available")
+
+        if bootstrap:
+            self.endWorking()
+
+        empty = False
+        if not allpkgs and action == "updates":
+            allpkgs = self.etpbase.getPackages('fake_updates')
+            empty = True
+
+        if bootstrap: time.sleep(3)
+        self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
+
+        self.pkgView.populate(allpkgs, empty = empty)
+        self.progress.total.show()
+
+        if self.doProgress: self.progress.hide() #Hide Progress
+        if bootstrap:
+            self.setPage('packages')
+
+        self.unsetBusy()
+        # reset labels
+        self.resetProgressText()
+        self.resetQueueProgressBars()
+        self.disable_ugc = False
+
+    def processPackageQueue(self, pkgs, remove_repos = []):
+
+        # preventive check against other instances
+        locked = self.Equo.application_lock_check()
+        if locked:
+            okDialog(self.ui.main, _("Another Entropy instance is running. Cannot process queue."))
+            self.progress.reset_progress()
+            self.setPage('packages')
+            return False
+
+        self.disable_ugc = True
+        self.setStatus( _( "Running tasks" ) )
+        total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
+        state = True
+        if total > 0:
+            self.startWorking(do_busy = True)
+            normalCursor(self.ui.main)
+            self.progress.show()
+            self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
+
+            queue = pkgs['i']+pkgs['u']+pkgs['rr']
+            install_queue = [x.matched_atom for x in queue]
+            removal_queue = [x.matched_atom[0] for x in pkgs['r']]
+            do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
+            if install_queue or removal_queue:
+                controller = QueueExecutor(self)
+                try:
+                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
+                except exceptionTools.QueueError:
+                    e = 1
+                self.ui.skipMirror.hide()
+                self.ui.abortQueue.hide()
+                if e != 0:
+                    okDialog(   self.ui.main,
+                                _("Attention. An error occured when processing the queue."
+                                    "\nPlease have a look in the processing terminal.")
+                    )
+                self.endWorking()
+                self.etpbase.clearPackages()
+                time.sleep(5)
+            self.endWorking()
+            self.progress.reset_progress()
+            self.etpbase.clearPackages()
+            self.etpbase.clearCache()
+            for myrepo in remove_repos:
+                self.Equo.removeRepository(myrepo)
+            self.Equo.closeAllRepositoryDatabases()
+            self.Equo.reopenClientDbconn()
+            # regenerate packages information
+
+            self.setupSpritz()
+            self.Equo.FileUpdates.scanfs(dcache = False)
+            if self.Equo.FileUpdates.scandata:
+                if len(self.Equo.FileUpdates.scandata) > 0:
+                    self.setPage('filesconf')
+            #self.progress.hide()
+        else:
+            self.setStatus( _( "No packages selected" ) )
+
+        self.disable_ugc = False
+        return state
+
+    def populateCategories(self):
+        self.setBusy()
+        self.etpbase.populateCategories()
+        self.catsView.populate(self.etpbase.getCategories())
+        self.unsetBusy()
+
+    def populateCategoryPackages(self, cat):
+        pkgs = self.etpbase.getPackagesByCategory(cat)
+        self.catPackages.populate(pkgs,self.ui.tvCatPackages)
+
+####### events
 
     def __getSelectedRepoIndex( self ):
         selection = self.repoView.view.get_selection()
@@ -185,9 +1411,9 @@ class SpritzController(Controller):
             return
 
         resolved = []
-        packages = self.etpbase.getPackages('updates') + \
-                    self.etpbase.getPackages('available') + \
-                    self.etpbase.getPackages('reinstallable')
+        self.etpbase.getPackages('updates')
+        self.etpbase.getPackages('available')
+        self.etpbase.getPackages('reinstallable')
         for match in matches:
             resolved.append(self.etpbase.getPackageItem(match,True)[0])
 
@@ -712,9 +1938,8 @@ class SpritzController(Controller):
             okDialog( self.ui.main, _("Please select at least one repository") )
             return
         self.setPage('output')
-        self.logger.info( "Enabled repositories : %s" % ",".join(repos))
         self.startWorking()
-        self.updateRepositories(repos)
+        status = self.updateRepositories(repos)
         # clear cache here too
         self.endWorking()
         self.etpbase.clearCache()
@@ -722,11 +1947,12 @@ class SpritzController(Controller):
         self.setupSpritz()
         self.setupAdvisories()
         self.setPage('repos')
+        if status:
+            self.showNoticeBoard()
 
     def on_cacheButton_clicked(self,widget):
         self.repoView.get_selected()
         self.setPage('output')
-        self.logger.info( "Cleaning cache")
         self.cleanEntropyCaches(alone = True)
 
     def on_repoDeSelect_clicked(self,widget):
@@ -736,11 +1962,6 @@ class SpritzController(Controller):
     def on_queueDel_clicked( self, widget ):
         """ Delete from Queue Button Handler """
         self.queueView.deleteSelected()
-
-    def on_queueQuickAdd_activate(self,widget):
-        txt = widget.get_text()
-        arglist = txt.split(' ')
-        self.doQuickAdd(arglist[0],arglist[1:])
 
     def on_queueProcess_clicked( self, widget ):
         """ Process Queue Button Handler """
@@ -757,7 +1978,6 @@ class SpritzController(Controller):
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser()
         if fn:
-            self.logger.info("Saving queue to %s" % fn)
             pkgdata = self.queue.get()
             keys = pkgdata.keys()
             for key in keys:
@@ -768,7 +1988,6 @@ class SpritzController(Controller):
     def on_queueOpen_clicked( self, widget ):
         fn = FileChooser()
         if fn:
-            self.logger.info("Loading queue from %s" % fn)
             try:
                 pkgdata = self.Equo.dumpTools.loadobj(fn,True)
             except:
@@ -915,7 +2134,6 @@ class SpritzController(Controller):
         if txt != '':
             flt.activate()
             lst = txt.split(' ')
-            self.logger.debug('Search Keyword : %s' % ','.join(lst))
             flt.setKeys(lst)
         else:
             flt.activate(False)
@@ -989,8 +2207,7 @@ class SpritzController(Controller):
 
     def on_bannerEventBox_button_release_event(self, widget, event):
         if self.ad_url != None:
-            import subprocess
-            subprocess.call(['xdg-open',self.ad_url])
+            self.load_url(self.ad_url)
 
     def on_bannerEventBox_enter_notify_event(self, widget, event):
         busyCursor(self.ui.main, cur = gtk.gdk.Cursor(gtk.gdk.HAND2))
@@ -1008,771 +2225,8 @@ class SpritzController(Controller):
         rc = mymenu.load()
         if not rc: del mymenu
 
-class SpritzApplication(SpritzController,SpritzGUI):
-
-    def __init__(self):
-
-        self.Equo = EquoConnection
-        locked = self.Equo._resources_run_check_lock()
-        if locked:
-            okDialog( None, _("Entropy resources are locked and not accessible. " + \
-                "Another Entropy application is running. Sorry, can't load Spritz.") )
-            sys.exit(1)
-
-        SpritzController.__init__( self )
-        SpritzGUI.__init__(self, self.Equo, self.etpbase)
-        self.logger = logging.getLogger("yumex.main")
-
-        # init flags
-        self.ad_list_url = 'http://www.sabayonlinux.org/entropy_ads/LIST'
-        self.ad_uri_dir = os.path.dirname(self.ad_list_url)
-        self.previous_ad_index = None
-        self.previous_ad_image_path = None
-        self.ad_url = None
-        self.ad_pix = gtk.image_new_from_file(const.plain_ad_pix)
-        self.adTask = None
-        self.ugcTask = None
-        self.spawning_ugc = False
-        self.Preferences = None
-        self.skipMirrorNow = False
-        self.abortQueueNow = False
-        self.doProgress = False
-        self.categoryOn = False
-        self.quitNow = False
-        self.isWorking = False
-        self.logger.info(_('Entropy Config Setup'))
-        self.catsView.etpbase = self.etpbase
-        self.lastPkgPB = "updates"
-        self.etpbase.setFilter(filters.spritzFilter.processFilters)
-
-        self.Equo.connect_to_gui(self)
-        self.setupEditor()
-        # Setup GUI
-        self.setupGUI()
-        self.setPage("packages")
-
-        self.setupAdvisories()
-        self.logger.info(_('GUI Setup Completed'))
-        # setup Repositories
-        self.setupRepoView()
-        self.firstTime = True
-        # calculate updates
-        self.setupSpritz()
-
-        self.console.set_pty(self.pty[0])
-        self.resetProgressText()
-        self.pkgProperties_selected = None
-        self.setupPreferences()
-
-        self.setupUgc()
-        self.setupAds()
-
-        packages_install = os.getenv("SPRITZ_PACKAGES")
-        if packages_install:
-            packages_install = [x for x in packages_install.split(";") if os.path.isfile(x)]
-        for arg in sys.argv:
-            if arg.endswith(etpConst['packagesext']) and os.path.isfile(arg):
-                arg = os.path.realpath(arg)
-                packages_install.append(arg)
-        if packages_install:
-            time.sleep(1)
-            fn = packages_install[0]
-            self.on_installPackageItem_activate(None,fn)
-
-    def setupAds(self):
-        self.ui.bannerEventBox.add(self.ad_pix)
-        self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
-        self.ad_url = 'http://www.silkbit.com'
-        self.ui.bannerEventBox.show_all()
-        self.adTask = entropyTools.TimeScheduled(self.spawnAdRotation, 60)
-        self.adTask.start()
-
-    def setupUgc(self):
-        self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
-        self.ugcTask.start()
-
-    def spawnAdRotation(self):
-        try:
-            self.ad_rotation()
-        except:
-            pass
-
-    def ad_rotation(self):
-
-        while self.isWorking:
-            time.sleep(1)
-
-        tries = 5
-        while tries:
-
-            ads_data = entropyTools.get_remote_data(self.ad_list_url)
-            if not ads_data:
-                tries -= 1
-                continue
-
-            ads_data = [x.strip() for x in ads_data if x.strip() and x.split() > 1]
-            length = len(ads_data)
-            myrand = int(random.random()*length)
-            while myrand == self.previous_ad_index:
-                myrand = int(random.random()*length)
-
-            mydata = ads_data[myrand].split()
-            mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
-            myurl = ' '.join(mydata[1:])
-
-            pix_tmp_path = entropyTools.getRandomTempFile()
-            fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
-            rc = fetchConn.download()
-            if rc in ("-1","-2","-3"):
-                tries -= 1
-                continue
-
-            # load the image
-            try:
-                myadpix = gtk.image_new_from_file(pix_tmp_path)
-            except:
-                tries -= 1
-                continue
-
-            gtk.gdk.threads_enter()
-
-            self.ui.bannerEventBox.remove(self.ad_pix)
-            self.ad_pix = myadpix
-            self.ui.bannerEventBox.add(self.ad_pix)
-            self.ui.bannerEventBox.show_all()
-            self.ad_url = myurl
-
-            if self.previous_ad_image_path != None:
-                if os.path.isfile(self.previous_ad_image_path) and os.access(self.previous_ad_image_path,os.W_OK):
-                    try:
-                        os.remove(self.previous_ad_image_path)
-                    except (OSError,IOError,):
-                        pass
-            self.previous_ad_image_path = pix_tmp_path
-            self.previous_ad_index = myrand
-
-            gtk.gdk.threads_leave()
-            break
-
-    def spawnUgcUpdate(self):
-        try:
-            self.ugc_update()
-        except:
-            pass
-
-    def ugc_update(self):
-
-        while (self.spawning_ugc or self.isWorking):
-            time.sleep(1)
-
-        self.isWorking = True
-        self.spawning_ugc = True
-        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
-        if (connected == False) or (self.Equo.UGC == None):
-            self.isWorking = False
-            self.spawning_ugc = False
-            return
-        for repo in self.Equo.validRepositories:
-            self.Equo.update_ugc_cache(repo)
-
-        self.isWorking = False
-        self.spawning_ugc = False
-
-    def setupPreferences(self):
-
-        # config protect
-        self.configProtectView = self.ui.configProtectView
-        for mycol in self.configProtectView.get_columns(): self.configProtectView.remove_column(mycol)
-        self.configProtectModel = gtk.ListStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
-        self.configProtectView.append_column( column )
-        self.configProtectView.set_model( self.configProtectModel )
-
-        # config protect mask
-        self.configProtectMaskView = self.ui.configProtectMaskView
-        for mycol in self.configProtectMaskView.get_columns(): self.configProtectMaskView.remove_column(mycol)
-        self.configProtectMaskModel = gtk.ListStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
-        self.configProtectMaskView.append_column( column )
-        self.configProtectMaskView.set_model( self.configProtectMaskModel )
-
-        # config protect skip
-        self.configProtectSkipView = self.ui.configProtectSkipView
-        for mycol in self.configProtectSkipView.get_columns(): self.configProtectSkipView.remove_column(mycol)
-        self.configProtectSkipModel = gtk.ListStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
-        self.configProtectSkipView.append_column( column )
-        self.configProtectSkipView.set_model( self.configProtectSkipModel )
-
-        # UGC repositories
-
-        def get_ugc_repo_text( column, cell, model, myiter ):
-            obj = model.get_value( myiter, 0 )
-            if obj:
-                t = "[<b>%s</b>] %s" % (obj['repoid'],obj['description'],)
-                cell.set_property('markup',t)
-
-        def get_ugc_logged_text( column, cell, model, myiter ):
-            obj = model.get_value( myiter, 0 )
-            if obj:
-                t = "<i>%s</i>" % (_("Not logged in"),)
-                if self.Equo.UGC != None:
-                    logged_data = self.Equo.UGC.read_login(obj['repoid'])
-                    if logged_data != None:
-                        t = "<i>%s</i>" % (logged_data[0],)
-                cell.set_property('markup',t)
-
-        def get_ugc_status_pix( column, cell, model, myiter ):
-            if self.Equo.UGC == None:
-                cell.set_property( 'icon-name', 'gtk-cancel' )
-                return
-            obj = model.get_value( myiter, 0 )
-            if obj:
-                if self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']):
-                    cell.set_property( 'icon-name', 'gtk-apply' )
-                else:
-                    cell.set_property( 'icon-name', 'gtk-cancel' )
-                return
-            cell.set_property( 'icon-name', 'gtk-cancel' )
-
-        self.ugcRepositoriesView = self.ui.ugcRepositoriesView
-        self.ugcRepositoriesModel = gtk.ListStore( gobject.TYPE_PYOBJECT )
-
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Repository" ), cell )
-        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column.set_fixed_width( 300 )
-        column.set_expand(True)
-        column.set_cell_data_func( cell, get_ugc_repo_text )
-        self.ugcRepositoriesView.append_column( column )
-
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Logged in as" ), cell )
-        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column.set_fixed_width( 150 )
-        column.set_cell_data_func( cell, get_ugc_logged_text )
-        self.ugcRepositoriesView.append_column( column )
-
-        cell = gtk.CellRendererPixbuf()
-        column = gtk.TreeViewColumn( _( "UGC Status" ), cell)
-        column.set_cell_data_func( cell, get_ugc_status_pix )
-        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column.set_fixed_width( 120 )
-
-        self.ugcRepositoriesView.append_column( column )
-        self.ugcRepositoriesView.set_model( self.ugcRepositoriesModel )
-
-        # prepare generic config to allow filling of data
-        def fillSettingView(model, view, data):
-            model.clear()
-            view.set_model(model)
-            view.set_property('headers-visible',False)
-            for item in data:
-                model.append([item])
-            view.expand_all()
-
-        def fillSetting(name, mytype, wgwrite, data):
-            if not isinstance(data,mytype):
-                if data == None: # empty parameter
-                    return
-                errorMessage(
-                    self.ui.main,
-                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
-                    _("An issue occured while loading a preference"),
-                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
-                )
-                return
-            wgwrite(data)
-
-        def saveSettingView(config_file, name, setting, mytype, model, view):
-
-            data = []
-            iterator = model.get_iter_first()
-            while iterator != None:
-                item = model.get_value( iterator, 0 )
-                if item:
-                    data.append(item)
-                iterator = model.iter_next( iterator )
-
-            return saveSetting(config_file, name, setting, mytype, data)
-
-
-        def saveSetting(config_file, name, myvariable, mytype, data):
-            # saving setting
-            writedata = ''
-            if (not isinstance(data,mytype)) and (data != None):
-                errorMessage(
-                    self.ui.main,
-                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
-                    _("An issue occured while saving a preference"),
-                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
-                )
-                return False
-
-            if isinstance(data,int):
-                writedata = str(data)
-            elif isinstance(data,list):
-                writedata = ' '.join(data)
-            elif isinstance(data,bool):
-                writedata = "disable"
-                if data: writedata = "enable"
-            elif isinstance(data,basestring):
-                writedata = data
-            return saveParameter(config_file, name, writedata)
-
-        def saveParameter(config_file, name, data):
-            return entropyTools.writeParameterToFile(config_file,name,data)
-
-        self.Preferences = {
-            etpConst['entropyconf']: [
-                (
-                    'ftp-proxy',
-                    etpConst['proxy']['ftp'],
-                    basestring,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.ftpProxyEntry.set_text,
-                    self.ui.ftpProxyEntry.get_text,
-                ),
-                (
-                    'http-proxy',
-                    etpConst['proxy']['http'],
-                    basestring,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.httpProxyEntry.set_text,
-                    self.ui.httpProxyEntry.get_text,
-                ),
-                (
-                    'proxy-username',
-                    etpConst['proxy']['username'],
-                    basestring,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.usernameProxyEntry.set_text,
-                    self.ui.usernameProxyEntry.get_text,
-                ),
-                (
-                    'proxy-password',
-                    etpConst['proxy']['password'],
-                    basestring,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.passwordProxyEntry.set_text,
-                    self.ui.passwordProxyEntry.get_text,
-                ),
-                (
-                    'nice-level',
-                    etpConst['current_nice'],
-                    int,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.niceSpinSelect.set_value,
-                    self.ui.niceSpinSelect.get_value_as_int,
-                )
-            ],
-            etpConst['equoconf']: [
-                (
-                    'collisionprotect',
-                    etpConst['collisionprotect'],
-                    int,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.collisionProtectionCombo.set_active,
-                    self.ui.collisionProtectionCombo.get_active,
-                ),
-                (
-                    'configprotect',
-                    etpConst['configprotect'],
-                    list,
-                    fillSettingView,
-                    saveSettingView,
-                    self.configProtectModel,
-                    self.configProtectView,
-                ),
-                (
-                    'configprotectmask',
-                    etpConst['configprotectmask'],
-                    list,
-                    fillSettingView,
-                    saveSettingView,
-                    self.configProtectMaskModel,
-                    self.configProtectMaskView,
-                ),
-                (
-                    'configprotectskip',
-                    etpConst['configprotectskip'],
-                    list,
-                    fillSettingView,
-                    saveSettingView,
-                    self.configProtectSkipModel,
-                    self.configProtectSkipView,
-                ),
-                (
-                    'filesbackup',
-                    etpConst['filesbackup'],
-                    bool,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.filesBackupCheckbutton.set_active,
-                    self.ui.filesBackupCheckbutton.get_active,
-                )
-            ],
-            etpConst['repositoriesconf']: [
-                (
-                    'downloadspeedlimit',
-                    etpConst['downloadspeedlimit'],
-                    int,
-                    fillSetting,
-                    saveSetting,
-                    self.ui.speedLimitSpin.set_value,
-                    self.ui.speedLimitSpin.get_value_as_int,
-                )
-            ],
-        }
-
-        # load data
-        for config_file in self.Preferences:
-            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
-                if mytype == list:
-                    fillfunc(wgwrite,wgread,setting)
-                else:
-                    fillfunc(name, mytype, wgwrite, setting)
-
-        self.on_Preferences_toggled(None,False)
-
-    def setupMaskedPackagesWarningBox(self):
-        mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
-            _("Attention"),
-            _("These packages are masked either by default or due to your choice. Please be careful, at least."),
-        )
-        self.ui.maskedWarningLabel.set_markup(mytxt)
-
-    def setupAdvisories(self):
-        self.Advisories = self.Equo.Security()
-
-    def setupEditor(self):
-
-        pathenv = os.getenv("PATH")
-        if os.path.isfile("/etc/profile.env"):
-            f = open("/etc/profile.env")
-            env_file = f.readlines()
-            for line in env_file:
-                line = line.strip()
-                if line.startswith("export PATH='"):
-                    line = line[len("export PATH='"):]
-                    line = line.rstrip("'")
-                    for path in line.split(":"):
-                        pathenv += ":"+path
-                    break
-        os.environ['PATH'] = pathenv
-
-        self.fileEditor = '/usr/bin/xterm -e $EDITOR'
-        de_session = os.getenv('DESKTOP_SESSION')
-        if de_session == None: de_session = ''
-        path = os.getenv('PATH').split(":")
-        if os.access("/usr/bin/xdg-open",os.X_OK):
-            self.fileEditor = "/usr/bin/xdg-open"
-        if de_session.find("kde") != -1:
-            for item in path:
-                itempath = os.path.join(item,'kwrite')
-                itempath2 = os.path.join(item,'kedit')
-                itempath3 = os.path.join(item,'kate')
-                if os.access(itempath,os.X_OK):
-                    self.fileEditor = itempath
-                    break
-                elif os.access(itempath2,os.X_OK):
-                    self.fileEditor = itempath2
-                    break
-                elif os.access(itempath3,os.X_OK):
-                    self.fileEditor = itempath3
-                    break
-        else:
-            if os.access('/usr/bin/gedit',os.X_OK):
-                self.fileEditor = '/usr/bin/gedit'
-
-    def startWorking(self, do_busy = True):
-        self.isWorking = True
-        if do_busy:
-            busyCursor(self.ui.main)
-        self.ui.progressVBox.grab_add()
-        gtkEventThread.startProcessing()
-
-    def endWorking(self):
-        self.isWorking = False
-        self.ui.progressVBox.grab_remove()
-        normalCursor(self.ui.main)
-        gtkEventThread.endProcessing()
-
-    def setupSpritz(self):
-        msg = _('Generating metadata. Please wait.')
-        self.setStatus(msg)
-        count = 30
-        while count:
-            try:
-                self.addPackages()
-            except self.Equo.dbapi2.ProgrammingError, e:
-                self.setStatus("%s: %s, %s" % (
-                        _("Error during list population"),
-                        e,
-                        _("Retrying in 1 second."),
-                    )
-                )
-                time.sleep(1)
-                count -= 1
-                continue
-            break
-        self.populateCategories()
-
-    def cleanEntropyCaches(self, alone = False):
-        if alone:
-            self.progress.total.hide()
-        self.Equo.generate_cache(depcache = True, configcache = False)
-        # clear views
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
-        self.setupSpritz()
-        if alone:
-            self.progress.total.show()
-
-    def populateAdvisories(self, widget, show):
-        self.setBusy()
-        cached = None
-        try:
-            cached = self.Advisories.get_advisories_cache()
-        except (IOError, EOFError):
-            pass
-        except AttributeError:
-            time.sleep(5)
-            cached = self.Advisories.get_advisories_cache()
-        if cached == None:
-            try:
-                cached = self.Advisories.get_advisories_metadata()
-            except Exception, e:
-                okDialog( self.ui.main, "%s: %s" % (_("Error loading advisories"),e) )
-                cached = {}
-        if cached:
-            self.advisoriesView.populate(self.Advisories, cached, show)
-        self.unsetBusy()
-
-    def populateFilesUpdate(self):
-        # load filesUpdate interface and fill self.filesView
-        cached = None
-        try:
-            cached = self.Equo.FileUpdates.load_cache()
-        except exceptionTools.CacheCorruptionError:
-            pass
-        if cached == None:
-            self.setBusy()
-            cached = self.Equo.FileUpdates.scanfs()
-            self.unsetBusy()
-        if cached:
-            self.filesView.populate(cached)
-
-    def updateRepositories(self, repos):
-
-        # set steps
-        progress_step = float(1)/(len(repos))
-        step = progress_step
-        myrange = []
-        while progress_step < 1.0:
-            myrange.append(step)
-            progress_step += step
-        myrange.append(step)
-
-        self.progress.total.setup( myrange )
-        self.progress.set_mainLabel(_('Initializing Repository module...'))
-        forceUpdate = self.ui.forceRepoUpdate.get_active()
-
-        try:
-            repoConn = self.Equo.Repositories(repos, forceUpdate = forceUpdate)
-        except exceptionTools.PermissionDenied:
-            self.progressLog(_('You must run this application as root'), extra = "repositories")
-            return 1
-        except exceptionTools.MissingParameter:
-            msg = "%s: %s" % (_('No repositories specified in'),etpConst['repositoriesconf'],)
-            self.progressLog( msg, extra = "repositories")
-            return 127
-        except exceptionTools.OnlineMirrorError:
-            self.progressLog(_('You are not connected to the Internet. You should.'), extra = "repositories")
-            return 126
-        except Exception, e:
-            msg = "%s: %s" % (_('Unhandled exception'),e,)
-            self.progressLog(msg, extra = "repositories")
-            return 2
-        rc = repoConn.sync()
-        if repoConn.syncErrors or (rc != 0):
-            self.progress.set_mainLabel(_('Errors updating repositories.'))
-            self.progress.set_subLabel(_('Please check logs below for more info'))
-        else:
-            if repoConn.alreadyUpdated == 0:
-                self.progress.set_mainLabel(_('Repositories updated successfully'))
-            else:
-                if len(repos) == repoConn.alreadyUpdated:
-                    self.progress.set_mainLabel(_('All the repositories were already up to date.'))
-                else:
-                    msg = "%s %s" % (repoConn.alreadyUpdated,_("repositories were already up to date. Others have been updated."),)
-                    self.progress.set_mainLabel(msg)
-            if repoConn.newEquo:
-                self.progress.set_extraLabel(_('sys-apps/entropy needs to be updated as soon as possible.'))
-
-        initConfig_entropyConstants(etpSys['rootdir'])
-
-    def resetProgressText(self):
-        self.progress.set_mainLabel(_('Nothing to do. I am idle.'))
-        self.progress.set_subLabel(_('Really, don\'t waste your time here. This is just a placeholder'))
-        self.progress.set_extraLabel(_('I am still alive and kickin\''))
-
-    def resetQueueProgressBars(self):
-        self.progress.reset_progress()
-        self.progress.total.clear()
-
-    def setupRepoView(self):
-        self.repoView.populate()
-
-    def setBusy(self):
-        self.isBusy = True
-        busyCursor(self.ui.main)
-
-    def unsetBusy(self):
-        self.isBusy = False
-        normalCursor(self.ui.main)
-
-    def addPackages(self):
-
-        action = self.lastPkgPB
-        if action == 'all':
-            masks = ['installed','available']
-        else:
-            masks = [action]
-
-
-        self.setBusy()
-        bootstrap = False
-        if (self.Equo.get_world_update_cache(empty_deps = False) == None):
-            bootstrap = True
-            self.setPage('output')
-        elif (self.Equo.get_available_packages_cache() == None) and ('available' in masks):
-            bootstrap = True
-            self.setPage('output')
-        self.progress.total.hide()
-
-        self.etpbase.clearPackages()
-        if bootstrap:
-            self.etpbase.clearCache()
-            self.startWorking()
-
-        allpkgs = []
-        if self.doProgress: self.progress.total.next() # -> Get lists
-        self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
-        self.progress.set_subLabel(_('Entropy is indexing the repositories. It will take a few seconds'))
-        self.progress.set_extraLabel(_('While you are waiting, take a break and look outside. Is it rainy?'))
-        for flt in masks:
-            msg = "%s: %s" % (_('Calculating'),flt,)
-            self.setStatus(msg)
-            allpkgs += self.etpbase.getPackages(flt)
-        if self.doProgress: self.progress.total.next() # -> Sort Lists
-
-        if action == "updates":
-            msg = "%s: available" % (_('Calculating'),)
-            self.setStatus(msg)
-            self.etpbase.getPackages("available")
-
-        if bootstrap:
-            self.endWorking()
-
-        empty = False
-        if not allpkgs and action == "updates":
-            allpkgs = self.etpbase.getPackages('fake_updates')
-            empty = True
-
-        if bootstrap: time.sleep(3)
-        self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
-
-        self.pkgView.populate(allpkgs, empty = empty)
-        self.progress.total.show()
-
-        if self.doProgress: self.progress.hide() #Hide Progress
-        if bootstrap:
-            self.setPage('packages')
-
-        self.unsetBusy()
-        # reset labels
-        self.resetProgressText()
-        self.resetQueueProgressBars()
-
-    def processPackageQueue(self, pkgs, remove_repos = []):
-
-        # preventive check against other instances
-        locked = self.Equo.application_lock_check()
-        if locked:
-            okDialog(self.ui.main, _("Another Entropy instance is running. Cannot process queue."))
-            self.progress.reset_progress()
-            self.setPage('packages')
-            return False
-
-        self.setStatus( _( "Running tasks" ) )
-        total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
-        state = True
-        if total > 0:
-            self.startWorking(do_busy = True)
-            normalCursor(self.ui.main)
-            self.progress.show()
-            self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-
-            queue = pkgs['i']+pkgs['u']+pkgs['rr']
-            install_queue = [x.matched_atom for x in queue]
-            removal_queue = [x.matched_atom[0] for x in pkgs['r']]
-            do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
-            if install_queue or removal_queue:
-                controller = QueueExecutor(self)
-                try:
-                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
-                except exceptionTools.QueueError:
-                    e = 1
-                self.ui.skipMirror.hide()
-                self.ui.abortQueue.hide()
-                if e != 0:
-                    okDialog(   self.ui.main,
-                                _("Attention. An error occured when processing the queue."
-                                    "\nPlease have a look in the processing terminal.")
-                    )
-                self.endWorking()
-                self.etpbase.clearPackages()
-                time.sleep(5)
-            self.endWorking()
-            self.progress.reset_progress()
-            self.etpbase.clearPackages()
-            self.etpbase.clearCache()
-            for myrepo in remove_repos:
-                self.Equo.removeRepository(myrepo)
-            self.Equo.closeAllRepositoryDatabases()
-            self.Equo.reopenClientDbconn()
-            # regenerate packages information
-
-            self.setupSpritz()
-            self.Equo.FileUpdates.scanfs(dcache = False)
-            if self.Equo.FileUpdates.scandata:
-                if len(self.Equo.FileUpdates.scandata) > 0:
-                    self.setPage('filesconf')
-            #self.progress.hide()
-            return state
-        else:
-            self.setStatus( _( "No packages selected" ) )
-            return state
-
-    def populateCategories(self):
-        self.setBusy()
-        self.etpbase.populateCategories()
-        self.catsView.populate(self.etpbase.getCategories())
-        self.unsetBusy()
-
-    def populateCategoryPackages(self, cat):
-        pkgs = self.etpbase.getPackagesByCategory(cat)
-        self.catPackages.populate(pkgs,self.ui.tvCatPackages)
+    def on_noticeBoardMenuItem_activate(self, widget):
+        self.showNoticeBoard()
 
 
 if __name__ == "__main__":

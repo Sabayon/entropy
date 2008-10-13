@@ -301,7 +301,6 @@ class EntropyPackageView:
         self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def run_updates_menu_stuff(self, obj):
-        do_show = True
         self.reset_updates_menu()
         if obj.queued:
             self.hide_updates_menu()
@@ -355,8 +354,8 @@ class EntropyPackageView:
 
     def on_unmask_activate(self, widget):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
 
         oldmask = self.etpbase.unmaskingPackages.copy()
         mydialog = MaskedPackagesDialog(self.Equo, self.etpbase, self.ui.main, [obj])
@@ -368,8 +367,8 @@ class EntropyPackageView:
 
     def on_remove_activate(self, widget, do_purge = False):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
         oldqueued = obj.queued
         oldpurge = obj.do_purge
         obj.queued = "r"
@@ -384,8 +383,8 @@ class EntropyPackageView:
 
     def on_reinstall_activate(self, widget):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
         oldqueued = obj.queued
         obj.queued = "rr"
         oldqueued_reinstallable = self.loaded_reinstallable.queued
@@ -399,8 +398,8 @@ class EntropyPackageView:
 
     def on_undoreinstall_activate(self, widget):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
         obj.queued = None
         self.remove_queued(self.loaded_reinstallable)
         self.queueView.refresh()
@@ -408,8 +407,8 @@ class EntropyPackageView:
 
     def on_undoremove_activate(self, widget):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
         self.remove_queued(obj)
         obj.do_purge = False
         self.queueView.refresh()
@@ -450,8 +449,8 @@ class EntropyPackageView:
 
     def on_install_update_activate(self, widget, action):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
         oldqueued = obj.queued
         obj.queued = action
         status, myaction = self.queue.add(obj)
@@ -463,8 +462,8 @@ class EntropyPackageView:
 
     def on_undoinstall_undoupdate_activate(self, widget):
         busyCursor(self.main_window)
-        model, iter = self.loaded_widget.get_selection().get_selected()
-        obj = self.store.get_value( iter, 0 )
+        model, myiter = self.loaded_widget.get_selection().get_selected()
+        obj = self.store.get_value( myiter, 0 )
         self.remove_queued(obj)
         self.queueView.refresh()
         normalCursor(self.main_window)
@@ -510,14 +509,14 @@ class EntropyPackageView:
         obj = model.get_value( myiter, 0 )
         if not obj: return
         try:
-            voted = int(getattr( obj, 'voted' ))
+            voted = int(obj.voted)
         except:
             return
         #if voted:
         #    cell.value_voted = int(voted)
         #    return
         try:
-            mydata = int(getattr( obj, 'vote' ))
+            mydata = int(obj.vote)
         except:
             return
         cell.value = int(mydata)
@@ -831,18 +830,18 @@ class EntropyQueueView:
             pkg.set_select( not pkg.selected )
         f = lambda x: str( x ) not in rmvlist
         for action in ['u', 'i', 'r','rr']:
-            list = self.queue.get(action)
-            if list:
-                self.queue.packages[action] = filter( f, list )
+            mylist = self.queue.get(action)
+            if mylist:
+                self.queue.packages[action] = filter( f, mylist )
         self.refresh()
 
     def getPkgsFromList( self, rlist ):
         rclist = []
         f = lambda x: str( x ) in rlist
         for action in ['u', 'i', 'r','rr']:
-            list = self.queue.packages[action]
-            if list:
-                rclist += filter( f, list )
+            mylist = self.queue.packages[action]
+            if mylist:
+                rclist += filter( f, mylist )
         return rclist
 
     def refresh ( self ):
@@ -1065,18 +1064,18 @@ class EntropyAdvisoriesView:
 
         only_affected = False
         only_unaffected = False
-        all = False
+        do_all = False
         if show == "affected":
             only_affected = True
         elif show == "applied":
             only_unaffected = True
         else:
-            all = True
+            do_all = True
 
         identifiers = {}
         for key in adv_metadata:
             affected = securityConn.is_affected(key)
-            if all:
+            if do_all:
                 identifiers[key] = affected
             elif only_affected and not affected:
                 continue
