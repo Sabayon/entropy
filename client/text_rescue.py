@@ -482,6 +482,10 @@ def database(options):
             print_info(red(" %s." % (_("Entropy locked, giving up"),)))
             return 2
 
+        rc = Equo.askQuestion(_("Are you ready ?"))
+        if rc == "No":
+            return 0
+
         Equo._resources_run_create_lock()
 
         if toBeRemoved:

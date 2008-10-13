@@ -1,10 +1,10 @@
 TODO list
   - implement package sets (meta packages list)
+  - masking/unmasking functions
   - UGC: bug report documents?
   - text ADS
   - p2p way to fight security attacks (through UGC and triple md5 verification)
   - force a package to keep the current version
-  - masking/unmasking functions
   - server-side messages collection
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
