@@ -67,6 +67,11 @@ myopts = [
     (2,'lock-status',2,_('show current lock status')),
     (2,'--syncall',2,_('sync all the configured repositories')),
     None,
+    (1,'notice',1,_('notice board handling functions')),
+    (2,'add',2,_('add a news item to the notice board')),
+    (2,'remove',2,_('remove a news item from the notice board')),
+    (2,'read',2,_('read the current notice board')),
+    None,
 ]
 
 options = sys.argv[1:]
@@ -104,25 +109,24 @@ options = _options
 if not entropyTools.isRoot():
     print_error("you must be root in order to run activator")
     sys.exit(2)
-
 elif (options[0] == "sync"):
     import server_activator
     server_activator.sync(options[1:])
-    sys.exit(0)
-
+    raise SystemExit
 elif (options[0] == "tidy"):
     import server_activator
     server_activator.sync(options[1:], justTidy = True)
-    sys.exit(0)
-
-# database tool
+    raise SystemExit
 elif (options[0] == "database"):
     import server_activator
     server_activator.database(options[1:])
-    sys.exit(0)
-
-# database tool
+    raise SystemExit
 elif (options[0] == "packages"):
     import server_activator
     server_activator.packages(options[1:])
-    sys.exit(0)
+    raise SystemExit
+# database tool
+elif (options[0] == "notice"):
+    import server_activator
+    server_activator.notice(options[1:])
+    raise SystemExit

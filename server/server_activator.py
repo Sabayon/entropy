@@ -126,6 +126,141 @@ def packages(options):
 
     return 0
 
+def notice(options):
+
+    if not options:
+        return
+
+    def show_notice(key, mydict):
+
+        mytxt = "[%s] [%s] %s: %s" % (
+            blue(str(key)),
+            brown(mydict['pubDate']),
+            _("Title"),
+            darkred(mydict['title']),
+        )
+        print_info(mytxt)
+
+        mytxt = "\t%s: %s" % (
+            darkgreen(_("Content")),
+            blue(mydict['description']),
+        )
+        print_info(mytxt)
+        mytxt = "\t%s: %s" % (
+            darkgreen(_("Link")),
+            blue(mydict['link']),
+        )
+        print_info(mytxt)
+
+        def fake_callback(s):
+            return True
+
+        input_params = [('idx',_('Press Enter to continue'),fake_callback,False)]
+        data = Entropy.inputBox('', input_params, cancel_button = True)
+        return
+
+
+    def show_notice_selector(title, mydict):
+        print_info('')
+        mykeys = sorted(mydict.keys())
+
+        for key in mykeys:
+            mydata = mydict.get(key)
+            mytxt = "[%s] [%s] %s: %s" % (
+                blue(str(key)),
+                brown(mydata['pubDate']),
+                _("Title"),
+                darkred(mydata['title']),
+            )
+            print_info(mytxt)
+
+        print_info('')
+        mytxt = "[%s] %s" % (
+            blue("-1"),
+            darkred(_("Exit/Commit")),
+        )
+        print_info(mytxt)
+
+        def fake_callback(s):
+            return s
+        input_params = [('id',blue(_('Choose one by typing its identifier')),fake_callback,False)]
+        data = Entropy.inputBox(title, input_params, cancel_button = True)
+        if not isinstance(data,dict):
+            return -1
+        try:
+            return int(data['id'])
+        except ValueError:
+            return -2
+
+    if options[0] == "add":
+
+        def fake_callback(s):
+            return s
+
+        def fake_callback_tr(s):
+            return True
+
+        input_params = [
+            ('title',_('Title'),fake_callback,False),
+            ('text',_('Notice text'),fake_callback,False),
+            ('url',_('Relevant URL (optional)'),fake_callback_tr,False),
+        ]
+
+        data = Entropy.inputBox(blue("%s") % (_("Repository notice board, new item insertion"),), input_params, cancel_button = True)
+        if data == None: return 0
+        status = Entropy.MirrorsService.update_notice_board(title = data['title'], notice_text = data['text'], link = data['url'])
+        if status:
+            return 0
+        return 1
+
+    if options[0] == "read":
+
+        data = Entropy.MirrorsService.read_notice_board()
+        if data == None:
+            print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
+            return 1
+        items, counter = data
+        while 1:
+            try:
+                sel = show_notice_selector('', items)
+            except KeyboardInterrupt:
+                return 0
+            if (sel >= 0) and (sel <= counter):
+                show_notice(sel, items.get(sel))
+            elif sel == -1:
+                return 0
+
+    if options[0] == "remove":
+
+        data = Entropy.MirrorsService.read_notice_board()
+        if data == None:
+            print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
+            return 1
+        items, counter = data
+        changed = False
+        while 1:
+            try:
+                sel = show_notice_selector(darkgreen(_("Choose the one you want to remove")), items)
+            except KeyboardInterrupt:
+                break
+            if (sel >= 0) and (sel <= counter):
+                show_notice(sel, items.get(sel))
+                rc = Entropy.askQuestion(_("Are you sure you want to remove this?"))
+                if rc == "Yes":
+                    changed = True
+                    Entropy.MirrorsService.remove_from_notice_board(sel)
+                    data = Entropy.MirrorsService.read_notice_board(do_download = False)
+                    items, counter = data
+            elif sel == -1:
+                break
+
+        if changed:
+            status = Entropy.MirrorsService.upload_notice_board()
+            if not status:
+                return 1
+        return 0
+
+    return 0
 
 def database(options):
 
