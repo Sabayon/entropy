@@ -17287,6 +17287,20 @@ class RemoteDbSkelInterface:
     def check_connection(self):
         if self.dbconn == None:
             raise exceptionTools.ConnectionError('ConnectionError: %s' % (_("not connected to database"),))
+        self._check_needed_reconnect()
+
+    def _check_needed_reconnect(self):
+        if self.dbconn == None:
+            return
+        try:
+            self.dbconn.ping()
+        except self.mysql_exceptions.OperationalError, e:
+            if e[0] != 2006:
+                raise
+            else:
+               self.connect()
+               return True
+        return False
 
     def _raise_not_implemented_error(self):
         raise exceptionTools.NotImplementedError('NotImplementedError: %s' % (_('method not implemented'),))
@@ -19106,10 +19120,6 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         )
         self.TABLE_PREFIX = 'phpbb_'
 
-    def check_connection(self):
-        RemoteDbSkelInterface.check_connection(self)
-        self._check_needed_reconnect()
-
     def login(self):
         self.check_connection()
         self.check_login_data()
@@ -19399,19 +19409,6 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         data = self.cursor.fetchone()
         if data:
             return True
-        return False
-
-    def _check_needed_reconnect(self):
-        if self.dbconn == None:
-            return
-        try:
-            self.dbconn.ping()
-        except self.mysql_exceptions.OperationalError, e:
-            if e[0] != 2006:
-                raise
-            else:
-               self.connect()
-               return True
         return False
 
     def _get_unique_id(self):
