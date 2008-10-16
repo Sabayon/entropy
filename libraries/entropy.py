@@ -17745,10 +17745,13 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return data['userid']
 
     def get_user_score(self, userid):
-        comments = self.get_user_comments_count(userid)*5
-        docs = self.get_user_docs_count(userid)*10
-        votes = self.get_user_votes_count(userid)*2
-        return comments+docs+votes
+        comments = self.get_user_comments_count(userid)
+        docs = self.get_user_docs_count(userid)
+        votes = self.get_user_votes_count(userid)
+        return self._calculate_score(comments, docs, votes)
+
+    def _calculate_score(self, comments, docs, votes):
+        return (comments*5)+(docs*10)+(votes*2)
 
     def get_user_votes_average(self, userid):
         self.execute_query('SELECT avg(`vote`) as vote_avg FROM entropy_votes WHERE `userid` = %s', (userid,))
@@ -17808,6 +17811,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         mydict['votes_avg'] = self.get_user_votes_average(userid)
         # total docs
         mydict['total_docs'] = mydict['comments'] + mydict['docs']
+        mydict['score'] = self._calculate_score(mydict['comments'], mydict['docs'], mydict['votes'])
         return mydict
 
     def handle_pkgkey(self, key):
