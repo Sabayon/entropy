@@ -17744,6 +17744,34 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return None
         return data['userid']
 
+    def get_total_comments_count(self):
+        self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` = %s', (self.DOC_TYPES['comments'],))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('comments'): return int(data['comments'])
+        return 0
+
+    def get_total_documents_count(self):
+        self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` != %s', (self.DOC_TYPES['comments'],))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('comments'): return int(data['comments'])
+        return 0
+
+    def get_total_votes_count(self):
+        self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes')
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('votes'): return int(data['votes'])
+        return 0
+
+    def get_total_downloads_count(self):
+        self.execute_query('SELECT count(`iddownload`) as downloads FROM entropy_downloads')
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('downloads'): return int(data['downloads'])
+        return 0
+
     def get_user_score(self, userid):
         comments = self.get_user_comments_count(userid)
         docs = self.get_user_docs_count(userid)
@@ -17812,6 +17840,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         # total docs
         mydict['total_docs'] = mydict['comments'] + mydict['docs']
         mydict['score'] = self._calculate_score(mydict['comments'], mydict['docs'], mydict['votes'])
+        return mydict
+
+    def get_distribution_stats(self):
+        mydict = {}
+        mydict['comments'] = self.get_total_comments_count()
+        mydict['documents'] = self.get_total_documents_count()
+        mydict['votes'] = self.get_total_votes_count()
+        mydict['downloads'] = self.get_total_downloads_count()
         return mydict
 
     def handle_pkgkey(self, key):
