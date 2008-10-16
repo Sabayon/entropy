@@ -264,7 +264,13 @@ def database(options):
             bold(etpConst['etpdatabaseclientfilepath']),
         )
         print_info(mytxt, back = True)
-        Equo.clientDbconn.initializeDatabase()
+        dbpath = etpConst['etpdatabaseclientfilepath']
+        if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
+            os.remove(dbpath)
+        dbc = Equo.openGenericDatabase(dbpath, dbname = etpConst['clientdbid']) # don't do this at home
+        dbc.initializeDatabase()
+        dbc.commitChanges()
+        Equo.clientDbconn = dbc
         mytxt = "  %s %s" % (
             darkgreen(_("Database reinitialized correctly at")),
             bold(etpConst['etpdatabaseclientfilepath']),

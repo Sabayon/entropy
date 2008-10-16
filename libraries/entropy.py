@@ -17744,6 +17744,72 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return None
         return data['userid']
 
+    def get_user_score(self, userid):
+        comments = self.get_user_comments_count(userid)*5
+        docs = self.get_user_docs_count(userid)*10
+        votes = self.get_user_votes_count(userid)*2
+        return comments+docs+votes
+
+    def get_user_votes_average(self, userid):
+        self.execute_query('SELECT avg(`vote`) as vote_avg FROM entropy_votes WHERE `userid` = %s', (userid,))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('vote_avg'): return int(data['vote_avg'])
+        return 0
+
+    def get_user_docs(self, userid):
+        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` != %s', (userid,self.DOC_TYPES['comments'],))
+        data = self.fetchall()
+        if not data: return []
+        return data
+
+    def get_user_comments(self, userid):
+        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` = %s', (userid,self.DOC_TYPES['comments'],))
+        data = self.fetchall()
+        if not data: return []
+        return data
+
+    def get_user_votes(self, userid):
+        self.execute_query('SELECT * FROM entropy_votes WHERE `userid` = %s', (userid,))
+        data = self.fetchall()
+        if not data: return []
+        return data
+
+    def get_user_comments_count(self, userid):
+        self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `userid` = %s AND `iddoctype` = %s', (userid,self.DOC_TYPES['comments'],))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('comments'): return int(data['comments'])
+        return 0
+
+    def get_user_docs_count(self, userid):
+        self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` != %s', (userid,self.DOC_TYPES['comments'],))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('docs'): return int(data['docs'])
+        return 0
+
+    def get_user_votes_count(self, userid):
+        self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes WHERE `userid` = %s', (userid,))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('votes'): return int(data['votes'])
+        return 0
+
+    def get_user_stats(self, userid):
+        mydict = {}
+        # number of comments
+        mydict['comments'] = self.get_user_comments_count(userid)
+        # number of docs
+        mydict['docs'] = self.get_user_docs_count(userid)
+        # number of votes
+        mydict['votes'] = self.get_user_votes_count(userid)
+        # vote avg
+        mydict['votes_avg'] = self.get_user_votes_average(userid)
+        # total docs
+        mydict['total_docs'] = mydict['comments'] + mydict['docs']
+        return mydict
+
     def handle_pkgkey(self, key):
         if not self.is_pkgkey_available(key):
             return self.insert_pkgkey(key, do_commit = True)
