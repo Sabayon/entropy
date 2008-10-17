@@ -17679,6 +17679,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return metadata
 
     def _get_ugc_extra_metadata(self, mydict):
+        self.check_connection()
         mydict['store_url'] = None
         mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
         mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
@@ -17711,6 +17712,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return vote
 
     def get_ugc_allvotes(self):
+        self.check_connection()
         vote_data = {}
         self.execute_query('SELECT `key`,`idkey` FROM entropy_base')
         keys_data = self.fetchall()
@@ -17734,6 +17736,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return downloads
 
     def get_ugc_alldownloads(self):
+        self.check_connection()
         down_data = {}
         self.execute_query('SELECT `key`,`idkey` FROM entropy_base')
         keys_data = self.fetchall()
@@ -17748,6 +17751,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return down_data
 
     def get_iddoc_userid(self, iddoc):
+        self.check_connection()
         if not self.is_iddoc_available(iddoc):
             return None
         self.execute_query('SELECT `userid` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
@@ -17759,6 +17763,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return data['userid']
 
     def get_total_comments_count(self):
+        self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` = %s', (self.DOC_TYPES['comments'],))
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17766,6 +17771,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return 0
 
     def get_total_documents_count(self):
+        self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` != %s', (self.DOC_TYPES['comments'],))
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17773,6 +17779,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return 0
 
     def get_total_votes_count(self):
+        self.check_connection()
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes')
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17780,7 +17787,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return 0
 
     def get_total_downloads_count(self):
-        self.execute_query('SELECT count(`iddownload`) as downloads FROM entropy_downloads')
+        self.check_connection()
+        self.execute_query('SELECT sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
         data = self.fetchone()
         if isinstance(data,dict):
             if data['downloads']: return int(data['downloads'])
@@ -17796,6 +17804,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return (comments*5)+(docs*10)+(votes*2)
 
     def get_user_votes_average(self, userid):
+        self.check_connection()
         self.execute_query('SELECT avg(`vote`) as vote_avg FROM entropy_votes WHERE `userid` = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17803,24 +17812,28 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return 0.0
 
     def get_user_docs(self, userid):
+        self.check_connection()
         self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` != %s', (userid,self.DOC_TYPES['comments'],))
         data = self.fetchall()
         if not data: return []
         return data
 
     def get_user_comments(self, userid):
+        self.check_connection()
         self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` = %s', (userid,self.DOC_TYPES['comments'],))
         data = self.fetchall()
         if not data: return []
         return data
 
     def get_user_votes(self, userid):
+        self.check_connection()
         self.execute_query('SELECT * FROM entropy_votes WHERE `userid` = %s', (userid,))
         data = self.fetchall()
         if not data: return []
         return data
 
     def get_user_comments_count(self, userid):
+        self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `userid` = %s AND `iddoctype` = %s', (userid,self.DOC_TYPES['comments'],))
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17828,6 +17841,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return 0
 
     def get_user_docs_count(self, userid):
+        self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` != %s', (userid,self.DOC_TYPES['comments'],))
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17835,6 +17849,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return 0
 
     def get_user_votes_count(self, userid):
+        self.check_connection()
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes WHERE `userid` = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
@@ -17871,6 +17886,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return self.get_idkey(key)
 
     def insert_flood_control_check(self, userid):
+        self.check_connection()
         from datetime import datetime
         self.execute_query('SELECT max(`ts`) as ts FROM entropy_docs WHERE `userid` = %s', (userid,))
         data = self.fetchone()
