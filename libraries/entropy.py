@@ -8470,7 +8470,10 @@ class rssFeed:
             self.title = self.channel.getElementsByTagName("title")[0].firstChild.data.strip()
             self.link = self.channel.getElementsByTagName("link")[0].firstChild.data.strip()
             self.description = self.channel.getElementsByTagName("description")[0].firstChild.data.strip()
-            self.language = self.channel.getElementsByTagName("language")[0].firstChild.data.strip()
+            try:
+                self.language = self.channel.getElementsByTagName("language")[0].firstChild.data.strip()
+            except IndexError:
+                self.language = 'en'
             self.cright = self.channel.getElementsByTagName("copyright")[0].firstChild.data.strip()
             self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data.strip()
             entries = self.channel.getElementsByTagName("item")
