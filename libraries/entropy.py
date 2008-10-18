@@ -8474,8 +8474,14 @@ class rssFeed:
                 self.language = self.channel.getElementsByTagName("language")[0].firstChild.data.strip()
             except IndexError:
                 self.language = 'en'
-            self.cright = self.channel.getElementsByTagName("copyright")[0].firstChild.data.strip()
-            self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data.strip()
+            try:
+                self.cright = self.channel.getElementsByTagName("copyright")[0].firstChild.data.strip()
+            except IndexError:
+                self.cright = ''
+            try:
+                self.editor = self.channel.getElementsByTagName("managingEditor")[0].firstChild.data.strip()
+            except IndexError:
+                self.editor = ''
             entries = self.channel.getElementsByTagName("item")
             self.itemscounter = len(entries)
             if self.itemscounter > self.maxentries:
