@@ -17345,8 +17345,10 @@ class RemoteDbSkelInterface:
 
     def disconnect(self):
         self.check_connection()
-        self.cursor.close()
-        self.dbconn.close()
+        if hasattr(self.cursor,'close'):
+            self.cursor.close()
+        if hasattr(self.dbconn,'close'):
+            self.dbconn.close()
         self.dbconn = None
         self.cursor = None
         self.plain_cursor = None
@@ -33639,14 +33641,11 @@ class EntropyDatabaseInterface:
 
         # use match
         scan_atom = self.entropyTools.remove_usedeps(atom)
-        if not scan_atom:
-            # completely broken atom
-            return -1,1
         if (not matchUse) and (atomUse):
             matchUse = atomUse
 
         # tag match
-        scan_atom = self.entropyTools.remove_tag(atom)
+        scan_atom = self.entropyTools.remove_tag(scan_atom)
         if (matchTag == None) and (atomTag != None):
             matchTag = atomTag
 
@@ -33660,34 +33659,41 @@ class EntropyDatabaseInterface:
         if (matchRevision == None) and (atomRev != None):
             matchRevision = atomRev
 
-        # check for direction
-        strippedAtom = self.entropyTools.dep_getcpv(scan_atom)
-        if scan_atom[-1] == "*":
-            strippedAtom += "*"
-        direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
+        myBranchIndex = ()
+        direction = ''
+        justname = True
 
-        justname = self.entropyTools.isjustname(strippedAtom)
-        pkgversion = ''
-        if not justname:
+        if scan_atom and strippedAtom:
 
-            # get version
-            data = self.entropyTools.catpkgsplit(strippedAtom)
-            if data == None: return -1,1 # atom is badly formatted
-            pkgversion = data[2]+"-"+data[3]
+            while 1:
+                pkgversion = ''
+                # check for direction
+                strippedAtom = self.entropyTools.dep_getcpv(scan_atom)
+                if scan_atom[-1] == "*":
+                    strippedAtom += "*"
+                direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
 
-        pkgkey = self.entropyTools.dep_getkey(strippedAtom)
-        splitkey = pkgkey.split("/")
-        if (len(splitkey) == 2):
-            pkgname = splitkey[1]
-            pkgcat = splitkey[0]
-        else:
-            pkgname = splitkey[0]
-            pkgcat = "null"
+                justname = self.entropyTools.isjustname(strippedAtom)
+                if not justname:
+                    # get version
+                    data = self.entropyTools.catpkgsplit(strippedAtom)
+                    if data == None: break # badly formatted
+                    pkgversion = data[2]+"-"+data[3]
 
-        myBranchIndex = (self.db_branch,)
-        if matchBranches:
-            # force to tuple for security
-            myBranchIndex = tuple(matchBranches)
+                pkgkey = self.entropyTools.dep_getkey(strippedAtom)
+                splitkey = pkgkey.split("/")
+                if (len(splitkey) == 2):
+                    pkgname = splitkey[1]
+                    pkgcat = splitkey[0]
+                else:
+                    pkgname = splitkey[0]
+                    pkgcat = "null"
+
+                myBranchIndex = (self.db_branch,)
+                if matchBranches:
+                    # force to tuple for security
+                    myBranchIndex = tuple(matchBranches)
+                break
 
         # IDs found in the database that match our search
         foundIDs = set()
@@ -33808,7 +33814,7 @@ class EntropyDatabaseInterface:
 
         dbpkginfo = set()
         # now we have to handle direction
-        if ((direction) or (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*"))) and foundIDs:
+        if ((direction) or ((not direction) and (not justname)) or ((not direction) and (not justname) and strippedAtom.endswith("*"))) and foundIDs:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \
