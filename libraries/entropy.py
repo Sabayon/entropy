@@ -17953,9 +17953,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         if not clean_keys:
             return
-        # maybe use execute_many?
-        for key in clean_keys:
-            self.execute_query('INSERT INTO entropy_docs_keywords VALUES (%s,%s)',( iddoc, key,))
+
+        def myiter():
+            for key in clean_keys:
+                yield (iddoc, key,)
+        self.execute_many('INSERT INTO entropy_docs_keywords VALUES (%s,%s)', myiter)
 
     def remove_keywords(self, iddoc):
         self.execute_query('DELETE FROM entropy_docs_keywords WHERE `iddoc` = %s',(iddoc,))
@@ -30753,7 +30755,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         self.WriteLock.acquire()
         try:
-            self.cursor.execute('delete from useflagsreference where idflag IN (select idflag from useflagsreference where idflag NOT in (select idflag from useflags))')
+            self.cursor.execute('DELETE FROM useflagsreference WHERE idflag NOT IN (SELECT idflag FROM useflags)')
             self.commitChanges()
         finally:
             self.WriteLock.release()
@@ -30762,7 +30764,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         self.WriteLock.acquire()
         try:
-            self.cursor.execute('delete from sourcesreference where idsource IN (select idsource from sourcesreference where idsource NOT in (select idsource from sources))')
+            self.cursor.execute('DELETE FROM sourcesreference WHERE idsource NOT IN (SELECT idsource FROM sources)')
             self.commitChanges()
         finally:
             self.WriteLock.release()
@@ -30771,7 +30773,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         self.WriteLock.acquire()
         try:
-            self.cursor.execute('delete from eclassesreference where idclass IN (select idclass from eclassesreference where idclass NOT in (select idclass from eclasses))')
+            self.cursor.execute('DELETE FROM eclassesreference WHERE idclass NOT IN (SELECT idclass FROM eclasses)')
             self.commitChanges()
         finally:
             self.WriteLock.release()
@@ -30780,7 +30782,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         self.WriteLock.acquire()
         try:
-            self.cursor.execute('delete from neededreference where idneeded IN (select idneeded from neededreference where idneeded NOT in (select idneeded from needed))')
+            self.cursor.execute('DELETE FROM neededreference WHERE idneeded NOT IN (SELECT idneeded FROM needed)')
             self.commitChanges()
         finally:
             self.WriteLock.release()
@@ -30789,7 +30791,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         self.WriteLock.acquire()
         try:
-            self.cursor.execute('delete from dependenciesreference where iddependency IN (select iddependency from dependenciesreference where iddependency NOT in (select iddependency from dependencies))')
+            self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)')
             self.commitChanges()
         finally:
             self.WriteLock.release()
@@ -33663,7 +33665,7 @@ class EntropyDatabaseInterface:
         direction = ''
         justname = True
 
-        if scan_atom and strippedAtom:
+        if scan_atom:
 
             while 1:
                 pkgversion = ''
