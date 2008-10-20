@@ -6220,8 +6220,7 @@ class RepoInterface:
             raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         if not self.reponames:
-            for x in etpRepositories:
-                self.reponames.append(x)
+            self.reponames.extend(etpRepositories.keys()[:])
 
     def __del__(self):
         if self.LockScanner != None:
@@ -8505,6 +8504,9 @@ class rssFeed:
                     self.items[mycounter]['link'] = ""
                 self.items[mycounter]['guid'] = item.getElementsByTagName("guid")[0].firstChild.data.strip()
                 self.items[mycounter]['pubDate'] = item.getElementsByTagName("pubDate")[0].firstChild.data.strip()
+                dcs = item.getElementsByTagName("dc:creator")
+                if dcs:
+                    self.items[mycounter]['dc:creator'] = dcs[0].firstChild.data.strip()
 
     def addItem(self, title, link = '', description = ''):
         self.itemscounter += 1
