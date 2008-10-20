@@ -86,7 +86,7 @@ class rhnAppletAnimation:
         return None
 
 def alpha_tween(start_image, end_image, steps):
-    tmp = start_image.copy() #start_image.scale_simple(end_image.get_width(), end_image.get_height(), gtk.gdk.INTERP_BILINEAR)
+    tmp = start_image.copy()
 
     frames = [ start_image ]
     stepsize = 256/steps

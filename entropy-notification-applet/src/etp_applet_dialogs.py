@@ -51,8 +51,6 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         self.xml.signal_autoconnect (
             {
             "on_launch_spritz_clicked" : self.on_spritz,
-            "on_ignore_clicked" : self.on_ignore_clicked,
-            "on_unignore_clicked" : self.on_unignore_clicked,
             "on_close_clicked" : self.on_close,
             })
 
@@ -71,7 +69,7 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
 
     def on_link_clicked(self, html, url):
         print "url: %s" % url
-        
+
     def set_critical(self, text, critical_active):
         if not self.critical_tab_contents:
             html_view = gtkhtml2.View()
@@ -116,35 +114,17 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
 
         self.notebook.remove_page(self.notebook.page_num(self.critical_tab_contents))
 
-    def on_ignore_clicked(self, *data):
-        selection = self.available_list.get_selection()
-        (model, iter) = selection.get_selected()
-        if not iter:
-            return
-
-        name = model.get_value(iter, 0)
-        self.parent.set_ignored(name, 1)
-
-    def on_unignore_clicked(self, *data):
-        selection = self.ignore_list.get_selection()
-        (model, iter) = selection.get_selected()
-        if not iter:
-            return
-
-        name = model.get_value(iter, 0)
-        self.parent.set_ignored(name, 0)
-
     def add_package(self, name, installed, avail):
-        iter = self.package_list_model.append()
-        self.package_list_model.set_value(iter, 0, name)
-        self.package_list_model.set_value(iter, 1, installed)
-        self.package_list_model.set_value(iter, 2, avail)
+        myiter = self.package_list_model.append()
+        self.package_list_model.set_value(myiter, 0, name)
+        self.package_list_model.set_value(myiter, 1, installed)
+        self.package_list_model.set_value(myiter, 2, avail)
 
 
 class rhnRegistrationPromptDialog(rhnGladeWindow):
     def __init__(self, parent):
         rhnGladeWindow.__init__(self, "etp_applet.glade", "need_to_register_dialog")
-        
+
         self.parent = parent
         self.window.connect('delete_event', self.close_dialog)
         self.xml.signal_autoconnect (
@@ -291,17 +271,16 @@ class rhnAppletFirstTimeDruid(rhnGladeWindow):
             if self.use_auth:
                 args.append(self.username_entry.get_text())
                 args.append(self.password_entry.get_text())
-
             apply(self.parent.set_proxy, args)
-                                  
         else:
             self.parent.set_proxy()
-            
+
         self.parent.user_consented()
         self.close_dialog()
 
 class rhnAppletErrorDialog(rhnGladeWindow):
     def __init__(self, parent, error):
+        rhnGladeWindow.__init__(self)
         self.window = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, str(error))
         self.window.set_modal(gtk.TRUE)
         self.window.connect("close", self.on_close)
@@ -315,7 +294,7 @@ class rhnAppletErrorDialog(rhnGladeWindow):
 
     def on_close(self, *data):
         self.close_dialog()
-        
+
 # stolen from anaconda
 def growToParent(*args):
     return
@@ -377,8 +356,8 @@ class rhnAppletExceptionDialog:
         self.window = win
         win.add_button('gtk-ok', 0)
         
-        buffer = gtk.TextBuffer(None)
-        buffer.set_text(text)
+        mybuf = gtk.TextBuffer(None)
+        mybuf.set_text(text)
         textbox = gtk.TextView()
         textbox.set_buffer(buffer)
         textbox.set_property("editable", gtk.FALSE)
@@ -388,9 +367,6 @@ class rhnAppletExceptionDialog:
         sw.set_policy (gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 
         hbox = gtk.HBox (gtk.FALSE)
-##         file = pixmap_file('gnome-warning.png')
-##         if file:
-##             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
 
         info = WrappingLabel(_("An unhandled exception has occured.  This "
                                "is most likely a bug.  Please copy the "

@@ -7,7 +7,7 @@
 #
 # $Id: applet.py,v 1.10 2003/09/15 15:07:19 veillard Exp $
 
-import sys
+import sys,os
 import signal
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -24,16 +24,9 @@ except:
     pass
 
 import etp_applet
-def child_reaper(*args):
-    try:
-        while os.waitpid(-1, os.WNOHANG):
-            pass
-    except:
-        pass
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    signal.signal(signal.SIGCHLD, child_reaper)
     applet = etp_applet.rhnApplet()
     applet.run()
 

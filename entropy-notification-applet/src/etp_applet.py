@@ -18,7 +18,7 @@ import gtk.gdk
 import egg.trayicon
 import pynotify
 
-import os, sys, math, traceback, time, threading, subprocess
+import os, sys, math, time, threading, subprocess
 
 import etp_applet_animation
 from etp_applet_dialogs import \
@@ -114,11 +114,12 @@ class GuiUrlFetcher(urlFetcher):
 class rhnApplet:
 
     def set_state(self, new_state, use_busy_icon = 0):
+
         if not new_state in etp_applet_config.APPLET_STATES:
             raise exceptionTools.IncorrectParameter("Error: invalid state %s" % new_state)
 
-        if self.refresh_timeout_tag and new_state not in [ "OKAY", "CRITICAL" ]:
-            raise exceptionTools.IncorrectParameter("Error: can't switch to state %s while refresh timer is on" % new_state)
+        #if self.refresh_timeout_tag and new_state not in [ "OKAY", "CRITICAL" ]:
+        #    raise exceptionTools.IncorrectParameter("Error: can't switch to state %s while refresh timer is on" % new_state)
 
         if new_state == "OKAY":
             self.animate_to("okay")
@@ -145,25 +146,18 @@ class rhnApplet:
 
     def __init__(self):
 
-        # this must be done before !!
         self.destroyed = 0
         self.isWorking = False
+        self.refresh_lock = threading.Lock()
         self.tooltip_text = ""
         gnome.program_init("spritz-updater", etpConst['entropyversion'])
         self.tooltip = gtk.Tooltips()
         self.applet_window = egg.trayicon.TrayIcon("spritz-updater")
         self.applet_window.connect("destroy", self.exit_applet)
 
-        #
-        # Cope with a change in the Gnome python bindings naming
-        #
-        try:
-            self.session = gnome.ui.gnome_master_client()
-        except:
-            self.session = gnome.ui.master_client()
+        self.session = gnome.ui.master_client()
         if self.session:
-            gtk.Object.connect(self.session, "save-yourself",
-                                self.save_yourself)
+            gtk.Object.connect(self.session, "save-yourself", self.save_yourself)
             gtk.Object.connect(self.session, "die", self.exit_applet)
 
         self.consent = {}
@@ -253,6 +247,7 @@ class rhnApplet:
         self.change_number = 0
         self.available_packages = []
         self.last_alert = None
+        self.Entropy = None
 
         hide_menu = False
         message = ''
@@ -337,22 +332,15 @@ class rhnApplet:
         widget.set_image(img)
 
     def enable_refresh_timer(self, when = etp_applet_config.settings['REFRESH_INTERVAL'] * 1000, force = 0):
-        #if self.current_state not in [ "OKAY", "CRITICAL" ]:
-        #    return
+        if self.current_state in [ "CRITICAL" ]: return
         if not self.refresh_timeout_tag:
-            self.refresh_timeout_tag = gobject.timeout_add(when, self.refresh_handler, force)
+            self.refresh_timeout_tag = entropyTools.TimeScheduled(self.refresh_handler, when/1000, dictData = {'force': force})
+            self.refresh_timeout_tag.start()
 
     def disable_refresh_timer(self):
         if self.refresh_timeout_tag:
-            gobject.source_remove(self.refresh_timeout_tag)
+            self.refresh_timeout_tag.kill()
             self.refresh_timeout_tag = None
-
-    def handle_gtk_events(self):
-        while gtk.events_pending():
-            gtk.main_iteration(False)
-
-    def refresh_callback(self):
-        self.handle_gtk_events()
 
     def start_working(self):
         self.isWorking = True
@@ -361,19 +349,6 @@ class rhnApplet:
     def end_working(self):
         self.isWorking = False
         normalCursor(self.applet_window)
-
-    def on_do_draw(self, *data):
-        self.redraw()
-
-    def on_bg_change(self, *data):
-        self.redraw()
-
-    def on_size_allocate(self, *data):
-        self.redraw()
-
-    def on_configure(self, widget, event):
-        if event.type == gtk.gdk.CONFIGURE:
-            self.redraw()
 
     def animate_stop(self):
         self.disable_animation_timer()
@@ -387,10 +362,11 @@ class rhnApplet:
 
     def disable_animation_timer(self):
         if self.animate_timeout_tag:
-            gobject.source_remove(self.animate_timeout_tag)
+            self.animate_timeout_tag.kill()
             self.animate_timeout_tag = None
 
     def animate_handler(self, *data):
+
         next_frame = self.animator.next_frame()
         if not next_frame:
             self.disable_animation_timer()
@@ -403,17 +379,8 @@ class rhnApplet:
 
     def animate_to(self, image, cycle_image = None):
 
-        # logic: one way animation?  then we skip this if we're asked
-        # to animate to the same, and let it finish.  if it's a cycle,
-        # and the start and end images are the same, then we also just
-        # continue
-
         if self.current_image == image:
-            if cycle_image:
-                if self.animation_cycle == cycle_image:
-                    return
-            else:
-                return
+            return
 
         if self.current_image:
             from_image = self.current_image.copy()
@@ -441,25 +408,19 @@ class rhnApplet:
             self.animator.append_cycle(cycle_frames)
 
         if not self.animate_timeout_tag:
-            self.animate_timeout_tag = gobject.timeout_add(int(math.floor(1000 * etp_applet_config.settings['ANIMATION_TOTAL_TIME']/len(frames))), self.animate_handler)
-
-        self.animate_handler()
+            mytiming = float(math.floor(1000 * etp_applet_config.settings['ANIMATION_TOTAL_TIME']/len(frames)))
+            self.animate_timeout_tag = entropyTools.TimeScheduled(self.animate_handler, mytiming/1000)
+            self.animate_timeout_tag.start()
 
     def set_displayed_image(self, image):
-        if type(image) == type(""):
-            new_image = self.icons.best_match(image, self.applet_size)
-        else:
-            new_image = image
-
+        if isinstance(image,basestring): new_image = self.icons.best_match(image, self.applet_size)
+        else: new_image = image
         self.disable_animation_timer()
-
         self.current_image = new_image
         self.redraw()
 
     def redraw(self):
-        if not self.current_image:
-            return
-
+        if not self.current_image: return
         self.image_widget.set_from_pixbuf(self.current_image)
 
     def on_destroy(self, *data):
@@ -500,8 +461,6 @@ class rhnApplet:
         self.menu_items['disable_applet'].hide()
         self.menu_items['enable_applet'].show()
 
-
-
     def enable_applet(self, *data):
         self.update_tooltip(_("Updates Notification Applet Enabled"))
         self.enable_refresh_timer()
@@ -511,16 +470,13 @@ class rhnApplet:
         self.menu_items['disable_applet'].show()
         self.menu_items['enable_applet'].hide()
 
-
     def launch_package_manager(self, *data):
-        pid = os.fork()
-        if not pid:
-            pid2 = os.fork()
-            if not pid2:
-                os.execv('/usr/bin/spritz', ['spritz'])
-                os.perror(_("Cannot load Spritz"))
-            else:
-                os._exit(-1)
+
+        def spawn_spritz():
+            os.execv('/usr/bin/spritz', ['spritz'])
+
+        t = entropyTools.parallelTask(spawn_spritz)
+        t.start()
 
     def show_alert(self, title, text, urgency = None):
 
@@ -542,14 +498,16 @@ class rhnApplet:
 
     def compare_repositories_status(self):
         repos = {}
+
         try:
-            repoConn = RepoInterface(self.Entropy, list(etpRepositories), noEquoCheck = True)
+            repoConn = self.Entropy.Repositories(noEquoCheck = True, fetchSecurity = False)
         except exceptionTools.MissingParameter:
             return repos,1 # no repositories specified
         except exceptionTools.OnlineMirrorError:
             return repos,2 # not connected ??
         except Exception, e:
             return repos,str(e) # unknown error
+
         # now get remote
         for repoid in etpRepositories:
             if repoConn.is_repository_updatable(repoid):
@@ -558,22 +516,28 @@ class rhnApplet:
                 repos[repoid]['local_revision'] = self.Entropy.get_repository_revision(repoid)
                 repos[repoid]['remote_revision'] = repoConn.get_online_repository_revision(repoid)
 
+        del repoConn
+
         return repos, 0
 
-    # every N seconds we poke the model to see if anything has
-    # changed.  changes can be new package lists from the server, the
-    # rpmdb being updated, etc.  the model caches aggressively, so
-    # this isn't expensive.  this is done asynchronous to all GUI
-    # updates, to try to avoid stalling the UI
     def refresh_handler(self, force = 0):
         gtk.gdk.threads_enter()
         self.refresh(force)
         gtk.gdk.threads_leave()
 
-    def refresh(self, force=0):
+    def refresh(self, force = 0):
 
-        if not etp_applet_config.settings['APPLET_ENABLED']:
-            return
+        if not self.Entropy: return
+        if not etp_applet_config.settings['APPLET_ENABLED']: return
+
+        self.refresh_lock.acquire()
+        try:
+            return self.run_refresh(force)
+        finally:
+            self.refresh_lock.release()
+
+
+    def run_refresh(self, force):
 
         locked = self.Entropy.application_lock_check(silent = True)
 
@@ -581,12 +545,11 @@ class rhnApplet:
         old_tip = self.tooltip_text
         old_state = self.current_state
 
-        self.disable_refresh_timer()
         self.disable_network_timer()
 
         self.set_state("BUSY", use_busy_icon = force)
         self.update_tooltip(_("Checking for updates..."))
-        self.handle_gtk_events()
+
         self.last_error = None
         self.last_error_is_network_error = 0
         self.error_threshold = 0
@@ -597,6 +560,7 @@ class rhnApplet:
 
             # compare repos
             repositories_to_update, rc = self.compare_repositories_status()
+
             if repositories_to_update and rc == 0:
                 repos = repositories_to_update.keys()
 
@@ -618,6 +582,7 @@ class rhnApplet:
                     # -1: not able to update all the repositories
                     rc = repoConn.sync()
                     rc = rc*-1
+                    del repoConn
 
             if rc == 1:
                 err = _("No repositories specified. Cannot check for package updates.")
@@ -644,7 +609,7 @@ class rhnApplet:
                 self.show_alert( _("Updates: sync issues"), err )
                 self.error_threshold += 1
                 self.last_error = err
-            elif type(rc) is str:
+            elif isinstance(rc,basestring):
                 self.show_alert( _("Updates: unhandled error"), rc )
                 self.error_threshold += 1
                 self.last_error_is_exception = 1
@@ -653,8 +618,6 @@ class rhnApplet:
             if self.last_error_is_network_error:
                 self.update_tooltip(_("Updates: connection issues"))
                 self.set_state("DISCONNECTED")
-                self.disable_refresh_timer()
-                self.enable_network_timer()
                 self.end_working()
                 return False
 
@@ -663,7 +626,7 @@ class rhnApplet:
             del fine, remove
         except Exception, e:
             msg = "%s: %s" % (_("Updates: error"),e,)
-            self.show_alert(msg)
+            self.show_alert(_("Updates: error"), msg)
             self.error_threshold += 1
             self.last_error_is_exception = 1
             self.last_error = str(e)
@@ -693,7 +656,7 @@ class rhnApplet:
             self.show_alert(    _("Updates available"),
                                 msg,
                                 urgency = 'critical'
-                           )
+                        )
             if self.notice_window:
                 self.refresh_notice_window()
 
@@ -703,24 +666,12 @@ class rhnApplet:
             self.show_alert(    _("Everything up-to-date"),
                                 _("So far, so good. w00t!"),
                                 urgency = 'low'
-                           )
+                        )
 
-        self.disable_refresh_timer()
-        self.enable_refresh_timer()
         self.end_working()
         return True
 
-    #
-    # Detection and handling of network related errors, the
-    # server may be unreachable, or refusing connections, quite
-    # common in case of laptops. If such an error is detected
-    # the applet will try to retry the connections after a timeout
-    # of etp_applet_config.settings['NETWORK_RETRY_INTERVAL'] seconds (one minute)
-    # until it suceeeds reaching the server and then exit the
-    # DISCONNECTED state
-    #
     def is_network_error(self, msg):
-        # print "is_network_error: '%s'" % (msg)
         if msg.find("SysCallError") >= 0 and msg.find("104") >= 0:
             return 1
         if msg.find("onnection") >= 0:
@@ -737,14 +688,14 @@ class rhnApplet:
         self.refresh(force)
 
     def enable_network_timer(self, when = etp_applet_config.settings['NETWORK_RETRY_INTERVAL'] * 1000, force = 0):
-        if self.current_state != "DISCONNECTED":
-            raise "Can't enable network timer unless in DISCONNECTED state"
+        if self.current_state != "DISCONNECTED": return
         if not self.network_timeout_tag:
-            self.network_timeout_tag = gobject.timeout_add(when, self.network_retry_handler, force)
+            self.network_timeout_tag = entropyTools.TimeScheduled(self.network_retry_handler, when/1000, dictData = {'force': force})
+            self.network_timeout_tag.start()
 
     def disable_network_timer(self):
         if self.network_timeout_tag:
-            gobject.source_remove(self.network_timeout_tag)
+            self.network_timeout_tag.kill()
             self.network_timeout_tag = None
 
     def update_tooltip(self, tip):
@@ -760,13 +711,13 @@ class rhnApplet:
 
     def notice_window_closed(self):
         self.notice_window = None
-        #ignored_package_str = "|".join(self.model.ignored_package_list())
-
-    def help (self, args):
-        gnome.help.goto ("file:///usr/share/doc/rhn-applet-@VERSION@/index.html")
-
 
     def exit_applet(self, *args):
+
+        for my in entropyTools.threading.enumerate():
+            if hasattr(my,'kill'):
+                my.kill()
+
         gtk.main_quit()
         raise SystemExit
 
@@ -780,7 +731,6 @@ class rhnApplet:
     def about(self, *data):
         if self.about_window:
             return
-
         self.about_window = rhnAppletAboutWindow(self)
 
     def about_dialog_closed(self):
@@ -796,7 +746,6 @@ class rhnApplet:
         self.last_error_is_network_error = 0
         self.set_state("OKAY")
         self.update_tooltip(_("Waiting before checkin..."))
-
         self.enable_refresh_timer()
 
     def applet_face_click(self, window, event, *data):
@@ -818,9 +767,6 @@ class rhnApplet:
             else:
                 self.error_dialog = rhnAppletErrorDialog(self, self.last_error)
             return
-
-        # clicked the face while it was loaded, and not while telling
-        # them to register?  well, let's close it
 
         self.never_viewed_notices = 0
         if self.notice_window and not self.rhnreg_dialog:
@@ -898,17 +844,6 @@ class rhnApplet:
 
     def set_ignored(self, name, new_value):
         self.never_viewed_notices = 0
-
-        '''
-        if self.model.is_package_ignored(name) and not new_value:
-            self.model.remove_ignored_package(name)
-
-        if not self.model.is_package_ignored(name) and new_value:
-            self.model.add_ignored_package(name)
-
-        needed_packages, ignored_needed_packages = self.model.needed_packages()
-        self.system_needs_packages(needed_packages, ignored_needed_packages)
-        '''
 
     def run(self):
         gobject.threads_init()
