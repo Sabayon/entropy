@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2008-10-18 15:25+0200\n"
-"PO-Revision-Date: 2008-10-17 03:54+0100\n"
+"PO-Revision-Date: 2008-10-21 00:30+0100\n"
 "Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
 "Language-Team:  <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -215,8 +215,7 @@ msgid "is corrupted"
 msgstr "está corrupto"
 
 #: ../../libraries/entropy.py:508
-msgid ""
-"Another Entropy instance is currently active, cannot satisfy your request."
+msgid "Another Entropy instance is currently active, cannot satisfy your request."
 msgstr ""
 "Otra instancia de Entropy está ejecutándose. No se puede realizar la "
 "petición."
@@ -287,8 +286,7 @@ msgstr "El repositorio %s no ha sido descargado aún."
 
 #: ../../libraries/entropy.py:931
 msgid "Cannot backup selected database"
-msgstr ""
-"No se puede hacer una copia de seguridad de la base de datos seleccionada"
+msgstr "No se puede hacer una copia de seguridad de la base de datos seleccionada"
 
 #: ../../libraries/entropy.py:931 ../../libraries/entropy.py:982
 msgid "permission denied"
@@ -519,8 +517,7 @@ msgstr "La comprobación de suma del paquete coincide."
 #: ../../libraries/entropy.py:4194
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
-msgstr ""
-"La comprobación de suma no coincide. Volviendo a descargar... intento #%s"
+msgstr "La comprobación de suma no coincide. Volviendo a descargar... intento #%s"
 
 #: ../../libraries/entropy.py:4212
 msgid "Cannot properly fetch package! Quitting."
@@ -586,8 +583,7 @@ msgstr "No se pudo actualizar la base de datos de Portage al destino"
 #: ../../libraries/entropy.py:4837
 #, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
-msgstr ""
-"No se pudo actualizar el contador de Portage porque el destino %s no existe."
+msgstr "No se pudo actualizar el contador de Portage porque el destino %s no existe."
 
 #: ../../libraries/entropy.py:4857
 #, python-format
@@ -821,8 +817,7 @@ msgstr "ERROR"
 
 #: ../../libraries/entropy.py:6581
 msgid "An error occured while checking database integrity"
-msgstr ""
-"Ocurrió un error mientras se comprobaba la integridad de la base de datos"
+msgstr "Ocurrió un error mientras se comprobaba la integridad de la base de datos"
 
 #: ../../libraries/entropy.py:6581
 msgid "Giving up"
@@ -1018,8 +1013,7 @@ msgstr "Descargando la revisión"
 
 #: ../../libraries/entropy.py:7511
 msgid "Downloading SPM global configuration"
-msgstr ""
-"Descargando la configuración global del Administrador de Paquetes Fuente"
+msgstr "Descargando la configuración global del Administrador de Paquetes Fuente"
 
 #: ../../libraries/entropy.py:7521
 msgid "Downloading SPM package masking configuration"
@@ -1047,12 +1041,11 @@ msgstr ""
 
 #: ../../libraries/entropy.py:7561
 msgid "Downloading SPM Profile configuration"
-msgstr ""
-"Descargando la configuración del Perfil del Administrador de Paquetes Fuente"
+msgstr "Descargando la configuración del Perfil del Administrador de Paquetes Fuente"
 
 #: ../../libraries/entropy.py:7571
 msgid "Downloading Notice Board"
-msgstr ""
+msgstr "Descargando el Tablón de Anuncios"
 
 #: ../../libraries/entropy.py:7590
 msgid "not available, it's ok"
@@ -1082,8 +1075,7 @@ msgstr "Sincronización de los repositorios"
 #: ../../libraries/entropy.py:7689 ../../libraries/entropy.py:20093
 #: ../../libraries/entropy.py:20693 ../../libraries/entropy.py:25235
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
-msgstr ""
-"Se requiere una instancia válida basada en EquoInterface/ServerInterface"
+msgstr "Se requiere una instancia válida basada en EquoInterface/ServerInterface"
 
 #: ../../libraries/entropy.py:7695
 msgid "Now searching for broken depends"
@@ -1200,8 +1192,7 @@ msgstr "Recuerda"
 
 #: ../../libraries/entropy.py:9027
 msgid "It is always better to leave Entropy updates isolated"
-msgstr ""
-"siempre es mejor realizar las actualizaciones de Entropy de forma aislada"
+msgstr "siempre es mejor realizar las actualizaciones de Entropy de forma aislada"
 
 #: ../../libraries/entropy.py:9033
 msgid "Purging Entropy cache"
@@ -1551,8 +1542,7 @@ msgstr "¿ Quieres inicializar tu repositorio por defecto ?"
 
 #: ../../libraries/entropy.py:15173
 msgid "You have taken the risk to continue with an uninitialized repository"
-msgstr ""
-"Has decidido asumir el riesgo de continuar con un repositorio no inicializado"
+msgstr "Has decidido asumir el riesgo de continuar con un repositorio no inicializado"
 
 #: ../../libraries/entropy.py:15193
 msgid "server-side repository"
@@ -1673,8 +1663,7 @@ msgstr "No coincide ningún paquete"
 
 #: ../../libraries/entropy.py:15688
 msgid "Initializing an empty database file with Entropy structure"
-msgstr ""
-"Inicializando un archivo de base de datos vacío con la estructura de Entropy"
+msgstr "Inicializando un archivo de base de datos vacío con la estructura de Entropy"
 
 #: ../../libraries/entropy.py:15700
 msgid "Entropy database file"
@@ -1853,8 +1842,7 @@ msgstr "Verificación de integridad de los paquetes seleccionados"
 
 #: ../../libraries/entropy.py:16707 ../../libraries/entropy.py:16912
 msgid "All the packages in the Entropy Packages repository will be checked."
-msgstr ""
-"Todos los paquetes en el Repositorio de Paquetes de Entropy serán comprobados"
+msgstr "Todos los paquetes en el Repositorio de Paquetes de Entropy serán comprobados"
 
 #: ../../libraries/entropy.py:16713
 msgid "This is the list of the packages that would be checked"
@@ -2193,8 +2181,9 @@ msgid "Running package removal"
 msgstr "Ejecutando la eliminación de paquetes"
 
 #: ../../libraries/entropy.py:21743
+#, fuzzy
 msgid "Running package quickpkg"
-msgstr ""
+msgstr "Ejecutando el quickpkg del paquete"
 
 #: ../../libraries/entropy.py:21765
 msgid "Adding packages"
@@ -2256,8 +2245,7 @@ msgstr "Identificador de cola"
 
 #: ../../libraries/entropy.py:24747
 msgid "Get queue stdout/stderr using its queue unique identifier"
-msgstr ""
-"Obtener la stdout/stderr de la cola usando su identificador único de cola"
+msgstr "Obtener la stdout/stderr de la cola usando su identificador único de cola"
 
 #: ../../libraries/entropy.py:24753
 msgid "Get queued command result using its queue unique identifier"
@@ -2290,12 +2278,14 @@ msgid "Swap items in queue using their queue ids"
 msgstr "Intercambiar ítemes en la cola usando sus identificadores de cola"
 
 #: ../../libraries/entropy.py:24786
+#, fuzzy
 msgid "Get pinboard content"
-msgstr ""
+msgstr "Obtener el contenido del tablón de notas"
 
 #: ../../libraries/entropy.py:24792
+#, fuzzy
 msgid "Add item to pinboard"
-msgstr ""
+msgstr "Añadir ítem al tablón de notas"
 
 #: ../../libraries/entropy.py:24795
 msgid "Extended text"
@@ -2303,19 +2293,22 @@ msgstr "Texto extendido"
 
 #: ../../libraries/entropy.py:24801
 msgid "Remove item from pinboard"
-msgstr ""
+msgstr "Eliminar ítem del tablón de notas"
 
 #: ../../libraries/entropy.py:24802 ../../libraries/entropy.py:24809
+#, fuzzy
 msgid "Pinboard identifiers"
-msgstr ""
+msgstr "Identificadores del tablón de notas"
 
 #: ../../libraries/entropy.py:24807
+#, fuzzy
 msgid "Set pinboard items status (done/not done)"
-msgstr ""
+msgstr "Fijar el estado del ítem del tablón de notas (finalizado/no finalizado)"
 
 #: ../../libraries/entropy.py:24810
+#, fuzzy
 msgid "Done status"
-msgstr ""
+msgstr "Estado de finalización"
 
 #: ../../libraries/entropy.py:24816
 msgid "Write to a remote running command stdin"
@@ -2459,7 +2452,7 @@ msgstr "Obtener información acerca de los repositorios de Entropy disponibles"
 
 #: ../../libraries/entropy.py:24974
 msgid "Set default Entropy Server repository"
-msgstr ""
+msgstr "Fijar el repositorio del Servidor de Entropy"
 
 #. Setup reponame & repofile column's
 #: ../../libraries/entropy.py:24976 ../../libraries/entropy.py:24984
@@ -2476,8 +2469,9 @@ msgid "Get available packages inside the specified repository"
 msgstr "Obtener los paquetes disponibles dentro del repositorio especificado"
 
 #: ../../libraries/entropy.py:24990
+#, fuzzy
 msgid "Get idpackage metadata using its idpackage in the specified repository"
-msgstr ""
+msgstr "Obtener los metadatos idpackage usando su idpackage en el repositorio especificado"
 
 #: ../../libraries/entropy.py:24992
 msgid "Package Identifier"
@@ -2485,7 +2479,7 @@ msgstr "Identificador de Paquete"
 
 #: ../../libraries/entropy.py:24999
 msgid "Remove the specified Entropy package matches (idpackage,repoid)"
-msgstr ""
+msgstr "Eliminar los paquetes de Entropy coincidentes (idpackage, repoid)"
 
 #: ../../libraries/entropy.py:25001
 msgid "Matched atoms"
@@ -2561,11 +2555,10 @@ msgstr "Ejecutar el test de bibliotecas de Entropy"
 
 #: ../../libraries/entropy.py:25056
 msgid "Run Entropy tree updates"
-msgstr ""
+msgstr "Ejecutar el árbol de actualizaciones de Entropy"
 
 #: ../../libraries/entropy.py:25064
-msgid ""
-"Scan for Mirror updates and retrieve a list of action that should be run"
+msgid "Scan for Mirror updates and retrieve a list of action that should be run"
 msgstr ""
 "Escanear en busca de actualizaciones en los mirrors y obtener una lista de "
 "acciones que deberían ejecutarse"
@@ -2582,11 +2575,12 @@ msgstr ""
 
 #: ../../libraries/entropy.py:25074
 msgid "composed repository data"
-msgstr ""
+msgstr "datos de repositorio compuesto"
 
 #: ../../libraries/entropy.py:25080
+#, fuzzy
 msgid "Run Entropy packages digest verification test"
-msgstr ""
+msgstr "Ejecutar el test resumen de verificación de paquetes de Entropy"
 
 #: ../../libraries/entropy.py:25083
 msgid "Check mode"
@@ -2594,11 +2588,11 @@ msgstr "Modo comprobación"
 
 #: ../../libraries/entropy.py:25089
 msgid "Get repository notice board"
-msgstr ""
+msgstr "Obtener el tablón de anuncios del repositorio"
 
 #: ../../libraries/entropy.py:25095
 msgid "Remove notice board entry"
-msgstr ""
+msgstr "Eliminar la entrada del tablón de anuncios"
 
 #: ../../libraries/entropy.py:25098
 msgid "Entry Identifiers"
@@ -2606,7 +2600,7 @@ msgstr "Identificadores de las entradas"
 
 #: ../../libraries/entropy.py:25104
 msgid "Add notice board entry"
-msgstr ""
+msgstr "Añadir entrada en el tablón de anuncios"
 
 #. title
 #. glsa title
@@ -2622,8 +2616,9 @@ msgid "Title"
 msgstr "Título"
 
 #: ../../libraries/entropy.py:25109
+#, fuzzy
 msgid "Notice link"
-msgstr ""
+msgstr "Link del anuncio"
 
 #: ../../libraries/entropy.py:25240
 msgid "A valid SystemManagerClientCommands class/subclass is needed"
@@ -2834,23 +2829,23 @@ msgstr "mirror no tiene un archivo de revisión de la base de datos válido"
 
 #: ../../libraries/entropy.py:26665
 msgid "downloading notice board from mirrors to"
-msgstr ""
+msgstr "descargando el tablón de anuncios desde los mirrors a"
 
 #: ../../libraries/entropy.py:26686
 msgid "notice board downloaded successfully from"
-msgstr ""
+msgstr "tablón de anuncios correctamente descargado desde"
 
 #: ../../libraries/entropy.py:26710
 msgid "uploading notice board from"
-msgstr ""
+msgstr "subiendo el tablón de anuncios desde"
 
 #: ../../libraries/entropy.py:26733
 msgid "notice board upload failed on"
-msgstr ""
+msgstr "fallo en la subida del tablón de anuncios en"
 
 #: ../../libraries/entropy.py:26744
 msgid "notice board upload success"
-msgstr ""
+msgstr "subida del tablón de anuncios correcta"
 
 #: ../../libraries/entropy.py:26973
 msgid "uris must be a list instance"
@@ -2921,8 +2916,7 @@ msgstr "ruta de la base de datos"
 
 #: ../../libraries/entropy.py:27312
 msgid "creating compressed database dump + checksum"
-msgstr ""
-"creando el volcado de la base de datos comprimida + comprobación de suma"
+msgstr "creando el volcado de la base de datos comprimida + comprobación de suma"
 
 #: ../../libraries/entropy.py:27325
 msgid "dump"
@@ -3008,8 +3002,7 @@ msgid "failed to download from mirror"
 msgstr "no se pudo descargar desde el mirror"
 
 #: ../../libraries/entropy.py:27831
-msgid ""
-"At the moment, mirrors are locked, someone is working on their databases"
+msgid "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 "En este momento los mirrors están bloqueados; alguien está trabajando en las "
 "bases de datos"
@@ -3198,7 +3191,7 @@ msgstr "recopilando los paquetes que han expirado"
 msgid ""
 "not the latest branch, skipping tidy for consistence. This branch entered "
 "the maintenance mode."
-msgstr ""
+msgstr "no es la última rama, saltándose el orden por consistencia. Esta rama a entrado en el modo de mantenimiento."
 
 #: ../../libraries/entropy.py:28825
 msgid "collecting expired packages in the selected branches"
@@ -3467,8 +3460,7 @@ msgstr "actualiza los repositorios configurados"
 
 #: ../../client/equo.py:65
 msgid "force sync regardless repositories status"
-msgstr ""
-"fuerza la sincronización independientemente del estado de los repositorios"
+msgstr "fuerza la sincronización independientemente del estado de los repositorios"
 
 #: ../../client/equo.py:66
 msgid "show repositories information"
@@ -3500,7 +3492,7 @@ msgstr "muestra el enlace de make.profile para los repositorios seleccionados"
 
 #: ../../client/equo.py:73
 msgid "repository notice board reader"
-msgstr ""
+msgstr "lector del tablón de anuncios del repositorio"
 
 #: ../../client/equo.py:74
 msgid "show respositories status"
@@ -3567,8 +3559,7 @@ msgstr "continúa las operaciones previamente interrumpidas"
 
 #: ../../client/equo.py:91
 msgid "used with --resume, makes the first package to be skipped"
-msgstr ""
-"usado junto a --resume hace que el primer paquete no se tenga en cuenta"
+msgstr "usado junto a --resume hace que el primer paquete no se tenga en cuenta"
 
 #: ../../client/equo.py:92
 msgid "upgrade your distribution to the specified release"
@@ -3737,8 +3728,7 @@ msgstr "muestra los paquetes que posean las licencias proporcionadas"
 
 #: ../../client/equo.py:152
 msgid "list packages based on the chosen parameter below"
-msgstr ""
-"muestra los paquetes basándose en el parámetro escogido de los siguientes"
+msgstr "muestra los paquetes basándose en el parámetro escogido de los siguientes"
 
 #: ../../client/equo.py:153
 msgid "list installed packages"
@@ -3776,8 +3766,7 @@ msgid "make a smart application for the provided atoms (experimental)"
 msgstr "crea una aplicación smart para el atom proporcionado (experimental)"
 
 #: ../../client/equo.py:164
-msgid ""
-"make a smart package for the provided atoms (multiple packages into one file)"
+msgid "make a smart package for the provided atoms (multiple packages into one file)"
 msgstr ""
 "crea un paquete smart para los atoms proporcionados (varios paquetes en un "
 "mismo archivo)"
@@ -3792,8 +3781,7 @@ msgstr "guarda los nuevos paquetes en el directorio especificado"
 
 #: ../../client/equo.py:167
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
-msgstr ""
-"convierte los .tbz2 de Gentoo en paquetes de Entropy (requiere Portage)"
+msgstr "convierte los .tbz2 de Gentoo en paquetes de Entropy (requiere Portage)"
 
 #: ../../client/equo.py:169
 msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
@@ -3818,8 +3806,7 @@ msgid "check System Database for errors"
 msgstr "comprueba errores en la Base de Datos del Sistema"
 
 #: ../../client/equo.py:177
-msgid ""
-"generate installed packages database using files on the system [last hope]"
+msgid "generate installed packages database using files on the system [last hope]"
 msgstr ""
 "genera la base de datos de paquetes instalados usando los archivos en el "
 "sistema [última esperanza]"
@@ -3836,8 +3823,7 @@ msgstr ""
 
 #: ../../client/equo.py:180
 msgid "makes Entropy aware of your Portage-updated packages"
-msgstr ""
-"hace que Entropy sea consciente de los paquetes actualizados con Portage"
+msgstr "hace que Entropy sea consciente de los paquetes actualizados con Portage"
 
 #: ../../client/equo.py:181
 msgid "backup the current Entropy installed packages database"
@@ -3892,8 +3878,7 @@ msgstr "no pregunta nada excepto cosas críticas"
 
 #: ../../client/equo.py:197 ../../server/reagent.py:53
 msgid "add binary packages to repository w/o affecting scopes (multipackages)"
-msgstr ""
-"añade paquetes binarios al repositorio sin afectar su alcance (multipaquetes)"
+msgstr "añade paquetes binarios al repositorio sin afectar su alcance (multipaquetes)"
 
 #: ../../client/equo.py:199
 msgid "community repositories mirrors management functions"
@@ -3919,28 +3904,23 @@ msgstr "verifica la integridad de los paquetes"
 
 #: ../../client/equo.py:209 ../../server/activator.py:62
 msgid "sync the current repository database across primary mirrors"
-msgstr ""
-"sincroniza la base de datos del repositorio actual con los mirrors primarios"
+msgstr "sincroniza la base de datos del repositorio actual con los mirrors primarios"
 
 #: ../../client/equo.py:211 ../../server/activator.py:63
 msgid "lock the current repository database (server-side)"
-msgstr ""
-"bloquea la base de datos del repositorio actual (en el lado del servidor)"
+msgstr "bloquea la base de datos del repositorio actual (en el lado del servidor)"
 
 #: ../../client/equo.py:212 ../../server/activator.py:64
 msgid "unlock the current repository database (server-side)"
-msgstr ""
-"desbloquea la base de datos del repositorio actual (en el lado del servidor)"
+msgstr "desbloquea la base de datos del repositorio actual (en el lado del servidor)"
 
 #: ../../client/equo.py:213 ../../server/activator.py:65
 msgid "lock the current repository database (client-side)"
-msgstr ""
-"bloquea la base de datos del repositorio actual (en el lado del cliente)"
+msgstr "bloquea la base de datos del repositorio actual (en el lado del cliente)"
 
 #: ../../client/equo.py:214 ../../server/activator.py:66
 msgid "unlock the current repository database (client-side)"
-msgstr ""
-"desbloquea la base de datos del repositorio actual (en el lado del cliente)"
+msgstr "desbloquea la base de datos del repositorio actual (en el lado del cliente)"
 
 #: ../../client/equo.py:215 ../../server/activator.py:67
 msgid "show current lock status"
@@ -3948,8 +3928,7 @@ msgstr "muestra el estado actual de bloqueo"
 
 #: ../../client/equo.py:216 ../../server/activator.py:52
 msgid "remove binary packages not in repositories and expired"
-msgstr ""
-"elimina los paquetes binarios que no están en repositorio y han expirado"
+msgstr "elimina los paquetes binarios que no están en repositorio y han expirado"
 
 #: ../../client/equo.py:219
 msgid "community repositories database functions"
@@ -3979,8 +3958,7 @@ msgstr "sincroniza la base de datos"
 
 #: ../../client/equo.py:225 ../../server/reagent.py:74
 msgid "remove the provided atoms from the current repository database"
-msgstr ""
-"elimina los atoms proporcionados de la base de datos del repositorio actual"
+msgstr "elimina los atoms proporcionados de la base de datos del repositorio actual"
 
 #: ../../client/equo.py:227 ../../server/reagent.py:75
 msgid "remove the provided injected atoms (all if no atom specified)"
@@ -4034,8 +4012,7 @@ msgstr "fija el repositorio por defecto"
 
 #: ../../client/equo.py:242
 msgid "do some searches into community repository databases"
-msgstr ""
-"hace algunas búsquedas en las bases de datos de los repositorios community"
+msgstr "hace algunas búsquedas en las bases de datos de los repositorios community"
 
 #: ../../client/equo.py:243 ../../server/reagent.py:56
 msgid "search packages inside the default repository database"
@@ -4063,19 +4040,19 @@ msgstr "muestra todos los paquetes del repositorio por defecto"
 
 #: ../../client/equo.py:255 ../../server/activator.py:70
 msgid "notice board handling functions"
-msgstr ""
+msgstr "funciones para el manejo del tablón de anuncios"
 
 #: ../../client/equo.py:256 ../../server/activator.py:71
 msgid "add a news item to the notice board"
-msgstr ""
+msgstr "añade una nueva entrada al tablón de anuncios"
 
 #: ../../client/equo.py:257 ../../server/activator.py:72
 msgid "remove a news item from the notice board"
-msgstr ""
+msgstr "elimina una entrada del tablón de anuncios"
 
 #: ../../client/equo.py:258 ../../server/activator.py:73
 msgid "read the current notice board"
-msgstr ""
+msgstr "lee el tablón de anuncios actual"
 
 #: ../../client/equo.py:260
 msgid "look for unsatisfied dependencies across community repositories"
@@ -4110,16 +4087,14 @@ msgstr ""
 "(comentarios, archivos, videos)"
 
 #: ../../client/equo.py:269
-msgid ""
-"get available documents for the specified package key (example: x11-libs/qt)"
+msgid "get available documents for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "adquiere los documentos disponibles para el paquete especificado (ejemplo: "
 "x11-libs/qt)"
 
 #: ../../client/equo.py:270
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
-msgstr ""
-"añade un nuevo documento al paquete especificado (ejemplo: x11-libs/qt)"
+msgstr "añade un nuevo documento al paquete especificado (ejemplo: x11-libs/qt)"
 
 #: ../../client/equo.py:271
 msgid "remove documents from database using their identifiers"
@@ -4228,10 +4203,8 @@ msgstr ""
 "petado. Ya sabes, a veces ocurren errores."
 
 #: ../../client/equo.py:665
-msgid ""
-"But there's something you could do to help Equo to be a better application."
-msgstr ""
-"Pero hay algo que puedes hacer para hacer que Equo sea una aplicación mejor."
+msgid "But there's something you could do to help Equo to be a better application."
+msgstr "Pero hay algo que puedes hacer para hacer que Equo sea una aplicación mejor."
 
 #: ../../client/equo.py:666
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
@@ -4890,7 +4863,7 @@ msgstr "Excepción no manejada"
 #: ../../client/text_repositories.py:188 ../../server/server_activator.py:220
 #: ../../server/server_activator.py:237
 msgid "Notice board not available"
-msgstr ""
+msgstr "Tablón de anuncios no disponible"
 
 #: ../../client/text_repositories.py:219 ../../client/text_ugc.py:548
 #: ../../server/server_activator.py:145 ../../spritz/src/dialogs.py:4237
@@ -4909,12 +4882,12 @@ msgstr "Presiona Enter para continuar"
 
 #: ../../client/text_repositories.py:258 ../../server/server_activator.py:186
 msgid "Choose one by typing its identifier"
-msgstr ""
+msgstr "Elige una escribiendo su identificador"
 
 #: ../../client/text_repositories.py:285 ../../spritz/src/dialogs.py:2064
 #: ../../spritz/src/spritz.glade.h:109
 msgid "Notice board"
-msgstr ""
+msgstr "Tablón de anuncios"
 
 #: ../../client/text_rescue.py:42 ../../client/text_smart.py:141
 msgid "Source Package Manager backend not available"
@@ -5038,8 +5011,7 @@ msgstr ""
 "tiempo."
 
 #: ../../client/text_rescue.py:238
-msgid ""
-"Please use this function ONLY if you are using an Entropy-aware distribution."
+msgid "Please use this function ONLY if you are using an Entropy-aware distribution."
 msgstr ""
 "Por favor, use esta función SÓLO si está usando una distribución consciente "
 "de Entropy."
@@ -6108,28 +6080,29 @@ msgid "Aborting !"
 msgstr "¡ Abortando !"
 
 #: ../../server/server_activator.py:180
+#, fuzzy
 msgid "Exit/Commit"
-msgstr ""
+msgstr "Salir/Enviar"
 
 #: ../../server/server_activator.py:205 ../../spritz/src/dialogs.py:2019
 msgid "Notice text"
-msgstr ""
+msgstr "Texto del anuncio"
 
 #: ../../server/server_activator.py:206
 msgid "Relevant URL (optional)"
-msgstr ""
+msgstr "URL relevante (opcional)"
 
 #: ../../server/server_activator.py:209
 msgid "Repository notice board, new item insertion"
-msgstr ""
+msgstr "Tablón de anuncios del repositorio, inserción de nueva entrada"
 
 #: ../../server/server_activator.py:243
 msgid "Choose the one you want to remove"
-msgstr ""
+msgstr "Elige la que quieras eliminar"
 
 #: ../../server/server_activator.py:248
 msgid "Are you sure you want to remove this?"
-msgstr ""
+msgstr "¿Seguro que quieres eliminarla?"
 
 #: ../../server/server_activator.py:275
 msgid "Starting to lock mirrors databases"
@@ -6162,8 +6135,7 @@ msgstr "Bloqueo de los mirrors de descarga completado"
 
 #: ../../server/server_activator.py:305
 msgid "Starting to unlock download mirrors databases"
-msgstr ""
-"Comenzando el desbloqueo de las bases de datos de los mirrors de descarga"
+msgstr "Comenzando el desbloqueo de las bases de datos de los mirrors de descarga"
 
 #: ../../server/server_activator.py:310
 msgid "Download mirrors unlock complete"
@@ -6264,8 +6236,7 @@ msgstr "Estos son los paquetes que serán eliminados de la base de datos"
 
 #: ../../server/server_reagent.py:234
 msgid "These are the packages that would be added/updated to the add list"
-msgstr ""
-"Estos son los paquetes que serán añadidos/actualizados en la lista de añadir"
+msgstr "Estos son los paquetes que serán añadidos/actualizados en la lista de añadir"
 
 #: ../../server/server_reagent.py:240
 msgid "Would you like to package them now ?"
@@ -6335,8 +6306,7 @@ msgstr "Eliminando los paquetes seleccionados"
 
 #: ../../server/server_reagent.py:385 ../../server/server_reagent.py:432
 msgid "Packages removed. To remove binary packages, run activator."
-msgstr ""
-"Paquetes eliminados. Para eliminar paquetes binarios, ejecuta el activador."
+msgstr "Paquetes eliminados. Para eliminar paquetes binarios, ejecuta el activador."
 
 #: ../../server/server_reagent.py:391
 msgid "Searching injected packages to remove"
@@ -6352,7 +6322,7 @@ msgstr "Sacudiendo la base de datos del repositorio"
 
 #: ../../spritz/src/dialogs.py:71 ../../spritz/src/spritz.glade.h:153
 msgid "Repositories Notice Board"
-msgstr ""
+msgstr "Tablón de Anuncios de los Repositorios"
 
 #: ../../spritz/src/dialogs.py:72
 msgid ""
@@ -6365,8 +6335,9 @@ msgstr ""
 "obtener información detallada."
 
 #: ../../spritz/src/dialogs.py:88
+#, fuzzy
 msgid "Notice"
-msgstr ""
+msgstr "Anuncio"
 
 #: ../../spritz/src/dialogs.py:193
 msgid "Connection name"
@@ -6476,8 +6447,9 @@ msgid "Date"
 msgstr "Fecha"
 
 #: ../../spritz/src/dialogs.py:790
+#, fuzzy
 msgid "Key"
-msgstr ""
+msgstr "Clave"
 
 #: ../../spritz/src/dialogs.py:800
 msgid "USE Flags"
@@ -6520,8 +6492,9 @@ msgid "Current"
 msgstr "Actual"
 
 #: ../../spritz/src/dialogs.py:975
+#, fuzzy
 msgid "c.mode"
-msgstr ""
+msgstr "c.mode"
 
 #: ../../spritz/src/dialogs.py:977
 msgid "branch"
@@ -6577,15 +6550,16 @@ msgstr "Mover/copiar paquetes de Entropy"
 
 #: ../../spritz/src/dialogs.py:2017
 msgid "Notice title"
-msgstr ""
+msgstr "Título del anuncio"
 
 #: ../../spritz/src/dialogs.py:2018
 msgid "Link (URL)"
 msgstr "Enlace (URL)"
 
 #: ../../spritz/src/dialogs.py:2022
+#, fuzzy
 msgid "Insert your new notice board entry"
-msgstr ""
+msgstr "Inserta la nueva entrada para el tablón de anuncios"
 
 #: ../../spritz/src/dialogs.py:2109
 msgid "Server"
@@ -6723,8 +6697,9 @@ msgid "Extended note"
 msgstr "Nota extendida"
 
 #: ../../spritz/src/dialogs.py:3216
+#, fuzzy
 msgid "Insert your new pinboard item"
-msgstr ""
+msgstr "Inserta tu nuevo ítem en el tablón de notas"
 
 #: ../../spritz/src/dialogs.py:3293
 msgid "List type"
@@ -6780,7 +6755,7 @@ msgstr "Comprobación de mirrors"
 
 #: ../../spritz/src/dialogs.py:3535
 msgid "Choose what notice board you want to see"
-msgstr ""
+msgstr "Elige el tablón de anuncios que quieras ver"
 
 #: ../../spritz/src/dialogs.py:3785
 msgid "Expand to browse"
@@ -6934,8 +6909,7 @@ msgstr "En el repositorio"
 
 #: ../../spritz/src/dialogs.py:4962
 msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Estos son los paquetes que deben habilitarse para satisfacer la petición"
+msgstr "Estos son los paquetes que deben habilitarse para satisfacer la petición"
 
 #: ../../spritz/src/dialogs.py:4964
 msgid "Some packages are masked"
@@ -7302,8 +7276,7 @@ msgstr "ítemes"
 
 #: ../../spritz/src/spritz.py:1262
 msgid "Another Entropy instance is running. Cannot process queue."
-msgstr ""
-"Otra instancia de Entropy está ejecutándose. No se puede procesar la cola."
+msgstr "Otra instancia de Entropy está ejecutándose. No se puede procesar la cola."
 
 #: ../../spritz/src/spritz.py:1268
 msgid "Running tasks"
@@ -7339,8 +7312,7 @@ msgstr "Los paquetes de todos los Avisos se han puesto en cola."
 
 #: ../../spritz/src/spritz.py:1409
 msgid "Packages not found in repositories, try again later."
-msgstr ""
-"Los paquetes no se han encontrado en los repositorios. Inténtalo más tarde."
+msgstr "Los paquetes no se han encontrado en los repositorios. Inténtalo más tarde."
 
 #: ../../spritz/src/spritz.py:1495
 msgid "Branch switching"
@@ -7407,8 +7379,7 @@ msgstr "Sin mirrors de descarga"
 
 #: ../../spritz/src/spritz.py:1631
 msgid "Database URL must start either with http:// or ftp:// or file://"
-msgstr ""
-"La dirección de la base de datos debe empezar por http:// o ftp:// o file://"
+msgstr "La dirección de la base de datos debe empezar por http:// o ftp:// o file://"
 
 #: ../../spritz/src/spritz.py:1639
 msgid "Repository Services Port not valid"
@@ -7849,8 +7820,7 @@ msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:4
 msgid "<b>Entropy database backup tool</b>"
-msgstr ""
-"<b>Herramienta de copia de seguridad de la base de datos de Entropy</b>"
+msgstr "<b>Herramienta de copia de seguridad de la base de datos de Entropy</b>"
 
 #: ../../spritz/src/spritz.glade.h:5
 msgid "<small>Powered by User Generated Content</small>"
@@ -7870,7 +7840,7 @@ msgstr "Añadir Documento"
 
 #: ../../spritz/src/spritz.glade.h:9
 msgid "Add USE flags on atoms"
-msgstr ""
+msgstr "Añade banderas USE a los atoms"
 
 #: ../../spritz/src/spritz.glade.h:10
 msgid "Add/Edit Repository"
@@ -7878,8 +7848,7 @@ msgstr "Añadir/Editar Repositorio"
 
 #: ../../spritz/src/spritz.glade.h:11
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr ""
-"Añadir <b>nuevos repositorios</b> te permite acceder a <b>más software</b>"
+msgstr "Añadir <b>nuevos repositorios</b> te permite acceder a <b>más software</b>"
 
 #: ../../spritz/src/spritz.glade.h:13
 msgid "Affected packages"
@@ -7902,8 +7871,9 @@ msgid "C_hanges"
 msgstr "_Cambios"
 
 #: ../../spritz/src/spritz.glade.h:26
+#, fuzzy
 msgid "Call"
-msgstr ""
+msgstr "Llamada"
 
 #: ../../spritz/src/spritz.glade.h:27
 msgid "Checksum test"
@@ -7914,16 +7884,19 @@ msgid "Collision protection"
 msgstr "Protección de colisión"
 
 #: ../../spritz/src/spritz.glade.h:29
+#, fuzzy
 msgid "Command arguments"
-msgstr ""
+msgstr "Argumentos del comando"
 
 #: ../../spritz/src/spritz.glade.h:30
+#, fuzzy
 msgid "Command description"
-msgstr ""
+msgstr "Descripción del comando"
 
 #: ../../spritz/src/spritz.glade.h:31
+#, fuzzy
 msgid "Command name"
-msgstr ""
+msgstr "Nombre del comando"
 
 #: ../../spritz/src/spritz.glade.h:32
 #, fuzzy
@@ -7939,8 +7912,9 @@ msgid "Compile packages on the remote server"
 msgstr "Compila los paquetes en el servidor remoto"
 
 #: ../../spritz/src/spritz.glade.h:35
+#, fuzzy
 msgid "Completed at"
-msgstr ""
+msgstr "Completado a"
 
 #: ../../spritz/src/spritz.glade.h:36
 msgid "Compression"
@@ -7959,16 +7933,18 @@ msgid "Custom command"
 msgstr "Comando personalizado"
 
 #: ../../spritz/src/spritz.glade.h:41
+#, fuzzy
 msgid "Custom shell command"
-msgstr ""
+msgstr "Comando de shell personalizado"
 
 #: ../../spritz/src/spritz.glade.h:42
 msgid "D_ependencies"
 msgstr "D_ependencias"
 
 #: ../../spritz/src/spritz.glade.h:43
+#, fuzzy
 msgid "Data View"
-msgstr ""
+msgstr "Ver datos"
 
 #: ../../spritz/src/spritz.glade.h:45
 msgid "Database updates"
@@ -8003,8 +7979,9 @@ msgstr ""
 "Instalar+Eliminar"
 
 #: ../../spritz/src/spritz.glade.h:56
+#, fuzzy
 msgid "Done"
-msgstr ""
+msgstr "Hecho"
 
 #: ../../spritz/src/spritz.glade.h:57
 msgid "Download Path"
@@ -8031,12 +8008,14 @@ msgid "Entropy Package Manager"
 msgstr "Administrador de Paquetes de Entropy"
 
 #: ../../spritz/src/spritz.glade.h:63
+#, fuzzy
 msgid "Entropy Repository Manager"
-msgstr ""
+msgstr "Administrador del Repositorio de Entropy"
 
 #: ../../spritz/src/spritz.glade.h:64
+#, fuzzy
 msgid "Entropy Service Connection Manager"
-msgstr ""
+msgstr "Administrador de Conexión del Servicio Entropy"
 
 #: ../../spritz/src/spritz.glade.h:65
 msgid "Entropy can keep a backup of your updated configuration files"
@@ -8045,8 +8024,9 @@ msgstr ""
 "configuración actualizados"
 
 #: ../../spritz/src/spritz.glade.h:67
+#, fuzzy
 msgid "Errored at"
-msgstr ""
+msgstr "Erróneo en"
 
 #: ../../spritz/src/spritz.glade.h:68
 msgid "Example: http://proxy:1234"
@@ -8061,20 +8041,24 @@ msgid "FTP Proxy"
 msgstr "Proxy FTP"
 
 #: ../../spritz/src/spritz.glade.h:72
+#, fuzzy
 msgid "Get Spm environment information"
-msgstr ""
+msgstr "Obtener la información del entorno del administrador de paquetes fuente"
 
 #: ../../spritz/src/spritz.glade.h:73
+#, fuzzy
 msgid "Get output"
-msgstr ""
+msgstr "Obtener la salida"
 
 #: ../../spritz/src/spritz.glade.h:74
+#, fuzzy
 msgid "Get package information"
-msgstr ""
+msgstr "Obtener información del paquete"
 
 #: ../../spritz/src/spritz.glade.h:75
+#, fuzzy
 msgid "Get updates related to the chosen categories"
-msgstr ""
+msgstr "Obtener actualizaciones relacionadas con las categorías elegidas"
 
 #: ../../spritz/src/spritz.glade.h:76
 msgid "HTTP Proxy"
@@ -8149,8 +8133,9 @@ msgid "Messages"
 msgstr "Mensajes"
 
 #: ../../spritz/src/spritz.glade.h:102
+#, fuzzy
 msgid "Mirror updates"
-msgstr ""
+msgstr "Actualizaciones de los mirrors"
 
 #: ../../spritz/src/spritz.glade.h:104
 msgid "Networking"
@@ -8162,24 +8147,28 @@ msgid "New backup"
 msgstr "Nueva copia de seguridad"
 
 #: ../../spritz/src/spritz.glade.h:106
+#, fuzzy
 msgid "Not done"
-msgstr ""
+msgstr "No finalizado"
 
 #: ../../spritz/src/spritz.glade.h:108
+#, fuzzy
 msgid "Notice Board Entry Information"
-msgstr ""
+msgstr "Información de la Entrada del Tablón de Anuncios"
 
 #: ../../spritz/src/spritz.glade.h:110
+#, fuzzy
 msgid "Notice board Id"
-msgstr ""
+msgstr "Id del tablón de anuncios"
 
 #: ../../spritz/src/spritz.glade.h:111
 msgid "O_ther"
 msgstr "_Otros"
 
 #: ../../spritz/src/spritz.glade.h:112
+#, fuzzy
 msgid "Output View"
-msgstr ""
+msgstr "Ver la salida"
 
 #: ../../spritz/src/spritz.glade.h:113
 msgid "Package Info"
@@ -8198,31 +8187,31 @@ msgid "Package Size"
 msgstr "Paquete"
 
 #: ../../spritz/src/spritz.glade.h:118
+#, fuzzy
 msgid "Pinboard Id"
-msgstr ""
+msgstr "Id del Tablón de Notas"
 
 #: ../../spritz/src/spritz.glade.h:119
+#, fuzzy
 msgid "Pinboard Item Information"
-msgstr ""
+msgstr "Información del Ítem del Tablón de Notas"
 
 #: ../../spritz/src/spritz.glade.h:120
+#, fuzzy
 msgid "Pinboard View"
-msgstr ""
+msgstr "Vista del Tablón de Notas"
 
 #: ../../spritz/src/spritz.glade.h:121
 msgid "Please Confirm"
 msgstr "Confirma por favor"
 
 #: ../../spritz/src/spritz.glade.h:122
-msgid ""
-"Please submit this error to us providing as much information as possible."
-msgstr ""
-"Por favor, envíanos este error añadiendo toda la información que puedas."
+msgid "Please submit this error to us providing as much information as possible."
+msgstr "Por favor, envíanos este error añadiendo toda la información que puedas."
 
 #: ../../spritz/src/spritz.glade.h:124
 msgid "Prevents files belonging to a package being overwritten by another"
-msgstr ""
-"Evita que los archivos pertenecientes a un paquete sean sobrescritos por otro"
+msgstr "Evita que los archivos pertenecientes a un paquete sean sobrescritos por otro"
 
 #: ../../spritz/src/spritz.glade.h:125
 msgid "Process priority (nice)"
@@ -8234,8 +8223,9 @@ msgid "Process result"
 msgstr "Resultado del proceso"
 
 #: ../../spritz/src/spritz.glade.h:127
+#, fuzzy
 msgid "Processing at"
-msgstr ""
+msgstr "Procesando a"
 
 #: ../../spritz/src/spritz.glade.h:128
 msgid "Protected files and directories"
@@ -8268,11 +8258,12 @@ msgstr "ID de cola"
 
 #: ../../spritz/src/spritz.glade.h:135
 msgid "Queue Item Information"
-msgstr ""
+msgstr "Información del Ítem en Cola"
 
 #: ../../spritz/src/spritz.glade.h:136
+#, fuzzy
 msgid "Queue View"
-msgstr ""
+msgstr "Ver la cola"
 
 #: ../../spritz/src/spritz.glade.h:137
 #, fuzzy
@@ -8284,8 +8275,9 @@ msgid "R_egenerate Cache"
 msgstr "Re_generar caché"
 
 #: ../../spritz/src/spritz.glade.h:139
+#, fuzzy
 msgid "R_epositories Notice Board"
-msgstr ""
+msgstr "Ta_blón de Anuncios de los Repositorios"
 
 #: ../../spritz/src/spritz.glade.h:143
 msgid "Reinstall the selected package"
@@ -8384,16 +8376,19 @@ msgid "Source Package Manager"
 msgstr "Administrador de Paquetes Fuente"
 
 #: ../../spritz/src/spritz.glade.h:175
+#, fuzzy
 msgid "Spm Info"
-msgstr ""
+msgstr "Información del administrador de paquetes fuente"
 
 #: ../../spritz/src/spritz.glade.h:176
+#, fuzzy
 msgid "Spm Sync"
-msgstr ""
+msgstr "Sincronización del administrador de paquetes fuente"
 
 #: ../../spritz/src/spritz.glade.h:177
+#, fuzzy
 msgid "Spm tree updates"
-msgstr ""
+msgstr "Árbol de actualizaciones del administrador de paquetes fuente"
 
 #: ../../spritz/src/spritz.glade.h:178
 msgid "Spritz Package Manager"
@@ -8633,20 +8628,24 @@ msgid "emerge --sync ? (o;"
 msgstr "¿ emerge --sync ? (o;"
 
 #: ../../spritz/src/spritz.glade.h:243
+#, fuzzy
 msgid "gtk-cancel"
-msgstr ""
+msgstr "_Cancelar"
 
 #: ../../spritz/src/spritz.glade.h:244
+#, fuzzy
 msgid "gtk-close"
-msgstr ""
+msgstr "Ce_rrar"
 
 #: ../../spritz/src/spritz.glade.h:245
+#, fuzzy
 msgid "gtk-execute"
-msgstr ""
+msgstr "E_jecutar"
 
 #: ../../spritz/src/spritz.glade.h:246
+#, fuzzy
 msgid "gtk-remove"
-msgstr ""
+msgstr "_Eliminar"
 
 #: ../../spritz/src/spritz.glade.h:247
 msgid "http://www.sabayon.org"
@@ -8671,3 +8670,4 @@ msgstr "escribe tu contraseña aquí"
 #: ../../spritz/src/spritz.glade.h:253
 msgid "type your username here"
 msgstr "escribe tu nombre de usuario aquí"
+
