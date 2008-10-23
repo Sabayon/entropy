@@ -19623,7 +19623,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             self.dbconn.commit()
 
     def _generate_sql(self, action, table, data, where = ''):
-        sql = ''
+        sql = u''
         keys = sorted(data.keys())
         if action == "update":
             sql += 'UPDATE %s SET ' % (self.dbconn.escape_string(table),)
@@ -19637,7 +19637,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             sql += ', '.join(keys_data)
             sql += ' WHERE %s' % (where,)
         elif action == "insert":
-            sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
+            sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
                 self.dbconn.escape_string(table),
                 ', '.join([self.dbconn.escape_string(x) for x in keys]),
                 ', '.join(["'"+self.dbconn.escape_string(unicode(data[x]))+"'" for x in keys])
