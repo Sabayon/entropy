@@ -19240,7 +19240,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         import binascii
         return str(binascii.crc32(email.lower())) + str(len(email))
 
-    def register_user(self, username, password, email):
+    def register_user(self, username, password, email, activate = False):
 
         if len(username) not in self.USERNAME_LENGTH_RANGE:
             return False,'Username not in range'
@@ -19259,16 +19259,19 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if exists: return False,'Email already in use'
 
         # now cross fingers
-        user_id = self.__register(username, password, email)
+        user_id = self.__register(username, password, email, activate)
 
         return True,user_id
 
 
-    def __register(self, username, password, email):
+    def __register(self, username, password, email, activate):
 
         email_hash = self._generate_email_hash(email)
         password_hash = self._get_password_hash(password.encode('utf-8'))
         time_now = int(time.time())
+
+        user_type = self.USER_INACTIVE
+        if activate: user_type = self.USER_NORMAL
 
         registration_data = {
             'username': username,
@@ -19278,7 +19281,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             'user_email': email.lower(),
             'user_email_hash': email_hash,
             'group_id': self.REGISTERED_USERS_GROUP,
-            'user_type': self.USER_INACTIVE,
+            'user_type': user_type,
             'user_permissions': '',
             'user_timezone': self._get_config_value('board_timezone'),
             'user_dateformat': self._get_config_value('default_dateformat'),
@@ -34308,3 +34311,88 @@ class EntropyDatabaseInterface:
                 result = (x,0)
             )
             return x,0
+
+class EmailSender:
+
+    def __init__(self):
+        import smtplib
+        self.smtplib = smtplib
+        from email.mime.audio import MIMEAudio
+        from email.mime.image import MIMEImage
+        from email.mime.text import MIMEText
+        from email.mime.base import MIMEBase
+        from email.mime.multipart import MIMEMultipart
+        from email import encoders
+        from email.message import Message
+        import mimetypes
+        self.text = MIMEText
+        self.mimefile = MIMEBase
+        self.audio = MIMEAudio
+        self.image = MIMEImage
+        self.multipart = MIMEMultipart
+        self.default_sender = self.smtp_send
+        self.mimetypes = mimetypes
+        self.encoders = encoders
+        self.Message = Message
+
+    def smtp_send(self, sender, destinations, message):
+        s = self.smtplib.SMTP()
+        s.connect()
+        s.sendmail(sender, destinations, message)
+        s.close()
+
+    def send_text_email(self, sender_email, destination_emails, subject, content):
+
+        # Create a text/plain message
+        if isinstance(content,unicode):
+            content = content.encode('utf-8')
+        if isinstance(subject,unicode):
+            subject = subject.encode('utf-8')
+
+        msg = self.text(content)
+        msg['Subject'] = subject
+        msg['From'] = sender_email
+        msg['To'] = ', '.join(destination_emails)
+        return self.default_sender(sender_email, destination_emails, msg.as_string())
+
+    def send_mime_email(self, sender_email, destination_emails, subject, content, files):
+
+        outer = self.multipart()
+        outer['Subject'] = subject
+        outer['From'] = sender_email
+        outer['To'] = ', '.join(destination_emails)
+        outer.preamble = subject
+
+        mymsg = self.text(content)
+        outer.attach(mymsg)
+
+        # attach files
+        for myfile in files:
+            if not (os.path.isfile(myfile) and os.access(myfile,os.R_OK)):
+                continue
+
+            ctype, encoding = self.mimetypes.guess_type(myfile)
+            if ctype is None or encoding is not None:
+                ctype = 'application/octet-stream'
+            maintype, subtype = ctype.split('/', 1)
+
+            if maintype == 'image':
+                fp = open(myfile, 'rb')
+                msg = self.image(fp.read(), _subtype = subtype)
+                fp.close()
+            elif maintype == 'audio':
+                fp = open(myfile, 'rb')
+                msg = self.audio(fp.read(), _subtype = subtype)
+                fp.close()
+            else:
+                fp = open(myfile, 'rb')
+                msg = self.mimefile(maintype, subtype)
+                msg.set_payload(fp.read())
+                fp.close()
+                self.encoders.encode_base64(msg)
+
+            msg.add_header('Content-Disposition', 'attachment', filename = os.path.basename(myfile))
+            outer.attach(msg)
+
+        composed = outer.as_string()
+        return self.default_sender(sender_email, destination_emails, composed)
