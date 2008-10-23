@@ -19255,7 +19255,6 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         time_now = int(time.time())
 
         registration_data = {
-            'user_id': None,
             'username': username,
             'username_clean': username,
             'user_password': password_hash,
@@ -19324,7 +19323,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         # set some misc config shit
         self._set_config_value('newest_user_id',user_id)
         self._set_config_value('newest_username',username)
-        self._set_config_value('num_users',self._get_config_value('num_users')+1)
+        self._set_config_value('num_users',int(self._get_config_value('num_users'))+1)
         self.cursor.execute('SELECT group_colour FROM '+self.TABLE_PREFIX+'groups WHERE group_id = %s', (group_data['group_id'],))
         data = self.cursor.fetchone()
         gcolor = None
