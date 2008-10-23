@@ -19240,6 +19240,11 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         import binascii
         return str(binascii.crc32(email.lower())) + str(len(email))
 
+    def activate_user(self, user_id):
+        self.check_connection()
+        self.cursor.execute('UPDATE '+self.TABLE_PREFIX+'users SET user_type = %s WHERE `user_id` = %s', (self.USER_NORMAL,user_id,))
+        return True, user_id
+
     def register_user(self, username, password, email, activate = False):
 
         if len(username) not in self.USERNAME_LENGTH_RANGE:
@@ -19261,7 +19266,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         # now cross fingers
         user_id = self.__register(username, password, email, activate)
 
-        return True,user_id
+        return True, user_id
 
 
     def __register(self, username, password, email, activate):
