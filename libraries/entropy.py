@@ -19176,7 +19176,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             regex = '[-\]_+ [a-zA-Z0-9]+'
         else: # USERNAME_ASCII
             regex = '[\x01-\x7F]+'
-        regex = "#^%s$#u" % (regex,)
+        regex = "^%s$" % (regex,)
         import re
         myreg = re.compile(regex)
         if myreg.match(username):
