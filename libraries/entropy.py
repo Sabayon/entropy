@@ -19639,8 +19639,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         elif action == "insert":
             sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
                 self.dbconn.escape_string(table),
-                ', '.join([self.dbconn.escape_string(x) for x in keys]),
-                ', '.join(["'"+self.dbconn.escape_string(unicode(data[x]).encode('utf-8'))+"'" for x in keys])
+                u', '.join([self.dbconn.escape_string(x) for x in keys]),
+                u', '.join([u"'"+self.dbconn.escape_string(unicode(data[x]))+"'" for x in keys])
             )
         return sql
 
