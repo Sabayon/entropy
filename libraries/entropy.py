@@ -19640,7 +19640,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
                 self.dbconn.escape_string(table),
                 u', '.join([self.dbconn.escape_string(x) for x in keys]),
-                u', '.join([u"'"+self.dbconn.escape_string(unicode(data[x]))+"'" for x in keys])
+                u', '.join([u"'"+self.dbconn.escape_string(unicode(data[x]).encode('utf-8')).decode('utf-8')+"'" for x in keys])
             )
         return sql
 
