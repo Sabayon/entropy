@@ -19188,7 +19188,17 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.check_connection()
         self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username` = %s OR `username_clean` = %s', (username,username,))
         data = self.cursor.fetchone()
-        if not (data and isinstance(data,dict)): return False
+        if not data: return False
+        if not isinstance(data,dict): return False
+        if not data.has_key('user_id'): return False
+        return True
+
+    def does_email_exist(self, email):
+        self.check_connection()
+        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `user_email` = %s', (email,))
+        data = self.cursor.fetchone()
+        if not data: return False
+        if not isinstance(data,dict): return False
         if not data.has_key('user_id'): return False
         return True
 
@@ -19196,9 +19206,10 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.check_connection()
         self.cursor.execute('SELECT disallow_id FROM '+self.TABLE_PREFIX+'disallow WHERE `disallow_username` = %s', (username,))
         data = self.cursor.fetchone()
-        if not (data and isinstance(data,dict)): return True
-        if not data.has_key('disallow_id'): return True
-        return False
+        if not data: return False
+        if not isinstance(data,dict): return False
+        if not data.has_key('disallow_id'): return False
+        return True
 
     def validate_username_string(self, username):
 
@@ -19231,16 +19242,20 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
     def register_user(self, username, password, email):
 
         if len(username) not in self.USERNAME_LENGTH_RANGE:
-            return False,'username not in range'
+            return False,'Username not in range'
         if len(password) not in self.PASSWORD_LENGTH_RANGE:
-            return False,'password not in range'
+            return False,'Password not in range'
         valid = self.entropyTools.is_valid_email(email)
         if not valid:
-            return False,'invalid email'
+            return False,'Invalid email'
 
         # check username validity
         status, err_msg = self.validate_username_string(username)
         if not status: return False,err_msg
+
+        # check email
+        exists = self.does_email_exist(email)
+        if exists: return False,'Email already in use'
 
         # now cross fingers
         user_id = self.__register(username, password, email)
