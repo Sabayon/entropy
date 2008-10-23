@@ -696,7 +696,7 @@ class EquoInterface(TextInterface):
             if not self.noclientdb:
                 try:
                     conn.validateDatabase()
-                except exceptionTools.SystemDatabaseError, e:
+                except exceptionTools.SystemDatabaseError:
                     try: conn.closeDB()
                     except: pass
                     conn = load_db_from_ram()
@@ -14835,7 +14835,10 @@ class SocketHostInterface:
             self.sessions[rng]['developer'] = False
             self.sessions[rng]['compression'] = None
             self.sessions[rng]['stream_mode'] = False
-            self.sessions[rng]['stream_path'] = self.entropyTools.getRandomTempFile()
+            try:
+                self.sessions[rng]['stream_path'] = self.entropyTools.getRandomTempFile()
+            except (IOError,OSError,):
+                self.sessions[rng]['stream_path'] = ''
             self.sessions[rng]['t'] = time.time()
             self.sessions[rng]['ip_address'] = ip_address
             return rng
@@ -18540,6 +18543,8 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return False
         elif not session_data.has_key('stream_path'):
             return False
+        elif not session_data['stream_path']:
+            return False
         mypath = session_data['stream_path']
         if not (os.path.isfile(mypath) and os.access(mypath,os.R_OK)):
             return False
@@ -19138,11 +19143,14 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.USER_INACTIVE = 1
         self.USER_IGNORE = 2
         self.USER_FOUNDER = 3
+        self.REGISTERED_USERS_GROUP = 7895
         self.ADMIN_GROUPS = [7893, 7898]
         self.MODERATOR_GROUPS = [484]
         self.DEVELOPER_GROUPS = [7900]
         self.USERNAME_LENGTH_RANGE = range(3,21)
         self.PASSWORD_LENGTH_RANGE = range(6,31)
+        self.PRIVMSGS_NO_BOX = -3
+        self.NOTIFY_EMAIL = 0
         self.FAKE_USERNAME = 'already_authed'
         self.USER_AGENT = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
                                         etpConst['entropyversion'],
@@ -19153,6 +19161,180 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
                                         os.uname()[2],
         )
         self.TABLE_PREFIX = 'phpbb_'
+
+    def validate_username_regex(self, username):
+        allow_name_chars = self._get_config_value("allow_name_chars")
+        if allow_name_chars == "USERNAME_CHARS_ANY":
+            regex = '.+'
+        elif allow_name_chars == "USERNAME_ALPHA_ONLY":
+            regex = '[A-Za-z0-9]+'
+        elif allow_name_chars == "USERNAME_ALPHA_SPACERS":
+            regex = '[A-Za-z0-9-[\]_+ ]+'
+        elif allow_name_chars == "USERNAME_LETTER_NUM":
+            regex = '[a-zA-Z0-9]+'
+        elif allow_name_chars == "USERNAME_LETTER_NUM_SPACERS":
+            regex = '[-\]_+ [a-zA-Z0-9]+'
+        else: # USERNAME_ASCII
+            regex = '[\x01-\x7F]+'
+        regex = "#^%s$#u" % (regex,)
+        import re
+        myreg = re.compile(regex)
+        if myreg.match(username):
+            del myreg
+            return True
+        return False
+
+    def does_username_exist(self, username):
+        self.check_connection()
+        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username` = %s OR `username_clean` = %s', (username,username,))
+        data = self.cursor.fetchone()
+        if not (data and isinstance(data,dict)): return False
+        if not data.has_key('user_id'): return False
+        return True
+
+    def is_username_allowed(self, username):
+        self.check_connection()
+        self.cursor.execute('SELECT disallow_id FROM '+self.TABLE_PREFIX+'disallow WHERE `disallow_username` = %s', (username,))
+        data = self.cursor.fetchone()
+        if not (data and isinstance(data,dict)): return True
+        if not data.has_key('disallow_id'): return True
+        return False
+
+    def validate_username_string(self, username):
+
+        try:
+            username = unicode(username,'raw_unicode_escape')
+        except (UnicodeDecodeError,UnicodeEncodeError,):
+            return False,'Invalid username'
+        if ("&quot;" in username) or ("'" in username) or ('"' in username):
+            return False,'Invalid username'
+
+        try:
+            valid = self.validate_username_regex(username)
+        except:
+            return False,'Username contains bad characters'
+        if not valid:
+            return False,'Invalid username'
+
+        exists = self.does_username_exist(username)
+        if exists: return False,'Username already taken'
+
+        allowed = self.is_username_allowed(username)
+        if not allowed: return False,'Username not allowed'
+
+        return True,'All fine'
+
+    def _generate_email_hash(self, email):
+        import binascii
+        return str(binascii.crc32(email.lower())) + str(len(email))
+
+    def register_user(self, username, password, email):
+
+        if len(username) not in self.USERNAME_LENGTH_RANGE:
+            return False,'username not in range'
+        if len(password) not in self.PASSWORD_LENGTH_RANGE:
+            return False,'password not in range'
+        valid = self.entropyTools.is_valid_email(email)
+        if not valid:
+            return False,'invalid email'
+
+        # check username validity
+        status, err_msg = self.validate_username_string(username)
+        if not status: return False,err_msg
+
+        # now cross fingers
+        user_id = self.__register(username, password, email)
+
+        return True,user_id
+
+
+    def __register(self, username, password, email):
+
+        email_hash = self._generate_email_hash(email)
+        password_hash = self._get_password_hash(password)
+        time_now = int(time.time())
+
+        registration_data = {
+            'user_id': None,
+            'username': username,
+            'username_clean': username,
+            'user_password': password_hash,
+            'user_pass_convert': 0,
+            'user_email': email.lower(),
+            'user_email_hash': email_hash,
+            'group_id': self.REGISTERED_USERS_GROUP,
+            'user_type': self.USER_INACTIVE,
+            'user_permissions': '',
+            'user_timezone': self._get_config_value('board_timezone'),
+            'user_dateformat': self._get_config_value('default_dateformat'),
+            'user_lang': self._get_config_value('default_lang'),
+            'user_style': self._get_config_value('default_style'),
+            'user_actkey': '',
+            'user_ip': '',
+            'user_regdate': time_now,
+            'user_passchg': time_now,
+            'user_options': 895, # ? don't ask me
+            'user_inactive_reason': 0,
+            'user_inactive_time': 0,
+            'user_lastmark': time_now,
+            'user_lastvisit': 0,
+            'user_lastpost_time': 0,
+            'user_lastpage': '',
+            'user_posts': 0,
+            'user_dst': self._get_config_value('board_dst'),
+            'user_colour': '',
+            'user_occ': '',
+            'user_interests': '',
+            'user_avatar': '',
+            'user_avatar_type': 0,
+            'user_avatar_width': 0,
+            'user_avatar_height': 0,
+            'user_new_privmsg': 0,
+            'user_unread_privmsg': 0,
+            'user_last_privmsg': 0,
+            'user_message_rules': 0,
+            'user_full_folder': self.PRIVMSGS_NO_BOX,
+            'user_emailtime': 0,
+            'user_notify': 0,
+            'user_notify_pm': 1,
+            'user_notify_type': self.NOTIFY_EMAIL,
+            'user_allow_pm': 1,
+            'user_allow_viewonline': 1,
+            'user_allow_viewemail': 1,
+            'user_allow_massemail': 1,
+            'user_sig': '',
+            'user_sig_bbcode_uid': '',
+            'user_sig_bbcode_bitfield': '',
+            'user_form_salt': self._get_unique_id(),
+        }
+
+        sql = self._generate_sql('insert', self.TABLE_PREFIX+'users', registration_data)
+        self.cursor.execute(sql)
+        user_id = self.cursor.lastrowid
+
+        # now insert into the default group
+        group_data = {
+            'user_id': user_id,
+            'group_id': self.REGISTERED_USERS_GROUP,
+            'user_pending': 0,
+        }
+        sql = self._generate_sql('insert', self.TABLE_PREFIX+'user_group', group_data)
+        self.cursor.execute(sql)
+
+        # set some misc config shit
+        self._set_config_value('newest_user_id',user_id)
+        self._set_config_value('newest_username',username)
+        self._set_config_value('num_users',self._get_config_value('num_users')+1)
+        self.cursor.execute('SELECT group_colour FROM '+self.TABLE_PREFIX+'groups WHERE group_id = %s', (group_data['group_id'],))
+        data = self.cursor.fetchone()
+        gcolor = None
+        if isinstance(data,dict):
+            if data.has_key('group_colour'):
+                gcolor = data['group_colour']
+        if gcolor: self._set_config_value('newest_user_colour',gcolor)
+
+        return user_id
+
 
     def login(self):
         self.check_connection()
@@ -19361,11 +19543,22 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.cursor.execute('SELECT user_permissions FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         return self.cursor.fetchone()
 
-    def _update_session_table(self, user_id, ip_address):
+    def _set_config_value(self, config_name, data):
+        self.cursor.execute('UPDATE '+self.TABLE_PREFIX+'config SET config_value = %s WHERE config_name = %s',(data,config_name,))
 
-        time_now = int(time.time())
-        self.cursor.execute('SELECT config_value AS autologin FROM '+self.TABLE_PREFIX+'config WHERE config_name = "allow_autologin"')
+    def _get_config_value(self, config_name):
+        self.check_connection()
+        self.cursor.execute('SELECT config_value FROM '+self.TABLE_PREFIX+'config WHERE config_name = %s',(config_name,))
         myconfig = self.cursor.fetchone()
+        if isinstance(myconfig,dict):
+            if myconfig.has_key('config_value'):
+                return myconfig['config_value']
+        return None
+
+    def _update_session_table(self, user_id, ip_address):
+        self.check_connection()
+        time_now = int(time.time())
+        autologin = self._get_config_value("allow_autologin")
         self.cursor.execute('SELECT user_allow_viewonline FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (user_id,))
         myuserprefs = self.cursor.fetchone()
         session_admin = 0
@@ -19380,13 +19573,13 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             'session_forwarded_for': '',
             'session_page': 'index.php',
             'session_viewonline': myuserprefs['user_allow_viewonline'],
-            'session_autologin': myconfig['autologin'],
+            'session_autologin': autologin,
             'session_admin': session_admin,
             'session_forum_id': 0,
         }
         import md5
         m = md5.new()
-        m.update(str(user_id)+str(time_now)+str(self.USER_AGENT)+str(ip_address)+str(myconfig['autologin'])+str(myuserprefs['user_allow_viewonline']))
+        m.update(str(user_id)+str(time_now)+str(self.USER_AGENT)+str(ip_address)+str(autologin)+str(myuserprefs['user_allow_viewonline']))
         session_data['session_id'] = m.hexdigest()
 
         self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'sessions WHERE session_user_id = %s', (user_id,))
