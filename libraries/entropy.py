@@ -19206,10 +19206,10 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.check_connection()
         self.cursor.execute('SELECT disallow_id FROM '+self.TABLE_PREFIX+'disallow WHERE `disallow_username` = %s', (username,))
         data = self.cursor.fetchone()
-        if not data: return False
-        if not isinstance(data,dict): return False
-        if not data.has_key('disallow_id'): return False
-        return True
+        if not data: return True
+        if not isinstance(data,dict): return True
+        if not data.has_key('disallow_id'): return True
+        return False
 
     def validate_username_string(self, username):
 
