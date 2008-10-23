@@ -19214,7 +19214,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
     def validate_username_string(self, username):
 
         try:
-            username = unicode(username,'raw_unicode_escape')
+            x = unicode(username.encode('utf-8'),'raw_unicode_escape')
+            del x
         except (UnicodeDecodeError,UnicodeEncodeError,):
             return False,'Invalid username'
         if ("&quot;" in username) or ("'" in username) or ('"' in username):
@@ -19266,7 +19267,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
     def __register(self, username, password, email):
 
         email_hash = self._generate_email_hash(email)
-        password_hash = self._get_password_hash(password)
+        password_hash = self._get_password_hash(password.encode('utf-8'))
         time_now = int(time.time())
 
         registration_data = {
