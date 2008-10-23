@@ -1100,6 +1100,9 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     pass
                 return 128,-1
 
+    if etpUi['pretend']:
+        return 0,0
+
     # validate removalQueue
     invalid = set()
     for idpackage in removalQueue:
