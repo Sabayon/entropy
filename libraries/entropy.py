@@ -19129,6 +19129,7 @@ class DistributionAuthInterface:
 
 class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
+    import entropyTools
     def __init__(self):
         DistributionAuthInterface.__init__(self)
         RemoteDbSkelInterface.__init__(self)
@@ -19140,6 +19141,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.ADMIN_GROUPS = [7893, 7898]
         self.MODERATOR_GROUPS = [484]
         self.DEVELOPER_GROUPS = [7900]
+        self.USERNAME_LENGTH_RANGE = range(3,21)
+        self.PASSWORD_LENGTH_RANGE = range(6,31)
         self.FAKE_USERNAME = 'already_authed'
         self.USER_AGENT = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
                                         etpConst['entropyversion'],
@@ -20215,11 +20218,11 @@ class EntropySocketClientCommands:
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
-                        bold(repository),
+                        bold(unicode(repository)),
                         darkred(_("arch")),
-                        bold(arch),
+                        bold(unicode(arch)),
                         darkgreen(_("product")),
-                        bold(product),
+                        bold(unicode(product)),
                         blue(mytxt),
                 ),
                 importance = 1,
