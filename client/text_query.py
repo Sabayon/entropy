@@ -132,7 +132,7 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None, EquoConne
                 if (idreturn):
                     dataInfo.add(idpackage)
                 else:
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = Equo)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
@@ -188,7 +188,7 @@ def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None)
                 elif (etpUi['quiet']):
                     print clientDbconn.retrieveAtom(idpackage)
                 else:
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = EquoConnection)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = Equo)
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+xfile))
                 print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(result)))+red(" entries"))
@@ -252,9 +252,9 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
                     dataInfo.add(idpackage)
                 else:
                     if (etpUi['verbose']):
-                        printPackageInfo(idpackage, dbconn, clientSearch = True, EquoConnection = EquoConnection)
+                        printPackageInfo(idpackage, dbconn, clientSearch = True, EquoConnection = Equo)
                     else:
-                        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, EquoConnection = EquoConnection)
+                        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+atom))
@@ -395,9 +395,9 @@ def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = Non
                 print myatom
             else:
                 if (etpUi['verbose']):
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = EquoConnection)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = Equo)
                 else:
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = EquoConnection)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
         if (not etpUi['quiet']):
             print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(matches)))+red(" %s" % (_("packages"),) ))
 
@@ -688,8 +688,7 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
         Equo = EquoConnection
     else:
         try:
-            if Equo == None:
-                Equo = EquoInterface()
+            if Equo == None: Equo = EquoInterface()
         except NameError:
             Equo = EquoInterface()
 
@@ -726,7 +725,7 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
                     if (idreturn):
                         dataInfo.add((idpackage,repo))
                     else:
-                        printPackageInfo(idpackage,dbconn)
+                        printPackageInfo(idpackage,dbconn, EquoConnection = Equo)
                 if (not idreturn) and (not etpUi['quiet']):
                     print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
                     print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(foundPackages[repo][package])))+red(" %s" % (_("entries"),) ))
@@ -772,7 +771,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
                     dataInfo.add(tuple(match))
                 else:
                     dbconn = Equo.openRepositoryDatabase(match[1])
-                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc)
+                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc, EquoConnection = Equo)
                     found = True
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
@@ -820,7 +819,7 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
                 foundPackages[repo][result[1]] = result[0]
                 # print info
                 if (not datareturn):
-                    printPackageInfo(result[1],dbconn)
+                    printPackageInfo(result[1],dbconn, EquoConnection = Equo)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+slot))
                 print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
@@ -863,7 +862,7 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
             for result in results:
                 foundPackages[repo][result[1]] = result[0]
                 if (not datareturn):
-                    printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
+                    printPackageInfo(result[1],dbconn, EquoConnection = Equo)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+tag))
                 print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),)))
@@ -909,7 +908,7 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
                 foundPackages[repo][result[1]] = result[0]
                 # print info
                 if (not datareturn):
-                    printPackageInfo(result[1],dbconn, EquoConnection = EquoConnection)
+                    printPackageInfo(result[1],dbconn, EquoConnection = Equo)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+mylicense))
                 print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
@@ -968,7 +967,7 @@ def searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = 
                 elif (etpUi['quiet']):
                     print dbconn.retrieveAtom(idpackage)
                 else:
-                    printPackageInfo(idpackage,dbconn, EquoConnection = EquoConnection)
+                    printPackageInfo(idpackage,dbconn, EquoConnection = Equo)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+desc))
