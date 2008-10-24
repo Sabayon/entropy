@@ -4212,8 +4212,9 @@ class PackageInterface:
                         header = red("   ## ")
                     )
                     return fetch
-                else:
-                    self.infoDict['verified'] = True
+                self.infoDict['verified'] = True
+                match = True
+                break
         if (not match):
             mytxt = _("Cannot properly fetch package or checksum does not match. Try download latest repositories.")
             self.Entropy.updateProgress(
