@@ -15775,9 +15775,7 @@ class ServerInterface(TextInterface):
                         blue(_("You cannot switch packages from/to your system database")),
                         red(etpConst['clientserverrepoid']),
                 ),
-                importance = 2,
-                type = "warning",
-                header = darkred(" @@ ")
+                importance = 2, type = "warning", header = darkred(" @@ ")
             )
             return switched
 
