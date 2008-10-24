@@ -516,7 +516,7 @@ def searchOrphans(EquoConnection = None):
             count += 1
             atom = clientDbconn.retrieveAtom(idpackage)
             txt = "["+str(count)+"/"+length+"] "
-            print_info(red(" @@ ")+blue("%s: " % (_("Intersecting with content of the package"),) )+txt+bold(atom), back = True)
+            print_info(red(" @@ ")+blue("%s: " % (_("Intersecting with content of the package"),) )+txt+bold(str(atom)), back = True)
         content = set()
         for x in clientDbconn.retrieveContent(idpackage):
             if x.startswith("/usr/lib64"):
