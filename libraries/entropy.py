@@ -1665,12 +1665,6 @@ class EquoInterface(TextInterface):
         repoResults = {}
         for repo in valid_repos:
 
-            # check if repo exists
-            if not repo.endswith(etpConst['packagesext']) and not server_repos:
-                fetch = self.fetch_repository_if_not_available(repo)
-                if fetch != 0:
-                    continue # cannot fetch repo, excluding
-
             # search
             dbconn = open_db(repo)
             use_cache = useCache
@@ -33617,30 +33611,14 @@ class EntropyDatabaseInterface:
             except IOError:
                 pass
 
-    # function that validate one atom by reading keywords settings
-    # idpackageValidatorCache = {} >> function cache
-    def idpackageValidator(self,idpackage, live = True):
+    def _idpackageValidator_live(self, idpackage, reponame):
+        if (idpackage,reponame) in etpConst['live_packagemasking']['mask_matches']:
+            # do not cache this
+            return -1,12
+        elif (idpackage,reponame) in etpConst['live_packagemasking']['unmask_matches']:
+            return idpackage,11
 
-        if self.dbname == etpConst['clientdbid']:
-            return idpackage,0
-        elif self.dbname.startswith(etpConst['serverdbid']):
-            return idpackage,0
-
-        if (etpConst['packagemasking'] == None) and self.ServiceInterface != None:
-            self.ServiceInterface.parse_masking_settings()
-
-        reponame = self.dbname[5:]
-        cached = idpackageValidatorCache.get((idpackage,reponame,live))
-        if cached != None:
-            return cached
-
-        if live:
-            if (idpackage,reponame) in etpConst['live_packagemasking']['mask_matches']:
-                # do not cache this
-                return -1,12
-            elif (idpackage,reponame) in etpConst['live_packagemasking']['unmask_matches']:
-                return idpackage,11
-
+    def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
         # check if user package.mask needs it masked
         user_package_mask_ids = etpConst['packagemasking'].get(reponame+'mask_ids')
         if user_package_mask_ids == None:
@@ -33656,6 +33634,7 @@ class EntropyDatabaseInterface:
             idpackageValidatorCache[(idpackage,reponame,live)] = -1,1
             return -1,1
 
+    def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
         # see if we can unmask by just lookin into user package.unmask stuff -> etpConst['packagemasking']['unmask']
         user_package_unmask_ids = etpConst['packagemasking'].get(reponame+'unmask_ids')
         if user_package_unmask_ids == None:
@@ -33670,6 +33649,7 @@ class EntropyDatabaseInterface:
             idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,3
             return idpackage,3
 
+    def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
         # check if repository packages.db.mask needs it masked
         repomask = etpConst['packagemasking']['repos_mask'].get(reponame)
         if repomask != None:
@@ -33706,6 +33686,7 @@ class EntropyDatabaseInterface:
                             idpackageValidatorCache[(idpackage,reponame,live)] = -1,9
                             return -1,9
 
+    def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
         if etpConst['packagemasking']['license_mask']:
             mylicenses = self.retrieveLicense(idpackage)
             mylicenses = mylicenses.strip().split()
@@ -33714,6 +33695,8 @@ class EntropyDatabaseInterface:
                     if mylicense in etpConst['packagemasking']['license_mask']:
                         idpackageValidatorCache[(idpackage,reponame,live)] = -1,10
                         return -1,10
+
+    def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
 
         mykeywords = self.retrieveKeywords(idpackage)
         # XXX WORKAROUND
@@ -33772,6 +33755,44 @@ class EntropyDatabaseInterface:
                         # valid!
                         idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,6
                         return idpackage,6
+
+
+
+    # function that validate one atom by reading keywords settings
+    # idpackageValidatorCache = {} >> function cache
+    def idpackageValidator(self,idpackage, live = True):
+
+        if self.dbname == etpConst['clientdbid']:
+            return idpackage,0
+        elif self.dbname.startswith(etpConst['serverdbid']):
+            return idpackage,0
+
+        if (etpConst['packagemasking'] == None) and self.ServiceInterface != None:
+            self.ServiceInterface.parse_masking_settings()
+
+        reponame = self.dbname[5:]
+        cached = idpackageValidatorCache.get((idpackage,reponame,live))
+        if cached != None:
+            return cached
+
+        if live:
+            data = self._idpackageValidator_live(idpackage, reponame)
+            if data: return data
+
+        data = self._idpackageValidator_user_package_mask(idpackage, reponame, live)
+        if data: return data
+
+        data = self._idpackageValidator_user_package_unmask(idpackage, reponame, live)
+        if data: return data
+
+        data = self._idpackageValidator_packages_db_mask(idpackage, reponame, live)
+        if data: return data
+
+        data = self._idpackageValidator_package_license_mask(idpackage, reponame, live)
+        if data: return data
+
+        data = self._idpackageValidator_keyword_mask(idpackage, reponame, live)
+        if data: return data
 
         # holy crap, can't validate
         idpackageValidatorCache[(idpackage,reponame,live)] = -1,7
@@ -33925,7 +33946,7 @@ class EntropyDatabaseInterface:
         if (matchRevision == None) and (atomRev != None):
             matchRevision = atomRev
 
-        myBranchIndex = ()
+        branch_list = ()
         direction = ''
         justname = True
 
@@ -33955,31 +33976,123 @@ class EntropyDatabaseInterface:
                     pkgname = splitkey[0]
                     pkgcat = "null"
 
-                myBranchIndex = (self.db_branch,)
+                branch_list = (self.db_branch,)
                 if matchBranches:
                     # force to tuple for security
-                    myBranchIndex = tuple(matchBranches)
+                    branch_list = tuple(matchBranches)
                 break
 
         # IDs found in the database that match our search
-        foundIDs = set()
+        foundIDs = self.__generate_found_ids_match(branch_list, pkgkey, pkgname, pkgcat, caseSensitive, multiMatch)
 
-        for idx in myBranchIndex:
+        ### FILTERING
+        # filter slot and tag
+        foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
+        if packagesFilter: # keyword filtering
+            foundIDs = self.packagesFilter(foundIDs, atom)
+        ### END FILTERING
+
+        dbpkginfo = self.__handle_found_ids_match(foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, atom, pkgversion)
+
+        if not dbpkginfo:
+            if extendedResults:
+                x = (-1,1,None,None,None)
+                self.atomMatchStoreCache(
+                    atom, caseSensitive, matchSlot,
+                    multiMatch, matchBranches, matchTag,
+                    matchUse, packagesFilter, matchRevision,
+                    extendedResults, result = (x,1)
+                )
+                return x,1
+            else:
+                self.atomMatchStoreCache(
+                    atom, caseSensitive, matchSlot,
+                    multiMatch, matchBranches, matchTag,
+                    matchUse, packagesFilter, matchRevision,
+                    extendedResults, result = (-1,1)
+                )
+                return -1,1
+
+        if multiMatch:
+            if extendedResults:
+                x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo])
+                self.atomMatchStoreCache(
+                    atom, caseSensitive, matchSlot,
+                    multiMatch, matchBranches, matchTag,
+                    matchUse, packagesFilter, matchRevision,
+                    extendedResults, result = (x,0)
+                )
+                return x,0
+            else:
+                x = set([x[0] for x in dbpkginfo])
+                self.atomMatchStoreCache(
+                    atom, caseSensitive, matchSlot,
+                    multiMatch, matchBranches, matchTag,
+                    matchUse, packagesFilter, matchRevision,
+                    extendedResults, result = (x,0)
+                )
+                return x,0
+
+        if len(dbpkginfo) == 1:
+            x = dbpkginfo.pop()
+            if extendedResults:
+                x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
+                self.atomMatchStoreCache(
+                    atom, caseSensitive, matchSlot,
+                    multiMatch, matchBranches, matchTag,
+                    matchUse, packagesFilter, matchRevision,
+                    extendedResults, result = (x,0)
+                )
+                return x,0
+            else:
+                self.atomMatchStoreCache(
+                    atom, caseSensitive, matchSlot,
+                    multiMatch, matchBranches, matchTag,
+                    matchUse, packagesFilter, matchRevision,
+                    extendedResults, result = (x[0],0)
+                )
+                return x[0],0
+
+        dbpkginfo = list(dbpkginfo)
+        pkgdata = {}
+        versions = set()
+        for x in dbpkginfo:
+            info_tuple = (x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
+            versions.add(info_tuple)
+            pkgdata[info_tuple] = x[0]
+        newer = self.entropyTools.getEntropyNewerVersion(list(versions))[0]
+        x = pkgdata[newer]
+        if extendedResults:
+            x = (x,0,newer[0],newer[1],newer[2])
+            self.atomMatchStoreCache(
+                atom, caseSensitive, matchSlot,
+                multiMatch, matchBranches, matchTag,
+                matchUse, packagesFilter, matchRevision,
+                extendedResults, result = (x,0)
+            )
+            return x,0
+        else:
+            self.atomMatchStoreCache(
+                atom, caseSensitive, matchSlot,
+                multiMatch, matchBranches, matchTag,
+                matchUse, packagesFilter, matchRevision,
+                extendedResults, result = (x,0)
+            )
+            return x,0
+
+    def __generate_found_ids_match(self, branch_list, pkgkey, pkgname, pkgcat, caseSensitive, multiMatch):
+        foundIDs = set()
+        for idx in branch_list:
 
             if pkgcat == "null":
                 results = self.searchPackagesByName(
-                                    pkgname,
-                                    sensitive = caseSensitive,
-                                    branch = idx,
-                                    justid = True
+                    pkgname, sensitive = caseSensitive,
+                    branch = idx, justid = True
                 )
             else:
                 results = self.searchPackagesByNameAndCategory(
-                                    name = pkgname,
-                                    category = pkgcat,
-                                    branch = idx,
-                                    sensitive = caseSensitive,
-                                    justid = True
+                    name = pkgname, category = pkgcat, branch = idx,
+                    sensitive = caseSensitive, justid = True
                 )
 
             mypkgcat = pkgcat
@@ -34026,11 +34139,8 @@ class EntropyDatabaseInterface:
                 if (not multiMatch) and (pkgcat == "null" or virtual):
                     # we searched by name, we need to search using category
                     results = self.searchPackagesByNameAndCategory(
-                                        name = mypkgname,
-                                        category = mypkgcat,
-                                        branch = idx,
-                                        sensitive = caseSensitive,
-                                        justid = True
+                        name = mypkgname, category = mypkgcat,
+                        branch = idx, sensitive = caseSensitive, justid = True
                     )
 
                 # validate again
@@ -34060,23 +34170,10 @@ class EntropyDatabaseInterface:
                     foundIDs.add(idpackage)
                     break
 
-        ### FILTERING
-        ### FILTERING
-        ### FILTERING
+        return foundIDs
 
-        # filter slot and tag
-        foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
 
-        if packagesFilter: # keyword filtering
-            foundIDs = self.packagesFilter(foundIDs, atom)
-
-        ### END FILTERING
-        ### END FILTERING
-        ### END FILTERING
-
-        ### FILLING dbpkginfo
-        ### FILLING dbpkginfo
-        ### FILLING dbpkginfo
+    def __handle_found_ids_match(self, foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, atom, pkgversion):
 
         dbpkginfo = set()
         # now we have to handle direction
@@ -34214,151 +34311,8 @@ class EntropyDatabaseInterface:
 
             dbpkginfo = set([(x,self.retrieveVersion(x)) for x in foundIDs])
 
-        ### END FILLING dbpkginfo
-        ### END FILLING dbpkginfo
-        ### END FILLING dbpkginfo
+        return dbpkginfo
 
-        if not dbpkginfo:
-            if extendedResults:
-                x = (-1,1,None,None,None)
-                self.atomMatchStoreCache(
-                    atom,
-                    caseSensitive,
-                    matchSlot,
-                    multiMatch,
-                    matchBranches,
-                    matchTag,
-                    matchUse,
-                    packagesFilter,
-                    matchRevision,
-                    extendedResults,
-                    result = (x,1)
-                )
-                return x,1
-            else:
-                self.atomMatchStoreCache(
-                    atom,
-                    caseSensitive,
-                    matchSlot,
-                    multiMatch,
-                    matchBranches,
-                    matchTag,
-                    matchUse,
-                    packagesFilter,
-                    matchRevision,
-                    extendedResults,
-                    result = (-1,1)
-                )
-                return -1,1
-
-        if multiMatch:
-            if extendedResults:
-                x = set([(x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0])) for x in dbpkginfo])
-                self.atomMatchStoreCache(
-                    atom,
-                    caseSensitive,
-                    matchSlot,
-                    multiMatch,
-                    matchBranches,
-                    matchTag,
-                    matchUse,
-                    packagesFilter,
-                    matchRevision,
-                    extendedResults,
-                    result = (x,0)
-                )
-                return x,0
-            else:
-                x = set([x[0] for x in dbpkginfo])
-                self.atomMatchStoreCache(
-                    atom,
-                    caseSensitive,
-                    matchSlot,
-                    multiMatch,
-                    matchBranches,
-                    matchTag,
-                    matchUse,
-                    packagesFilter,
-                    matchRevision,
-                    extendedResults,
-                    result = (x,0)
-                )
-                return x,0
-
-        if len(dbpkginfo) == 1:
-            x = dbpkginfo.pop()
-            if extendedResults:
-                x = (x[0],0,x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
-                self.atomMatchStoreCache(
-                    atom,
-                    caseSensitive,
-                    matchSlot,
-                    multiMatch,
-                    matchBranches,
-                    matchTag,
-                    matchUse,
-                    packagesFilter,
-                    matchRevision,
-                    extendedResults,
-                    result = (x,0)
-                )
-                return x,0
-            else:
-                self.atomMatchStoreCache(
-                    atom,
-                    caseSensitive,
-                    matchSlot,
-                    multiMatch,
-                    matchBranches,
-                    matchTag,
-                    matchUse,
-                    packagesFilter,
-                    matchRevision,
-                    extendedResults,
-                    result = (x[0],0)
-                )
-                return x[0],0
-
-        dbpkginfo = list(dbpkginfo)
-        pkgdata = {}
-        versions = set()
-        for x in dbpkginfo:
-            info_tuple = (x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
-            versions.add(info_tuple)
-            pkgdata[info_tuple] = x[0]
-        newer = self.entropyTools.getEntropyNewerVersion(list(versions))[0]
-        x = pkgdata[newer]
-        if extendedResults:
-            x = (x,0,newer[0],newer[1],newer[2])
-            self.atomMatchStoreCache(
-                atom,
-                caseSensitive,
-                matchSlot,
-                multiMatch,
-                matchBranches,
-                matchTag,
-                matchUse,
-                packagesFilter,
-                matchRevision,
-                extendedResults,
-                result = (x,0)
-            )
-            return x,0
-        else:
-            self.atomMatchStoreCache(
-                atom,
-                caseSensitive,
-                matchSlot,
-                multiMatch,
-                matchBranches,
-                matchTag,
-                matchUse,
-                packagesFilter,
-                matchRevision,
-                extendedResults,
-                result = (x,0)
-            )
-            return x,0
 
 class EmailSender:
 
