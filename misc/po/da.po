@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-18 15:25+0200\n"
+"POT-Creation-Date: 2008-10-24 11:23+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -159,15 +159,15 @@ msgid ""
 "support"
 msgstr ""
 
-#: ../../libraries/entropy.py:41 ../../libraries/entropy.py:5259
-#: ../../libraries/entropy.py:5310 ../../libraries/entropy.py:5316
-#: ../../libraries/entropy.py:5341 ../../libraries/entropy.py:5366
-#: ../../libraries/entropy.py:8663 ../../libraries/entropy.py:11186
+#: ../../libraries/entropy.py:41 ../../libraries/entropy.py:5262
+#: ../../libraries/entropy.py:5322 ../../libraries/entropy.py:5328
+#: ../../libraries/entropy.py:5353 ../../libraries/entropy.py:5378
+#: ../../libraries/entropy.py:8697 ../../libraries/entropy.py:11242
 #: ../../spritz/src/spritz.glade.h:66
 msgid "Error"
 msgstr "Fejl"
 
-#: ../../libraries/entropy.py:271 ../../libraries/entropy.py:14960
+#: ../../libraries/entropy.py:271 ../../libraries/entropy.py:15019
 msgid "Fetch"
 msgstr ""
 
@@ -192,12 +192,12 @@ msgstr ""
 #: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3402
 #: ../../spritz/src/dialogs.py:3438 ../../spritz/src/dialogs.py:3462
 #: ../../spritz/src/dialogs.py:3488 ../../spritz/src/dialogs.py:3531
-#: ../../spritz/src/spritz.py:729 ../../spritz/src/views.py:504
+#: ../../spritz/src/spritz.py:728 ../../spritz/src/views.py:504
 #: ../../spritz/src/views.py:1152
 msgid "Repository"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:429 ../../client/text_ui.py:136
+#: ../../libraries/entropy.py:429 ../../client/text_ui.py:139
 #, fuzzy
 msgid "is not available"
 msgstr "Tilgængelige"
@@ -380,15 +380,15 @@ msgstr "Installeret"
 msgid "Collecting broken executables"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:1308 ../../libraries/entropy.py:7308
-#: ../../libraries/entropy.py:7345 ../../libraries/entropy.py:7360
-#: ../../libraries/entropy.py:7372 ../../libraries/entropy.py:7387
-#: ../../libraries/entropy.py:9731 ../../libraries/entropy.py:16643
+#: ../../libraries/entropy.py:1308 ../../libraries/entropy.py:7330
+#: ../../libraries/entropy.py:7367 ../../libraries/entropy.py:7382
+#: ../../libraries/entropy.py:7394 ../../libraries/entropy.py:7409
+#: ../../libraries/entropy.py:9765 ../../libraries/entropy.py:16702
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:302
-#: ../../client/text_ui.py:707 ../../client/text_ui.py:708
 #: ../../client/text_ui.py:710 ../../client/text_ui.py:711
+#: ../../client/text_ui.py:713 ../../client/text_ui.py:714
 #: ../../spritz/src/dialogs.py:5585 ../../spritz/src/misc.py:91
-#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:933
+#: ../../spritz/src/misc.py:302 ../../spritz/src/spritz.py:932
 msgid "Attention"
 msgstr ""
 
@@ -404,2367 +404,2372 @@ msgstr ""
 msgid "Matching broken libraries/executables"
 msgstr ""
 
-#: ../../libraries/entropy.py:1647
+#: ../../libraries/entropy.py:1650
 msgid "server_repos needs serverInstance"
 msgstr ""
 
-#: ../../libraries/entropy.py:1897
+#: ../../libraries/entropy.py:1900
 msgid "repodata dictionary is corrupted"
 msgstr ""
 
-#: ../../libraries/entropy.py:2531
+#: ../../libraries/entropy.py:2534
 #, fuzzy
 msgid "Sorting dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:2624
+#: ../../libraries/entropy.py:2627
 #, fuzzy
 msgid "Calculating removable depends of"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:2793
+#: ../../libraries/entropy.py:2796
 #, fuzzy
 msgid "Calculating available packages for"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../libraries/entropy.py:2894
+#: ../../libraries/entropy.py:2897
 #, fuzzy
 msgid "Calculating world packages"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:3013
+#: ../../libraries/entropy.py:3016
 msgid "not a valid method"
 msgstr ""
 
-#: ../../libraries/entropy.py:3358 ../../libraries/entropy.py:16835
+#: ../../libraries/entropy.py:3361 ../../libraries/entropy.py:16894
 #, fuzzy
 msgid "Mirror"
 msgstr "_Filspejlsliste"
 
-#: ../../libraries/entropy.py:3360
+#: ../../libraries/entropy.py:3363
 msgid "maximum failure threshold reached"
 msgstr ""
 
-#: ../../libraries/entropy.py:3386
+#: ../../libraries/entropy.py:3389
 #, fuzzy
 msgid "Downloading from"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:3403
+#: ../../libraries/entropy.py:3406
 msgid "Successfully downloaded from"
 msgstr ""
 
-#: ../../libraries/entropy.py:3405
+#: ../../libraries/entropy.py:3408
 msgid "at"
 msgstr ""
 
-#: ../../libraries/entropy.py:3405
+#: ../../libraries/entropy.py:3408
 msgid "second"
 msgstr ""
 
-#: ../../libraries/entropy.py:3431
+#: ../../libraries/entropy.py:3434
 #, fuzzy
 msgid "Error downloading from"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../libraries/entropy.py:3436
+#: ../../libraries/entropy.py:3439
 #, fuzzy
 msgid "file not available on this mirror"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:3439
+#: ../../libraries/entropy.py:3442
 msgid "wrong checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:3444
+#: ../../libraries/entropy.py:3447
 msgid "discarded download"
 msgstr ""
 
-#: ../../libraries/entropy.py:3447
+#: ../../libraries/entropy.py:3450
 msgid "unknown reason"
 msgstr ""
 
-#: ../../libraries/entropy.py:3619
+#: ../../libraries/entropy.py:3622
 #, fuzzy
 msgid "Extracting package metadata"
 msgstr "Behandler metadata fra : %s"
 
-#: ../../libraries/entropy.py:3764 ../../libraries/entropy.py:16783
-#: ../../libraries/entropy.py:27041
+#: ../../libraries/entropy.py:3767 ../../libraries/entropy.py:16842
+#: ../../libraries/entropy.py:27320
 #, fuzzy
 msgid "not supported"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:3765
+#: ../../libraries/entropy.py:3768
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../libraries/entropy.py:4060
+#: ../../libraries/entropy.py:4063
 #, fuzzy
 msgid "not set"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:4060
+#: ../../libraries/entropy.py:4063
 msgid "have you configured make.conf properly?"
 msgstr ""
 
-#: ../../libraries/entropy.py:4081
+#: ../../libraries/entropy.py:4084
 #, fuzzy
 msgid "Package extraction complete"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../libraries/entropy.py:4135 ../../libraries/entropy.py:5904
-#: ../../libraries/entropy.py:6182 ../../libraries/entropy.py:10555
+#: ../../libraries/entropy.py:4138 ../../libraries/entropy.py:5927
+#: ../../libraries/entropy.py:6205 ../../libraries/entropy.py:10611
 msgid "A valid Equo instance or subclass is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:4155
+#: ../../libraries/entropy.py:4158
 msgid "Already prepared"
 msgstr ""
 
-#: ../../libraries/entropy.py:4160
+#: ../../libraries/entropy.py:4163
 msgid "Not yet prepared"
 msgstr ""
 
-#: ../../libraries/entropy.py:4165
+#: ../../libraries/entropy.py:4168
 msgid "Action must be in"
 msgstr ""
 
-#: ../../libraries/entropy.py:4174
+#: ../../libraries/entropy.py:4177
 msgid "Checking package checksum..."
 msgstr ""
 
-#: ../../libraries/entropy.py:4183
+#: ../../libraries/entropy.py:4186
 #, fuzzy
 msgid "Package checksum matches."
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../libraries/entropy.py:4194
+#: ../../libraries/entropy.py:4197
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
 msgstr ""
 
-#: ../../libraries/entropy.py:4212
+#: ../../libraries/entropy.py:4215
 msgid "Cannot properly fetch package! Quitting."
 msgstr ""
 
-#: ../../libraries/entropy.py:4221
+#: ../../libraries/entropy.py:4224
 msgid ""
 "Cannot properly fetch package or checksum does not match. Try download "
 "latest repositories."
 msgstr ""
 
-#: ../../libraries/entropy.py:4341
+#: ../../libraries/entropy.py:4344
 msgid "Removing from Entropy"
 msgstr ""
 
 #. in this way we filter out directories
-#: ../../libraries/entropy.py:4376
+#: ../../libraries/entropy.py:4379
 msgid "Collision found during removal of"
 msgstr ""
 
-#: ../../libraries/entropy.py:4377 ../../libraries/entropy.py:5220
+#: ../../libraries/entropy.py:4380 ../../libraries/entropy.py:5223
 msgid "cannot overwrite"
 msgstr ""
 
-#: ../../libraries/entropy.py:4404 ../../libraries/entropy.py:28031
-#: ../../libraries/entropy.py:28871
+#: ../../libraries/entropy.py:4407 ../../libraries/entropy.py:28310
+#: ../../libraries/entropy.py:29150
 #, fuzzy
 msgid "remove"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:4405 ../../libraries/entropy.py:5179
+#: ../../libraries/entropy.py:4408 ../../libraries/entropy.py:5182
 msgid "Protecting config file"
 msgstr ""
 
-#: ../../libraries/entropy.py:4420
+#: ../../libraries/entropy.py:4423
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
 #. inject into database
-#: ../../libraries/entropy.py:4689
+#: ../../libraries/entropy.py:4692
 #, fuzzy
 msgid "Updating database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:4722
+#: ../../libraries/entropy.py:4725
 #, fuzzy
 msgid "Cleaning old package files..."
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:4803 ../../libraries/entropy.py:8948
-#: ../../libraries/entropy.py:9805 ../../libraries/entropy.py:9877
-#: ../../libraries/entropy.py:9951 ../../libraries/entropy.py:10027
-#: ../../libraries/entropy.py:10409 ../../libraries/entropy.py:10423
-#: ../../libraries/entropy.py:10465 ../../libraries/entropy.py:10483
-#: ../../libraries/entropy.py:10512 ../../libraries/entropy.py:10525
-#: ../../libraries/entropy.py:10538
+#: ../../libraries/entropy.py:4806 ../../libraries/entropy.py:8982
+#: ../../libraries/entropy.py:9839 ../../libraries/entropy.py:9911
+#: ../../libraries/entropy.py:9996 ../../libraries/entropy.py:10083
+#: ../../libraries/entropy.py:10465 ../../libraries/entropy.py:10479
+#: ../../libraries/entropy.py:10521 ../../libraries/entropy.py:10539
+#: ../../libraries/entropy.py:10568 ../../libraries/entropy.py:10581
+#: ../../libraries/entropy.py:10594
 msgid "QA"
 msgstr ""
 
-#: ../../libraries/entropy.py:4803
+#: ../../libraries/entropy.py:4806
 msgid "Cannot update Portage database to destination"
 msgstr ""
 
-#: ../../libraries/entropy.py:4837
+#: ../../libraries/entropy.py:4840
 #, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
 msgstr ""
 
-#: ../../libraries/entropy.py:4857
+#: ../../libraries/entropy.py:4860
 #, python-format
 msgid "Cannot update Portage world file, destination %s does not exist."
 msgstr ""
 
-#: ../../libraries/entropy.py:4884
+#: ../../libraries/entropy.py:4887
 #, python-format
 msgid "Cannot update Portage world file, destination %s is corrupted."
 msgstr ""
 
-#: ../../libraries/entropy.py:5007
+#: ../../libraries/entropy.py:5010
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy.py:5082
+#: ../../libraries/entropy.py:5085
 #, python-format
 msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy.py:5192
+#: ../../libraries/entropy.py:5195
 #, fuzzy
 msgid "Skipping file installation/removal"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:5205
+#: ../../libraries/entropy.py:5208
 msgid "Cannot check CONFIG PROTECTION. Error"
 msgstr ""
 
-#: ../../libraries/entropy.py:5219
+#: ../../libraries/entropy.py:5222
 msgid "Collision found during install for"
 msgstr ""
 
-#: ../../libraries/entropy.py:5238
+#: ../../libraries/entropy.py:5241
 #, fuzzy
 msgid "Downloading archive"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:5258
+#: ../../libraries/entropy.py:5261
 msgid "Package cannot be fetched. Try to update repositories and retry"
 msgstr ""
 
-#: ../../libraries/entropy.py:5273
+#: ../../libraries/entropy.py:5276
+#, fuzzy
+msgid "Fetch for the chosen package is not available, unknown error."
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy.py:5285
 msgid "Installed package in queue vanished, skipping."
 msgstr ""
 
-#: ../../libraries/entropy.py:5289
+#: ../../libraries/entropy.py:5301
 #, fuzzy
 msgid "Unpacking package"
 msgstr "Opdater som afhængighed"
 
-#: ../../libraries/entropy.py:5297
+#: ../../libraries/entropy.py:5309
 #, fuzzy
 msgid "Merging package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:5308
+#: ../../libraries/entropy.py:5320
 msgid "You are running out of disk space"
 msgstr ""
 
-#: ../../libraries/entropy.py:5309
+#: ../../libraries/entropy.py:5321
 msgid "I bet, you're probably Michele"
 msgstr ""
 
-#: ../../libraries/entropy.py:5314
+#: ../../libraries/entropy.py:5326
 msgid "An error occured while trying to unpack the package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5315 ../../libraries/entropy.py:5340
+#: ../../libraries/entropy.py:5327 ../../libraries/entropy.py:5352
 msgid "Check if your system is healthy"
 msgstr ""
 
-#: ../../libraries/entropy.py:5329
+#: ../../libraries/entropy.py:5341
 #, fuzzy
 msgid "Installing package"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../libraries/entropy.py:5339
+#: ../../libraries/entropy.py:5351
 #, fuzzy
 msgid "An error occured while trying to install the package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../libraries/entropy.py:5354
+#: ../../libraries/entropy.py:5366
 #, fuzzy
 msgid "Removing data"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:5364
+#: ../../libraries/entropy.py:5376
 msgid "An error occured while trying to remove the package"
 msgstr ""
 
-#: ../../libraries/entropy.py:5365
+#: ../../libraries/entropy.py:5377
 msgid "Check if you have enough disk space on your hard disk"
 msgstr ""
 
-#: ../../libraries/entropy.py:5379 ../../libraries/entropy.py:5568
+#: ../../libraries/entropy.py:5391 ../../libraries/entropy.py:5586
 #, fuzzy
 msgid "Cleaning"
 msgstr "Oprydning"
 
-#: ../../libraries/entropy.py:5406
+#: ../../libraries/entropy.py:5418
 msgid "Compilation messages"
 msgstr ""
 
-#: ../../libraries/entropy.py:5525
+#: ../../libraries/entropy.py:5543
 #, fuzzy
 msgid "Fetching"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy.py:5531
+#: ../../libraries/entropy.py:5549
 #, fuzzy
 msgid "Verifying"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:5538
+#: ../../libraries/entropy.py:5556
 #, fuzzy
 msgid "Unpacking"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:5541
+#: ../../libraries/entropy.py:5559
 #, fuzzy
 msgid "Merging"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:5550
+#: ../../libraries/entropy.py:5568
 #, fuzzy
 msgid "Installing"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:5556 ../../client/text_rescue.py:526
+#: ../../libraries/entropy.py:5574 ../../client/text_rescue.py:526
 msgid "Removing"
-msgstr "Sletter"
-
-#: ../../libraries/entropy.py:5574
-#, fuzzy
-msgid "Postinstall"
-msgstr "Installeret"
-
-#: ../../libraries/entropy.py:5580
-#, fuzzy
-msgid "Preinstall"
-msgstr "Installeret"
-
-#: ../../libraries/entropy.py:5586
-#, fuzzy
-msgid "Preremove"
 msgstr "Sletter"
 
 #: ../../libraries/entropy.py:5592
 #, fuzzy
+msgid "Postinstall"
+msgstr "Installeret"
+
+#: ../../libraries/entropy.py:5598
+#, fuzzy
+msgid "Preinstall"
+msgstr "Installeret"
+
+#: ../../libraries/entropy.py:5604
+#, fuzzy
+msgid "Preremove"
+msgstr "Sletter"
+
+#: ../../libraries/entropy.py:5610
+#, fuzzy
 msgid "Postremove"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:5633
+#: ../../libraries/entropy.py:5651
 msgid "An error occured. Action aborted."
 msgstr ""
 
-#: ../../libraries/entropy.py:6004 ../../client/text_configuration.py:152
+#: ../../libraries/entropy.py:6027 ../../client/text_configuration.py:152
 #: ../../client/text_configuration.py:162
 #: ../../client/text_configuration.py:229
 #, fuzzy
 msgid "Automerging file"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy.py:6020
+#: ../../libraries/entropy.py:6043
 #, fuzzy
 msgid "I/O Error"
 msgstr "Fejl"
 
-#: ../../libraries/entropy.py:6021
+#: ../../libraries/entropy.py:6044
 #, fuzzy
 msgid "Cannot automerge file"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy.py:6054
+#: ../../libraries/entropy.py:6077
 #, fuzzy
 msgid "Cache is corrupted"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:6130
+#: ../../libraries/entropy.py:6153
 msgid "Invalid config file number"
 msgstr ""
 
-#: ../../libraries/entropy.py:6213
+#: ../../libraries/entropy.py:6236
 #, fuzzy, python-format
 msgid "No repositories specified in %s"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:6219 ../../libraries/entropy.py:11473
+#: ../../libraries/entropy.py:6242 ../../libraries/entropy.py:11529
 #, fuzzy, python-format
 msgid "Cannot connect to %s"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:6281
+#: ../../libraries/entropy.py:6303
 msgid "Repository is not listed in self.reponames"
 msgstr ""
 
-#: ../../libraries/entropy.py:6290
+#: ../../libraries/entropy.py:6312
 #, fuzzy
 msgid "Wrong database compression method"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:6308
+#: ../../libraries/entropy.py:6330
 #, python-format
 msgid "Supported items: %s"
 msgstr ""
 
-#: ../../libraries/entropy.py:6311
+#: ../../libraries/entropy.py:6333
 #, python-format
 msgid "For %s, cmethod can't be None"
 msgstr ""
 
-#: ../../libraries/entropy.py:6394 ../../libraries/entropy.py:6420
-#: ../../libraries/entropy.py:6451
+#: ../../libraries/entropy.py:6416 ../../libraries/entropy.py:6442
+#: ../../libraries/entropy.py:6473
 msgid "self.dbformat_eapi must be in (1,2)"
 msgstr ""
 
 #. verify checksum
-#: ../../libraries/entropy.py:6548
+#: ../../libraries/entropy.py:6570
 msgid "Checking downloaded database"
 msgstr ""
 
-#: ../../libraries/entropy.py:6558
+#: ../../libraries/entropy.py:6580
 #, fuzzy
 msgid "Cannot open digest"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:6558 ../../libraries/entropy.py:7272
+#: ../../libraries/entropy.py:6580 ../../libraries/entropy.py:7294
 #, fuzzy
 msgid "Cannot verify database integrity"
 msgstr "fandt %d pakker, som matcher : %s"
 
-#: ../../libraries/entropy.py:6566 ../../libraries/entropy.py:6574
+#: ../../libraries/entropy.py:6588 ../../libraries/entropy.py:6596
 msgid "Downloaded database status"
 msgstr ""
 
-#: ../../libraries/entropy.py:6566
+#: ../../libraries/entropy.py:6588
 msgid "OK"
 msgstr ""
 
-#: ../../libraries/entropy.py:6574
+#: ../../libraries/entropy.py:6596
 msgid "ERROR"
 msgstr ""
 
-#: ../../libraries/entropy.py:6581
+#: ../../libraries/entropy.py:6603
 msgid "An error occured while checking database integrity"
 msgstr ""
 
-#: ../../libraries/entropy.py:6581
+#: ../../libraries/entropy.py:6603
 msgid "Giving up"
 msgstr ""
 
-#: ../../libraries/entropy.py:6601 ../../client/text_repositories.py:129
+#: ../../libraries/entropy.py:6623 ../../client/text_repositories.py:129
 #: ../../client/text_repositories.py:151
 msgid "Database URL"
 msgstr ""
 
-#: ../../libraries/entropy.py:6608
+#: ../../libraries/entropy.py:6630
 #, fuzzy
 msgid "Database local path"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:6615
+#: ../../libraries/entropy.py:6637
 msgid "Database EAPI"
 msgstr ""
 
-#: ../../libraries/entropy.py:6702 ../../libraries/entropy.py:6743
-#: ../../libraries/entropy.py:6763
+#: ../../libraries/entropy.py:6724 ../../libraries/entropy.py:6765
+#: ../../libraries/entropy.py:6785
 msgid "EAPI3 Service status"
 msgstr ""
 
-#: ../../libraries/entropy.py:6703
+#: ../../libraries/entropy.py:6725
 msgid "remote database suddenly locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:6721
+#: ../../libraries/entropy.py:6743
 msgid "EAPI3 Service"
-msgstr ""
-
-#: ../../libraries/entropy.py:6722
-#, fuzzy
-msgid "skipping differential sync"
-msgstr "Installer som afhængighed"
-
-#: ../../libraries/entropy.py:6723
-msgid "threshold"
 msgstr ""
 
 #: ../../libraries/entropy.py:6744
 #, fuzzy
+msgid "skipping differential sync"
+msgstr "Installer som afhængighed"
+
+#: ../../libraries/entropy.py:6745
+msgid "threshold"
+msgstr ""
+
+#: ../../libraries/entropy.py:6766
+#, fuzzy
 msgid "treeupdates data not available"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:6764
+#: ../../libraries/entropy.py:6786
 msgid "cannot update treeupdates data"
 msgstr ""
 
-#: ../../libraries/entropy.py:6794
+#: ../../libraries/entropy.py:6816
 msgid "Fetching segments"
 msgstr ""
 
-#: ../../libraries/entropy.py:6816
+#: ../../libraries/entropy.py:6838
 msgid "Fetch error on segment"
 msgstr ""
 
-#: ../../libraries/entropy.py:6833 ../../libraries/entropy.py:6848
+#: ../../libraries/entropy.py:6855 ../../libraries/entropy.py:6870
 msgid "Service status"
 msgstr ""
 
-#: ../../libraries/entropy.py:6882
+#: ../../libraries/entropy.py:6904
 msgid "Fetch error on segment while adding"
 msgstr ""
 
-#: ../../libraries/entropy.py:6896
+#: ../../libraries/entropy.py:6918
 #, fuzzy
 msgid "Injecting package"
 msgstr "Henter Pakker : %s"
 
-#: ../../libraries/entropy.py:6915
+#: ../../libraries/entropy.py:6937
 #, fuzzy
 msgid "Packages injection complete"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../libraries/entropy.py:6927
+#: ../../libraries/entropy.py:6949
 #, fuzzy
 msgid "Removing package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:6939
+#: ../../libraries/entropy.py:6961
 #, fuzzy
 msgid "Packages removal complete"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../libraries/entropy.py:6954
+#: ../../libraries/entropy.py:6976
 msgid "Database checksum doesn't match remote."
 msgstr ""
 
-#: ../../libraries/entropy.py:6955 ../../libraries/entropy.py:16899
+#: ../../libraries/entropy.py:6977 ../../libraries/entropy.py:16958
 msgid "local"
 msgstr ""
 
-#: ../../libraries/entropy.py:6957
+#: ../../libraries/entropy.py:6979
 #, fuzzy
 msgid "remote"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:7054
+#: ../../libraries/entropy.py:7076
 msgid "EAPI3 Service error"
 msgstr ""
 
-#: ../../libraries/entropy.py:7192
+#: ../../libraries/entropy.py:7214
 msgid "Something bad happened. Please have a look."
 msgstr ""
 
-#: ../../libraries/entropy.py:7217
+#: ../../libraries/entropy.py:7239
 #, fuzzy
 msgid "a new release is available"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:7218
+#: ../../libraries/entropy.py:7240
 #, fuzzy
 msgid "Mind to install it before any other package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:7232
+#: ../../libraries/entropy.py:7254
 #, fuzzy
 msgid "Unpacking database to"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:7242
+#: ../../libraries/entropy.py:7264
 #, fuzzy
 msgid "Cannot unpack compressed package"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:7242
+#: ../../libraries/entropy.py:7264
 #, fuzzy
 msgid "Skipping repository"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:7261
+#: ../../libraries/entropy.py:7283
 #, fuzzy
 msgid "Downloading checksum"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:7272
+#: ../../libraries/entropy.py:7294
 msgid "Cannot fetch checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:7302
+#: ../../libraries/entropy.py:7324
 msgid "Current repository got suddenly locked. Download aborted."
 msgstr ""
 
-#: ../../libraries/entropy.py:7308
+#: ../../libraries/entropy.py:7330
 msgid "remote database got suddenly locked"
 msgstr ""
 
 #. starting to download
-#: ../../libraries/entropy.py:7317
+#: ../../libraries/entropy.py:7339
 #, fuzzy
 msgid "Downloading repository database"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:7345
+#: ../../libraries/entropy.py:7367
 msgid "database does not exist online"
 msgstr ""
 
-#: ../../libraries/entropy.py:7360
+#: ../../libraries/entropy.py:7382
 msgid "database is already up to date"
 msgstr ""
 
-#: ../../libraries/entropy.py:7372
+#: ../../libraries/entropy.py:7394
 #, fuzzy
 msgid "database will be ready soon"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:7388
+#: ../../libraries/entropy.py:7410
 #, fuzzy
 msgid "Repository is being updated"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:7389
+#: ../../libraries/entropy.py:7411
 msgid "Try again in a few minutes"
 msgstr ""
 
-#: ../../libraries/entropy.py:7421
+#: ../../libraries/entropy.py:7443
 msgid "Injecting downloaded dump"
 msgstr ""
 
-#: ../../libraries/entropy.py:7423 ../../libraries/entropy.py:32378
-#: ../../spritz/src/spritz.glade.h:250
+#: ../../libraries/entropy.py:7445 ../../libraries/entropy.py:32657
+#: ../../spritz/src/spritz.glade.h:246
 msgid "please wait"
 msgstr ""
 
-#: ../../libraries/entropy.py:7445
+#: ../../libraries/entropy.py:7467
 msgid "Advisories fetch error"
 msgstr ""
 
-#: ../../libraries/entropy.py:7461
+#: ../../libraries/entropy.py:7483
 #, fuzzy
 msgid "Downloading SSL CA certificate"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:7471
+#: ../../libraries/entropy.py:7493
 #, fuzzy
 msgid "Downloading SSL Server certificate"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:7481
+#: ../../libraries/entropy.py:7503
 #, fuzzy
 msgid "Downloading package mask"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:7491
+#: ../../libraries/entropy.py:7513
 #, fuzzy
 msgid "Downloading license whitelist"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:7501
+#: ../../libraries/entropy.py:7523
 #, fuzzy
 msgid "Downloading revision"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:7511
+#: ../../libraries/entropy.py:7533
 msgid "Downloading SPM global configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7521
+#: ../../libraries/entropy.py:7543
 msgid "Downloading SPM package masking configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7531
+#: ../../libraries/entropy.py:7553
 msgid "Downloading SPM package unmasking configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7541
+#: ../../libraries/entropy.py:7563
 msgid "Downloading SPM package keywording configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7551
+#: ../../libraries/entropy.py:7573
 msgid "Downloading SPM package USE flags configuration"
 msgstr ""
 
-#: ../../libraries/entropy.py:7561
+#: ../../libraries/entropy.py:7583
 #, fuzzy
 msgid "Downloading SPM Profile configuration"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:7571
+#: ../../libraries/entropy.py:7593
 #, fuzzy
 msgid "Downloading Notice Board"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:7590
+#: ../../libraries/entropy.py:7612
 #, fuzzy
 msgid "not available, it's ok"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:7593
+#: ../../libraries/entropy.py:7615
 #, fuzzy
 msgid "not available, not much ok!"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:7595
+#: ../../libraries/entropy.py:7617
 #, fuzzy
 msgid "available, w00t!"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:7604 ../../client/text_repositories.py:157
+#: ../../libraries/entropy.py:7626 ../../client/text_repositories.py:157
 #, fuzzy
 msgid "Repository revision"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:7620
+#: ../../libraries/entropy.py:7642
 #, fuzzy
 msgid "Indexing Repository metadata"
 msgstr "Kilde"
 
 #. let's dance!
-#: ../../libraries/entropy.py:7647
+#: ../../libraries/entropy.py:7669
 #, fuzzy
 msgid "Repositories synchronization"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:7689 ../../libraries/entropy.py:20093
-#: ../../libraries/entropy.py:20693 ../../libraries/entropy.py:25235
+#: ../../libraries/entropy.py:7711 ../../libraries/entropy.py:20372
+#: ../../libraries/entropy.py:20972 ../../libraries/entropy.py:25514
 msgid "A valid EquoInterface/ServerInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:7695
+#: ../../libraries/entropy.py:7717
 msgid "Now searching for broken depends"
 msgstr ""
 
-#: ../../libraries/entropy.py:7713
+#: ../../libraries/entropy.py:7735
 msgid "scanning for broken depends"
 msgstr ""
 
-#: ../../libraries/entropy.py:7752
+#: ../../libraries/entropy.py:7774
 msgid "broken libraries detected"
 msgstr ""
 
-#: ../../libraries/entropy.py:7763
+#: ../../libraries/entropy.py:7785
 msgid "needs"
 msgstr ""
 
-#: ../../libraries/entropy.py:7784
+#: ../../libraries/entropy.py:7806
 msgid "Now searching for missing RDEPENDs"
 msgstr ""
 
-#: ../../libraries/entropy.py:7794
+#: ../../libraries/entropy.py:7816
 msgid "scanning for missing RDEPENDs"
 msgstr ""
 
-#: ../../libraries/entropy.py:7820
+#: ../../libraries/entropy.py:7842
 #, fuzzy
 msgid "is missing the following dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:7842
+#: ../../libraries/entropy.py:7864
 msgid "Do you want to add them?"
 msgstr ""
 
-#: ../../libraries/entropy.py:7845
+#: ../../libraries/entropy.py:7867
 #, fuzzy
 msgid "Selectively?"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:7859
+#: ../../libraries/entropy.py:7881
 msgid "Want to add?"
 msgstr ""
 
-#: ../../libraries/entropy.py:7871
+#: ../../libraries/entropy.py:7893
 #, fuzzy
 msgid "missing dependencies added"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:8050 ../../libraries/entropy.py:11646
-#: ../../libraries/entropy.py:11708
+#: ../../libraries/entropy.py:8072 ../../libraries/entropy.py:11702
+#: ../../libraries/entropy.py:11764
 msgid "A valid TextInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:8079
+#: ../../libraries/entropy.py:8101
 msgid "connecting with user"
 msgstr ""
 
-#: ../../libraries/entropy.py:8091 ../../libraries/entropy.py:8128
-#: ../../libraries/entropy.py:8158
+#: ../../libraries/entropy.py:8113 ../../libraries/entropy.py:8150
+#: ../../libraries/entropy.py:8180
 #, fuzzy
 msgid "switching to"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy.py:8119
+#: ../../libraries/entropy.py:8141
 msgid "reconnecting with user"
 msgstr ""
 
 #. create text
-#: ../../libraries/entropy.py:8281
+#: ../../libraries/entropy.py:8303
 #, fuzzy
 msgid "Upload status"
 msgstr "Opdateret"
 
-#: ../../libraries/entropy.py:8327
+#: ../../libraries/entropy.py:8349
 #, fuzzy
 msgid "Upload issue"
 msgstr "Opdateringer"
 
-#: ../../libraries/entropy.py:8329
+#: ../../libraries/entropy.py:8351
 msgid "retrying"
 msgstr ""
 
-#: ../../libraries/entropy.py:8356
+#: ../../libraries/entropy.py:8378
 #, fuzzy
 msgid "Download status"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:8637
+#: ../../libraries/entropy.py:8671
 msgid "A valid Entropy Instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:8662
+#: ../../libraries/entropy.py:8696
 msgid "Portage interface can't be loaded"
 msgstr ""
 
-#: ../../libraries/entropy.py:8665
+#: ../../libraries/entropy.py:8699
 #, fuzzy
 msgid "please fix"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../libraries/entropy.py:8680
+#: ../../libraries/entropy.py:8714
 msgid "Valid phases"
 msgstr ""
 
-#: ../../libraries/entropy.py:8949
+#: ../../libraries/entropy.py:8983
 msgid "Cannot run External trigger for"
 msgstr ""
 
-#: ../../libraries/entropy.py:8951 ../../libraries/entropy.py:9808
-#: ../../libraries/entropy.py:9880 ../../libraries/entropy.py:9954
-#: ../../libraries/entropy.py:10030
+#: ../../libraries/entropy.py:8985 ../../libraries/entropy.py:9842
+#: ../../libraries/entropy.py:9914 ../../libraries/entropy.py:9999
+#: ../../libraries/entropy.py:10086
 #, fuzzy
 msgid "Please report it"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../libraries/entropy.py:9001 ../../libraries/entropy.py:9663
+#: ../../libraries/entropy.py:9035 ../../libraries/entropy.py:9697
 msgid "Regenerating"
 msgstr ""
 
-#: ../../libraries/entropy.py:9027
+#: ../../libraries/entropy.py:9061
 #, fuzzy
 msgid "Please remember"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../libraries/entropy.py:9027
+#: ../../libraries/entropy.py:9061
 msgid "It is always better to leave Entropy updates isolated"
 msgstr ""
 
-#: ../../libraries/entropy.py:9033
+#: ../../libraries/entropy.py:9067
 #, fuzzy
 msgid "Purging Entropy cache"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:9058
+#: ../../libraries/entropy.py:9092
 msgid "Configuring fonts directories"
 msgstr ""
 
-#: ../../libraries/entropy.py:9075
+#: ../../libraries/entropy.py:9109
 msgid "Updating {conf.d,init.d} mtime"
 msgstr ""
 
-#: ../../libraries/entropy.py:9102
+#: ../../libraries/entropy.py:9136
 #, fuzzy
 msgid "Configuring GCC Profile"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../libraries/entropy.py:9121
+#: ../../libraries/entropy.py:9155
 msgid "Updating icons cache"
 msgstr ""
 
-#: ../../libraries/entropy.py:9139
+#: ../../libraries/entropy.py:9173
 msgid "Updating shared mime info database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9153
+#: ../../libraries/entropy.py:9187
 #, fuzzy
 msgid "Updating desktop mime database"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:9167
+#: ../../libraries/entropy.py:9201
 msgid "Updating scrollkeeper database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9181
+#: ../../libraries/entropy.py:9215
 msgid "Reloading gconf2 database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9195
+#: ../../libraries/entropy.py:9229
 #, fuzzy
 msgid "Configuring Binutils Profile"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../libraries/entropy.py:9215
+#: ../../libraries/entropy.py:9249
 msgid "Updating moduledb"
 msgstr ""
 
-#: ../../libraries/entropy.py:9223
+#: ../../libraries/entropy.py:9257
 #, fuzzy
 msgid "Running depmod"
 msgstr "Sletter som afhængighed"
 
-#: ../../libraries/entropy.py:9246
+#: ../../libraries/entropy.py:9280
 #, fuzzy
 msgid "Configuring Python"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../libraries/entropy.py:9260
+#: ../../libraries/entropy.py:9294
 #, fuzzy
 msgid "Configuring SQLite"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../libraries/entropy.py:9277
+#: ../../libraries/entropy.py:9311
 msgid "Removing boot service"
 msgstr ""
 
-#: ../../libraries/entropy.py:9297
+#: ../../libraries/entropy.py:9331
 msgid "A new service will be installed"
 msgstr ""
 
-#: ../../libraries/entropy.py:9318 ../../libraries/entropy.py:9351
+#: ../../libraries/entropy.py:9352 ../../libraries/entropy.py:9385
 msgid "Reconfiguring OpenGL"
 msgstr ""
 
-#: ../../libraries/entropy.py:9336 ../../libraries/entropy.py:9369
+#: ../../libraries/entropy.py:9370 ../../libraries/entropy.py:9403
 msgid "Eselect NOT found, cannot run OpenGL trigger"
 msgstr ""
 
-#: ../../libraries/entropy.py:9399 ../../libraries/entropy.py:9423
+#: ../../libraries/entropy.py:9433 ../../libraries/entropy.py:9457
 msgid "Configuring GRUB bootloader"
 msgstr ""
 
-#: ../../libraries/entropy.py:9400
+#: ../../libraries/entropy.py:9434
 msgid "Adding the new kernel"
 msgstr ""
 
-#: ../../libraries/entropy.py:9424
+#: ../../libraries/entropy.py:9458
 #, fuzzy
 msgid "Removing the selected kernel"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:9456
+#: ../../libraries/entropy.py:9490
 msgid "Mounted /boot successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:9467
+#: ../../libraries/entropy.py:9501
 msgid "Cannot mount /boot automatically !!"
 msgstr ""
 
-#: ../../libraries/entropy.py:9495 ../../libraries/entropy.py:9523
+#: ../../libraries/entropy.py:9529 ../../libraries/entropy.py:9557
 msgid "Running kbuildsycoca to build global KDE database"
 msgstr ""
 
-#: ../../libraries/entropy.py:9548
+#: ../../libraries/entropy.py:9582
 msgid "Installing gconf2 schemas"
 msgstr ""
 
-#: ../../libraries/entropy.py:9629
+#: ../../libraries/entropy.py:9663
 msgid "Creating kernel symlink"
 msgstr ""
 
-#: ../../libraries/entropy.py:9631
+#: ../../libraries/entropy.py:9665
 msgid "for"
 msgstr ""
 
-#: ../../libraries/entropy.py:9680
+#: ../../libraries/entropy.py:9714
 msgid "Updating environment"
 msgstr ""
 
-#: ../../libraries/entropy.py:9711
+#: ../../libraries/entropy.py:9745
 msgid "Setting system VM to"
 msgstr ""
 
-#: ../../libraries/entropy.py:9733 ../../libraries/entropy.py:26458
+#: ../../libraries/entropy.py:9767 ../../libraries/entropy.py:26737
 #: ../../client/text_security.py:73 ../../client/text_smart.py:85
 msgid "does not exist"
 msgstr ""
 
-#: ../../libraries/entropy.py:9806 ../../libraries/entropy.py:9878
-#: ../../libraries/entropy.py:9952 ../../libraries/entropy.py:10028
+#: ../../libraries/entropy.py:9840 ../../libraries/entropy.py:9912
+#: ../../libraries/entropy.py:9997 ../../libraries/entropy.py:10084
 msgid "Cannot run Portage trigger for"
 msgstr ""
 
-#: ../../libraries/entropy.py:10410
+#: ../../libraries/entropy.py:10466
 #, fuzzy
 msgid "Cannot find df"
 msgstr "Installeret"
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy.py:10411 ../../libraries/entropy.py:10425
-#: ../../libraries/entropy.py:10469 ../../libraries/entropy.py:10514
-#: ../../libraries/entropy.py:10527 ../../libraries/entropy.py:10540
+#: ../../libraries/entropy.py:10467 ../../libraries/entropy.py:10481
+#: ../../libraries/entropy.py:10525 ../../libraries/entropy.py:10570
+#: ../../libraries/entropy.py:10583 ../../libraries/entropy.py:10596
 msgid "Cannot properly configure the kernel"
 msgstr ""
 
-#: ../../libraries/entropy.py:10412 ../../libraries/entropy.py:10426
-#: ../../libraries/entropy.py:10470 ../../libraries/entropy.py:10487
-#: ../../libraries/entropy.py:10515 ../../libraries/entropy.py:10528
-#: ../../libraries/entropy.py:10541
+#: ../../libraries/entropy.py:10468 ../../libraries/entropy.py:10482
+#: ../../libraries/entropy.py:10526 ../../libraries/entropy.py:10543
+#: ../../libraries/entropy.py:10571 ../../libraries/entropy.py:10584
+#: ../../libraries/entropy.py:10597
 msgid "Defaulting to"
 msgstr ""
 
-#: ../../libraries/entropy.py:10424
+#: ../../libraries/entropy.py:10480
 #, fuzzy
 msgid "Cannot find grub"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:10466
+#: ../../libraries/entropy.py:10522
 msgid "cannot match device"
 msgstr ""
 
-#: ../../libraries/entropy.py:10468
+#: ../../libraries/entropy.py:10524
 msgid "with a grub one"
 msgstr ""
 
-#: ../../libraries/entropy.py:10484
+#: ../../libraries/entropy.py:10540
 msgid "grub translation not supported for"
 msgstr ""
 
-#: ../../libraries/entropy.py:10486
+#: ../../libraries/entropy.py:10542
 msgid "Cannot properly configure grub.conf"
 msgstr ""
 
-#: ../../libraries/entropy.py:10513
+#: ../../libraries/entropy.py:10569
 msgid "cannot match grub device with a Linux one"
 msgstr ""
 
-#: ../../libraries/entropy.py:10526
+#: ../../libraries/entropy.py:10582
 #, fuzzy
 msgid "cannot find generated device.map"
 msgstr "Opdater som afhængighed"
 
-#: ../../libraries/entropy.py:10539
+#: ../../libraries/entropy.py:10595
 msgid "cannot run df /boot"
 msgstr ""
 
-#: ../../libraries/entropy.py:10963
+#: ../../libraries/entropy.py:11019
 msgid "Not prepared yet"
 msgstr ""
 
-#: ../../libraries/entropy.py:10988
+#: ../../libraries/entropy.py:11044
 msgid "A valid EquoInterface instance or subclass is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:11189
+#: ../../libraries/entropy.py:11245
 #, fuzzy
 msgid "Warning"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:11191
+#: ../../libraries/entropy.py:11247
 #, fuzzy
 msgid "advisory broken"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:11461 ../../libraries/entropy.py:11476
-#: ../../libraries/entropy.py:11505 ../../libraries/entropy.py:11507
-#: ../../libraries/entropy.py:11526 ../../libraries/entropy.py:11536
-#: ../../libraries/entropy.py:11548 ../../libraries/entropy.py:11562
-#: ../../libraries/entropy.py:11572 ../../libraries/entropy.py:11582
-#: ../../libraries/entropy.py:11592 ../../libraries/entropy.py:11613
-#: ../../libraries/entropy.py:11623 ../../spritz/src/spritz.py:440
+#: ../../libraries/entropy.py:11517 ../../libraries/entropy.py:11532
+#: ../../libraries/entropy.py:11561 ../../libraries/entropy.py:11563
+#: ../../libraries/entropy.py:11582 ../../libraries/entropy.py:11592
+#: ../../libraries/entropy.py:11604 ../../libraries/entropy.py:11618
+#: ../../libraries/entropy.py:11628 ../../libraries/entropy.py:11638
+#: ../../libraries/entropy.py:11648 ../../libraries/entropy.py:11669
+#: ../../libraries/entropy.py:11679 ../../spritz/src/spritz.py:439
 msgid "Security Advisories"
 msgstr ""
 
-#: ../../libraries/entropy.py:11461
+#: ../../libraries/entropy.py:11517
 msgid "testing service connection"
 msgstr ""
 
-#: ../../libraries/entropy.py:11476
+#: ../../libraries/entropy.py:11532
 msgid "getting latest GLSAs"
 msgstr ""
 
-#: ../../libraries/entropy.py:11505
+#: ../../libraries/entropy.py:11561
 msgid "updated successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:11507
+#: ../../libraries/entropy.py:11563
 #, fuzzy
 msgid "already up to date"
 msgstr "Slettet"
 
-#: ../../libraries/entropy.py:11526
+#: ../../libraries/entropy.py:11582
 #, fuzzy
 msgid "unable to download the package, sorry"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:11536
+#: ../../libraries/entropy.py:11592
 msgid "Verifying checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:11548
+#: ../../libraries/entropy.py:11604
 msgid "cannot download the checksum, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11562
+#: ../../libraries/entropy.py:11618
 msgid "cannot open packages, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11572
+#: ../../libraries/entropy.py:11628
 #, fuzzy
 msgid "cannot read the checksum, sorry"
 msgstr "Kan ikke læse %s attributen"
 
-#: ../../libraries/entropy.py:11582
+#: ../../libraries/entropy.py:11638
 msgid "digest verification failed, sorry"
 msgstr ""
 
-#: ../../libraries/entropy.py:11592
+#: ../../libraries/entropy.py:11648
 msgid "verification Successful"
 msgstr ""
 
-#: ../../libraries/entropy.py:11600
+#: ../../libraries/entropy.py:11656
 msgid "Return status not valid"
 msgstr ""
 
-#: ../../libraries/entropy.py:11613
+#: ../../libraries/entropy.py:11669
 msgid "digest verification failed, try again later"
 msgstr ""
 
-#: ../../libraries/entropy.py:11623
+#: ../../libraries/entropy.py:11679
 #, fuzzy
 msgid "installing"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:11654
+#: ../../libraries/entropy.py:11710
 msgid "Invalid backend"
 msgstr ""
 
-#: ../../libraries/entropy.py:12082 ../../libraries/entropy.py:27245
-#: ../../libraries/entropy.py:27396 ../../libraries/entropy.py:27491
-#: ../../libraries/entropy.py:28692
+#: ../../libraries/entropy.py:12138 ../../libraries/entropy.py:27524
+#: ../../libraries/entropy.py:27675 ../../libraries/entropy.py:27770
+#: ../../libraries/entropy.py:28971
 #, fuzzy
 msgid "error"
 msgstr "Fejl"
 
-#: ../../libraries/entropy.py:12084 ../../server/server_reagent.py:87
+#: ../../libraries/entropy.py:12140 ../../server/server_reagent.py:87
 #: ../../server/server_reagent.py:99
 msgid "not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:12477
+#: ../../libraries/entropy.py:12533
 #, fuzzy
 msgid "Error calculating dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:12542
+#: ../../libraries/entropy.py:12598
 msgid "missing right parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy.py:12608
+#: ../../libraries/entropy.py:12664
 msgid "missing atom list in"
 msgstr ""
 
-#: ../../libraries/entropy.py:12611
+#: ../../libraries/entropy.py:12667
 msgid "Conditional without target in"
 msgstr ""
 
-#: ../../libraries/entropy.py:12641
+#: ../../libraries/entropy.py:12697
 msgid "Conditional with no target"
 msgstr ""
 
-#: ../../libraries/entropy.py:12646
+#: ../../libraries/entropy.py:12702
 msgid "Empty target in string"
 msgstr ""
 
-#: ../../libraries/entropy.py:12646 ../../libraries/entropy.py:12655
+#: ../../libraries/entropy.py:12702 ../../libraries/entropy.py:12711
 #, fuzzy
 msgid "Deprecated"
 msgstr "Slettet"
 
-#: ../../libraries/entropy.py:12655
+#: ../../libraries/entropy.py:12711
 msgid "Nested use flags without parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy.py:12695
+#: ../../libraries/entropy.py:12751
 msgid "Conditional without flag"
 msgstr ""
 
-#: ../../libraries/entropy.py:12711
+#: ../../libraries/entropy.py:12767
 msgid "Conditional without parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy.py:13402
+#: ../../libraries/entropy.py:13458
 #, fuzzy
 msgid "Cannot bind the service"
 msgstr "Kan ikke læse %s attributen"
 
-#: ../../libraries/entropy.py:14969
+#: ../../libraries/entropy.py:15028
 msgid "Entropy ServerInterface must be run as root"
 msgstr ""
 
-#: ../../libraries/entropy.py:14998 ../../libraries/entropy.py:15137
+#: ../../libraries/entropy.py:15057 ../../libraries/entropy.py:15196
 #, fuzzy
 msgid "repository not configured"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:15004
+#: ../../libraries/entropy.py:15063
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr ""
 
-#: ../../libraries/entropy.py:15037
+#: ../../libraries/entropy.py:15096
 #, fuzzy
 msgid "migrating database path from"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:15039 ../../libraries/entropy.py:29731
+#: ../../libraries/entropy.py:15098 ../../libraries/entropy.py:30010
 #: ../../client/text_configuration.py:113
 msgid "to"
 msgstr ""
 
-#: ../../libraries/entropy.py:15160
+#: ../../libraries/entropy.py:15219
 msgid "Your default repository is not initialized"
 msgstr ""
 
-#: ../../libraries/entropy.py:15171
+#: ../../libraries/entropy.py:15230
 msgid "Do you want to initialize your default repository ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:15173
+#: ../../libraries/entropy.py:15232
 msgid "You have taken the risk to continue with an uninitialized repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:15193
+#: ../../libraries/entropy.py:15252
 #, fuzzy
 msgid "server-side repository"
 msgstr "Rediger Filkilder"
 
-#: ../../libraries/entropy.py:15195
+#: ../../libraries/entropy.py:15254
 #, fuzzy
 msgid "community repository"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:15196
+#: ../../libraries/entropy.py:15255
 msgid "Entropy Server Interface Instance on repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:15201
+#: ../../libraries/entropy.py:15260
 msgid "current branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:15203
+#: ../../libraries/entropy.py:15262
 msgid "type"
 msgstr ""
 
-#: ../../libraries/entropy.py:15212
+#: ../../libraries/entropy.py:15271
 #, fuzzy
 msgid "Currently configured repositories"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:15327
+#: ../../libraries/entropy.py:15386
 msgid "Entropy database is already locked by you :-)"
 msgstr ""
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy.py:15334
+#: ../../libraries/entropy.py:15393
 #, fuzzy
 msgid "Locking and Syncing Entropy database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:15346 ../../server/server_activator.py:315
+#: ../../libraries/entropy.py:15405 ../../server/server_activator.py:315
 msgid "Mirrors status table"
 msgstr ""
 
-#: ../../libraries/entropy.py:15355 ../../libraries/entropy.py:15358
+#: ../../libraries/entropy.py:15414 ../../libraries/entropy.py:15417
 #: ../../server/server_activator.py:321 ../../server/server_activator.py:325
 msgid "Unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:15357 ../../libraries/entropy.py:15360
+#: ../../libraries/entropy.py:15416 ../../libraries/entropy.py:15419
 #: ../../server/server_activator.py:319 ../../server/server_activator.py:323
 msgid "Locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:15366 ../../libraries/entropy.py:15473
+#: ../../libraries/entropy.py:15425 ../../libraries/entropy.py:15532
 #, fuzzy
 msgid "database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:15368 ../../libraries/entropy.py:16957
-#: ../../libraries/entropy.py:27687 ../../libraries/entropy.py:28003
+#: ../../libraries/entropy.py:15427 ../../libraries/entropy.py:17016
+#: ../../libraries/entropy.py:27966 ../../libraries/entropy.py:28282
 #: ../../spritz/src/dialogs.py:2125
 #, fuzzy
 msgid "download"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:15377
+#: ../../libraries/entropy.py:15436
 msgid "cannot lock mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:15460
+#: ../../libraries/entropy.py:15519
 msgid ""
 "Entropy database is probably empty. If you don't agree with what I'm saying, "
 "then it's probably corrupted! I won't stop you here btw..."
 msgstr ""
 
-#: ../../libraries/entropy.py:15474
+#: ../../libraries/entropy.py:15533
 #, fuzzy
 msgid "indexing database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:15511
+#: ../../libraries/entropy.py:15570
 msgid "Checking"
 msgstr ""
 
-#: ../../libraries/entropy.py:15539
+#: ../../libraries/entropy.py:15598
 #, fuzzy
 msgid "Running dependencies test"
 msgstr "Sletter som afhængighed"
 
-#: ../../libraries/entropy.py:15567 ../../client/text_ui.py:1183
+#: ../../libraries/entropy.py:15626 ../../client/text_ui.py:1189
 msgid "These are the dependencies not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:15574 ../../client/text_ui.py:1187
+#: ../../libraries/entropy.py:15633 ../../client/text_ui.py:1193
 #, fuzzy
 msgid "Needed by"
 msgstr "behøvet af %s"
 
-#: ../../libraries/entropy.py:15591
+#: ../../libraries/entropy.py:15650
 msgid "by repo"
 msgstr ""
 
-#: ../../libraries/entropy.py:15598
+#: ../../libraries/entropy.py:15657
 msgid "Every dependency is satisfied. It's all fine."
 msgstr ""
 
-#: ../../libraries/entropy.py:15620 ../../client/text_ui.py:1233
+#: ../../libraries/entropy.py:15679 ../../client/text_ui.py:1239
 msgid "System is healthy"
 msgstr ""
 
-#: ../../libraries/entropy.py:15629
+#: ../../libraries/entropy.py:15688
 msgid "Matching libraries with Spm"
 msgstr ""
 
-#: ../../libraries/entropy.py:15638 ../../libraries/entropy.py:21965
+#: ../../libraries/entropy.py:15697 ../../libraries/entropy.py:22244
 msgid "Scanning"
 msgstr ""
 
-#: ../../libraries/entropy.py:15650
+#: ../../libraries/entropy.py:15709
 #, fuzzy
 msgid "These are the matched packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:15666
+#: ../../libraries/entropy.py:15725
 #, fuzzy
 msgid "No matched packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:15688
+#: ../../libraries/entropy.py:15747
 msgid "Initializing an empty database file with Entropy structure"
 msgstr ""
 
-#: ../../libraries/entropy.py:15700
+#: ../../libraries/entropy.py:15759
 #, fuzzy
 msgid "Entropy database file"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:15700
+#: ../../libraries/entropy.py:15759
 msgid "successfully initialized"
 msgstr ""
 
-#: ../../libraries/entropy.py:15716
+#: ../../libraries/entropy.py:15775
 msgid "You cannot switch packages from/to your system database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15732
+#: ../../libraries/entropy.py:15791
 #, fuzzy
 msgid "Preparing to move selected packages to"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:15734
+#: ../../libraries/entropy.py:15793
 #, fuzzy
 msgid "Preparing to copy selected packages to"
 msgstr "Vis Installerede Pakker"
 
 #. note
-#: ../../libraries/entropy.py:15746 ../../libraries/entropy.py:24794
+#: ../../libraries/entropy.py:15805 ../../libraries/entropy.py:25073
 #: ../../spritz/src/dialogs.py:731 ../../spritz/src/dialogs.py:3212
 #: ../../spritz/src/spritz.glade.h:107
 msgid "Note"
 msgstr ""
 
-#: ../../libraries/entropy.py:15747
+#: ../../libraries/entropy.py:15806
 msgid ""
 "all the old packages with conflicting scope will be removed from the "
 "destination repo unless injected"
 msgstr ""
 
 #. ask to continue
-#: ../../libraries/entropy.py:15771 ../../libraries/entropy.py:16731
-#: ../../libraries/entropy.py:16968 ../../libraries/entropy.py:28883
+#: ../../libraries/entropy.py:15830 ../../libraries/entropy.py:16790
+#: ../../libraries/entropy.py:17027 ../../libraries/entropy.py:29162
 #: ../../server/server_reagent.py:336 ../../server/server_reagent.py:379
 #: ../../server/server_reagent.py:424
 msgid "Would you like to continue ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:15787
+#: ../../libraries/entropy.py:15846
 #, fuzzy
 msgid "switching"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy.py:15805
+#: ../../libraries/entropy.py:15864
 msgid "cannot switch, package not found, skipping"
 msgstr ""
 
-#: ../../libraries/entropy.py:15831
+#: ../../libraries/entropy.py:15890
 #, fuzzy
 msgid "moving file"
 msgstr "Forkert fil type (%s)"
 
-#: ../../libraries/entropy.py:15847
+#: ../../libraries/entropy.py:15906
 msgid "loading data from source database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15864
+#: ../../libraries/entropy.py:15923
 msgid "injecting data to destination database"
 msgstr ""
 
-#: ../../libraries/entropy.py:15882
+#: ../../libraries/entropy.py:15941
 #, fuzzy
 msgid "removing entry from source database"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:15900
+#: ../../libraries/entropy.py:15959
 msgid "successfully handled atom"
 msgstr ""
 
-#: ../../libraries/entropy.py:15925 ../../libraries/entropy.py:16016
+#: ../../libraries/entropy.py:15984 ../../libraries/entropy.py:16075
 #, fuzzy
 msgid "adding package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:15963 ../../libraries/entropy.py:16607
+#: ../../libraries/entropy.py:16022 ../../libraries/entropy.py:16666
 #, fuzzy
 msgid "added package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:15965
+#: ../../libraries/entropy.py:16024
 msgid "rev"
 msgstr ""
 
-#: ../../libraries/entropy.py:16037
+#: ../../libraries/entropy.py:16096
 msgid "Exception caught, running injection and RDEPEND check before raising"
 msgstr ""
 
-#: ../../libraries/entropy.py:16098
+#: ../../libraries/entropy.py:16157
 #, fuzzy
 msgid "Injecting entropy metadata into built packages"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:16113
+#: ../../libraries/entropy.py:16172
 #, fuzzy
 msgid "injecting entropy metadata"
 msgstr "Oprydning af alt Yum metadat"
 
-#: ../../libraries/entropy.py:16133
+#: ../../libraries/entropy.py:16192
 #, fuzzy
 msgid "injection complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:16157
+#: ../../libraries/entropy.py:16216
 #, fuzzy
 msgid "removing package"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:16169 ../../libraries/entropy.py:28358
+#: ../../libraries/entropy.py:16228 ../../libraries/entropy.py:28637
 #, fuzzy
 msgid "removal complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:16290
+#: ../../libraries/entropy.py:16349
 #, fuzzy
 msgid "invalid database revision"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:16292
+#: ../../libraries/entropy.py:16351
 msgid "defaulting to 0"
 msgstr ""
 
-#: ../../libraries/entropy.py:16445
+#: ../../libraries/entropy.py:16504
 #, fuzzy
 msgid "Initializing Entropy database"
 msgstr "Oprydning af alt Yum metadat"
 
-#: ../../libraries/entropy.py:16478 ../../libraries/entropy.py:29466
-#: ../../libraries/entropy.py:29484 ../../libraries/entropy.py:29674
+#: ../../libraries/entropy.py:16537 ../../libraries/entropy.py:29745
+#: ../../libraries/entropy.py:29763 ../../libraries/entropy.py:29953
 msgid "WARNING"
 msgstr ""
 
-#: ../../libraries/entropy.py:16479
+#: ../../libraries/entropy.py:16538
 msgid "database already exists"
 msgstr ""
 
-#: ../../libraries/entropy.py:16489
+#: ../../libraries/entropy.py:16548
 #, fuzzy
 msgid "Do you want to continue ?"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:16508
+#: ../../libraries/entropy.py:16567
 msgid "Dumping current revisions to file"
 msgstr ""
 
-#: ../../libraries/entropy.py:16525
+#: ../../libraries/entropy.py:16584
 msgid "Dumping current 'treeupdates' actions to file"
 msgstr ""
 
-#: ../../libraries/entropy.py:16537
+#: ../../libraries/entropy.py:16596
 msgid ""
 "Would you like to sync packages first (important if you don't have them "
 "synced) ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:16555
+#: ../../libraries/entropy.py:16614
 msgid "Reinitializing Entropy database for branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:16557
+#: ../../libraries/entropy.py:16616
 #, fuzzy
 msgid "using Packages in the repository"
 msgstr "Behander pakker i køen"
 
-#: ../../libraries/entropy.py:16574
+#: ../../libraries/entropy.py:16633
 #, fuzzy
 msgid "analyzing"
 msgstr "Installerer"
 
-#: ../../libraries/entropy.py:16609 ../../client/text_query.py:1063
-#: ../../client/text_query.py:1065
+#: ../../libraries/entropy.py:16668 ../../client/text_query.py:1062
+#: ../../client/text_query.py:1064
 msgid "revision"
 msgstr ""
 
-#: ../../libraries/entropy.py:16643
+#: ../../libraries/entropy.py:16702
 msgid "cannot match"
 msgstr ""
 
-#: ../../libraries/entropy.py:16695 ../../libraries/entropy.py:16900
+#: ../../libraries/entropy.py:16754 ../../libraries/entropy.py:16959
 #, fuzzy
 msgid "Integrity verification of the selected packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:16707 ../../libraries/entropy.py:16912
+#: ../../libraries/entropy.py:16766 ../../libraries/entropy.py:16971
 msgid "All the packages in the Entropy Packages repository will be checked."
 msgstr ""
 
-#: ../../libraries/entropy.py:16713
+#: ../../libraries/entropy.py:16772
 #, fuzzy
 msgid "This is the list of the packages that would be checked"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:16745
+#: ../../libraries/entropy.py:16804
 #, fuzzy
 msgid "Working on mirror"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:16765
+#: ../../libraries/entropy.py:16824
 msgid "checking hash"
 msgstr ""
 
-#: ../../libraries/entropy.py:16781 ../../libraries/entropy.py:16796
+#: ../../libraries/entropy.py:16840 ../../libraries/entropy.py:16855
 msgid "digest verification of"
 msgstr ""
 
-#: ../../libraries/entropy.py:16798
+#: ../../libraries/entropy.py:16857
 msgid "failed for unknown reasons"
 msgstr ""
 
-#: ../../libraries/entropy.py:16813 ../../libraries/entropy.py:17074
-#: ../../libraries/entropy.py:26456 ../../libraries/entropy.py:26475
-#: ../../libraries/entropy.py:26509 ../../libraries/entropy.py:26524
-#: ../../libraries/entropy.py:26543
+#: ../../libraries/entropy.py:16872 ../../libraries/entropy.py:17133
+#: ../../libraries/entropy.py:26735 ../../libraries/entropy.py:26754
+#: ../../libraries/entropy.py:26788 ../../libraries/entropy.py:26803
+#: ../../libraries/entropy.py:26822
 #, fuzzy
 msgid "package"
 msgstr "Pakker."
 
-#: ../../libraries/entropy.py:16815
+#: ../../libraries/entropy.py:16874
 msgid "NOT healthy"
 msgstr ""
 
-#: ../../libraries/entropy.py:16827 ../../libraries/entropy.py:17086
+#: ../../libraries/entropy.py:16886 ../../libraries/entropy.py:17145
 #, fuzzy
 msgid "This is the list of broken packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:16852 ../../server/server_reagent.py:271
+#: ../../libraries/entropy.py:16911 ../../server/server_reagent.py:271
 msgid "Statistics"
 msgstr ""
 
-#: ../../libraries/entropy.py:16861 ../../libraries/entropy.py:17112
+#: ../../libraries/entropy.py:16920 ../../libraries/entropy.py:17171
 #, fuzzy
 msgid "Number of checked packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:16871 ../../libraries/entropy.py:17122
+#: ../../libraries/entropy.py:16930 ../../libraries/entropy.py:17181
 #, fuzzy
 msgid "Number of healthy packages"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy.py:16881 ../../libraries/entropy.py:17132
+#: ../../libraries/entropy.py:16940 ../../libraries/entropy.py:17191
 #, fuzzy
 msgid "Number of broken packages"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../libraries/entropy.py:16933
+#: ../../libraries/entropy.py:16992
 #, fuzzy
 msgid "available"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:16946
+#: ../../libraries/entropy.py:17005
 msgid "upload/ignored"
 msgstr ""
 
-#: ../../libraries/entropy.py:16981
+#: ../../libraries/entropy.py:17040
 msgid "Starting to download missing files"
 msgstr ""
 
-#: ../../libraries/entropy.py:16991
+#: ../../libraries/entropy.py:17050
 msgid "Trying to search missing or broken files on another mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:17011
+#: ../../libraries/entropy.py:17070
 msgid "All the binary packages have been downloaded successfully."
 msgstr ""
 
-#: ../../libraries/entropy.py:17019
+#: ../../libraries/entropy.py:17078
 #, fuzzy
 msgid "These are the packages that cannot be found online"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:17035
+#: ../../libraries/entropy.py:17094
 msgid "They won't be checked"
 msgstr ""
 
-#: ../../libraries/entropy.py:17054
+#: ../../libraries/entropy.py:17113
 msgid "checking hash of"
 msgstr ""
 
-#: ../../libraries/entropy.py:17076
+#: ../../libraries/entropy.py:17135
 msgid "is corrupted, stored checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:17142
+#: ../../libraries/entropy.py:17201
 #, fuzzy
 msgid "Number of downloaded packages"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:17152
+#: ../../libraries/entropy.py:17211
 #, fuzzy
 msgid "Number of failed downloads"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy.py:17171
+#: ../../libraries/entropy.py:17230
 #, fuzzy
 msgid "Please setup your branch to"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:17171
+#: ../../libraries/entropy.py:17230
 #, fuzzy
 msgid "and retry"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:17180
+#: ../../libraries/entropy.py:17239
 #, fuzzy
 msgid "Moving database (if not exists)"
 msgstr "I_nformation"
 
-#: ../../libraries/entropy.py:17192
+#: ../../libraries/entropy.py:17251
 #, fuzzy
 msgid "Switching packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:17218
+#: ../../libraries/entropy.py:17277
 msgid "Ignoring"
 msgstr ""
 
-#: ../../libraries/entropy.py:17220
+#: ../../libraries/entropy.py:17279
 msgid "already in branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:17232
+#: ../../libraries/entropy.py:17291
 #, fuzzy
 msgid "configuring package information"
 msgstr "I_nformation"
 
-#: ../../libraries/entropy.py:17259
+#: ../../libraries/entropy.py:17318
 #, fuzzy
 msgid "migration loop completed"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:17289
+#: ../../libraries/entropy.py:17348
 #, fuzzy
 msgid "not connected to database"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:17306 ../../libraries/entropy.py:19009
+#: ../../libraries/entropy.py:17365 ../../libraries/entropy.py:19074
 msgid "method not implemented"
 msgstr ""
 
-#: ../../libraries/entropy.py:17313
+#: ../../libraries/entropy.py:17372
 #, fuzzy
 msgid "no connection data"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:17505
+#: ../../libraries/entropy.py:17566
 msgid "not a valid directory path"
 msgstr ""
 
-#: ../../libraries/entropy.py:18995 ../../libraries/entropy.py:19006
+#: ../../libraries/entropy.py:19060 ../../libraries/entropy.py:19071
 msgid "not logged in"
 msgstr ""
 
-#: ../../libraries/entropy.py:19002
+#: ../../libraries/entropy.py:19067
 #, fuzzy
 msgid "no login data"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:19144
+#: ../../libraries/entropy.py:19412
 #, fuzzy
 msgid "no username specified"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:19146
+#: ../../libraries/entropy.py:19414
 #, fuzzy
 msgid "no password specified"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:19149
+#: ../../libraries/entropy.py:19417
 msgid "empty password"
 msgstr ""
 
-#: ../../libraries/entropy.py:19151
+#: ../../libraries/entropy.py:19419
 #, fuzzy
 msgid "empty username"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:19156
+#: ../../libraries/entropy.py:19424
 msgid "user not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:19160
+#: ../../libraries/entropy.py:19428
 msgid "you need to login on the website to update your password format"
 msgstr ""
 
-#: ../../libraries/entropy.py:19166
+#: ../../libraries/entropy.py:19434
 msgid "wrong password"
 msgstr ""
 
-#: ../../libraries/entropy.py:19170
+#: ../../libraries/entropy.py:19438
 msgid "user inactive"
 msgstr ""
 
-#: ../../libraries/entropy.py:19174
+#: ../../libraries/entropy.py:19442
 msgid "user banned"
 msgstr ""
 
-#: ../../libraries/entropy.py:19960
+#: ../../libraries/entropy.py:20239
 msgid "database does not exist. Locking services for it"
 msgstr ""
 
-#: ../../libraries/entropy.py:19978
+#: ../../libraries/entropy.py:20257
 msgid "database got locked. Locking services for it"
 msgstr ""
 
-#: ../../libraries/entropy.py:19992
+#: ../../libraries/entropy.py:20271
 msgid "unlocking and indexing database"
 msgstr ""
 
-#: ../../libraries/entropy.py:19993
+#: ../../libraries/entropy.py:20272
 msgid "hash"
 msgstr ""
 
-#: ../../libraries/entropy.py:20098
+#: ../../libraries/entropy.py:20377
 msgid "A valid SystemSocketClientInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:20111
+#: ../../libraries/entropy.py:20390
 msgid "feature not supported remotely"
 msgstr ""
 
-#: ../../libraries/entropy.py:20114 ../../libraries/entropy.py:20131
-#: ../../libraries/entropy.py:20149 ../../libraries/entropy.py:20165
-#: ../../libraries/entropy.py:20202
+#: ../../libraries/entropy.py:20393 ../../libraries/entropy.py:20410
+#: ../../libraries/entropy.py:20428 ../../libraries/entropy.py:20444
+#: ../../libraries/entropy.py:20481
 #, fuzzy
 msgid "repo"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:20116 ../../libraries/entropy.py:20133
-#: ../../libraries/entropy.py:20151 ../../libraries/entropy.py:20167
-#: ../../libraries/entropy.py:20204
+#: ../../libraries/entropy.py:20395 ../../libraries/entropy.py:20412
+#: ../../libraries/entropy.py:20430 ../../libraries/entropy.py:20446
+#: ../../libraries/entropy.py:20483
 #, fuzzy
 msgid "arch"
 msgstr "Ark."
 
-#: ../../libraries/entropy.py:20118 ../../libraries/entropy.py:20135
-#: ../../libraries/entropy.py:20153 ../../libraries/entropy.py:20169
-#: ../../libraries/entropy.py:20206
+#: ../../libraries/entropy.py:20397 ../../libraries/entropy.py:20414
+#: ../../libraries/entropy.py:20432 ../../libraries/entropy.py:20448
+#: ../../libraries/entropy.py:20485
 msgid "product"
 msgstr ""
 
-#: ../../libraries/entropy.py:20128
+#: ../../libraries/entropy.py:20407
 #, fuzzy
 msgid "service temporarily not available"
 msgstr "Tilgængelige"
 
 #. command failed
-#: ../../libraries/entropy.py:20146
+#: ../../libraries/entropy.py:20425
 #, fuzzy
 msgid "command failed"
 msgstr "Fi_ler"
 
-#: ../../libraries/entropy.py:20162
+#: ../../libraries/entropy.py:20441
 msgid "received wrong answer"
 msgstr ""
 
-#: ../../libraries/entropy.py:20199
+#: ../../libraries/entropy.py:20478
 msgid "cannot convert stream into object"
 msgstr ""
 
-#: ../../libraries/entropy.py:20615 ../../spritz/src/spritz.glade.h:202
+#: ../../libraries/entropy.py:20894 ../../spritz/src/spritz.glade.h:202
 msgid "User Generated Content"
 msgstr ""
 
-#: ../../libraries/entropy.py:20616
+#: ../../libraries/entropy.py:20895
 #, fuzzy
 msgid "sending file"
 msgstr "Forkert fil type (%s)"
 
-#: ../../libraries/entropy.py:20697
+#: ../../libraries/entropy.py:20976
 msgid "A valid EntropySocketClientCommands based class is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:20799
+#: ../../libraries/entropy.py:21078
 msgid "OpenSSL Python module not available, you need dev-python/pyopenssl"
 msgstr ""
 
-#: ../../libraries/entropy.py:20946
+#: ../../libraries/entropy.py:21225
 msgid "malformed EOS. receive aborted"
 msgstr ""
 
-#: ../../libraries/entropy.py:20982
+#: ../../libraries/entropy.py:21261
 msgid "malformed data. receive aborted"
 msgstr ""
 
-#: ../../libraries/entropy.py:20997
+#: ../../libraries/entropy.py:21276
 msgid "connection timed out while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:21012
+#: ../../libraries/entropy.py:21291
 msgid "connection error while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:21029
+#: ../../libraries/entropy.py:21308
 msgid "too many WantReadError error while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:21047
+#: ../../libraries/entropy.py:21326
 msgid "syscall error while receiving data"
 msgstr ""
 
-#: ../../libraries/entropy.py:21065
+#: ../../libraries/entropy.py:21344
 msgid "Reconnecting to socket"
 msgstr ""
 
-#: ../../libraries/entropy.py:21080
+#: ../../libraries/entropy.py:21359
 msgid "Not connected to host"
 msgstr ""
 
-#: ../../libraries/entropy.py:21105
+#: ../../libraries/entropy.py:21384
 msgid ""
 "Warning: you are using an emergency SSL interface, SSL certificate can't be "
 "verified. Please install dev-python/pyopenssl"
 msgstr ""
 
-#: ../../libraries/entropy.py:21116
+#: ../../libraries/entropy.py:21395
 msgid "Service issuer"
 msgstr ""
 
-#: ../../libraries/entropy.py:21130
+#: ../../libraries/entropy.py:21409
 #, fuzzy
 msgid "Cannot connect to"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:21130
+#: ../../libraries/entropy.py:21409
 msgid "on port"
 msgstr ""
 
-#: ../../libraries/entropy.py:21136
+#: ../../libraries/entropy.py:21415
 msgid "Successfully connected to host"
 msgstr ""
 
-#: ../../libraries/entropy.py:21160
+#: ../../libraries/entropy.py:21439
 msgid "Successfully disconnected from host"
 msgstr ""
 
-#: ../../libraries/entropy.py:21664
+#: ../../libraries/entropy.py:21943
 #, fuzzy
 msgid "Calculating updates..."
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:21722
+#: ../../libraries/entropy.py:22001
 #, fuzzy
 msgid "Running package injection"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:21729
+#: ../../libraries/entropy.py:22008
 #, fuzzy
 msgid "Running package removal"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:21743
+#: ../../libraries/entropy.py:22022
 #, fuzzy
 msgid "Running package quickpkg"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:21765
+#: ../../libraries/entropy.py:22044
 #, fuzzy
 msgid "Adding packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:21925
+#: ../../libraries/entropy.py:22204
 msgid ""
 "Opening database to let it run treeupdates. If you won't see anything below, "
 "it's just fine."
 msgstr ""
 
-#: ../../libraries/entropy.py:21983
+#: ../../libraries/entropy.py:22262
 msgid "Socket error, continuing..."
 msgstr ""
 
-#: ../../libraries/entropy.py:22047 ../../libraries/entropy.py:22060
+#: ../../libraries/entropy.py:22326 ../../libraries/entropy.py:22339
 #: ../../server/server_activator.py:362 ../../server/server_activator.py:376
 msgid "Remote Entropy Database Repository Status"
 msgstr ""
 
-#: ../../libraries/entropy.py:22051 ../../libraries/entropy.py:22062
+#: ../../libraries/entropy.py:22330 ../../libraries/entropy.py:22341
 #: ../../server/server_activator.py:364 ../../server/server_activator.py:378
 msgid "Host"
 msgstr ""
 
-#: ../../libraries/entropy.py:22052 ../../libraries/entropy.py:22063
+#: ../../libraries/entropy.py:22331 ../../libraries/entropy.py:22342
 #: ../../server/server_activator.py:365 ../../server/server_activator.py:379
 #, fuzzy
 msgid "Database revision"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:22054 ../../server/server_activator.py:368
+#: ../../libraries/entropy.py:22333 ../../server/server_activator.py:368
 #, fuzzy
 msgid "Database local revision currently at"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:24727
+#: ../../libraries/entropy.py:25006
 msgid "Get a list of remotely available commands"
 msgstr ""
 
-#: ../../libraries/entropy.py:24733
+#: ../../libraries/entropy.py:25012
 msgid "Get current queue content"
 msgstr ""
 
-#: ../../libraries/entropy.py:24735
+#: ../../libraries/entropy.py:25014
 #, fuzzy
 msgid "Extended results"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:24741
+#: ../../libraries/entropy.py:25020
 msgid "Get queue item using its queue unique identifier"
 msgstr ""
 
-#: ../../libraries/entropy.py:24742 ../../libraries/entropy.py:24748
-#: ../../libraries/entropy.py:24754 ../../libraries/entropy.py:24772
-#: ../../libraries/entropy.py:24779 ../../libraries/entropy.py:24780
-#: ../../libraries/entropy.py:24818
+#: ../../libraries/entropy.py:25021 ../../libraries/entropy.py:25027
+#: ../../libraries/entropy.py:25033 ../../libraries/entropy.py:25051
+#: ../../libraries/entropy.py:25058 ../../libraries/entropy.py:25059
+#: ../../libraries/entropy.py:25097
 #, fuzzy
 msgid "Queue Identifier"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:24747
+#: ../../libraries/entropy.py:25026
 msgid "Get queue stdout/stderr using its queue unique identifier"
 msgstr ""
 
-#: ../../libraries/entropy.py:24753
+#: ../../libraries/entropy.py:25032
 msgid "Get queued command result using its queue unique identifier"
 msgstr ""
 
-#: ../../libraries/entropy.py:24759
+#: ../../libraries/entropy.py:25038
 msgid "Remove queued commands using their queue unique identifiers"
 msgstr ""
 
-#: ../../libraries/entropy.py:24760
+#: ../../libraries/entropy.py:25039
 #, fuzzy
 msgid "Queue Identifiers"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:24765
+#: ../../libraries/entropy.py:25044
 msgid "Toggle queue pause (True/False)"
 msgstr ""
 
-#: ../../libraries/entropy.py:24766
+#: ../../libraries/entropy.py:25045
 #, fuzzy
 msgid "Pause or not"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../libraries/entropy.py:24771
+#: ../../libraries/entropy.py:25050
 msgid "Kill a running process through its queue id"
 msgstr ""
 
-#: ../../libraries/entropy.py:24777
+#: ../../libraries/entropy.py:25056
 msgid "Swap items in queue using their queue ids"
 msgstr ""
 
-#: ../../libraries/entropy.py:24786
+#: ../../libraries/entropy.py:25065
 msgid "Get pinboard content"
 msgstr ""
 
-#: ../../libraries/entropy.py:24792
+#: ../../libraries/entropy.py:25071
 msgid "Add item to pinboard"
 msgstr ""
 
-#: ../../libraries/entropy.py:24795
+#: ../../libraries/entropy.py:25074
 #, fuzzy
 msgid "Extended text"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:24801
+#: ../../libraries/entropy.py:25080
 msgid "Remove item from pinboard"
 msgstr ""
 
-#: ../../libraries/entropy.py:24802 ../../libraries/entropy.py:24809
+#: ../../libraries/entropy.py:25081 ../../libraries/entropy.py:25088
 #, fuzzy
 msgid "Pinboard identifiers"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:24807
+#: ../../libraries/entropy.py:25086
 msgid "Set pinboard items status (done/not done)"
 msgstr ""
 
-#: ../../libraries/entropy.py:24810
+#: ../../libraries/entropy.py:25089
 #, fuzzy
 msgid "Done status"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:24816
+#: ../../libraries/entropy.py:25095
 msgid "Write to a remote running command stdin"
 msgstr ""
 
-#: ../../libraries/entropy.py:24819
+#: ../../libraries/entropy.py:25098
 msgid "Write to stdout?"
 msgstr ""
 
-#: ../../libraries/entropy.py:24820 ../../libraries/entropy.py:25108
+#: ../../libraries/entropy.py:25099 ../../libraries/entropy.py:25387
 msgid "Text"
 msgstr ""
 
-#: ../../libraries/entropy.py:24875
+#: ../../libraries/entropy.py:25154
 #, fuzzy
 msgid "Update Spm Repository (emerge --sync)"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:24881
+#: ../../libraries/entropy.py:25160
 msgid "Compile specified atoms with specified parameters"
 msgstr ""
 
-#: ../../libraries/entropy.py:24883 ../../libraries/entropy.py:24901
-#: ../../libraries/entropy.py:24924 ../../libraries/entropy.py:24933
-#: ../../libraries/entropy.py:24941
+#: ../../libraries/entropy.py:25162 ../../libraries/entropy.py:25180
+#: ../../libraries/entropy.py:25203 ../../libraries/entropy.py:25212
+#: ../../libraries/entropy.py:25220
 #, fuzzy
 msgid "Atoms"
 msgstr "Fi_ler"
 
-#: ../../libraries/entropy.py:24884 ../../libraries/entropy.py:24902
+#: ../../libraries/entropy.py:25163 ../../libraries/entropy.py:25181
 #: ../../spritz/src/dialogs.py:3019 ../../spritz/src/dialogs.py:3063
 #, fuzzy
 msgid "Pretend"
 msgstr "Slettet"
 
-#: ../../libraries/entropy.py:24885 ../../spritz/src/dialogs.py:3064
+#: ../../libraries/entropy.py:25164 ../../spritz/src/dialogs.py:3064
 msgid "Oneshot"
 msgstr ""
 
-#: ../../libraries/entropy.py:24886 ../../libraries/entropy.py:24903
+#: ../../libraries/entropy.py:25165 ../../libraries/entropy.py:25182
 #: ../../spritz/src/dialogs.py:3020 ../../spritz/src/dialogs.py:3065
 #, fuzzy
 msgid "Verbose"
 msgstr "_Filspejlsliste"
 
-#: ../../libraries/entropy.py:24887 ../../libraries/entropy.py:24904
+#: ../../libraries/entropy.py:25166 ../../libraries/entropy.py:25183
 #: ../../spritz/src/dialogs.py:3021 ../../spritz/src/dialogs.py:3066
 msgid "No color"
 msgstr ""
 
-#: ../../libraries/entropy.py:24888 ../../spritz/src/dialogs.py:3067
+#: ../../libraries/entropy.py:25167 ../../spritz/src/dialogs.py:3067
 #, fuzzy
 msgid "Fetch only"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy.py:24889 ../../spritz/src/dialogs.py:3068
+#: ../../libraries/entropy.py:25168 ../../spritz/src/dialogs.py:3068
 msgid "Build only"
 msgstr ""
 
-#: ../../libraries/entropy.py:24890 ../../spritz/src/dialogs.py:3069
+#: ../../libraries/entropy.py:25169 ../../spritz/src/dialogs.py:3069
 #, fuzzy
 msgid "No dependencies"
 msgstr "Indstillinger"
 
-#: ../../libraries/entropy.py:24891
+#: ../../libraries/entropy.py:25170
 msgid "Custom USE"
 msgstr ""
 
-#: ../../libraries/entropy.py:24892 ../../spritz/src/dialogs.py:3071
+#: ../../libraries/entropy.py:25171 ../../spritz/src/dialogs.py:3071
 msgid "Custom LDFLAGS"
 msgstr ""
 
-#: ../../libraries/entropy.py:24893 ../../spritz/src/dialogs.py:3072
+#: ../../libraries/entropy.py:25172 ../../spritz/src/dialogs.py:3072
 msgid "Custom CFLAGS"
 msgstr ""
 
-#: ../../libraries/entropy.py:24899
+#: ../../libraries/entropy.py:25178
 msgid "Remove specified atoms with specified parameters"
 msgstr ""
 
-#: ../../libraries/entropy.py:24910
+#: ../../libraries/entropy.py:25189
 #, fuzzy
 msgid "Get SPM updates for the specified categories"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:24911 ../../libraries/entropy.py:24917
+#: ../../libraries/entropy.py:25190 ../../libraries/entropy.py:25196
 #: ../../spritz/src/views.py:44
 msgid "Categories"
 msgstr "Kategorier"
 
-#: ../../libraries/entropy.py:24916
+#: ../../libraries/entropy.py:25195
 #, fuzzy
 msgid "Get SPM installed packages for the specified categories"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:24922
+#: ../../libraries/entropy.py:25201
 #, fuzzy
 msgid "Enable USE flags for the specified atoms"
 msgstr "Ingen valgte pakker"
 
 #. print use flags
-#: ../../libraries/entropy.py:24925 ../../libraries/entropy.py:24934
-#: ../../client/text_query.py:1085 ../../spritz/src/dialogs.py:4162
+#: ../../libraries/entropy.py:25204 ../../libraries/entropy.py:25213
+#: ../../client/text_query.py:1084 ../../spritz/src/dialogs.py:4162
 msgid "USE flags"
 msgstr ""
 
-#: ../../libraries/entropy.py:24931
+#: ../../libraries/entropy.py:25210
 #, fuzzy
 msgid "Disable USE flags for the specified atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:24940
+#: ../../libraries/entropy.py:25219
 #, fuzzy
 msgid "Get info for the specified atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:24946
+#: ../../libraries/entropy.py:25225
 msgid "Run SPM info command"
 msgstr ""
 
-#: ../../libraries/entropy.py:24952
+#: ../../libraries/entropy.py:25231
 msgid "Run custom shell command"
 msgstr ""
 
 #. command col
-#: ../../libraries/entropy.py:24954 ../../spritz/src/dialogs.py:663
+#: ../../libraries/entropy.py:25233 ../../spritz/src/dialogs.py:663
 #: ../../spritz/src/dialogs.py:704
 msgid "Command"
 msgstr ""
 
-#: ../../libraries/entropy.py:24960
+#: ../../libraries/entropy.py:25239
 #, fuzzy
 msgid "Get Spm security updates information"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:24962
+#: ../../libraries/entropy.py:25241
 msgid "List type (affected,new,all)"
 msgstr ""
 
-#: ../../libraries/entropy.py:24968
+#: ../../libraries/entropy.py:25247
 #, fuzzy
 msgid "Get information about available Entropy repositories"
 msgstr "Pakke Beskrivelser"
 
-#: ../../libraries/entropy.py:24974
+#: ../../libraries/entropy.py:25253
 #, fuzzy
 msgid "Set default Entropy Server repository"
 msgstr "Rediger Filkilder"
 
 #. Setup reponame & repofile column's
-#: ../../libraries/entropy.py:24976 ../../libraries/entropy.py:24984
-#: ../../libraries/entropy.py:24993 ../../libraries/entropy.py:25011
-#: ../../libraries/entropy.py:25058 ../../libraries/entropy.py:25082
-#: ../../libraries/entropy.py:25090 ../../libraries/entropy.py:25097
-#: ../../libraries/entropy.py:25106 ../../spritz/src/views.py:1213
+#: ../../libraries/entropy.py:25255 ../../libraries/entropy.py:25263
+#: ../../libraries/entropy.py:25272 ../../libraries/entropy.py:25290
+#: ../../libraries/entropy.py:25337 ../../libraries/entropy.py:25361
+#: ../../libraries/entropy.py:25369 ../../libraries/entropy.py:25376
+#: ../../libraries/entropy.py:25385 ../../spritz/src/views.py:1213
 #, fuzzy
 msgid "Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:24982
+#: ../../libraries/entropy.py:25261
 #, fuzzy
 msgid "Get available packages inside the specified repository"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:24990
+#: ../../libraries/entropy.py:25269
 #, fuzzy
 msgid "Get idpackage metadata using its idpackage in the specified repository"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy.py:24992
+#: ../../libraries/entropy.py:25271
 #, fuzzy
 msgid "Package Identifier"
 msgstr "Pakke"
 
-#: ../../libraries/entropy.py:24999
+#: ../../libraries/entropy.py:25278
 msgid "Remove the specified Entropy package matches (idpackage,repoid)"
 msgstr ""
 
-#: ../../libraries/entropy.py:25001
+#: ../../libraries/entropy.py:25280
 #, fuzzy
 msgid "Matched atoms"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy.py:25007
+#: ../../libraries/entropy.py:25286
 msgid ""
 "Search Entropy packages using a defined set of search types in the specified "
 "repository"
 msgstr ""
 
-#: ../../libraries/entropy.py:25009 ../../spritz/src/dialogs.py:3403
+#: ../../libraries/entropy.py:25288 ../../spritz/src/dialogs.py:3403
 #, fuzzy
 msgid "Search type"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:25010 ../../spritz/src/dialogs.py:3404
+#: ../../libraries/entropy.py:25289 ../../spritz/src/dialogs.py:3404
 #, fuzzy
 msgid "Search string"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:25017
+#: ../../libraries/entropy.py:25296
 msgid "Move or copy a package from a repository to another"
 msgstr ""
 
-#: ../../libraries/entropy.py:25019
+#: ../../libraries/entropy.py:25298
 #, fuzzy
 msgid "Package identifiers"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:25020
+#: ../../libraries/entropy.py:25299
 #, fuzzy
 msgid "From repository"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:25021 ../../spritz/src/dialogs.py:1848
+#: ../../libraries/entropy.py:25300 ../../spritz/src/dialogs.py:1848
 #, fuzzy
 msgid "To repository"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:25022
+#: ../../libraries/entropy.py:25301
 msgid "Copy instead of move?"
 msgstr ""
 
-#: ../../libraries/entropy.py:25028
+#: ../../libraries/entropy.py:25307
 msgid ""
 "Scan Spm package changes and retrieve a list of action that should be run on "
 "the repositories"
 msgstr ""
 
-#: ../../libraries/entropy.py:25034
+#: ../../libraries/entropy.py:25313
 #, fuzzy
 msgid "Run Entropy database updates"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:25036
+#: ../../libraries/entropy.py:25315
 msgid "Matches to add from Spm"
 msgstr ""
 
-#: ../../libraries/entropy.py:25037
+#: ../../libraries/entropy.py:25316
 #, fuzzy
 msgid "Matches to remove from repository database"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:25038
+#: ../../libraries/entropy.py:25317
 #, fuzzy
 msgid "Matches to inject on repository database"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:25044
+#: ../../libraries/entropy.py:25323
 #, fuzzy
 msgid "Run Entropy dependency test"
 msgstr "Sletter som afhængighed"
 
-#: ../../libraries/entropy.py:25050
+#: ../../libraries/entropy.py:25329
 msgid "Run Entropy library test"
 msgstr ""
 
-#: ../../libraries/entropy.py:25056
+#: ../../libraries/entropy.py:25335
 msgid "Run Entropy tree updates"
 msgstr ""
 
-#: ../../libraries/entropy.py:25064
+#: ../../libraries/entropy.py:25343
 msgid ""
 "Scan for Mirror updates and retrieve a list of action that should be run"
 msgstr ""
 
-#: ../../libraries/entropy.py:25066
+#: ../../libraries/entropy.py:25345
 #, fuzzy
 msgid "list of repository identifiers"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:25072
+#: ../../libraries/entropy.py:25351
 msgid "Run Mirror updates for the provided repositories and its data"
 msgstr ""
 
-#: ../../libraries/entropy.py:25074
+#: ../../libraries/entropy.py:25353
 #, fuzzy
 msgid "composed repository data"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:25080
+#: ../../libraries/entropy.py:25359
 msgid "Run Entropy packages digest verification test"
 msgstr ""
 
-#: ../../libraries/entropy.py:25083
+#: ../../libraries/entropy.py:25362
 #, fuzzy
 msgid "Check mode"
 msgstr "Henter : %s"
 
-#: ../../libraries/entropy.py:25089
+#: ../../libraries/entropy.py:25368
 #, fuzzy
 msgid "Get repository notice board"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:25095
+#: ../../libraries/entropy.py:25374
 #, fuzzy
 msgid "Remove notice board entry"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:25098
+#: ../../libraries/entropy.py:25377
 #, fuzzy
 msgid "Entry Identifiers"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:25104
+#: ../../libraries/entropy.py:25383
 msgid "Add notice board entry"
 msgstr ""
 
 #. title
 #. glsa title
-#: ../../libraries/entropy.py:25107 ../../client/text_repositories.py:213
+#: ../../libraries/entropy.py:25386 ../../client/text_repositories.py:213
 #: ../../client/text_repositories.py:245 ../../client/text_repositories.py:298
 #: ../../client/text_security.py:85 ../../client/text_ugc.py:358
 #: ../../client/text_ugc.py:542 ../../server/server_activator.py:139
@@ -2776,857 +2781,857 @@ msgstr ""
 msgid "Title"
 msgstr "_Filer"
 
-#: ../../libraries/entropy.py:25109
+#: ../../libraries/entropy.py:25388
 msgid "Notice link"
 msgstr ""
 
-#: ../../libraries/entropy.py:25240
+#: ../../libraries/entropy.py:25519
 msgid "A valid SystemManagerClientCommands class/subclass is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:25248
+#: ../../libraries/entropy.py:25527
 msgid "A valid SystemManagerMethodsInterface class/subclass is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:25283 ../../libraries/entropy.py:25285
-#: ../../libraries/entropy.py:25287
+#: ../../libraries/entropy.py:25562 ../../libraries/entropy.py:25564
+#: ../../libraries/entropy.py:25566
 #, fuzzy
 msgid "not a string"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:25283 ../../libraries/entropy.py:25285
-#: ../../libraries/entropy.py:25287 ../../libraries/entropy.py:25289
-#: ../../libraries/entropy.py:25291
+#: ../../libraries/entropy.py:25562 ../../libraries/entropy.py:25564
+#: ../../libraries/entropy.py:25566 ../../libraries/entropy.py:25568
+#: ../../libraries/entropy.py:25570
 msgid "Please use setup_connection() properly"
 msgstr ""
 
-#: ../../libraries/entropy.py:25289
+#: ../../libraries/entropy.py:25568
 msgid "not an int"
 msgstr ""
 
-#: ../../libraries/entropy.py:25291
+#: ../../libraries/entropy.py:25570
 #, fuzzy
 msgid "not a bool"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:25534
+#: ../../libraries/entropy.py:25813
 msgid "A valid UGCClientInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:25612
+#: ../../libraries/entropy.py:25891
 #, fuzzy
 msgid "Cannot setup cache directory"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:25614
+#: ../../libraries/entropy.py:25893
 msgid "Cannot write to cache directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:25620
+#: ../../libraries/entropy.py:25899
 #, fuzzy
 msgid "Cannot remove cache file"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy.py:25632
+#: ../../libraries/entropy.py:25911
 #, fuzzy
 msgid "Cannot write to cache file"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy.py:25795
+#: ../../libraries/entropy.py:26074
 msgid "A valid EquoInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:25810
+#: ../../libraries/entropy.py:26089
 #, fuzzy
 msgid "repository is not available"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy.py:25817
+#: ../../libraries/entropy.py:26096
 #, fuzzy
 msgid "repository metadata is malformed"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:25872 ../../libraries/entropy.py:25917
+#: ../../libraries/entropy.py:26151 ../../libraries/entropy.py:26196
 msgid "ok"
 msgstr ""
 
-#: ../../libraries/entropy.py:25876
+#: ../../libraries/entropy.py:26155
 msgid "repository does not support EAPI3"
 msgstr ""
 
-#: ../../libraries/entropy.py:25886 ../../spritz/src/dialogs.py:196
+#: ../../libraries/entropy.py:26165 ../../spritz/src/dialogs.py:196
 #: ../../spritz/src/spritz.glade.h:203
 #, fuzzy
 msgid "Username"
 msgstr "Filnavn"
 
-#: ../../libraries/entropy.py:25887 ../../spritz/src/spritz.glade.h:117
+#: ../../libraries/entropy.py:26166 ../../spritz/src/spritz.glade.h:117
 msgid "Password"
 msgstr ""
 
-#: ../../libraries/entropy.py:25890
+#: ../../libraries/entropy.py:26169
 #, fuzzy
 msgid "Please login against"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../libraries/entropy.py:25890 ../../server/server_reagent.py:78
+#: ../../libraries/entropy.py:26169 ../../server/server_reagent.py:78
 #: ../../server/server_reagent.py:81 ../../server/server_reagent.py:90
 #: ../../server/server_reagent.py:93 ../../server/server_reagent.py:119
 #, fuzzy
 msgid "repository"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:25895
+#: ../../libraries/entropy.py:26174
 #, fuzzy
 msgid "login abort"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:25900
+#: ../../libraries/entropy.py:26179
 #, fuzzy
 msgid "connection issues"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy.py:25906
+#: ../../libraries/entropy.py:26185
 msgid "Access denied. Login failed"
 msgstr ""
 
-#: ../../libraries/entropy.py:25913
+#: ../../libraries/entropy.py:26192
 msgid "Login successful. Do you want to save these credentials ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:26079
+#: ../../libraries/entropy.py:26358
 msgid "A valid ServerInterface based instance is needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:26086
+#: ../../libraries/entropy.py:26365
 msgid "Entropy Server Mirrors Interface loaded"
 msgstr ""
 
-#: ../../libraries/entropy.py:26093 ../../libraries/entropy.py:26124
+#: ../../libraries/entropy.py:26372 ../../libraries/entropy.py:26403
 #, fuzzy
 msgid "mirror"
 msgstr "_Filspejlsliste"
 
-#: ../../libraries/entropy.py:26117 ../../libraries/entropy.py:26193
+#: ../../libraries/entropy.py:26396 ../../libraries/entropy.py:26472
 msgid "unlocking"
 msgstr ""
 
-#: ../../libraries/entropy.py:26118 ../../libraries/entropy.py:26194
-#: ../../libraries/entropy.py:27418 ../../libraries/entropy.py:27438
+#: ../../libraries/entropy.py:26397 ../../libraries/entropy.py:26473
+#: ../../libraries/entropy.py:27697 ../../libraries/entropy.py:27717
 #, fuzzy
 msgid "locking"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:26141 ../../libraries/entropy.py:27419
+#: ../../libraries/entropy.py:26420 ../../libraries/entropy.py:27698
 msgid "mirror already locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:26154
+#: ../../libraries/entropy.py:26433
 msgid "mirror already unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:26200
+#: ../../libraries/entropy.py:26479
 msgid "mirror for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:26217
+#: ../../libraries/entropy.py:26496
 msgid "mirror already locked for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:26230
+#: ../../libraries/entropy.py:26509
 msgid "mirror already unlocked for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:26269
+#: ../../libraries/entropy.py:26548
 msgid "for download"
 msgstr ""
 
-#: ../../libraries/entropy.py:26279
+#: ../../libraries/entropy.py:26558
 msgid "mirror successfully locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:26293
+#: ../../libraries/entropy.py:26572
 msgid "mirror not locked"
 msgstr ""
 
-#: ../../libraries/entropy.py:26332
+#: ../../libraries/entropy.py:26611
 msgid "mirror successfully unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:26347
+#: ../../libraries/entropy.py:26626
 msgid "unlock error"
 msgstr ""
 
-#: ../../libraries/entropy.py:26349
+#: ../../libraries/entropy.py:26628
 msgid "mirror not unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:26420
+#: ../../libraries/entropy.py:26699
 #, fuzzy
 msgid "connecting to download package"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:26438
+#: ../../libraries/entropy.py:26717
 #, fuzzy
 msgid "downloading package"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:26477
+#: ../../libraries/entropy.py:26756
 #, fuzzy
 msgid "is not listed in the current repository database!!"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:26492
+#: ../../libraries/entropy.py:26771
 msgid "verifying checksum of package"
 msgstr ""
 
-#: ../../libraries/entropy.py:26511
+#: ../../libraries/entropy.py:26790
 msgid "downloaded successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:26526
+#: ../../libraries/entropy.py:26805
 msgid "checksum does not match. re-downloading..."
 msgstr ""
 
-#: ../../libraries/entropy.py:26545
+#: ../../libraries/entropy.py:26824
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr ""
 
-#: ../../libraries/entropy.py:26575
+#: ../../libraries/entropy.py:26854
 msgid "mirror doesn't have a valid directory structure"
 msgstr ""
 
-#: ../../libraries/entropy.py:26586
+#: ../../libraries/entropy.py:26865
 #, fuzzy
 msgid "Wrong database compression method passed"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:26607
+#: ../../libraries/entropy.py:26886
 msgid "mirror doesn't have a valid database revision file"
 msgstr ""
 
-#: ../../libraries/entropy.py:26665
+#: ../../libraries/entropy.py:26944
 #, fuzzy
 msgid "downloading notice board from mirrors to"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:26686
+#: ../../libraries/entropy.py:26965
 #, fuzzy
 msgid "notice board downloaded successfully from"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:26710
+#: ../../libraries/entropy.py:26989
 #, fuzzy
 msgid "uploading notice board from"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy.py:26733
+#: ../../libraries/entropy.py:27012
 msgid "notice board upload failed on"
 msgstr ""
 
-#: ../../libraries/entropy.py:26744
+#: ../../libraries/entropy.py:27023
 msgid "notice board upload success"
 msgstr ""
 
-#: ../../libraries/entropy.py:26973
+#: ../../libraries/entropy.py:27252
 msgid "uris must be a list instance"
 msgstr ""
 
-#: ../../libraries/entropy.py:26976
+#: ../../libraries/entropy.py:27255
 msgid "files_to_upload must be a list or dict instance"
 msgstr ""
 
-#: ../../libraries/entropy.py:27018
+#: ../../libraries/entropy.py:27297
 msgid "verifying upload (if supported)"
 msgstr ""
 
-#: ../../libraries/entropy.py:27039 ../../libraries/entropy.py:27055
-#: ../../libraries/entropy.py:27074 ../../libraries/entropy.py:27090
-#: ../../libraries/entropy.py:27106
+#: ../../libraries/entropy.py:27318 ../../libraries/entropy.py:27334
+#: ../../libraries/entropy.py:27353 ../../libraries/entropy.py:27369
+#: ../../libraries/entropy.py:27385
 #, fuzzy
 msgid "digest verification"
 msgstr "_Beskrivelse"
 
-#: ../../libraries/entropy.py:27057
+#: ../../libraries/entropy.py:27336
 msgid "file not found"
 msgstr ""
 
-#: ../../libraries/entropy.py:27076
+#: ../../libraries/entropy.py:27355
 msgid "so far, so good!"
 msgstr ""
 
-#: ../../libraries/entropy.py:27092
+#: ../../libraries/entropy.py:27371
 msgid "invalid checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:27108
+#: ../../libraries/entropy.py:27387
 msgid "unknown data returned"
 msgstr ""
 
-#: ../../libraries/entropy.py:27134
+#: ../../libraries/entropy.py:27413
 msgid "connecting to mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:27146
+#: ../../libraries/entropy.py:27425
 msgid "changing directory to"
 msgstr ""
 
-#: ../../libraries/entropy.py:27208
+#: ../../libraries/entropy.py:27487
 msgid "successful"
 msgstr ""
 
-#: ../../libraries/entropy.py:27225
+#: ../../libraries/entropy.py:27504
 msgid "failed, retrying"
 msgstr ""
 
-#: ../../libraries/entropy.py:27259
+#: ../../libraries/entropy.py:27538
 #, fuzzy
 msgid "not critical"
 msgstr "Installeret"
 
-#: ../../libraries/entropy.py:27261
+#: ../../libraries/entropy.py:27540
 msgid "continuing"
 msgstr ""
 
-#: ../../libraries/entropy.py:27288
+#: ../../libraries/entropy.py:27567
 msgid "preparing uncompressed database for the upload"
 msgstr ""
 
-#: ../../libraries/entropy.py:27295 ../../libraries/entropy.py:27319
-#: ../../libraries/entropy.py:27359
+#: ../../libraries/entropy.py:27574 ../../libraries/entropy.py:27598
+#: ../../libraries/entropy.py:27638
 msgid "database path"
 msgstr ""
 
-#: ../../libraries/entropy.py:27312
+#: ../../libraries/entropy.py:27591
 msgid "creating compressed database dump + checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:27325
+#: ../../libraries/entropy.py:27604
 msgid "dump"
 msgstr ""
 
-#: ../../libraries/entropy.py:27331
+#: ../../libraries/entropy.py:27610
 msgid "dump checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:27337 ../../libraries/entropy.py:27377
+#: ../../libraries/entropy.py:27616 ../../libraries/entropy.py:27656
 msgid "opener"
 msgstr ""
 
-#: ../../libraries/entropy.py:27351
+#: ../../libraries/entropy.py:27630
 msgid "compressing database + checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:27365
+#: ../../libraries/entropy.py:27644
 msgid "compressed database path"
 msgstr ""
 
-#: ../../libraries/entropy.py:27371
+#: ../../libraries/entropy.py:27650
 msgid "compressed checksum"
 msgstr ""
 
-#: ../../libraries/entropy.py:27394
+#: ../../libraries/entropy.py:27673
 msgid "cannot create mirror directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:27420
+#: ../../libraries/entropy.py:27699
 msgid "waiting up to 2 minutes before giving up"
 msgstr ""
 
-#: ../../libraries/entropy.py:27439
+#: ../../libraries/entropy.py:27718
 msgid "mirror unlocked"
 msgstr ""
 
-#: ../../libraries/entropy.py:27490
+#: ../../libraries/entropy.py:27769
 msgid "Troubles with treeupdates"
 msgstr ""
 
-#: ../../libraries/entropy.py:27493
+#: ../../libraries/entropy.py:27772
 #, fuzzy
 msgid "Bumping old data back"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:27531 ../../libraries/entropy.py:27672
+#: ../../libraries/entropy.py:27810 ../../libraries/entropy.py:27951
 #, fuzzy
 msgid "wrong database compression method passed"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:27552 ../../libraries/entropy.py:27989
+#: ../../libraries/entropy.py:27831 ../../libraries/entropy.py:28268
 #: ../../spritz/src/dialogs.py:2123
 msgid "upload"
 msgstr ""
 
-#: ../../libraries/entropy.py:27553
+#: ../../libraries/entropy.py:27832
 msgid "preparing to upload database to mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:27613 ../../libraries/entropy.py:27730
+#: ../../libraries/entropy.py:27892 ../../libraries/entropy.py:28009
 #, fuzzy
 msgid "errors"
 msgstr "_Filspejlsliste"
 
-#: ../../libraries/entropy.py:27614
+#: ../../libraries/entropy.py:27893
 msgid "failed to upload to mirror, not unlocking and continuing"
 msgstr ""
 
-#: ../../libraries/entropy.py:27623 ../../libraries/entropy.py:27740
-#: ../../libraries/entropy.py:28439 ../../libraries/entropy.py:28500
-#: ../../libraries/entropy.py:28924
+#: ../../libraries/entropy.py:27902 ../../libraries/entropy.py:28019
+#: ../../libraries/entropy.py:28718 ../../libraries/entropy.py:28779
+#: ../../libraries/entropy.py:29203
 #, fuzzy
 msgid "reason"
 msgstr "Filkilde"
 
-#: ../../libraries/entropy.py:27688
+#: ../../libraries/entropy.py:27967
 msgid "preparing to download database from mirror"
 msgstr ""
 
-#: ../../libraries/entropy.py:27697
+#: ../../libraries/entropy.py:27976
 #, fuzzy
 msgid "download path"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:27731
+#: ../../libraries/entropy.py:28010
 #, fuzzy
 msgid "failed to download from mirror"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:27831
+#: ../../libraries/entropy.py:28110
 msgid ""
 "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 
-#: ../../libraries/entropy.py:27832
+#: ../../libraries/entropy.py:28111
 msgid "try again later"
 msgstr ""
 
-#: ../../libraries/entropy.py:27843 ../../libraries/entropy.py:27859
-#: ../../libraries/entropy.py:27877 ../../libraries/entropy.py:27893
-#: ../../libraries/entropy.py:27907 ../../libraries/entropy.py:28356
-#: ../../libraries/entropy.py:28496 ../../libraries/entropy.py:28512
-#: ../../libraries/entropy.py:28532 ../../libraries/entropy.py:28556
-#: ../../libraries/entropy.py:28573 ../../libraries/entropy.py:28590
-#: ../../libraries/entropy.py:28625 ../../libraries/entropy.py:28670
-#: ../../libraries/entropy.py:28688 ../../libraries/entropy.py:28713
+#: ../../libraries/entropy.py:28122 ../../libraries/entropy.py:28138
+#: ../../libraries/entropy.py:28156 ../../libraries/entropy.py:28172
+#: ../../libraries/entropy.py:28186 ../../libraries/entropy.py:28635
+#: ../../libraries/entropy.py:28775 ../../libraries/entropy.py:28791
+#: ../../libraries/entropy.py:28811 ../../libraries/entropy.py:28835
+#: ../../libraries/entropy.py:28852 ../../libraries/entropy.py:28869
+#: ../../libraries/entropy.py:28904 ../../libraries/entropy.py:28949
+#: ../../libraries/entropy.py:28967 ../../libraries/entropy.py:28992
 msgid "sync"
 msgstr ""
 
 #. something short please
-#: ../../libraries/entropy.py:27844
+#: ../../libraries/entropy.py:28123
 #, fuzzy
 msgid "database already in sync"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:27860 ../../libraries/entropy.py:27894
+#: ../../libraries/entropy.py:28139 ../../libraries/entropy.py:28173
 msgid "database sync failed"
 msgstr ""
 
-#: ../../libraries/entropy.py:27861
+#: ../../libraries/entropy.py:28140
 #, fuzzy
 msgid "download issues"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:27878
+#: ../../libraries/entropy.py:28157
 #, fuzzy
 msgid "database sync forbidden"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:27879
+#: ../../libraries/entropy.py:28158
 msgid "dependencies_test() reported errors"
 msgstr ""
 
-#: ../../libraries/entropy.py:27895
+#: ../../libraries/entropy.py:28174
 msgid "upload issues"
 msgstr ""
 
-#: ../../libraries/entropy.py:27908
+#: ../../libraries/entropy.py:28187
 #, fuzzy
 msgid "database sync completed successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:27952
+#: ../../libraries/entropy.py:28231
 msgid "Local statistics"
 msgstr ""
 
-#: ../../libraries/entropy.py:27959
+#: ../../libraries/entropy.py:28238
 msgid "upload directory"
 msgstr ""
 
-#: ../../libraries/entropy.py:27961 ../../libraries/entropy.py:27972
+#: ../../libraries/entropy.py:28240 ../../libraries/entropy.py:28251
 #, fuzzy
 msgid "files ready"
 msgstr "Fi_ler"
 
-#: ../../libraries/entropy.py:27970
+#: ../../libraries/entropy.py:28249
 #, fuzzy
 msgid "packages directory"
 msgstr "Pakker."
 
-#: ../../libraries/entropy.py:28017
+#: ../../libraries/entropy.py:28296
 msgid "copy"
 msgstr ""
 
-#: ../../libraries/entropy.py:28042
+#: ../../libraries/entropy.py:28321
 #, fuzzy
 msgid "Packages to be removed"
 msgstr "Pakker til behandling"
 
-#: ../../libraries/entropy.py:28051
+#: ../../libraries/entropy.py:28330
 #, fuzzy
 msgid "Packages to be moved locally"
 msgstr "<b>Pakker Til Sletning</b>"
 
-#: ../../libraries/entropy.py:28060
+#: ../../libraries/entropy.py:28339
 #, fuzzy
 msgid "Packages to be uploaded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../libraries/entropy.py:28070
+#: ../../libraries/entropy.py:28349
 msgid "Total removal size"
 msgstr ""
 
-#: ../../libraries/entropy.py:28080
+#: ../../libraries/entropy.py:28359
 #, fuzzy
 msgid "Total upload size"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:28089
+#: ../../libraries/entropy.py:28368
 #, fuzzy
 msgid "Total download size"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy.py:28135
+#: ../../libraries/entropy.py:28414
 msgid "Remote statistics for"
 msgstr ""
 
-#: ../../libraries/entropy.py:28147
+#: ../../libraries/entropy.py:28426
 #, fuzzy
 msgid "remote packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:28149
+#: ../../libraries/entropy.py:28428
 #, fuzzy
 msgid "files stored"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:28156
+#: ../../libraries/entropy.py:28435
 #, fuzzy
 msgid "Calculating queues"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy.py:28339
+#: ../../libraries/entropy.py:28618
 #, fuzzy
 msgid "removing package+hash"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:28383
+#: ../../libraries/entropy.py:28662
 #, fuzzy
 msgid "copying file+hash to repository"
 msgstr "Kilde"
 
-#: ../../libraries/entropy.py:28437
+#: ../../libraries/entropy.py:28716
 #, fuzzy
 msgid "upload errors"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:28451
+#: ../../libraries/entropy.py:28730
 msgid "upload completed successfully"
 msgstr ""
 
-#: ../../libraries/entropy.py:28498
+#: ../../libraries/entropy.py:28777
 #, fuzzy
 msgid "download errors"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:28514
+#: ../../libraries/entropy.py:28793
 #, fuzzy
 msgid "download completed successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:28533
+#: ../../libraries/entropy.py:28812
 #, fuzzy
 msgid "starting packages sync"
 msgstr "Henter Pakker : %s"
 
-#: ../../libraries/entropy.py:28558
+#: ../../libraries/entropy.py:28837
 #, fuzzy
 msgid "packages sync"
 msgstr "Pakker."
 
-#: ../../libraries/entropy.py:28575
+#: ../../libraries/entropy.py:28854
 #, fuzzy
 msgid "socket error"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../libraries/entropy.py:28577
+#: ../../libraries/entropy.py:28856
 msgid "on"
 msgstr ""
 
-#: ../../libraries/entropy.py:28592
+#: ../../libraries/entropy.py:28871
 #, fuzzy
 msgid "nothing to do on"
 msgstr "Ingen pakker i køen"
 
-#: ../../libraries/entropy.py:28603
+#: ../../libraries/entropy.py:28882
 msgid "Expanding queues"
 msgstr ""
 
-#: ../../libraries/entropy.py:28627
+#: ../../libraries/entropy.py:28906
 msgid "nothing to sync for"
 msgstr ""
 
-#: ../../libraries/entropy.py:28643
+#: ../../libraries/entropy.py:28922
 msgid "Would you like to run the steps above ?"
 msgstr ""
 
-#: ../../libraries/entropy.py:28672
+#: ../../libraries/entropy.py:28951
 msgid "keyboard interrupt !"
 msgstr ""
 
-#: ../../libraries/entropy.py:28690
+#: ../../libraries/entropy.py:28969
 msgid "exception caught"
 msgstr ""
 
-#: ../../libraries/entropy.py:28715
+#: ../../libraries/entropy.py:28994
 msgid "at least one mirror has been sync'd properly, hooray!"
 msgstr ""
 
-#: ../../libraries/entropy.py:28795
+#: ../../libraries/entropy.py:29074
 msgid "tidy"
 msgstr ""
 
-#: ../../libraries/entropy.py:28797
+#: ../../libraries/entropy.py:29076
 #, fuzzy
 msgid "collecting expired packages"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy.py:28813
+#: ../../libraries/entropy.py:29092
 msgid ""
 "not the latest branch, skipping tidy for consistence. This branch entered "
 "the maintenance mode."
 msgstr ""
 
-#: ../../libraries/entropy.py:28825
+#: ../../libraries/entropy.py:29104
 msgid "collecting expired packages in the selected branches"
 msgstr ""
 
-#: ../../libraries/entropy.py:28850
+#: ../../libraries/entropy.py:29129
 msgid "nothing to remove on this branch"
 msgstr ""
 
-#: ../../libraries/entropy.py:28861
+#: ../../libraries/entropy.py:29140
 #, fuzzy
 msgid "these are the expired packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:28897
+#: ../../libraries/entropy.py:29176
 #, fuzzy
 msgid "removing packages remotely"
 msgstr "Behandler pakker for %s"
 
-#: ../../libraries/entropy.py:28922
+#: ../../libraries/entropy.py:29201
 #, fuzzy
 msgid "remove errors"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../libraries/entropy.py:28937
+#: ../../libraries/entropy.py:29216
 #, fuzzy
 msgid "removing packages locally"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy.py:28954
+#: ../../libraries/entropy.py:29233
 #, fuzzy
 msgid "removing"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:28998
+#: ../../libraries/entropy.py:29277
 msgid "valid database path needed"
 msgstr ""
 
-#: ../../libraries/entropy.py:29094
+#: ../../libraries/entropy.py:29373
 msgid "Mirrors have not been unlocked. Remember to sync them."
 msgstr ""
 
-#: ../../libraries/entropy.py:29181
+#: ../../libraries/entropy.py:29460
 msgid "can't do that on a readonly database"
 msgstr ""
 
-#: ../../libraries/entropy.py:29258 ../../libraries/entropy.py:29328
-#: ../../libraries/entropy.py:29693 ../../libraries/entropy.py:32996
-#: ../../libraries/entropy.py:33016 ../../client/text_rescue.py:72
+#: ../../libraries/entropy.py:29537 ../../libraries/entropy.py:29607
+#: ../../libraries/entropy.py:29972 ../../libraries/entropy.py:33275
+#: ../../libraries/entropy.py:33295 ../../client/text_rescue.py:72
 #: ../../client/text_rescue.py:224 ../../client/text_rescue.py:232
-#: ../../client/text_rescue.py:237 ../../client/text_ui.py:368
-#: ../../client/text_ui.py:928
+#: ../../client/text_rescue.py:237 ../../client/text_ui.py:371
+#: ../../client/text_ui.py:931
 msgid "ATTENTION"
 msgstr ""
 
-#: ../../libraries/entropy.py:29259
+#: ../../libraries/entropy.py:29538
 #, fuzzy
 msgid "forcing package updates"
 msgstr "Vis Pakker Opdateringer"
 
-#: ../../libraries/entropy.py:29260
+#: ../../libraries/entropy.py:29539
 #, fuzzy
 msgid "Syncing with"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:29329
+#: ../../libraries/entropy.py:29608
 #, fuzzy
 msgid "forcing packages metadata update"
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../libraries/entropy.py:29330
+#: ../../libraries/entropy.py:29609
 msgid "Updating system database using repository id"
 msgstr ""
 
-#: ../../libraries/entropy.py:29419 ../../libraries/entropy.py:29728
+#: ../../libraries/entropy.py:29698 ../../libraries/entropy.py:30007
 msgid "SPM"
 msgstr ""
 
-#: ../../libraries/entropy.py:29420
+#: ../../libraries/entropy.py:29699
 #, fuzzy
 msgid "Running fixpackages"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:29421
+#: ../../libraries/entropy.py:29700
 msgid "it could take a while"
 msgstr ""
 
-#: ../../libraries/entropy.py:29443
+#: ../../libraries/entropy.py:29722
 msgid "ENTROPY"
 msgstr ""
 
-#: ../../libraries/entropy.py:29444
+#: ../../libraries/entropy.py:29723
 #, fuzzy
 msgid "action"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:29467
+#: ../../libraries/entropy.py:29746
 msgid "Cannot complete quickpkg for atoms"
 msgstr ""
 
-#: ../../libraries/entropy.py:29469 ../../libraries/entropy.py:29677
+#: ../../libraries/entropy.py:29748 ../../libraries/entropy.py:29956
 msgid "do it manually"
 msgstr ""
 
-#: ../../libraries/entropy.py:29485
+#: ../../libraries/entropy.py:29764
 msgid "Cannot run SPM cleanup, error"
 msgstr ""
 
-#: ../../libraries/entropy.py:29536 ../../libraries/entropy.py:29609
+#: ../../libraries/entropy.py:29815 ../../libraries/entropy.py:29888
 msgid "INJECT"
 msgstr ""
 
-#: ../../libraries/entropy.py:29538 ../../libraries/entropy.py:29611
+#: ../../libraries/entropy.py:29817 ../../libraries/entropy.py:29890
 msgid "has been injected"
 msgstr ""
 
-#: ../../libraries/entropy.py:29539 ../../libraries/entropy.py:29612
+#: ../../libraries/entropy.py:29818 ../../libraries/entropy.py:29891
 msgid "You need to quickpkg it manually to update the embedded database"
 msgstr ""
 
-#: ../../libraries/entropy.py:29540 ../../libraries/entropy.py:29613
+#: ../../libraries/entropy.py:29819 ../../libraries/entropy.py:29892
 #, fuzzy
 msgid "Repository database will be updated anyway"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy.py:29659
+#: ../../libraries/entropy.py:29938
 #, fuzzy
 msgid "repackaging"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy.py:29675
+#: ../../libraries/entropy.py:29954
 msgid "Cannot complete quickpkg for atom"
 msgstr ""
 
-#: ../../libraries/entropy.py:29694
+#: ../../libraries/entropy.py:29973
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr ""
 
-#: ../../libraries/entropy.py:29695
+#: ../../libraries/entropy.py:29974
 msgid "Please update packages manually"
 msgstr ""
 
-#: ../../libraries/entropy.py:29729
+#: ../../libraries/entropy.py:30008
 msgid "Moving old entry"
 msgstr ""
 
-#: ../../libraries/entropy.py:32264 ../../libraries/entropy.py:32289
+#: ../../libraries/entropy.py:32543 ../../libraries/entropy.py:32568
 #: ../../client/text_rescue.py:427
 msgid "Entropy database"
 msgstr ""
 
-#: ../../libraries/entropy.py:32264
+#: ../../libraries/entropy.py:32543
 msgid "regenerating indexes after migration"
 msgstr ""
 
-#: ../../libraries/entropy.py:32289
+#: ../../libraries/entropy.py:32568
 #, fuzzy
 msgid "migrating table"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../libraries/entropy.py:32347
+#: ../../libraries/entropy.py:32626
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 
-#: ../../libraries/entropy.py:32352
+#: ../../libraries/entropy.py:32631
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 
-#: ../../libraries/entropy.py:32378
+#: ../../libraries/entropy.py:32657
 #, fuzzy
 msgid "Syncing current database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy.py:32390
+#: ../../libraries/entropy.py:32669
 #, fuzzy
 msgid "Removing entry"
 msgstr "Sletter"
 
-#: ../../libraries/entropy.py:32405
+#: ../../libraries/entropy.py:32684
 msgid "Adding entry"
 msgstr ""
 
-#: ../../libraries/entropy.py:32443
+#: ../../libraries/entropy.py:32722
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr ""
 
-#: ../../libraries/entropy.py:32462
+#: ../../libraries/entropy.py:32741
 msgid "Exporting database table"
 msgstr ""
 
-#: ../../libraries/entropy.py:32501
+#: ../../libraries/entropy.py:32780
 #, fuzzy
 msgid "Database Export completed."
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy.py:32997
+#: ../../libraries/entropy.py:33276
 msgid "cannot open Spm counter file for"
 msgstr ""
 
-#: ../../libraries/entropy.py:33017
+#: ../../libraries/entropy.py:33296
 msgid "counter for atom is duplicated, ignoring"
 msgstr ""
 
-#: ../../libraries/entropy.py:33871
+#: ../../libraries/entropy.py:34154
 msgid "comparison between"
 msgstr ""
 
-#: ../../libraries/entropy.py:33873
+#: ../../libraries/entropy.py:34156
 msgid "and"
 msgstr ""
 
-#: ../../libraries/entropy.py:33875 ../../libraries/entropy.py:33887
+#: ../../libraries/entropy.py:34158 ../../libraries/entropy.py:34170
 #, fuzzy
 msgid "failed"
 msgstr "Fi_ler"
 
-#: ../../libraries/entropy.py:33876
+#: ../../libraries/entropy.py:34159
 msgid "Wrong syntax for"
 msgstr ""
 
-#: ../../libraries/entropy.py:33884
+#: ../../libraries/entropy.py:34167
 msgid "from atom"
 msgstr ""
 
@@ -4433,7 +4438,7 @@ msgid "Caching complete."
 msgstr "Indlæsning afsluttet"
 
 #: ../../client/equo.py:400
-#: ../../entropy-notification-applet/src/etp_applet.py:691
+#: ../../entropy-notification-applet/src/etp_applet.py:654
 msgid "There are"
 msgstr ""
 
@@ -4668,7 +4673,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:256
 #: ../../client/text_repositories.py:252
-#: ../../entropy-notification-applet/src/etp_applet.py:206
+#: ../../entropy-notification-applet/src/etp_applet.py:200
 #, fuzzy
 msgid "Exit"
 msgstr "Extra"
@@ -4735,33 +4740,33 @@ msgstr "Vis Installerede Pakker"
 msgid "Unique files that would be automerged"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_query.py:114 ../../client/text_query.py:700
+#: ../../client/text_query.py:114 ../../client/text_query.py:699
 #, fuzzy
 msgid "Searching"
 msgstr "Søgnings Indstiller"
 
 #: ../../client/text_query.py:138 ../../client/text_query.py:193
-#: ../../client/text_query.py:260 ../../client/text_query.py:731
-#: ../../client/text_query.py:778 ../../client/text_query.py:825
-#: ../../client/text_query.py:868 ../../client/text_query.py:914
-#: ../../client/text_query.py:974 ../../server/server_query.py:96
+#: ../../client/text_query.py:260 ../../client/text_query.py:730
+#: ../../client/text_query.py:777 ../../client/text_query.py:824
+#: ../../client/text_query.py:867 ../../client/text_query.py:913
+#: ../../client/text_query.py:973 ../../server/server_query.py:96
 msgid "Keyword"
 msgstr ""
 
 #: ../../client/text_query.py:139 ../../client/text_query.py:194
 #: ../../client/text_query.py:270 ../../client/text_query.py:318
 #: ../../client/text_query.py:358 ../../client/text_query.py:402
-#: ../../client/text_query.py:448 ../../client/text_query.py:732
-#: ../../client/text_query.py:779 ../../client/text_query.py:826
-#: ../../client/text_query.py:869 ../../client/text_query.py:915
-#: ../../client/text_query.py:975 ../../server/server_query.py:97
+#: ../../client/text_query.py:448 ../../client/text_query.py:731
+#: ../../client/text_query.py:778 ../../client/text_query.py:825
+#: ../../client/text_query.py:868 ../../client/text_query.py:914
+#: ../../client/text_query.py:974 ../../server/server_query.py:97
 msgid "Found"
 msgstr ""
 
 #: ../../client/text_query.py:139 ../../client/text_query.py:271
-#: ../../client/text_query.py:732 ../../client/text_query.py:779
-#: ../../client/text_query.py:826 ../../client/text_query.py:869
-#: ../../client/text_query.py:915 ../../client/text_query.py:975
+#: ../../client/text_query.py:731 ../../client/text_query.py:778
+#: ../../client/text_query.py:825 ../../client/text_query.py:868
+#: ../../client/text_query.py:914 ../../client/text_query.py:974
 #: ../../server/server_query.py:97
 #, fuzzy
 msgid "entries"
@@ -4777,12 +4782,12 @@ msgstr "_Beskrivelse"
 msgid "Depends Search"
 msgstr "_Beskrivelse"
 
-#: ../../client/text_query.py:261 ../../client/text_ui.py:1244
+#: ../../client/text_query.py:261 ../../client/text_ui.py:1250
 #, fuzzy
 msgid "Matched"
 msgstr "Opdaterer"
 
-#: ../../client/text_query.py:265 ../../client/text_query.py:1062
+#: ../../client/text_query.py:265 ../../client/text_query.py:1061
 #: ../../spritz/src/spritz.glade.h:99
 #, fuzzy
 msgid "Masked"
@@ -4832,7 +4837,7 @@ msgstr "Ekskludering"
 
 #. package
 #. glsa id
-#: ../../client/text_query.py:447 ../../client/text_query.py:1058
+#: ../../client/text_query.py:447 ../../client/text_query.py:1057
 #: ../../spritz/src/dialogs.py:2351 ../../spritz/src/dialogs.py:2645
 #: ../../spritz/src/dialogs.py:4500 ../../spritz/src/dialogs.py:5201
 #: ../../spritz/src/dialogs.py:5207 ../../spritz/src/views.py:490
@@ -4911,8 +4916,8 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Removal Search"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_query.py:602 ../../client/text_ui.py:380
-#: ../../client/text_ui.py:956 ../../server/server_reagent.py:369
+#: ../../client/text_query.py:602 ../../client/text_ui.py:383
+#: ../../client/text_ui.py:959 ../../server/server_reagent.py:369
 #: ../../server/server_reagent.py:414
 #, fuzzy
 msgid "No packages found"
@@ -4930,8 +4935,8 @@ msgstr "Vis Installerede Pakker"
 
 #: ../../client/text_query.py:627 ../../client/text_smart.py:109
 #: ../../client/text_smart.py:258 ../../client/text_smart.py:391
-#: ../../client/text_ui.py:497 ../../client/text_ui.py:638
-#: ../../client/text_ui.py:805 ../../client/text_ui.py:1037
+#: ../../client/text_ui.py:500 ../../client/text_ui.py:641
+#: ../../client/text_ui.py:808 ../../client/text_ui.py:1040
 msgid "from"
 msgstr ""
 
@@ -4945,113 +4950,113 @@ msgstr "Installeret"
 msgid "These are the installed packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_query.py:753 ../../client/text_rescue.py:718
+#: ../../client/text_query.py:752 ../../client/text_rescue.py:718
 #, fuzzy
 msgid "Matching"
 msgstr "Opdaterer"
 
-#: ../../client/text_query.py:782
+#: ../../client/text_query.py:781
 #, fuzzy
 msgid "No matches"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_query.py:805
+#: ../../client/text_query.py:804
 #, fuzzy
 msgid "Slot Search"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/text_query.py:849 ../../server/server_query.py:85
+#: ../../client/text_query.py:848 ../../server/server_query.py:85
 #, fuzzy
 msgid "Tag Search"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/text_query.py:892
+#: ../../client/text_query.py:891
 #, fuzzy
 msgid "License Search"
 msgstr "Filnavn"
 
-#: ../../client/text_query.py:935
+#: ../../client/text_query.py:934
 #, fuzzy
 msgid "Description Search"
 msgstr "_Beskrivelse"
 
 #. client info
-#: ../../client/text_query.py:1042 ../../client/text_ui.py:407
-#: ../../client/text_ui.py:436
-#: ../../entropy-notification-applet/src/etp_applet.py:859
+#: ../../client/text_query.py:1041 ../../client/text_ui.py:410
+#: ../../client/text_ui.py:439
+#: ../../entropy-notification-applet/src/etp_applet.py:805
 #, fuzzy
 msgid "Not installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1043 ../../client/text_query.py:1044
+#: ../../client/text_query.py:1042 ../../client/text_query.py:1043
 #: ../../spritz/src/dialogs.py:3567 ../../spritz/src/dialogs.py:3627
 #: ../../spritz/src/dialogs.py:3675 ../../spritz/src/dialogs.py:3787
 #: ../../spritz/src/dialogs.py:3790
 msgid "N/A"
 msgstr ""
 
-#: ../../client/text_query.py:1060
+#: ../../client/text_query.py:1059
 #, fuzzy
 msgid "Category"
 msgstr "Kategorier"
 
-#: ../../client/text_query.py:1061
+#: ../../client/text_query.py:1060
 msgid "Name"
 msgstr "Navn"
 
-#: ../../client/text_query.py:1063 ../../spritz/src/dialogs.py:781
+#: ../../client/text_query.py:1062 ../../spritz/src/dialogs.py:781
 #: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
 #: ../../spritz/src/spritz.glade.h:16
 msgid "Available"
 msgstr "Tilgængelige"
 
-#: ../../client/text_query.py:1063 ../../client/text_query.py:1065
+#: ../../client/text_query.py:1062 ../../client/text_query.py:1064
 #, fuzzy
 msgid "version"
 msgstr "Sletter"
 
-#: ../../client/text_query.py:1065 ../../spritz/src/dialogs.py:779
+#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:779
 #: ../../spritz/src/spritz.glade.h:86
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1067 ../../spritz/src/dialogs.py:792
+#: ../../client/text_query.py:1066 ../../spritz/src/dialogs.py:792
 #: ../../spritz/src/dialogs.py:813 ../../spritz/src/spritz.glade.h:172
 msgid "Slot"
 msgstr ""
 
-#: ../../client/text_query.py:1068 ../../client/text_ugc.py:556
+#: ../../client/text_query.py:1067 ../../client/text_ugc.py:556
 #: ../../spritz/src/dialogs.py:809 ../../spritz/src/dialogs.py:3800
 #: ../../spritz/src/spritz.glade.h:171
 msgid "Size"
 msgstr "Størrelse"
 
-#: ../../client/text_query.py:1069 ../../client/text_ugc.py:563
+#: ../../client/text_query.py:1068 ../../client/text_ugc.py:563
 #, fuzzy
 msgid "Download"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_query.py:1070
+#: ../../client/text_query.py:1069
 #, fuzzy
 msgid "Checksum"
 msgstr "Henter : %s"
 
-#: ../../client/text_query.py:1072 ../../spritz/src/dialogs.py:4178
+#: ../../client/text_query.py:1071 ../../spritz/src/dialogs.py:4178
 #, fuzzy
 msgid "Dependencies"
 msgstr "Indstillinger"
 
-#: ../../client/text_query.py:1076
+#: ../../client/text_query.py:1075
 msgid "Conflicts"
 msgstr ""
 
-#: ../../client/text_query.py:1079 ../../spritz/src/dialogs.py:819
+#: ../../client/text_query.py:1078 ../../spritz/src/dialogs.py:819
 msgid "Homepage"
 msgstr ""
 
 #. print description
 #. desc col
-#: ../../client/text_query.py:1083 ../../client/text_security.py:89
+#: ../../client/text_query.py:1082 ../../client/text_security.py:89
 #: ../../client/text_ugc.py:363 ../../spritz/src/dialogs.py:665
 #: ../../spritz/src/dialogs.py:678 ../../spritz/src/dialogs.py:798
 #: ../../spritz/src/dialogs.py:3399 ../../spritz/src/dialogs.py:3807
@@ -5061,58 +5066,58 @@ msgstr ""
 msgid "Description"
 msgstr "_Beskrivelse"
 
-#: ../../client/text_query.py:1089 ../../spritz/src/spritz.glade.h:22
+#: ../../client/text_query.py:1088 ../../spritz/src/spritz.glade.h:22
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1090 ../../spritz/src/spritz.glade.h:21
+#: ../../client/text_query.py:1089 ../../spritz/src/spritz.glade.h:21
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1091 ../../spritz/src/spritz.glade.h:24
+#: ../../client/text_query.py:1090 ../../spritz/src/spritz.glade.h:24
 msgid "CXXFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1095
+#: ../../client/text_query.py:1094
 #, fuzzy
 msgid "Gentoo eclasses"
 msgstr "Ekskludering"
 
-#: ../../client/text_query.py:1097 ../../spritz/src/dialogs.py:4138
+#: ../../client/text_query.py:1096 ../../spritz/src/dialogs.py:4138
 msgid "Sources"
 msgstr ""
 
-#: ../../client/text_query.py:1099
+#: ../../client/text_query.py:1098
 msgid "Source"
 msgstr ""
 
-#: ../../client/text_query.py:1100
+#: ../../client/text_query.py:1099
 msgid "Entry API"
 msgstr ""
 
-#: ../../client/text_query.py:1102
+#: ../../client/text_query.py:1101
 msgid "Compiled with"
 msgstr ""
 
-#: ../../client/text_query.py:1103 ../../client/text_ugc.py:368
+#: ../../client/text_query.py:1102 ../../client/text_ugc.py:368
 #: ../../client/text_ugc.py:551 ../../spritz/src/dialogs.py:3809
 #: ../../spritz/src/dialogs.py:4154 ../../spritz/src/spritz.glade.h:90
 msgid "Keywords"
 msgstr ""
 
-#: ../../client/text_query.py:1104
+#: ../../client/text_query.py:1103
 #, fuzzy
 msgid "Created"
 msgstr "Slettet"
 
-#: ../../client/text_query.py:1105 ../../client/text_ui.py:801
+#: ../../client/text_query.py:1104 ../../client/text_ui.py:804
 #: ../../spritz/src/dialogs.py:5878
 #, fuzzy
 msgid "License"
 msgstr "Filnavn"
 
 #: ../../client/text_repositories.py:51 ../../client/text_repositories.py:167
-#: ../../client/text_security.py:47 ../../client/text_ui.py:145
+#: ../../client/text_security.py:47 ../../client/text_ui.py:148
 #, python-format
 msgid "You must be either root or in the %s group."
 msgstr ""
@@ -5187,21 +5192,21 @@ msgstr "Kilde"
 msgid "Repository database checksum"
 msgstr "Filkilder"
 
-#: ../../client/text_repositories.py:171 ../../client/text_ui.py:149
-#: ../../spritz/src/spritz.py:1098
-#: ../../entropy-notification-applet/src/etp_applet.py:606
+#: ../../client/text_repositories.py:171 ../../client/text_ui.py:152
+#: ../../spritz/src/spritz.py:1097
+#: ../../entropy-notification-applet/src/etp_applet.py:570
 #, fuzzy
 msgid "No repositories specified in"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/text_repositories.py:174 ../../client/text_ui.py:152
-#: ../../spritz/src/spritz.py:1103
+#: ../../client/text_repositories.py:174 ../../client/text_ui.py:155
+#: ../../spritz/src/spritz.py:1102
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../../client/text_repositories.py:177 ../../client/text_ui.py:155
-#: ../../spritz/src/spritz.py:1107
-#: ../../entropy-notification-applet/src/etp_applet.py:614
+#: ../../client/text_repositories.py:177 ../../client/text_ui.py:158
+#: ../../spritz/src/spritz.py:1106
+#: ../../entropy-notification-applet/src/etp_applet.py:578
 #, fuzzy
 msgid "Unhandled exception"
 msgstr "_Beskrivelse"
@@ -5320,8 +5325,8 @@ msgstr ""
 msgid "Now checking dependency atoms validity"
 msgstr ""
 
-#: ../../client/text_rescue.py:187 ../../client/text_ui.py:324
-#: ../../client/text_ui.py:490
+#: ../../client/text_rescue.py:187 ../../client/text_ui.py:327
+#: ../../client/text_ui.py:493
 #, fuzzy
 msgid "atom"
 msgstr "Fi_ler"
@@ -5706,7 +5711,7 @@ msgid "This is the list of the packages that would be quickpkg'd"
 msgstr "Vis Installerede Pakker"
 
 #: ../../client/text_smart.py:109
-#: ../../entropy-notification-applet/src/etp_applet.py:882
+#: ../../entropy-notification-applet/src/etp_applet.py:828
 #, fuzzy
 msgid "installed"
 msgstr "Installeret"
@@ -5734,8 +5739,8 @@ msgstr ""
 msgid "directory does not exist"
 msgstr ""
 
-#: ../../client/text_smart.py:156 ../../client/text_ui.py:364
-#: ../../spritz/src/spritz.py:1849
+#: ../../client/text_smart.py:156 ../../client/text_ui.py:367
+#: ../../spritz/src/spritz.py:1848
 #, fuzzy
 msgid "is not a valid Entropy package"
 msgstr "Sorterer Pakker"
@@ -5873,7 +5878,7 @@ msgstr ""
 msgid "Login error. Not logged in."
 msgstr ""
 
-#: ../../client/text_ugc.py:110 ../../spritz/src/spritz.py:705
+#: ../../client/text_ugc.py:110 ../../spritz/src/spritz.py:704
 msgid "Not logged in"
 msgstr ""
 
@@ -6030,459 +6035,463 @@ msgstr ""
 msgid "Current package vote"
 msgstr "Behandler pakker for %s"
 
-#: ../../client/text_ui.py:102 ../../client/text_ui.py:112
-#: ../../client/text_ui.py:506 ../../client/text_ui.py:1001
+#: ../../client/text_ui.py:55
+msgid "Malformed command"
+msgstr ""
+
+#: ../../client/text_ui.py:105 ../../client/text_ui.py:115
+#: ../../client/text_ui.py:509 ../../client/text_ui.py:1004
 #, fuzzy
 msgid "Nothing to do"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:124 ../../client/text_ui.py:275
-#: ../../client/text_ui.py:909
+#: ../../client/text_ui.py:127 ../../client/text_ui.py:278
+#: ../../client/text_ui.py:912
 #, fuzzy
 msgid "Running with"
 msgstr "Kører Transaktion"
 
-#: ../../client/text_ui.py:135
+#: ../../client/text_ui.py:138
 #, fuzzy
 msgid "Selected release"
 msgstr "%s profilen er valgt"
 
-#: ../../client/text_ui.py:163
+#: ../../client/text_ui.py:166
 #, fuzzy
 msgid "Calculating System Updates"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_ui.py:167
+#: ../../client/text_ui.py:170
 #, fuzzy
 msgid "Packages matching update"
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../client/text_ui.py:168
+#: ../../client/text_ui.py:171
 #, fuzzy
 msgid "Packages matching not available"
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../client/text_ui.py:169
+#: ../../client/text_ui.py:172
 #, fuzzy
 msgid "Packages matching already up to date"
 msgstr "<b>Pakker Til Opdatering</b>"
 
 #. None or {}
-#: ../../client/text_ui.py:195 ../../client/text_ui.py:743
-#: ../../client/text_ui.py:1088
+#: ../../client/text_ui.py:198 ../../client/text_ui.py:746
+#: ../../client/text_ui.py:1091
 #, fuzzy
 msgid "Nothing to resume"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:206 ../../client/text_ui.py:756
-#: ../../client/text_ui.py:1096
+#: ../../client/text_ui.py:209 ../../client/text_ui.py:759
+#: ../../client/text_ui.py:1099
 #, fuzzy
 msgid "Resume cache corrupted"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:230
+#: ../../client/text_ui.py:233
 #, fuzzy
 msgid "Nothing to update"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:242
+#: ../../client/text_ui.py:245
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr ""
 
-#: ../../client/text_ui.py:246
+#: ../../client/text_ui.py:249
 msgid "Even if they are usually harmless, it is suggested to remove them."
 msgstr ""
 
-#: ../../client/text_ui.py:250
+#: ../../client/text_ui.py:253
 msgid "Would you like to scan them ?"
 msgstr ""
 
-#: ../../client/text_ui.py:264
+#: ../../client/text_ui.py:267
 #, fuzzy
 msgid "Calculation complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:267
+#: ../../client/text_ui.py:270
 #, fuzzy
 msgid "Nothing to remove"
 msgstr "Behandler pakker for %s"
 
-#: ../../client/text_ui.py:304
+#: ../../client/text_ui.py:307
 #, fuzzy
 msgid "Every package matching"
 msgstr "fandt %d pakker, som matcher : %s"
 
-#: ../../client/text_ui.py:306
+#: ../../client/text_ui.py:309
 #, fuzzy
 msgid "is masked"
 msgstr "Slettet"
 
-#: ../../client/text_ui.py:320
+#: ../../client/text_ui.py:323
 #, fuzzy
 msgid "matching"
 msgstr "Opdaterer"
 
-#: ../../client/text_ui.py:322
+#: ../../client/text_ui.py:325
 #, fuzzy
 msgid "is broken"
 msgstr "Filkilder"
 
-#: ../../client/text_ui.py:328
+#: ../../client/text_ui.py:331
 msgid "No match for"
 msgstr ""
 
-#: ../../client/text_ui.py:330
+#: ../../client/text_ui.py:333
 #, fuzzy
 msgid "in repositories"
 msgstr "Kilde"
 
-#: ../../client/text_ui.py:342 ../../client/text_ui.py:940
+#: ../../client/text_ui.py:345 ../../client/text_ui.py:943
 msgid "When you wrote"
 msgstr ""
 
-#: ../../client/text_ui.py:344 ../../client/text_ui.py:942
+#: ../../client/text_ui.py:347 ../../client/text_ui.py:945
 msgid "You Meant(tm)"
 msgstr ""
 
-#: ../../client/text_ui.py:345 ../../client/text_ui.py:943
+#: ../../client/text_ui.py:348 ../../client/text_ui.py:946
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:366 ../../spritz/src/spritz.py:1851
+#: ../../client/text_ui.py:369 ../../spritz/src/spritz.py:1850
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
-#: ../../client/text_ui.py:371
+#: ../../client/text_ui.py:374
 #, fuzzy
 msgid "Skipped"
 msgstr "_Spring Over"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:386 ../../client/text_ui.py:963
+#: ../../client/text_ui.py:389 ../../client/text_ui.py:966
 #, fuzzy
 msgid "These are the chosen packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:410 ../../client/text_ui.py:560
+#: ../../client/text_ui.py:413 ../../client/text_ui.py:563
 #, fuzzy
 msgid "Not available"
 msgstr "Tilgængelige"
 
-#: ../../client/text_ui.py:424
+#: ../../client/text_ui.py:427
 #, fuzzy
 msgid "Versions"
 msgstr "_Filspejlsliste"
 
-#: ../../client/text_ui.py:447
+#: ../../client/text_ui.py:450
 #, fuzzy
 msgid "Switch repo"
 msgstr "Opdaterer"
 
-#: ../../client/text_ui.py:448 ../../client/text_ui.py:450
+#: ../../client/text_ui.py:451 ../../client/text_ui.py:453
 #: ../../spritz/src/spritz.glade.h:142
 #, fuzzy
 msgid "Reinstall"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:453 ../../spritz/src/spritz.glade.h:81
+#: ../../client/text_ui.py:456 ../../spritz/src/spritz.glade.h:81
 #, fuzzy
 msgid "Install"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:455
+#: ../../client/text_ui.py:458
 #, fuzzy
 msgid "Upgrade"
 msgstr "Opdateret"
 
-#: ../../client/text_ui.py:457
+#: ../../client/text_ui.py:460
 #, fuzzy
 msgid "Downgrade"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_ui.py:458 ../../spritz/src/dialogs.py:2107
+#: ../../client/text_ui.py:461 ../../spritz/src/dialogs.py:2107
 #, fuzzy
 msgid "Action"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/text_ui.py:461 ../../client/text_ui.py:998
+#: ../../client/text_ui.py:464 ../../client/text_ui.py:1001
 #, fuzzy
 msgid "Packages involved"
 msgstr "Pakker"
 
-#: ../../client/text_ui.py:465
+#: ../../client/text_ui.py:468
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr ""
 
-#: ../../client/text_ui.py:474
+#: ../../client/text_ui.py:477
 #, fuzzy
 msgid "Calculating dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_ui.py:478
+#: ../../client/text_ui.py:481
 #, fuzzy
 msgid "Cannot find needed dependencies"
 msgstr "Opdater som afhængighed"
 
-#: ../../client/text_ui.py:485
+#: ../../client/text_ui.py:488
 #, fuzzy
 msgid "Reason"
 msgstr "Filkilde"
 
-#: ../../client/text_ui.py:492
+#: ../../client/text_ui.py:495
 #, fuzzy
 msgid "Not found"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:495
+#: ../../client/text_ui.py:498
 #, fuzzy
 msgid "Probably needed by"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:522 ../../client/text_ui.py:626
+#: ../../client/text_ui.py:525 ../../client/text_ui.py:629
 #, fuzzy
 msgid "These are the packages that would be"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:522
+#: ../../client/text_ui.py:525
 msgid "merged"
 msgstr ""
 
-#: ../../client/text_ui.py:627
+#: ../../client/text_ui.py:630
 #, fuzzy
 msgid "removed"
 msgstr "Sletter"
 
-#: ../../client/text_ui.py:628
+#: ../../client/text_ui.py:631
 msgid "conflicting/substituted"
 msgstr ""
 
 #. show download info
-#: ../../client/text_ui.py:643
+#: ../../client/text_ui.py:646
 #, fuzzy
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:645
+#: ../../client/text_ui.py:648
 #, fuzzy
 msgid "Packages needing to be removed"
 msgstr "Pakker til behandling"
 
-#: ../../client/text_ui.py:649
+#: ../../client/text_ui.py:652
 #, fuzzy
 msgid "Packages needing to be installed"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:654
+#: ../../client/text_ui.py:657
 #, fuzzy
 msgid "Packages needing to be reinstalled"
 msgstr "Pakker til behandling"
 
-#: ../../client/text_ui.py:659
+#: ../../client/text_ui.py:662
 #, fuzzy
 msgid "Packages needing to be updated"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:664
+#: ../../client/text_ui.py:667
 #, fuzzy
 msgid "Packages needing to be downgraded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:674
+#: ../../client/text_ui.py:677
 #, fuzzy
 msgid "Download size"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_ui.py:680
+#: ../../client/text_ui.py:683
 #, fuzzy
 msgid "Used disk space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:682 ../../spritz/src/misc.py:366
+#: ../../client/text_ui.py:685 ../../spritz/src/misc.py:366
 #, fuzzy
 msgid "Freed disk space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:694
+#: ../../client/text_ui.py:697
 msgid "You need at least"
 msgstr ""
 
-#: ../../client/text_ui.py:696
+#: ../../client/text_ui.py:699
 #, fuzzy
 msgid "of free space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:704
+#: ../../client/text_ui.py:707
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 
-#: ../../client/text_ui.py:714
+#: ../../client/text_ui.py:717
 msgid "Would you like to execute the queue ?"
 msgstr ""
 
-#: ../../client/text_ui.py:754 ../../client/text_ui.py:1094
+#: ../../client/text_ui.py:757 ../../client/text_ui.py:1097
 #, fuzzy
 msgid "Resuming previous operations"
 msgstr "Filkilder"
 
-#: ../../client/text_ui.py:778
+#: ../../client/text_ui.py:781
 #, fuzzy
 msgid "Please select an option"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:779
+#: ../../client/text_ui.py:782
 msgid "Read the license"
 msgstr ""
 
-#: ../../client/text_ui.py:780
+#: ../../client/text_ui.py:783
 msgid "Accept the license (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:781
+#: ../../client/text_ui.py:784
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:782
+#: ../../client/text_ui.py:785
 msgid "Quit"
 msgstr ""
 
 #. wait user interaction
-#: ../../client/text_ui.py:784
+#: ../../client/text_ui.py:787
 msgid "Your choice (type a number and press enter)"
 msgstr ""
 
-#: ../../client/text_ui.py:797
+#: ../../client/text_ui.py:800
 msgid "You need to accept the licenses below"
 msgstr ""
 
-#: ../../client/text_ui.py:801
+#: ../../client/text_ui.py:804
 #, fuzzy
 msgid "needed by"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:821
+#: ../../client/text_ui.py:824
 msgid "No file viewer"
 msgstr ""
 
-#: ../../client/text_ui.py:821
+#: ../../client/text_ui.py:824
 #, fuzzy
 msgid "License saved into"
 msgstr "Filnavn"
 
-#: ../../client/text_ui.py:843
+#: ../../client/text_ui.py:846
 #, fuzzy
 msgid "fetch"
 msgstr "Opdaterer"
 
-#: ../../client/text_ui.py:856
+#: ../../client/text_ui.py:859
 #, fuzzy
 msgid "Download completed"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:867
+#: ../../client/text_ui.py:870
 #, fuzzy
 msgid "install"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:895
+#: ../../client/text_ui.py:898
 #, fuzzy
 msgid "Installation completed"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:930
+#: ../../client/text_ui.py:933
 #, fuzzy
 msgid "is not installed"
 msgstr "Installeret"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:982
+#: ../../client/text_ui.py:985
 #, fuzzy
 msgid "vital package"
 msgstr "Sorterer Pakker"
 
-#: ../../client/text_ui.py:983
+#: ../../client/text_ui.py:986
 #, fuzzy
 msgid "Removal forbidden"
 msgstr "Sletter som afhængighed"
 
-#: ../../client/text_ui.py:993
+#: ../../client/text_ui.py:996
 msgid "Disk size"
 msgstr ""
 
-#: ../../client/text_ui.py:994
+#: ../../client/text_ui.py:997
 #, fuzzy
 msgid "Installed from"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:1006
+#: ../../client/text_ui.py:1009
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1009 ../../server/server_reagent.py:221
+#: ../../client/text_ui.py:1012 ../../server/server_reagent.py:221
 msgid "Would you like to remove them now ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1025
+#: ../../client/text_ui.py:1028
 msgid "This is the new removal queue"
 msgstr ""
 
-#: ../../client/text_ui.py:1050
+#: ../../client/text_ui.py:1053
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1052
+#: ../../client/text_ui.py:1055
 msgid "Would you like to proceed with a selective removal ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1059
+#: ../../client/text_ui.py:1062
 msgid "Would you like to skip this step then ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1064
+#: ../../client/text_ui.py:1067
 msgid "Starting removal in"
 msgstr ""
 
-#: ../../client/text_ui.py:1125
+#: ../../client/text_ui.py:1131
 #, fuzzy
 msgid "Remove this one ?"
 msgstr "Sletter"
 
-#: ../../client/text_ui.py:1161
+#: ../../client/text_ui.py:1167
 msgid "All done"
 msgstr ""
 
-#: ../../client/text_ui.py:1167
+#: ../../client/text_ui.py:1173
 #, fuzzy
 msgid "Running dependency test"
 msgstr "Sletter som afhængighed"
 
-#: ../../client/text_ui.py:1192
+#: ../../client/text_ui.py:1198
 #, fuzzy
 msgid "Would you like to install the available packages ?"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../client/text_ui.py:1197 ../../client/text_ui.py:1273
+#: ../../client/text_ui.py:1203 ../../client/text_ui.py:1279
 #, fuzzy
 msgid "Installing available packages in"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../client/text_ui.py:1198 ../../client/text_ui.py:1274
+#: ../../client/text_ui.py:1204 ../../client/text_ui.py:1280
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/text_ui.py:1239
+#: ../../client/text_ui.py:1245
 msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/text_ui.py:1241
+#: ../../client/text_ui.py:1247
 #, fuzzy
 msgid "Not matched"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:1267
+#: ../../client/text_ui.py:1273
 msgid "Would you like to install them ?"
 msgstr ""
 
@@ -6971,7 +6980,7 @@ msgstr ""
 #. date col
 #. date
 #: ../../spritz/src/dialogs.py:708 ../../spritz/src/dialogs.py:729
-#: ../../spritz/src/spritz.py:689 ../../spritz/src/spritz.glade.h:46
+#: ../../spritz/src/spritz.py:688 ../../spritz/src/spritz.glade.h:46
 #, fuzzy
 msgid "Date"
 msgstr "Opdateret"
@@ -7109,7 +7118,7 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2118 ../../spritz/src/spritz.py:686
+#: ../../spritz/src/dialogs.py:2118 ../../spritz/src/spritz.py:685
 #: ../../spritz/src/spritz.glade.h:44
 #, fuzzy
 msgid "Database"
@@ -7630,13 +7639,13 @@ msgstr "Vis Installerede Pakker"
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:1669
-#: ../../spritz/src/spritz.py:1702
+#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:1668
+#: ../../spritz/src/spritz.py:1701
 #, fuzzy
 msgid "Update Repositories"
 msgstr "Filkilder"
 
-#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:441
+#: ../../spritz/src/packages.py:205 ../../spritz/src/spritz.py:440
 #, fuzzy
 msgid "Repository Selection"
 msgstr "Filkilder"
@@ -7668,487 +7677,487 @@ msgstr ""
 msgid "Safe Mode"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:408
+#: ../../spritz/src/spritz.py:407
 msgid "Show Package Updates"
 msgstr "Vis Pakker Opdateringer"
 
-#: ../../spritz/src/spritz.py:409
+#: ../../spritz/src/spritz.py:408
 msgid "Show available Packages"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../spritz/src/spritz.py:410
+#: ../../spritz/src/spritz.py:409
 msgid "Show Installed Packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:411
+#: ../../spritz/src/spritz.py:410
 #, fuzzy
 msgid "Show Masked Packages"
 msgstr "Vis Installerede Pakker"
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/spritz.py:438 ../../spritz/src/views.py:794
+#: ../../spritz/src/spritz.py:437 ../../spritz/src/views.py:794
 msgid "Packages"
 msgstr "Pakker."
 
-#: ../../spritz/src/spritz.py:439
+#: ../../spritz/src/spritz.py:438
 #, fuzzy
 msgid "Package Categories"
 msgstr "Kategorier"
 
-#: ../../spritz/src/spritz.py:442
+#: ../../spritz/src/spritz.py:441
 #, fuzzy
 msgid "Configuration Files"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../spritz/src/spritz.py:443 ../../spritz/src/spritz.py:492
+#: ../../spritz/src/spritz.py:442 ../../spritz/src/spritz.py:491
 #, fuzzy
 msgid "Preferences"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.py:444
+#: ../../spritz/src/spritz.py:443
 #, fuzzy
 msgid "Package Queue"
 msgstr "Pakke Køen"
 
-#: ../../spritz/src/spritz.py:445
+#: ../../spritz/src/spritz.py:444
 #, fuzzy
 msgid "Output"
 msgstr "Information"
 
-#: ../../spritz/src/spritz.py:494
+#: ../../spritz/src/spritz.py:493
 msgid ""
 "Some configuration options are critical for the health of your System. Be "
 "careful."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:499
+#: ../../spritz/src/spritz.py:498
 msgid "Advertisement"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:613
+#: ../../spritz/src/spritz.py:612
 #, fuzzy
 msgid "Error during backup"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:615
+#: ../../spritz/src/spritz.py:614
 #, fuzzy
 msgid "Backup complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:634
+#: ../../spritz/src/spritz.py:633
 #, fuzzy
 msgid "Error during restore"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:638
+#: ../../spritz/src/spritz.py:637
 #, fuzzy
 msgid "Restore complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:648
+#: ../../spritz/src/spritz.py:647
 #, fuzzy
 msgid "Error during removal"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:660 ../../spritz/src/spritz.py:669
-#: ../../spritz/src/spritz.py:678
+#: ../../spritz/src/spritz.py:659 ../../spritz/src/spritz.py:668
+#: ../../spritz/src/spritz.py:677
 #, fuzzy
 msgid "Item"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.py:737
+#: ../../spritz/src/spritz.py:736
 #, fuzzy
 msgid "Logged in as"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../spritz/src/spritz.py:744
+#: ../../spritz/src/spritz.py:743
 #, fuzzy
 msgid "UGC Status"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.py:767 ../../spritz/src/spritz.py:793
+#: ../../spritz/src/spritz.py:766 ../../spritz/src/spritz.py:792
 #, fuzzy
 msgid "Error setting parameter"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:768
+#: ../../spritz/src/spritz.py:767
 #, fuzzy
 msgid "An issue occured while loading a preference"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:769 ../../spritz/src/spritz.py:795
-#: ../../spritz/src/spritz.py:1747
+#: ../../spritz/src/spritz.py:768 ../../spritz/src/spritz.py:794
+#: ../../spritz/src/spritz.py:1746
 #, fuzzy
 msgid "Parameter"
 msgstr "Slettet"
 
-#: ../../spritz/src/spritz.py:769 ../../spritz/src/spritz.py:795
+#: ../../spritz/src/spritz.py:768 ../../spritz/src/spritz.py:794
 msgid "must be of type"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:769 ../../spritz/src/spritz.py:795
+#: ../../spritz/src/spritz.py:768 ../../spritz/src/spritz.py:794
 msgid "got"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:794 ../../spritz/src/spritz.py:1746
+#: ../../spritz/src/spritz.py:793 ../../spritz/src/spritz.py:1745
 #, fuzzy
 msgid "An issue occured while saving a preference"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:934
+#: ../../spritz/src/spritz.py:933
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:995
+#: ../../spritz/src/spritz.py:994
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1003
+#: ../../spritz/src/spritz.py:1002
 #, fuzzy
 msgid "Error during list population"
 msgstr "Fejl i Transaktionen"
 
-#: ../../spritz/src/spritz.py:1005
+#: ../../spritz/src/spritz.py:1004
 msgid "Retrying in 1 second."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1039
+#: ../../spritz/src/spritz.py:1038
 #, fuzzy
 msgid "Error loading advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../spritz/src/spritz.py:1088
+#: ../../spritz/src/spritz.py:1087
 #, fuzzy
 msgid "Initializing Repository module..."
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:1094
+#: ../../spritz/src/spritz.py:1093
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1113
+#: ../../spritz/src/spritz.py:1112
 #, fuzzy
 msgid "Errors updating repositories."
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:1114
+#: ../../spritz/src/spritz.py:1113
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1117
+#: ../../spritz/src/spritz.py:1116
 #, fuzzy
 msgid "Repositories updated successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:1120
+#: ../../spritz/src/spritz.py:1119
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1122
+#: ../../spritz/src/spritz.py:1121
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1125
+#: ../../spritz/src/spritz.py:1124
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1133
+#: ../../spritz/src/spritz.py:1132
 #, fuzzy
 msgid "Nothing to do. I am idle."
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:1134
+#: ../../spritz/src/spritz.py:1133
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1135
+#: ../../spritz/src/spritz.py:1134
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1219
+#: ../../spritz/src/spritz.py:1218
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1220
+#: ../../spritz/src/spritz.py:1219
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1221
+#: ../../spritz/src/spritz.py:1220
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1223 ../../spritz/src/spritz.py:1229
+#: ../../spritz/src/spritz.py:1222 ../../spritz/src/spritz.py:1228
 #, fuzzy
 msgid "Calculating"
 msgstr "Installer som afhængighed"
 
-#: ../../spritz/src/spritz.py:1242
+#: ../../spritz/src/spritz.py:1241
 #, fuzzy
 msgid "Showing"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.py:1242
+#: ../../spritz/src/spritz.py:1241
 #, fuzzy
 msgid "items"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.py:1262
+#: ../../spritz/src/spritz.py:1261
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1268
+#: ../../spritz/src/spritz.py:1267
 #, fuzzy
 msgid "Running tasks"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/spritz.py:1275
+#: ../../spritz/src/spritz.py:1274
 msgid "Processing Packages in queue"
 msgstr "Behander pakker i køen"
 
-#: ../../spritz/src/spritz.py:1291
+#: ../../spritz/src/spritz.py:1290
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1314
+#: ../../spritz/src/spritz.py:1313
 msgid "No packages selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:1374
+#: ../../spritz/src/spritz.py:1373
 #, fuzzy
 msgid "The chosen package is not vulnerable"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1382
+#: ../../spritz/src/spritz.py:1381
 msgid "Packages in Advisory have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1397
+#: ../../spritz/src/spritz.py:1396
 msgid "Packages in all Advisories have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1409
+#: ../../spritz/src/spritz.py:1408
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1495
+#: ../../spritz/src/spritz.py:1494
 #, fuzzy
 msgid "Branch switching"
 msgstr "Opdaterer"
 
-#: ../../spritz/src/spritz.py:1495
+#: ../../spritz/src/spritz.py:1494
 msgid "Enter a valid branch you want to switch to"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1498
+#: ../../spritz/src/spritz.py:1497
 #, fuzzy
 msgid "The selected branch is not available."
 msgstr "Tilgængelige"
 
-#: ../../spritz/src/spritz.py:1501
+#: ../../spritz/src/spritz.py:1500
 msgid "New branch is"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1501
+#: ../../spritz/src/spritz.py:1500
 #, fuzzy
 msgid "It is suggested to synchronize repositories"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1545 ../../spritz/src/spritz.py:1567
+#: ../../spritz/src/spritz.py:1544 ../../spritz/src/spritz.py:1566
 msgid "Insert URL"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1545 ../../spritz/src/spritz.py:1567
+#: ../../spritz/src/spritz.py:1544 ../../spritz/src/spritz.py:1566
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1550
+#: ../../spritz/src/spritz.py:1549
 msgid "You must enter either a HTTP or a FTP url."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1604 ../../spritz/src/spritz.py:1672
+#: ../../spritz/src/spritz.py:1603 ../../spritz/src/spritz.py:1671
 msgid "Wrong entries, errors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1616 ../../spritz/src/spritz.py:1669
+#: ../../spritz/src/spritz.py:1615 ../../spritz/src/spritz.py:1668
 #: ../../spritz/src/views.py:1172
 msgid "You should press the button"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1616 ../../spritz/src/spritz.py:1702
+#: ../../spritz/src/spritz.py:1615 ../../spritz/src/spritz.py:1701
 #: ../../spritz/src/views.py:1172
 #, fuzzy
 msgid "Regenerate Cache"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.py:1616 ../../spritz/src/spritz.py:1669
-#: ../../spritz/src/spritz.py:1702 ../../spritz/src/views.py:1172
+#: ../../spritz/src/spritz.py:1615 ../../spritz/src/spritz.py:1668
+#: ../../spritz/src/spritz.py:1701 ../../spritz/src/views.py:1172
 msgid "now"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1622
+#: ../../spritz/src/spritz.py:1621
 #, fuzzy
 msgid "No Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1625
+#: ../../spritz/src/spritz.py:1624
 #, fuzzy
 msgid "Duplicated Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1629
+#: ../../spritz/src/spritz.py:1628
 #, fuzzy
 msgid "No download mirrors"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:1631
+#: ../../spritz/src/spritz.py:1630
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1639
+#: ../../spritz/src/spritz.py:1638
 #, fuzzy
 msgid "Repository Services Port not valid"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1647
+#: ../../spritz/src/spritz.py:1646
 #, fuzzy
 msgid "Secure Services Port not valid"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1682
+#: ../../spritz/src/spritz.py:1681
 #, fuzzy
 msgid "Insert Repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/spritz.py:1682
+#: ../../spritz/src/spritz.py:1681
 #, fuzzy
 msgid "Insert Repository identification string"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1688
+#: ../../spritz/src/spritz.py:1687
 #, fuzzy
 msgid "This Repository identification string is malformed"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1698
+#: ../../spritz/src/spritz.py:1697
 msgid "You! Why do you want to remove the main repository ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1702
+#: ../../spritz/src/spritz.py:1701
 msgid "You must now either press the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1702
+#: ../../spritz/src/spritz.py:1701
 #, fuzzy
 msgid "or the"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1732
+#: ../../spritz/src/spritz.py:1731
 msgid "Are you sure ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1745
+#: ../../spritz/src/spritz.py:1744
 #, fuzzy
 msgid "Error saving parameter"
 msgstr "Fejl opstået i Yum Extender"
 
-#: ../../spritz/src/spritz.py:1747
+#: ../../spritz/src/spritz.py:1746
 #, fuzzy
 msgid "not saved"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:1759 ../../spritz/src/spritz.py:1765
-#: ../../spritz/src/spritz.py:1771 ../../spritz/src/spritz.py:1795
-#: ../../spritz/src/spritz.py:1805 ../../spritz/src/spritz.py:1815
+#: ../../spritz/src/spritz.py:1758 ../../spritz/src/spritz.py:1764
+#: ../../spritz/src/spritz.py:1770 ../../spritz/src/spritz.py:1794
+#: ../../spritz/src/spritz.py:1804 ../../spritz/src/spritz.py:1814
 msgid "New"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1759 ../../spritz/src/spritz.py:1765
-#: ../../spritz/src/spritz.py:1771
+#: ../../spritz/src/spritz.py:1758 ../../spritz/src/spritz.py:1764
+#: ../../spritz/src/spritz.py:1770
 #, fuzzy
 msgid "Please insert a new path"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1795 ../../spritz/src/spritz.py:1805
-#: ../../spritz/src/spritz.py:1815
+#: ../../spritz/src/spritz.py:1794 ../../spritz/src/spritz.py:1804
+#: ../../spritz/src/spritz.py:1814
 #, fuzzy
 msgid "Please edit the selected path"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1835
+#: ../../spritz/src/spritz.py:1834
 #, fuzzy
 msgid "You have chosen to install this package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:1837
+#: ../../spritz/src/spritz.py:1836
 msgid "Are you supa sure?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1855
+#: ../../spritz/src/spritz.py:1854
 #, fuzzy
 msgid "Cannot install"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:1938
+#: ../../spritz/src/spritz.py:1937
 #, fuzzy
 msgid "Please select at least one repository"
 msgstr "Vis Installerede Pakker"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:1969
+#: ../../spritz/src/spritz.py:1968
 msgid "No packages in queue"
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:2011
+#: ../../spritz/src/spritz.py:2010
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2113
+#: ../../spritz/src/spritz.py:2112
 msgid ""
 "You have chosen to interrupt the queue processing. Doing so could be risky "
 "and you should let Entropy to close all its tasks. Are you sure you want it?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2121
+#: ../../spritz/src/spritz.py:2120
 msgid "Aborting queue tasks."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2127
+#: ../../spritz/src/spritz.py:2126
 #, fuzzy
 msgid "Skipping current mirror."
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:2196
+#: ../../spritz/src/spritz.py:2195
 #, fuzzy
 msgid "Cleaning UGC cache of"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.py:2197
+#: ../../spritz/src/spritz.py:2196
 msgid "UGC cache cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2206
+#: ../../spritz/src/spritz.py:2205
 msgid "UGC credentials cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2279
+#: ../../spritz/src/spritz.py:2278
 #, fuzzy
 msgid "Exception caught"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/spritz.py:2280
+#: ../../spritz/src/spritz.py:2279
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2289
+#: ../../spritz/src/spritz.py:2288
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2291
+#: ../../spritz/src/spritz.py:2290
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -8257,15 +8266,12 @@ msgstr "Pakker"
 msgid "Version Installed"
 msgstr "Installeret"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:86
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:84
 #, fuzzy
 msgid "Critical Information"
 msgstr "I_nformation"
 
-#. #         file = pixmap_file('gnome-warning.png')
-#. #         if file:
-#. #             hbox.pack_start (GnomePixmap (file), gtk.FALSE)
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:395
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:371
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to "
@@ -8277,199 +8283,195 @@ msgstr ""
 msgid "Updates Notification"
 msgstr "_Beskrivelse"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:198
+#: ../../entropy-notification-applet/src/etp_applet.py:192
 msgid "_Disable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:198
+#: ../../entropy-notification-applet/src/etp_applet.py:192
 msgid "Disable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:199
+#: ../../entropy-notification-applet/src/etp_applet.py:193
 msgid "_Enable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:199
+#: ../../entropy-notification-applet/src/etp_applet.py:193
 msgid "Enable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:200
+#: ../../entropy-notification-applet/src/etp_applet.py:194
 msgid "_Check for updates"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:200
+#: ../../entropy-notification-applet/src/etp_applet.py:194
 msgid "Check for updates"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:201
+#: ../../entropy-notification-applet/src/etp_applet.py:195
 #, fuzzy
 msgid "_Launch Package Manager"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:201
+#: ../../entropy-notification-applet/src/etp_applet.py:195
 #, fuzzy
 msgid "Launch Package Manager"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:202
+#: ../../entropy-notification-applet/src/etp_applet.py:196
 #, fuzzy
 msgid "_Packages Website"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:202
+#: ../../entropy-notification-applet/src/etp_applet.py:196
 #, fuzzy
 msgid "Use Packages web interface"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:203
+#: ../../entropy-notification-applet/src/etp_applet.py:197
 msgid "_Sabayon Linux Website"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:203
+#: ../../entropy-notification-applet/src/etp_applet.py:197
 msgid "Launch Sabayon Linux Website"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:205
+#: ../../entropy-notification-applet/src/etp_applet.py:199
 #, fuzzy
 msgid "_About"
 msgstr "Om"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:205
+#: ../../entropy-notification-applet/src/etp_applet.py:199
 #, fuzzy
 msgid "About..."
 msgstr "Om"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:206
+#: ../../entropy-notification-applet/src/etp_applet.py:200
 #, fuzzy
 msgid "_Exit"
 msgstr "R_ediger"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:268
+#: ../../entropy-notification-applet/src/etp_applet.py:263
 msgid "You must add yourself to this group"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:271
+#: ../../entropy-notification-applet/src/etp_applet.py:266
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:495
+#: ../../entropy-notification-applet/src/etp_applet.py:456
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:506
+#: ../../entropy-notification-applet/src/etp_applet.py:465
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:521
-#, fuzzy
-msgid "Cannot load Spritz"
-msgstr "Ønsker du at forsættet ?"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:588
+#: ../../entropy-notification-applet/src/etp_applet.py:551
 #, fuzzy
 msgid "Checking for updates..."
 msgstr "Ingen pakker i køen"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:609
+#: ../../entropy-notification-applet/src/etp_applet.py:573
 #, fuzzy
 msgid "Repository Network Error"
 msgstr "Filkilder"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:623
+#: ../../entropy-notification-applet/src/etp_applet.py:588
 #, fuzzy
 msgid "No repositories specified. Cannot check for package updates."
 msgstr "Ingen valgte pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:624
+#: ../../entropy-notification-applet/src/etp_applet.py:589
 #, fuzzy
 msgid "Updates: attention"
 msgstr "Opdateringer"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:628
+#: ../../entropy-notification-applet/src/etp_applet.py:593
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:629
-#: ../../entropy-notification-applet/src/etp_applet.py:654
+#: ../../entropy-notification-applet/src/etp_applet.py:594
+#: ../../entropy-notification-applet/src/etp_applet.py:619
 #, fuzzy
 msgid "Updates: connection issues"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:633
+#: ../../entropy-notification-applet/src/etp_applet.py:598
 msgid "Not all the repositories have been fetched for checking"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:634
-#: ../../entropy-notification-applet/src/etp_applet.py:639
+#: ../../entropy-notification-applet/src/etp_applet.py:599
+#: ../../entropy-notification-applet/src/etp_applet.py:604
 #, fuzzy
 msgid "Updates: repository issues"
 msgstr "Filkilder"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:638
+#: ../../entropy-notification-applet/src/etp_applet.py:603
 #, fuzzy
 msgid "No repositories found online"
 msgstr "Ingen valgte pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:643
+#: ../../entropy-notification-applet/src/etp_applet.py:608
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:644
+#: ../../entropy-notification-applet/src/etp_applet.py:609
 #, fuzzy
 msgid "Updates: sync issues"
 msgstr "Opdateringer"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:648
+#: ../../entropy-notification-applet/src/etp_applet.py:613
 #, fuzzy
 msgid "Updates: unhandled error"
 msgstr "Opdateringer"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:665
+#: ../../entropy-notification-applet/src/etp_applet.py:628
+#: ../../entropy-notification-applet/src/etp_applet.py:629
 #, fuzzy
 msgid "Updates: error"
 msgstr "Opdateringer"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:673
+#: ../../entropy-notification-applet/src/etp_applet.py:636
 #, fuzzy
 msgid "Updates issue:"
 msgstr "Opdateringer"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:691
+#: ../../entropy-notification-applet/src/etp_applet.py:654
 #, fuzzy
 msgid "updates available."
 msgstr "Tilgængelige"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:693
+#: ../../entropy-notification-applet/src/etp_applet.py:656
 #, fuzzy
 msgid "Updates available"
 msgstr "Tilgængelige"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:702
-#: ../../entropy-notification-applet/src/etp_applet.py:704
+#: ../../entropy-notification-applet/src/etp_applet.py:665
+#: ../../entropy-notification-applet/src/etp_applet.py:667
 msgid "So far, so good. w00t!"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:703
+#: ../../entropy-notification-applet/src/etp_applet.py:666
 #, fuzzy
 msgid "Everything up-to-date"
 msgstr "Ingen pakker i køen"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:798
+#: ../../entropy-notification-applet/src/etp_applet.py:748
 msgid "Waiting before checkin..."
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:880
+#: ../../entropy-notification-applet/src/etp_applet.py:826
 msgid "Your system currently has"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:883
+#: ../../entropy-notification-applet/src/etp_applet.py:829
 #, fuzzy
 msgid "but the latest available version is"
 msgstr "Vis Installerede Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:885
+#: ../../entropy-notification-applet/src/etp_applet.py:831
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
@@ -9372,47 +9374,41 @@ msgid "emerge --sync ? (o;"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:243
-msgid "gtk-cancel"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:244
-#, fuzzy
-msgid "gtk-close"
-msgstr "Sletter"
-
-#: ../../spritz/src/spritz.glade.h:245
-msgid "gtk-execute"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:246
-#, fuzzy
-msgid "gtk-remove"
-msgstr "Sletter"
-
-#: ../../spritz/src/spritz.glade.h:247
 msgid "http://www.sabayon.org"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:248
+#: ../../spritz/src/spritz.glade.h:244
 msgid "kb/sec"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:249
+#: ../../spritz/src/spritz.glade.h:245
 msgid "localhost"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:251
+#: ../../spritz/src/spritz.glade.h:247
 #, fuzzy
 msgid "root"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:252
+#: ../../spritz/src/spritz.glade.h:248
 msgid "type your password here"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:253
+#: ../../spritz/src/spritz.glade.h:249
 msgid "type your username here"
 msgstr ""
+
+#, fuzzy
+#~ msgid "gtk-close"
+#~ msgstr "Sletter"
+
+#, fuzzy
+#~ msgid "gtk-remove"
+#~ msgstr "Sletter"
+
+#, fuzzy
+#~ msgid "Cannot load Spritz"
+#~ msgstr "Ønsker du at forsættet ?"
 
 #, fuzzy
 #~ msgid "cannot switch, package not found!"
