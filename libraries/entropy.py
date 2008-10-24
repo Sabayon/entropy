@@ -16839,7 +16839,8 @@ class ServerInterface(TextInterface):
                         count = (currentcounter,totalcounter,)
                     )
                 elif len(ck) == 32:
-                    ckOk = True
+                    pgkhash = dbconn.retrieveDigest(idpackage)
+                    if ck == pgkhash: ckOk = True
                 else:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
