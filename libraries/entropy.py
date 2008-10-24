@@ -1442,7 +1442,10 @@ class EquoInterface(TextInterface):
             if x.isalpha():
                 x = "(%s{1,})?" % (x,)
                 match_string += x
-        match_exp = re.compile(match_string,re.IGNORECASE)
+        try:
+            match_exp = re.compile(match_string,re.IGNORECASE)
+        except AssertionError: # too many groups
+            return set()
 
         matched = {}
         valid_repos = self.validRepositories
