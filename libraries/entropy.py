@@ -16839,8 +16839,8 @@ class ServerInterface(TextInterface):
                         count = (currentcounter,totalcounter,)
                     )
                 elif len(ck) == 32:
-                    pgkhash = dbconn.retrieveDigest(idpackage)
-                    if ck == pgkhash: ckOk = True
+                    pkghash = dbconn.retrieveDigest(idpackage)
+                    if ck == pkghash: ckOk = True
                 else:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
@@ -29991,7 +29991,10 @@ class EntropyDatabaseInterface:
                 Spm = self.ServiceInterface.SpmService
             vdb_path = Spm.get_vdb_path()
             pkg_path = os.path.join(vdb_path,key.split("/")[0])
-            mydirs = [os.path.join(pkg_path,x) for x in os.listdir(pkg_path) if x.startswith(name)]
+            try:
+                mydirs = [os.path.join(pkg_path,x) for x in os.listdir(pkg_path) if x.startswith(name)]
+            except OSError: # no dir, no party!
+                continue
             mydirs = [x for x in mydirs if os.path.isdir(x)]
             # now move these dirs
             for mydir in mydirs:
