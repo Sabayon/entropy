@@ -51,6 +51,9 @@ def package(options):
     _myopts = []
     mytbz2paths = []
     for opt in myopts:
+        if not Equo.entropyTools.is_valid_unicode(opt):
+            print_error(red(" %s." % (_("Malformed command"),) ))
+            return -10
         if (opt == "--nodeps"):
             equoRequestDeps = False
         elif (opt == "--empty"):
