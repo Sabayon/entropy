@@ -268,6 +268,20 @@ def add_proxy_opener(module, data):
         opener = module.build_opener(proxy_support)
     module.install_opener(opener)
 
+def is_valid_ascii(string):
+    try:
+        mystring = str(string)
+    except:
+        return False
+    return True
+
+def is_valid_unicode(string):
+    try:
+        mystring = unicode(string)
+    except:
+        return False
+    return True
+
 def is_valid_email(email):
     import re
     monster = "(?:[a-z0-9!#$%&'*+/=?^_{|}~-]+(?:.[a-z0-9!#$%" + \
