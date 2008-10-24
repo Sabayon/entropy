@@ -9949,6 +9949,17 @@ class TriggerInterface:
                     header = red("   ## ")
                 )
                 return 0
+            except ImportError, e:
+                sys.stderr = oldstderr
+                stdfile.close()
+                # stuff on system is broken, ignore it
+                self.Entropy.updateProgress(
+                    darkred("!!! Ebuild: pkg_prerm() failed, ImportError: ")+str(e)+darkred(" - ignoring"),
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                return 0
 
         if os.path.isfile(myebuild):
 
@@ -10019,7 +10030,18 @@ class TriggerInterface:
                 stdfile.close()
                 # stuff on system is broken, ignore it
                 self.Entropy.updateProgress(
-                    darkred("!!! Ebuild: pkg_prerm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
+                    darkred("!!! Ebuild: pkg_postrm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                return 0
+            except ImportError, e:
+                sys.stderr = oldstderr
+                stdfile.close()
+                # stuff on system is broken, ignore it
+                self.Entropy.updateProgress(
+                    darkred("!!! Ebuild: pkg_postrm() failed, ImportError: ")+str(e)+darkred(" - ignoring"),
                     importance = 1,
                     type = "warning",
                     header = red("   ## ")
