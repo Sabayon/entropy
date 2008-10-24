@@ -5268,6 +5268,15 @@ class PackageInterface:
             return rc
         return 0
 
+    def fetch_not_available_step(self):
+        self.Entropy.updateProgress(
+            blue(_("Fetch for the chosen package is not available, unknown error.")),
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
+        return 0
+
     def vanished_step(self):
         self.Entropy.updateProgress(
             blue(_("Installed package in queue vanished, skipping.")),
@@ -5515,6 +5524,12 @@ class PackageInterface:
             self.xterm_title += ' Installed package vanished'
             self.Entropy.setTitle(self.xterm_title)
             rc = self.vanished_step()
+            return rc
+
+        if self.infoDict.has_key('fetch_not_available'):
+            self.xterm_title += ' Fetch not available'
+            self.Entropy.setTitle(self.xterm_title)
+            rc = self.fetch_not_available_step()
             return rc
 
         rc = 0
@@ -5872,6 +5887,11 @@ class PackageInterface:
         self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
         self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
         self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
+
+        if not self.infoDict['download']:
+            self.infoDict['fetch_not_available'] = True
+            return 0
+
         self.infoDict['verified'] = False
         self.infoDict['steps'] = []
         if not repository.endswith(etpConst['packagesext']):
@@ -34330,6 +34350,8 @@ class EmailSender:
         from email import encoders
         from email.message import Message
         import mimetypes
+        self.smtphost = 'localhost'
+        self.smtpport = 25
         self.text = MIMEText
         self.mimefile = MIMEBase
         self.audio = MIMEAudio
@@ -34341,7 +34363,7 @@ class EmailSender:
         self.Message = Message
 
     def smtp_send(self, sender, destinations, message):
-        s = self.smtplib.SMTP()
+        s = self.smtplib.SMTP(self.smtphost,self.smtpport)
         s.connect()
         s.sendmail(sender, destinations, message)
         s.close()
