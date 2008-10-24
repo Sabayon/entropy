@@ -385,7 +385,6 @@ class SpritzApplication(Controller):
                 arg = os.path.realpath(arg)
                 packages_install.append(arg)
         if packages_install:
-            time.sleep(1)
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
         else:
@@ -1820,7 +1819,7 @@ class SpritzApplication(Controller):
 
     def on_installPackageItem_activate(self, widget = None, fn = None):
 
-        if self.isBusy:
+        if (widget and self.isWorking) or self.isBusy:
             return
 
         if not fn:

@@ -35,7 +35,7 @@ def busyCursor(mainwin,insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
     CURRENT_CURSOR = cur
     if insensitive:
         mainwin.set_sensitive(False)
-    doGtkEvents()
+    #doGtkEvents()
 
 def normalCursor(mainwin):
     ''' Set Normal cursor in mainwin and make it sensitive '''
@@ -44,7 +44,7 @@ def normalCursor(mainwin):
         mainwin.set_sensitive(True)
     global CURRENT_CURSOR
     CURRENT_CURSOR = None
-    doGtkEvents()
+    #doGtkEvents()
 
 def doGtkEvents():
     while gtk.events_pending():      # process gtk events
