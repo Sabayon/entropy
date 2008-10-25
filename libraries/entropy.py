@@ -1025,6 +1025,9 @@ class EquoInterface(TextInterface):
                     os.access(os.path.join(client_dbdir,x),os.R_OK)
         ]
 
+    def get_branch_from_download_relative_uri(self, db_download_uri):
+        return db_download_uri.split("/")[2]
+
     '''
        Cache stuff :: begin
     '''
@@ -3279,10 +3282,13 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
-    def fetch_file(self, url, digest = None, resume = True, fetch_file_abort_function = None):
+    def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None):
         # remove old
         filename = os.path.basename(url)
-        filepath = etpConst['packagesbindir']+"/"+etpConst['branch']+"/"+filename
+        filepath = etpConst['packagesbindir']+"/"+branch+"/"+filename
+        filepath_dir = os.path.dirname(filepath)
+        if not os.path.isdir(filepath_dir):
+            os.makedirs(filepath_dir,0755)
 
         # load class
         fetchConn = self.urlFetcher(url, filepath, resume = resume, abort_check_func = fetch_file_abort_function)
@@ -3305,8 +3311,8 @@ class EquoInterface(TextInterface):
             return -3, data_transfer, resumed
 
         del fetchConn
-        if (digest):
-            if (fetchChecksum != digest):
+        if digest:
+            if fetchChecksum != digest:
                 # not properly downloaded
                 return -2, data_transfer, resumed
             else:
@@ -3328,7 +3334,7 @@ class EquoInterface(TextInterface):
         else:
             return item
 
-    def fetch_file_on_mirrors(self, repository, filename, digest = False, verified = False, fetch_abort_function = None, package_name = None):
+    def fetch_file_on_mirrors(self, repository, branch, filename, digest = False, verified = False, fetch_abort_function = None, package_name = None):
 
         uris = etpRepositories[repository]['packages'][::-1]
         remaining = set(uris[:])
@@ -3391,6 +3397,7 @@ class EquoInterface(TextInterface):
                     )
                     rc, data_transfer, resumed = self.fetch_file(
                         url,
+                        branch,
                         digest,
                         do_resume,
                         fetch_file_abort_function = fetch_abort_function
@@ -4199,6 +4206,7 @@ class PackageInterface:
                     pkgkey = self.Entropy.entropyTools.dep_getkey(self.infoDict['atom'])
                 fetch = self.Entropy.fetch_file_on_mirrors(
                             self.infoDict['repository'],
+                            self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
                             self.infoDict['download'],
                             self.infoDict['checksum'],
                             fetch_abort_function = self.fetch_abort_function,
@@ -5243,8 +5251,10 @@ class PackageInterface:
         pkgkey = None
         if self.infoDict.has_key('atom'):
             pkgkey = self.Entropy.entropyTools.dep_getkey(self.infoDict['atom'])
+
         rc = self.Entropy.fetch_file_on_mirrors(
             self.infoDict['repository'],
+            self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
             self.infoDict['download'],
             self.infoDict['checksum'],
             self.infoDict['verified'],
@@ -16366,7 +16376,7 @@ class ServerInterface(TextInterface):
         return remote_revision
 
     def get_branch_from_download_relative_uri(self, mypath):
-        return mypath.split("/")[2]
+        return self.ClientService.get_branch_from_download_relative_uri(mypath)
 
     def atomMatch(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
@@ -32121,7 +32131,7 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None):
+    def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom'):
 
         searchkeywords = ["%"+keyword+"%"]
         slotstring = ''
@@ -32136,11 +32146,14 @@ class EntropyDatabaseInterface:
         if branch:
             searchkeywords.append(branch)
             branchstring = ' and branch = (?)'
+        order_by_string = ''
+        if order_by in ("atom","idpackage","branch",):
+            order_by_string = ' order by %s' % (order_by,)
 
         if (sensitive):
-            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
         else:
-            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring, searchkeywords)
+            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
         return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None, justid = False):
