@@ -16329,7 +16329,7 @@ class ServerInterface(TextInterface):
             repo = self.default_repository
         if branch == None:
             branch = etpConst['branch']
-        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],branch,etpConst['etpdatabasemissingdepswlfile'])
+        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],branch,etpConst['etpdatabasemissingdepsblfile'])
 
     def get_missing_dependencies_blacklist(self, repo = None, branch = None):
         if repo == None:
