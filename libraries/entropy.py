@@ -1600,6 +1600,100 @@ class EquoInterface(TextInterface):
             status = False
         return status
 
+    def __handle_multi_repo_matches(self, results, extended_results, valid_repos, open_db):
+
+        packageInformation = {}
+        versionInformation = {}
+        # .tbz2 repos have always the precedence, so if we find them,
+        # we should second what user wants, installing his tbz2
+        tbz2repos = [x for x in results if x.endswith(etpConst['packagesext'])]
+        if tbz2repos:
+            del tbz2repos
+            newrepos = results.copy()
+            for x in newrepos:
+                if x.endswith(etpConst['packagesext']):
+                    continue
+                del results[x]
+
+        version_duplicates = set()
+        versions = set()
+        for repo in results:
+            packageInformation[repo] = {}
+            if extended_results:
+                version = results[repo][1]
+                packageInformation[repo]['versiontag'] = results[repo][2]
+                packageInformation[repo]['revision'] = results[repo][3]
+            else:
+                dbconn = open_db(repo)
+                packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(results[repo])
+                packageInformation[repo]['revision'] = dbconn.retrieveRevision(results[repo])
+                version = dbconn.retrieveVersion(results[repo])
+            packageInformation[repo]['version'] = version
+            versionInformation[version] = repo
+            if version in versions:
+                version_duplicates.add(version)
+            versions.add(version)
+
+        newerVersion = self.entropyTools.getNewerVersion(list(versions))[0]
+        # if no duplicates are found or newer version is not in duplicates we're done
+        if (not version_duplicates) or (newerVersion not in version_duplicates):
+            reponame = versionInformation.get(newerVersion)
+            return (results[reponame],reponame)
+
+        # we have two repositories with >two packages with the same version
+        # check package tag
+
+        conflictingEntries = {}
+        tags_duplicates = set()
+        tags = set()
+        tagsInfo = {}
+        for repo in packageInformation:
+            if packageInformation[repo]['version'] != newerVersion:
+                continue
+            conflictingEntries[repo] = {}
+            versiontag = packageInformation[repo]['versiontag']
+            if versiontag in tags:
+                tags_duplicates.add(versiontag)
+            tags.add(versiontag)
+            tagsInfo[versiontag] = repo
+            conflictingEntries[repo]['versiontag'] = versiontag
+            conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
+
+        # tags will always be != []
+        newerTag = sorted(list(tags), reverse = True)[0]
+        if newerTag not in tags_duplicates:
+            reponame = tagsInfo.get(newerTag)
+            return (results[reponame],reponame)
+
+        # in this case, we have >two packages with the same version and tag
+        # check package revision
+
+        conflictingRevisions = {}
+        revisions = set()
+        revisions_duplicates = set()
+        revisionInfo = {}
+        for repo in conflictingEntries:
+            if conflictingEntries[repo]['versiontag'] == newerTag:
+                conflictingRevisions[repo] = {}
+                versionrev = conflictingEntries[repo]['revision']
+                if versionrev in revisions:
+                    revisions_duplicates.add(versionrev)
+                revisions.add(versionrev)
+                revisionInfo[versionrev] = repo
+                conflictingRevisions[repo]['revision'] = versionrev
+
+        newerRevision = max(revisions)
+        if newerRevision not in revisions_duplicates:
+            reponame = revisionInfo.get(newerRevision)
+            return (results[reponame],reponame)
+
+        # final step, in this case we have >two packages with the same version, tag and revision
+        # get the repository with the biggest priority
+
+        for reponame in valid_repos:
+            if reponame in conflictingRevisions:
+                return (results[reponame],reponame)
+
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True,
             multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None,
             server_repos = [], serverInstance = None, extendedResults = False, useCache = True):
@@ -1689,9 +1783,8 @@ class EquoInterface(TextInterface):
         else:
             dbpkginfo = (-1,1)
 
-        packageInformation = {}
-
         if multiRepo and repoResults:
+
             data = set()
             for repoid in repoResults:
                 data.add((repoResults[repoid],repoid))
@@ -1705,116 +1798,8 @@ class EquoInterface(TextInterface):
         elif len(repoResults) > 1:
 
             # we have to decide which version should be taken
-            # .tbz2 repos have always the precedence, so if we find them,
-            # we should second what user wants, installing his tbz2
-            tbz2repos = [x for x in repoResults if x.endswith(etpConst['packagesext'])]
-            if tbz2repos:
-                del tbz2repos
-                newrepos = repoResults.copy()
-                for x in newrepos:
-                    if x.endswith(etpConst['packagesext']):
-                        continue
-                    del repoResults[x]
-
-            version_duplicates = set()
-            versions = []
-            for repo in repoResults:
-                packageInformation[repo] = {}
-                if extendedResults:
-                    version = repoResults[repo][1]
-                    packageInformation[repo]['versiontag'] = repoResults[repo][2]
-                    packageInformation[repo]['revision'] = repoResults[repo][3]
-                    packageInformation[repo]['version'] = version
-                else:
-                    dbconn = open_db(repo)
-                    packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(repoResults[repo])
-                    packageInformation[repo]['revision'] = dbconn.retrieveRevision(repoResults[repo])
-                    version = dbconn.retrieveVersion(repoResults[repo])
-                packageInformation[repo]['version'] = version
-                if version in versions:
-                    version_duplicates.add(version)
-                versions.append(version)
-
-
-            newerVersion = self.entropyTools.getNewerVersion(versions)[0]
-
-            # if no duplicates are found, we're done
-            if not version_duplicates:
-
-                for reponame in packageInformation:
-                    if packageInformation[reponame]['version'] == newerVersion:
-                        break
-                dbpkginfo = (repoResults[reponame],reponame)
-
-            else:
-
-                if newerVersion not in version_duplicates:
-
-                    # we are fine, the newerVersion is not one of the duplicated ones
-                    for reponame in packageInformation:
-                        if packageInformation[reponame]['version'] == newerVersion:
-                            break
-                    dbpkginfo = (repoResults[reponame],reponame)
-
-                else:
-
-                    del version_duplicates
-                    conflictingEntries = {}
-                    tags_duplicates = set()
-                    tags = []
-                    for repo in packageInformation:
-                        if packageInformation[repo]['version'] == newerVersion:
-                            conflictingEntries[repo] = {}
-                            versiontag = packageInformation[repo]['versiontag']
-                            if versiontag in tags:
-                                tags_duplicates.add(versiontag)
-                            tags.append(versiontag)
-                            conflictingEntries[repo]['versiontag'] = versiontag
-                            conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
-
-                    del packageInformation
-                    newerTag = tags[:]
-                    newerTag.reverse()
-                    newerTag = newerTag[0]
-                    if not newerTag in tags_duplicates:
-
-                        # we're finally done
-                        for reponame in conflictingEntries:
-                            if conflictingEntries[reponame]['versiontag'] == newerTag:
-                                break
-                        dbpkginfo = (repoResults[reponame],reponame)
-
-                    else:
-
-                        # yes, it is. we need to compare revisions
-                        conflictingRevisions = {}
-                        revisions = []
-                        revisions_duplicates = set()
-                        for repo in conflictingEntries:
-                            if conflictingEntries[repo]['versiontag'] == newerTag:
-                                conflictingRevisions[repo] = {}
-                                versionrev = conflictingEntries[repo]['revision']
-                                if versionrev in revisions:
-                                    revisions_duplicates.add(versionrev)
-                                revisions.append(versionrev)
-                                conflictingRevisions[repo]['revision'] = versionrev
-
-                        del conflictingEntries
-                        newerRevision = max(revisions)
-                        if not newerRevision in revisions_duplicates:
-
-                            for reponame in conflictingRevisions:
-                                if conflictingRevisions[reponame]['revision'] == newerRevision:
-                                    break
-                            dbpkginfo = (repoResults[reponame],reponame)
-
-                        else:
-
-                            # ok, we must get the repository with the biggest priority
-                            for reponame in valid_repos:
-                                if reponame in conflictingRevisions:
-                                    break
-                            dbpkginfo = (repoResults[reponame],reponame)
+            mypkginfo = self.__handle_multi_repo_matches(repoResults, extendedResults, valid_repos, open_db)
+            if mypkginfo != None: dbpkginfo = mypkginfo
 
         # multimatch support
         if multiMatch:
