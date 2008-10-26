@@ -1600,21 +1600,9 @@ class EquoInterface(TextInterface):
             status = False
         return status
 
-    def atomMatch(          self,
-                            atom,
-                            caseSensitive = True,
-                            matchSlot = None,
-                            matchBranches = (),
-                            packagesFilter = True,
-                            multiMatch = False,
-                            multiRepo = False,
-                            matchRevision = None,
-                            matchRepo = None,
-                            server_repos = [],
-                            serverInstance = None,
-                            extendedResults = False,
-                            useCache = True
-                                                        ):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True,
+            multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None,
+            server_repos = [], serverInstance = None, extendedResults = False, useCache = True):
 
         if not server_repos:
             # support match in repository from shell
@@ -1715,8 +1703,8 @@ class EquoInterface(TextInterface):
             dbpkginfo = (repoResults[repo],repo)
 
         elif len(repoResults) > 1:
-            # we have to decide which version should be taken
 
+            # we have to decide which version should be taken
             # .tbz2 repos have always the precedence, so if we find them,
             # we should second what user wants, installing his tbz2
             tbz2repos = [x for x in repoResults if x.endswith(etpConst['packagesext'])]
@@ -1724,8 +1712,9 @@ class EquoInterface(TextInterface):
                 del tbz2repos
                 newrepos = repoResults.copy()
                 for x in newrepos:
-                    if not x.endswith(etpConst['packagesext']):
-                        del repoResults[x]
+                    if x.endswith(etpConst['packagesext']):
+                        continue
+                    del repoResults[x]
 
             version_duplicates = set()
             versions = []
@@ -1748,6 +1737,7 @@ class EquoInterface(TextInterface):
 
 
             newerVersion = self.entropyTools.getNewerVersion(versions)[0]
+
             # if no duplicates are found, we're done
             if not version_duplicates:
 
@@ -7805,7 +7795,7 @@ class QAInterface:
         return broken
 
 
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, self_check = False, repo = etpConst['officialrepositoryid']):
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, self_check = False, repo = etpConst['officialrepositoryid'], black_list = set(), black_list_adder = None):
 
         taint = False
         scan_msg = blue(_("Now searching for missing RDEPENDs"))
@@ -7837,7 +7827,12 @@ class QAInterface:
                 count = (count,maxcount,)
             )
             missing_extended, missing = self.get_missing_rdepends(dbconn, idpackage, self_check = self_check)
-            if not missing:
+            missing -= black_list
+            for item in missing_extended.keys():
+                missing_extended[item] -= black_list
+                if not missing_extended[item]:
+                    del missing_extended[item]
+            if (not missing) or (not missing_extended):
                 continue
             self.Entropy.updateProgress(
                 "[repo:%s] %s: %s %s:" % (
@@ -7853,7 +7848,7 @@ class QAInterface:
             )
             for missing_data in missing_extended:
                 self.Entropy.updateProgress(
-                        "%s:" % (brown(str(missing_data)),),
+                        "%s:" % (brown(unicode(missing_data)),),
                         importance = 0,
                         type = "info",
                         header = purple("   ## ")
@@ -7872,6 +7867,7 @@ class QAInterface:
                 rc = self.Entropy.askQuestion(_("Selectively?"))
                 if rc == "Yes":
                     newmissing = set()
+                    new_blacklist = set()
                     for dependency in missing:
                         self.Entropy.updateProgress(
                             "[repo:%s|%s] %s" % (
@@ -7886,6 +7882,12 @@ class QAInterface:
                         rc = self.Entropy.askQuestion(_("Want to add?"))
                         if rc == "Yes":
                             newmissing.add(dependency)
+                        else:
+                            rc = self.Entropy.askQuestion(_("Want to blacklist?"))
+                            if rc == "Yes":
+                                new_blacklist.add(dependency)
+                    if new_blacklist and (black_list_adder != None):
+                        black_list_adder(new_blacklist, repo = repo)
                     missing = newmissing
             if missing:
                 taint = True
@@ -16113,7 +16115,9 @@ class ServerInterface(TextInterface):
                         dbconn,
                         ask = ask,
                         repo = repo,
-                        self_check = True
+                        self_check = True,
+                        black_list = self.get_missing_dependencies_blacklist(repo = repo),
+                        black_list_adder = self.add_missing_dependencies_blacklist_items
                     )
                     myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
                 if to_be_injected:
@@ -16134,7 +16138,9 @@ class ServerInterface(TextInterface):
                 dbconn,
                 ask = ask,
                 repo = repo,
-                self_check = True
+                self_check = True,
+                black_list = self.get_missing_dependencies_blacklist(repo = repo),
+                black_list_adder = self.add_missing_dependencies_blacklist_items
             )
             myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
 
@@ -16333,6 +16339,42 @@ class ServerInterface(TextInterface):
             branch = etpConst['branch']
         return os.path.join(etpConst['server_repositories'][repo]['database_dir'],branch)
 
+    def get_missing_dependencies_blacklist_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        if branch == None:
+            branch = etpConst['branch']
+        return os.path.join(etpConst['server_repositories'][repo]['database_dir'],branch,etpConst['etpdatabasemissingdepswlfile'])
+
+    def get_missing_dependencies_blacklist(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        if branch == None:
+            branch = etpConst['branch']
+        wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
+        wl_data = []
+        if os.path.isfile(wl_file) and os.access(wl_file,os.R_OK):
+            f = open(wl_file,"r")
+            wl_data = [x.strip() for x in f.readlines() if x.strip() and not x.strip().startswith("#")]
+            f.close()
+        return set(wl_data)
+
+    def add_missing_dependencies_blacklist_items(self, items, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        if branch == None:
+            branch = etpConst['branch']
+        wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
+        wl_dir = os.path.dirname(wl_file)
+        if not (os.path.isdir(wl_dir) and os.access(wl_dir,os.W_OK)):
+            return
+        if os.path.isfile(wl_file) and not os.access(wl_file,os.W_OK):
+            return
+        f = open(wl_file,"a+")
+        f.write('\n'.join(items)+'\n')
+        f.flush()
+        f.close()
+
     def get_local_database_revision(self, repo = None):
 
         if repo == None:
@@ -16494,8 +16536,7 @@ class ServerInterface(TextInterface):
 
     def initialize_server_database(self, empty = True, repo = None, warnings = True):
 
-        if repo == None:
-            repo = self.default_repository
+        if repo == None: repo = self.default_repository
 
         self.close_server_databases()
         revisions_match = {}
@@ -16506,10 +16547,8 @@ class ServerInterface(TextInterface):
 
         mytxt = red("%s ...") % (_("Initializing Entropy database"),)
         self.updateProgress(
-            mytxt,
-            importance = 1,
-            type = "info",
-            header = darkgreen(" * "),
+            mytxt, importance = 1,
+            type = "info", header = darkgreen(" * "),
             back = True
         )
 
@@ -16683,7 +16722,12 @@ class ServerInterface(TextInterface):
 
             if idpackages_added:
                 dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-                myQA.scan_missing_dependencies(idpackages_added, dbconn, ask = True, repo = repo, self_check = True)
+                myQA.scan_missing_dependencies(
+                    idpackages_added, dbconn, ask = True,
+                    repo = repo, self_check = True,
+                    black_list = self.get_missing_dependencies_blacklist(repo = repo),
+                    black_list_adder = self.add_missing_dependencies_blacklist_items
+                )
 
         dbconn.commitChanges()
         self.close_server_databases()
