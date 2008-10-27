@@ -33996,6 +33996,10 @@ class EntropyDatabaseInterface:
         branch_list = ()
         direction = ''
         justname = True
+        pkgkey = ''
+        strippedAtom = ''
+        foundIDs = []
+        dbpkginfo = set()
 
         if scan_atom:
 
@@ -34029,17 +34033,21 @@ class EntropyDatabaseInterface:
                     branch_list = tuple(matchBranches)
                 break
 
-        # IDs found in the database that match our search
-        foundIDs = self.__generate_found_ids_match(branch_list, pkgkey, pkgname, pkgcat, caseSensitive, multiMatch)
+
+        if branch_list:
+            # IDs found in the database that match our search
+            foundIDs = self.__generate_found_ids_match(branch_list, pkgkey, pkgname, pkgcat, caseSensitive, multiMatch)
 
         ### FILTERING
         # filter slot and tag
-        foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
-        if packagesFilter: # keyword filtering
-            foundIDs = self.packagesFilter(foundIDs, atom)
+        if foundIDs:
+            foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
+            if packagesFilter: # keyword filtering
+                foundIDs = self.packagesFilter(foundIDs, atom)
         ### END FILTERING
 
-        dbpkginfo = self.__handle_found_ids_match(foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, atom, pkgversion)
+        if foundIDs:
+            dbpkginfo = self.__handle_found_ids_match(foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, atom, pkgversion)
 
         if not dbpkginfo:
             if extendedResults:
