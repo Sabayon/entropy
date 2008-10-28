@@ -18295,7 +18295,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         return True, (iddoc, None)
 
-    def insert_youtube_video(self, pkgkey, userid, username, video_path, title, description, keywords):
+    def insert_youtube_video(self, pkgkey, userid, username, video_path, file_name, title, description, keywords):
         self.check_connection()
         if not self.gdata:
             return False, None
@@ -18309,11 +18309,22 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             os.remove(video_path)
             return False, None
 
+        new_video_path = video_path
+        if isinstance(file_name,basestring):
+            # move file to the new filename
+            new_video_path = os.path.join(os.path.dirname(video_path),os.path.basename(file_name)) # force basename
+            scount = 0
+            while os.path.lexists(new_video_path):
+                scount += 1
+                bpath = "%s.%s" % (unicode(scount),os.path.basename(file_name),)
+                new_video_path = os.path.join(os.path.dirname(video_path),bpath)
+            shutil.move(video_path,new_video_path)
+
         yt_service = self.get_youtube_service()
         if yt_service == None:
             return False, None
 
-        mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split() if (x.strip() and x.strip(","))])
+        mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split() if (x.strip() and x.strip(",") and (len(x.strip()) > 4))])
         mydescription = "%s: %s" % (pkgkey,description,)
         mytitle = "%s %s: %s" % (self.system_name,'user generated content',title,)
         my_media_group = self.gdata.media.Group(
@@ -18331,7 +18342,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             player = None
         )
         video_entry = self.gdata.youtube.YouTubeVideoEntry(media = my_media_group)
-        new_entry = yt_service.InsertVideoEntry(video_entry, video_path)
+        new_entry = yt_service.InsertVideoEntry(video_entry, new_video_path)
         if not isinstance(new_entry,self.gdata.youtube.YouTubeVideoEntry):
             return False, None
         video_url = new_entry.GetSwfUrl()
@@ -18375,8 +18386,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return False, None
 
         video_id = data.get('ddata')
-        video_entry = yt_service.GetYouTubeVideoEntry(video_id = video_id)
-        deleted = yt_service.DeleteVideoEntry(video_entry)
+        try:
+            video_entry = yt_service.GetYouTubeVideoEntry(video_id = video_id)
+            deleted = yt_service.DeleteVideoEntry(video_entry)
+        except:
+            deleted = True
 
         if deleted:
             do_remove()
@@ -18661,6 +18675,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
         description = mydict.get('description')
         keywords = mydict.get('keywords')
         file_name = mydict.get('file_name')
+        real_filename = mydict.get('real_filename')
 
         try:
             doc_type = int(doc_type)
@@ -18690,7 +18705,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
         scount = -1
         while os.path.lexists(new_stream_path):
             scount += 1
-            b_name = os.path.basename(orig_stream_path)
+            b_name = os.path.basename(stream_path)
             b_name = "%s.%s" % (scount,b_name,)
             new_stream_path = os.path.join(os.path.dirname(orig_stream_path),b_name)
             if scount > 1000000:
@@ -18706,7 +18721,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
         elif doc_type == self.DOC_TYPES['generic_file']:
             rslt = ugc.insert_file(pkgkey, userid, username, stream_path, file_name, title, description, keywords)
         elif doc_type == self.DOC_TYPES['youtube_video']:
-            rslt = ugc.insert_youtube_video(pkgkey, userid, username, stream_path, title, description, keywords)
+            rslt = ugc.insert_youtube_video(pkgkey, userid, username, stream_path, real_filename, title, description, keywords)
         return rslt
 
     def docmd_add_comment(self, authenticator, myargs):
@@ -20989,7 +21004,8 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
             'title': title,
             'description': description,
             'keywords': keywords,
-            'file_name': os.path.join(pkgkey,os.path.basename(file_path))
+            'file_name': os.path.join(pkgkey,os.path.basename(file_path)),
+            'real_filename': os.path.basename(file_path),
         }
         xml_string = self.entropyTools.xml_from_dict(mydict)
 
