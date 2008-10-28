@@ -17807,7 +17807,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
         vote = 0.0
-        self.execute_query('SELECT avg(entropy_votes.vote) as avg_vote FROM entropy_votes,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_votes.idkey', (pkgkey,))
+        self.execute_query('SELECT avg(entropy_votes.`vote`) as avg_vote FROM entropy_votes,entropy_base WHERE entropy_base.`key` = %s AND entropy_base.idkey = entropy_votes.idkey', (pkgkey,))
         data = self.fetchone()
         if isinstance(data,dict):
             if data.get('avg_vote'):
