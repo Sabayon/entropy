@@ -18046,10 +18046,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if not clean_keys:
             return
 
-        def myiter():
-            for key in clean_keys:
-                yield (iddoc, key,)
-        self.execute_many('INSERT INTO entropy_docs_keywords VALUES (%s,%s)', myiter)
+        mydata = []
+        for key in clean_keys:
+            mydata.append((iddoc, key,))
+
+        self.execute_many('INSERT INTO entropy_docs_keywords VALUES (%s,%s)', mydata)
 
     def remove_keywords(self, iddoc):
         self.execute_query('DELETE FROM entropy_docs_keywords WHERE `iddoc` = %s',(iddoc,))
