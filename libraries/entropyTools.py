@@ -335,8 +335,7 @@ def applicationLockCheck(option = None, gentle = False, silent = False):
     return False
 
 def getRandomNumber():
-    import random
-    return int(str(random.random())[2:7])
+    return abs(hash(os.urandom(2)))%99999
 
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
@@ -991,7 +990,7 @@ def dep_getkey(mydepx):
     @rtype: String
     @return: The package category/package-version
     """
-
+    if not mydepx: return mydepx
     mydep = mydepx[:]
     mydep = remove_tag(mydep)
     mydep = remove_usedeps(mydep)
