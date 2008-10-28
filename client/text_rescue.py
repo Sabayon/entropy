@@ -456,22 +456,25 @@ def database(options):
             if x[0] not in installedCounters:
                 # check if the package is in toBeAdded
                 if (toBeAdded):
-                    atomkey = Equo.entropyTools.dep_getkey(Equo.clientDbconn.retrieveAtom(x[1]))
-                    atomslot = Equo.clientDbconn.retrieveSlot(x[1])
+                    atom = Equo.clientDbconn.retrieveAtom(x[1])
                     add = True
-                    for pkgdata in toBeAdded:
-                        try:
-                            addslot = Spm.get_installed_package_slot(pkgdata[0])
-                        except KeyError:
-                            continue
-                        addkey = Equo.entropyTools.dep_getkey(pkgdata[0])
-                        # workaround for ebuilds not having slot
-                        if addslot == None:
-                            addslot = '0'
-                        if (atomkey == addkey) and (str(atomslot) == str(addslot)):
-                            # do not add to toBeRemoved
-                            add = False
-                            break
+                    if atom:
+                        atomkey = Equo.entropyTools.dep_getkey(atom)
+                        atomslot = Equo.clientDbconn.retrieveSlot(x[1])
+                        add = True
+                        for pkgdata in toBeAdded:
+                            try:
+                                addslot = Spm.get_installed_package_slot(pkgdata[0])
+                            except KeyError:
+                                continue
+                            addkey = Equo.entropyTools.dep_getkey(pkgdata[0])
+                            # workaround for ebuilds not having slot
+                            if addslot == None:
+                                addslot = '0'
+                            if (atomkey == addkey) and (str(atomslot) == str(addslot)):
+                                # do not add to toBeRemoved
+                                add = False
+                                break
                     if add:
                         toBeRemoved.add(x[1])
                 else:
