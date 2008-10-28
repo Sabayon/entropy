@@ -681,6 +681,7 @@ class EquoInterface(TextInterface):
 
         if (not self.noclientdb) and (not os.path.isfile(etpConst['etpdatabaseclientfilepath'])):
             conn = load_db_from_ram()
+            self.entropyTools.printTraceback(f = self.clientLog)
         else:
             conn = EntropyDatabaseInterface(
                 readOnly = False,
@@ -697,8 +698,11 @@ class EquoInterface(TextInterface):
                 try:
                     conn.validateDatabase()
                 except exceptionTools.SystemDatabaseError:
-                    try: conn.closeDB()
-                    except: pass
+                    try:
+                        conn.closeDB()
+                    except:
+                        pass
+                    self.entropyTools.printTraceback(f = self.clientLog)
                     conn = load_db_from_ram()
 
         if not etpConst['dbconfigprotect']:
@@ -17780,7 +17784,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         # for binary files, get size too
         mydict['size'] = 0
         if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
-            myfilename = mydict['ddata'].tostring()
+            myfilename = mydict['ddata']
+            if not isinstance(myfilename,basestring):
+                myfilename = myfilename.tostring()
             mypath = os.path.join(self.STORE_PATH,myfilename)
             if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
                 try:
@@ -17789,20 +17795,23 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                     pass
             mydict['store_url'] = os.path.join(self.store_url,myfilename)
         else:
+            mydata = mydict['ddata']
+            if not isinstance(mydata,basestring):
+                mydata = mydata.tostring()
             try:
-                mydict['size'] = len(mydict['ddata'].tostring())
+                mydict['size'] = len(mydata)
             except:
                 pass
         return mydict
 
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
-        idkey = self.get_idkey(pkgkey)
         vote = 0.0
-        self.execute_query('SELECT avg(`vote`) as `avg_vote` FROM entropy_votes WHERE `idkey` = %s', (idkey,))
+        self.execute_query('SELECT avg(entropy_votes.vote) as avg_vote FROM entropy_votes,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_votes.idkey', (idkey,))
         data = self.fetchone()
-        if data['avg_vote'] != None:
-            vote = float(data['avg_vote'])
+        if isinstance(data,dict):
+            if data.has_key('avg_vote'):
+                vote = float(data['avg_vote'])
         return vote
 
     def get_ugc_allvotes(self):
@@ -18270,8 +18279,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         data = self.fetchone()
         if data != None:
             mypath = data.get('ddata')
+            if not isinstance(mypath,basestring):
+                mypath = mypath.tostring()
             if mypath != None:
-                mypath = os.path.join(self.STORE_PATH,mypath.tostring())
+                mypath = os.path.join(self.STORE_PATH,mypath)
                 if os.path.isfile(mypath) and os.access(mypath,os.W_OK):
                     os.remove(mypath)
 
@@ -31032,19 +31043,20 @@ class EntropyDatabaseInterface:
         while self.doesTableExist(randomtable):
             randomtable = "cdiff"+str(self.entropyTools.getRandomNumber())
         self.cursor.execute('CREATE TEMPORARY TABLE '+randomtable+' ( file VARCHAR )')
-
-        dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-        dbconn.cursor.execute('select file from content where idpackage = (?)', (dbconn_idpackage,))
-        xfile = dbconn.cursor.fetchone()
-        while xfile:
-            self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile[0],))
+        try:
+            dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+            dbconn.cursor.execute('select file from content where idpackage = (?)', (dbconn_idpackage,))
             xfile = dbconn.cursor.fetchone()
+            while xfile:
+                self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile[0],))
+                xfile = dbconn.cursor.fetchone()
 
-        # now compare
-        self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
-        diff = self.fetchall2set(self.cursor.fetchall())
-        self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
-        return diff
+            # now compare
+            self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
+            diff = self.fetchall2set(self.cursor.fetchall())
+            return diff
+        finally:
+            self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
 
     def doCleanups(self):
         self.cleanupUseflags()
@@ -32409,8 +32421,11 @@ class EntropyDatabaseInterface:
         self.live_cache['listAllBranches'] = results.copy()
         return results
 
-    def listIdPackagesInIdcategory(self,idcategory):
-        self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)', (idcategory,))
+    def listIdPackagesInIdcategory(self,idcategory, order_by = 'atom'):
+        order_by_string = ''
+        if order_by in ("atom","name","version",):
+            order_by_string = ' ORDER BY %s' % (order_by,)
+        self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)'+order_by_string, (idcategory,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def listIdpackageDependencies(self, idpackage):
