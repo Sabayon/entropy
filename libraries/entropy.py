@@ -4242,17 +4242,27 @@ class PackageInterface:
             if os.path.islink(self.infoDict['pkgpath']):
                 os.remove(self.infoDict['pkgpath'])
             self.infoDict['verified'] = False
-            self.fetch_step()
+            rc = self.fetch_step()
+            if rc != 0: return rc
 
         if not self.infoDict['merge_from']:
-            rc = self.Entropy.entropyTools.spawnFunction(
-                        self.Entropy.entropyTools.uncompressTarBz2,
-                        self.infoDict['pkgpath'],
-                        self.infoDict['imagedir'],
-                        catchEmpty = True
-                )
-            if rc != 0:
-                return rc
+            unpack_tries = 3
+            while 1:
+                unpack_tries -= 1
+                rc = self.Entropy.entropyTools.spawnFunction(
+                            self.Entropy.entropyTools.uncompressTarBz2,
+                            self.infoDict['pkgpath'],
+                            self.infoDict['imagedir'],
+                            catchEmpty = True
+                    )
+                if rc == 0:
+                    break
+                if unpack_tries <= 0:
+                    return rc
+                # otherwise, try to download it again
+                self.infoDict['verified'] = False
+                f_rc = self.fetch_step()
+                if f_rc != 0: return f_rc
         else:
             pid = os.fork()
             if pid > 0:
@@ -17702,28 +17712,22 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.check_connection()
         self.execute_query('SELECT `idkey` FROM entropy_base WHERE `key` = %s', (key,))
         data = self.fetchone()
-        if data:
-            return data['idkey']
+        if data: return data['idkey']
         return -1
 
     def get_pkgkey(self, idkey):
         self.check_connection()
         self.execute_query('SELECT `key` FROM entropy_base WHERE `idkey` = %s', (idkey,))
         data = self.fetchone()
-        if data:
-            return data['key']
+        if data: return data['key']
 
     def get_ugc_metadata(self, pkgkey):
         self.check_connection()
-        idkey = self.get_idkey(pkgkey)
         metadata = {}
-        if idkey == -1:
-            return metadata
-        self.execute_query('SELECT * FROM entropy_docs WHERE `idkey` = %s', (idkey,))
+        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_base.`idkey` = entropy_docs.`idkey` AND entropy_base.`key` = %s', (pkgkey,))
         metadata['docs'] = self.fetchall()
-        if metadata['docs']:
-            for mydict in metadata['docs']:
-                mydict = self._get_ugc_extra_metadata(mydict)
+        for mydict in metadata['docs']:
+            mydict = self._get_ugc_extra_metadata(mydict)
         metadata['vote'] = self.get_ugc_vote(pkgkey)
         metadata['downloads'] = self.get_ugc_downloads(pkgkey)
         return metadata
@@ -17741,15 +17745,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
         self.check_connection()
-        idkey = self.get_idkey(pkgkey)
         metadata = []
-        if idkey == -1:
-            return metadata
-        self.execute_query('SELECT * FROM entropy_docs WHERE `idkey` = %s AND `iddoctype` IN %s', (idkey,typeslist,))
+        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_base.`key` = %s AND entropy_docs.`iddoctype` IN %s', (pkgkey,typeslist,))
         metadata = self.fetchall()
-        if metadata:
-            for mydict in metadata:
-                mydict = self._get_ugc_extra_metadata(mydict)
+        for mydict in metadata:
+            mydict = self._get_ugc_extra_metadata(mydict)
         return metadata
 
     def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
@@ -17820,16 +17820,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_allvotes(self):
         self.check_connection()
         vote_data = {}
-        self.execute_query('SELECT `key`,`idkey` FROM entropy_base')
-        keys_data = self.fetchall()
-        if not keys_data: return vote_data
-        for d_dict in keys_data:
-            myvote = 0.0
-            self.execute_query('SELECT avg(`vote`) as `avg_vote` FROM entropy_votes WHERE `idkey` = %s', (d_dict['idkey'],))
-            data = self.fetchone()
-            if data.get('avg_vote'):
-                myvote = float(data['avg_vote'])
-            vote_data[d_dict['key']] = myvote
+        self.execute_query('SELECT entropy_base.`key` as `vkey`,avg(entropy_votes.vote) as `avg_vote` FROM entropy_votes,entropy_base WHERE entropy_votes.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
+        data = self.fetchall()
+        for d_dict in data:
+            myvote = float(d_dict['avg_vote'])
+            vote_data[d_dict['vkey']] = myvote
         return vote_data
 
     def get_ugc_downloads(self, pkgkey):
@@ -17844,16 +17839,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_alldownloads(self):
         self.check_connection()
         down_data = {}
-        self.execute_query('SELECT `key`,`idkey` FROM entropy_base')
-        keys_data = self.fetchall()
-        if not keys_data: return down_data
-        for d_dict in keys_data:
-            downloads = 0
-            self.execute_query('SELECT sum(`count`) as `tot_downloads` FROM entropy_downloads WHERE `idkey` = %s', (d_dict['idkey'],))
-            data = self.fetchone()
-            if data['tot_downloads'] != None:
-                downloads = data['tot_downloads']
-            down_data[d_dict['key']] = int(downloads)
+        self.execute_query('SELECT entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
+        data = self.fetchall()
+        for d_dict in data:
+            down_data[d_dict['vkey']] = int(d_dict['tot_downloads'])
         return down_data
 
     def get_iddoc_userid(self, iddoc):
@@ -30225,6 +30214,8 @@ class EntropyDatabaseInterface:
 
         myidpackage_string = 'NULL'
         if isinstance(idpackage,int):
+            # does it exist?
+            self.removePackage(idpackage, do_cleanup = False, do_commit = False, do_rss = False)
             myidpackage_string = '?'
             mybaseinfo_data.insert(0,idpackage)
         else:
@@ -30378,14 +30369,14 @@ class EntropyDatabaseInterface:
             return self.addPackage(etpData, revision = curRevision)
 
 
-    def removePackage(self, idpackage, do_cleanup = True, do_commit = True):
+    def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
 
         self.checkReadOnly()
         self.live_cache.clear()
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if etpConst['rss-feed'] and not self.clientDatabase:
+        if etpConst['rss-feed'] and (not self.clientDatabase) and do_rss:
             # store addPackage action
             rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
             global etpRSSMessages
@@ -30439,10 +30430,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('DELETE FROM useflags WHERE idpackage = (?)',(idpackage,))
             # keywords
             self.cursor.execute('DELETE FROM keywords WHERE idpackage = (?)',(idpackage,))
-
-            #
-            # WARNING: exception won't be handled anymore with 1.0
-            #
 
             if self.doesTableExist('messages'):
                 self.cursor.execute('DELETE FROM messages WHERE idpackage = (?)',(idpackage,))
