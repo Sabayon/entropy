@@ -339,7 +339,7 @@ class SpritzApplication(Controller):
         self.disable_ugc = False
         self.ad_list_url = 'http://www.sabayonlinux.org/entropy_ads/LIST'
         self.ad_uri_dir = os.path.dirname(self.ad_list_url)
-        self.previous_ad_index = None
+        self.previous_ad_index = -1
         self.previous_ad_image_path = None
         self.ad_url = None
         self.ad_pix = gtk.image_new_from_file(const.plain_ad_pix)
@@ -506,10 +506,12 @@ class SpritzApplication(Controller):
         self.ugcTask.start()
 
     def spawnAdRotation(self):
+        if self.do_debug: print "entering ad rotation"
         try:
             self.ad_rotation()
         except:
             pass
+        if self.do_debug: print "quitting ad rotation"
 
     def ad_rotation(self):
 
@@ -525,10 +527,13 @@ class SpritzApplication(Controller):
                 continue
 
             ads_data = [x.strip() for x in ads_data if x.strip() and x.split() > 1]
+
             length = len(ads_data)
             myrand = int(random.random()*length)
-            while myrand == self.previous_ad_index:
-                myrand = int(random.random()*length)
+            if length > 1:
+                while (myrand == self.previous_ad_index):
+                    if self.do_debug: print "ad loop",myrand
+                    myrand = int(random.random()*length)
 
             mydata = ads_data[myrand].split()
             mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
@@ -569,10 +574,12 @@ class SpritzApplication(Controller):
             break
 
     def spawnUgcUpdate(self):
+        if self.do_debug: print "entering UGC"
         try:
             self.ugc_update()
         except:
             pass
+        if self.do_debug: print "quitting UGC"
 
     def ugc_update(self):
 
@@ -581,13 +588,25 @@ class SpritzApplication(Controller):
 
         self.isWorking = True
         self.spawning_ugc = True
+        if self.do_debug: print "are we connected?"
         connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+        if self.do_debug:
+            cr = False
+            if connected: cr = True
+            print "conn result",cr
         if (isinstance(connected,bool) and (not connected)) or (self.Equo.UGC == None):
             self.isWorking = False
             self.spawning_ugc = False
             return
         for repo in self.Equo.validRepositories:
+            if self.do_debug:
+                t1 = time.time()
+                print "working UGC update for",repo
             self.Equo.update_ugc_cache(repo)
+            if self.do_debug:
+                t2 = time.time()
+                td = t2 - t1
+                print "completed UGC update for",repo,"took",td
 
         self.isWorking = False
         self.spawning_ugc = False
