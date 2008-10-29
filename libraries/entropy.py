@@ -21185,7 +21185,8 @@ class SystemSocketClientInterface:
 
     def transmit(self, data):
         self.check_socket_connection()
-        self.sock_conn.settimeout(self.socket_timeout)
+        if hasattr(self.sock_conn,'settimeout'):
+            self.sock_conn.settimeout(self.socket_timeout)
         data = self.append_eos(data)
         try:
 
@@ -21247,7 +21248,8 @@ class SystemSocketClientInterface:
     def receive(self):
 
         self.check_socket_connection()
-        self.sock_conn.settimeout(self.socket_timeout)
+        if hasattr(self.sock_conn,'settimeout'):
+            self.sock_conn.settimeout(self.socket_timeout)
         self.ssl_prepending = True
 
         def do_receive():
@@ -21415,14 +21417,16 @@ class SystemSocketClientInterface:
 
         if self.ssl:
             self.real_sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
-            self.real_sock_conn.settimeout(self.socket_timeout)
+            if hasattr(self.real_sock_conn,'settimeout'):
+                self.real_sock_conn.settimeout(self.socket_timeout)
             if self.pyopenssl:
                 self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
             else:
                 self.sock_conn = self.real_sock_conn
         else:
             self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
-            self.sock_conn.settimeout(self.socket_timeout)
+            if hasattr(self.sock_conn,'settimeout'):
+                self.sock_conn.settimeout(self.socket_timeout)
             self.real_sock_conn = self.sock_conn
 
         self.hostname = host
