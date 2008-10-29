@@ -1679,47 +1679,60 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             return 0
         else:
             raise
+    except EOFError:
+        return -1
 
-    directories = []
-    for tarinfo in tar:
-        if tarinfo.isdir():
-            # Extract directory with a safe mode, so that
-            # all files below can be extracted as well.
+    try:
+        directories = []
+        for tarinfo in tar:
+            if tarinfo.isdir():
+                # Extract directory with a safe mode, so that
+                # all files below can be extracted as well.
+                try:
+                    os.makedirs(os.path.join(extractPath, tarinfo.name), 0777)
+                except EnvironmentError:
+                    pass
+                directories.append(tarinfo)
+            else:
+                try:
+                    tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
+                except:  # default encoding failed
+                    tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
+                    tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
+                tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
+            del tar.members[:]
+
+        # Reverse sort directories.
+        #'''
+        directories.sort(lambda a, b: cmp(a.name, b.name))
+        directories.reverse()
+
+        origpath = extractPath
+        # Set correct owner, mtime and filemode on directories.
+        for tarinfo in directories:
+            epath = os.path.join(extractPath, tarinfo.name)
             try:
-                os.makedirs(os.path.join(extractPath, tarinfo.name), 0777)
-            except EnvironmentError:
-                pass
-            directories.append(tarinfo)
-        else:
-            try:
-                tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
-            except:  # default encoding failed
-                tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
-                tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
-            tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
-        del tar.members[:]
+                tar.chown(tarinfo, epath)
+                tar.utime(tarinfo, epath)
+                tar.chmod(tarinfo, epath)
+            except tarfile.ExtractError:
+                if tar.errorlevel > 1:
+                    raise
 
-    # Reverse sort directories.
-    #'''
-    directories.sort(lambda a, b: cmp(a.name, b.name))
-    directories.reverse()
+    except EOFError:
+        return -1
 
-    origpath = extractPath
-    # Set correct owner, mtime and filemode on directories.
-    for tarinfo in directories:
-        epath = os.path.join(extractPath, tarinfo.name)
+    finally:
         try:
-            tar.chown(tarinfo, epath)
-            tar.utime(tarinfo, epath)
-            tar.chmod(tarinfo, epath)
-        except tarfile.ExtractError:
-            if tar.errorlevel > 1:
-                raise
+            del directories
+            tar.close()
+            del tar
+        except:
+            pass
+
     #'''
 
-    del directories
-    tar.close()
-    del tar
+
     if os.listdir(origpath):
         return 0
     else:
