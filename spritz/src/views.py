@@ -508,6 +508,10 @@ class EntropyPackageView:
     def get_stars_rating( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
         if not obj: return
+
+        if obj.color:
+            self.set_line_status(obj, cell)
+
         try:
             voted = int(obj.voted)
         except:

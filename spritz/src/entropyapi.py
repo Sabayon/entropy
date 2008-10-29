@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import sys
 from spritz_setup import const
 from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
 
@@ -195,6 +196,8 @@ class Equo(EquoInterface):
         self.urlFetcher = None
         EquoInterface.__init__(self, *args, **kwargs)
         self.xcache = True # force xcache enabling
+        if "--debug" in sys.argv:
+            self.UGC.quiet = False
 
     def connect_to_gui(self, spritz_app):
         self.progress = spritz_app.progress
