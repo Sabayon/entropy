@@ -1442,7 +1442,7 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
-    def get_meant_packages(self, search_term, from_installed = False):
+    def get_meant_packages(self, search_term, from_installed = False, valid_repos = [], branch = etpConst['branch']):
         import re
         match_string = ''
         for x in search_term:
@@ -1452,21 +1452,24 @@ class EquoInterface(TextInterface):
         try:
             match_exp = re.compile(match_string,re.IGNORECASE)
         except AssertionError: # too many groups
-            return set()
+            return []
 
         matched = {}
-        valid_repos = self.validRepositories
+        if not valid_repos:
+            valid_repos = self.validRepositories
         if from_installed:
             valid_repos = [1]
         for repo in valid_repos:
             if isinstance(repo,basestring):
                 dbconn = self.openRepositoryDatabase(repo)
+            elif isinstance(repo,EntropyDatabaseInterface):
+                dbconn = repo
             elif hasattr(self,'clientDbconn'):
                 dbconn = self.clientDbconn
             else:
                 continue
             # get names
-            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=")
+            idpackages = dbconn.listAllIdpackages(branch = branch, branch_operator = "<=")
             for idpackage in idpackages:
                 name = dbconn.retrieveName(idpackage)
                 if len(name) < len(search_term):
@@ -1496,7 +1499,7 @@ class EquoInterface(TextInterface):
                 popped = matched.pop(most)
                 mydata.extend(list(popped))
             return mydata
-        return set()
+        return []
 
     # better to use key:slot
     def check_package_update(self, atom, deep = False):
@@ -26325,7 +26328,9 @@ class UGCClientInterface:
         return self.do_cmd(repository, True, "ugc_remove_comment", [iddoc], {})
 
     def add_vote(self, repository, pkgkey, vote):
-        voted, add_err_msg = self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
+        data = self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
+        if isinstance(data,tuple): voted, add_err_msg = data
+        else: return False,'wrong server answer'
         if voted: self.get_vote(repository, pkgkey)
         return voted, add_err_msg
 
@@ -26346,7 +26351,9 @@ class UGCClientInterface:
         return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
 
     def get_downloads(self, repository, pkgkey):
-        downloads, err_msg = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
+        data = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
+        if isinstance(data,tuple): downloads, err_msg = data
+        else: return False,'wrong server answer'
         if downloads:
             mydict = {pkgkey: downloads}
             self.UGCCache.update_downloads_cache(repository, mydict)
@@ -26383,7 +26390,9 @@ class UGCClientInterface:
         return self.do_cmd(repository, True, "ugc_remove_youtube_video", [iddoc], {})
 
     def get_docs(self, repository, pkgkey):
-        docs_data, err_msg = self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
+        data = self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
+        if isinstance(data,tuple): docs_data, err_msg = data
+        else: return False,'wrong server answer'
         if err_msg == 'ok':
             self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
         return docs_data, err_msg
