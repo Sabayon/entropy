@@ -7195,7 +7195,7 @@ class RepoInterface:
         self.Entropy.validate_repositories()
         self.Entropy.closeAllRepositoryDatabases()
 
-        # clean caches
+        # clean caches, fetch security
         if self.dbupdated:
             self.Entropy.generate_cache(
                 depcache = self.Entropy.xcache,
@@ -7205,6 +7205,12 @@ class RepoInterface:
             )
             if self.fetchSecurity:
                 self.do_update_security_advisories()
+            # do treeupdates
+            if isinstance(self.Entropy.clientDbconn,EntropyDatabaseInterface):
+                for repo in self.reponames:
+                    dbc = self.Entropy.openRepositoryDatabase(repo)
+                    dbc.clientUpdatePackagesData(self.Entropy.clientDbconn)
+                self.Entropy.closeAllRepositoryDatabases()
 
         if self.syncErrors:
             self.Entropy.updateProgress(
