@@ -34420,6 +34420,8 @@ class EmailSender:
         from email import encoders
         from email.message import Message
         import mimetypes
+        self.smtpuser = None
+        self.smtppassword = None
         self.smtphost = 'localhost'
         self.smtpport = 25
         self.text = MIMEText
@@ -34435,6 +34437,8 @@ class EmailSender:
     def smtp_send(self, sender, destinations, message):
         s = self.smtplib.SMTP(self.smtphost,self.smtpport)
         s.connect()
+        if self.smtpuser and self.smtppassword:
+            s.login(self.smtpuser,self.smtppassword)
         s.sendmail(sender, destinations, message)
         s.close()
 
