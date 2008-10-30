@@ -34436,11 +34436,10 @@ class EmailSender:
 
     def smtp_send(self, sender, destinations, message):
         s = self.smtplib.SMTP(self.smtphost,self.smtpport)
-        s.connect()
         if self.smtpuser and self.smtppassword:
             s.login(self.smtpuser,self.smtppassword)
         s.sendmail(sender, destinations, message)
-        s.close()
+        s.quit()
 
     def send_text_email(self, sender_email, destination_emails, subject, content):
 
