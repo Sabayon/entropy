@@ -18328,9 +18328,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if yt_service == None:
             return False, None
 
-        mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split() if (x.strip() and x.strip(",") and (len(x.strip()) > 4))])
-        gd_keywords = None
-        if mykeywords: gd_keywords = self.gdata.media.Keywords(text = mykeywords)
+        mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split()+["sabayon"] if (x.strip() and x.strip(",") and (len(x.strip()) > 4))])
+        gd_keywords = self.gdata.media.Keywords(text = mykeywords)
 
         mydescription = "%s: %s" % (pkgkey,description,)
         mytitle = "%s: %s" % (self.system_name,title,)
