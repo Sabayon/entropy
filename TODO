@@ -3,7 +3,7 @@ TODO list
   - implement package sets (meta packages list - security only updates feature)
   - masking/unmasking functions
   - UGC: bug report documents?
-  - text ADS
+  - UGC: bbcode docs?
   - p2p way to fight security attacks (through UGC and triple md5 verification)
   - force a package to keep the current version
   - server-side messages collection
