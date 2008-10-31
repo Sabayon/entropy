@@ -17721,6 +17721,13 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if data: return data['idkey']
         return -1
 
+    def get_iddoctype(self, iddoc):
+        self.check_connection()
+        self.execute_query('SELECT `iddoctype` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
+        data = self.fetchone()
+        if data: return data['iddoctype']
+        return -1
+
     def get_pkgkey(self, idkey):
         self.check_connection()
         self.execute_query('SELECT `key` FROM entropy_base WHERE `idkey` = %s', (idkey,))
