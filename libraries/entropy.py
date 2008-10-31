@@ -17752,7 +17752,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
         self.check_connection()
         metadata = []
-        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_base.`key` = %s AND entropy_docs.`iddoctype` IN %s', (pkgkey,typeslist,))
+        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_base.`key` = %s AND entropy_docs.`iddoctype` IN %s ORDER BY entropy_docs.`ts` ASC', (pkgkey,typeslist,))
         metadata = self.fetchall()
         for mydict in metadata:
             mydict = self._get_ugc_extra_metadata(mydict)
@@ -17768,9 +17768,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             typeslist += [0]
         self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers,typeslist,))
         metadata = self.fetchall()
-        if metadata:
-            for mydict in metadata:
-                mydict = self._get_ugc_extra_metadata(mydict)
+        for mydict in metadata:
+            mydict = self._get_ugc_extra_metadata(mydict)
         return metadata
 
     def get_ugc_metadata_by_identifiers(self, identifiers):
@@ -17780,9 +17779,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             identifiers += [0]
         self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s', (identifiers,))
         metadata = self.fetchall()
-        if metadata:
-            for mydict in metadata:
-                mydict = self._get_ugc_extra_metadata(mydict)
+        for mydict in metadata:
+            mydict = self._get_ugc_extra_metadata(mydict)
         return metadata
 
     def _get_ugc_extra_metadata(self, mydict):
@@ -21405,8 +21403,8 @@ class SystemSocketClientInterface:
             mytxt = _("Reconnecting to socket")
             self.Entropy.updateProgress(
                 "[%s:%s] %s" % (
-                        brown(self.hostname),
-                        bold(str(self.hostport)),
+                        brown(unicode(self.hostname)),
+                        bold(unicode(self.hostport)),
                         blue(mytxt),
                 ),
                 importance = 1,
