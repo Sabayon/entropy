@@ -17725,7 +17725,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.check_connection()
         self.execute_query('SELECT `iddoctype` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
         data = self.fetchone()
-        if data: return data['iddoctype']
+        if data: return int(data['iddoctype'])
         return -1
 
     def get_pkgkey(self, idkey):
@@ -18330,7 +18330,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split() if (x.strip() and x.strip(",") and (len(x.strip()) > 4))])
         mydescription = "%s: %s" % (pkgkey,description,)
-        mytitle = "%s %s: %s" % (self.system_name,'user generated content',title,)
+        mytitle = "%s: %s" % (self.system_name,title,)
         my_media_group = self.gdata.media.Group(
             title = self.gdata.media.Title(text = mytitle),
             description = self.gdata.media.Description(
