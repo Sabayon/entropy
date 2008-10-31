@@ -18186,6 +18186,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         args += self.VIRUS_CHECK_ARGS
         args += [filepath]
         rc = subprocess.call(args)
+        f = open("/dev/null","w")
+        p = subprocess.Popen(args, stdout = f, stderr = f)
+        rc = p.wait()
+        f.close()
         if rc == 1:
             return True,None
         return False,None
