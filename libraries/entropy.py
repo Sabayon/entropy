@@ -18329,6 +18329,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return False, None
 
         mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split() if (x.strip() and x.strip(",") and (len(x.strip()) > 4))])
+        gd_keywords = None
+        if mykeywords: gd_keywords = self.gdata.media.Keywords(text = mykeywords)
+
         mydescription = "%s: %s" % (pkgkey,description,)
         mytitle = "%s: %s" % (self.system_name,title,)
         my_media_group = self.gdata.media.Group(
@@ -18337,7 +18340,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 description_type = 'plain',
                 text = mydescription
             ),
-            keywords = self.gdata.media.Keywords(text = mykeywords),
+            keywords = gd_keywords,
             category = self.gdata.media.Category(
                 text = 'Tech',
                 scheme = 'http://gdata.youtube.com/schemas/2007/categories.cat',
