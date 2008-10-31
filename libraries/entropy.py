@@ -19714,8 +19714,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             'session_admin': session_admin,
             'session_forum_id': 0,
         }
-        import md5
-        m = md5.new()
+        import hashlib
+        m = hashlib.md5()
         m.update(str(user_id)+str(time_now)+str(self.USER_AGENT)+str(ip_address)+str(autologin)+str(myuserprefs['user_allow_viewonline']))
         session_data['session_id'] = m.hexdigest()
 
@@ -19776,8 +19776,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         return False
 
     def _get_unique_id(self):
-        import md5
-        m = md5.new()
+        import hashlib
+        m = hashlib.md5()
         rnd = str(abs(hash(os.urandom(20))))
         m.update(rnd)
         x = m.hexdigest()[:-16]
@@ -19800,8 +19800,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if len(myhash) == 34:
             return myhash
 
-        import md5
-        m = md5.new()
+        import hashlib
+        m = hashlib.md5()
         m.update(myhash)
         return m.hexdigest()
 
@@ -19836,8 +19836,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if len(salt) != 8:
             return myoutput
 
-        import md5
-        m = md5.new()
+        import hashlib
+        m = hashlib.md5()
         m.update(salt+password)
         myhash = m.digest()
         while count:
@@ -19887,8 +19887,8 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if len(myhash) == 34:
             return self._hash_crypt_private(password, myhash) == myhash
 
-        import md5
-        m = md5.new()
+        import hashlib
+        m = hashlib.md5()
         m.update(password)
         rhash = m.hexdigest()
         return rhash == myhash
@@ -32922,8 +32922,8 @@ class EntropyDatabaseInterface:
                     m.update(str(item))
 
         if strings:
-            import md5
-            m = md5.new()
+            import hashlib
+            m = hashlib.md5()
 
         self.cursor.execute('select idpackage,atom,name,version,versiontag,revision,branch,slot,etpapi,trigger from baseinfo'+idpackage_order)
         if strings:

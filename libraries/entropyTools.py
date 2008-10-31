@@ -355,8 +355,8 @@ def countdown(secs=5,what="Counting...", back = False):
             time.sleep(1)
 
 def md5sum(filepath):
-    import md5
-    m = md5.new()
+    import hashlib
+    m = hashlib.md5()
     readfile = open(filepath)
     block = readfile.read(1024)
     while block:
@@ -369,8 +369,8 @@ def md5sum_directory(directory, get_obj = False):
     if not os.path.isdir(directory):
         raise exceptionTools.DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
-    import md5
-    m = md5.new()
+    import hashlib
+    m = hashlib.md5()
     if not myfiles:
         if get_obj:
             return m
@@ -728,8 +728,8 @@ def compareMd5(filepath,checksum):
     return False
 
 def md5string(string):
-    import md5
-    m = md5.new()
+    import hashlib
+    m = hashlib.md5()
     m.update(string)
     return m.hexdigest()
 
