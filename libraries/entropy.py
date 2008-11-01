@@ -17976,26 +17976,26 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             if data['vote_avg']: return round(float(data['vote_avg']),2)
         return 0.0
 
-    def get_user_docs(self, userid):
+    def get_user_alldocs(self, userid):
         self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` != %s', (userid,self.DOC_TYPES['comments'],))
-        data = self.fetchall()
-        if not data: return []
-        return data
+        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s', (userid,))
+        return self.fetchall()
+
+    def get_user_docs(self, userid):
+        return self.get_user_generic_doctype(userid, self.DOC_TYPES['comments'], doctype_sql_cmp = "!=")
 
     def get_user_comments(self, userid):
-        self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` = %s', (userid,self.DOC_TYPES['comments'],))
-        data = self.fetchall()
-        if not data: return []
-        return data
+        return self.get_user_generic_doctype(userid, self.DOC_TYPES['comments'], doctype_sql_cmp = "=")
 
     def get_user_votes(self, userid):
         self.check_connection()
         self.execute_query('SELECT * FROM entropy_votes WHERE `userid` = %s', (userid,))
-        data = self.fetchall()
-        if not data: return []
-        return data
+        return self.fetchall()
+
+    def get_user_generic_doctype(self, userid, doctype, doctype_sql_cmp = "="):
+        self.check_connection()
+        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid,doctype,))
+        return self.fetchall()
 
     def get_user_generic_doctype_count(self, userid, doctype, doctype_sql_cmp = "="):
         self.check_connection()
