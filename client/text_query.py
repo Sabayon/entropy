@@ -942,7 +942,7 @@ def searchDescription(descriptions, idreturn = False, EquoConnection = None):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
         dbconn = Equo.openRepositoryDatabase(repo)
-        dataInfo, descdata = searchDescriptions(descriptions, dbconn, idreturn)
+        dataInfo, descdata = searchDescriptions(descriptions, dbconn, idreturn, EquoConnection = Equo)
         foundPackages[repo].update(descdata)
 
     if (idreturn):
@@ -967,7 +967,7 @@ def searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = 
                 elif (etpUi['quiet']):
                     print dbconn.retrieveAtom(idpackage)
                 else:
-                    printPackageInfo(idpackage,dbconn, EquoConnection = Equo)
+                    printPackageInfo(idpackage,dbconn, EquoConnection = EquoConnection)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+desc))
