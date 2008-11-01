@@ -17980,21 +17980,28 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if not data: return []
         return data
 
-    def get_user_comments_count(self, userid):
+    def get_user_generic_doctype_count(self, userid, doctype, doctype_sql_cmp = "="):
         self.check_connection()
-        self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `userid` = %s AND `iddoctype` = %s', (userid,self.DOC_TYPES['comments'],))
+        self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid,doctype,))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['comments']: return int(data['comments'])
+            if data['docs']: return int(data['docs'])
         return 0
 
+    def get_user_comments_count(self, userid):
+        return self.get_user_generic_doctype_count(userid, self.DOC_TYPES['comments'])
+
     def get_user_docs_count(self, userid):
-        self.check_connection()
-        self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` != %s', (userid,self.DOC_TYPES['comments'],))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data.has_key('docs'): return int(data['docs'])
-        return 0
+        return self.get_user_generic_doctype_count(userid, self.DOC_TYPES['comments'], doctype_sql_cmp = "!=")
+
+    def get_user_images_count(self, userid):
+        return self.get_user_generic_doctype_count(userid, self.DOC_TYPES['image'])
+
+    def get_user_files_count(self, userid):
+        return self.get_user_generic_doctype_count(userid, self.DOC_TYPES['generic_file'])
+
+    def get_user_yt_videos_count(self, userid):
+        return self.get_user_generic_doctype_count(userid, self.DOC_TYPES['youtube_video'])
 
     def get_user_votes_count(self, userid):
         self.check_connection()
@@ -18006,15 +18013,13 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_user_stats(self, userid):
         mydict = {}
-        # number of comments
         mydict['comments'] = self.get_user_comments_count(userid)
-        # number of docs
         mydict['docs'] = self.get_user_docs_count(userid)
-        # number of votes
+        mydict['images'] = self.get_user_images_count(userid)
+        mydict['files'] = self.get_user_files_count(userid)
+        mydict['yt_videos'] = self.get_user_yt_videos_count(userid)
         mydict['votes'] = self.get_user_votes_count(userid)
-        # vote avg
         mydict['votes_avg'] = self.get_user_votes_average(userid)
-        # total docs
         mydict['total_docs'] = mydict['comments'] + mydict['docs']
         mydict['score'] = self.get_user_score(userid)
         return mydict
