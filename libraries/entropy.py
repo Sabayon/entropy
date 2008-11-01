@@ -19883,7 +19883,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         m.update(salt+password)
         myhash = m.digest()
         while count:
-            m = md5.new()
+            m = hashlib.md5()
             m.update(myhash+password)
             myhash = m.digest()
             count -= 1
