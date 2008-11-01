@@ -17911,10 +17911,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_user_score_ranking(self, userid):
         self.check_connection()
-        self.execute_script("""
-            SET @row = 0;
-            SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s
-        """, (userid,))
+        self.execute_query('SET @row = 0')
+        self.execute_query('SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
             if data.get('Row'): return int(data['Row'])
@@ -17975,7 +17973,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT avg(`vote`) as vote_avg FROM entropy_votes WHERE `userid` = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['vote_avg']: return float(data['vote_avg'])
+            if data['vote_avg']: return round(float(data['vote_avg']),2)
         return 0.0
 
     def get_user_docs(self, userid):
@@ -18027,7 +18025,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes WHERE `userid` = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['votes']: return float(data['votes'])
+            if data['votes']: return int(data['votes'])
         return 0
 
     def get_user_stats(self, userid):
