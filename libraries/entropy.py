@@ -17909,6 +17909,25 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             if data['downloads']: return int(data['downloads'])
         return 0
 
+    def get_user_score_ranking(self, userid):
+        self.check_connection()
+        self.execute_query("""
+            SET @row = 0;
+            SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s
+        """, (userid,))
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.get('Row'): return int(data['Row'])
+        return 0
+
+    def get_users_scored_count(self):
+        self.check_connection()
+        self.execute_query('SELECT count(`userid`) as mycount FROM entropy_user_scores')
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.get('mycount'): return int(data['mycount'])
+        return 0
+
     def is_user_score_available(self, userid):
         self.check_connection()
         rows = self.execute_query('SELECT `userid` FROM entropy_user_scores WHERE `userid` = %s', (userid,))
@@ -18022,6 +18041,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         mydict['votes_avg'] = self.get_user_votes_average(userid)
         mydict['total_docs'] = mydict['comments'] + mydict['docs']
         mydict['score'] = self.get_user_score(userid)
+        mydict['ranking'] = self.get_user_score_ranking(userid)
         return mydict
 
     def get_distribution_stats(self):
