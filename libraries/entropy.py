@@ -17911,7 +17911,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_user_score_ranking(self, userid):
         self.check_connection()
-        self.execute_query("""
+        self.execute_script("""
             SET @row = 0;
             SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s
         """, (userid,))
