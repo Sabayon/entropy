@@ -4684,7 +4684,7 @@ class PackageInterface:
             return rc
 
         # inject into database
-        mytxt = blue("%s: %s") % (_("Updating database"),red(self.infoDict['atom']),)
+        mytxt = "%s: %s" % (blue(_("Updating database")),red(self.infoDict['atom']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
@@ -17590,6 +17590,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     entropy_docs_title_len = 512
     entropy_docs_description_len = 4000
     entropy_docs_keyword_len = 100
+    COMMENTS_SCORE_WEIGHT = 5
+    DOCS_SCORE_WEIGHT = 10
+    VOTES_SCORE_WEIGHT = 2
 
     '''
         dependencies:
@@ -17917,7 +17920,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         comments = self.get_user_comments_count(userid)
         docs = self.get_user_docs_count(userid)
         votes = self.get_user_votes_count(userid)
-        return (comments*5)+(docs*10)+(votes*2)
+        return (comments*self.COMMENTS_SCORE_WEIGHT)+(docs*self.DOCS_SCORE_WEIGHT)+(votes*self.VOTES_SCORE_WEIGHT)
 
     def update_user_score(self, userid):
         self.check_connection()
