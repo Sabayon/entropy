@@ -17532,6 +17532,12 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
         """,
+        'entropy_user_scores': """
+            CREATE TABLE `entropy_user_scores` (
+            `userid` INT UNSIGNED NOT NULL PRIMARY KEY,
+            `score` INT UNSIGNED NOT NULL DEFAULT 0
+            );
+        """,
         'entropy_downloads': """
             CREATE TABLE `entropy_downloads` (
             `iddownload` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -17900,14 +17906,47 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             if data['downloads']: return int(data['downloads'])
         return 0
 
-    def get_user_score(self, userid):
+    def is_user_score_available(self, userid):
+        self.check_connection()
+        rows = self.execute_query('SELECT `userid` FROM entropy_user_scores WHERE `userid` = %s', (userid,))
+        if rows:
+            return True
+        return False
+
+    def calculate_user_score(self, userid):
         comments = self.get_user_comments_count(userid)
         docs = self.get_user_docs_count(userid)
         votes = self.get_user_votes_count(userid)
-        return self._calculate_score(comments, docs, votes)
-
-    def _calculate_score(self, comments, docs, votes):
         return (comments*5)+(docs*10)+(votes*2)
+
+    def update_user_score(self, userid):
+        self.check_connection()
+        avail = self.is_user_score_available(userid)
+        myscore = self.calculate_user_score(userid)
+        if avail:
+            self.execute_query('UPDATE entropy_user_scores SET score = %s WHERE `userid` = %s', (myscore,userid,))
+        else:
+            self.execute_query('INSERT INTO entropy_user_scores VALUES (%s,%s)', (userid,myscore,))
+        return myscore
+
+    def get_user_score(self, userid):
+        self.check_connection()
+        myscore = None
+        self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s')
+        data = self.fetchone()
+        if isinstance(data,dict):
+            if data.has_key('score'): myscore = data.get('score')
+        if myscore == None: myscore = self.update_user_score(userid)
+        return myscore
+
+    def get_users_score_ranking(self):
+        self.check_connection()
+        self.execute_query('SELECT userid,score FROM entropy_user_scores ORDER BY score')
+        data = self.fetchall()
+        mydata = {}
+        for userid,score in data:
+            mydata[userid] = score
+        return mydata
 
     def get_user_votes_average(self, userid):
         self.check_connection()
@@ -17974,7 +18013,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         mydict['votes_avg'] = self.get_user_votes_average(userid)
         # total docs
         mydict['total_docs'] = mydict['comments'] + mydict['docs']
-        mydict['score'] = self._calculate_score(mydict['comments'], mydict['docs'], mydict['votes'])
+        mydict['score'] = self.get_user_score(userid)
         return mydict
 
     def get_distribution_stats(self):
