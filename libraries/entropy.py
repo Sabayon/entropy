@@ -17932,7 +17932,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_user_score(self, userid):
         self.check_connection()
         myscore = None
-        self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s')
+        self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s',(userid,))
         data = self.fetchone()
         if isinstance(data,dict):
             if data.has_key('score'): myscore = data.get('score')
