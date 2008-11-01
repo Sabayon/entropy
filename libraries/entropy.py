@@ -17978,7 +17978,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_user_alldocs(self, userid):
         self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s', (userid,))
+        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_docs.`userid` = %s AND entropy_base.idkey = entropy_docs.idkey', (userid,))
         return self.fetchall()
 
     def get_user_docs(self, userid):
