@@ -12524,8 +12524,10 @@ class PortageInterface:
         for myiuse in metadata['IUSE'].split():
             if myiuse.startswith("+"):
                 myiuse = myiuse[1:]
+                if (myiuse not in use) and ("-"+myiuse not in use):
+                    use.append(myiuse)
             elif myiuse.startswith("-"):
-                continue
+                myiuse = myiuse[1:]
             iuse.add(myiuse)
         use = sorted([f for f in use if f in iuse])
         metadata['USE'] = " ".join(use)
