@@ -17810,7 +17810,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return iddownload
 
     def store_download_data(self, iddownload, ip_addr, do_commit = False):
-        # self.DOWNLOADS_STORE_LOCATION
         self.execute_query('INSERT INTO entropy_downloads_data VALUES (%s,%s,%s)', (iddownload,ip_addr,self.DOWNLOADS_STORE_LOCATION))
         if do_commit: self.commit()
 
@@ -18311,8 +18310,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         else:
             self.update_download(iddownload, pkgkey, mydate, 1)
         if do_commit: self.commit()
-        if (int(iddownload) > 0) and isinstance(ip_addr,basestring):
-            self.store_download_data(self, int(iddownload), unicode(ip_addr))
+        if (iddownload > 0) and isinstance(ip_addr,basestring):
+            self.store_download_data(self, iddownload, unicode(ip_addr))
         return True
 
     def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
