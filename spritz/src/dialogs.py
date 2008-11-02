@@ -3791,7 +3791,10 @@ class PkgInfoMenu(MenuSkel):
                 if obj['description']:
                     description = obj['description']
                 if obj['iddoctype'] in (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],):
-                    description = unicode(obj['ddata'].tostring(),'raw_unicode_escape')
+                    myddata = obj['ddata']
+                    if not isinstance(obj['ddata'],basestring):
+                        myddata = myddata.tostring()
+                    description = unicode(myddata,'raw_unicode_escape')
                     if len(description) > 100:
                         description = description[:100].strip()+"..."
                 mytxt = "<small><b>%s</b>: %s, %s: %s\n<b>%s</b>: %s, <i>%s</i>\n<b>%s</b>: %s\n<b>%s</b>: <i>%s</i>\n<b>%s</b>: %s</small>" % (
