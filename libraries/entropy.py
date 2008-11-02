@@ -13655,6 +13655,9 @@ class SocketHostInterface:
                             if e.errno != 10: raise
                             dead = True
                         if dead or (seconds > my_timeout):
+                            if not dead:
+                                import signal
+                                os.kill(pid,signal.SIGKILL)
                             break
                 else:
                     self.do_handle()
