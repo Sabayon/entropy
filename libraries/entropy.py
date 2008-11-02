@@ -18163,6 +18163,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if do_commit: self.commit()
         iddoc = self.lastrowid()
         self.insert_keywords(iddoc, keywords)
+        self.update_user_score(userid)
         return iddoc
 
     def insert_keywords(self, iddoc, keywords):
@@ -18219,12 +18220,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def remove_comment(self, iddoc):
         self.check_connection()
+        userid = self.get_iddoc_userid(iddoc)
         self.remove_keywords(iddoc)
         self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
                 iddoc,
                 self.DOC_TYPES['comments'],
             )
         )
+        if userid: self.update_user_score(userid)
         return True, iddoc
 
     # give a vote to an app
@@ -18247,6 +18250,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             )
         )
         if do_commit: self.commit()
+        self.update_user_score(userid)
         return True
 
     def has_user_already_voted(self, pkgkey, userid):
@@ -18301,12 +18305,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def remove_document(self, iddoc):
         self.check_connection()
+        userid = self.get_iddoc_userid(iddoc)
         self.remove_keywords(iddoc)
         self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
                 iddoc,
                 self.DOC_TYPES['bbcode_doc'],
             )
         )
+        if userid: self.update_user_score(userid)
         return True, iddoc
 
     def scan_for_viruses(self, filepath):
@@ -18395,6 +18401,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         store_url = os.path.basename(dest_path)
         if self.store_url:
             store_url = os.path.join(self.store_url,store_url)
+        self.update_user_score(userid)
         return True, (iddoc, store_url)
 
     def insert_image(self, pkgkey, userid, username, image_path, file_name, title, description, keywords):
@@ -18412,6 +18419,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def delete_generic_file(self, iddoc, doc_type):
         self.check_connection()
 
+        userid = self.get_iddoc_userid(iddoc)
         self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
                 iddoc,
                 doc_type,
@@ -18433,7 +18441,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 doc_type,
             )
         )
-
+        if userid: self.update_user_score(userid)
         return True, (iddoc, None)
 
     def insert_youtube_video(self, pkgkey, userid, username, video_path, file_name, title, description, keywords):
@@ -18502,6 +18510,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return False, None
         if not self.is_iddoc_available(iddoc):
             return False, None
+        userid = self.get_iddoc_userid(iddoc)
 
         yt_service = self.get_youtube_service()
         if yt_service == None:
@@ -18537,6 +18546,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         if deleted:
             do_remove()
+        if userid: self.update_user_score(userid)
         return deleted, (iddoc, video_id,)
 
     def get_youtube_service(self):
