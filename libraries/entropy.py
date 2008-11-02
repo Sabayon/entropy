@@ -18307,7 +18307,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         mydate = self.get_date()
         iddownload = self.get_iddownload(pkgkey, mydate)
         if iddownload == -1:
-            self.insert_download(pkgkey, mydate, count = 1)
+            iddownload = self.insert_download(pkgkey, mydate, count = 1)
         else:
             self.update_download(iddownload, pkgkey, mydate, 1)
         if do_commit: self.commit()
