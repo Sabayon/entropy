@@ -17640,6 +17640,14 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
         """,
+        'entropy_downloads_data': """
+            CREATE TABLE `entropy_downloads_data` (
+            `iddownload` INT UNSIGNED NOT NULL,
+            `ip_address` VARCHAR(40) NULL DEFAULT '',
+            `location` TINYINT NULL DEFAULT 0,
+            FOREIGN KEY  (`iddownload`) REFERENCES `entropy_downloads` (`iddownload`)
+            );
+        """,
         'entropy_docs': """
             CREATE TABLE `entropy_docs` (
             `iddoc` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -17686,6 +17694,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     COMMENTS_SCORE_WEIGHT = 5
     DOCS_SCORE_WEIGHT = 10
     VOTES_SCORE_WEIGHT = 2
+    DOWNLOADS_STORE_LOCATION = 0
 
     '''
         dependencies:
@@ -17799,6 +17808,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('UPDATE entropy_downloads SET `count` = %s WHERE `iddownload` = %s', (count,iddownload,))
         if do_commit: self.commit()
         return iddownload
+
+    def store_download_data(self, iddownload, ip_addr, do_commit = False):
+        # self.DOWNLOADS_STORE_LOCATION
+        self.execute_query('INSERT INTO entropy_downloads_data VALUES (%s,%s,%s)', (iddownload,ip_addr,self.DOWNLOADS_STORE_LOCATION))
+        if do_commit: self.commit()
 
     def get_date(self):
         mytime = time.time()
@@ -18288,7 +18302,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return False
 
     # increment +1 the number of downloads
-    def do_download(self, pkgkey, do_commit = False):
+    def do_download(self, pkgkey, ip_addr = None, do_commit = False):
         self.check_connection()
         mydate = self.get_date()
         iddownload = self.get_iddownload(pkgkey, mydate)
@@ -18297,6 +18311,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         else:
             self.update_download(iddownload, pkgkey, mydate, 1)
         if do_commit: self.commit()
+        if (iddownload > 0) and isinstance(ip_addr,basestring):
+            self.store_download_data(self, iddownload, ip_addr)
         return True
 
     def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
@@ -18726,7 +18742,7 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_do_download,
-                'args': ["myargs"],
+                'args': ["authenticator","myargs"],
                 'as_user': False,
                 'desc': "inform the system of a downloaded application",
                 'syntax': "<SESSION_ID> ugc:do_download app-foo/foo",
@@ -18830,6 +18846,14 @@ class DistributionUGCCommands(SocketCommandsSkel):
         if not (os.path.isfile(mypath) and os.access(mypath,os.R_OK)):
             return False
         return mypath
+
+    def _get_session_ip_address(self, authenticator):
+        session_data = self.HostInterface.sessions.get(authenticator.session)
+        if not session_data:
+            return None
+        elif not session_data.has_key('ip_address'):
+            return None
+        return session_data['ip_address']
 
     def docmd_register_stream(self, authenticator, myargs):
 
@@ -19118,14 +19142,15 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return voted,'already voted'
         return voted,'ok'
 
-    def docmd_do_download(self, myargs):
+    def docmd_do_download(self, authenticator, myargs):
 
         if not myargs:
             return None,'wrong arguments'
         pkgkey = myargs[0]
 
+        ip_addr = self._get_session_ip_address(authenticator)
         ugc = self._load_ugc_interface()
-        done = ugc.do_download(pkgkey)
+        done = ugc.do_download(pkgkey, ip_addr = ip_addr)
         if not done:
             return done,'download not stored'
         return done,'ok'
