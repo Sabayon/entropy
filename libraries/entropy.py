@@ -13646,6 +13646,7 @@ class SocketHostInterface:
                 seconds = 0
                 if pid > 0:
                     # pid killer after timeout
+                    passed_away = False
                     while 1:
                         time.sleep(1)
                         seconds += 1
@@ -13654,10 +13655,14 @@ class SocketHostInterface:
                         except OSError, e:
                             if e.errno != 10: raise
                             dead = True
+                        if passed_away:
+                            break
                         if dead or (seconds > my_timeout):
                             if not dead:
                                 import signal
                                 os.kill(pid,signal.SIGKILL)
+                                passed_away = True # in this way, the process table should be clean
+                                continue
                             break
                 else:
                     self.do_handle()
@@ -13775,6 +13780,7 @@ class SocketHostInterface:
 
         def ip_max_connections_check(self, ip_address):
             max_conn_per_ip = self.server.processor.HostInterface.max_connections_per_host
+            max_conn_per_ip_barrier = self.server.processor.HostInterface.max_connections_per_host_barrier
             per_host_connections = self.server.processor.HostInterface.per_host_connections
             conn_data = per_host_connections.get(ip_address)
             if conn_data == None:
@@ -13783,7 +13789,24 @@ class SocketHostInterface:
                 conn_data += 1
                 per_host_connections[ip_address] += 1
                 if conn_data > max_conn_per_ip:
+                    self.server.processor.HostInterface.updateProgress(
+                        '[from: %s] ------- :EEK: !! connection closed too many simultaneous connections from host (current: %s | limit: %s) -------' % (
+                            self.client_address,
+                            conn_data,
+                            max_conn_per_ip,
+                        )
+                    )
                     return False
+                elif conn_data > max_conn_per_ip_barrier:
+                    times = [5,6,7,8]
+                    self.server.processor.HostInterface.updateProgress(
+                        '[from: %s] ------- :EEEK: !! connection warning simultaneous connection barrier reached from host (current: %s | soft limit: %s) -------' % (
+                            self.client_address,
+                            conn_data,
+                            max_conn_per_ip_barrier,
+                        )
+                    )
+                    time.sleep(times[abs(hash(os.urandom(1)))%len(times)])
             return True
 
         def max_connections_check(self, current, maximum):
@@ -14610,6 +14633,7 @@ class SocketHostInterface:
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
         self.max_connections = etpConst['socket_service']['max_connections']
         self.max_connections_per_host = etpConst['socket_service']['max_connections_per_host']
+        self.max_connections_per_host_barrier = etpConst['socket_service']['max_connections_per_host_barrier']
         self.disabled_commands = etpConst['socket_service']['disabled_cmds']
         self.ip_blacklist = etpConst['socket_service']['ip_blacklist']
         self.connections = 0
@@ -15071,6 +15095,7 @@ class SocketHostInterface:
                         break
                     mydata = mydata[sent:]
                 except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError']):
+                    time.sleep(0.2)
                     continue
                 except UnicodeEncodeError:
                     if encode_done:
@@ -21365,6 +21390,7 @@ class SystemSocketClientInterface:
                             break
                         mydata = mydata[sent:]
                     except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError'],):
+                        time.sleep(0.2)
                         continue
                     except UnicodeEncodeError, e:
                         if encode_done:

@@ -798,10 +798,11 @@ def const_defaultSettings(rootdir):
             'ssl_port': 1027, # above + 1
             'timeout': 200,
             'threads': 5,
-            'session_ttl': 120,
+            'session_ttl': 15,
             'default_uid': 0,
             'max_connections': 5,
-            'max_connections_per_host': 20,
+            'max_connections_per_host': 15,
+            'max_connections_per_host_barrier': 8,
             'disabled_cmds': set(),
             'ip_blacklist': set(),
             'ssl_key': ETP_CONF_DIR+"/socket_server.key",
