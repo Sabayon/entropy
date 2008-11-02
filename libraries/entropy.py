@@ -14579,7 +14579,7 @@ class SocketHostInterface:
         # settings
         self.SessionsLock = self.threading.Lock()
         self.fork_requests = True # used by the command processor
-        self.fork_request_timeout_seconds = 120
+        self.fork_request_timeout_seconds = 300
         self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
