@@ -13641,9 +13641,21 @@ class SocketHostInterface:
             # not using spawnFunction because it causes some mess
             # forking this way avoids having memory leaks
             if self.server.processor.HostInterface.fork_requests:
+                my_timeout = self.server.processor.HostInterface.fork_request_timeout_seconds
                 pid = os.fork()
+                seconds = 0
                 if pid > 0:
-                    os.waitpid(pid, 0)
+                    # pid killer after timeout
+                    while 1:
+                        time.sleep(1)
+                        seconds += 1
+                        try:
+                            dead = os.waitpid(pid, os.WNOHANG)[0]
+                        except OSError, e:
+                            if e.errno != 10: raise
+                            dead = True
+                        if dead or (seconds > my_timeout):
+                            break
                 else:
                     self.do_handle()
             else:
@@ -13686,15 +13698,20 @@ class SocketHostInterface:
             self.valid_connection = True
             self.data_counter = None
             self.buffered_data = ''
+            self.do_ssl = self.server.processor.HostInterface.SSL
+            if self.do_ssl: self.do_ssl = True
+            else: self.do_ssl = False
 
             allowed = self.ip_blacklist_check(
                 self.client_address,
                 self.server.processor.HostInterface.ip_blacklist
             )
+            if allowed: allowed = self.ip_max_connections_check(self.client_address[0])
             if not allowed:
                 self.server.processor.HostInterface.updateProgress(
-                    '[from: %s] connection refused, ip blacklisted' % (
+                    '[from: %s | SSL: %s] connection refused, ip blacklisted or maximum connections per IP reached' % (
                         self.client_address,
+                        self.do_ssl,
                     )
                 )
                 self.valid_connection = False
@@ -13706,8 +13723,9 @@ class SocketHostInterface:
             )
             if not allowed:
                 self.server.processor.HostInterface.updateProgress(
-                    '[from: %s] connection refused (max connections reached: %s)' % (
+                    '[from: %s | SSL: %s] connection refused (max connections reached: %s)' % (
                         self.client_address,
+                        self.do_ssl,
                         self.server.processor.HostInterface.max_connections,
                     )
                 )
@@ -13717,11 +13735,12 @@ class SocketHostInterface:
             ### let's go!
             self.server.processor.HostInterface.connections += 1
             self.server.processor.HostInterface.updateProgress(
-                '[from: %s] connection established (%s of %s max connections)' % (
-                                    self.client_address,
-                                    self.server.processor.HostInterface.connections,
-                                    self.server.processor.HostInterface.max_connections,
-                            )
+                '[from: %s | SSL: %s] connection established (%s of %s max connections)' % (
+                    self.client_address,
+                    self.do_ssl,
+                    self.server.processor.HostInterface.connections,
+                    self.server.processor.HostInterface.max_connections,
+                )
             )
             return True
 
@@ -13738,10 +13757,30 @@ class SocketHostInterface:
                     self.server.processor.HostInterface.max_connections,
                 )
             )
+            per_host_connections = self.server.processor.HostInterface.per_host_connections
+            conn_data = per_host_connections.get(self.client_address[0])
+            if conn_data != None:
+                if conn_data < 1:
+                    del per_host_connections[self.client_address[0]]
+                else:
+                    per_host_connections[self.client_address[0]] -= 1
 
         def ip_blacklist_check(self, client_addr_data, blacklist):
             if client_addr_data[0] in blacklist:
                 return False
+            return True
+
+        def ip_max_connections_check(self, ip_address):
+            max_conn_per_ip = self.server.processor.HostInterface.max_connections_per_host
+            per_host_connections = self.server.processor.HostInterface.per_host_connections
+            conn_data = per_host_connections.get(ip_address)
+            if conn_data == None:
+                per_host_connections[ip_address] = 1
+            else:
+                conn_data += 1
+                per_host_connections[ip_address] += 1
+                if conn_data > max_conn_per_ip:
+                    return False
             return True
 
         def max_connections_check(self, current, maximum):
@@ -14537,6 +14576,7 @@ class SocketHostInterface:
         # settings
         self.SessionsLock = self.threading.Lock()
         self.fork_requests = True # used by the command processor
+        self.fork_request_timeout_seconds = 120
         self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']
@@ -14545,9 +14585,11 @@ class SocketHostInterface:
         self.port = etpConst['socket_service']['port']
         self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
         self.max_connections = etpConst['socket_service']['max_connections']
+        self.max_connections_per_host = etpConst['socket_service']['max_connections_per_host']
         self.disabled_commands = etpConst['socket_service']['disabled_cmds']
         self.ip_blacklist = etpConst['socket_service']['ip_blacklist']
         self.connections = 0
+        self.per_host_connections = {}
         self.sessions = {}
         self.answers = etpConst['socket_service']['answers']
         self.__output = None

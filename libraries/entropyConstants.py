@@ -801,6 +801,7 @@ def const_defaultSettings(rootdir):
             'session_ttl': 120,
             'default_uid': 0,
             'max_connections': 5,
+            'max_connections_per_host': 20,
             'disabled_cmds': set(),
             'ip_blacklist': set(),
             'ssl_key': ETP_CONF_DIR+"/socket_server.key",
