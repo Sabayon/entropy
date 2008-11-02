@@ -13908,7 +13908,28 @@ class SocketHostInterface:
 
             self.channel = channel
             self.client_address = client_address
-            authenticator = self.load_authenticator()
+            try:
+                authenticator = self.load_authenticator()
+            except exceptionTools.ConnectionError, e:
+                self.HostInterface.updateProgress(
+                    '[from: %s] authenticator error: cannot load: %s' % (
+                        self.client_address,
+                        e,
+                    )
+                )
+                self.entropyTools.printTraceback()
+                self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                return "close"
+            except Exception, e:
+                self.HostInterface.updateProgress(
+                    '[from: %s] authenticator error: cannot load: %s - unknown error' % (
+                        self.client_address,
+                        e,
+                    )
+                )
+                self.entropyTools.printTraceback()
+                self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                return "close"
 
             if data.strip():
                 self.HostInterface.updateProgress("----")
@@ -14004,7 +14025,7 @@ class SocketHostInterface:
             rcmd = None
             try:
                 self.handle_end_answer(cmd, whoops, valid_cmd)
-            except (self.socket.error, self.socket.timeout):
+            except (self.socket.error, self.socket.timeout,self.HostInterface.SSL_exceptions['SysCallError'],):
                 rcmd = "close"
 
             authenticator.terminate_instance()
