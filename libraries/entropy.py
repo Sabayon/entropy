@@ -18311,8 +18311,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         else:
             self.update_download(iddownload, pkgkey, mydate, 1)
         if do_commit: self.commit()
-        if (iddownload > 0) and isinstance(ip_addr,basestring):
-            self.store_download_data(self, iddownload, ip_addr)
+        if (int(iddownload) > 0) and isinstance(ip_addr,basestring):
+            self.store_download_data(self, int(iddownload), unicode(ip_addr))
         return True
 
     def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
