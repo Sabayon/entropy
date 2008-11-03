@@ -13699,6 +13699,13 @@ class SocketHostInterface:
                         if passed_away:
                             break
                         if dead or (seconds > my_timeout):
+                            self.server.processor.HostInterface.updateProgress(
+                                'interrupted: forked request timeout: %s,%s from client: %s' % (
+                                    seconds,
+                                    dead,
+                                    self.client_address,
+                                )
+                            )
                             if not dead:
                                 import signal
                                 os.kill(pid,signal.SIGKILL)
@@ -14664,7 +14671,7 @@ class SocketHostInterface:
         # settings
         self.SessionsLock = self.threading.Lock()
         self.fork_requests = True # used by the command processor
-        self.fork_request_timeout_seconds = 300
+        self.fork_request_timeout_seconds = etpConst['socket_service']['forked_requests_timeout']
         self.stdout_logging = True
         self.timeout = etpConst['socket_service']['timeout']
         self.hostname = etpConst['socket_service']['hostname']

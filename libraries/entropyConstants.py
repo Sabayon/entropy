@@ -798,6 +798,7 @@ def const_defaultSettings(rootdir):
             'port': 1026,
             'ssl_port': 1027, # above + 1
             'timeout': 200,
+            'forked_requests_timeout': 10,
             'threads': 5,
             'session_ttl': 15,
             'default_uid': 0,
