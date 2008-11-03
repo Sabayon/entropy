@@ -13698,7 +13698,8 @@ class SocketHostInterface:
                             dead = True
                         if passed_away:
                             break
-                        if dead or (seconds > my_timeout):
+                        if dead: break
+                        if seconds > my_timeout:
                             self.server.processor.HostInterface.updateProgress(
                                 'interrupted: forked request timeout: %s,%s from client: %s' % (
                                     seconds,
