@@ -9850,11 +9850,13 @@ class TriggerInterface:
                     ETP_LOGLEVEL_NORMAL,
                     "[POST] ATTENTION Cannot run Portage trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
-                mytxt = "%s: %s %s. %s." % (
+                mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
                     brown(_("Cannot run Portage trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
+                    bold(_("Attach this")),
+                    darkred(etpConst['spmlogfile']),
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -9922,11 +9924,13 @@ class TriggerInterface:
                     ETP_LOGLEVEL_NORMAL,
                     "[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
-                mytxt = "%s: %s %s. %s." % (
+                mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
                     brown(_("Cannot run Portage trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
+                    bold(_("Attach this")),
+                    darkred(etpConst['spmlogfile']),
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -10007,11 +10011,13 @@ class TriggerInterface:
                     ETP_LOGLEVEL_NORMAL,
                     "[PRE] ATTENTION Cannot run Portage preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
-                mytxt = "%s: %s %s. %s." % (
+                mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
                     brown(_("Cannot run Portage trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
+                    bold(_("Attach this")),
+                    darkred(etpConst['spmlogfile']),
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -10094,11 +10100,13 @@ class TriggerInterface:
                     "[PRE] ATTENTION Cannot run Gentoo postremove trigger for " + \
                     portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
-                mytxt = "%s: %s %s. %s." % (
+                mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
                     brown(_("Cannot run Portage trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
+                    bold(_("Attach this")),
+                    darkred(etpConst['spmlogfile']),
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -11787,10 +11795,13 @@ class PortageInterface:
         # importing portage stuff
         import portage
         self.portage = portage
+        self.EAPI = 1
         try:
             import portage.const as portage_const
         except ImportError:
             import portage_const
+        if hasattr(portage_const,"EAPI"):
+            self.EAPI = portage_const.EAPI
         self.portage_const = portage_const
 
         try:
@@ -11809,6 +11820,26 @@ class PortageInterface:
             self.portage_exception = self.portage.exception
         else: # portage <2.2 workaround
             self.portage_exception = Exception
+
+    def write_to_log(self, message):
+        spmLog = LogFile(
+            level = etpConst['spmloglevel'],
+            filename = etpConst['spmlogfile'],
+            header = "[spm]"
+        )
+        spmLog.write(message)
+        spmLog.flush()
+        spmLog.close()
+
+    def write_traceback_to_log(self):
+        spmLog = LogFile(
+            level = etpConst['spmloglevel'],
+            filename = etpConst['spmlogfile'],
+            header = "[spm]"
+        )
+        self.entropyTools.printTraceback(f = spmLog)
+        spmLog.flush()
+        spmLog.close()
 
     def list_glsa_packages(self, command = "affected"):
 
@@ -13049,7 +13080,8 @@ class PortageInterface:
 
         oldsystderr = sys.stderr
         f = open("/dev/null","w")
-        sys.stderr = f
+        if not etpUi['debug']:
+            sys.stderr = f
 
         ### SETUP ENVIRONMENT
         # if mute, supress portage output
@@ -13084,6 +13116,10 @@ class PortageInterface:
         # find config
         mysettings = self._get_portage_config("/",mypath)
         mysettings['EBUILD_PHASE'] = mydo
+        mysettings['EAPI'] = "0"
+        if metadata.has_key('EAPI'):
+            mysettings['EAPI'] = metadata['EAPI']
+        mysettings.backup_changes("EAPI")
 
         try: # this is a >portage-2.1.4_rc11 feature
             mysettings._environ_whitelist = set(mysettings._environ_whitelist)
@@ -13094,7 +13130,7 @@ class PortageInterface:
             mysettings._environ_whitelist.add("ROOT")
             mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
         except:
-            pass
+            self.write_traceback_to_log()
 
         cpv = str(cpv)
         mysettings.setcpv(cpv)
@@ -13112,16 +13148,20 @@ class PortageInterface:
         # cached vartree class
         vartree = self._get_portage_vartree(mypath)
 
-        rc = self.portage.doebuild(
-            myebuild = str(myebuild),
-            mydo = str(mydo),
-            myroot = mypath,
-            tree = tree,
-            mysettings = mysettings,
-            mydbapi = mydbapi,
-            vartree = vartree,
-            use_cache = 0
-        )
+        try:
+            rc = self.portage.doebuild(
+                myebuild = str(myebuild),
+                mydo = str(mydo),
+                myroot = mypath,
+                tree = tree,
+                mysettings = mysettings,
+                mydbapi = mydbapi,
+                vartree = vartree,
+                use_cache = 0
+            )
+        except:
+            self.write_traceback_to_log()
+            raise
 
         # if mute, restore old stdout/stderr
         if domute:
@@ -13139,6 +13179,7 @@ class PortageInterface:
         return rc
 
 class LogFile:
+
     def __init__ (self, level = 0, filename = None, header = "[LOG]"):
         self.handler = self.default_handler
         self.level = level
@@ -13148,7 +13189,7 @@ class LogFile:
 
     def close (self):
         try:
-            self.logFile.close ()
+            self.logFile.close()
         except:
             pass
 

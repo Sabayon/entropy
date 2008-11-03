@@ -616,13 +616,14 @@ def const_defaultSettings(rootdir):
         'socketloglevel': 2, # # Entropy Socket Interface log level
         'electronloglevel': 2, # # Entropy Socket Interface log level
         'equologlevel': 1, # # Equo log level (default: 1 - see equo.conf for more info)
+        'spmloglevel': 1,
         'logdir': ETP_LOG_DIR , # Log dir where ebuilds store their stuff
 
         'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
-        'entropylogfile': ETP_SYSLOG_DIR+"entropy.log", # Activator operations log file
-        'equologfile': ETP_SYSLOG_DIR+"equo.log", # Activator operations log file
-        'socketlogfile': ETP_SYSLOG_DIR+"socket.log", # Activator operations log file
-        'electronlogfile': ETP_SYSLOG_DIR+"electron.log", # Activator operations log file
+        'entropylogfile': ETP_SYSLOG_DIR+"entropy.log",
+        'equologfile': ETP_SYSLOG_DIR+"equo.log",
+        'spmlogfile': ETP_SYSLOG_DIR+"spm.log",
+        'socketlogfile': ETP_SYSLOG_DIR+"socket.log",
 
         'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
         'etpdatabaseclientfilepath': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR+"/"+ETP_DBCLIENTFILE, # path to equo.db - client side database file
