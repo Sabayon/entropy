@@ -265,12 +265,8 @@ class rhnApplet:
             hide_menu = True
             message = _("Please run Equo/Spritz as root to update Entropy permissions")
         else:
-            # first refresh should be 2 minutes after execution; this
-            # should give the rest of the user's desktop environment time
-            # to load, etc, and avoid competing with nautilus or whatever
-            # else is loading.  subsequent intervals will be much larger.
             self.set_state("OKAY")
-            self.enable_refresh_timer(50000)
+            self.enable_refresh_timer(120000)
 
             # Entropy initialization
             self.Entropy = Entropy()
