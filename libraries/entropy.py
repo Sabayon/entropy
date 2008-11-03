@@ -17990,8 +17990,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT entropy_base.`key` as `vkey`,avg(entropy_votes.vote) as `avg_vote` FROM entropy_votes,entropy_base WHERE entropy_votes.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
         data = self.fetchall()
         for d_dict in data:
-            myvote = float(d_dict['avg_vote'])
-            vote_data[d_dict['vkey']] = myvote
+            vote_data[d_dict['vkey']] = float(d_dict['avg_vote'])
         return vote_data
 
     def get_ugc_downloads(self, pkgkey):
@@ -18014,8 +18013,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_iddoc_userid(self, iddoc):
         self.check_connection()
-        if not self.is_iddoc_available(iddoc):
-            return None
         self.execute_query('SELECT `userid` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
         data = self.fetchone()
         if not data:
@@ -18190,12 +18187,108 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return mydict
 
     def get_distribution_stats(self):
+        self.check_connection()
         mydict = {}
         mydict['comments'] = self.get_total_comments_count()
         mydict['documents'] = self.get_total_documents_count()
         mydict['votes'] = self.get_total_votes_count()
         mydict['downloads'] = self.get_total_downloads_count()
         return mydict
+
+    def search_pkgkey_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
+        self.check_connection()
+
+        if iddoctypes == None:
+            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
+        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        myterm = "%"+pkgkey_string+"%"
+
+        search_params = [myterm,results_offset,results_limit]
+
+        order_by_string = ''
+        if order_by == "key":
+            order_by_string = 'ORDER BY entropy_base.`key`'
+        elif order_by == "username":
+            order_by_string = 'ORDER BY entropy_docs.`username`'
+        elif order_by == "vote":
+            order_by_string = 'ORDER BY avg_vote DESC'
+        elif order_by == "downloads":
+            order_by_string = 'ORDER BY tot_downloads DESC'
+
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads WHERE entropy_base.`key` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc`  '+order_by_string+' LIMIT %s,%s', search_params)
+
+        return self.fetchall()
+
+    def search_username_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
+        self.check_connection()
+
+        if iddoctypes == None:
+            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
+        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        myterm = "%"+pkgkey_string+"%"
+
+        search_params = [myterm,results_offset,results_limit]
+
+        order_by_string = ''
+        if order_by == "key":
+            order_by_string = 'ORDER BY entropy_base.`key`'
+        elif order_by == "username":
+            order_by_string = 'ORDER BY entropy_docs.`username`'
+        elif order_by == "vote":
+            order_by_string = 'ORDER BY avg_vote DESC'
+        elif order_by == "downloads":
+            order_by_string = 'ORDER BY tot_downloads DESC'
+
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads WHERE entropy_docs.`username` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+
+        return self.fetchall()
+
+    def search_content_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
+        self.check_connection()
+
+        if iddoctypes == None:
+            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
+        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        myterm = "%"+pkgkey_string+"%"
+        search_params = [myterm,myterm,myterm,results_offset,results_limit]
+
+        order_by_string = ''
+        if order_by == "key":
+            order_by_string = 'ORDER BY entropy_base.`key`'
+        elif order_by == "username":
+            order_by_string = 'ORDER BY entropy_docs.`username`'
+        elif order_by == "vote":
+            order_by_string = 'ORDER BY avg_vote DESC'
+        elif order_by == "downloads":
+            order_by_string = 'ORDER BY tot_downloads DESC'
+
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads WHERE (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+
+        return self.fetchall()
+
+    def search_keyword_items(self, keyword_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
+        self.check_connection()
+
+        if iddoctypes == None:
+            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
+        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        myterm = "%"+keyword_string+"%"
+
+        search_params = [myterm,results_offset,results_limit]
+
+        order_by_string = ''
+        if order_by == "key":
+            order_by_string = 'ORDER BY entropy_base.`key`'
+        elif order_by == "username":
+            order_by_string = 'ORDER BY entropy_docs.`username`'
+        elif order_by == "vote":
+            order_by_string = 'ORDER BY avg_vote DESC'
+        elif order_by == "downloads":
+            order_by_string = 'ORDER BY tot_downloads DESC'
+
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads WHERE entropy_docs_keywords.`keyword` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+
+        return self.fetchall()
 
     def handle_pkgkey(self, key):
         if not self.is_pkgkey_available(key):
