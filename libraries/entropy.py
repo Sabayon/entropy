@@ -14090,7 +14090,7 @@ class SocketHostInterface:
 
             authenticator.terminate_instance()
             del authenticator
-            if not self.server.processor.HostInterface.fork_requests:
+            if not self.HostInterface.fork_requests:
                 self.gc.collect()
             return rcmd
 
