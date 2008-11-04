@@ -13964,39 +13964,6 @@ class SocketHostInterface:
 
             self.channel = channel
             self.client_address = client_address
-            try:
-                authenticator = self.load_authenticator()
-            except exceptionTools.ConnectionError, e:
-                self.HostInterface.updateProgress(
-                    '[from: %s] authenticator error: cannot load: %s' % (
-                        self.client_address,
-                        e,
-                    )
-                )
-                self.entropyTools.printTraceback()
-                self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
-                return "close"
-            except Exception, e:
-                self.HostInterface.updateProgress(
-                    '[from: %s] authenticator error: cannot load: %s - unknown error' % (
-                        self.client_address,
-                        e,
-                    )
-                )
-                self.entropyTools.printTraceback()
-                self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
-                return "close"
-
-            if data.strip():
-                self.HostInterface.updateProgress("----")
-                mycommand = data.strip().split()
-                if mycommand[0] in self.HostInterface.login_pass_commands:
-                    mycommand = authenticator.hide_login_data(mycommand)
-                #self.HostInterface.updateProgress("[from: %s] call: %s" % (
-                #                self.client_address,
-                #                repr(' '.join(mycommand)),
-                #            )
-                #)
 
             term = self.handle_termination_commands(data)
             if term:
@@ -14005,6 +13972,34 @@ class SocketHostInterface:
 
             cmd, args, session = self.handle_command_string(data)
             valid_cmd, reason = self.validate_command(cmd, args, session)
+
+            # decide if we need to load authenticator or Entropy
+            authenticator = None
+            cmd_data = self.HostInterface.valid_commands.get(cmd)
+            if isinstance(cmd_data,dict) and (cmd not in self.HostInterface.login_pass_commands):
+                if "authenticator" in cmd_data['args']:
+                    try:
+                        authenticator = self.load_authenticator()
+                    except exceptionTools.ConnectionError, e:
+                        self.HostInterface.updateProgress(
+                            '[from: %s] authenticator error: cannot load: %s' % (
+                                self.client_address,
+                                e,
+                            )
+                        )
+                        self.entropyTools.printTraceback()
+                        self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                        return "close"
+                    except Exception, e:
+                        self.HostInterface.updateProgress(
+                            '[from: %s] authenticator error: cannot load: %s - unknown error' % (
+                                self.client_address,
+                                e,
+                            )
+                        )
+                        self.entropyTools.printTraceback()
+                        self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                        return "close"
 
             p_args = args
             if cmd in self.HostInterface.login_pass_commands:
@@ -14026,10 +14021,13 @@ class SocketHostInterface:
             whoops = False
             if valid_cmd:
 
-                # now set session
-                authenticator.set_session(session)
+                if authenticator != None:
+                    # now set session
+                    authenticator.set_session(session)
 
-                Entropy = self.load_service_interface(session)
+                Entropy = None
+                if "Entropy" in cmd_data['args']:
+                    Entropy = self.load_service_interface(session)
                 try:
                     self.run_task(cmd, args, session, Entropy, authenticator)
                 except self.socket.timeout:
@@ -14091,7 +14089,8 @@ class SocketHostInterface:
             except (self.socket.error, self.socket.timeout,self.HostInterface.SSL_exceptions['SysCallError'],):
                 rcmd = "close"
 
-            authenticator.terminate_instance()
+            if authenticator != None:
+                authenticator.terminate_instance()
             del authenticator
             if not self.HostInterface.fork_requests:
                 self.gc.collect()
