@@ -6224,7 +6224,6 @@ class RepoInterface:
         self.notAvailable = 0
         self.valid_eapis = [1,2,3]
         self.reset_dbformat_eapi(None)
-        self.eapi3_socket = None
         self.current_repository_got_locked = False
         self.updated_repos = set()
 
@@ -6246,26 +6245,32 @@ class RepoInterface:
         if self.LockScanner != None:
             self.LockScanner.kill()
 
-    def check_eapi3_availability(self, repository):
+    def get_eapi3_connection(self, repository):
         # get database url
         dburl = etpRepositories[repository]['plain_database']
         if dburl.startswith("file://"):
-            return False
+            return None
         try:
             dburl = dburl.split("/")[2]
         except IndexError:
-            return False
-
+            return None
         port = etpRepositories[repository]['service_port']
-
         try:
-            self.eapi3_socket = SystemSocketClientInterface(
+            eapi3_socket = SystemSocketClientInterface(
                 self.Entropy, RepositorySocketClientCommands, output_header = "\t"
             )
-            self.eapi3_socket.socket_timeout = self.big_socket_timeout
-            self.eapi3_socket.connect(dburl, port)
+            eapi3_socket.socket_timeout = self.big_socket_timeout
+            eapi3_socket.connect(dburl, port)
+            return eapi3_socket
         except (exceptionTools.ConnectionError,self.socket.error,):
-            self.eapi3_socket = None
+            return None
+
+    def check_eapi3_availability(self, repository):
+        conn = self.get_eapi3_connection(repository)
+        if conn == None: return False
+        try:
+            conn.disconnect()
+        except (self.socket.error,AttributeError,):
             return False
         return True
 
@@ -6655,14 +6660,10 @@ class RepoInterface:
                 mydbconn = None
         return mydbconn
 
-    def get_eapi3_database_differences(self, repo, idpackages, session):
+    def get_eapi3_database_differences(self, eapi3_interface, repo, idpackages, session):
 
-        data = self.eapi3_socket.CmdInterface.differential_packages_comparison(
-                session,
-                idpackages,
-                repo,
-                etpConst['currentarch'],
-                etpConst['product']
+        data = eapi3_interface.CmdInterface.differential_packages_comparison(
+            session, idpackages, repo, etpConst['currentarch'], etpConst['product']
         )
         if isinstance(data,bool): # then it's probably == False
             return False,False,False
@@ -6674,49 +6675,48 @@ class RepoInterface:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def get_eapi3_database_treeupdates(self, repo, session):
+    def get_eapi3_database_treeupdates(self, eapi3_interface, repo, session):
         self.socket.setdefaulttimeout(self.big_socket_timeout)
-        data = self.eapi3_socket.CmdInterface.get_repository_treeupdates(
-                session,
-                repo,
-                etpConst['currentarch'],
-                etpConst['product']
+        data = eapi3_interface.CmdInterface.get_repository_treeupdates(
+            session, repo, etpConst['currentarch'], etpConst['product']
         )
-        if not isinstance(data,dict):
-            return None,None
-        else:
-            if not data.has_key('digest'):
-                return None,None
-            elif not data.has_key('actions'):
-                return None,None
-            else:
-                return data['digest'],data['actions']
+        if not isinstance(data,dict): return None,None
+        return data.get('digest'), data.get('actions')
 
     def handle_eapi3_database_sync(self, repo, threshold = 1500, chunk_size = 12):
 
-        session = self.eapi3_socket.open_session()
-        mydbconn = None
+        def prepare_exit(mysock, session = None):
+            try:
+                if session != None:
+                    mysock.close_session(session)
+                mysock.disconnect()
+            except (self.socket.error,):
+                pass
+
+        eapi3_interface = self.get_eapi3_connection(repo)
+        if eapi3_interface == None: return False
+
+        session = eapi3_interface.open_session()
+
         try:
             mydbconn = self.get_eapi3_local_database(repo)
         except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
-            pass
-        if mydbconn == None:
-            self.eapi3_socket.close_session(session)
+            prepare_exit(eapi3_interface, session)
             return False
-        myidpackages = mydbconn.listAllIdpackages()
 
+        myidpackages = mydbconn.listAllIdpackages()
         added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
-            repo,
-            myidpackages,
-            session
+            eapi3_interface, repo,
+            myidpackages, session
         )
         if None in (added_ids,removed_ids,checksum):
             mydbconn.closeDB()
-            self.eapi3_socket.close_session(session)
+            prepare_exit(eapi3_interface, session)
             return False
+
         elif not checksum: # {added_ids, removed_ids, checksum} == False
             mydbconn.closeDB()
-            self.eapi3_socket.close_session(session)
+            prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % (
                 blue(_("EAPI3 Service status")),
                 darkred(_("remote database suddenly locked")),
@@ -6731,7 +6731,7 @@ class RepoInterface:
 
         if not added_ids and not removed_ids and self.forceUpdate:
             mydbconn.closeDB()
-            self.eapi3_socket.close_session(session)
+            prepare_exit(eapi3_interface, session)
             return False
 
         # is it worth it?
@@ -6750,14 +6750,14 @@ class RepoInterface:
                 header = blue("  # "),
             )
             mydbconn.closeDB()
-            self.eapi3_socket.close_session(session)
+            prepare_exit(eapi3_interface, session)
             return False
 
         # get treeupdates stuff
-        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(repo, session)
+        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(eapi3_interface, repo, session)
         if dbdigest == None:
             mydbconn.closeDB()
-            self.eapi3_socket.close_session(session)
+            prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % (
                 blue(_("EAPI3 Service status")),
                 darkred(_("treeupdates data not available")),
@@ -6771,13 +6771,11 @@ class RepoInterface:
             return None
         else:
             try:
-                # inject new digest
                 mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
-                # bump new actions
                 mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
-            except (dbapi2.OperationalError,dbapi2.IntegrityError,):
+            except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
                 mydbconn.closeDB()
-                self.eapi3_socket.close_session(session)
+                prepare_exit(eapi3_interface, session)
                 mytxt = "%s: %s" % (
                     blue(_("EAPI3 Service status")),
                     darkred(_("cannot update treeupdates data")),
@@ -6800,8 +6798,7 @@ class RepoInterface:
             if count % chunk_size == 0:
                 added_segments.append(list(mytmp))
                 mytmp.clear()
-        if mytmp:
-            added_segments.append(list(mytmp))
+        if mytmp: added_segments.append(list(mytmp))
         del mytmp
 
         # fetch and store
@@ -6822,13 +6819,16 @@ class RepoInterface:
             fetch_count = 0
             max_fetch_count = 5
             while 1:
+
+                # anti loop protection
+                if fetch_count > max_fetch_count:
+                    mydbconn.closeDB()
+                    prepare_exit(eapi3_interface, session)
+                    return False
+
                 fetch_count += 1
-                pkgdata = self.eapi3_socket.CmdInterface.get_package_information(
-                    session,
-                    segment,
-                    repo,
-                    etpConst['currentarch'],
-                    etpConst['product']
+                pkgdata = eapi3_interface.CmdInterface.get_package_information(
+                    session, segment, repo, etpConst['currentarch'], etpConst['product']
                 )
                 if pkgdata == None:
                     mytxt = "%s: %s" % (
@@ -6844,7 +6844,7 @@ class RepoInterface:
                     )
                     if fetch_count > max_fetch_count:
                         mydbconn.closeDB()
-                        self.eapi3_socket.close_session(session)
+                        prepare_exit(eapi3_interface, session)
                         return False
                     continue # retry
                 elif not pkgdata: # pkgdata == False
@@ -6860,7 +6860,7 @@ class RepoInterface:
                         count = (count,maxcount,)
                     )
                     mydbconn.closeDB()
-                    self.eapi3_socket.close_session(session)
+                    prepare_exit(eapi3_interface, session)
                     return None
                 elif isinstance(pkgdata,tuple):
                     mytxt = "%s: %s, %s. %s" % (
@@ -6877,18 +6877,39 @@ class RepoInterface:
                         count = (count,maxcount,)
                     )
                     mydbconn.closeDB()
-                    self.eapi3_socket.close_session(session)
+                    prepare_exit(eapi3_interface, session)
                     return None
-                for idpackage in pkgdata:
-                    self.dumpTools.dumpobj(
-                        etpCache['eapi3_fetch']+str(idpackage),
-                        pkgdata[idpackage]
+
+                try:
+                    for idpackage in pkgdata:
+                        self.dumpTools.dumpobj(
+                            etpCache['eapi3_fetch']+str(idpackage),
+                            pkgdata[idpackage],
+                            ignoreExceptions = False
+                        )
+                except (IOError,EOFError,OSError,), e:
+                    mytxt = "%s: %s: %s." % (
+                        blue(_("Local status")),
+                        darkred("Error storing data"),
+                        e,
                     )
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "info",
+                        header = "\t",
+                        count = (count,maxcount,)
+                    )
+                    mydbconn.closeDB()
+                    prepare_exit(eapi3_interface, session)
+                    return None
+
                 break
         del added_segments
 
         # I don't need you anymore
-        self.eapi3_socket.close_session(session)
+        # disconnect socket
+        prepare_exit(eapi3_interface, session)
 
         # now that we have all stored, add
         count = 0
@@ -6909,7 +6930,6 @@ class RepoInterface:
                     count = (count,maxcount,)
                 )
                 mydbconn.closeDB()
-                self.eapi3_socket.close_session(session)
                 return False
 
             mytxt = "%s %s" % (blue(_("Injecting package")), darkgreen(mydata['atom']),)
@@ -7045,11 +7065,6 @@ class RepoInterface:
 
                     break
 
-                elif self.dbformat_eapi == 3 and self.eapi3_socket == None:
-
-                    self.dbformat_eapi -= 1
-                    continue
-
                 elif self.dbformat_eapi == 3 and not (os.path.isfile(dbfile) and os.access(dbfile,os.W_OK)):
 
                     do_db_update_transfer = None
@@ -7058,15 +7073,8 @@ class RepoInterface:
 
                 elif self.dbformat_eapi == 3:
 
-                    def do_close_conn():
-                        # close conn
-                        if self.eapi3_socket != None:
-                            self.eapi3_socket.disconnect()
-                            self.eapi3_socket = None
-
                     status = False
                     try:
-                        self.eapi3_socket.socket.setdefaulttimeout(self.big_socket_timeout)
                         status = self.handle_eapi3_database_sync(repo)
                     except self.socket.error, e:
                         mytxt = "%s: %s" % (
@@ -7080,7 +7088,6 @@ class RepoInterface:
                             header = blue("  # "),
                         )
                         status = False
-                    self.eapi3_socket.socket.setdefaulttimeout(5)
                     if status == None: # remote db not available anymore ?
                         time.sleep(5)
                         locked = self.handle_repository_lock(repo)
@@ -7092,17 +7099,13 @@ class RepoInterface:
                         else: # ah, well... dunno then...
                             do_db_update_transfer = None
                             self.dbformat_eapi -= 1
-                        do_close_conn()
                         continue
                     elif not status: # (status == False)
-                        do_close_conn()
                         # set to none and completely skip database alignment
                         do_db_update_transfer = None
                         self.dbformat_eapi -= 1
                         continue
 
-
-                    do_close_conn()
                     break
 
             if skip_this_repo:
