@@ -13546,6 +13546,95 @@ class SocketHostInterface:
         def verify_ssl_cb(self, conn, cert, errnum, depth, ok) :
             return ok
 
+        def verify_request(self, request, client_address):
+
+            self.do_ssl = self.HostInterface.SSL
+            if self.do_ssl: self.do_ssl = True
+            else: self.do_ssl = False
+
+            allowed = self.ip_blacklist_check(client_address[0])
+            if allowed: allowed = self.ip_max_connections_check(client_address[0])
+            if not allowed:
+                self.HostInterface.updateProgress(
+                    '[from: %s | SSL: %s] connection refused, ip blacklisted or maximum connections per IP reached' % (
+                        client_address,
+                        self.do_ssl,
+                    )
+                )
+                return False
+
+            allowed = self.max_connections_check(request)
+            if not allowed:
+                self.HostInterface.updateProgress(
+                    '[from: %s | SSL: %s] connection refused (max connections reached: %s)' % (
+                        client_address,
+                        self.do_ssl,
+                        self.HostInterface.max_connections,
+                    )
+                )
+                return False
+
+            ### let's go!
+            self.HostInterface.connections += 1
+            self.HostInterface.updateProgress(
+                '[from: %s | SSL: %s] connection established (%s of %s max connections)' % (
+                    client_address,
+                    self.do_ssl,
+                    self.HostInterface.connections,
+                    self.HostInterface.max_connections,
+                )
+            )
+            return True
+
+        def ip_blacklist_check(self, client_addr):
+            if client_addr in self.HostInterface.ip_blacklist:
+                return False
+            return True
+
+        def ip_max_connections_check(self, ip_address):
+            max_conn_per_ip = self.HostInterface.max_connections_per_host
+            max_conn_per_ip_barrier = self.HostInterface.max_connections_per_host_barrier
+            per_host_connections = self.HostInterface.per_host_connections
+            conn_data = per_host_connections.get(ip_address)
+            if conn_data == None:
+                per_host_connections[ip_address] = 1
+            else:
+                conn_data += 1
+                per_host_connections[ip_address] += 1
+                if conn_data > max_conn_per_ip:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] ------- :EEK: !! connection closed too many simultaneous connections from host (current: %s | limit: %s) -------' % (
+                            ip_address,
+                            conn_data,
+                            max_conn_per_ip,
+                        )
+                    )
+                    return False
+                elif conn_data > max_conn_per_ip_barrier:
+                    times = [5,6,7,8]
+                    self.HostInterface.updateProgress(
+                        '[from: %s] ------- :EEEK: !! connection warning simultaneous connection barrier reached from host (current: %s | soft limit: %s) -------' % (
+                            ip_address,
+                            conn_data,
+                            max_conn_per_ip_barrier,
+                        )
+                    )
+                    time.sleep(times[abs(hash(os.urandom(1)))%len(times)])
+
+            return True
+
+        def max_connections_check(self, request):
+            current = self.HostInterface.connections
+            maximum = self.HostInterface.max_connections
+            if current >= maximum:
+                self.HostInterface.transmit(
+                    request,
+                    self.HostInterface.answers['mcr']
+                )
+                return False
+            else:
+                return True
+
         def serve_forever(self):
             while self.alive:
                 #r,w,e = self.select.select([self.socket], [], [], 1)
@@ -13566,19 +13655,6 @@ class SocketHostInterface:
             self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
 
         def data_receiver(self):
-
-            # XXX: remove this, testing !
-            self.loop_counter += 1
-            if self.loop_counter > 100000000:
-                self.server.processor.HostInterface.updateProgress(
-                    'interrupted: %s, reason: %s - from client: %s' % (
-                        self.server.server_address,
-                        "max while loop count reached",
-                        self.client_address,
-                    )
-                )
-                self.entropyTools.printTraceback()
-                return True
 
             if self.timed_out:
                 return True
@@ -13728,8 +13804,6 @@ class SocketHostInterface:
 
             if self.valid_connection:
 
-                self.loop_counter = 0
-
                 while 1:
 
                     try:
@@ -13755,52 +13829,6 @@ class SocketHostInterface:
             self.valid_connection = True
             self.data_counter = None
             self.buffered_data = ''
-            self.do_ssl = self.server.processor.HostInterface.SSL
-            if self.do_ssl: self.do_ssl = True
-            else: self.do_ssl = False
-
-            allowed = self.ip_blacklist_check(
-                self.client_address,
-                self.server.processor.HostInterface.ip_blacklist
-            )
-            if allowed: allowed = self.ip_max_connections_check(self.client_address[0])
-            if not allowed:
-                self.server.processor.HostInterface.updateProgress(
-                    '[from: %s | SSL: %s] connection refused, ip blacklisted or maximum connections per IP reached' % (
-                        self.client_address,
-                        self.do_ssl,
-                    )
-                )
-                self.valid_connection = False
-                return False
-
-            allowed = self.max_connections_check(
-                self.server.processor.HostInterface.connections,
-                self.server.processor.HostInterface.max_connections
-            )
-            if not allowed:
-                self.server.processor.HostInterface.updateProgress(
-                    '[from: %s | SSL: %s] connection refused (max connections reached: %s)' % (
-                        self.client_address,
-                        self.do_ssl,
-                        self.server.processor.HostInterface.max_connections,
-                    )
-                )
-                self.valid_connection = False
-                return False
-
-            ### let's go!
-            self.server.processor.HostInterface.connections += 1
-            self.server.processor.HostInterface.updateProgress(
-                '[from: %s | SSL: %s] connection established (%s of %s max connections)' % (
-                    self.client_address,
-                    self.do_ssl,
-                    self.server.processor.HostInterface.connections,
-                    self.server.processor.HostInterface.max_connections,
-                )
-            )
-            return True
-
 
 
         def finish(self):
@@ -13822,52 +13850,7 @@ class SocketHostInterface:
                 else:
                     per_host_connections[self.client_address[0]] -= 1
 
-        def ip_blacklist_check(self, client_addr_data, blacklist):
-            if client_addr_data[0] in blacklist:
-                return False
-            return True
 
-        def ip_max_connections_check(self, ip_address):
-            max_conn_per_ip = self.server.processor.HostInterface.max_connections_per_host
-            max_conn_per_ip_barrier = self.server.processor.HostInterface.max_connections_per_host_barrier
-            per_host_connections = self.server.processor.HostInterface.per_host_connections
-            conn_data = per_host_connections.get(ip_address)
-            if conn_data == None:
-                per_host_connections[ip_address] = 1
-            else:
-                conn_data += 1
-                per_host_connections[ip_address] += 1
-                if conn_data > max_conn_per_ip:
-                    self.server.processor.HostInterface.updateProgress(
-                        '[from: %s] ------- :EEK: !! connection closed too many simultaneous connections from host (current: %s | limit: %s) -------' % (
-                            self.client_address,
-                            conn_data,
-                            max_conn_per_ip,
-                        )
-                    )
-                    return False
-                elif conn_data > max_conn_per_ip_barrier:
-                    times = [5,6,7,8]
-                    self.server.processor.HostInterface.updateProgress(
-                        '[from: %s] ------- :EEEK: !! connection warning simultaneous connection barrier reached from host (current: %s | soft limit: %s) -------' % (
-                            self.client_address,
-                            conn_data,
-                            max_conn_per_ip_barrier,
-                        )
-                    )
-                    time.sleep(times[abs(hash(os.urandom(1)))%len(times)])
-            return True
-
-        def max_connections_check(self, current, maximum):
-            if current >= maximum:
-                self.server.processor.HostInterface.transmit(
-                    self.request,
-                    self.server.processor.HostInterface.answers['mcr']
-                )
-                self.valid_connection = False
-                return False
-            else:
-                return True
 
     class CommandProcessor:
 
@@ -14016,6 +13999,7 @@ class SocketHostInterface:
 
             term = self.handle_termination_commands(data)
             if term:
+                del authenticator
                 return term
 
             cmd, args, session = self.handle_command_string(data)
@@ -14054,6 +14038,8 @@ class SocketHostInterface:
                         )
                     )
                     # close connection
+                    del authenticator
+                    del Entropy
                     return "close"
                 except self.socket.error, e:
                     self.HostInterface.updateProgress(
@@ -14063,6 +14049,8 @@ class SocketHostInterface:
                         )
                     )
                     # close connection
+                    del authenticator
+                    del Entropy
                     return "close"
                 except self.HostInterface.SSL_exceptions['SysCallError'], e:
                     self.HostInterface.updateProgress(
@@ -14072,6 +14060,8 @@ class SocketHostInterface:
                         )
                     )
                     # close connection
+                    del authenticator
+                    del Entropy
                     return "close"
                 except Exception, e:
                     # write to self.HostInterface.socketLog
@@ -14102,7 +14092,8 @@ class SocketHostInterface:
 
             authenticator.terminate_instance()
             del authenticator
-            self.gc.collect()
+            if not self.server.processor.HostInterface.fork_requests:
+                self.gc.collect()
             return rcmd
 
         def transmit(self, data):
@@ -17536,10 +17527,18 @@ class RemoteDbSkelInterface:
         self.connection_data = {}
         try:
             import MySQLdb, _mysql_exceptions
+            from MySQLdb.constants import FIELD_TYPE
+            from MySQLdb.converters import conversions
         except ImportError:
             raise exceptionTools.LibraryNotFound('LibraryNotFound: dev-python/mysql-python not found')
         self.mysql = MySQLdb
         self.mysql_exceptions = _mysql_exceptions
+        self.FIELD_TYPE = FIELD_TYPE
+        self.conversion_dict = conversions.copy()
+        self.conversion_dict[self.FIELD_TYPE.DECIMAL] = int
+        self.conversion_dict[self.FIELD_TYPE.LONG] = int
+        self.conversion_dict[self.FIELD_TYPE.FLOAT] = float
+        self.conversion_dict[self.FIELD_TYPE.NEWDECIMAL] = float
 
     def check_connection(self):
         if self.dbconn == None:
@@ -17564,6 +17563,8 @@ class RemoteDbSkelInterface:
 
     def set_connection_data(self, data):
         self.connection_data = data.copy()
+        if not self.connection_data.has_key('converters') and self.conversion_dict:
+            self.connection_data['converters'] = self.conversion_dict.copy()
 
     def check_connection_data(self):
         if not self.connection_data:
@@ -17576,7 +17577,8 @@ class RemoteDbSkelInterface:
             ('user',"username"),
             ('passwd',"password"),
             ('db',"dbname"),
-            ('port',"port")
+            ('port',"port"),
+            ('conv',"converters"), # mysql type converter dict
         ]
         for ckey, dkey in keys:
             if not self.connection_data.has_key(dkey):
@@ -17889,7 +17891,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.check_connection()
         self.execute_query('SELECT `iddoctype` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
         data = self.fetchone()
-        if data: return int(data['iddoctype'])
+        if data: return data['iddoctype']
         return -1
 
     def get_pkgkey(self, idkey):
@@ -17989,7 +17991,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         data = self.fetchone()
         if isinstance(data,dict):
             if data.get('avg_vote'):
-                vote = float(data['avg_vote'])
+                return data['avg_vote']
         return vote
 
     def get_ugc_allvotes(self):
@@ -17998,7 +18000,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT entropy_base.`key` as `vkey`,avg(entropy_votes.vote) as `avg_vote` FROM entropy_votes,entropy_base WHERE entropy_votes.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
         data = self.fetchall()
         for d_dict in data:
-            vote_data[d_dict['vkey']] = float(d_dict['avg_vote'])
+            vote_data[d_dict['vkey']] = d_dict['avg_vote']
         return vote_data
 
     def get_ugc_downloads(self, pkgkey):
@@ -18016,7 +18018,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
         data = self.fetchall()
         for d_dict in data:
-            down_data[d_dict['vkey']] = int(d_dict['tot_downloads'])
+            down_data[d_dict['vkey']] = d_dict['tot_downloads']
         return down_data
 
     def get_iddoc_userid(self, iddoc):
@@ -18034,7 +18036,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` = %s', (self.DOC_TYPES['comments'],))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['comments']: return int(data['comments'])
+            if data['comments']: return data['comments']
         return 0
 
     def get_total_documents_count(self):
@@ -18042,7 +18044,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` != %s', (self.DOC_TYPES['comments'],))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['comments']: return int(data['comments'])
+            if data['comments']: return data['comments']
         return 0
 
     def get_total_votes_count(self):
@@ -18050,7 +18052,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes')
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['votes']: return int(data['votes'])
+            if data['votes']: return data['votes']
         return 0
 
     def get_total_downloads_count(self):
@@ -18058,7 +18060,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['downloads']: return int(data['downloads'])
+            if data['downloads']: return data['downloads']
         return 0
 
     def get_user_score_ranking(self, userid):
@@ -18067,7 +18069,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data.get('Row'): return int(data['Row'])
+            if data.get('Row'): return data['Row']
         return 0
 
     def get_users_scored_count(self):
@@ -18075,7 +18077,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`userid`) as mycount FROM entropy_user_scores')
         data = self.fetchone()
         if isinstance(data,dict):
-            if data.get('mycount'): return int(data['mycount'])
+            if data.get('mycount'): return data['mycount']
         return 0
 
     def is_user_score_available(self, userid):
@@ -18154,7 +18156,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid,doctype,))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['docs']: return int(data['docs'])
+            if data['docs']: return data['docs']
         return 0
 
     def get_user_comments_count(self, userid):
@@ -18177,7 +18179,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes WHERE `userid` = %s', (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['votes']: return int(data['votes'])
+            if data['votes']: return data['votes']
         return 0
 
     def get_user_stats(self, userid):
