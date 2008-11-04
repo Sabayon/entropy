@@ -13641,6 +13641,29 @@ class SocketHostInterface:
                 #if r:
                 self.handle_request()
 
+        # taken from SocketServer.py
+        def finish_request(self, request, client_address):
+            """Finish one request by instantiating RequestHandlerClass."""
+            self.RequestHandlerClass(request, client_address, self)
+
+            self.HostInterface.updateProgress(
+                '[from: %s] connection closed (%s of %s max connections)' % (
+                    client_address,
+                    self.HostInterface.connections - 1,
+                    self.HostInterface.max_connections,
+                )
+            )
+            per_host_connections = self.HostInterface.per_host_connections
+            conn_data = per_host_connections.get(client_address[0])
+            if conn_data != None:
+                if conn_data < 1:
+                    del per_host_connections[client_address[0]]
+                else:
+                    per_host_connections[client_address[0]] -= 1
+
+        def close_request(self, request):
+            if self.HostInterface.connections > 0:
+                self.HostInterface.connections -= 1
 
     class RequestHandler(SocketServer.BaseRequestHandler):
 
@@ -13802,54 +13825,29 @@ class SocketHostInterface:
             self.ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
             self.myeos = self.server.processor.HostInterface.answers['eos']
 
-            if self.valid_connection:
+            while 1:
 
-                while 1:
-
-                    try:
-                        dobreak = self.data_receiver()
-                        if dobreak: break
-                    except Exception, e:
-                        self.server.processor.HostInterface.updateProgress(
-                            'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
-                                Exception,
-                                e,
-                                self.client_address,
-                            )
+                try:
+                    dobreak = self.data_receiver()
+                    if dobreak: break
+                except Exception, e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
+                            Exception,
+                            e,
+                            self.client_address,
                         )
-                        # print exception
-                        self.entropyTools.printTraceback()
-                        self.entropyTools.printTraceback(f = self.server.processor.HostInterface.socketLog)
-                        break
+                    )
+                    # print exception
+                    self.entropyTools.printTraceback()
+                    self.entropyTools.printTraceback(f = self.server.processor.HostInterface.socketLog)
+                    break
 
             self.request.close()
 
         def setup(self):
-
-            self.valid_connection = True
             self.data_counter = None
             self.buffered_data = ''
-
-
-        def finish(self):
-            if self.valid_connection:
-                if self.server.processor.HostInterface.connections > 0:
-                    self.server.processor.HostInterface.connections -= 1
-            self.server.processor.HostInterface.updateProgress(
-                '[from: %s] connection closed (%s of %s max connections)' % (
-                    self.client_address,
-                    self.server.processor.HostInterface.connections,
-                    self.server.processor.HostInterface.max_connections,
-                )
-            )
-            per_host_connections = self.server.processor.HostInterface.per_host_connections
-            conn_data = per_host_connections.get(self.client_address[0])
-            if conn_data != None:
-                if conn_data < 1:
-                    del per_host_connections[self.client_address[0]]
-                else:
-                    per_host_connections[self.client_address[0]] -= 1
-
 
 
     class CommandProcessor:
