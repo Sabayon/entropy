@@ -20,6 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+from __future__ import with_statement
 import shutil, commands, urllib2, time, thread, copy
 from entropyConstants import *
 from outputTools import TextInterface, \
@@ -26486,8 +26487,8 @@ class UGCClientInterface:
             mytxt = _("A valid EquoInterface based instance is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
-        import socket
-        self.socket = socket
+        import socket, threading
+        self.socket, self.threading = socket, threading
         import struct
         self.struct = struct
         self.Entropy = EquoInstance
@@ -26495,6 +26496,7 @@ class UGCClientInterface:
         self.quiet = quiet
         self.show_progress = show_progress
         self.UGCCache = UGCCacheInterface(self)
+        self.TxLocks = {}
 
     def connect_to_service(self, repository, timeout = None):
         if repository not in etpRepositories:
@@ -26558,54 +26560,60 @@ class UGCClientInterface:
         return self.store.remove_login(repository)
 
     def login(self, repository):
-        login_data = self.read_login(repository)
-        if login_data != None:
-            return True,_('ok')
 
-        aware = self.is_repository_eapi3_aware(repository)
-        if not aware:
-            return False,_('repository does not support EAPI3')
+        if not self.TxLocks.has_key(repository):
+            self.TxLocks[repository] = self.threading.Lock()
 
-        def fake_callback(*args,**kwargs):
-            return True
+        with self.TxLocks[repository]:
 
-        attempts = 3
-        while attempts:
+            login_data = self.read_login(repository)
+            if login_data != None:
+                return True,_('ok')
 
-            # use input box to read login
-            input_params = [
-                ('username',_('Username'),fake_callback,False),
-                ('password',_('Password'),fake_callback,True)
-            ]
-            login_data = self.Entropy.inputBox(
-                "%s %s %s" % (_('Please login against'),repository,_('repository'),),
-                input_params,
-                cancel_button = True
-            )
-            if not login_data:
-                return False,_('login abort')
+            aware = self.is_repository_eapi3_aware(repository)
+            if not aware:
+                return False,_('repository does not support EAPI3')
 
-            # now verify
-            srv = self.get_service_connection(repository)
-            if srv == None:
-                return False,_('connection issues')
-            session = srv.open_session()
-            login_status, login_msg = srv.CmdInterface.service_login(login_data['username'], login_data['password'], session)
-            if not login_status:
+            def fake_callback(*args,**kwargs):
+                return True
+
+            attempts = 3
+            while attempts:
+
+                # use input box to read login
+                input_params = [
+                    ('username',_('Username'),fake_callback,False),
+                    ('password',_('Password'),fake_callback,True)
+                ]
+                login_data = self.Entropy.inputBox(
+                    "%s %s %s" % (_('Please login against'),repository,_('repository'),),
+                    input_params,
+                    cancel_button = True
+                )
+                if not login_data:
+                    return False,_('login abort')
+
+                # now verify
+                srv = self.get_service_connection(repository)
+                if srv == None:
+                    return False,_('connection issues')
+                session = srv.open_session()
+                login_status, login_msg = srv.CmdInterface.service_login(login_data['username'], login_data['password'], session)
+                if not login_status:
+                    srv.close_session(session)
+                    srv.disconnect()
+                    self.Entropy.askQuestion("%s: %s" % (_("Access denied. Login failed"),login_msg,), responses = ["Ok"])
+                    attempts -= 1
+                    continue
+
+                # login accepted, store it?
                 srv.close_session(session)
                 srv.disconnect()
-                self.Entropy.askQuestion("%s: %s" % (_("Access denied. Login failed"),login_msg,), responses = ["Ok"])
-                attempts -= 1
-                continue
-
-            # login accepted, store it?
-            srv.close_session(session)
-            srv.disconnect()
-            rc = self.Entropy.askQuestion(_("Login successful. Do you want to save these credentials ?"))
-            save = False
-            if rc == "Yes": save = True
-            self.store.store_login(login_data['username'], login_data['password'], repository, save = save)
-            return True,_('ok')
+                rc = self.Entropy.askQuestion(_("Login successful. Do you want to save these credentials ?"))
+                save = False
+                if rc == "Yes": save = True
+                self.store.store_login(login_data['username'], login_data['password'], repository, save = save)
+                return True,_('ok')
 
     def logout(self, repository):
         return self.store.remove_login(repository)
@@ -26613,46 +26621,51 @@ class UGCClientInterface:
     # eval(func) must have session as first param
     def do_cmd(self, repository, login_required, func, args, kwargs):
 
-        if login_required:
-            status, err_msg = self.login(repository)
-            if not status:
-                return False,err_msg
+        if not self.TxLocks.has_key(repository):
+            self.TxLocks[repository] = self.threading.Lock()
 
-        srv = self.get_service_connection(repository)
-        if srv == None:
-            return False,'no connection'
-        session = srv.open_session()
-        if session == None:
-            return False,'no session'
-        args.insert(0,session)
+        with self.TxLocks[repository]:
 
-        if login_required:
-            stored_pass = False
-            while 1:
-                # login
-                login_data = self.read_login(repository)
-                if login_data == None:
-                    status, msg = self.login(repository)
-                    if not status: return status, msg
-                    username, password = self.read_login(repository)
-                else:
-                    stored_pass = True
-                    username, password = login_data
-                logged, error = srv.CmdInterface.service_login(username, password, session)
-                if not logged:
-                    if stored_pass:
-                        stored_pass = False
-                        self.remove_login(repository)
-                        continue
-                    srv.close_session(session)
-                    srv.disconnect()
-                    return logged, error
-                break
+            if login_required:
+                status, err_msg = self.login(repository)
+                if not status:
+                    return False,err_msg
 
-        rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
-        srv.close_session(session)
-        srv.disconnect()
-        return rslt
+            srv = self.get_service_connection(repository)
+            if srv == None:
+                return False,'no connection'
+            session = srv.open_session()
+            if session == None:
+                return False,'no session'
+            args.insert(0,session)
+
+            if login_required:
+                stored_pass = False
+                while 1:
+                    # login
+                    login_data = self.read_login(repository)
+                    if login_data == None:
+                        status, msg = self.login(repository)
+                        if not status: return status, msg
+                        username, password = self.read_login(repository)
+                    else:
+                        stored_pass = True
+                        username, password = login_data
+                    logged, error = srv.CmdInterface.service_login(username, password, session)
+                    if not logged:
+                        if stored_pass:
+                            stored_pass = False
+                            self.remove_login(repository)
+                            continue
+                        srv.close_session(session)
+                        srv.disconnect()
+                        return logged, error
+                    break
+
+            rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
+            srv.close_session(session)
+            srv.disconnect()
+            return rslt
 
     def get_comments(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_get_textdocs", [pkgkey], {})
