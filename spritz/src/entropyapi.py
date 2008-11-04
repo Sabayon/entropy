@@ -93,6 +93,7 @@ class QueueExecutor:
         self.Spritz.ui.abortQueue.show()
         # first fetch all
         fetchqueue = 0
+        mykeys = {}
         for packageInfo in runQueue:
 
             self.Spritz.queue_bombing()
@@ -102,6 +103,12 @@ class QueueExecutor:
             metaopts = {}
             metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
             Package.prepare(packageInfo,"fetch",metaopts)
+
+            myrepo = Package.infoDict['repository']
+            if not mykeys.has_key(myrepo):
+                mykeys[myrepo] = set()
+            mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(Package.infoDict['atom']))
+
             self.Entropy.updateProgress(
                 "Fetching: "+Package.infoDict['atom'],
                 importance = 2,
@@ -113,6 +120,12 @@ class QueueExecutor:
             Package.kill()
             del Package
             self.Entropy.cycleDone()
+
+        if self.Entropy.UGC != None:
+            for myrepo in mykeys:
+                mypkgkeys = list(mykeys[myrepo])
+                self.Entropy.UGC.add_downloads(myrepo, mypkgkeys)
+        del mykeys
 
         self.Spritz.ui.skipMirror.hide()
 

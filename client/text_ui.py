@@ -835,6 +835,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     if not etpUi['clean'] or onlyfetch:
         ### Before starting the real install, fetch packages and verify checksum.
         fetchqueue = 0
+        mykeys = {}
         for packageInfo in runQueue:
             fetchqueue += 1
 
@@ -842,6 +843,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             metaopts['dochecksum'] = dochecksum
             Package = Equo.Package()
             Package.prepare(packageInfo,"fetch", metaopts)
+            myrepo = Package.infoDict['repository']
+            if not mykeys.has_key(myrepo):
+                mykeys[myrepo] = set()
+            mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.infoDict['atom']))
 
             xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
             print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
@@ -854,6 +859,12 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
             del metaopts
             del Package
+
+        if Equo.UGC != None:
+            for myrepo in mykeys:
+                mypkgkeys = list(mykeys[myrepo])
+                Equo.UGC.add_downloads(myrepo, mypkgkeys)
+        del mykeys
 
     if onlyfetch:
         print_info(red(" @@ ")+blue("%s." % (_("Download completed"),) ))

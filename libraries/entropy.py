@@ -3317,7 +3317,7 @@ class EquoInterface(TextInterface):
         else:
             return item
 
-    def fetch_file_on_mirrors(self, repository, branch, filename, digest = False, verified = False, fetch_abort_function = None, package_name = None):
+    def fetch_file_on_mirrors(self, repository, branch, filename, digest = False, verified = False, fetch_abort_function = None):
 
         uris = etpRepositories[repository]['packages'][::-1]
         remaining = set(uris[:])
@@ -3396,8 +3396,8 @@ class EquoInterface(TextInterface):
                             type = "info",
                             header = red("   ## ")
                         )
+                        '''
                         if (self.UGC != None) and (package_name != None):
-
                             def register_download(repository, package_name):
                                 try:
                                     self.UGC.add_download(repository, package_name)
@@ -3407,6 +3407,7 @@ class EquoInterface(TextInterface):
                             task = self.entropyTools.parallelTask(register_download, repository, package_name)
                             task.parallel_wait()
                             task.start()
+                        '''
 
                         return 0
                     elif resumed:
@@ -4184,16 +4185,12 @@ class PackageInterface:
                     header = red("   ## "),
                     back = True
                 )
-                pkgkey = None
-                if self.infoDict.has_key('atom'):
-                    pkgkey = self.Entropy.entropyTools.dep_getkey(self.infoDict['atom'])
                 fetch = self.Entropy.fetch_file_on_mirrors(
                             self.infoDict['repository'],
                             self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
                             self.infoDict['download'],
                             self.infoDict['checksum'],
-                            fetch_abort_function = self.fetch_abort_function,
-                            package_name = pkgkey
+                            fetch_abort_function = self.fetch_abort_function
                         )
                 if fetch != 0:
                     self.Entropy.updateProgress(
@@ -5241,9 +5238,6 @@ class PackageInterface:
             type = "info",
             header = red("   ## ")
         )
-        pkgkey = None
-        if self.infoDict.has_key('atom'):
-            pkgkey = self.Entropy.entropyTools.dep_getkey(self.infoDict['atom'])
 
         rc = self.Entropy.fetch_file_on_mirrors(
             self.infoDict['repository'],
@@ -5251,8 +5245,7 @@ class PackageInterface:
             self.infoDict['download'],
             self.infoDict['checksum'],
             self.infoDict['verified'],
-            fetch_abort_function = self.fetch_abort_function,
-            package_name = pkgkey
+            fetch_abort_function = self.fetch_abort_function
         )
         if rc != 0:
             mytxt = "%s. %s: %s" % (
@@ -15121,7 +15114,7 @@ class SocketHostInterface:
         self.SessionsLock.acquire()
         try:
             if session in self.sessions:
-                return self.sessions[session]['rc']
+                return self.sessions[session].get('rc')
         finally:
             self.SessionsLock.release()
 
@@ -18459,6 +18452,20 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             self.store_download_data(iddownload, ip_addr)
         return True
 
+    def do_downloads(self, pkgkeys, ip_addr = None, do_commit = False):
+        self.check_connection()
+        mydate = self.get_date()
+        for pkgkey in pkgkeys:
+            iddownload = self.get_iddownload(pkgkey, mydate)
+            if iddownload == -1:
+                iddownload = self.insert_download(pkgkey, mydate, count = 1)
+            else:
+                self.update_download(iddownload, pkgkey, mydate, 1)
+            if (iddownload > 0) and isinstance(ip_addr,basestring):
+                self.store_download_data(iddownload, ip_addr)
+        if do_commit: self.commit()
+        return True
+
     def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
@@ -18892,6 +18899,16 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> ugc:do_download app-foo/foo",
                 'from': unicode(self), # from what class
             },
+            'ugc:do_downloads':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_do_downloads,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "inform the system of downloaded applications",
+                'syntax': "<SESSION_ID> ugc:do_downloads app-foo/foo1 app-foo/foo2 <...>",
+                'from': unicode(self), # from what class
+            },
             'ugc:add_comment':    {
                 'auth': True,
                 'built_in': False,
@@ -19295,6 +19312,18 @@ class DistributionUGCCommands(SocketCommandsSkel):
         ip_addr = self._get_session_ip_address(authenticator)
         ugc = self._load_ugc_interface()
         done = ugc.do_download(pkgkey, ip_addr = ip_addr)
+        if not done:
+            return done,'download not stored'
+        return done,'ok'
+
+    def docmd_do_downloads(self, authenticator, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+
+        ip_addr = self._get_session_ip_address(authenticator)
+        ugc = self._load_ugc_interface()
+        done = ugc.do_downloads(myargs, ip_addr = ip_addr)
         if not done:
             return done,'download not stored'
         return done,'ok'
@@ -21093,6 +21122,15 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
             session_id,
             'ugc:do_download',
             pkgkey,
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_do_downloads(self, session_id, pkgkeys):
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:do_downloads',
+            ' '.join(pkgkeys),
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -26710,6 +26748,9 @@ class UGCClientInterface:
 
     def add_download(self, repository, pkgkey):
         return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
+
+    def add_downloads(self, repository, pkgkeys):
+        return self.do_cmd(repository, False, "ugc_do_downloads", [pkgkeys], {})
 
     def get_downloads(self, repository, pkgkey):
         data = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
