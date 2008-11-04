@@ -21859,8 +21859,9 @@ class SystemSocketClientInterface:
                 header = self.output_header
             )
         self.real_sock_conn = None
-        self.hostname = None
-        self.hostport = None
+        # otherwise reconnect_socket won't work
+        #self.hostname = None
+        #self.hostport = None
 
 class SystemManagerExecutorInterface:
 
