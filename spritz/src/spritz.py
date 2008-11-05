@@ -502,7 +502,7 @@ class SpritzApplication(Controller):
         self.adTask.start()
 
     def setupUgc(self):
-        self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 120)
+        self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 300)
         self.ugcTask.start()
 
     def spawnAdRotation(self):

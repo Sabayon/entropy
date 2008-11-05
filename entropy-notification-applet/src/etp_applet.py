@@ -45,22 +45,20 @@ class Entropy(EquoInterface):
 
     def connect_progress_objects(self, appletInterface):
         self.appletInterface = appletInterface
+        self.appletX, self.appletY = self.appletInterface.appletX, self.appletInterface.appletY
         self.progress_tooltip = self.appletInterface.update_tooltip
         self.progress_widget = self.appletInterface.tooltip
         self.updateProgress = self.appletUpdateProgress
         self.progress_tooltip_message_title = _("Updates Notification")
         self.appletCreateNotification()
-        #self.progress_tooltip_notification_timer = None
-        #gobject.timeout_add(1000, self.appletCreateNotification)
         self.urlFetcher = GuiUrlFetcher
         self.progress = self.appletPrintText # for the GuiUrlFetcher
         self.applet_last_message = ''
 
 
     def appletSetCoordinates(self):
-        self.appletX,self.appletY = self.appletInterface.get_tray_coordinates()
-        self.progress_tooltip_notification.set_hint("x", self.appletX+11)
-        self.progress_tooltip_notification.set_hint("y", self.appletY+11)
+        self.progress_tooltip_notification.set_hint("x", self.appletX)
+        self.progress_tooltip_notification.set_hint("y", self.appletY)
 
     def appletCreateNotification(self):
         gtk.gdk.threads_enter()
@@ -89,7 +87,6 @@ class Entropy(EquoInterface):
 
     def appletPrintText(self, message):
         gtk.gdk.threads_enter()
-        self.appletSetCoordinates()
         self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
         self.progress_tooltip_notification.show()
         self.applet_last_message = message
@@ -146,6 +143,25 @@ class rhnApplet:
 
     def __init__(self):
 
+        self.debug = False
+        if "--debug" in sys.argv:
+            self.debug = True
+
+        self.appletX, self.appletY = 0,0
+        self.animator = None
+        self.client = None
+        self.notice_window = None
+        self.rhnreg_dialog = None
+        self.error_dialog = None
+        self.error_threshold = 0
+        self.about_window = None
+        self.last_error = None
+        self.last_error_is_exception = 0
+        self.last_error_is_network_error = 0
+        self.change_number = 0
+        self.available_packages = []
+        self.last_alert = None
+        self.Entropy = None
         self.destroyed = 0
         self.isWorking = False
         self.refresh_lock = threading.Lock()
@@ -225,29 +241,13 @@ class rhnApplet:
         self.event_box = gtk.EventBox()
         self.image_widget = gtk.Image()
         self.event_box.add(self.image_widget)
-        self.event_box.set_events(gtk.gdk.BUTTON_PRESS_MASK | gtk.gdk.POINTER_MOTION_MASK | gtk.gdk.POINTER_MOTION_HINT_MASK | gtk.gdk.CONFIGURE)
 
-        self.image_widget.show()
         self.event_box.connect("button_press_event", self.applet_face_click)
         self.image_widget.connect('destroy', self.on_destroy)
 
         self.applet_window.add(self.event_box)
+        self.applet_window.realize()
         self.applet_window.show_all()
-
-        self.animator = None
-        self.client = None
-        self.notice_window = None
-        self.rhnreg_dialog = None
-        self.error_dialog = None
-        self.error_threshold = 0
-        self.about_window = None
-        self.last_error = None
-        self.last_error_is_exception = 0
-        self.last_error_is_network_error = 0
-        self.change_number = 0
-        self.available_packages = []
-        self.last_alert = None
-        self.Entropy = None
 
         hide_menu = False
         message = ''
@@ -258,6 +258,7 @@ class rhnApplet:
                 workdir_perms_issue = True
 
         permitted = entropyTools.is_user_in_entropy_group()
+        load_intf = False
         if not permitted:
             hide_menu = True
             message = "%s: %s" % (_("You must add yourself to this group"),etpConst['sysgroup'],)
@@ -265,15 +266,10 @@ class rhnApplet:
             hide_menu = True
             message = _("Please run Equo/Spritz as root to update Entropy permissions")
         else:
-            self.set_state("OKAY")
-            self.enable_refresh_timer(120000)
-
-            # Entropy initialization
-            self.Entropy = Entropy()
-            self.Entropy.connect_progress_objects(self)
+            load_intf = True
 
         if etp_applet_config.settings['APPLET_ENABLED']:
-            self.enable_applet()
+            self.enable_applet(init = True)
         else:
             self.disable_applet()
 
@@ -287,6 +283,16 @@ class rhnApplet:
                 w = self.menu_items[key]
                 w.set_sensitive(False)
                 w.hide()
+
+        self.appletX, self.appletY = self.get_tray_coordinates()
+        self.appletX += 10
+        self.appletY += 10
+        if load_intf:
+            # Entropy initialization
+            self.Entropy = Entropy()
+            self.Entropy.connect_progress_objects(self)
+            self.enable_refresh_timer()
+
 
     def get_tray_coordinates(self):
         """
@@ -304,7 +310,7 @@ class rhnApplet:
             y=coordinates[1]+size[1]/2
         else:
             y=coordinates[1]-size[1]/2
-        msg_xy=[coordinates[0],y]
+        msg_xy = (coordinates[0],y)
         return tuple(msg_xy)
 
     def set_menu_image(self, widget, name):
@@ -327,10 +333,10 @@ class rhnApplet:
         img.set_from_pixbuf(pix)
         widget.set_image(img)
 
-    def enable_refresh_timer(self, when = etp_applet_config.settings['REFRESH_INTERVAL'] * 1000, force = 0):
+    def enable_refresh_timer(self, when = etp_applet_config.settings['REFRESH_INTERVAL'] * 1000):
         if self.current_state in [ "CRITICAL" ]: return
         if not self.refresh_timeout_tag:
-            self.refresh_timeout_tag = entropyTools.TimeScheduled(self.refresh_handler, when/1000, dictData = {'force': force})
+            self.refresh_timeout_tag = entropyTools.TimeScheduled(self.refresh_handler, when/1000)
             self.refresh_timeout_tag.start()
 
     def disable_refresh_timer(self):
@@ -448,7 +454,7 @@ class rhnApplet:
         if browser:
             subprocess.call([browser,url])
 
-    def disable_applet(self, *data):
+    def disable_applet(self):
         self.update_tooltip(_("Updates Notification Applet Disabled"))
         self.disable_refresh_timer()
         self.set_state("DISCONNECTED")
@@ -457,9 +463,10 @@ class rhnApplet:
         self.menu_items['disable_applet'].hide()
         self.menu_items['enable_applet'].show()
 
-    def enable_applet(self, *data):
+    def enable_applet(self, init = False):
         self.update_tooltip(_("Updates Notification Applet Enabled"))
-        self.enable_refresh_timer()
+        if not init:
+            self.enable_refresh_timer()
         self.set_state("OKAY")
         etp_applet_config.settings['APPLET_ENABLED'] = 1
         etp_applet_config.save_settings(etp_applet_config.settings)
@@ -486,9 +493,8 @@ class rhnApplet:
         elif urgency == 'low':
             n.set_urgency(pynotify.URGENCY_LOW)
 
-        x,y = self.get_tray_coordinates()
-        n.set_hint("x", x+11)
-        n.set_hint("y", y+11)
+        n.set_hint("x", self.Entropy.appletX)
+        n.set_hint("y", self.Entropy.appletY)
         self.last_alert = (title,text)
         n.show()
 
@@ -516,15 +522,21 @@ class rhnApplet:
 
         return repos, 0
 
-    def refresh_handler(self, force = 0):
+    def refresh_handler(self, force = 0, after = 0):
         gtk.gdk.threads_enter()
+        if after: time.sleep(after)
         self.refresh(force)
         gtk.gdk.threads_leave()
 
     def refresh(self, force = 0):
 
-        if not self.Entropy: return
-        if not etp_applet_config.settings['APPLET_ENABLED']: return
+        if not self.Entropy:
+            if self.debug: print "refresh: Entropy interface not loaded"
+            return
+        if not etp_applet_config.settings['APPLET_ENABLED']:
+            if self.debug: print "refresh: applet not enabled"
+            return
+        if self.debug: print "refresh: all fine, getting lock and running run_refresh"
 
         self.refresh_lock.acquire()
         try:
@@ -555,30 +567,40 @@ class rhnApplet:
         if not locked:
 
             # compare repos
+            if self.debug: print "run_refresh: launching compare_repositories_status"
             repositories_to_update, rc = self.compare_repositories_status()
+            if self.debug: print "run_refresh: completed compare_repositories_status: %s" % ((repositories_to_update, rc),)
 
             if repositories_to_update and rc == 0:
                 repos = repositories_to_update.keys()
 
+                if self.debug: print "run_refresh: loading repository interface"
                 try:
                     repoConn = self.Entropy.Repositories(repos, fetchSecurity = False, noEquoCheck = True)
-                except exceptionTools.MissingParameter:
+                    if self.debug: print "run_refresh: repository interface loaded"
+                except exceptionTools.MissingParameter, e:
                     self.last_error = "%s: %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)
                     self.error_threshold += 1
-                except exceptionTools.OnlineMirrorError:
+                    if self.debug: print "run_refresh: MissingParameter exception, error: %s" % (e,)
+                except exceptionTools.OnlineMirrorError, e:
                     self.last_error = _("Repository Network Error")
                     self.last_error_is_network_error = 1
+                    if self.debug: print "run_refresh: OnlineMirrorError exception, error: %s" % (e,)
                 except Exception, e:
                     self.error_threshold += 1
                     self.last_error_is_exception = 1
                     self.last_error = "%s: %s" % (_('Unhandled exception'),e,)
+                    if self.debug: print "run_refresh: Unhandled exception, error: %s" % (e,)
                 else:
                     # -128: sync error, something bad happened
                     # -2: repositories not available (all)
                     # -1: not able to update all the repositories
+                    if self.debug: print "run_refresh: preparing to run sync"
                     rc = repoConn.sync()
                     rc = rc*-1
                     del repoConn
+                    if self.debug: print "run_refresh: sync done"
+                if self.debug: print "run_refresh: sync closed, rc: %s" % (rc,)
 
             if rc == 1:
                 err = _("No repositories specified. Cannot check for package updates.")
@@ -840,9 +862,3 @@ class rhnApplet:
 
     def set_ignored(self, name, new_value):
         self.never_viewed_notices = 0
-
-    def run(self):
-        gobject.threads_init()
-        gtk.gdk.threads_enter()
-        gtk.main()
-        gtk.gdk.threads_leave()

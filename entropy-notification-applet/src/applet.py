@@ -7,7 +7,7 @@
 #
 # $Id: applet.py,v 1.10 2003/09/15 15:07:19 veillard Exp $
 
-import sys,os
+import sys, os, time, gtk, gobject
 import signal
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -18,17 +18,15 @@ sys.path.insert(0,'../../spritz/src')
 sys.path.insert(0,'../')
 sys.argv.append('--no-pid-handling')
 
-try:
-    os.nice(10)
-except:
-    pass
-
 import etp_applet
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     applet = etp_applet.rhnApplet()
-    applet.run()
+    gobject.threads_init()
+    gtk.gdk.threads_enter()
+    gtk.main()
+    gtk.gdk.threads_leave()
 
 if __name__ == "__main__":
     main()
