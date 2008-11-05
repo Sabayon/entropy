@@ -18219,7 +18219,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads WHERE entropy_base.`key` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc`  '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_base.`key` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
 
         return self.fetchall()
 
@@ -18243,7 +18243,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads WHERE entropy_docs.`username` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs.`username` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
 
         return self.fetchall()
 
@@ -18266,7 +18266,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads WHERE (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
 
         return self.fetchall()
 
@@ -18290,7 +18290,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads WHERE entropy_docs_keywords.`keyword` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query('SELECT *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs_keywords.`keyword` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
 
         return self.fetchall()
 
