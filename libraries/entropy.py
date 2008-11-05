@@ -13719,6 +13719,10 @@ class SocketHostInterface:
                         self.data_counter -= len(data)
                         self.buffered_data += data
 
+                    # command length exceeds our command length limit
+                    if self.data_counter > self.max_command_length:
+                        raise exceptionTools.InterruptError('InterruptError: command too long: %s, limit: %s' % (self.data_counter,self.max_command_length,))
+
                     while self.data_counter > 0:
                         if self.ssl:
                             x = ''
@@ -13759,6 +13763,14 @@ class SocketHostInterface:
                 except self.ssl_exceptions['Error'], e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: SSL Error, reason: %s - from client: %s' % (
+                            e,
+                            self.client_address,
+                        )
+                    )
+                    return True
+                except exceptionTools.InterruptError, e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: Command Error, reason: %s - from client: %s' % (
                             e,
                             self.client_address,
                         )
@@ -13821,6 +13833,7 @@ class SocketHostInterface:
             self.ssl = self.server.processor.HostInterface.SSL
             self.ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
             self.myeos = self.server.processor.HostInterface.answers['eos']
+            self.max_command_length = self.server.processor.HostInterface.max_command_length
 
             while 1:
 
@@ -14668,6 +14681,7 @@ class SocketHostInterface:
         self.max_connections = etpConst['socket_service']['max_connections']
         self.max_connections_per_host = etpConst['socket_service']['max_connections_per_host']
         self.max_connections_per_host_barrier = etpConst['socket_service']['max_connections_per_host_barrier']
+        self.max_command_length = etpConst['socket_service']['max_command_length']
         self.disabled_commands = etpConst['socket_service']['disabled_cmds']
         self.ip_blacklist = etpConst['socket_service']['ip_blacklist']
         self.connections = 0
@@ -17954,7 +17968,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.check_connection()
         mydict['store_url'] = None
         mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-        mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+        if mydict.has_key("key"): mydict['pkgkey'] = mydict['key']
+        else: mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
         # for binary files, get size too
         mydict['size'] = 0
         if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
