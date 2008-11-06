@@ -122,15 +122,15 @@ class QueueExecutor:
             self.Entropy.cycleDone()
 
         def spawn_ugc():
-            if self.Entropy.UGC != None:
-                for myrepo in mykeys:
-                    mypkgkeys = list(mykeys[myrepo])
-                    self.Entropy.UGC.add_downloads(myrepo, mypkgkeys)
-        try:
-            t = self.Entropy.entropyTools.parallelTask(spawn_ugc)
-            t.start()
-        except:
-            pass
+            try:
+                if self.Entropy.UGC != None:
+                    for myrepo in mykeys:
+                        mypkgkeys = list(mykeys[myrepo])
+                        self.Entropy.UGC.add_downloads(myrepo, mypkgkeys)
+            except:
+                pass
+        t = self.Entropy.entropyTools.parallelTask(spawn_ugc)
+        t.start()
 
         self.Spritz.ui.skipMirror.hide()
 

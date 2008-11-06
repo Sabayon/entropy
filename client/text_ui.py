@@ -861,15 +861,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             del Package
 
         def spawn_ugc():
-            if Equo.UGC != None:
-                for myrepo in mykeys:
-                    mypkgkeys = list(mykeys[myrepo])
-                    Equo.UGC.add_downloads(myrepo, mypkgkeys)
-        try:
-            t = Equo.entropyTools.parallelTask(spawn_ugc)
-            t.start()
-        except:
-            pass
+            try:
+                if Equo.UGC != None:
+                    for myrepo in mykeys:
+                        mypkgkeys = list(mykeys[myrepo])
+                        Equo.UGC.add_downloads(myrepo, mypkgkeys)
+            except:
+                pass
+        t = Equo.entropyTools.parallelTask(spawn_ugc)
+        t.start()
 
     if onlyfetch:
         print_info(red(" @@ ")+blue("%s." % (_("Download completed"),) ))
