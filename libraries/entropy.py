@@ -18338,10 +18338,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return results, found_rows
 
     def handle_pkgkey(self, key):
-        if not self.is_pkgkey_available(key):
-            return self.insert_pkgkey(key, do_commit = True)
-        else:
-            return self.get_idkey(key)
+        idkey = self.get_idkey(key)
+        if idkey == -1: return self.insert_pkgkey(key)
+        return idkey
 
     def insert_flood_control_check(self, userid):
         self.check_connection()
