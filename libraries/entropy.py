@@ -18069,7 +18069,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
         data = self.fetchone()
         if isinstance(data,dict):
-            if data['downloads']: return data['downloads']
+            if data['downloads']: return int(data['downloads'])
         return 0
 
     def get_user_score_ranking(self, userid):
