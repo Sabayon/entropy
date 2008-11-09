@@ -683,16 +683,16 @@ def const_defaultSettings(rootdir):
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {
-            'global_make_conf': "/etc/make.conf",
-            'global_package_keywords': "/etc/portage/package.keywords",
-            'global_package_use': "/etc/portage/package.use",
-            'global_package_mask': "/etc/portage/package.mask",
-            'global_package_unmask': "/etc/portage/package.unmask",
-            'global_make_profile': "/etc/make.profile",
+            'global_make_conf': rootdir+"/etc/make.conf",
+            'global_package_keywords': rootdir+"/etc/portage/package.keywords",
+            'global_package_use': rootdir+"/etc/portage/package.use",
+            'global_package_mask': rootdir+"/etc/portage/package.mask",
+            'global_package_unmask': rootdir+"/etc/portage/package.unmask",
+            'global_make_profile': rootdir+"/etc/make.profile",
             'global_make_profile_link_name' : "profile.link",
-            'exec': "/usr/bin/emerge", # source package manager executable
-            'env_update_cmd': "env-update",
-            'source_profile': ["source","/etc/profile"],
+            'exec': rootdir+"/usr/bin/emerge", # source package manager executable
+            'env_update_cmd': rootdir+"/usr/sbin/env-update",
+            'source_profile': ["source",rootdir+"/etc/profile"],
             'ask_cmd': "--ask",
             'info_cmd': "--info",
             'remove_cmd': "-C",
@@ -731,7 +731,6 @@ def const_defaultSettings(rootdir):
             'system_packages': [
                 "sys-kernel/linux-sabayon", # our kernel
                 "dev-db/sqlite", # our interface
-                "dev-python/pysqlite",  # our python interface to our interface
                 "virtual/cron", # our cron service
                 "app-admin/equo", # our package manager (client)
                 "sys-apps/entropy" # our package manager (server+client)

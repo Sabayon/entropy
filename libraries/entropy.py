@@ -92,6 +92,11 @@ class urlFetcher:
             self.startingposition = int(self.localfile.tell())
             self.resumed = True
         else:
+            if os.path.lexists(self.pathToSave) and not self.entropyTools.is_valid_path(self.pathToSave):
+                try:
+                    os.remove(self.pathToSave)
+                except OSError: # I won't stop you here
+                    pass
             self.localfile = open(self.pathToSave,"wb")
 
         # setup proxy, doing here because config is dynamic
@@ -6320,7 +6325,7 @@ class RepoInterface:
 
         const_setup_perms(etpConst['etpdatabaseclientdir'],etpConst['entropygid'])
 
-    def __construct_paths(self, item, repo, cmethod):
+    def _construct_paths(self, item, repo, cmethod):
 
         if item not in self.supported_download_items:
             mytxt = _("Supported items: %s") % (self.supported_download_items,)
@@ -6534,7 +6539,7 @@ class RepoInterface:
     def download_item(self, item, repo, cmethod = None, lock_status_func = None, disallow_redirect = True):
 
         self.__validate_repository_id(repo)
-        url, filepath = self.__construct_paths(item, repo, cmethod)
+        url, filepath = self._construct_paths(item, repo, cmethod)
 
         # to avoid having permissions issues
         # it's better to remove the file before,
@@ -6694,27 +6699,25 @@ class RepoInterface:
 
         try:
             mydbconn = self.get_eapi3_local_database(repo)
+            myidpackages = mydbconn.listAllIdpackages()
         except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
             prepare_exit(eapi3_interface, session)
             return False
 
-        myidpackages = mydbconn.listAllIdpackages()
         added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
             eapi3_interface, repo,
             myidpackages, session
         )
-        if None in (added_ids,removed_ids,checksum):
-            mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
-            return False
+        if (None in (added_ids,removed_ids,checksum)) or \
+            (not added_ids and not removed_ids and self.forceUpdate):
+                mydbconn.closeDB()
+                prepare_exit(eapi3_interface, session)
+                return False
 
         elif not checksum: # {added_ids, removed_ids, checksum} == False
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % (
-                blue(_("EAPI3 Service status")),
-                darkred(_("remote database suddenly locked")),
-            )
+            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")), darkred(_("remote database suddenly locked")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 0,
@@ -6723,19 +6726,11 @@ class RepoInterface:
             )
             return None
 
-        if not added_ids and not removed_ids and self.forceUpdate:
-            mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
-            return False
-
         # is it worth it?
         if len(added_ids) > threshold:
             mytxt = "%s: %s (%s: %s/%s)" % (
-                blue(_("EAPI3 Service")),
-                darkred(_("skipping differential sync")),
-                brown(_("threshold")),
-                blue(str(len(added_ids))),
-                darkred(str(threshold)),
+                blue(_("EAPI3 Service")), darkred(_("skipping differential sync")),
+                brown(_("threshold")), blue(str(len(added_ids))), darkred(str(threshold)),
             )
             self.Entropy.updateProgress(
                 mytxt,
@@ -6752,10 +6747,7 @@ class RepoInterface:
         if dbdigest == None:
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % (
-                blue(_("EAPI3 Service status")),
-                darkred(_("treeupdates data not available")),
-            )
+            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")), darkred(_("treeupdates data not available")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 0,
@@ -6763,24 +6755,21 @@ class RepoInterface:
                 header = blue("  # "),
             )
             return None
-        else:
-            try:
-                mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
-                mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
-            except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
-                mydbconn.closeDB()
-                prepare_exit(eapi3_interface, session)
-                mytxt = "%s: %s" % (
-                    blue(_("EAPI3 Service status")),
-                    darkred(_("cannot update treeupdates data")),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    type = "info",
-                    header = blue("  # "),
-                )
-                return None
+
+        try:
+            mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
+            mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
+        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            mydbconn.closeDB()
+            prepare_exit(eapi3_interface, session)
+            mytxt = "%s: %s" % (blue(_("EAPI3 Service status")), darkred(_("cannot update treeupdates data")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
 
         count = 0
         added_segments = []
@@ -6803,76 +6792,59 @@ class RepoInterface:
             count += 1
             mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
             self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t",
-                back = True,
-                count = (count,maxcount,)
+                mytxt, importance = 0, type = "info",
+                header = "\t", back = True, count = (count,maxcount,)
             )
             fetch_count = 0
             max_fetch_count = 5
+
+            error_caught = False
+            error_rc = None
+
             while 1:
 
                 # anti loop protection
                 if fetch_count > max_fetch_count:
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    return False
+                    error_caught = True
+                    error_rc = False
+                    break
 
                 fetch_count += 1
                 pkgdata = eapi3_interface.CmdInterface.get_package_information(
                     session, segment, repo, etpConst['currentarch'], etpConst['product']
                 )
                 if pkgdata == None:
-                    mytxt = "%s: %s" % (
-                        blue(_("Fetch error on segment")),
-                        darkred(str(segment)),
-                    )
+                    mytxt = "%s: %s" % ( blue(_("Fetch error on segment")), darkred(str(segment)),)
                     self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = "\t",
-                        count = (count,maxcount,)
+                        mytxt, importance = 1, type = "warning",
+                        header = "\t", count = (count,maxcount,)
                     )
-                    if fetch_count > max_fetch_count:
-                        mydbconn.closeDB()
-                        prepare_exit(eapi3_interface, session)
-                        return False
-                    continue # retry
+                    continue
                 elif not pkgdata: # pkgdata == False
                     mytxt = "%s: %s" % (
                         blue(_("Service status")),
                         darkred("remote database suddenly locked"),
                     )
                     self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "info",
-                        header = "\t",
-                        count = (count,maxcount,)
+                        mytxt, importance = 1, type = "info",
+                        header = "\t", count = (count,maxcount,)
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    return None
+                    error_caught = True
+                    break
                 elif isinstance(pkgdata,tuple):
-                    mytxt = "%s: %s, %s. %s" % (
-                        blue(_("Service status")),
-                        pkgdata[0],
-                        pkgdata[1],
-                        darkred("Error processing the command"),
-                    )
+                    mytxt = "%s: %s, %s. %s" % ( blue(_("Service status")), pkgdata[0], pkgdata[1], darkred("Error processing the command"),)
                     self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "info",
-                        header = "\t",
-                        count = (count,maxcount,)
+                        mytxt, importance = 1, type = "info",
+                        header = "\t", count = (count,maxcount,)
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    return None
+                    error_caught = True
+                    break
 
                 try:
                     for idpackage in pkgdata:
@@ -6882,23 +6854,20 @@ class RepoInterface:
                             ignoreExceptions = False
                         )
                 except (IOError,EOFError,OSError,), e:
-                    mytxt = "%s: %s: %s." % (
-                        blue(_("Local status")),
-                        darkred("Error storing data"),
-                        e,
-                    )
+                    mytxt = "%s: %s: %s." % ( blue(_("Local status")), darkred("Error storing data"), e,)
                     self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "info",
-                        header = "\t",
-                        count = (count,maxcount,)
+                        mytxt, importance = 1, type = "info",
+                        header = "\t", count = (count,maxcount,)
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    return None
+                    error_caught = True
+                    break
 
                 break
+
+            if error_caught: return error_rc
+
         del added_segments
 
         # I don't need you anymore
@@ -6917,38 +6886,26 @@ class RepoInterface:
                     darkred(str(segment)),
                 )
                 self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "\t",
-                    count = (count,maxcount,)
+                    mytxt, importance = 1, type = "warning",
+                    header = "\t", count = (count,maxcount,)
                 )
                 mydbconn.closeDB()
                 return False
 
             mytxt = "%s %s" % (blue(_("Injecting package")), darkgreen(mydata['atom']),)
             self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t",
-                back = True,
-                count = (count,maxcount,)
+                mytxt, importance = 0, type = "info",
+                header = "\t", back = True, count = (count,maxcount,)
             )
             mydbconn.addPackage(
-                mydata,
-                revision = mydata['revision'],
-                idpackage = idpackage,
-                do_remove = False,
-                do_commit = False,
-                formatted_content = True
+                mydata, revision = mydata['revision'],
+                idpackage = idpackage, do_remove = False,
+                do_commit = False, formatted_content = True
             )
 
         self.Entropy.updateProgress(
-            blue(_("Packages injection complete")),
-            importance = 0,
-            type = "info",
-            header = "\t",
+            blue(_("Packages injection complete")), importance = 0,
+            type = "info", header = "\t",
         )
 
         # now remove
@@ -6959,19 +6916,14 @@ class RepoInterface:
             count += 1
             mytxt = "%s: %s" % (blue(_("Removing package")), darkred(str(myatom)),)
             self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t",
-                back = True,
-                count = (count,maxcount,)
+                mytxt, importance = 0, type = "info",
+                header = "\t", back = True, count = (count,maxcount,)
             )
             mydbconn.removePackage(idpackage, do_cleanup = False, do_commit = False)
 
         self.Entropy.updateProgress(
             blue(_("Packages removal complete")),
-            importance = 0,
-            type = "info",
+            importance = 0, type = "info",
             header = "\t",
         )
 
@@ -6985,16 +6937,12 @@ class RepoInterface:
         else:
             mytxt = "%s: %s: %s | %s: %s" % (
                 blue(_("Database checksum doesn't match remote.")),
-                darkgreen(_("local")),
-                mychecksum,
-                darkred(_("remote")),
-                checksum,
+                darkgreen(_("local")), mychecksum,
+                darkred(_("remote")), checksum,
             )
             self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = "\t",
+                mytxt, importance = 0,
+                type = "info", header = "\t",
             )
 
         mydbconn.closeDB()
@@ -7180,6 +7128,16 @@ class RepoInterface:
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
+            if (repo == etpConst['officialrepositoryid']):
+                try:
+                    self.run_config_files_updates(repo)
+                except Exception, e:
+                    self.entropyTools.printTraceback()
+                    mytxt = "%s: %s" % (
+                        blue(_("Configuration files update error, not critical, continuing")),
+                        darkred(unicode(e)),
+                    )
+                    self.Entropy.updateProgress(mytxt, importance = 0, type = "info", header = blue("  # "),)
             self.updated_repos.add(repo)
             self.Entropy.cycleDone()
 
@@ -7224,6 +7182,160 @@ class RepoInterface:
             self.check_entropy_updates()
 
         return 0
+
+    def run_config_files_updates(self, repo):
+
+        # are we root?
+        if etpConst['uid'] != 0:
+            self.Entropy.updateProgress(
+                brown(_("Skipping configuration files update, you are not root.")),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            return
+
+        # make.conf
+        self._config_updates_make_conf(repo)
+        self._config_updates_make_profile(repo)
+
+
+    def _config_updates_make_conf(self, repo):
+
+        ## WARNING: it doesn't handle multi-line variables, yet. remember this.
+        url, repo_make_conf = self._construct_paths("make.conf", repo, None)
+        system_make_conf = etpConst['spm']['global_make_conf']
+        make_conf_variables_check = ["CHOST"]
+
+        if os.path.isfile(repo_make_conf) and os.access(repo_make_conf,os.R_OK):
+
+            if not os.path.isfile(system_make_conf):
+                self.Entropy.updateProgress(
+                    "%s %s. %s." % (red(system_make_conf),blue(_("does not exist")),blue(_("Overwriting")),),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                if os.path.lexists(system_make_conf):
+                    shutil.move(
+                        system_make_conf,
+                        "%s.backup_%s" % (system_make_conf,self.entropyTools.getRandomNumber(),)
+                    )
+                shutil.copy2(repo_make_conf,system_make_conf)
+
+            elif os.access(system_make_conf,os.W_OK):
+
+                repo_f = open(repo_make_conf,"r")
+                sys_f = open(system_make_conf,"r")
+                repo_make_c = [x.strip() for x in repo_f.readlines()]
+                sys_make_c = [x.strip() for x in sys_f.readlines()]
+                repo_f.close()
+                sys_f.close()
+
+                # read repository settings
+                repo_data = {}
+                for setting in make_conf_variables_check:
+                    for line in repo_make_c:
+                        if line.startswith(setting+"="):
+                            # there can't be bash vars with a space after its name on declaration
+                            repo_data[setting] = line
+                            # I don't break, because there might be other overlapping settings
+
+                differences = {}
+                # update make.conf data in memory
+                for setting in repo_data:
+                    for idx in range(len(sys_make_c)):
+                        line = sys_make_c[idx]
+                        if line.startswith(setting+"=") and (line != repo_data[setting]):
+                            # there can't be bash vars with a space after its name on declaration
+                            self.Entropy.updateProgress(
+                                "%s: %s %s. %s." % (
+                                    red(system_make_conf), bold(unicode(setting)),
+                                    blue(_("variable differs")), red(_("Updating")),
+                                ),
+                                importance = 1,
+                                type = "info",
+                                header = blue(" @@ ")
+                            )
+                            differences[setting] = repo_data[setting]
+                            line = repo_data[setting]
+                        sys_make_c[idx] = line
+
+                if differences:
+
+                    self.Entropy.updateProgress(
+                        "%s: %s." % (red(system_make_conf), blue(_("updating critical variables")),),
+                        importance = 1,
+                        type = "info",
+                        header = blue(" @@ ")
+                    )
+                    # backup user make.conf
+                    shutil.copy2(system_make_conf,"%s.entropy_backup" % (system_make_conf,))
+
+                    self.Entropy.updateProgress(
+                        "%s: %s." % (
+                            red(system_make_conf), darkgreen("writing changes to disk"),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = blue(" @@ ")
+                    )
+                    # write to disk, safely
+                    tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
+                    f = open(tmp_make_conf,"w")
+                    for line in sys_make_c: f.write(line+"\n")
+                    f.flush()
+                    f.close()
+                    shutil.move(tmp_make_conf,system_make_conf)
+
+                # update environment
+                for var in differences:
+                    try:
+                        myval = '='.join(differences[var].strip().split("=")[1:])
+                        if myval:
+                            if myval[0] in ("'",'"',): myval = myval[1:]
+                            if myval[-1] in ("'",'"',): myval = myval[:-1]
+                    except IndexError:
+                        myval = ''
+                    os.environ[var] = myval
+
+    def _config_updates_make_profile(self, repo):
+        url, repo_make_profile = self._construct_paths("profile.link", repo, None)
+        system_make_profile = etpConst['spm']['global_make_profile']
+        if not (os.path.isfile(repo_make_profile) and os.access(repo_make_profile,os.R_OK)):
+            return
+        f = open(repo_make_profile,"r")
+        repo_profile_link_data = f.readline().strip()
+        f.close()
+        current_profile_link = ''
+        if os.path.islink(system_make_profile) and os.access(system_make_profile,os.R_OK):
+            current_profile_link = os.readlink(system_make_profile)
+        if repo_profile_link_data != current_profile_link:
+            self.Entropy.updateProgress(
+                "%s: %s %s. %s." % (
+                    red(system_make_profile), blue("link"),
+                    blue(_("differs")), red(_("Updating")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            if os.path.lexists(repo_make_profile):
+                shutil.move(system_make_profile,"%s.entropy_old" % (system_make_profile,))
+            os.symlink(repo_profile_link_data,system_make_profile)
+            if not self.entropyTools.is_valid_path(system_make_profile):
+                # revert change, link does not exist yet
+                self.Entropy.updateProgress(
+                    "%s: %s %s. %s." % (
+                        red(system_make_profile), blue("new link"),
+                        blue(_("does not exist")), red(_("Reverting")),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                os.symlink(current_profile_link,system_make_profile)
+
 
     def check_entropy_updates(self):
         rc = False
@@ -17910,7 +18022,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_ugc_metadata(self, pkgkey):
         self.check_connection()
-        metadata = {}
+        metadata = {
+            'vote': 0.0,
+            'downloads': 0,
+        }
         self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_base.`idkey` = entropy_docs.`idkey` AND entropy_base.`key` = %s', (pkgkey,))
         metadata['docs'] = self.fetchall()
         for mydict in metadata['docs']:
@@ -17965,7 +18080,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         return metadata
 
     def _get_ugc_extra_metadata(self, mydict):
-        self.check_connection()
         mydict['store_url'] = None
         mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
         if mydict.has_key("key"): mydict['pkgkey'] = mydict['key']
@@ -18327,6 +18441,40 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             order_by_string = 'ORDER BY tot_downloads DESC'
 
         self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs_keywords.`keyword` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+
+        results = self.fetchall()
+        self.execute_query('SELECT FOUND_ROWS() as count')
+        data = self.fetchone()
+        found_rows = 0
+        if isinstance(data,dict):
+            if data.has_key('count'):
+                found_rows = data.get('count')
+        return results, found_rows
+
+    def search_iddoc_item(self, iddoc_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
+        self.check_connection()
+
+        if iddoctypes == None:
+            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
+        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        try:
+            myterm = int(iddoc_string)
+        except ValueError:
+            return [],0
+
+        search_params = [myterm,results_offset,results_limit]
+
+        order_by_string = ''
+        if order_by == "key":
+            order_by_string = 'ORDER BY entropy_base.`key`'
+        elif order_by == "username":
+            order_by_string = 'ORDER BY entropy_docs.`username`'
+        elif order_by == "vote":
+            order_by_string = 'ORDER BY avg_vote DESC'
+        elif order_by == "downloads":
+            order_by_string = 'ORDER BY tot_downloads DESC'
+
+        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs.`iddoc` = %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')

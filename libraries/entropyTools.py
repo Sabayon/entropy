@@ -2152,6 +2152,13 @@ def is_valid_string(string):
             return False
     return True
 
+def is_valid_path(path):
+    try:
+        os.stat(path)
+    except OSError:
+        return False
+    return True
+
 def open_buffer():
     try:
         import cStringIO as stringio
