@@ -102,6 +102,32 @@ def repositories(options):
         Entropy.switch_default_repository(repoid, save = True)
     elif cmd == "status":
         return 0
+    elif cmd == "package-tag":
+
+        if len(myopts) < 3:
+            return 1
+        repo = myopts[0]
+
+        if repo not in etpConst['server_repositories']:
+            return 3
+
+        tag_string = myopts[1]
+        atoms = myopts[2:]
+        # match
+        idpackages = []
+        for package in atoms:
+            match = Entropy.atomMatch(package, matchRepo = [repo], matchTag = '')
+            if (match[1] == repo):
+                idpackages.append(match[0])
+            else:
+                print_warning(  brown(" * ") + \
+                                red("%s: " % (_("Cannot match"),) )+bold(package) + \
+                                red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
+                                )
+        if not idpackages: return 2
+        status, data = Entropy.tag_packages(tag_string, idpackages, repo = repo)
+        return status
+
     elif cmd in ["move","copy"]:
         matches = []
         # from repo: repoid

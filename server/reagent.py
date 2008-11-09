@@ -82,6 +82,7 @@ myopts = [
     (2,'enable <repo>',3,_('enable the specified repository')),
     (2,'disable <repo>',3,_('disable the specified repository')),
     (2,'status <repo>',3,_('show the current Server Interface status')),
+    (2,'package-tag <repo> <tag-string> [atoms]',1,_('clone a package assigning it an arbitrary tag')),
     (2,'move <from> <to> [atoms]',1,_('move packages from a repository to another')),
     (2,'copy <from> <to> [atoms]',1,_('copy packages from a repository to another')),
     (2,'default <repo_id>',2,_('set the default repository')),

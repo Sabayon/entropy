@@ -1707,7 +1707,7 @@ class EquoInterface(TextInterface):
             if reponame in conflictingRevisions:
                 return (results[reponame],reponame)
 
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), packagesFilter = True,
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), matchTag = None, packagesFilter = True,
             multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None,
             server_repos = [], serverInstance = None, extendedResults = False, useCache = True):
 
@@ -1726,6 +1726,7 @@ class EquoInterface(TextInterface):
                 u_hash = hash(matchRepo)
             c_hash =    str(atom) + \
                         str(matchSlot) + \
+                        str(matchTag) + \
                         str(hash(tuple(matchBranches))) + \
                         str(packagesFilter) + \
                         str(hash(tuple(self.validRepositories))) + \
@@ -1773,6 +1774,7 @@ class EquoInterface(TextInterface):
                         caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
                         matchBranches = matchBranches,
+                        matchTag = matchTag,
                         packagesFilter = packagesFilter,
                         matchRevision = matchRevision,
                         extendedResults = extendedResults,
@@ -1826,6 +1828,7 @@ class EquoInterface(TextInterface):
                                                     caseSensitive = caseSensitive,
                                                     matchSlot = matchSlot,
                                                     matchBranches = matchBranches,
+                                                    matchTag = matchTag,
                                                     packagesFilter = packagesFilter,
                                                     multiMatch = True,
                                                     extendedResults = extendedResults
@@ -1844,6 +1847,7 @@ class EquoInterface(TextInterface):
                                                 caseSensitive = caseSensitive,
                                                 matchSlot = matchSlot,
                                                 matchBranches = matchBranches,
+                                                matchTag = matchTag,
                                                 packagesFilter = packagesFilter,
                                                 multiMatch = True,
                                                 extendedResults = extendedResults
@@ -3838,7 +3842,6 @@ class EquoInterface(TextInterface):
 
         return pkg_links
 
-
     # This function extracts all the info from a .tbz2 file and returns them
     def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
@@ -3925,7 +3928,6 @@ class EquoInterface(TextInterface):
 
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
-        versiontag = ""
         kernelstuff = False
         kernelstuff_kernel = False
         for item in data['content']:
@@ -3954,11 +3956,10 @@ class EquoInterface(TextInterface):
                 data['slot'] = kmodver # if you change this behaviour,
                                        # you must change "reagent update"
                                        # and "equo database gentoosync" consequentially
-            versiontag = "#"+data['versiontag']
 
         data['download'] = etpConst['packagesrelativepath'] + data['branch'] + "/"
-        data['download'] += data['category']+":"+data['name']+"-"+data['version']
-        data['download'] += versiontag+etpConst['packagesext']
+        data['download'] += self.entropyTools.create_package_filename(data['category'], data['name'], data['version'], data['versiontag'])
+
 
         data['trigger'] = ""
         if os.path.isfile(etpConst['triggersdir']+"/"+data['category']+"/"+data['name']+"/"+etpConst['triggername']):
@@ -16002,8 +16003,55 @@ class ServerInterface(TextInterface):
             header = darkgreen(" * ")
         )
 
-    def move_packages(self, matches, to_repo, from_repo = None, ask = True, do_copy = False):
+    def tag_packages(self, package_tag, idpackages, repo = None, ask = True):
 
+        # check package_tag "no spaces"
+
+        try:
+            package_tag = str(package_tag)
+            if " " in package_tag: raise ValueError
+        except (UnicodeDecodeError,UnicodeEncodeError,ValueError,):
+            self.updateProgress(
+                "%s: %s" % (
+                    blue(_("Invalid tag specified")),
+                    package_tag,
+                ),
+                importance = 1, type = "error", header = darkred(" !! ")
+            )
+            return 1, package_tag
+
+        if repo == None: repo = self.default_repository
+
+        # sanity check
+        invalid_atoms = []
+        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+        for idpackage in idpackages:
+            ver_tag = dbconn.retrieveVersionTag(idpackage)
+            if ver_tag:
+                invalid_atoms.append(dbconn.retrieveAtom(idpackage))
+
+        if invalid_atoms:
+            self.updateProgress(
+                "%s: %s" % (
+                    blue(_("These are the packages already tagged, cannot re-tag, action aborted")),
+                    ', '.join([darkred(unicode(x)) for x in invalid_atoms]),
+                ),
+                importance = 1, type = "error", header = darkred(" !! ")
+            )
+            return 2, invalid_atoms
+
+        matches = [(x,repo) for x in idpackages]
+        status = 0
+        data = self.move_packages(
+            matches, to_repo = repo, from_repo = repo, ask = ask,
+            do_copy = True, new_tag = package_tag
+        )
+        return status, data
+
+
+    def move_packages(self, matches, to_repo, from_repo = None, ask = True, do_copy = False, new_tag = None):
+
+        if from_repo == None: from_repo = self.default_repository
         switched = set()
 
         # avoid setting __default__ as default server repo
@@ -16046,16 +16094,18 @@ class ServerInterface(TextInterface):
             header = red(" @@ ")
         )
 
+        new_tag_string = ''
+        if new_tag != None: new_tag_string = "[%s: %s]" % (darkgreen(_("new tag")),brown(new_tag),)
         for match in matches:
             repo = match[1]
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
             self.updateProgress(
-                "[%s=>%s|%s] %s" % (
+                "[%s=>%s|%s] %s " % (
                         darkgreen(repo),
                         darkred(to_repo),
                         brown(etpConst['branch']),
                         blue(dbconn.retrieveAtom(match[0])),
-                ),
+                ) + new_tag_string,
                 importance = 0,
                 type = "info",
                 header = brown("    # ")
@@ -16067,9 +16117,7 @@ class ServerInterface(TextInterface):
             if rc == "No":
                 return switched
 
-        for match in matches:
-            idpackage = match[0]
-            repo = match[1]
+        for idpackage, repo in matches:
             dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
             match_branch = dbconn.retrieveBranch(idpackage)
             match_atom = dbconn.retrieveAtom(idpackage)
@@ -16107,7 +16155,14 @@ class ServerInterface(TextInterface):
                 )
                 continue
 
-            to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,package_filename)
+            if new_tag != None:
+                match_category = dbconn.retrieveCategory(idpackage)
+                match_name = dbconn.retrieveName(idpackage)
+                match_version = dbconn.retrieveVersion(idpackage)
+                tagged_package_filename = self.entropyTools.create_package_filename(match_category, match_name, match_version, new_tag)
+                to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,tagged_package_filename)
+            else:
+                to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,package_filename)
             if not os.path.isdir(os.path.dirname(to_file)):
                 os.makedirs(os.path.dirname(to_file))
 
@@ -16149,6 +16204,9 @@ class ServerInterface(TextInterface):
             )
             # install package into destination db
             data = dbconn.getPackageData(idpackage)
+            if new_tag != None:
+                data['versiontag'] = new_tag
+
             todbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = to_repo)
 
             self.updateProgress(
@@ -30671,11 +30729,9 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
 
         # build atom string
-        versiontag = ''
-        if etpData['versiontag']:
-            versiontag = '#'+etpData['versiontag']
+        pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
 
-        foundid = self.isPackageAvailable(etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag)
+        foundid = self.isPackageAvailable(pkgatom)
         if (foundid < 0): # same atom doesn't exist in any branch
             return self.addPackage(etpData, revision = forcedRevision)
         else:
@@ -30762,17 +30818,12 @@ class EntropyDatabaseInterface:
         if idflags == -1: idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
 
 
-        # look for configured versiontag
-        versiontag = ""
-        if (etpData['versiontag']):
-            versiontag = "#"+etpData['versiontag']
-
         trigger = 0
         if etpData['trigger']:
             trigger = 1
 
         # baseinfo
-        pkgatom = etpData['category']+"/"+etpData['name']+"-"+etpData['version']+versiontag
+        pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
 
         mybaseinfo_data = [
             pkgatom,
@@ -30910,10 +30961,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
 
         # build atom string
-        versiontag = ''
-        if etpData['versiontag']:
-            versiontag = '#'+etpData['versiontag']
-        pkgatom = etpData['category'] + "/" + etpData['name'] + "-" + etpData['version']+versiontag
+        pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
 
         # for client database - the atom if present, must be overwritten with the new one regardless its branch
         if (self.clientDatabase):
@@ -30946,6 +30994,8 @@ class EntropyDatabaseInterface:
 
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
+
+        import pdb;pdb.set_trace()
 
         self.checkReadOnly()
         self.live_cache.clear()
