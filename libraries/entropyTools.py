@@ -306,6 +306,15 @@ def get_file_size(file_path):
     mystat = os.lstat(file_path)
     return int(mystat.st_size)
 
+def sum_file_sizes(file_list):
+    size = 0
+    for myfile in file_list:
+        try:
+            size += get_file_size(myfile)
+        except (OSError,IOError,):
+            continue
+    return size
+
 def check_required_space(mountpoint, bytes_required):
     import statvfs
     st = os.statvfs(mountpoint)
