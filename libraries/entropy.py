@@ -8563,7 +8563,7 @@ class FtpInterface:
     def closeConnection(self):
         try:
             self.ftpconn.quit()
-        except (EOFError,AttributeError,self.socket.timeout,):
+        except (EOFError,AttributeError,self.socket.timeout,self.ftplib.error_reply,):
             # AttributeError is raised when socket gets trashed
             # EOFError is raised when the connection breaks
             # timeout, who cares!
@@ -13862,6 +13862,15 @@ class SocketHostInterface:
                 except self.socket.timeout, e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
+                            self.server.server_address,
+                            e,
+                            self.client_address,
+                        )
+                    )
+                    return True
+                except self.socket.sslerror, e:
+                    self.server.processor.HostInterface.updateProgress(
+                        'interrupted: %s, SSL socket error reason: %s - from client: %s' % (
                             self.server.server_address,
                             e,
                             self.client_address,
@@ -21799,6 +21808,9 @@ class SystemSocketClientInterface:
         except self.SSL_exceptions['Error'], e:
             self.disconnect()
             raise exceptionTools.SSLError('SSLError: %s' % (e,))
+        except self.socket.sslerror, e:
+            self.disconnect()
+            raise exceptionTools.SSLError('SSL Socket error: %s' % (e,))
         except:
             self.disconnect()
             raise
