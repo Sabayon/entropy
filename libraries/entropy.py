@@ -30995,8 +30995,6 @@ class EntropyDatabaseInterface:
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
 
-        import pdb;pdb.set_trace()
-
         self.checkReadOnly()
         self.live_cache.clear()
 
