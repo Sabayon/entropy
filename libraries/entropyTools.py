@@ -1469,11 +1469,11 @@ def getNewerVersionTag(InputVersionlist):
 
 def isnumber(x):
     try:
-	t = int(x)
+        t = int(x)
         del t
-	return True
+        return True
     except:
-	return False
+        return False
 
 
 def istextfile(filename, blocksize = 512):
@@ -2278,6 +2278,25 @@ def dict_from_xml(xml_string):
         mydict[key] = data
     return mydict
 
+def create_package_filename(category, name, version, package_tag):
+    if package_tag:
+        package_tag = "#%s" % (package_tag,)
+    else:
+        package_tag = ''
+
+    package_name = "%s:%s-%s" % (category, name, version,)
+    package_name += package_tag
+    package_name += etpConst['packagesext']
+    return package_name
+
+def create_package_atom_string(category, name, version, package_tag):
+    if package_tag:
+        package_tag = "#%s" % (package_tag,)
+    else:
+        package_tag = ''
+    package_name = "%s/%s-%s" % (category,name,version,)
+    package_name += package_tag
+    return package_name
 
 def collectLinkerPaths():
     if linkerPaths:
