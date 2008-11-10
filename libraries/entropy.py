@@ -20118,6 +20118,19 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         return self.cursor.fetchone()
 
+    def get_user_birthday(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        self.cursor.execute('SELECT user_birthday FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
+        bday = self.cursor.fetchone()
+        if not bday:
+            return None
+        elif not bday.has_key('user_birthday'):
+            return None
+        return bday['user_birthday']
+
     def get_username(self):
         self.check_connection()
         self.check_login_data()
@@ -20263,6 +20276,92 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.check_logged_in()
         self.cursor.execute('SELECT user_permissions FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         return self.cursor.fetchone()
+
+    def update_email(self, email):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        email_hash = self._generate_email_hash(email)
+        mydata = {
+            'user_email_hash': email_hash,
+            'user_email': email.lower(),
+        }
+
+        try:
+            sql = self._generate_sql("update",self.TABLE_PREFIX+'users', mydata, 'user_id = %s' % (self.login_data['user_id'],))
+            self.cursor.execute(sql)
+            return True
+        except Exception:
+            return False
+
+    def update_password_hash(self, password_hash):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        mydata = {
+            'user_password': password_hash,
+        }
+
+        try:
+            sql = self._generate_sql("update",self.TABLE_PREFIX+'users', mydata, 'user_id = %s' % (self.login_data['user_id'],))
+            self.cursor.execute(sql)
+            return True
+        except Exception:
+            return False
+
+    def get_email(self):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+        self.cursor.execute('SELECT user_email FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
+        data = self.cursor.fetchone()
+        if not data:
+            return ''
+        elif not data.has_key('user_email'):
+            return ''
+        return data['user_email']
+
+    def update_user_id_profile(self, profile_data):
+        self.check_connection()
+        self.check_login_data()
+        self.check_logged_in()
+
+        # filter valid params
+        valid_params = [
+            "user_icq","user_yim","user_msnm",
+            "user_jabber","user_website","user_from",
+            "user_interests","user_occ","user_birthday",
+            "user_sig"
+        ]
+
+        my_params = {}
+        for param in valid_params:
+            d = profile_data.get(param)
+            if d == None: continue
+            my_params[param] = d
+
+        if not my_params:
+            return False,'no parameters'
+
+
+        # validate parameters
+        b_day = my_params.get('user_birthday')
+        if isinstance(b_day,basestring):
+            import re
+            myre = re.compile("(0[1-9]|[12][0-9]|3[01])[-](0[1-9]|1[012])[-](19|20)\d\d")
+            if not myre.match(b_day):
+                del my_params['user_birthday']
+
+        try:
+            sql = self._generate_sql("update",self.TABLE_PREFIX+'users', my_params, 'user_id = %s' % (self.login_data['user_id'],))
+            self.cursor.execute(sql)
+            return True, None
+        except Exception, e:
+            return False, unicode(e)
+
+    
 
     def _set_config_value(self, config_name, data):
         self.cursor.execute('UPDATE '+self.TABLE_PREFIX+'config SET config_value = %s WHERE config_name = %s',(data,config_name,))
