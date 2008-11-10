@@ -8617,11 +8617,14 @@ class rssFeed:
                 if dcs:
                     self.items[mycounter]['dc:creator'] = dcs[0].firstChild.data.strip()
 
-    def addItem(self, title, link = '', description = ''):
+    def addItem(self, title, link = '', description = '', pubDate = ''):
         self.itemscounter += 1
         self.items[self.itemscounter] = {}
         self.items[self.itemscounter]['title'] = title
-        self.items[self.itemscounter]['pubDate'] = time.strftime("%a, %d %b %Y %X +0000")
+        if pubDate:
+            self.items[self.itemscounter]['pubDate'] = pubDate
+        else:
+            self.items[self.itemscounter]['pubDate'] = time.strftime("%a, %d %b %Y %X +0000")
         self.items[self.itemscounter]['description'] = description
         self.items[self.itemscounter]['link'] = link
         if link:
