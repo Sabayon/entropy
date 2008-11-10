@@ -18527,6 +18527,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return False
         elif not data.has_key('ts'):
             return False
+        elif data['ts'] == None:
+            return False
         delta = datetime.fromtimestamp(time.time()) - data['ts']
         if (delta.days == 0) and (delta.seconds <= self.FLOOD_INTERVAL):
             return True
