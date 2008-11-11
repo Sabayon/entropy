@@ -21261,8 +21261,11 @@ class EntropySocketClientCommands:
                 return lasterr
             tries -= 1
 
-            # send command
-            self.Service.transmit(cmd)
+            try:
+                # send command
+                self.Service.transmit(cmd)
+            except (exceptionTools.SSLError,):
+                return None
             # receive answer
             data = self.Service.receive()
 
@@ -22206,10 +22209,16 @@ class SystemSocketClientInterface:
             self.sock_conn.shutdown()
             self.sock_conn.close()
         elif self.ssl and not self.pyopenssl:
-            self.real_sock_conn.shutdown(self.socket.SHUT_RDWR)
+            try:
+                self.real_sock_conn.shutdown(self.socket.SHUT_RDWR)
+            except self.socket.error:
+                pass
         del self.sock_conn
         self.sock_conn = None
-        self.real_sock_conn.close()
+        try:
+            self.real_sock_conn.close()
+        except self.socket.error:
+            pass
         if not self.quiet:
             mytxt = _("Successfully disconnected from host")
             self.Entropy.updateProgress(
