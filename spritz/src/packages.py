@@ -22,6 +22,7 @@ import logging
 from spritz_setup import SpritzConf
 from entropy_i18n import _
 from entropyConstants import *
+import exceptionTools
 
 class EntropyPackages:
 
@@ -74,7 +75,10 @@ class EntropyPackages:
         catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
         pkgsdata = []
         for pkgdata in catsdata:
-            yp, new = self.getPackageItem(pkgdata,True)
+            try:
+                yp, new = self.getPackageItem(pkgdata,True)
+            except exceptionTools.RepositoryError:
+                continue
             install_status = yp.install_status
             ok = False
             if install_status == 1:
@@ -151,7 +155,10 @@ class EntropyPackages:
 
         if mask == 'installed':
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
-                yp, new = self.getPackageItem((idpackage,0),True)
+                try:
+                    yp, new = self.getPackageItem((idpackage,0),True)
+                except exceptionTools.RepositoryError:
+                    continue
                 yp.action = 'r'
                 yp.color = SpritzConf.color_install
                 yield yp
@@ -160,7 +167,10 @@ class EntropyPackages:
             # Get the rest of the available packages.
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
-                yp, new = self.getPackageItem(pkgdata,True)
+                try:
+                    yp, new = self.getPackageItem(pkgdata,True)
+                except exceptionTools.RepositoryError:
+                    continue
                 yp.action = 'i'
                 yield yp
 
@@ -168,7 +178,10 @@ class EntropyPackages:
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
             for pkgdata in updates:
-                yp, new = self.getPackageItem(pkgdata,True)
+                try:
+                    yp, new = self.getPackageItem(pkgdata,True)
+                except exceptionTools.RepositoryError:
+                    continue
                 yp.action = 'u'
                 yp.color = SpritzConf.color_update
                 yield yp
@@ -178,7 +191,10 @@ class EntropyPackages:
             pkgdata = self.filterReinstallable(pkgdata)
             # (idpackage,(idpackage,repoid,))
             for idpackage, matched in pkgdata:
-                yp, new = self.getPackageItem(matched,True)
+                try:
+                    yp, new = self.getPackageItem(matched,True)
+                except exceptionTools.RepositoryError:
+                    continue
                 yp.installed_match = (idpackage,0)
                 yp.action = 'rr'
                 yp.color = SpritzConf.color_install
@@ -186,7 +202,10 @@ class EntropyPackages:
 
         elif mask == "masked":
             for match, idreason in self.getMaskedPackages():
-                yp, new = self.getPackageItem(match,True)
+                try:
+                    yp, new = self.getPackageItem(match,True)
+                except exceptionTools.RepositoryError:
+                    continue
                 action = self.getMaskedPackageAction(match)
                 yp.action = action
                 if action == 'rr': # setup reinstallables
