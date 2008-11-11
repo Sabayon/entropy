@@ -17658,7 +17658,7 @@ class ServerInterface(TextInterface):
         mytxt = blue("%s.") % (_("migration loop completed"),)
         self.updateProgress(
             "[%s=>%s] %s" % (
-                    brown(cur_branch),
+                    brown(from_branch),
                     bold(to_branch),
                     mytxt,
             ),
