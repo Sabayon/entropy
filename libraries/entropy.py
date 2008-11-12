@@ -14079,30 +14079,29 @@ class SocketHostInterface:
             # decide if we need to load authenticator or Entropy
             authenticator = None
             cmd_data = self.HostInterface.valid_commands.get(cmd)
-            if isinstance(cmd_data,dict) and (cmd not in self.HostInterface.login_pass_commands):
-                if "authenticator" in cmd_data['args']:
-                    try:
-                        authenticator = self.load_authenticator()
-                    except exceptionTools.ConnectionError, e:
-                        self.HostInterface.updateProgress(
-                            '[from: %s] authenticator error: cannot load: %s' % (
-                                self.client_address,
-                                e,
-                            )
+            if (("authenticator" in cmd_data['args']) or (cmd in self.HostInterface.login_pass_commands)) and isinstance(cmd_data,dict):
+                try:
+                    authenticator = self.load_authenticator()
+                except exceptionTools.ConnectionError, e:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] authenticator error: cannot load: %s' % (
+                            self.client_address,
+                            e,
                         )
-                        self.entropyTools.printTraceback()
-                        self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
-                        return "close"
-                    except Exception, e:
-                        self.HostInterface.updateProgress(
-                            '[from: %s] authenticator error: cannot load: %s - unknown error' % (
-                                self.client_address,
-                                e,
-                            )
+                    )
+                    self.entropyTools.printTraceback()
+                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    return "close"
+                except Exception, e:
+                    self.HostInterface.updateProgress(
+                        '[from: %s] authenticator error: cannot load: %s - unknown error' % (
+                            self.client_address,
+                            e,
                         )
-                        self.entropyTools.printTraceback()
-                        self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
-                        return "close"
+                    )
+                    self.entropyTools.printTraceback()
+                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    return "close"
 
             p_args = args
             if (cmd in self.HostInterface.login_pass_commands) and authenticator != None:
