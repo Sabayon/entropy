@@ -982,7 +982,10 @@ class RepositoryManagerMenu(MenuSkel):
                 len(self.EntropyRepositories['available']),
             )
             gtk.gdk.threads_enter()
-            self.sm_ui.repoManagerCurrentRepoLabel.set_markup(mytxt)
+            try:
+                self.sm_ui.repoManagerCurrentRepoLabel.set_markup(mytxt)
+            except AttributeError: # user might have closed the win
+                pass
             gtk.gdk.threads_leave()
 
     def update_queue_view(self):
