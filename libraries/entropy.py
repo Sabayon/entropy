@@ -17817,6 +17817,24 @@ class RemoteDbSkelInterface:
                 return True
         return False
 
+    def fetchall2set(self, item):
+        mycontent = set()
+        for x in item:
+            mycontent |= set(x)
+        return mycontent
+
+    def fetchall2list(self, item):
+        content = []
+        for x in item:
+            content += list(x)
+        return content
+
+    def fetchone2list(self, item):
+        return list(item)
+
+    def fetchone2set(self, item):
+        return set(item)
+
 class DistributionUGCInterface(RemoteDbSkelInterface):
 
     SQL_TABLES = {
