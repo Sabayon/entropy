@@ -13414,52 +13414,56 @@ class SocketHostInterface:
 
         def docmd_login(self, arguments):
 
-            # filter n00bs
-            if not arguments or (len(arguments) != 3):
-                return False,None,None,'wrong arguments'
+            with self.HostInterface.AuthenticatorLock:
 
-            user = arguments[0]
-            auth_type = arguments[1]
-            auth_string = arguments[2]
+                # filter n00bs
+                if not arguments or (len(arguments) != 3):
+                    return False,None,None,'wrong arguments'
 
-            # check auth type validity
-            if auth_type not in self.valid_auth_types:
-                return False,user,None,'invalid auth type'
+                user = arguments[0]
+                auth_type = arguments[1]
+                auth_string = arguments[2]
 
-            udata = self.__get_user_data(user)
-            if udata == None:
-                return False,user,None,'invalid user'
+                # check auth type validity
+                if auth_type not in self.valid_auth_types:
+                    return False,user,None,'invalid auth type'
 
-            uid = udata[2]
-            # check if user is in the Entropy group
-            if not self.entropyTools.is_user_in_entropy_group(uid):
-                return False,user,uid,'user not in %s group' % (etpConst['sysgroup'],)
+                udata = self.__get_user_data(user)
+                if udata == None:
+                    return False,user,None,'invalid user'
 
-            # now validate password
-            valid = self.__validate_auth(user,auth_type,auth_string)
-            if not valid:
-                return False,user,uid,'auth failed'
+                uid = udata[2]
+                # check if user is in the Entropy group
+                if not self.entropyTools.is_user_in_entropy_group(uid):
+                    return False,user,uid,'user not in %s group' % (etpConst['sysgroup'],)
 
-            if not uid:
-                self.HostInterface.sessions[self.session]['admin'] = True
-            else:
-                self.HostInterface.sessions[self.session]['user'] = True
-            return True,user,uid,"ok"
+                # now validate password
+                valid = self.__validate_auth(user,auth_type,auth_string)
+                if not valid:
+                    return False,user,uid,'auth failed'
+
+                if not uid:
+                    self.HostInterface.sessions[self.session]['admin'] = True
+                else:
+                    self.HostInterface.sessions[self.session]['user'] = True
+                return True,user,uid,"ok"
 
         # it we get here is because user is logged in
         def docmd_userdata(self):
 
-            auth_uid = self.HostInterface.sessions[self.session]['auth_uid']
-            mydata = {}
-            udata = self.__get_uid_data(auth_uid)
-            if udata:
-                mydata['username'] = udata[0]
-                mydata['uid'] = udata[2]
-                mydata['gid'] = udata[3]
-                mydata['references'] = udata[4]
-                mydata['home'] = udata[5]
-                mydata['shell'] = udata[6]
-            return True,mydata,'ok'
+            with self.HostInterface.AuthenticatorLock:
+
+                auth_uid = self.HostInterface.sessions[self.session]['auth_uid']
+                mydata = {}
+                udata = self.__get_uid_data(auth_uid)
+                if udata:
+                    mydata['username'] = udata[0]
+                    mydata['uid'] = udata[2]
+                    mydata['gid'] = udata[3]
+                    mydata['references'] = udata[4]
+                    mydata['home'] = udata[5]
+                    mydata['shell'] = udata[6]
+                return True,mydata,'ok'
 
         def __get_uid_data(self, user_id):
             import pwd
@@ -13517,22 +13521,25 @@ class SocketHostInterface:
 
         def docmd_logout(self, myargs):
 
-            # filter n00bs
-            if (len(myargs) < 1) or (len(myargs) > 1):
-                return False,None,'wrong arguments'
+            with self.HostInterface.AuthenticatorLock:
 
-            user = myargs[0]
-            # filter n00bs
-            if not user or not isinstance(user,basestring):
-                return False,None,"wrong user"
+                # filter n00bs
+                if (len(myargs) < 1) or (len(myargs) > 1):
+                    return False,None,'wrong arguments'
 
-            return True,user,"ok"
+                user = myargs[0]
+                # filter n00bs
+                if not user or not isinstance(user,basestring):
+                    return False,None,"wrong user"
+
+                return True,user,"ok"
 
         def set_exc_permissions(self, uid, gid):
-            if gid != None:
-                os.setgid(gid)
-            if uid != None:
-                os.setuid(uid)
+            with self.HostInterface.AuthenticatorLock:
+                if gid != None:
+                    os.setgid(gid)
+                if uid != None:
+                    os.setuid(uid)
 
         def hide_login_data(self, args):
             myargs = args[:]
@@ -15038,6 +15045,8 @@ class SocketHostInterface:
 
     def setup_authenticator(self):
 
+        # lock, if perhaps some implementations need it
+        self.AuthenticatorLock = self.threading.Lock()
         auth_inst = (self.BasicPamAuthenticator, [self], {},) # authentication class, args, keywords
         # external authenticator
         if self.kwds.has_key('sock_auth'):
@@ -21137,8 +21146,8 @@ class EntropySocketClientCommands:
                 mytxt = _("A valid SystemSocketClientInterface based instance is needed")
                 raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service,mytxt,))
 
-        import entropyTools, socket, zlib, struct
-        self.entropyTools, self.socket, self.zlib, self.struct = entropyTools, socket, zlib, struct
+        import entropyTools, socket, zlib, struct, dumpTools
+        self.entropyTools, self.socket, self.zlib, self.struct, self.dumpTools = entropyTools, socket, zlib, struct, dumpTools
         self.Entropy = Entropy
         self.Service = Service
         self.output_header = ''
@@ -21234,7 +21243,7 @@ class EntropySocketClientCommands:
         error = False
         try:
             data = self.Service.stream_to_object(data, gzipped)
-        except (EOFError,IOError,self.zlib.error,):
+        except (EOFError,IOError,self.zlib.error,self.dumpTools.pickle.UnpicklingError,):
             mytxt = _("cannot convert stream into object")
             self.Entropy.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
