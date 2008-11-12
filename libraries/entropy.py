@@ -22422,7 +22422,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
 
         cmd = ["emerge", "--sync"]
         try:
@@ -22448,7 +22448,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
 
         cmd = [etpConst['spm']['env_update_cmd'],"&&"]
         cmd += etpConst['spm']['source_profile']+["&&"]
@@ -22494,7 +22494,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
 
         cmd = [etpConst['spm']['env_update_cmd'],"&&"]
         cmd += etpConst['spm']['source_profile']+["&&"]
@@ -22628,7 +22628,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
 
         cmd = [etpConst['spm']['exec'],etpConst['spm']['info_cmd']]
 
@@ -22652,7 +22652,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
 
         cmd = [etpConst['spm']['env_update_cmd'],"&&"]
         cmd += etpConst['spm']['source_profile']+[";"]
@@ -22684,7 +22684,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         for idpackage in idpackages:
             matches.append((idpackage,from_repo,))
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -22723,7 +22723,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         if queue_data == None:
             return False,'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"aw")
+        stdout_err = open(queue_data['stdout'],"a+")
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
         def myfunc():
