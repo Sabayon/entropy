@@ -2967,7 +2967,9 @@ class EquoInterface(TextInterface):
                 # look for packages that would match key with any slot (for eg: gcc, kernel updates)
                 matchresults = self.atomMatch(mystrictdata[0], matchBranches = (branch,))
                 if matchresults[0] != -1:
-                    update.append(matchresults)
+                    m_action = self.get_package_action(matchresults)
+                    if m_action > 0:
+                        update.append(matchresults)
 
         if self.xcache:
             c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
@@ -7725,12 +7727,13 @@ class RepoInterface:
         dbconn.createAllIndexes()
         # get list of indexes
         repo_indexes = dbconn.listAllIndexes()
-        try: # client db can be absent
-            client_indexes = self.Entropy.clientDbconn.listAllIndexes()
-            if repo_indexes != client_indexes:
-                self.Entropy.clientDbconn.createAllIndexes()
-        except:
-            pass
+        if self.Entropy.clientDbconn != None:
+            try: # client db can be absent
+                client_indexes = self.Entropy.clientDbconn.listAllIndexes()
+                if repo_indexes != client_indexes:
+                    self.Entropy.clientDbconn.createAllIndexes()
+            except:
+                pass
         self.Entropy.set_priority(old_prio)
 
 
@@ -30961,8 +30964,7 @@ class EntropyDatabaseInterface:
         else:
             idpackage = None
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
 
             self.cursor.execute(
                     'INSERT into baseinfo VALUES '
@@ -30986,9 +30988,6 @@ class EntropyDatabaseInterface:
                             etpData['datecreation'],
                             )
             )
-
-        finally:
-            self.WriteLock.release()
         ### other information iserted below are not as critical as these above
 
         # tables using a select
@@ -31142,8 +31141,7 @@ class EntropyDatabaseInterface:
             # save
             self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
 
             # baseinfo
             self.cursor.execute('DELETE FROM baseinfo WHERE idpackage = (?)',(idpackage,))
@@ -31185,9 +31183,6 @@ class EntropyDatabaseInterface:
             if self.doesTableExist('injected'):
                 self.cursor.execute('DELETE FROM injected WHERE idpackage = (?)',(idpackage,))
 
-        finally:
-            self.WriteLock.release()
-
         # Remove from installedtable if exists
         self.removePackageFromInstalledTable(idpackage)
         # Remove from dependstable if exists
@@ -31203,151 +31198,111 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def removeMirrorEntries(self,mirrorname):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = (?)',(mirrorname,))
-        finally:
-            self.WriteLock.release()
 
     def addMirrors(self,mirrorname,mirrorlist):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             for x in mirrorlist:
                 self.cursor.execute(
                     'INSERT into mirrorlinks VALUES '
                     '(?,?)', (mirrorname,x,)
                 )
-        finally:
-            self.WriteLock.release()
 
     def addCategory(self,category):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into categories VALUES '
                     '(NULL,?)', (category,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
 
     def addProtect(self,protect):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into configprotectreference VALUES '
                     '(NULL,?)', (protect,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
 
     def addSource(self,source):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into sourcesreference VALUES '
                     '(NULL,?)', (source,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addDependency(self,dependency):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into dependenciesreference VALUES '
                     '(NULL,?)', (dependency,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addKeyword(self,keyword):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into keywordsreference VALUES '
                     '(NULL,?)', (keyword,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addUseflag(self,useflag):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into useflagsreference VALUES '
                     '(NULL,?)', (useflag,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addEclass(self,eclass):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into eclassesreference VALUES '
                     '(NULL,?)', (eclass,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addNeeded(self,needed):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into neededreference VALUES '
                     '(NULL,?)', (needed,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addLicense(self,pkglicense):
         if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into licenses VALUES '
                     '(NULL,?)', (pkglicense,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def addCompileFlags(self,chost,cflags,cxxflags):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into flags VALUES '
                     '(NULL,?,?,?)', (chost,cflags,cxxflags,)
             )
             return self.cursor.lastrowid
-        finally:
-            self.WriteLock.release()
 
     def setSystemPackage(self, idpackage, do_commit = True):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('INSERT into systempackages VALUES (?)', (idpackage,))
             if do_commit:
                 self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setInjected(self, idpackage, do_commit = True):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             if not self.isInjected(idpackage):
                 self.cursor.execute(
                     'INSERT into injected VALUES '
@@ -31356,36 +31311,25 @@ class EntropyDatabaseInterface:
                 )
             if do_commit:
                 self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     # date expressed the unix way
     def setDateCreation(self, idpackage, date):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)', (str(date),idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setDigest(self, idpackage, digest):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest,idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setDownloadURL(self, idpackage, url):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url,idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setCategory(self, idpackage, category):
         self.checkReadOnly()
@@ -31394,17 +31338,13 @@ class EntropyDatabaseInterface:
         if (catid == -1):
             # create category
             catid = self.addCategory(category)
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid,idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setCategoryDescription(self, category, description_data):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM categoriesdescription WHERE category = (?)', (category,))
             for locale in description_data:
                 mydesc = description_data[locale]
@@ -31412,62 +31352,42 @@ class EntropyDatabaseInterface:
                 #    mydesc = mydesc.encode('raw_unicode_escape')
                 self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?,?)', (category,locale,mydesc,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setName(self, idpackage, name):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name,idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setDependency(self, iddependency, dependency):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE dependenciesreference SET dependency = (?) WHERE iddependency = (?)', (dependency,iddependency,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setAtom(self, idpackage, atom):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom,idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setSlot(self, idpackage, slot):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def removeLicensedata(self, license_name):
         if not self.doesTableExist("licensedata"):
             return
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
-        finally:
-            self.WriteLock.release()
 
     def removeDependencies(self, idpackage):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def insertDependencies(self, idpackage, depdata):
 
@@ -31491,20 +31411,14 @@ class EntropyDatabaseInterface:
             deps.add((idpackage,iddep,deptype,))
             dcache.add(dep)
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
-        finally:
-            self.WriteLock.release()
 
     def removeContent(self, idpackage):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute("DELETE FROM content WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def insertContent(self, idpackage, content, already_formatted = False):
 
@@ -31521,14 +31435,11 @@ class EntropyDatabaseInterface:
                     xfile = xfile.encode('raw_unicode_escape')
                 yield (idpackage,xfile,contenttype,)
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             if already_formatted:
                 self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',content)
             else:
                 self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',myiter())
-        finally:
-            self.WriteLock.release()
 
     def insertLicenses(self, licenses_data):
 
@@ -31540,21 +31451,15 @@ class EntropyDatabaseInterface:
                 continue
             mydata.add((mylicense,buffer(licenses_data[mylicense]),0,))
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',mydata)
-        finally:
-            self.WriteLock.release()
 
     def insertConfigProtect(self, idpackage, idprotect, mask = False):
 
         mytable = 'configprotect'
         if mask: mytable += 'mask'
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('INSERT into '+mytable+' VALUES (?,?)', (idpackage,idprotect,))
-        finally:
-            self.WriteLock.release()
 
     def insertMirrors(self, mirrors):
 
@@ -31574,11 +31479,8 @@ class EntropyDatabaseInterface:
                 idkeyword = self.addKeyword(key)
             mydata.add((idpackage,idkeyword,))
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into keywords VALUES (?,?)',mydata)
-        finally:
-            self.WriteLock.release()
 
     def insertUseflags(self, idpackage, useflags):
 
@@ -31590,11 +31492,8 @@ class EntropyDatabaseInterface:
                 iduseflag = self.addUseflag(flag)
             mydata.add((idpackage,iduseflag,))
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into useflags VALUES (?,?)',mydata)
-        finally:
-            self.WriteLock.release()
 
     def insertSources(self, idpackage, sources):
 
@@ -31608,11 +31507,8 @@ class EntropyDatabaseInterface:
                 idsource = self.addSource(source)
             mydata.add((idpackage,idsource,))
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into sources VALUES (?,?)',mydata)
-        finally:
-            self.WriteLock.release()
 
     def insertConflicts(self, idpackage, conflicts):
 
@@ -31620,11 +31516,8 @@ class EntropyDatabaseInterface:
             for conflict in conflicts:
                 yield (idpackage,conflict,)
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into conflicts VALUES (?,?)',myiter())
-        finally:
-            self.WriteLock.release()
 
     def insertMessages(self, idpackage, messages):
 
@@ -31632,11 +31525,8 @@ class EntropyDatabaseInterface:
             for message in messages:
                 yield (idpackage,message,)
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into messages VALUES (?,?)',myiter())
-        finally:
-            self.WriteLock.release()
 
     def insertProvide(self, idpackage, provides):
 
@@ -31644,11 +31534,8 @@ class EntropyDatabaseInterface:
             for atom in provides:
                 yield (idpackage,atom,)
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into provide VALUES (?,?)',myiter())
-        finally:
-            self.WriteLock.release()
 
     def insertNeeded(self, idpackage, neededs):
 
@@ -31660,11 +31547,8 @@ class EntropyDatabaseInterface:
                 idneeded = self.addNeeded(needed)
             mydata.add((idpackage,idneeded,elfclass))
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into needed VALUES (?,?,?)',mydata)
-        finally:
-            self.WriteLock.release()
 
     def insertEclasses(self, idpackage, eclasses):
 
@@ -31676,25 +31560,16 @@ class EntropyDatabaseInterface:
                 idclass = self.addEclass(eclass)
             mydata.add((idpackage,idclass))
 
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.executemany('INSERT into eclasses VALUES (?,?)',mydata)
-        finally:
-            self.WriteLock.release()
 
     def insertOnDiskSize(self, idpackage, mysize):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('INSERT into sizes VALUES (?,?)', (idpackage,mysize,))
-        finally:
-            self.WriteLock.release()
 
     def insertTrigger(self, idpackage, trigger):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('INSERT into triggers VALUES (?,?)', (idpackage,buffer(trigger),))
-        finally:
-            self.WriteLock.release()
 
     def insertPortageCounter(self, idpackage, counter, branch, injected):
 
@@ -31704,30 +31579,8 @@ class EntropyDatabaseInterface:
                 # special cases
                 counter = self.getNewNegativeCounter()
 
-            self.WriteLock.acquire()
-            try:
-                self.cursor.execute(
-                'INSERT into counters VALUES '
-                '(?,?,?)'
-                , ( counter,
-                    idpackage,
-                    branch,
-                    )
-                )
-            except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
-                self.migrateCountersTable(lock = False)
-                self.cursor.execute(
-                'INSERT into counters VALUES '
-                '(?,?,?)'
-                , ( counter,
-                    idpackage,
-                    branch,
-                    )
-                )
-            except:
-                if self.dbname == etpConst['clientdbid']: # force only for client database
-                    if self.doesTableExist("counters"):
-                        raise
+            with self.WriteLock:
+                try:
                     self.cursor.execute(
                     'INSERT into counters VALUES '
                     '(?,?,?)'
@@ -31736,10 +31589,30 @@ class EntropyDatabaseInterface:
                         branch,
                         )
                     )
-                elif self.dbname.startswith(etpConst['serverdbid']):
-                    raise
-            finally:
-                self.WriteLock.release()
+                except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
+                    self._migrateCountersTable()
+                    self.cursor.execute(
+                    'INSERT into counters VALUES '
+                    '(?,?,?)'
+                    , ( counter,
+                        idpackage,
+                        branch,
+                        )
+                    )
+                except:
+                    if self.dbname == etpConst['clientdbid']: # force only for client database
+                        if self.doesTableExist("counters"):
+                            raise
+                        self.cursor.execute(
+                        'INSERT into counters VALUES '
+                        '(?,?,?)'
+                        , ( counter,
+                            idpackage,
+                            branch,
+                            )
+                        )
+                    elif self.dbname.startswith(etpConst['serverdbid']):
+                        raise
 
         return counter
 
@@ -31747,23 +31620,17 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         if not branch: branch = self.db_branch
         if not branch: branch = etpConst['branch']
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM counters WHERE (counter = (?) OR idpackage = (?)) AND branch = (?)', (counter,idpackage,branch,))
             self.cursor.execute('INSERT INTO counters VALUES (?,?,?)', (counter,idpackage,branch,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setTrashedCounter(self, counter):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM trashedcounters WHERE counter = (?)', (counter,))
             self.cursor.execute('INSERT INTO trashedcounters VALUES (?)', (counter,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
 
     def setCounter(self, idpackage, counter, branch = None):
@@ -31775,15 +31642,13 @@ class EntropyDatabaseInterface:
             branchstring = ', branch = (?)'
             insertdata.insert(1,branch)
 
-        self.WriteLock.acquire()
-        try:
-            self.cursor.execute('UPDATE counters SET counter = (?) '+branchstring+' WHERE idpackage = (?)', insertdata)
-            self.commitChanges()
-        except:
-            if self.dbname == etpConst['clientdbid']:
-                raise
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try:
+                self.cursor.execute('UPDATE counters SET counter = (?) '+branchstring+' WHERE idpackage = (?)', insertdata)
+                self.commitChanges()
+            except:
+                if self.dbname == etpConst['clientdbid']:
+                    raise
 
     def contentDiff(self, idpackage, dbconn, dbconn_idpackage):
         self.checkReadOnly()
@@ -31817,48 +31682,33 @@ class EntropyDatabaseInterface:
 
     def cleanupUseflags(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM useflagsreference WHERE idflag NOT IN (SELECT idflag FROM useflags)')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def cleanupSources(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM sourcesreference WHERE idsource NOT IN (SELECT idsource FROM sources)')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def cleanupEclasses(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM eclassesreference WHERE idclass NOT IN (SELECT idclass FROM eclasses)')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def cleanupNeeded(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM neededreference WHERE idneeded NOT IN (SELECT idneeded FROM needed)')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def cleanupDependencies(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def getNewNegativeCounter(self):
         counter = -2
@@ -32180,58 +32030,43 @@ class EntropyDatabaseInterface:
     # mainly used to restore a previous table, used by reagent in --initialize
     def bumpTreeUpdatesActions(self, updates):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdatesactions')
             for update in updates:
                 self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', update)
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def removeTreeUpdatesActions(self, repository):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdatesactions WHERE repository = (?)', (repository,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def insertTreeUpdatesActions(self, updates, repository):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             for update in updates:
                 update = list(update)
                 update.insert(0,repository)
                 self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', update)
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
             self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
         self.checkReadOnly()
 
         mytime = str(self.entropyTools.getCurrentUnixTime())
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             for command in actions:
                 if not self.doesTreeupdatesActionExist(repository, command, branch):
                     self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,branch,mytime,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def doesTreeupdatesActionExist(self, repository, command, branch):
         self.cursor.execute('SELECT * FROM treeupdatesactions WHERE repository = (?) and command = (?) and branch = (?)', (repository,command,branch,))
@@ -32777,12 +32612,9 @@ class EntropyDatabaseInterface:
             return
         if self.isLicenseAccepted(license_name):
             return
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('INSERT INTO licenses_accepted VALUES (?)', (license_name,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def isLicenseAvailable(self,pkglicense):
         if not self.entropyTools.is_valid_string(pkglicense):
@@ -33242,13 +33074,10 @@ class EntropyDatabaseInterface:
         if my_idpackage != -1: return False
 
         # otherwise, update the old one (set the new branch)
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch,idpackage,))
             self.commitChanges()
             self.clearCache()
-        finally:
-            self.WriteLock.release()
         return True
 
     def databaseStructureUpdates(self):
@@ -33376,8 +33205,7 @@ class EntropyDatabaseInterface:
             type = "warning",
             header = blue(" !!! ")
         )
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             # create table
             self.cursor.execute('DROP TABLE IF EXISTS '+totable)
             self.cursor.execute(schema)
@@ -33395,8 +33223,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('DROP TABLE '+totable)
             self.commitChanges()
             return True
-        finally:
-            self.WriteLock.release()
 
     def getForcedAtomsUpdateId(self):
         self.cursor.execute(
@@ -33409,8 +33235,7 @@ class EntropyDatabaseInterface:
         return myid[0]
 
     def setForcedAtomsUpdateId(self, myid):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                 'DELETE FROM entropy_misc_counters WHERE idtype = (?)',
                 (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
@@ -33420,8 +33245,6 @@ class EntropyDatabaseInterface:
                 (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],myid)
             )
             return myid
-        finally:
-            self.WriteLock.release()
 
     def validateDatabase(self):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
@@ -33682,8 +33505,7 @@ class EntropyDatabaseInterface:
 
     def addPackageToInstalledTable(self, idpackage, repositoryName):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into installedtable VALUES '
                     '(?,?)'
@@ -33692,56 +33514,44 @@ class EntropyDatabaseInterface:
                             )
             )
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def retrievePackageFromInstalledTable(self, idpackage):
         self.checkReadOnly()
         result = 'Not available'
-        self.WriteLock.acquire()
-        try:
-            self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = (?)', (idpackage,))
-            return self.cursor.fetchone()[0] # it's ok because it's inside try/except
-        except:
-            pass
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try:
+                self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = (?)', (idpackage,))
+                return self.cursor.fetchone()[0] # it's ok because it's inside try/except
+            except:
+                pass
         return result
 
     def removePackageFromInstalledTable(self, idpackage):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM installedtable WHERE idpackage = (?)', (idpackage,))
-        finally:
-            self.WriteLock.release()
 
     def removePackageFromDependsTable(self, idpackage):
-        self.WriteLock.acquire()
-        try:
-            self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
-            return 0
-        except:
-            return 1 # need reinit
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try:
+                self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
+                return 0
+            except:
+                return 1 # need reinit
 
     def removeDependencyFromDependsTable(self, iddependency):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
-            self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
-            self.commitChanges()
-            return 0
-        except:
-            return 1 # need reinit
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try:
+                self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
+                self.commitChanges()
+                return 0
+            except:
+                return 1 # need reinit
 
     # temporary/compat functions
     def createDependsTable(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
             self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
             # this will be removed when dependstable is refilled properly
@@ -33755,16 +33565,11 @@ class EntropyDatabaseInterface:
             if self.indexing:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependsindex_idpackage ON dependstable ( idpackage )')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def sanitizeDependsTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def isDependsTableSane(self):
         try:
@@ -33783,23 +33588,17 @@ class EntropyDatabaseInterface:
 
     def createXpakTable(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def storeXpakMetadata(self, idpackage, blob):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into xpakdata VALUES '
                     '(?,?)', ( int(idpackage), buffer(blob), )
             )
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def retrieveXpakMetadata(self, idpackage):
         try:
@@ -33814,30 +33613,21 @@ class EntropyDatabaseInterface:
             pass
 
     def createCountersTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS counters;')
             self.cursor.execute('CREATE TABLE counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def CreatePackedDataTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE packed_data ( idpack INTEGER PRIMARY KEY, data BLOB );')
-        finally:
-            self.WriteLock.release()
 
     def dropAllIndexes(self):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
         indexes = self.fetchall2set(self.cursor.fetchall())
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             for index in indexes:
                 if not index.startswith("sqlite"):
                     self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
-        finally:
-            self.WriteLock.release()
 
     def listAllIndexes(self, only_entropy = True):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
@@ -33875,187 +33665,133 @@ class EntropyDatabaseInterface:
 
     def createNeededIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( elfclass )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createMessagesIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createCompileFlagsIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS flagsindex ON flags ( chost,cflags,cxxflags )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createUseflagsIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage ON useflags ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createContentIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createConfigProtectReferenceIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createBaseinfoIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_idcategory ON baseinfo ( idcategory )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createLicensedataIndex(self):
         if self.indexing:
             if not self.doesTableExist("licensedata"):
                 return
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createLicensesIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createCategoriesIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS categoriesindex_category ON categories ( category )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createKeywordsIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword ON keywords ( idkeyword )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createDependenciesIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage ON dependencies ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createCountersIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createSourcesIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesindex_idpackage ON sources ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source ON sourcesreference ( source )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createProvideIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createConflictsIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createExtrainfoIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def createEclassesIndex(self):
         if self.indexing:
-            self.WriteLock.acquire()
-            try:
+            with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesindex_idpackage ON eclasses ( idpackage )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname ON eclassesreference ( classname )')
                 self.commitChanges()
-            finally:
-                self.WriteLock.release()
 
     def regenerateCountersTable(self, vdb_path, output = False):
         self.checkReadOnly()
@@ -34087,28 +33823,26 @@ class EntropyDatabaseInterface:
                         )
                     continue
                 # insert id+counter
-                self.WriteLock.acquire()
-                try:
-                    self.cursor.execute(
-                            'INSERT into counters VALUES '
-                            '(?,?,?)', ( counter, myid, mybranch )
-                    )
-                except self.dbapi2.IntegrityError:
-                    if output:
-                        mytxt = "%s: %s: %s" % (
-                            bold(_("ATTENTION")),
-                            red(_("counter for atom is duplicated, ignoring")),
-                            bold(myatom),
+                with self.WriteLock:
+                    try:
+                        self.cursor.execute(
+                                'INSERT into counters VALUES '
+                                '(?,?,?)', ( counter, myid, mybranch )
                         )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning"
-                        )
-                    continue
-                    # don't trust counters, they might not be unique
-                finally:
-                    self.WriteLock.release()
+                    except self.dbapi2.IntegrityError:
+                        if output:
+                            mytxt = "%s: %s: %s" % (
+                                bold(_("ATTENTION")),
+                                red(_("counter for atom is duplicated, ignoring")),
+                                bold(myatom),
+                            )
+                            self.updateProgress(
+                                mytxt,
+                                importance = 1,
+                                type = "warning"
+                            )
+                        continue
+                        # don't trust counters, they might not be unique
 
         self.commitChanges()
 
@@ -34117,234 +33851,163 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
         # treeupdates
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     def resetTreeupdatesDigests(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
-        finally:
-            self.WriteLock.release()
 
     #
     # FIXME: remove these when 1.0 will be out
     #
 
-    def migrateCountersTable(self, lock = True):
-        if lock: self.WriteLock.acquire()
-        try:
-            self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
-            self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER, branch VARCHAR, PRIMARY KEY(idpackage,branch) );')
-            self.cursor.execute('select * from counters')
-            countersdata = self.cursor.fetchall()
-            self.cursor.executemany('INSERT INTO counterstemp VALUES (?,?,?)',countersdata)
-            self.cursor.execute('DROP TABLE counters')
-            self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
-            self.commitChanges()
-        finally:
-            if lock: self.WriteLock.release()
+    def migrateCountersTable(self):
+        with self.WriteLock:
+            self._migrateCountersTable()
+
+    def _migrateCountersTable(self):
+        self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
+        self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER, branch VARCHAR, PRIMARY KEY(idpackage,branch) );')
+        self.cursor.execute('select * from counters')
+        countersdata = self.cursor.fetchall()
+        self.cursor.executemany('INSERT INTO counterstemp VALUES (?,?,?)',countersdata)
+        self.cursor.execute('DROP TABLE counters')
+        self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
+        self.commitChanges()
 
     def createCategoriesdescriptionTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR, locale VARCHAR, description VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def createTreeupdatesTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def createTreeupdatesactionsTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY AUTOINCREMENT, repository VARCHAR, command VARCHAR, branch VARCHAR, date VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def createSizesTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
-        finally:
-            self.WriteLock.release()
 
     def createEntropyMiscCountersTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE entropy_misc_counters ( idtype INTEGER PRIMARY KEY, counter INTEGER );')
-        finally:
-            self.WriteLock.release()
 
     def createDependenciesTypeColumn(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('ALTER TABLE dependencies ADD COLUMN type INTEGER;')
             self.cursor.execute('UPDATE dependencies SET type = (?)', (0,))
-        finally:
-            self.WriteLock.release()
 
     def createCountersBranchColumn(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('ALTER TABLE counters ADD COLUMN branch VARCHAR;')
             idpackages = self.listAllIdpackages()
             for idpackage in idpackages:
                 branch = self.retrieveBranch(idpackage)
                 self.cursor.execute('UPDATE counters SET branch = (?) WHERE idpackage = (?)', (branch,idpackage,))
-        finally:
-            self.WriteLock.release()
 
     def createTreeupdatesactionsDateColumn(self):
-        self.WriteLock.acquire()
-        try: # if database disk image is malformed, won't raise exception here
-            self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN date VARCHAR;')
-            mytime = str(self.entropyTools.getCurrentUnixTime())
-            self.cursor.execute('UPDATE treeupdatesactions SET date = (?)', (mytime,))
-        except:
-            pass
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try:
+                # if database disk image is malformed, won't raise exception here
+                self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN date VARCHAR;')
+                mytime = str(self.entropyTools.getCurrentUnixTime())
+                self.cursor.execute('UPDATE treeupdatesactions SET date = (?)', (mytime,))
+            except:
+                pass
 
     def createTreeupdatesactionsBranchColumn(self):
-        self.WriteLock.acquire()
-        try: # if database disk image is malformed, won't raise exception here
-            self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
-            self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (etpConst['branch'],))
-        except:
-            pass
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try: # if database disk image is malformed, won't raise exception here
+                self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
+                self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (etpConst['branch'],))
+            except:
+                pass
 
     def createNeededElfclassColumn(self):
-        self.WriteLock.acquire()
-        try: # if database disk image is malformed, won't raise exception here
-            self.cursor.execute('ALTER TABLE needed ADD COLUMN elfclass INTEGER;')
-            self.cursor.execute('UPDATE needed SET elfclass = -1')
-        except:
-            pass
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try: # if database disk image is malformed, won't raise exception here
+                self.cursor.execute('ALTER TABLE needed ADD COLUMN elfclass INTEGER;')
+                self.cursor.execute('UPDATE needed SET elfclass = -1')
+            except:
+                pass
 
     def createContentTypeColumn(self):
-        self.WriteLock.acquire()
-        try: # if database disk image is malformed, won't raise exception here
-            self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
-            self.cursor.execute('UPDATE content SET type = "0"')
-        except:
-            pass
-        finally:
-            self.WriteLock.release()
+        with self.WriteLock:
+            try: # if database disk image is malformed, won't raise exception here
+                self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
+                self.cursor.execute('UPDATE content SET type = "0"')
+            except:
+                pass
 
     def createLicensedataTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
-        finally:
-            self.WriteLock.release()
 
     def createLicensesAcceptedTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );')
-        finally:
-            self.WriteLock.release()
 
     def createTrashedcountersTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE trashedcounters ( counter INTEGER );')
-        finally:
-            self.WriteLock.release()
 
     def createTriggerTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
-        finally:
-            self.WriteLock.release()
 
     def createTriggerColumn(self):
         self.checkReadOnly()
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
             self.cursor.execute('UPDATE baseinfo SET trigger = 0')
-        finally:
-            self.WriteLock.release()
 
     def createMessagesTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR );")
-        finally:
-            self.WriteLock.release()
 
     def createEclassesTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
             self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
             self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
             self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY AUTOINCREMENT, classname VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def createNeededTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER, elfclass INTEGER );')
             self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY AUTOINCREMENT, library VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def createSystemPackagesTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
-        finally:
-            self.WriteLock.release()
 
     def createInjectedTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('CREATE TABLE injected ( idpackage INTEGER PRIMARY KEY );')
-        finally:
-            self.WriteLock.release()
 
     def createProtectTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
             self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
             self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
             self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
             self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
             self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY AUTOINCREMENT, protect VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def createInstalledTable(self):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
             self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
-        finally:
-            self.WriteLock.release()
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute(
                     'INSERT into dependstable VALUES '
                     '(?,?)'
@@ -34356,8 +34019,6 @@ class EntropyDatabaseInterface:
                 (self.dbname.startswith(etpConst['serverdbid'])):
                     # force commit even if readonly, this will allow to automagically fix dependstable server side
                     self.connection.commit() # we don't care much about syncing the database since it's quite trivial
-        finally:
-            self.WriteLock.release()
 
     '''
        @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests
@@ -34387,13 +34048,10 @@ class EntropyDatabaseInterface:
         self.sanitizeDependsTable()
 
     def moveCountersToBranch(self, to_branch):
-        self.WriteLock.acquire()
-        try:
+        with self.WriteLock:
             self.cursor.execute('UPDATE counters SET branch = (?)', to_branch)
             self.commitChanges()
             self.clearCache()
-        finally:
-            self.WriteLock.release()
 
 ########################################################
 ####
