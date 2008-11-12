@@ -248,7 +248,8 @@ class Equo(EquoInterface):
                 myfunc(count_str+text)
 
         if not back and self.progressLog:
-            self.progressLog(count_str+text)
+            if callable(self.progressLog):
+                self.progressLog(count_str+text)
         elif not back:
             print count_str+text
 
@@ -270,7 +271,12 @@ class Equo(EquoInterface):
     # feel free to reimplement this
     def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
 
-        choice = choiceDialog(self.ui.main, question, _("Entropy needs your attention"), responses)
+        try:
+            parent = self.ui.main
+        except AttributeError:
+            parent = None
+
+        choice = choiceDialog(parent, question, _("Entropy needs your attention"), responses)
         try:
             return responses[choice]
         except IndexError:
@@ -282,7 +288,11 @@ class Equo(EquoInterface):
     # @ output: dictionary as follows:
     #   {'identifier 1': result, 'identifier 2': result}
     def inputBox(self, title, input_parameters, cancel_button = True):
-        return inputDialog(self.ui.main, title, input_parameters, cancel = cancel_button)
+        try:
+            parent = self.ui.main
+        except AttributeError:
+            parent = None
+        return inputDialog(parent, title, input_parameters, cancel = cancel_button)
 
 class GuiUrlFetcher(urlFetcher):
 

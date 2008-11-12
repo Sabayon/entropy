@@ -301,11 +301,13 @@ class Controller:
         self.wait_ui = wait_ui
         self.ui.signal_autoconnect(self._getAllMethods())
 
-        self.addrepo_ui.signal_autoconnect(self._getAllMethods())
-        self.addrepo_ui.addRepoWin.set_transient_for(self.ui.main)
+        if addrepo_ui != None:
+            self.addrepo_ui.signal_autoconnect(self._getAllMethods())
+            self.addrepo_ui.addRepoWin.set_transient_for(self.ui.main)
 
-        self.wait_ui.signal_autoconnect(self._getAllMethods())
-        self.wait_ui.waitWindow.set_transient_for(self.ui.main)
+        if wait_ui != None:
+            self.wait_ui.signal_autoconnect(self._getAllMethods())
+            self.wait_ui.waitWindow.set_transient_for(self.ui.main)
 
     def _getAllMethods(self):
         """Get a dictionary of all methods in self's class hierarchy."""
