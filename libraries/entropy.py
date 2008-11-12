@@ -14105,7 +14105,7 @@ class SocketHostInterface:
                         return "close"
 
             p_args = args
-            if cmd in self.HostInterface.login_pass_commands:
+            if (cmd in self.HostInterface.login_pass_commands) and authenticator != None:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
