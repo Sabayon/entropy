@@ -26303,8 +26303,9 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 class SystemManagerClientInterface:
 
     ssl_connection = True
-    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = True):
+    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False):
 
+        # FIXME: if you enable cache connection, you should also consider to clear the socket buffer
         if not isinstance(EntropyInstance, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInstance, (EquoInterface, ServerInterface)):
                 mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
@@ -26371,7 +26372,11 @@ class SystemManagerClientInterface:
     def get_connection_cache(self):
         if self.do_cache_connection:
             key = self.get_connection_cache_key()
-            return self.connection_cache.get(key)
+            srv = self.connection_cache.get(key)
+            # FIXME: if you enable cache connection, you should also consider to clear the socket buffer
+            #  srv.sock_conn
+            #  srv.real_sock_conn
+            return srv
 
     def cache_connection(self, srv):
         if self.do_cache_connection:
