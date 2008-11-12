@@ -5605,8 +5605,7 @@ class InputDialog:
     def __init__(self, parent, title, input_parameters, cancel = True):
 
         mywin = gtk.Window()
-        mywin.set_default_size(350, -1)
-        mywin.set_transient_for(parent)
+
         mywin.set_title(_("Please fill the following form"))
         myvbox = gtk.VBox()
         mylabel = gtk.Label()
@@ -5712,7 +5711,11 @@ class InputDialog:
         self.parent = parent
         mywin.set_keep_above(True)
         mywin.set_urgency_hint(True)
-        mywin.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        if parent == None:
+            mywin.set_position(gtk.WIN_POS_CENTER)
+        else:
+            mywin.set_transient_for(parent)
+            mywin.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         mywin.set_default_size(350,-1)
         mywin.show_all()
 
