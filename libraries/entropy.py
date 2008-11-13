@@ -20829,7 +20829,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
             repository = myargs[0]
             arch = myargs[1]
             product = myargs[2]
-            branch = myargs[3]
+            try:
+                branch = str(myargs[3])
+            except (UnicodeEncodeError,UnicodeDecodeError,):
+                return None
             foreign_idpackages = myargs[4:]
             x = (repository,arch,product,branch,)
 
@@ -20858,7 +20861,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
             repository = myargs[0]
             arch = myargs[1]
             product = myargs[2]
-            branch = myargs[3]
+            try:
+                branch = str(myargs[3])
+            except (UnicodeEncodeError,UnicodeDecodeError,):
+                return None
 
             x = (repository,arch,product,branch,)
             valid = self.HostInterface.is_repository_available(x)
@@ -20895,7 +20901,10 @@ class RepositorySocketServerInterface(SocketHostInterface):
             repository = myargs[1]
             arch = myargs[2]
             product = myargs[3]
-            branch = myargs[4]
+            try:
+                branch = str(myargs[4])
+            except (UnicodeEncodeError,UnicodeDecodeError,):
+                return None
             zidpackages = myargs[5:]
             idpackages = []
             for idpackage in zidpackages:
@@ -21285,6 +21294,8 @@ class EntropySocketClientCommands:
         tries = 3
         lasterr = None
         while 1:
+
+            #import pdb;pdb.set_trace()
 
             if tries <= 0:
                 return lasterr
