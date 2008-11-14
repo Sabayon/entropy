@@ -20203,9 +20203,10 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
                 return True
 
         # search into phpbb_groups
-        group = self.get_user_group()
-        if group in self.ADMIN_GROUPS:
-            return True
+        groups = self.get_user_groups()
+        for group in groups:
+            if group in self.ADMIN_GROUPS:
+                return True
 
         return False
 
