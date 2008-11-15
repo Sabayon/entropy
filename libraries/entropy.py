@@ -1410,6 +1410,7 @@ class EquoInterface(TextInterface):
             self.closeAllRepositoryDatabases()
             etpConst['branch'] = branch
             initConfig_entropyConstants(etpSys['rootdir'])
+            etpConst['branch'] = branch
             self.reopenClientDbconn()
         return 0
 
