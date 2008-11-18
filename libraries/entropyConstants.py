@@ -637,7 +637,7 @@ def const_defaultSettings(rootdir):
         'branches': [], # available branches, this only exists for the server part, these settings will be overridden by server.conf ones
         'branch': "4", # default choosen branch (overridden by setting in repositories.conf)
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]), # default allowed package keywords
-        'gentoo-compat': False, # Gentoo compatibility (/var/db/pkg + Portage availability)
+        'gentoo-compat': True, # Gentoo compatibility (/var/db/pkg + Portage availability)
         'edbcounter': edbCOUNTER,
         'filesystemdirs': ['/bin','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
         'filesystemdirsmask': [
@@ -1145,13 +1145,6 @@ def const_readEquoSettings():
                     pass
                 if (loglevel > -1) and (loglevel < 3):
                     etpConst['equologlevel'] = loglevel
-
-            elif line.startswith("gentoo-compat|") and (len(line.split("|")) == 2):
-                compatopt = line.split("|")[1].strip()
-                if compatopt.lower() in ("disable","disabled","false","0","no"):
-                    etpConst['gentoo-compat'] = False
-                else:
-                    etpConst['gentoo-compat'] = True
 
             elif line.startswith("filesbackup|") and (len(line.split("|")) == 2):
                 compatopt = line.split("|")[1].strip()
