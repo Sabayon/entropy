@@ -5427,7 +5427,7 @@ class PackageInterface:
                     if remdata:
                         rTrigger = self.Entropy.Triggers('preremove',remdata, self.action)
                         rTrigger.prepare()
-                        Trigger.triggers = Trigger.triggers - rTrigger.triggers
+                        Trigger.triggers = [x for x in Trigger.triggers if x not in rTrigger.triggers]
                         rTrigger.kill()
                         del rTrigger
                     del remdata
@@ -5463,7 +5463,7 @@ class PackageInterface:
                 if pkgdata:
                     iTrigger = self.Entropy.Triggers('postinstall',pkgdata, self.action)
                     iTrigger.prepare()
-                    Trigger.triggers = Trigger.triggers - iTrigger.triggers
+                    Trigger.triggers = [x for x in Trigger.triggers if x not in iTrigger.triggers]
                     iTrigger.kill()
                     del iTrigger
                 del pkgdata
