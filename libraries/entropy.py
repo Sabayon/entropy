@@ -4465,8 +4465,8 @@ class PackageInterface:
         key = self.Entropy.entropyTools.dep_getkey(atom)
         others_installed = Spm.search_keys(key)
         slot = self.infoDict['slot']
-        tag = self.infoDict['versiontag'] # FIXME: kernel tag, hopefully to 0
-        if tag: slot = "0"
+        tag = self.infoDict['versiontag']
+        if (tag == slot) and tag: slot = "0"
         if os.path.isdir(removePath):
             shutil.rmtree(removePath,True)
         elif others_installed:
@@ -4811,7 +4811,11 @@ class PackageInterface:
             # add to Portage world
             # key: key
             # slot: self.infoDict['slot']
-            keyslot = key+":"+self.infoDict['slot']
+            myslot = self.infoDict['slot']
+            if (self.infoDict['versiontag'] == self.infoDict['slot']) and self.infoDict['versiontag']:
+                # usually kernel packages
+                myslot = "0"
+            keyslot = key+":"+myslot
             world_file = Spm.get_world_file()
             world_atoms = set()
 
