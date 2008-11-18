@@ -4217,12 +4217,16 @@ class PackageInterface:
             unpack_tries = 3
             while 1:
                 unpack_tries -= 1
-                rc = self.Entropy.entropyTools.spawnFunction(
-                            self.Entropy.entropyTools.uncompressTarBz2,
-                            self.infoDict['pkgpath'],
-                            self.infoDict['imagedir'],
-                            catchEmpty = True
+                try:
+                    rc = self.Entropy.entropyTools.spawnFunction(
+                        self.Entropy.entropyTools.uncompressTarBz2,
+                        self.infoDict['pkgpath'],
+                        self.infoDict['imagedir'],
+                        catchEmpty = True
                     )
+                except EOFError:
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"EOFError on "+self.infoDict['pkgpath'])
+                    rc = 1
                 if rc == 0:
                     break
                 if unpack_tries <= 0:
@@ -7901,6 +7905,7 @@ class QAInterface:
         for idpackage in idpackages:
             count += 1
             atom = dbconn.retrieveAtom(idpackage)
+            if not atom: continue
             self.Entropy.updateProgress(
                 "[repo:%s] %s: %s" % (
                             darkgreen(repo),
