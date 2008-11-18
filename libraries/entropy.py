@@ -4051,8 +4051,8 @@ class EquoInterface(TextInterface):
     '''
         Triggers interface :: begindatabaseStructureUpdates
     '''
-    def Triggers(self, phase, pkgdata):
-        conn = TriggerInterface(EquoInstance = self, phase = phase, pkgdata = pkgdata)
+    def Triggers(self, *args, **kwargs):
+        conn = TriggerInterface(self, *args, **kwargs)
         return conn
     '''
         Triggers interface :: end
@@ -4096,7 +4096,7 @@ class PackageInterface:
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
-        self.valid_actions = ("fetch","remove","install")
+        self.valid_actions = ("fetch","remove","remove_conflict","install")
         self.action = None
         self.fetch_abort_function = None
 
@@ -5398,7 +5398,7 @@ class PackageInterface:
         self.error_on_not_prepared()
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
-            Trigger = self.Entropy.Triggers('postinstall',pkgdata)
+            Trigger = self.Entropy.Triggers('postinstall',pkgdata, self.action)
             Trigger.prepare()
             Trigger.run()
             Trigger.kill()
@@ -5411,13 +5411,13 @@ class PackageInterface:
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
 
-            Trigger = self.Entropy.Triggers('preinstall',pkgdata)
+            Trigger = self.Entropy.Triggers('preinstall',pkgdata, self.action)
             Trigger.prepare()
             if (self.infoDict.get("diffremoval") != None): # diffremoval is true only when the remove action is triggered by installPackages()
                 if self.infoDict['diffremoval']:
                     remdata = self.infoDict['triggers'].get('remove')
                     if remdata:
-                        rTrigger = self.Entropy.Triggers('preremove',remdata)
+                        rTrigger = self.Entropy.Triggers('preremove',remdata, self.action)
                         rTrigger.prepare()
                         Trigger.triggers = Trigger.triggers - rTrigger.triggers
                         rTrigger.kill()
@@ -5434,7 +5434,7 @@ class PackageInterface:
         self.error_on_not_prepared()
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
-            Trigger = self.Entropy.Triggers('preremove',remdata)
+            Trigger = self.Entropy.Triggers('preremove',remdata, self.action)
             Trigger.prepare()
             Trigger.run()
             Trigger.kill()
@@ -5447,13 +5447,13 @@ class PackageInterface:
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
 
-            Trigger = self.Entropy.Triggers('postremove',remdata)
+            Trigger = self.Entropy.Triggers('postremove',remdata, self.action)
             Trigger.prepare()
             if self.infoDict['diffremoval'] and (self.infoDict.get("atom") != None):
                 # diffremoval is true only when the remove action is triggered by installPackages()
                 pkgdata = self.infoDict['triggers'].get('install')
                 if pkgdata:
-                    iTrigger = self.Entropy.Triggers('postinstall',pkgdata)
+                    iTrigger = self.Entropy.Triggers('postinstall',pkgdata, self.action)
                     iTrigger.prepare()
                     Trigger.triggers = Trigger.triggers - iTrigger.triggers
                     iTrigger.kill()
@@ -5472,7 +5472,7 @@ class PackageInterface:
             if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
                 continue
             Package = self.Entropy.Package()
-            Package.prepare((idpackage,),"remove", self.infoDict['remove_metaopts'])
+            Package.prepare((idpackage,),"remove_conflict", self.infoDict['remove_metaopts'])
             rc = Package.run(xterm_header = self.xterm_title)
             Package.kill()
             if rc != 0:
@@ -5646,7 +5646,7 @@ class PackageInterface:
 
         if self.action == "fetch":
             self.__generate_fetch_metadata()
-        elif self.action == "remove":
+        elif self.action in ("remove","remove_conflict"):
             self.__generate_remove_metadata()
         elif self.action == "install":
             self.__generate_install_metadata()
@@ -8758,7 +8758,7 @@ class rssFeed:
 class TriggerInterface:
 
     import entropyTools
-    def __init__(self, EquoInstance, phase, pkgdata):
+    def __init__(self, EquoInstance, phase, pkgdata, package_action = None):
 
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid Entropy Instance is needed")
@@ -8771,6 +8771,7 @@ class TriggerInterface:
         self.prepared = False
         self.triggers = set()
         self.gentoo_compat = etpConst['gentoo-compat']
+	self.package_action = package_action
 
         '''
         @ description: Gentoo toolchain variables
@@ -9034,7 +9035,8 @@ class TriggerInterface:
                 functions.remove("ebuild_postremove")
             except:
                 pass
-            functions.add("openglsetup_xorg")
+            if self.package_action not in ["remove_conflict"]:
+                functions.add("openglsetup_xorg")
 
         for x in self.pkgdata['removecontent']:
             if x.startswith("/boot"):
