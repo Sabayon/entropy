@@ -2988,9 +2988,13 @@ class EquoInterface(TextInterface):
         conflicts = dbconn.retrieveConflicts(match[0])
         found_conflicts = set()
         for conflict in conflicts:
-            match = self.clientDbconn.atomMatch(conflict)
-            if match[0] != -1:
-                found_conflicts.add(match[0])
+            mymatch = self.clientDbconn.atomMatch(conflict)
+            if mymatch[0] != -1:
+                # check if the package shares the same slot
+                match_data = dbconn.retrieveKeySlot(match[0])
+                installed_match_data = self.clientDbconn.retrieveKeySlot(mymatch[0])
+                if match_data != installed_match_data:
+                    found_conflicts.add(mymatch[0])
         return found_conflicts
 
     def is_match_masked(self, match, live_check = True):
@@ -31667,6 +31671,11 @@ class EntropyDatabaseInterface:
 
     def retrieveKeySlot(self, idpackage):
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        data = self.cursor.fetchone()
+        return data
+
+    def retrieveKeySlotTag(self, idpackage):
+        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.versiontag FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         data = self.cursor.fetchone()
         return data
 
