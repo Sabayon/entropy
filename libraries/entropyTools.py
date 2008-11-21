@@ -271,6 +271,7 @@ def add_proxy_opener(module, data):
 def is_valid_ascii(string):
     try:
         mystring = str(string)
+        del mystring
     except:
         return False
     return True
@@ -1732,7 +1733,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     #'''
 
 
-    if os.listdir(extract_path):
+    if os.listdir(extractPath):
         return 0
     return -1
 
