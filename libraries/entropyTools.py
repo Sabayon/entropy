@@ -1679,15 +1679,11 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         return rc
 
     try:
-        try:
-            tar = tarfile.open(filepath,"r")
-        except tarfile.CompressionError:
-            tar = tarfile.open(filepath,"r:bz2") # python 2.4 crashes above, so supporting only bz2
+        tar = tarfile.open(filepath,"r")
     except tarfile.ReadError:
         if catchEmpty:
             return 0
-        else:
-            raise
+        raise
     except EOFError:
         return -1
 
@@ -1716,7 +1712,6 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         directories.sort(lambda a, b: cmp(a.name, b.name))
         directories.reverse()
 
-        origpath = extractPath
         # Set correct owner, mtime and filemode on directories.
         for tarinfo in directories:
             epath = os.path.join(extractPath, tarinfo.name)
@@ -1732,20 +1727,14 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         return -1
 
     finally:
-        try:
-            del directories
-            tar.close()
-            del tar
-        except:
-            pass
+        tar.close()
 
     #'''
 
 
-    if os.listdir(origpath):
+    if os.listdir(extract_path):
         return 0
-    else:
-        return -1
+    return -1
 
 def bytesIntoHuman(bytes):
     size = str(round(float(bytes)/1024,1))
