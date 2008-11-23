@@ -15449,7 +15449,7 @@ class ServerInterface(TextInterface):
             )
             for package_slot in packages:
                 self.updateProgress(
-                    blue(package_slot),
+                    blue(unicode(package_slot)),
                     importance = 0,
                     type = "info",
                     header = red("     # ")
