@@ -12080,6 +12080,32 @@ class PortageInterface:
                         matches.add(package)
         return matches
 
+    def query_belongs_multiple(self, filenames, like = False):
+        mypath = etpConst['systemroot']+"/"
+        mytree = self._get_portage_vartree(mypath)
+        packages = mytree.dbapi.cpv_all()
+        matches = {}
+        filenames = filenames.copy()
+        for package in packages:
+            cat, pkgv = package.split("/")
+            content = self.portage.dblink(cat, pkgv, mypath, self.portage.settings).getcontents()
+            if not like:
+                for filename in filenames:
+                    if filename in content:
+                        myslot = self.get_installed_package_slot(package)
+                        if not matches.has_key((package,myslot)):
+                            matches[(package,myslot)] = set()
+                        matches[(package,myslot)].add(filename)
+            else:
+                for filename in filenames:
+                    for myfile in content:
+                        if myfile.find(filename) != -1:
+                            myslot = self.get_installed_package_slot(package)
+                            if not matches.has_key((package,myslot)):
+                                matches[(package,myslot)] = set()
+                            matches[(package,myslot)].add(filename)
+        return matches
+
     def calculate_dependencies(self, my_iuse, my_use, my_license, my_depend, my_rdepend, my_pdepend, my_provide, my_src_uri):
         metadata = {}
         metadata['USE'] = my_use
@@ -15403,7 +15429,7 @@ class ServerInterface(TextInterface):
             )
             return 0,None
 
-        mytxt = "%s:" % (_("Matching libraries with Spm"),)
+        mytxt = "%s..." % (_("Matching libraries with Spm, please wait"),)
         self.updateProgress(
             blue(mytxt),
             importance = 1,
@@ -15411,17 +15437,7 @@ class ServerInterface(TextInterface):
             header = red(" @@ ")
         )
 
-        packages = set()
-        mytxt = red("%s: ") % (_("Scanning"),)
-        for brokenexec in brokenexecs:
-            self.updateProgress(
-                mytxt+darkgreen(brokenexec),
-                importance = 0,
-                type = "info",
-                header = red(" @@ "),
-                back = True
-            )
-            packages |= self.SpmService.query_belongs(brokenexec)
+        packages = self.SpmService.query_belongs_multiple(brokenexecs)
 
         if packages:
             mytxt = "%s:" % (_("These are the matched packages"),)
@@ -15431,13 +15447,29 @@ class ServerInterface(TextInterface):
                 type = "info",
                 header = red(" @@ ")
             )
-            for package in packages:
+            for package_slot in packages:
                 self.updateProgress(
-                    blue(package),
+                    blue(package_slot),
                     importance = 0,
                     type = "info",
                     header = red("     # ")
                 )
+                for filename in sorted(list(packages[package_slot])):
+                    self.updateProgress(
+                        blue(filename),
+                        importance = 0,
+                        type = "info",
+                        header = brown("       => ")
+                    )
+            # print string
+            pkgstring = ' '.join(["%s:%s" % (self.entropyTools.dep_getkey(x[0]),x[1],) for x in sorted(packages.keys())])
+            mytxt = "%s: %s" % (darkgreen(_("Packages string")),pkgstring,)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
         else:
             self.updateProgress(
                 red(_("No matched packages")),
