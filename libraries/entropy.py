@@ -1282,6 +1282,8 @@ class EquoInterface(TextInterface):
         if "/usr/lib64" in ldpaths and "/usr/lib" in ldpaths:
             if os.path.realpath("/usr/lib64") == "/usr/lib":
                 ldpaths.remove("/usr/lib")
+        # some crappy packages put shit here too
+        ldpaths.add("/usr/share")
 
         executables = set()
         total = len(ldpaths)
