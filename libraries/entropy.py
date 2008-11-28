@@ -1284,6 +1284,8 @@ class EquoInterface(TextInterface):
                 ldpaths.remove("/usr/lib")
         # some crappy packages put shit here too
         ldpaths.add("/usr/share")
+        # always force /usr/libexec too
+        ldpaths.add("/usr/libexec")
 
         executables = set()
         total = len(ldpaths)
@@ -20792,8 +20794,6 @@ class EntropySocketClientCommands:
         tries = 3
         lasterr = None
         while 1:
-
-            #import pdb;pdb.set_trace()
 
             if tries <= 0:
                 return lasterr
