@@ -17810,10 +17810,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             if rdata.has_key('count'):
                 found_rows = rdata.get('count')
 
-        mydata = {}
-        for item in data:
-            mydata[item['userid']] = item['score']
-        return found_rows, mydata
+        return found_rows, data
 
     def get_user_votes_average(self, userid):
         self.check_connection()
