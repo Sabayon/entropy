@@ -17800,7 +17800,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         limit_string = ''
         if count:
             limit_string = ' LIMIT %s,%s' % (offset,count,)
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *,userid,score FROM entropy_user_scores ORDER BY score'+limit_string)
+        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *,userid,score FROM entropy_user_scores ORDER BY score DESC'+limit_string)
         data = self.fetchall()
 
         self.execute_query('SELECT FOUND_ROWS() as count')
