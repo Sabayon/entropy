@@ -17795,9 +17795,12 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if myscore == None: myscore = self.update_user_score(userid)
         return myscore
 
-    def get_users_score_ranking(self):
+    def get_users_score_ranking(self, offset = 0, count = 0):
         self.check_connection()
-        self.execute_query('SELECT userid,score FROM entropy_user_scores ORDER BY score')
+        limit_string = ''
+        if count:
+            limit_string = ' LIMIT %s,%s' % (offset,count,)
+        self.execute_query('SELECT userid,score FROM entropy_user_scores ORDER BY score'+limit_string)
         data = self.fetchall()
         mydata = {}
         for userid,score in data:
@@ -18267,7 +18270,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         args = [self.VIRUS_CHECK_EXEC]
         args += self.VIRUS_CHECK_ARGS
         args += [filepath]
-        rc = subprocess.call(args)
         f = open("/dev/null","w")
         p = subprocess.Popen(args, stdout = f, stderr = f)
         rc = p.wait()
