@@ -17811,8 +17811,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
                 found_rows = rdata.get('count')
 
         mydata = {}
-        for userid,score in data:
-            mydata[userid] = score
+        for item in data:
+            mydata[item['userid']] = item['score']
         return found_rows, mydata
 
     def get_user_votes_average(self, userid):
