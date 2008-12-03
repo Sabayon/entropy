@@ -17800,12 +17800,20 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         limit_string = ''
         if count:
             limit_string = ' LIMIT %s,%s' % (offset,count,)
-        self.execute_query('SELECT userid,score FROM entropy_user_scores ORDER BY score'+limit_string)
+        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *,userid,score FROM entropy_user_scores ORDER BY score'+limit_string)
         data = self.fetchall()
+
+        self.execute_query('SELECT FOUND_ROWS() as count')
+        rdata = self.fetchone()
+        found_rows = 0
+        if isinstance(rdata,dict):
+            if rdata.has_key('count'):
+                found_rows = rdata.get('count')
+
         mydata = {}
         for userid,score in data:
             mydata[userid] = score
-        return mydata
+        return found_rows, mydata
 
     def get_user_votes_average(self, userid):
         self.check_connection()
