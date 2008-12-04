@@ -24,6 +24,7 @@ from entropyConstants import *
 import entropyTools, exceptionTools
 from entropy import SystemManagerServerInterface, SystemManagerExecutorServerRepositoryInterface, SystemManagerRepositoryCommands, ServerInterface
 etpConst['community']['mode'] = True
+etpConst['socket_service']['session_ttl'] = 300
 
 def run_srv(s):
     try:
