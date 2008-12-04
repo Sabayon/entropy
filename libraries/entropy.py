@@ -19611,7 +19611,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         elif not self.login_data['username']:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('empty username'),))
 
-        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE username_clean = %s', (self.login_data['username'],))
+        self.cursor.execute('SELECT * FROM '+self.TABLE_PREFIX+'users WHERE username = %s', (self.login_data['username'],))
         data = self.cursor.fetchone()
         if not data:
             raise exceptionTools.PermissionDenied('PermissionDenied: %s' % (_('user not found'),))
