@@ -2051,9 +2051,14 @@ class EquoInterface(TextInterface):
             repoMatch = self.atomMatch(dependency)
             if repoMatch[0] != -1:
                 dbconn = self.openRepositoryDatabase(repoMatch[1])
-                repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
-                repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
-                repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
+                try:
+                    repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
+                    repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
+                    repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
+                except self.dbapi2.InterfaceError:
+                    # package entry is broken
+                    unsatisfiedDeps.add(dependency)
+                    continue
             else:
                 # dependency does not exist in our database
                 unsatisfiedDeps.add(dependency)
