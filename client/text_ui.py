@@ -225,7 +225,8 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
             onlyfetch = onlyfetch,
             resume = resume,
             skipfirst = skipfirst,
-            dochecksum = dochecksum
+            dochecksum = dochecksum,
+            deepdeps = True
         )
         if rc[1] != 0:
             return 1,rc[0]
