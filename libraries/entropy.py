@@ -8665,7 +8665,7 @@ class rssFeed:
     def getEntries(self):
         return self.items, self.itemscounter
 
-    def writeChanges(self):
+    def writeChanges(self, reverse = True):
 
         # filter entries to fit in maxentries
         if self.itemscounter > self.maxentries:
@@ -8716,7 +8716,7 @@ class rssFeed:
         channel.appendChild(managingEditor)
 
         keys = self.items.keys()
-        keys.reverse()
+        if reverse: keys.reverse()
         for key in keys:
 
             # sanity check, you never know
