@@ -1,4 +1,5 @@
 TODO list
+  - fix queue length issue with extended commands on the repository manager server
   - equo source (download sources + patches)
   - implement package sets (meta packages list - security only updates feature)
   - masking/unmasking functions
