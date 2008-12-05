@@ -2020,8 +2020,7 @@ class EquoInterface(TextInterface):
     def filterSatisfiedDependencies(self, dependencies, deep_deps = False):
 
         if self.xcache:
-            c_data = list(dependencies)
-            c_data.sort()
+            c_data = sorted(list(dependencies))
             client_checksum = self.clientDbconn.database_checksum()
             c_hash = str(hash(tuple(c_data)))+str(hash(deep_deps))+client_checksum
             c_hash = str(hash(c_hash))
@@ -2236,7 +2235,7 @@ class EquoInterface(TextInterface):
             deptree.add((1,atomInfo))
 
         virgin = True
-        while mydep != None:
+        while mydep:
 
             # already analyzed in this call
             if mydep[1] in treecache:
@@ -2359,6 +2358,27 @@ class EquoInterface(TextInterface):
         matchcache.clear()
 
         return newdeptree,0 # note: newtree[0] contains possible conflicts
+
+    def _lookup_system_mask_repository_deps(self):
+        # check against uninitialized masking parser
+        if etpConst['packagemasking'] == None: self.parse_masking_settings()
+
+        data = etpConst['packagemasking']['repos_system_mask']
+        if not data: return []
+        mydata = []
+        cached_items = set()
+        for atom in data:
+            mymatch = self.atomMatch(atom)
+            if mymatch[0] == -1: # ignore missing ones intentionally
+                continue
+            if mymatch in cached_items:
+                continue
+            if mymatch not in mydata:
+                # check if not found
+                myaction = self.get_package_action(mymatch)
+                if myaction != 0: mydata.append(mymatch) # upgrades, installs and downgrades allowed
+            cached_items.add(mymatch)
+        return mydata
 
     def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
         if self.entropyTools.isjustname(conflict_atom):
@@ -2512,8 +2532,7 @@ class EquoInterface(TextInterface):
         maskingReasonsStorage.clear()
 
         if self.xcache:
-            c_data = list(matched_atoms)
-            c_data.sort()
+            c_data = sorted(list(matched_atoms))
             client_checksum = self.clientDbconn.database_checksum()
             c_hash = str(hash(tuple(c_data)))+str(hash(empty_deps))+str(hash(deep_deps))+client_checksum
             c_hash = str(hash(c_hash))
@@ -2529,6 +2548,14 @@ class EquoInterface(TextInterface):
         matchfilter = matchContainer()
         error_generated = 0
         error_tree = set()
+
+        # check if there are repositories needing some mandatory packages
+        forced_matches = self._lookup_system_mask_repository_deps()
+        if forced_matches:
+            if isinstance(matched_atoms, list):
+                matched_atoms = forced_matches + [x for x in matched_atoms if x not in forced_matches]
+            elif isinstance(matched_atoms, set): # we cannot do anything about the order here
+                matched_atoms |= set(forced_matches)
 
         sort_dep_text = _("Sorting dependencies")
         for atomInfo in matched_atoms:
@@ -2602,8 +2629,7 @@ class EquoInterface(TextInterface):
     def generate_depends_tree(self, idpackages, deep = False):
 
         if self.xcache:
-            c_data = list(idpackages)
-            c_data.sort()
+            c_data = sorted(list(idpackages))
             c_hash = str(hash(tuple(c_data))) + str(hash(deep))
             c_hash = str(hash(c_hash))
             del c_data
@@ -3523,9 +3549,8 @@ class EquoInterface(TextInterface):
 
         if not fake:
 
-            contents = [x for x in pkgdata['content']]
+            contents = sorted([x for x in pkgdata['content']])
             id_strings = {}
-            contents.sort()
 
             # collect files
             for path in contents:
@@ -3736,8 +3761,7 @@ class EquoInterface(TextInterface):
                 i = list(i)
                 datatype = i[1]
                 _outcontent.add((i[0],i[1]))
-            outcontent = list(_outcontent)
-            outcontent.sort()
+            outcontent = sorted(list(_outcontent))
             for i in outcontent:
                 pkg_content[i[0]] = i[1]
 
@@ -4627,8 +4651,7 @@ class PackageInterface:
                                 for myidpackage,myrepo in disk_cache['available']:
                                     mydbc = self.Entropy.openRepositoryDatabase(myrepo)
                                     mydata[mydbc.retrieveAtom(myidpackage)] = (myidpackage,myrepo)
-                                mykeys = mydata.keys()
-                                mykeys.sort()
+                                mykeys = sorted(mydata.keys())
                                 for mykey in mykeys:
                                     mylist.append(mydata[mykey])
                                 disk_cache['available'] = mylist
@@ -4857,8 +4880,7 @@ class PackageInterface:
                         if key in world_atoms:
                             world_atoms.remove(key)
                         world_atoms.add(keyslot)
-                        world_atoms = list(world_atoms)
-                        world_atoms.sort()
+                        world_atoms = sorted(list(world_atoms))
                         world_file_tmp = world_file+".entropy_inst"
                         f = open(world_file_tmp,"w")
                         for item in world_atoms:
@@ -4912,8 +4934,7 @@ class PackageInterface:
 
         dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
         package_content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True, formatted = True)
-        contents = [x for x in package_content]
-        contents.sort()
+        contents = sorted([x for x in package_content])
 
         # collect files
         for path in contents:
@@ -6105,7 +6126,7 @@ class FileUpdatesInterface:
             pass
         # get next counter
         if keys:
-            keys.sort()
+            keys = sorted(keys)
             index = keys[-1]
         else:
             index = 0
@@ -6189,7 +6210,7 @@ class RepoInterface:
 
         self.supported_download_items = (
             "db","rev","ck",
-            "lock","mask","dbdump",
+            "lock","mask","system_mask","dbdump",
             "dbdumpck","lic_whitelist","make.conf",
             "package.mask","package.unmask","package.keywords","profile.link",
             "package.use","server.cert","ca.cert",
@@ -6338,6 +6359,9 @@ class RepoInterface:
         elif item == "mask":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasemaskfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
+        elif item == "system_mask":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasesytemmaskfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasesytemmaskfile']
         elif item == "make.conf":
             myfile = os.path.basename(etpConst['spm']['global_make_conf'])
             url = etpRepositories[repo]['database'] + "/" + myfile
@@ -7604,6 +7628,16 @@ class RepoInterface:
                 )
             ),
             (
+                "system_mask",
+                etpConst['etpdatabasesytemmaskfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading packages system mask")),
+                    darkgreen(etpConst['etpdatabasesytemmaskfile']),
+                    red("..."),
+                )
+            ),
+            (
                 "lic_whitelist",
                 etpConst['etpdatabaselicwhitelistfile'],
                 True,
@@ -7630,16 +7664,6 @@ class RepoInterface:
                 "%s %s %s" % (
                     red(_("Downloading SPM global configuration")),
                     darkgreen(os.path.basename(etpConst['spm']['global_make_conf'])),
-                    red("..."),
-                )
-            ),
-            (
-                "package.mask",
-                os.path.basename(etpConst['spm']['global_package_mask']),
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SPM package masking configuration")),
-                    darkgreen(os.path.basename(etpConst['spm']['global_package_mask'])),
                     red("..."),
                 )
             ),
@@ -10077,7 +10101,7 @@ timeout=10
                     for x in mdstat:
                         if x.startswith("sd"):
                             mddevs.append(x[:-3])
-                    mddevs.sort()
+                    mddevs = sorted(mddevs)
                     if mddevs:
                         gboot = "/dev/"+mddevs[0]
                     else:
@@ -10189,8 +10213,9 @@ class PackageMaskingParser:
             'unmask': etpConst['confdir']+"/packages/package.unmask", # unmasking configuration files
             'mask': etpConst['confdir']+"/packages/package.mask", # masking configuration files
             'license_mask': etpConst['confdir']+"/packages/license.mask", # masking configuration files
+            'repos_system_mask': {},
             'repos_mask': {},
-            'repos_license_whitelist': {}
+            'repos_license_whitelist': {},
         }
 
         self.etpMtimeFiles = {
@@ -10198,6 +10223,7 @@ class PackageMaskingParser:
             'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime",
             'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime",
             'license_mask_mtime': etpConst['dumpstoragedir']+"/license_mask.mtime",
+            'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {}
         }
@@ -10208,10 +10234,13 @@ class PackageMaskingParser:
         for repoid in etpRepositoriesOrder:
             maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
             wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
+            sm_path = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasesytemmaskfile'])
             if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
                 self.etpMaskFiles['repos_mask'][repoid] = maskpath
             if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
                 self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
+            if os.path.isfile(sm_path) and os.access(sm_path,os.R_OK):
+                self.etpMaskFiles['repos_system_mask'][repoid] = sm_path
 
         # append repositories mtime files
         for repoid in etpRepositoriesOrder:
@@ -10219,10 +10248,14 @@ class PackageMaskingParser:
                 self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
             if repoid in self.etpMaskFiles['repos_license_whitelist']:
                 self.etpMtimeFiles['repos_license_whitelist'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabaselicwhitelistfile']+".mtime"
+            if repoid in self.etpMaskFiles['repos_system_mask']:
+                self.etpMtimeFiles['repos_system_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasesytemmaskfile']+".mtime"
 
         data = {}
         for item in self.etpMaskFiles:
-            data[item] = eval('self.'+item+'_parser')()
+            myattr = '%s_parser' % (item,)
+            if not hasattr(self,myattr): continue
+            data[item] = eval('self.'+myattr)()
         return data
 
 
@@ -10379,6 +10412,25 @@ class PackageMaskingParser:
                             data[repoid]['branch'][line[1]] = set()
                         data[repoid]['branch'][line[1]].add(line[0])
         return data
+
+    def repos_system_mask_parser(self):
+
+        data = []
+        for repoid in self.etpMaskFiles['repos_system_mask']:
+
+            self.__validateEntropyCache(self.etpMaskFiles['repos_system_mask'][repoid],self.etpMtimeFiles['repos_system_mask'][repoid], repoid = repoid)
+            if os.path.isfile(self.etpMaskFiles['repos_system_mask'][repoid]):
+                f = open(self.etpMaskFiles['repos_system_mask'][repoid],"r")
+                content = f.readlines()
+                f.close()
+                # filter comments and white lines
+                content = [x.strip() for x in content if not x.startswith("#") and x.strip() and len(x.split()) <= 2]
+                for line in content: # preserving order
+                    line = line.split()[0]
+                    if line not in data: data.append(line)
+
+        return data
+
 
     '''
     internal functions
@@ -10779,8 +10831,7 @@ class SecurityInterface:
         if not self.check_advisories_availability():
             return []
         xmls = os.listdir(etpConst['securitydir'])
-        xmls = [x for x in xmls if x.endswith(".xml") and x.startswith("glsa-")]
-        xmls.sort()
+        xmls = sorted([x for x in xmls if x.endswith(".xml") and x.startswith("glsa-")])
         return xmls
 
     def get_advisories_metadata(self):
@@ -11688,8 +11739,7 @@ class PortageInterface:
 
         contents = dblnk.getcontents()
         id_strings = {}
-        paths = contents.keys()
-        paths.sort()
+        paths = sorted(contents.keys())
 
         for path in paths:
             try:
@@ -14171,8 +14221,7 @@ class SocketHostInterface:
         def docmd_help(self, transmitter):
             text = '\nEntropy Socket Interface Help Menu\n' + \
                    'Available Commands:\n\n'
-            valid_cmds = self.HostInterface.valid_commands.keys()
-            valid_cmds.sort()
+            valid_cmds = sorted(self.HostInterface.valid_commands.keys())
             for cmd in valid_cmds:
                 if self.HostInterface.valid_commands[cmd].has_key('desc'):
                     desc = self.HostInterface.valid_commands[cmd]['desc']
@@ -14785,6 +14834,11 @@ class ServerInterface(TextInterface):
             header = "[server]"
         )
 
+        self.default_repository = default_repository
+        if self.default_repository == None:
+            self.default_repository = etpConst['officialserverrepositoryid']
+
+        self.ensure_paths(self.default_repository)
         self.migrate_repository_databases_to_new_branched_path()
         self.community_repo = community_repo
         self.dbapi2 = dbapi2 # export for third parties
@@ -14798,9 +14852,7 @@ class ServerInterface(TextInterface):
         self.serverDbCache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
-        self.default_repository = default_repository
-        if self.default_repository == None:
-            self.default_repository = etpConst['officialserverrepositoryid']
+
 
         if self.default_repository not in etpConst['server_repositories']:
             raise exceptionTools.PermissionDenied("PermissionDenied: %s %s" % (
@@ -14821,6 +14873,15 @@ class ServerInterface(TextInterface):
 
     def __del__(self):
         self.close_server_databases()
+
+    def ensure_paths(self, repo):
+        upload_dir = os.path.join(self.get_local_upload_directory(repo),etpConst['branch'])
+        db_dir = self.get_local_database_dir(repo)
+        for mydir in [upload_dir,db_dir]:
+            if (not os.path.isdir(mydir)) and (not os.path.lexists(mydir)):
+                os.makedirs(mydir)
+                const_setup_perms(mydir,etpConst['entropygid'])
+
 
     # FIXME: this will be removed in future, creation date: 2008-10-08
     def migrate_repository_databases_to_new_branched_path(self):
@@ -16113,6 +16174,11 @@ class ServerInterface(TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemaskfile'])
+
+    def get_local_database_system_mask_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasesytemmaskfile'])
 
     def get_local_database_licensewhitelist_file(self, repo = None, branch = None):
         if repo == None:
@@ -19429,7 +19495,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
     def does_username_exist(self, username):
         self.check_connection()
-        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username` = %s OR `username_clean` = %s', (username,username,))
+        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username` = %s ', (username,))
         data = self.cursor.fetchone()
         if not data: return False
         if not isinstance(data,dict): return False
@@ -27512,11 +27578,18 @@ class ServerMirrorsInterface:
         data = {}
         data['database_revision_file'] = self.Entropy.get_local_database_revision_file(repo)
         critical.append(data['database_revision_file'])
+
         database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
         if os.path.isfile(database_package_mask_file) or download:
             data['database_package_mask_file'] = database_package_mask_file
             if not download:
                 critical.append(data['database_package_mask_file'])
+
+        database_package_system_mask_file = self.Entropy.get_local_database_system_mask_file(repo)
+        if os.path.isfile(database_package_system_mask_file) or download:
+            data['database_package_system_mask_file'] = database_package_mask_file
+            if not download:
+                critical.append(data['database_package_system_mask_file'])
 
         database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
         if os.path.isfile(database_license_whitelist_file) or download:
@@ -27620,8 +27693,7 @@ class ServerMirrorsInterface:
             if isinstance(files_to_upload,list):
                 self.myfiles = files_to_upload[:]
             else:
-                self.myfiles = [x for x in files_to_upload]
-                self.myfiles.sort()
+                self.myfiles = sorted([x for x in files_to_upload])
             self.download = download
             self.remove = remove
             self.repo = repo
@@ -28242,10 +28314,8 @@ class ServerMirrorsInterface:
                 )
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
-                    my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
-                    my_fine_uris.sort()
-                    my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
-                    my_broken_uris.sort()
+                    my_fine_uris = sorted([self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris])
+                    my_broken_uris = sorted([(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris])
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
                             repo,
@@ -28359,10 +28429,8 @@ class ServerMirrorsInterface:
                 )
                 errors, m_fine_uris, m_broken_uris = downloader.go()
                 if errors:
-                    my_fine_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris]
-                    my_fine_uris.sort()
-                    my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
-                    my_broken_uris.sort()
+                    my_fine_uris = sorted([self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris])
+                    my_broken_uris = sorted([(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris])
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
                             brown(repo),
@@ -31764,8 +31832,7 @@ class EntropyDatabaseInterface:
 
         if extended:
             self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded order by library', (idpackage,))
-            needed = self.cursor.fetchall()
-            needed.sort()
+            needed = sorted(self.cursor.fetchall())
         else:
             self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded order by library', (idpackage,))
             needed = self.fetchall2list(self.cursor.fetchall())

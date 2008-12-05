@@ -311,11 +311,6 @@ CREATE TABLE treeupdatesactions (
     date VARCHAR
 );
 
-CREATE TABLE binkeywords (
-    idpackage INTEGER,
-    idkeyword INTEGER
-);
-
 CREATE TABLE licensedata (
     licensename VARCHAR UNIQUE,
     text BLOB,
@@ -563,11 +558,12 @@ def const_defaultSettings(rootdir):
         'entropyxpakdatarelativepath': "data", # Gentoo xpak metadata directory path
         'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
 
-        'etpdatabasemaskfile': ETP_DBFILE+".mask", # the local/remote database revision file
-        'etpdatabaseupdatefile': ETP_DBFILE+".repo_updates", # the local/remote database revision file
-        'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist", # the local/remote database revision file
+        'etpdatabasesytemmaskfile': ETP_DBFILE+".system_mask", # file containing a list of packages that are strictly required by the repository, thus forced 
+        'etpdatabasemaskfile': ETP_DBFILE+".mask",
+        'etpdatabaseupdatefile': ETP_DBFILE+".repo_updates",
+        'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist",
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
-        'etpdatabasemissingdepsblfile': ETP_DBFILE+".missing_deps_blacklist", # missing dependencies white list file
+        'etpdatabasemissingdepsblfile': ETP_DBFILE+".missing_deps_blacklist", # missing dependencies black list file
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",
         'etpdatabasedumphashfilegzip': ETP_DBFILE+".dump.gz.md5",
@@ -643,19 +639,11 @@ def const_defaultSettings(rootdir):
         'filesystemdirsmask': [
                                     '/var/cache','/var/db','/var/empty','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d', '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage', '/var/spool', '/var/lib', '/usr/lib/locale','/lib64/splash/cache'
         ],
-        'libtest_blacklist': [
-            'www-client/mozilla-firefox-bin',
-            'dev-java/blackdown-jdk',
-        ],
-        'libtest_files_blacklist': [
-            '/usr/lib64/openmotif-2.2/libMrm.so.3',
-            '/usr/lib64/openmotif-2.2/libXm.so.3',
-            '/usr/lib/openmotif-2.2/libMrm.so.3',
-            '/usr/lib/openmotif-2.2/libXm.so.3'
-        ],
+        'libtest_blacklist': [],
+        'libtest_files_blacklist': [],
         'officialserverrepositoryid': "sabayonlinux.org", # our official repository name
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
-        'conntestlink': "http://www.google.com", 
+        'conntestlink': "http://www.google.com",
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'pidfile': ETP_DIR+"/entropy.pid",
         'applicationlock': False,

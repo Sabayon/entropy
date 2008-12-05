@@ -1,0 +1,15 @@
+# Server side packages.db.system_mask file, to force clients to install specified packages
+#
+# In this file you can specify atoms, one per line, that you would force clients to install.
+# Use with care.
+
+# LINE CONSTRUCTION:
+# <atom>
+# See examples below
+
+# EXAMPLES:
+# >=media-libs/foo-1.2.3
+# media-libs/foo
+# media-libs/foo:1
+# >=media-libs/foo-1.2.3#2.6.23-sabayon-r1
+# 
