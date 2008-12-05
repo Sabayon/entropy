@@ -37,6 +37,9 @@ def sync(options, justTidy = False):
             do_noask = True
         elif opt == "--syncall":
             sync_all = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return
         else:
             myopts.append(opt)
     options = myopts
@@ -96,6 +99,9 @@ def packages(options):
             do_pkg_check = True
         elif opt == "--syncall":
             sync_all = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return
 
     if not options:
         return
@@ -269,6 +275,9 @@ def database(options):
     for opt in options:
         if opt == "--syncall":
             sync_all = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return
 
     if cmd == "lock":
 
