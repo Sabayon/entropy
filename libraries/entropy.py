@@ -791,11 +791,33 @@ class EquoInterface(TextInterface):
         else:
             return self.repoDbCache.get((repoid,etpConst['systemroot'],t_ident,))
 
+    def ensure_masking_settings_init(self):
+        if etpConst['packagemasking'] == None: self.parse_masking_settings()
+
+    def is_installed_idpackage_in_system_mask(self, idpackage):
+        self.ensure_masking_settings_init()
+        if idpackage in etpConst['packagemasking']['repos_system_mask_installed']:
+            return True
+        return False
+
     def parse_masking_settings(self):
         etpConst['packagemasking'] = self.MaskingParser.parse()
+
         # merge universal keywords
         for x in etpConst['packagemasking']['keywords']['universal']:
             etpConst['keywords'].add(x)
+
+        # match installed packages of system_mask
+        etpConst['packagemasking']['repos_system_mask_installed'] = []
+        if self.clientDbconn != None:
+            mc_cache = set()
+            for atom in etpConst['packagemasking']['repos_system_mask']:
+                match = self.clientDbconn.atomMatch(atom)
+                if match[0] == -1: continue
+                if match[0] in mc_cache: continue
+                mc_cache.add(match[0])
+                etpConst['packagemasking']['repos_system_mask_installed'].append(match[0])
+
 
     '''
     @description: open the repository database
@@ -808,8 +830,7 @@ class EquoInterface(TextInterface):
     def loadRepositoryDatabase(self, repositoryName, xcache = True, indexing = True):
 
         # load the masking parser
-        if etpConst['packagemasking'] == None:
-            self.parse_masking_settings()
+        self.ensure_masking_settings_init()
         if repositoryName.endswith(etpConst['packagesext']):
             xcache = False
 
@@ -2360,8 +2381,9 @@ class EquoInterface(TextInterface):
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
     def _lookup_system_mask_repository_deps(self):
-        # check against uninitialized masking parser
-        if etpConst['packagemasking'] == None: self.parse_masking_settings()
+
+        # initialized masking parser
+        self.ensure_masking_settings_init()
 
         data = etpConst['packagemasking']['repos_system_mask']
         if not data: return []
@@ -2620,12 +2642,7 @@ class EquoInterface(TextInterface):
         depends -= remove_depends
         return depends
 
-    '''
-    @description: generates a depends tree using provided idpackages (from client database)
-                    !!! you can see it as the function that generates the removal tree
-    @input package: idpackages list
-    @output: 	depends tree dictionary, plus status code
-    '''
+
     def generate_depends_tree(self, idpackages, deep = False):
 
         if self.xcache:
@@ -2665,7 +2682,7 @@ class EquoInterface(TextInterface):
                     header = '|/-\\'[count%4]+" "
                 )
 
-                systempkg = self.clientDbconn.isSystemPackage(idpackage)
+                systempkg = self.clientDbconn.isSystemPackage(idpackage) or self.is_installed_idpackage_in_system_mask(idpackage)
                 if (idpackage in dependscache) or systempkg:
                     if idpackage in treeview:
                         treeview.remove(idpackage)
@@ -2675,7 +2692,7 @@ class EquoInterface(TextInterface):
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
                 depends = set([x for x in depends if x not in monotree])
-                depends = set([x for x in depends if not self.clientDbconn.isSystemPackage(x)])
+                depends = set([x for x in depends if not ( self.clientDbconn.isSystemPackage(x) or self.is_installed_idpackage_in_system_mask(x) ) ])
                 if depends:
                     depends = self._filter_depends_multimatched_atoms(idpackage, depends, monotree)
                 if depends: # something depends on idpackage
@@ -2691,7 +2708,7 @@ class EquoInterface(TextInterface):
                             mydeps.add(match[0])
 
                     # now filter them
-                    mydeps = [x for x in mydeps if x not in monotree and (not self.clientDbconn.isSystemPackage(x))]
+                    mydeps = [x for x in mydeps if x not in monotree and not (self.clientDbconn.isSystemPackage(x) or self.is_installed_idpackage_in_system_mask(x) )]
                     for x in mydeps:
                         mydepends = self.clientDbconn.retrieveDepends(x)
                         mydepends -= set([y for y in mydepends if y not in monotree])
@@ -3214,22 +3231,20 @@ class EquoInterface(TextInterface):
         return data,status
 
     def validatePackageRemoval(self, idpackage):
+
+        if self.is_installed_idpackage_in_system_mask(idpackage):
+            return False # cannot remove
+
         system_pkg = self.clientDbconn.isSystemPackage(idpackage)
-        if not system_pkg:
-            return True # valid
+        if not system_pkg: return True
 
         pkgatom = self.clientDbconn.retrieveAtom(idpackage)
         # check if the package is slotted and exist more than one installed first
         sysresults = self.clientDbconn.atomMatch(self.entropyTools.dep_getkey(pkgatom), multiMatch = True)
-        slots = set()
         if sysresults[1] == 0:
-            for x in sysresults[0]:
-                slots.add(self.clientDbconn.retrieveSlot(x))
-            if len(slots) < 2:
-                return False
-            return True # valid
-        else:
-            return False
+            if len(sysresults[0]) < 2: return False
+            return True
+        return False
 
 
     def retrieveRemovalQueue(self, idpackages, deep = False):

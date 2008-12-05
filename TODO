@@ -5,6 +5,7 @@ TODO list
   - masking/unmasking functions
   - UGC: bug report documents?
   - UGC: bbcode docs?
+  - rework etpConst['packagemasking'] thing, create a stand-alone class
   - p2p way to fight security attacks (through UGC and triple md5 verification)
   - force a package to keep the current version
   - server-side messages collection
