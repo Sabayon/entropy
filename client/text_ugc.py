@@ -35,6 +35,9 @@ def ugc(options):
     for opt in options[1:]:
         if opt == "--force":
             do_force = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return -10
         else:
             myopts.append(opt)
     options = myopts

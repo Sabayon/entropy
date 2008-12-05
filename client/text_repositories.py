@@ -42,6 +42,9 @@ def repositories(options):
     for opt in myopts:
         if (opt == "--force"):
             equoRequestForceUpdate = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return -10
         elif opt in etpRepositoriesOrder:
             repo_names.append(opt)
 

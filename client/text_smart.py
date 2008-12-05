@@ -43,6 +43,9 @@ def smart(options):
             smartRequestEmpty = True
         elif (opt == "--savedir"):
             savedir = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return
         else:
             if savedir:
                 try:

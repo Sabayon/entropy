@@ -42,6 +42,9 @@ def query(options):
     for opt in options:
         if (opt == "--deep"):
             equoRequestDeep = True
+        elif opt.startswith("--"):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return -10
         else:
             if not opt.startswith("-"):
                 myopts.append(opt)

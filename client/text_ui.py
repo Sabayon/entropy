@@ -76,6 +76,9 @@ def package(options):
             equoRequestChecksum = False
         elif (opt == "--skipfirst"):
             equoRequestSkipfirst = True
+        elif (opt.startswith("--")):
+            print_error(red(" %s." % (_("Wrong parameters"),) ))
+            return -10
         else:
             if opt.startswith("--"):
                 continue
