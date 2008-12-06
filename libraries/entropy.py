@@ -13642,7 +13642,15 @@ class SocketHostInterface:
             # decide if we need to load authenticator or Entropy
             authenticator = None
             cmd_data = self.HostInterface.valid_commands.get(cmd)
-            if (("authenticator" in cmd_data['args']) or (cmd in self.HostInterface.login_pass_commands)) and isinstance(cmd_data,dict):
+            if not isinstance(cmd_data,dict):
+                self.HostInterface.updateProgress(
+                    '[from: %s] command error: invalid command: %s' % (
+                        self.client_address,
+                        cmd,
+                    )
+                )
+                return "close"
+            elif (("authenticator" in cmd_data['args']) or (cmd in self.HostInterface.login_pass_commands)):
                 try:
                     authenticator = self.load_authenticator()
                 except exceptionTools.ConnectionError, e:
@@ -17571,6 +17579,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         key = self.get_cache_item_key(cache_item)
         self.dumpTools.dumpobj(key, r)
 
+    # expired get_ugc_alldownloads 0 86400 1228577077
     def get_cached_result(self, cache_item):
         if not self.cached_results.get(cache_item): return None
         key = self.get_cache_item_key(cache_item)
