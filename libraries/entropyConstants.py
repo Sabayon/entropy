@@ -403,6 +403,7 @@ etpCache = {
     'ugc_votes': 'ugc/ugc_votes',
     'ugc_downloads': 'ugc/ugc_downloads',
     'ugc_docs': 'ugc/ugc_docs',
+    'ugc_srv_cache': 'ugc/ugc_srv_cache'
 }
 
 # ahahaha
