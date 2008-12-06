@@ -17552,12 +17552,11 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             pass
 
         self.cached_results = {
-            #'get_ugc_allvotes': (self.get_ugc_allvotes, [], {}),
-            'get_ugc_alldownloads': (self.get_ugc_alldownloads, [], {}),
-            #'get_users_scored_count': (self.get_users_scored_count, [], {}),
-            'get_total_downloads_count': (self.get_total_downloads_count, [], {}),
+            #'get_ugc_allvotes': (self.get_ugc_allvotes, [], {}, 86400),
+            'get_ugc_alldownloads': (self.get_ugc_alldownloads, [], {}, 86400),
+            #'get_users_scored_count': (self.get_users_scored_count, [], {}, 86400),
+            'get_total_downloads_count': (self.get_total_downloads_count, [], {}, 7200),
         }
-        self.cache_expire_timer = 86400 # 1 day
 
     def get_current_time(self):
         return int(time.time())
@@ -17566,7 +17565,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         for cache_item in self.cached_results:
             fdata = self.cached_results.get(cache_item)
             if fdata == None: return
-            func, args, kwargs = fdata
+            func, args, kwargs, exp_time = fdata
             key = self.get_cache_item_key(cache_item)
             r = func(*args,**kwargs)
             self.dumpTools.dumpobj(key, r)
@@ -17581,11 +17580,15 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     # expired get_ugc_alldownloads 0 86400 1228577077
     def get_cached_result(self, cache_item):
-        if not self.cached_results.get(cache_item): return None
+        fdata = self.cached_results.get(cache_item)
+        if fdata == None: return None
+        func, args, kwargs, exp_time = fdata
+
         key = self.get_cache_item_key(cache_item)
         cur_time = self.get_current_time()
         cache_time = self.dumpTools.getobjmtime(key)
-        if (cache_time + self.cache_expire_timer) < cur_time:
+        exp_timer = self.cached_results
+        if (cache_time + exp_timer) < cur_time:
             # expired
             return None
         return self.dumpTools.loadobj(key)
