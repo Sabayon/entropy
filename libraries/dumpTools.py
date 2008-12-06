@@ -122,7 +122,7 @@ def loadobj(name, completePath = False):
 
 def getobjmtime(name):
     mtime = 0
-    dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+    dump_path = os.path.join(etpConst['dumpstoragedir'],name+".dmp")
     if os.path.isfile(dump_path) and os.access(dump_path,os.R_OK):
         mtime = os.path.getmtime(dump_path)
     return int(mtime)
