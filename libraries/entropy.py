@@ -17434,9 +17434,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         'entropy_base': """
             CREATE TABLE `entropy_base` (
             `idkey` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `key` VARCHAR( 255 ) NOT NULL
+            `key` VARCHAR( 255 )  collate utf8_bin NOT NULL,
+            KEY `key` (`key`)
             );
-            ALTER TABLE `entropy_base` ADD INDEX ( `key` );
         """,
         'entropy_votes': """
             CREATE TABLE `entropy_votes` (
@@ -17461,6 +17461,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `idkey` INT UNSIGNED NOT NULL,
             `ddate` DATE NOT NULL,
             `count` INT UNSIGNED NULL DEFAULT '0',
+            KEY `idkey` (`idkey`,`ddate`),
+            KEY `idkey_2` (`idkey`),
             FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
         """,
@@ -17483,13 +17485,13 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `title` VARCHAR( 512 ),
             `description` VARCHAR( 4000 ),
             `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            KEY `idkey` (`idkey`),
+            KEY `userid` (`userid`),
+            KEY `idkey_2` (`idkey`,`userid`,`iddoctype`),
+            KEY `title` (`title`(333)),
+            KEY `description` (`description`(333)),
             FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
-            ALTER TABLE `entropy_docs` ADD INDEX ( `idkey` );
-            ALTER TABLE `entropy_docs` ADD INDEX ( `userid` );
-            ALTER TABLE `entropy_docs` ADD INDEX ( `idkey` , `userid`, `iddoctype` );
-            ALTER TABLE `entropy_docs` ADD INDEX ( `title` );
-            ALTER TABLE `entropy_docs` ADD INDEX ( `description` );
         """,
         'entropy_doctypes': """
             CREATE TABLE `entropy_doctypes` (
@@ -17501,9 +17503,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             CREATE TABLE `entropy_docs_keywords` (
             `iddoc` INT UNSIGNED NOT NULL,
             `keyword` VARCHAR( 100 ),
+            KEY `keyword` (`keyword`),
             FOREIGN KEY  (`iddoc`) REFERENCES `entropy_docs` (`iddoc`)
             );
-            ALTER TABLE `entropy_docs_keywords` ADD INDEX ( `keyword` );
         """,
     }
     VOTE_RANGE = etpConst['ugc_voterange'] # [1, 2, 3, 4, 5]
