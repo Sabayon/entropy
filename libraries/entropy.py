@@ -17774,7 +17774,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_downloads(self, pkgkey):
         self.check_connection()
         downloads = 0
-        self.execute_query('SELECT sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_downloads.idkey', (pkgkey,))
+        self.execute_query('SELECT SQL_CACHE sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_downloads.idkey', (pkgkey,))
         data = self.fetchone()
         if data['tot_downloads'] != None:
             downloads = data['tot_downloads']
@@ -17783,7 +17783,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_alldownloads(self):
         self.check_connection()
         down_data = {}
-        self.execute_query('SELECT entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
+        self.execute_query('SELECT SQL_CACHE entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
         data = self.fetchall()
         for d_dict in data:
             down_data[d_dict['vkey']] = d_dict['tot_downloads']
@@ -17825,7 +17825,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_total_downloads_count(self):
         self.check_connection()
-        self.execute_query('SELECT sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
+        self.execute_query('SELECT SQL_CACHE sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
         data = self.fetchone()
         if isinstance(data,dict):
             if data['downloads']: return int(data['downloads'])
@@ -17842,7 +17842,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_users_scored_count(self):
         self.check_connection()
-        self.execute_query('SELECT count(`userid`) as mycount FROM entropy_user_scores')
+        self.execute_query('SELECT SQL_CACHE count(`userid`) as mycount FROM entropy_user_scores')
         data = self.fetchone()
         if isinstance(data,dict):
             if data.get('mycount'): return data['mycount']
