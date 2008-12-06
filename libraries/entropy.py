@@ -17587,8 +17587,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         key = self.get_cache_item_key(cache_item)
         cur_time = self.get_current_time()
         cache_time = self.dumpTools.getobjmtime(key)
-        exp_timer = self.cached_results
-        if (cache_time + exp_timer) < cur_time:
+        if (cache_time + exp_time) < cur_time:
             # expired
             return None
         return self.dumpTools.loadobj(key)
