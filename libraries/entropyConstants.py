@@ -119,6 +119,7 @@ DROP TABLE IF EXISTS licenses_accepted;
 DROP TABLE IF EXISTS trashedcounters;
 DROP TABLE IF EXISTS entropy_misc_counters;
 DROP TABLE IF EXISTS categoriesdescription;
+DROP TABLE IF EXISTS packagesets;
 """
 
 etpSQLInit = """
@@ -335,6 +336,11 @@ CREATE TABLE categoriesdescription (
     category VARCHAR,
     locale VARCHAR,
     description VARCHAR
+);
+
+CREATE TABLE packagesets (
+    setname VARCHAR,
+    dependency VARCHAR
 );
 
 """
@@ -603,6 +609,7 @@ def const_defaultSettings(rootdir):
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
         'rss-notice-board': "notice.rss", # repository RSS-based notice board content
 
+        'userpackagesetsid': '__user__',
         'packagesext': ".tbz2",
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime

@@ -1865,6 +1865,65 @@ class EquoInterface(TextInterface):
 
         return dbpkginfo
 
+    def packageSetList(self, server_repos = [], serverInstance = None):
+        return self.packageSetMatch('', server_repos = server_repos, serverInstance = serverInstance, search = True)
+
+    def packageSetSearch(self, package_set, server_repos = [], serverInstance = None):
+        return self.packageSetMatch(package_set, server_repos = server_repos, serverInstance = serverInstance, search = True)
+
+    def packageSetMatch(self, package_set, multiMatch = False, server_repos = [], serverInstance = None, search = False):
+
+        if server_repos:
+            if not serverInstance:
+                t = _("server_repos needs serverInstance")
+                raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (t,))
+            valid_repos = server_repos[:]
+        else:
+            valid_repos = self.validRepositories
+
+        def open_db(repoid):
+            if server_repos:
+                dbconn = serverInstance.openServerDatabase(just_reading = True, repo = repoid)
+            else:
+                dbconn = self.openRepositoryDatabase(repoid)
+            return dbconn
+
+        # if we search, we return all the matches available
+        if search: multiMatch = True
+
+        set_data = []
+
+        while 1:
+
+            # check inside PackageSettings
+            if not server_repos:
+                if search:
+                    mysets = [x for x in self.PackageSettings['system_package_sets'].keys() if (x.find(package_set) != -1)]
+                    for myset in mysets:
+                        mydata = self.PackageSettings['system_package_sets'].get(myset)
+                        set_data.append((etpConst['userpackagesetsid'], myset, mydata.copy(),))
+                else:
+                    mydata = self.PackageSettings['system_package_sets'].get(package_set)
+                    if mydata != None: set_data.append((etpConst['userpackagesetsid'], package_set, mydata,))
+                    if not multiMatch: break
+
+            for repoid in valid_repos:
+                dbconn = open_db(repoid)
+                if search:
+                    mysets = dbconn.searchSets(package_set)
+                    for myset in mysets:
+                        mydata = dbconn.retrievePackageSet(myset)
+                        set_data.append((repoid, myset, mydata.copy(),))
+                else:
+                    mydata = dbconn.retrievePackageSet(package_set)
+                    if mydata: set_data.append((repoid, package_set, mydata,))
+                    if not multiMatch: break
+
+            break
+
+        if multiMatch: return set_data
+        if not set_data: return {}
+        return set_data.pop(0)
 
     def repository_move_clear_cache(self, repoid = None):
         self.clear_dump_cache(etpCache['world_available'])
@@ -6656,6 +6715,14 @@ class RepoInterface:
         if not isinstance(data,dict): return None,None
         return data.get('digest'), data.get('actions')
 
+    def get_eapi3_package_sets(self, eapi3_interface, repo, session):
+        self.socket.setdefaulttimeout(self.big_socket_timeout)
+        data = eapi3_interface.CmdInterface.get_package_sets(
+            session, repo, etpConst['currentarch'], etpConst['product']
+        )
+        if not isinstance(data,dict): return {}
+        return data
+
     def handle_eapi3_database_sync(self, repo, threshold = 1500, chunk_size = 12):
 
         def prepare_exit(mysock, session = None):
@@ -6715,35 +6782,6 @@ class RepoInterface:
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             return False
-
-        # get treeupdates stuff
-        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(eapi3_interface, repo, session)
-        if dbdigest == None:
-            mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")), darkred(_("treeupdates data not available")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = blue("  # "),
-            )
-            return None
-
-        try:
-            mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
-            mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
-        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
-            mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % (blue(_("EAPI3 Service status")), darkred(_("cannot update treeupdates data")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = blue("  # "),
-            )
-            return None
 
         count = 0
         added_segments = []
@@ -6843,6 +6881,53 @@ class RepoInterface:
             if error_caught: return error_rc
 
         del added_segments
+
+        # get treeupdates stuff
+        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(eapi3_interface, repo, session)
+        if dbdigest == None:
+            mydbconn.closeDB()
+            prepare_exit(eapi3_interface, session)
+            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")), darkred(_("treeupdates data not available")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
+
+        try:
+            mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
+            mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
+        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            mydbconn.closeDB()
+            prepare_exit(eapi3_interface, session)
+            mytxt = "%s: %s" % (blue(_("EAPI3 Service status")), darkred(_("cannot update treeupdates data")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
+
+
+        # get updated package sets
+        repo_sets = self.get_eapi3_package_sets(eapi3_interface, repo, session)
+        try:
+            mydbconn.clearPackageSets()
+            mydbconn.insertPackageSets(repo_sets)
+        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            mydbconn.closeDB()
+            prepare_exit(eapi3_interface, session)
+            mytxt = "%s: %s" % (blue(_("EAPI3 Service status")), darkred(_("cannot update package sets data")),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
 
         # I don't need you anymore
         # disconnect socket
@@ -10165,6 +10250,7 @@ timeout=10
 
 class PackageSettings:
 
+    import entropyTools
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,EquoInterface):
@@ -10180,6 +10266,7 @@ class PackageSettings:
             'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {},
+            'system_package_sets': {},
         }
 
         self.etpMtimeFiles = {
@@ -10190,6 +10277,7 @@ class PackageSettings:
             'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {},
+            'system_package_sets': {},
         }
 
         self.__settings = None
@@ -10203,6 +10291,9 @@ class PackageSettings:
 
     def clear(self):
         self.__settings = None
+
+    def keys(self):
+        return self.__settings.keys()
 
     def scan(self):
 
@@ -10239,6 +10330,9 @@ class PackageSettings:
         if self.__settings == None: self.scan()
         return mykey in self.__settings
 
+    def __cmp__(self, other):
+        return cmp(self.__settings,other)
+
     def get(self, mykey):
         if self.__settings == None: self.scan()
         return self.__settings.get(mykey)
@@ -10250,25 +10344,33 @@ class PackageSettings:
     def parse(self):
 
         # append repositories mask files
+        # append repositories mtime files
         for repoid in etpRepositoriesOrder:
             maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
             wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
             sm_path = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasesytemmaskfile'])
             if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
                 self.etpMaskFiles['repos_mask'][repoid] = maskpath
+                self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
             if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
                 self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
+                self.etpMtimeFiles['repos_license_whitelist'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabaselicwhitelistfile']+".mtime"
             if os.path.isfile(sm_path) and os.access(sm_path,os.R_OK):
                 self.etpMaskFiles['repos_system_mask'][repoid] = sm_path
-
-        # append repositories mtime files
-        for repoid in etpRepositoriesOrder:
-            if repoid in self.etpMaskFiles['repos_mask']:
-                self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
-            if repoid in self.etpMaskFiles['repos_license_whitelist']:
-                self.etpMtimeFiles['repos_license_whitelist'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabaselicwhitelistfile']+".mtime"
-            if repoid in self.etpMaskFiles['repos_system_mask']:
                 self.etpMtimeFiles['repos_system_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasesytemmaskfile']+".mtime"
+
+        # user defined package sets
+        sets_dir = etpConst['confsetsdir']
+        if (os.path.isdir(sets_dir) and os.access(sets_dir,os.R_OK)):
+            set_files = [x for x in os.listdir(sets_dir) if (os.path.isfile(os.path.join(sets_dir,x)) and os.access(os.path.join(sets_dir,x),os.R_OK))]
+            for set_file in set_files:
+                try:
+                    set_file = str(set_file)
+                except (UnicodeDecodeError,UnicodeEncodeError,):
+                    continue
+                set_filepath = os.path.join(sets_dir,set_file)
+                self.etpMaskFiles['system_package_sets'][set_file] = set_filepath
+                self.etpMtimeFiles['system_package_sets'][set_file] = etpConst['dumpstoragedir']+"/system_package_set_"+set_file+".mtime"
 
         data = {}
         for item in self.etpMaskFiles:
@@ -10440,6 +10542,16 @@ class PackageSettings:
                 for line in content: # preserving order
                     line = line.split()[0]
                     if line not in data: data.append(line)
+
+        return data
+
+    def system_package_sets_parser(self):
+
+        data = {}
+        for set_name in self.etpMaskFiles['system_package_sets']:
+            set_filepath = self.etpMaskFiles['system_package_sets'][set_name]
+            set_elements = self.entropyTools.extract_packages_from_set_file(set_filepath)
+            if set_elements: data[set_name] = set_elements.copy()
 
         return data
 
@@ -13484,6 +13596,8 @@ class SocketHostInterface:
 
                 cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
                 if cmd == 'close':
+                    # send KAPUTT signal JA!
+                    self.transmit(self.HostInterface.answers['cl'])
                     return True
                 self.buffered_data = ''
                 return False
@@ -15429,6 +15543,14 @@ class ServerInterface(TextInterface):
                 use_branch,
                 lock_remote
             )] = conn
+
+        # auto-update package sets
+        if not read_only:
+            cur_sets = conn.retrievePackageSets()
+            sys_sets = self.get_configured_package_sets(repo)
+            if cur_sets != sys_sets:
+                self.update_database_package_sets(repo)
+
         return conn
 
     def deps_tester(self):
@@ -17368,6 +17490,18 @@ class ServerInterface(TextInterface):
                 del sets_data[invalid_set]
 
         return sets_data
+
+    def update_database_package_sets(self, repo = None):
+
+        if repo == None: repo = self.default_repository
+
+        package_sets = self.get_configured_package_sets(repo)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        # clear old
+        dbconn.clearPackageSets()
+        if package_sets: dbconn.insertPackageSets(package_sets)
+        dbconn.commitChanges()
+
 
 class RemoteDbSkelInterface:
 
@@ -20590,6 +20724,16 @@ class RepositorySocketServerInterface(SocketHostInterface):
                     'syntax': "<SESSION_ID> repository_server:treeupdates <repository> <arch> <product> <branch>",
                     'from': unicode(self), # from what class
                 },
+                'repository_server:get_package_sets': {
+                    'auth': False,
+                    'built_in': False,
+                    'cb': self.docmd_package_sets,
+                    'args': ["myargs"],
+                    'as_user': False,
+                    'desc': "returns repository package sets metadata",
+                    'syntax': "<SESSION_ID> repository_server:get_package_sets <repository> <arch> <product> <branch>",
+                    'from': unicode(self), # from what class
+                }
             }
 
         def trash_old_databases(self):
@@ -20628,6 +20772,41 @@ class RepositorySocketServerInterface(SocketHostInterface):
             added_ids = myids - foreign_idpackages
 
             return {'removed': removed_ids, 'added': added_ids, 'checksum': mychecksum}
+
+        def docmd_package_sets(self, myargs):
+
+            self.trash_old_databases()
+
+            if len(myargs) < 4:
+                return None
+            repository = myargs[0]
+            arch = myargs[1]
+            product = myargs[2]
+            try:
+                branch = str(myargs[3])
+            except (UnicodeEncodeError,UnicodeDecodeError,):
+                return None
+
+            x = (repository,arch,product,branch,)
+            valid = self.HostInterface.is_repository_available(x)
+            if not valid:
+                return valid
+
+            cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_package_sets'), repository)
+            if cached != None:
+                return cached
+
+            dbpath = self.get_database_path(repository, arch, product, branch)
+            dbconn = self.HostInterface.open_db(dbpath, docache = False)
+
+            # get data
+            data = dbconn.retrievePackageSets()
+
+            self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_package_sets'), data, repository)
+            dbconn.closeDB()
+
+            return data
+
 
         def docmd_treeupdates(self, myargs):
 
@@ -21233,6 +21412,18 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
+    def get_package_sets(self, session_id, repository, arch, product):
+
+        cmd = "%s %s %s %s %s %s" % (
+            session_id,
+            'repository_server:get_package_sets',
+            repository,
+            arch,
+            product,
+            etpConst['branch'],
+        )
+        return self.do_generic_handler(cmd, session_id, tries = 5)
+
     def get_package_information(self, session_id, idpackages, repository, arch, product):
 
         cmd = "%s %s %s %s %s %s %s %s" % (
@@ -21811,7 +22002,23 @@ class SystemSocketClientInterface:
                 data = do_receive()
                 if self.buffer_length == None:
                     self.buffered_data = ''
-                    if len(data) < len(myeos):
+                    if (data == '') or (data == self.answers['cl']):
+                        # nein! no support, KAPUTT!
+                        # RAUSS!
+                        if not self.quiet:
+                            mytxt = _("command not supported. receive aborted")
+                            self.Entropy.updateProgress(
+                                "[%s:%s] %s" % (
+                                        brown(self.hostname),
+                                        bold(str(self.hostport)),
+                                        blue(mytxt),
+                                ),
+                                importance = 1,
+                                type = "warning",
+                                header = self.output_header
+                            )
+                        return None
+                    elif len(data) < len(myeos):
                         if not self.quiet:
                             mytxt = _("malformed EOS. receive aborted")
                             self.Entropy.updateProgress(
@@ -28469,6 +28676,7 @@ class ServerMirrorsInterface:
             )
 
             self.sync_database_treeupdates(repo)
+            self.Entropy.update_database_package_sets(repo)
             self.Entropy.close_server_databases()
 
             # backup current database to avoid re-indexing
@@ -31894,6 +32102,34 @@ class EntropyDatabaseInterface:
             return True
         return False
 
+    def clearPackageSets(self):
+        self.checkReadOnly()
+        self.cursor.execute('DELETE FROM packagesets')
+
+    def insertPackageSets(self, sets_data):
+        self.checkReadOnly()
+
+        def myiter():
+            for setname in sets_data:
+                for dependency in sets_data[setname]:
+                    yield (setname,dependency)
+
+        with self.WriteLock:
+            self.cursor.executemany('INSERT into packagesets VALUES (?,?)', myiter())
+
+    def retrievePackageSets(self):
+        self.cursor.execute('SELECT setname,dependency FROM packagesets')
+        data = self.fetchall()
+        sets = {}
+        for setname, dependency in data:
+            if not sets.has_key(setname):
+                sets[setname] = set()
+            sets[setname].add(dependency)
+        return sets
+
+    def retrievePackageSet(self, setname):
+        self.cursor.execute('SELECT dependency FROM packagesets WHERE setname = (?)', (setname,))
+        return self.fetchall2set(self.fetchall())
 
     def retrieveAtom(self, idpackage):
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
@@ -32577,6 +32813,10 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
         return self.fetchall2set(self.cursor.fetchall())
 
+    def searchSets(self, keyword):
+        self.cursor.execute('SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)', ("%"+keyword+"%",))
+        return self.fetchall2set(self.cursor.fetchall())
+
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom'):
 
         searchkeywords = ["%"+keyword+"%"]
@@ -32975,6 +33215,9 @@ class EntropyDatabaseInterface:
 
         if not self.doesTableExist("categoriesdescription"):
             self.createCategoriesdescriptionTable()
+
+        if not self.doesTableExist('packagesets'):
+            self.createPackagesetsTable()
 
         # these are the tables moved to INTEGER PRIMARY KEY AUTOINCREMENT
         autoincrement_tables = [
@@ -33484,7 +33727,13 @@ class EntropyDatabaseInterface:
         self.createEclassesIndex()
         self.createCategoriesIndex()
         self.createCompileFlagsIndex()
+        self.createPackagesetsIndex()
 
+    def createPackagesetsIndex(self):
+        if self.indexing:
+            with self.WriteLock:
+                self.cursor.execute('CREATE INDEX IF NOT EXISTS packagesetsindex ON packagesets ( setname )')
+                self.commitChanges()
 
     def createNeededIndex(self):
         if self.indexing:
@@ -33701,6 +33950,10 @@ class EntropyDatabaseInterface:
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
+
+    def createPackagesetsTable(self):
+        with self.WriteLock:
+            self.cursor.execute('CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );')
 
     def createCategoriesdescriptionTable(self):
         with self.WriteLock:
