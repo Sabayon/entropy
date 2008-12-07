@@ -515,8 +515,11 @@ def const_defaultSettings(rootdir):
     ETP_SMARTPACKAGESDIR = "/smartpackages/"+ETP_ARCH_CONST
     ETP_CACHESDIR = "/caches/"
     ETP_SECURITYDIR = "/glsa/"
+    ETP_SETSDIRNAME = "sets"
+    ETP_SETSDIR = "/%s/" % (ETP_SETSDIRNAME,)
     ETP_LOG_DIR = ETP_DIR+"/"+"logs"
     ETP_CONF_DIR = rootdir+"/etc/entropy"
+    ETP_CONF_PACKAGES_DIR = ETP_CONF_DIR+"/packages"
     ETP_UGC_CONF_DIR = ETP_CONF_DIR+"/ugc"
     ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
     ETP_VAR_DIR = rootdir+"/var/tmp/entropy"
@@ -543,6 +546,9 @@ def const_defaultSettings(rootdir):
         'portagetreedir': ETP_PORTDIR, # directory where is stored our local portage tree
         'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR, # directory where our sources are downloaded
         'confdir': ETP_CONF_DIR, # directory where entropy stores its configuration
+        'confpackagesdir': ETP_CONF_PACKAGES_DIR, # same as above + /packages
+        'confsetsdir': ETP_CONF_PACKAGES_DIR+ETP_SETSDIR, # system package sets dir
+        'confsetsdirname': ETP_SETSDIRNAME, # just the dirname
         'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
         'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
         'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
@@ -727,12 +733,7 @@ def const_defaultSettings(rootdir):
         'securitydir': ETP_DIR+ETP_SECURITYDIR, # where GLSAs are stored
         'securityurl': "http://community.sabayonlinux.org/security/security-advisories.tar.bz2",
 
-        # packages keywords/mask/unmask settings
-        'packagemasking': None, # package masking information dictionary filled by the masking parser
-        'live_packagemasking': {
-            'unmask_matches': set(),
-            'mask_matches': set(),
-        },
+        # packages keywords/mask/unmask live settings
         'packagemaskingreasons': {
             0: _('reason not available'),
             1: _('user package.mask'),

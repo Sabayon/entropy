@@ -1,11 +1,11 @@
 TODO list
+  - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - fix queue length issue with extended commands on the repository manager server
   - equo source (download sources + patches)
   - implement package sets (meta packages list - security only updates feature)
   - masking/unmasking functions
   - UGC: bug report documents?
   - UGC: bbcode docs?
-  - rework etpConst['packagemasking'] thing, create a stand-alone class
   - p2p way to fight security attacks (through UGC and triple md5 verification)
   - force a package to keep the current version
   - server-side messages collection
@@ -18,7 +18,6 @@ TODO list
   - documentation + man page
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - server-side: packages upload through socket?
-  - ease branch stuff, since we split databases
 
   Spritz:
     - Remote System Manager

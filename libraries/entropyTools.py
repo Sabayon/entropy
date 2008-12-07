@@ -2288,6 +2288,18 @@ def create_package_atom_string(category, name, version, package_tag):
     package_name += package_tag
     return package_name
 
+def extract_packages_from_set_file(filepath):
+    f = open(filepath,"r")
+    items = set()
+    line = f.readline()
+    while line:
+        x = line.strip().rsplit("#",1)[0]
+        if x and (not x.startswith('#')):
+            items.add(x)
+        line = f.readline()
+    f.close()
+    return items
+
 def collectLinkerPaths():
     if linkerPaths:
         return linkerPaths
