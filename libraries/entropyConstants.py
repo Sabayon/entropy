@@ -717,13 +717,7 @@ def const_defaultSettings(rootdir):
                 'contents': "CONTENTS",
                 'counter': "COUNTER"
             },
-            'system_packages': [
-                "sys-kernel/linux-sabayon", # our kernel
-                "dev-db/sqlite", # our interface
-                "virtual/cron", # our cron service
-                "app-admin/equo", # our package manager (client)
-                "sys-apps/entropy" # our package manager (server+client)
-            ],
+            'system_packages': [],
             'ignore-spm-downgrades': False,
         },
 
@@ -731,7 +725,7 @@ def const_defaultSettings(rootdir):
 
         'dumpstoragedir': ETP_DIR+ETP_CACHESDIR, # data storage directory, useful to speed up equo across multiple issued commands
         'securitydir': ETP_DIR+ETP_SECURITYDIR, # where GLSAs are stored
-        'securityurl': "http://packages.sabayonlinux.org/security/security-advisories.tar.bz2",
+        'securityurl': "http://community.sabayonlinux.org/security/security-advisories.tar.bz2",
 
         # packages keywords/mask/unmask settings
         'packagemasking': None, # package masking information dictionary filled by the masking parser

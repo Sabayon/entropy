@@ -11419,6 +11419,12 @@ class PortageInterface:
         self.portage_util = portage_util
 
         try:
+            import portage.sets as portage_sets
+            self.portage_sets = portage_sets
+        except ImportError:
+            self.portage_sets = None
+
+        try:
             import glsa
             self.glsa = glsa
         except ImportError:
@@ -12643,6 +12649,34 @@ class PortageInterface:
                     continue
                 installedAtoms.add((os.path.basename(current_dirpath)+"/"+mypv,counter))
         return installedAtoms
+
+    def get_set_config(self):
+        # old portage
+        if self.portage_sets == None: return
+        myroot = etpConst['systemroot']+"/"
+        setconfig = self.portage_sets.load_default_config(
+            self.portage.settings,
+            self.portage.db[myroot]
+        )
+        return setconfig
+
+    def get_sets(self):
+        config = self.get_set_config()
+        if config == None: return {}
+        return config.getSets()
+
+    def get_sets_expanded(self):
+        config = self.get_set_config()
+        if config == None: return {}
+        mysets = {}
+        sets = config.getSets()
+        for myset in sorted(sets):
+            try:
+                atoms = config.getSetAtoms(myset).copy()
+            except:
+                continue
+            mysets[myset] = atoms
+        return mysets
 
     def refill_counter(self, dbdir = None):
         if not dbdir:
