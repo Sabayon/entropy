@@ -10407,9 +10407,7 @@ class PackageMaskingParser:
         data = {}
         for repoid in self.etpMaskFiles['repos_mask']:
 
-            data[repoid] = {}
-            data[repoid]['branch'] = {}
-            data[repoid]['*'] = set()
+            data[repoid] = set()
 
             self.__validateEntropyCache(self.etpMaskFiles['repos_mask'][repoid],self.etpMtimeFiles['repos_mask'][repoid], repoid = repoid)
             if os.path.isfile(self.etpMaskFiles['repos_mask'][repoid]):
@@ -10419,13 +10417,8 @@ class PackageMaskingParser:
                 # filter comments and white lines
                 content = [x.strip() for x in content if not x.startswith("#") and x.strip() and len(x.split()) <= 2]
                 for line in content:
-                    line = line.split()
-                    if len(line) == 1:
-                        data[repoid]['*'].add(line[0])
-                    else:
-                        if not data[repoid]['branch'].has_key(line[1]):
-                            data[repoid]['branch'][line[1]] = set()
-                        data[repoid]['branch'][line[1]].add(line[0])
+                    line = line.split()[0]
+                    data[repoid].add(line)
         return data
 
     def repos_system_mask_parser(self):
@@ -20152,7 +20145,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             for key in keys:
                 keys_data.append("%s = '%s'" % (
                         self.dbconn.escape_string(key),
-                        self.dbconn.escape_string(unicode(data[key]))
+                        self.dbconn.escape_string(unicode(data[key]).encode('utf-8')).decode('utf-8')
                     )
                 )
             sql += ', '.join(keys_data)
@@ -33849,40 +33842,23 @@ class EntropyDatabaseInterface:
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
         # check if repository packages.db.mask needs it masked
-        repomask = etpConst['packagemasking']['repos_mask'].get(reponame)
+        repos_mask = etpConst['packagemasking']['repos_mask']
+        repomask = repos_mask.get(reponame)
         if repomask != None:
             # first, seek into generic masking, all branches
-            all_branches_mask = repomask.get("*")
-            if all_branches_mask:
-                all_branches_mask_ids = repomask.get("*_ids")
-                if all_branches_mask_ids == None:
-                    etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] = set()
-                    for atom in all_branches_mask:
-                        matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                        if matches[1] != 0:
-                            continue
-                        etpConst['packagemasking']['repos_mask'][reponame]['*_ids'] |= set(matches[0])
-                    all_branches_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['*_ids']
-                if idpackage in all_branches_mask_ids:
-                    idpackageValidatorCache[(idpackage,reponame,live)] = -1,8
-                    return -1,8
-            # no universal mask
-            branches_mask = repomask.get("branch")
-            if branches_mask:
-                for branch in branches_mask:
-                    branch_mask_ids = branches_mask.get(branch+"_ids")
-                    if branch_mask_ids == None:
-                        etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"] = set()
-                        for atom in branches_mask[branch]:
-                            matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                            if matches[1] != 0:
-                                continue
-                            etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"] |= set(matches[0])
-                        branch_mask_ids = etpConst['packagemasking']['repos_mask'][reponame]['branch'][branch+"_ids"]
-                    if idpackage in branch_mask_ids:
-                        if  self.retrieveBranch(idpackage) == branch:
-                            idpackageValidatorCache[(idpackage,reponame,live)] = -1,9
-                            return -1,9
+            mask_repo_id = "%s_ids@@:of:%s" % (reponame,reponame,) # avoid issues with repository names
+            repomask_ids = repos_mask.get(mask_repo_id)
+            if repomask_ids == None:
+                repos_mask[mask_repo_id] = set()
+                for atom in repomask:
+                    matches = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                    if matches[1] != 0:
+                        continue
+                    repos_mask[mask_repo_id] |= set(matches[0])
+                repomask_ids = repos_mask[mask_repo_id]
+            if idpackage in repomask_ids:
+                idpackageValidatorCache[(idpackage,reponame,live)] = -1,8
+                return -1,8
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
         if etpConst['packagemasking']['license_mask']:
