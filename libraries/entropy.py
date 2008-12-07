@@ -17421,6 +17421,28 @@ class RemoteDbSkelInterface:
     def fetchone2set(self, item):
         return set(item)
 
+    def _generate_sql(self, action, table, data, where = ''):
+        sql = u''
+        keys = sorted(data.keys())
+        if action == "update":
+            sql += 'UPDATE %s SET ' % (self.dbconn.escape_string(table),)
+            keys_data = []
+            for key in keys:
+                keys_data.append("%s = '%s'" % (
+                        self.dbconn.escape_string(key),
+                        self.dbconn.escape_string(unicode(data[key]).encode('utf-8')).decode('utf-8')
+                    )
+                )
+            sql += ', '.join(keys_data)
+            sql += ' WHERE %s' % (where,)
+        elif action == "insert":
+            sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
+                self.dbconn.escape_string(table),
+                u', '.join([self.dbconn.escape_string(x) for x in keys]),
+                u', '.join([u"'"+self.dbconn.escape_string(unicode(data[x]).encode('utf-8')).decode('utf-8')+"'" for x in keys])
+            )
+        return sql
+
 class DistributionUGCInterface(RemoteDbSkelInterface):
 
     SQL_TABLES = {
@@ -20070,7 +20092,6 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         except Exception, e:
             return False, unicode(e)
 
-    
 
     def _set_config_value(self, config_name, data):
         self.cursor.execute('UPDATE '+self.TABLE_PREFIX+'config SET config_value = %s WHERE config_name = %s',(data,config_name,))
@@ -20135,28 +20156,6 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if sql:
             self.cursor.execute(sql)
             self.dbconn.commit()
-
-    def _generate_sql(self, action, table, data, where = ''):
-        sql = u''
-        keys = sorted(data.keys())
-        if action == "update":
-            sql += 'UPDATE %s SET ' % (self.dbconn.escape_string(table),)
-            keys_data = []
-            for key in keys:
-                keys_data.append("%s = '%s'" % (
-                        self.dbconn.escape_string(key),
-                        self.dbconn.escape_string(unicode(data[key]).encode('utf-8')).decode('utf-8')
-                    )
-                )
-            sql += ', '.join(keys_data)
-            sql += ' WHERE %s' % (where,)
-        elif action == "insert":
-            sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
-                self.dbconn.escape_string(table),
-                u', '.join([self.dbconn.escape_string(x) for x in keys]),
-                u', '.join([u"'"+self.dbconn.escape_string(unicode(data[x]).encode('utf-8')).decode('utf-8')+"'" for x in keys])
-            )
-        return sql
 
 
     def _is_ip_banned(self, ip):
