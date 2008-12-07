@@ -1,4 +1,6 @@
 TODO list
+  - block package commit if there are config files not updated
+  - cleanup EntropyDatabaseInterface.databaseStructureUpdates
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - fix queue length issue with extended commands on the repository manager server
   - equo source (download sources + patches)
