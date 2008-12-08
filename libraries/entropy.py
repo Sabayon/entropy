@@ -1869,6 +1869,8 @@ class EquoInterface(TextInterface):
         return self.packageSetMatch('', server_repos = server_repos, serverInstance = serverInstance, search = True)
 
     def packageSetSearch(self, package_set, server_repos = [], serverInstance = None):
+        # search support
+        if package_set == '*': package_set = ''
         return self.packageSetMatch(package_set, server_repos = server_repos, serverInstance = serverInstance, search = True)
 
     def packageSetMatch(self, package_set, multiMatch = False, server_repos = [], serverInstance = None, search = False):
@@ -15550,6 +15552,7 @@ class ServerInterface(TextInterface):
             sys_sets = self.get_configured_package_sets(repo)
             if cur_sets != sys_sets:
                 self.update_database_package_sets(repo)
+            conn.commitChanges()
 
         return conn
 
@@ -16483,6 +16486,24 @@ class ServerInterface(TextInterface):
 
     def get_branch_from_download_relative_uri(self, mypath):
         return self.ClientService.get_branch_from_download_relative_uri(mypath)
+
+    def packageSetList(self, *args, **kwargs):
+        repos = etpConst['server_repositories'].keys()
+        kwargs['server_repos'] = repos
+        kwargs['serverInstance'] = self
+        return self.ClientService.packageSetList(*args,**kwargs)
+
+    def packageSetSearch(self, *args, **kwargs):
+        repos = etpConst['server_repositories'].keys()
+        kwargs['server_repos'] = repos
+        kwargs['serverInstance'] = self
+        return self.ClientService.packageSetSearch(*args,**kwargs)
+
+    def packageSetMatch(self, *args, **kwargs):
+        repos = etpConst['server_repositories'].keys()
+        kwargs['server_repos'] = repos
+        kwargs['serverInstance'] = self
+        return self.ClientService.packageSetMatch(*args,**kwargs)
 
     def atomMatch(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
@@ -32130,7 +32151,7 @@ class EntropyDatabaseInterface:
 
     def retrievePackageSets(self):
         self.cursor.execute('SELECT setname,dependency FROM packagesets')
-        data = self.fetchall()
+        data = self.cursor.fetchall()
         sets = {}
         for setname, dependency in data:
             if not sets.has_key(setname):
@@ -32140,7 +32161,7 @@ class EntropyDatabaseInterface:
 
     def retrievePackageSet(self, setname):
         self.cursor.execute('SELECT dependency FROM packagesets WHERE setname = (?)', (setname,))
-        return self.fetchall2set(self.fetchall())
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveAtom(self, idpackage):
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))

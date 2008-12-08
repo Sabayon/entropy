@@ -74,12 +74,13 @@ def query(options):
         rc = searchRemoval(myopts[1:],deep = equoRequestDeep)
 
     elif myopts[0] == "tags":
-        if (len(myopts) > 1):
-            rc = searchTaggedPackages(myopts[1:])
+        rc = searchTaggedPackages(myopts[1:])
+
+    elif myopts[0] == "sets":
+        rc = searchPackageSets(myopts[1:])
 
     elif myopts[0] == "license":
-        if (len(myopts) > 1):
-            rc = searchLicenses(myopts[1:])
+        rc = searchLicenses(myopts[1:])
 
     elif myopts[0] == "slot":
         if (len(myopts) > 1):
@@ -828,6 +829,44 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
                 print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
 
     if (datareturn):
+        return foundPackages
+    return 0
+
+def searchPackageSets(items, datareturn = False, EquoConnection = None):
+
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
+
+    foundPackages = {}
+
+    if (not datareturn) and (not etpUi['quiet']):
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Package Set Search"),)))
+
+    if not items: items.append('*')
+
+    matchNumber = 0
+    for item in items:
+        results = Equo.packageSetSearch(item)
+        for repo, set_name, set_data in results:
+            matchNumber += 1
+            if (not datareturn) and (not etpUi['quiet']):
+                print_info(blue("  #"+str(matchNumber))+bold(" "+set_name))
+                if (not datareturn):
+                    elements = sorted(list(set_data))
+                    for element in elements:
+                        print_info(brown("    "+element))
+
+        if (not datareturn) and (not etpUi['quiet']):
+            print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+item))
+            print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(matchNumber))+red(" %s" % (_("entries"),)))
+
+    if datareturn:
         return foundPackages
     return 0
 

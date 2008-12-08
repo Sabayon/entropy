@@ -32,7 +32,7 @@ def query(myopts):
         return 10
     cmd = myopts[0]
     myopts = myopts[1:]
-    if not myopts and cmd not in ["list"]:
+    if not myopts and cmd not in ["list","sets"]:
         return 10
 
     rc = 0
@@ -60,6 +60,8 @@ def query(myopts):
 
     elif cmd == "tags":
         searchTaggedPackages(myopts, dbconn, Entropy)
+    elif cmd == "sets":
+        text_query.searchPackageSets(myopts, EquoConnection = Entropy)
     elif cmd == "files":
         text_query.searchFiles(myopts, dbconn = dbconn, EquoConnection = Entropy)
     elif cmd == "belongs":
