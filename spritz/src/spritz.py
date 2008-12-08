@@ -1994,44 +1994,36 @@ class SpritzApplication(Controller):
             self.queueView.refresh() # Refresh Package Queue
 
     def on_queueSave_clicked( self, widget ):
-        fn = FileChooser()
+        fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
         if fn:
             pkgdata = self.queue.get()
-            keys = pkgdata.keys()
-            for key in keys:
-                if pkgdata[key]:
-                    pkgdata[key] = [str(x) for x in pkgdata[key]]
+            for key in pkgdata.keys():
+                if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
             self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
 
     def on_queueOpen_clicked( self, widget ):
         fn = FileChooser()
         if fn:
+
             try:
-                pkgdata = self.Equo.dumpTools.loadobj(fn,True)
+                pkgdata = self.Equo.dumpTools.loadobj(fn,completePath = True)
             except:
                 return
 
-            try:
-                pkgdata_keys = pkgdata.keys()
-            except:
+            if not isinstance(pkgdata,dict):
                 return
-            packages = self.etpbase.getAllPackages()
+
             collected_items = []
-            for key in pkgdata_keys:
+            for key in pkgdata.keys():
                 for pkg in pkgdata[key]:
-                    found = False
-                    for x in packages:
-                        if (pkg == str(x)) and (x.action == key):
-                            found = True
-                            collected_items.append([key,x])
-                            break
-                    if not found:
+                    try:
+                        yp, new = self.etpbase.getPackageItem(pkg,True)
+                    except:
                         okDialog( self.ui.main, _("Queue is too old. Cannot load.") )
                         return
+                    collected_items.append((key,yp))
 
-            for pkgtuple in collected_items:
-                key = pkgtuple[0]
-                pkg = pkgtuple[1]
+            for key, pkg in collected_items:
                 pkg.queued = key
                 self.queue.packages[key].append(pkg)
 

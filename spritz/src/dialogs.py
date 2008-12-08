@@ -5558,12 +5558,12 @@ def inputBox( parent, title, text, input_text = None):
     dlg.destroy()
     return rc
 
-def FileChooser(basedir = None, pattern = None):
+def FileChooser(basedir = None, pattern = None, action = gtk.FILE_CHOOSER_ACTION_OPEN, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK)):
     # open file selector
     dialog = gtk.FileChooserDialog(
         title = None,
-        action = gtk.FILE_CHOOSER_ACTION_OPEN,
-        buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK)
+        action = action,
+        buttons = buttons
     )
     if not basedir:
         basedir = os.getenv('HOME')
