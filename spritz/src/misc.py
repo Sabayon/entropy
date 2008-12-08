@@ -146,7 +146,7 @@ class SpritzQueue:
             return new_proposed_idpackages_queue
         return idpackages_queued
 
-    def remove(self, pkgs, accept = False, accept_reinsert = False):
+    def remove(self, pkgs, accept = False, accept_reinsert = False, always_ask = False):
 
         if type(pkgs) is not list:
             pkgs = [pkgs]
@@ -168,7 +168,7 @@ class SpritzQueue:
             self.keyslotFilter -= mybefore
 
             if xlist:
-                status = self.elaborateInstall(xlist,action,False,accept)
+                status = self.elaborateInstall(xlist,action,False,accept,always_ask)
                 del self.before[:]
                 return status,0
 
@@ -200,7 +200,7 @@ class SpritzQueue:
 
             if xlist:
 
-                status = self.elaborateRemoval(xlist,False,accept)
+                status = self.elaborateRemoval(xlist,False,accept,always_ask)
                 if status == -10:
                     del self.packages[action[0]][:]
                     self.packages[action[0]] = self.before[:]
@@ -211,7 +211,7 @@ class SpritzQueue:
             del self.before[:]
             return 0,1
 
-    def add(self, pkgs, accept = False):
+    def add(self, pkgs, accept = False, always_ask = False):
 
         if type(pkgs) is not list:
             pkgs = [pkgs]
@@ -230,7 +230,7 @@ class SpritzQueue:
             tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
             xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
             xlist = list(set(xlist))
-            status = self.elaborateInstall(xlist,action,False,accept)
+            status = self.elaborateInstall(xlist,action,False,accept,always_ask)
             if status == 0:
                 self.keyslotFilter |= self._keyslotFilter
             return status,0
@@ -249,7 +249,7 @@ class SpritzQueue:
 
             tmpqueue = [x for x in pkgs if x not in self.packages['r']]
             xlist = [x.matched_atom[0] for x in self.packages['r']+tmpqueue]
-            status = self.elaborateRemoval(xlist,False, accept)
+            status = self.elaborateRemoval(xlist,False,accept,always_ask)
             return status,1
 
     def elaborateMaskedPackages(self, matches):
@@ -289,7 +289,7 @@ class SpritzQueue:
 
         return result
 
-    def elaborateInstall(self, xlist, actions, deep_deps, accept):
+    def elaborateInstall(self, xlist, actions, deep_deps, accept, always_ask = False):
 
         status = self.elaborateMaskedPackages(xlist)
         if status != 0:
@@ -352,7 +352,7 @@ class SpritzQueue:
 
                 items_before = [x for x in install_todo+remove_todo if x not in self.before]
 
-                if (len(items_before) > 1) and not accept:
+                if ((len(items_before) > 1) and (not accept)) or (always_ask):
                     ok = False
                     size = 0
                     for x in install_todo:
@@ -390,7 +390,7 @@ class SpritzQueue:
 
         return status
 
-    def elaborateRemoval(self, mylist, nodeps, accept):
+    def elaborateRemoval(self, mylist, nodeps, accept, always_ask = False):
         if nodeps:
             return 0
 
@@ -416,7 +416,7 @@ class SpritzQueue:
             if todo:
                 ok = True
                 items_before = [x for x in todo if x not in self.before]
-                if (len(items_before) > 1) and not accept:
+                if ((len(items_before) > 1) and (not accept)) or (always_ask):
                     ok = False
                     size = 0
                     for x in todo:

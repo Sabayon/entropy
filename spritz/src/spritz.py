@@ -1396,7 +1396,7 @@ class SpritzApplication(Controller):
             affected_data = data['affected'][mykey][0]
             atoms |= set(affected_data['unaff_atoms'])
 
-        self.add_atoms_to_queue(atoms)
+        rc = self.add_atoms_to_queue(atoms, always_ask = True)
         if rc: okDialog( self.ui.main, _("Packages in Advisory have been queued.") )
 
     def on_updateAdvAll_clicked( self, widget ):
@@ -1411,10 +1411,10 @@ class SpritzApplication(Controller):
                 affected_data = adv_data[key]['affected'][mykey][0]
                 atoms |= set(affected_data['unaff_atoms'])
 
-        rc = self.add_atoms_to_queue(atoms)
+        rc = self.add_atoms_to_queue(atoms, always_ask = True)
         if rc: okDialog( self.ui.main, _("Packages in all Advisories have been queued.") )
 
-    def add_atoms_to_queue(self, atoms):
+    def add_atoms_to_queue(self, atoms, always_ask = False):
 
         self.setBusy()
         # resolve atoms
@@ -1435,22 +1435,26 @@ class SpritzApplication(Controller):
         for match in matches:
             resolved.append(self.etpbase.getPackageItem(match,True)[0])
 
+        rc = True
+
         for obj in resolved:
             if obj in self.queue.packages['i'] + \
                         self.queue.packages['u'] + \
                         self.queue.packages['r'] + \
                         self.queue.packages['rr']:
                 continue
+
             oldqueued = obj.queued
             obj.queued = 'u'
-            status, myaction = self.queue.add(obj)
+            status, myaction = self.queue.add(obj, always_ask = always_ask)
             if status != 0:
+                rc = False
                 obj.queued = oldqueued
             self.queueView.refresh()
             self.ui.viewPkg.queue_draw()
 
         self.unsetBusy()
-        return True
+        return rc
 
 
     def on_advInfoButton_clicked( self, widget ):
