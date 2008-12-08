@@ -2815,7 +2815,7 @@
                                                 <property name="tooltip" translatable="yes">This is what they call "nice level"</property>
                                                 <property name="max_length">3</property>
                                                 <property name="width_chars">3</property>
-                                                <property name="adjustment">1 -19 19 1 10 10</property>
+                                                <property name="adjustment">1 -19 19 1 10 0</property>
                                                 <property name="climb_rate">1</property>
                                                 <property name="numeric">True</property>
                                                 <signal name="value_changed" handler="on_Preferences_toggled"/>
@@ -2990,7 +2990,7 @@ Install+Removal</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                             <property name="tooltip" translatable="yes">0 = no limit; 100 = 100kb/sec</property>
                                             <property name="editable">False</property>
-                                            <property name="adjustment">0 0 99999 1 100 100</property>
+                                            <property name="adjustment">0 0 99999 1 100 0</property>
                                             <signal name="value_changed" handler="on_Preferences_toggled"/>
                                           </widget>
                                           <packing>
