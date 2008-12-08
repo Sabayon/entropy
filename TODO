@@ -1,11 +1,13 @@
 TODO list
+  - rename exceptionTools
+  - move etpConst['conflicting_tagged_packages'] elsewhere
   - block package commit if there are config files not updated
   - cleanup EntropyDatabaseInterface.databaseStructureUpdates
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - fix queue length issue with extended commands on the repository manager server
   - equo source (download sources + patches)
-  - implement package sets (meta packages list - security only updates feature)
   - masking/unmasking functions
+  - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
   - p2p way to fight security attacks (through UGC and triple md5 verification)
@@ -22,7 +24,6 @@ TODO list
   - server-side: packages upload through socket?
 
   Spritz:
-    - Remote System Manager
     - allow package remasking
     - package source download
     - fetch-only

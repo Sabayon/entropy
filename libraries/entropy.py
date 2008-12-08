@@ -354,6 +354,8 @@ class EquoInterface(TextInterface):
         self.securityCache = {}
         self.QACache = {}
         self.spmCache = {}
+        self.memoryDbInstances = {}
+        self.validRepositories = []
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
 
@@ -401,7 +403,6 @@ class EquoInterface(TextInterface):
         # setup package settings (masking and other stuff)
         self.PackageSettings = PackageSettings(self)
 
-        self.validRepositories = []
         if self.repo_validation:
             self.validate_repositories()
 
@@ -422,6 +423,9 @@ class EquoInterface(TextInterface):
         self.closeAllSecurity()
         self.closeAllQA()
 
+    def reload_constants(self):
+        initConfig_entropyConstants(etpSys['rootdir'])
+        initConfig_clientConstants()
 
     def validate_repositories(self):
         # valid repositories
@@ -458,6 +462,22 @@ class EquoInterface(TextInterface):
                 continue
         # to avoid having zillions of open files when loading a lot of EquoInterfaces
         self.closeAllRepositoryDatabases(mask_clear = False)
+
+    def init_generic_memory_repository(self, repoid, description, package_mirrors = []):
+        dbc = self.openMemoryDatabase(dbname = repoid)
+        self.memoryDbInstances[repoid] = dbc
+
+        # add to etpRepositories
+        repodata = {
+            'repoid': sets_repo_id,
+            'in_memory': True,
+            'description': description,
+            'packages': package_mirrors,
+            'dbpath': ':memory:',
+        }
+        self.addRepository(repodata)
+
+        return dbc
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
@@ -621,8 +641,7 @@ class EquoInterface(TextInterface):
         if chroot.endswith("/"):
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
-        initConfig_entropyConstants(etpSys['rootdir'])
-        initConfig_clientConstants()
+        self.reload_constants()
         self.validate_repositories()
         self.reopenClientDbconn()
         if chroot:
@@ -1408,8 +1427,9 @@ class EquoInterface(TextInterface):
             # reopen Client Database, this will make treeupdates to be re-read
             self.closeAllRepositoryDatabases()
             etpConst['branch'] = branch
-            initConfig_entropyConstants(etpSys['rootdir'])
+            self.reload_constants()
             etpConst['branch'] = branch
+            self.validate_repositories()
             self.reopenClientDbconn()
         return 0
 
@@ -1711,12 +1731,11 @@ class EquoInterface(TextInterface):
             multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None,
             server_repos = [], serverInstance = None, extendedResults = False, useCache = True):
 
-        if not server_repos:
-            # support match in repository from shell
-            # atom@repo1,repo2,repo3
-            atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
-            if (matchRepo == None) and (repos != None):
-                matchRepo = repos
+        # support match in repository from shell
+        # atom@repo1,repo2,repo3
+        atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
+        if (matchRepo == None) and (repos != None):
+            matchRepo = repos
 
         if self.xcache:
 
@@ -1865,6 +1884,56 @@ class EquoInterface(TextInterface):
 
         return dbpkginfo
 
+    # expands package sets, and in future something more perhaps
+    def packagesExpand(self, packages):
+        new_packages = []
+
+        for pkg_id in range(len(packages)):
+            package = packages[pkg_id]
+
+            # expand package sets
+            if package.startswith(etpConst['packagesetprefix']):
+                set_pkgs = sorted(list(self.packageSetExpand(package, raise_exceptions = False)))
+                new_packages.extend([x for x in set_pkgs if x not in packages]) # atomMatch below will filter dupies
+            else:
+                new_packages.append(package)
+
+        return new_packages
+
+    def packageSetExpand(self, package_set, raise_exceptions = True):
+
+        max_recursion_level = 50
+        recursion_level = 0
+
+        def do_expand(myset, recursion_level, max_recursion_level):
+            recursion_level += 1
+            if recursion_level > max_recursion_level:
+                raise exceptionTools.InvalidPackageSet('InvalidPackageSet: corrupted, too many recursions: %s' % (myset,))
+            set_data = self.packageSetMatch(myset[1:])
+            if not set_data:
+                raise exceptionTools.InvalidPackageSet('InvalidPackageSet: not found: %s' % (myset,))
+            (set_from, package_set, mydata,) = set_data
+
+            mypkgs = set()
+            for fset in mydata: # recursively
+                if fset.startswith(etpConst['packagesetprefix']):
+                    mypkgs |= do_expand(fset, recursion_level, max_recursion_level)
+                else:
+                    mypkgs.add(fset)
+
+            return mypkgs
+
+        if not package_set.startswith(etpConst['packagesetprefix']):
+            package_set = "%s%s" % (etpConst['packagesetprefix'],package_set,)
+
+        try:
+            mylist = do_expand(package_set, recursion_level, max_recursion_level)
+        except exceptionTools.InvalidPackageSet:
+            if raise_exceptions: raise
+            mylist = set()
+
+        return mylist
+
     def packageSetList(self, server_repos = [], serverInstance = None):
         return self.packageSetMatch('', server_repos = server_repos, serverInstance = serverInstance, search = True)
 
@@ -1873,7 +1942,13 @@ class EquoInterface(TextInterface):
         if package_set == '*': package_set = ''
         return self.packageSetMatch(package_set, server_repos = server_repos, serverInstance = serverInstance, search = True)
 
-    def packageSetMatch(self, package_set, multiMatch = False, server_repos = [], serverInstance = None, search = False):
+    def packageSetMatch(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
+
+        # support match in repository from shell
+        # atom@repo1,repo2,repo3
+        package_set, repos = self.entropyTools.dep_get_match_in_repos(package_set)
+        if (matchRepo == None) and (repos != None):
+            matchRepo = repos
 
         if server_repos:
             if not serverInstance:
@@ -1882,6 +1957,9 @@ class EquoInterface(TextInterface):
             valid_repos = server_repos[:]
         else:
             valid_repos = self.validRepositories
+
+        if matchRepo and (type(matchRepo) in (list,tuple,set)):
+            valid_repos = list(matchRepo)
 
         def open_db(repoid):
             if server_repos:
@@ -1950,13 +2028,14 @@ class EquoInterface(TextInterface):
             t = _("repodata dictionary is corrupted")
             raise exceptionTools.InvalidData("InvalidData: %s" % (t,))
 
-        if repodata['repoid'].endswith(etpConst['packagesext']): # dynamic repository
+        if repodata['repoid'].endswith(etpConst['packagesext']) or repodata.get('in_memory'): # dynamic repository
             try:
                 # no need # etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
                 etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
-                etpRepositories[repodata['repoid']]['smartpackage'] = repodata['smartpackage']
-                etpRepositories[repodata['repoid']]['dbpath'] = repodata['dbpath']
-                etpRepositories[repodata['repoid']]['pkgpath'] = repodata['pkgpath']
+                smart_package = repodata.get('smartpackage')
+                if smart_package: etpRepositories[repodata['repoid']]['smartpackage'] = smart_package
+                etpRepositories[repodata['repoid']]['dbpath'] = repodata.get('dbpath')
+                etpRepositories[repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
             except KeyError:
                 raise exceptionTools.InvalidData("InvalidData: repodata dictionary is corrupted")
             # put at top priority, shift others
@@ -1991,7 +2070,7 @@ class EquoInterface(TextInterface):
             self.repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
             self.entropyTools.saveRepositorySettings(repodata)
-            initConfig_entropyConstants(etpSys['rootdir'])
+            self.reload_constants()
         self.validate_repositories()
 
     def removeRepository(self, repoid, disable = False):
@@ -2021,7 +2100,7 @@ class EquoInterface(TextInterface):
                 self.entropyTools.saveRepositorySettings(repodata, disable = True)
             else:
                 self.entropyTools.saveRepositorySettings(repodata, remove = True)
-            initConfig_entropyConstants(etpSys['rootdir'])
+            self.reload_constants()
 
         self.validate_repositories()
 
@@ -2030,7 +2109,7 @@ class EquoInterface(TextInterface):
         etpRepositoriesOrder.remove(repoid)
         etpRepositoriesOrder.insert(toidx,repoid)
         self.entropyTools.writeOrderedRepositoriesEntries()
-        initConfig_entropyConstants(etpSys['rootdir'])
+        self.reload_constants()
         self.repository_move_clear_cache(repoid)
         self.validate_repositories()
 
@@ -2040,7 +2119,7 @@ class EquoInterface(TextInterface):
         repodata = {}
         repodata['repoid'] = repoid
         self.entropyTools.saveRepositorySettings(repodata, enable = True)
-        initConfig_entropyConstants(etpSys['rootdir'])
+        self.reload_constants()
         self.validate_repositories()
 
     def disableRepository(self, repoid):
@@ -2064,7 +2143,7 @@ class EquoInterface(TextInterface):
             repodata = {}
             repodata['repoid'] = repoid
             self.entropyTools.saveRepositorySettings(repodata, disable = True)
-            initConfig_entropyConstants(etpSys['rootdir'])
+            self.reload_constants()
         self.validate_repositories()
 
 

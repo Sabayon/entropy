@@ -98,6 +98,9 @@ class InvalidLocation(EntropyException):
 class InvalidAtom(EntropyException):
         """Atom not properly formatted"""
 
+class InvalidPackageSet(EntropyException):
+        """Package set does not exist"""
+
 class FileNotFound(InvalidLocation):
         """A file was not found when it was expected to exist"""
 

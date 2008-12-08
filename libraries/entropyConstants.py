@@ -609,7 +609,8 @@ def const_defaultSettings(rootdir):
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
         'rss-notice-board': "notice.rss", # repository RSS-based notice board content
 
-        'userpackagesetsid': '__user__',
+        'packagesetprefix': "@",
+        'userpackagesetsid': "__user__",
         'packagesext': ".tbz2",
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime

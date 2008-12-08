@@ -298,6 +298,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             foundAtoms = atomsdata
         else:
             foundAtoms = []
+
+            # expand package
+            packages = Equo.packagesExpand(packages)
+
             for package in packages:
                 # clear masking reasons
                 maskingReasonsStorage.clear()
@@ -360,7 +364,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                                 items_cache.add((key, slot))
                             del items_cache
                     continue
-                foundAtoms.append(match)
+                if match not in foundAtoms:
+                    foundAtoms.append(match)
             if tbz2:
                 for pkg in tbz2:
                     status, atomsfound = Equo.add_tbz2_to_repos(pkg)
@@ -944,6 +949,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     continue
                 foundAtoms.append(idpackage)
         else:
+
+            # expand package
+            packages = Equo.packagesExpand(packages)
+
             for package in packages:
                 idpackage, result = Equo.clientDbconn.atomMatch(package)
                 if idpackage == -1:
