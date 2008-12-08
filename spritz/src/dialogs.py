@@ -3758,7 +3758,8 @@ class PkgInfoMenu(MenuSkel):
         self.switched_to_ugc_page = False
         self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
-        self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
+        if self.window:
+            self.pkginfo_ui.pkgInfo.set_transient_for(self.window)
         self.pkginfo_ui.pkgInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         # noeeees! otherwise voting won't work
         #self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
@@ -4944,25 +4945,38 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAdd.show()
 
 
-class MaskedPackagesDialog:
+class MaskedPackagesDialog(MenuSkel):
+
 
     def __init__( self, Entropy, etpbase, parent, pkgs, top_text = None, sub_text = None ):
+
         self.Entropy = Entropy
         self.etpbase = etpbase
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'maskdialog', domain="entropy" )
-        self.dialog = self.xml.get_widget( "maskdialog" )
-        self.dialog.set_transient_for( parent )
-        self.action = self.xml.get_widget( "maskAction" )
-        self.subaction = self.xml.get_widget( "maskSubtext" )
-        self.cancelbutton = self.xml.get_widget( "cancelbutton" )
-        self.okbutton = self.xml.get_widget( "okbutton" )
-        self.enableButton = self.xml.get_widget( "enableButton" )
-        self.enableButton.connect("clicked", self.enablePackage)
-        self.enableAllButton = self.xml.get_widget( "enableAllButton" )
-        self.enableAllButton.connect("clicked", self.enableAllPackages)
-        self.propertiesButton = self.xml.get_widget( "propertiesButton" )
-        self.propertiesButton.connect("clicked", self.openPackageProperties)
+        self.parent = parent
         self.docancel = True
+        self.mp_ui = UI( const.GLADE_FILE, 'packageMaskWindow', 'entropy' )
+        self.mp_ui.signal_autoconnect(self._getAllMethods())
+        self.window = self.mp_ui.packageMaskWindow
+        self.mp_ui.packageMaskWindow.set_transient_for(self.parent)
+        self.cancelbutton = self.mp_ui.maskDialogCancelButton
+        self.okbutton = self.mp_ui.maskDialogOkButton
+        self.enableButton = self.mp_ui.maskDialogEnableButton
+        self.enableAllButton = self.mp_ui.maskDialogEnableAllButton
+        self.propertiesButton = self.mp_ui.maskDialogPropertiesButton
+        self.action = self.mp_ui.maskDialogAction
+        self.subaction = self.mp_ui.maskDialogSubtext
+        self.pkg = self.mp_ui.maskDialogPkg
+        self.button_pressed = False
+        # backward compat
+        self.ok_button_reply = -5
+        self.cancel_button_reply = -6
+        self.rc = self.cancel_button_reply
+
+        self.okbutton.connect("clicked", self.do_ok)
+        self.cancelbutton.connect("clicked",self.do_cancel)
+        self.enableButton.connect("clicked", self.enablePackage)
+        self.enableAllButton.connect("clicked", self.enableAllPackages)
+        self.propertiesButton.connect("clicked", self.openPackageProperties)
 
         # setup text
         if top_text == None:
@@ -4974,7 +4988,6 @@ class MaskedPackagesDialog:
         if sub_text != None: self.subaction.set_markup( sub_text )
 
         self.pkgs = pkgs
-        self.pkg = self.xml.get_widget( "maskPkg" )
         # fill
         self.model = self.setup_view( self.pkg )
         self.show_data( self.model, self.pkgs )
@@ -4992,7 +5005,7 @@ class MaskedPackagesDialog:
         obj = self.get_obj()
         if not obj:
             return
-        mymenu = PkgInfoMenu(self.Entropy, obj, self.dialog)
+        mymenu = PkgInfoMenu(self.Entropy, obj, self.window)
         mymenu.load()
 
     def enablePackage(self, widget, obj = None, do_refresh = True):
@@ -5024,10 +5037,33 @@ class MaskedPackagesDialog:
         self.pkg.queue_draw()
         self.pkg.expand_all()
 
+    def do_cancel(self, widget):
+        self.button_pressed = True
+
+    def do_ok(self, widget):
+        self.rc = self.ok_button_reply
+        self.button_pressed = True
+
+    def on_packageMaskWindow_destroy_event(self, *args, **kwargs):
+        self.button_pressed = True
+
+    def on_packageMaskWindow_delete_event(self, *args, **kwargs):
+        self.button_pressed = True
+
     def run( self ):
-        self.dialog.show_all()
+
+        self.window.show_all()
         self.okbutton.set_sensitive(False)
-        return self.dialog.run()
+
+        while not self.button_pressed:
+            time.sleep(0.05)
+            while gtk.events_pending():
+                gtk.main_iteration()
+            continue
+
+        self.window.destroy()
+
+        return self.rc
 
     def setup_view( self, view ):
 
@@ -5142,7 +5178,7 @@ class MaskedPackagesDialog:
         return True
 
     def destroy( self ):
-        return self.dialog.destroy()
+        return self.window.destroy()
 
 class ConfirmationDialog:
 
