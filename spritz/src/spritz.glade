@@ -6873,15 +6873,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </widget>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="descriptionTextLabel">
-                    <property name="width_request">480</property>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow39">
                     <property name="visible">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="xalign">0</property>
-                    <property name="yalign">0</property>
-                    <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
-                    <property name="selectable">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTextView" id="descriptionTextLabel">
+                        <property name="width_request">480</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="position">1</property>
@@ -6910,15 +6914,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="backgroundTextLabel">
-                    <property name="width_request">480</property>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow40">
                     <property name="visible">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="xalign">0</property>
-                    <property name="yalign">0</property>
-                    <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
-                    <property name="selectable">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTextView" id="backgroundTextLabel">
+                        <property name="width_request">480</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="position">4</property>
@@ -6947,15 +6955,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="impactTextLabel">
-                    <property name="width_request">480</property>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow41">
                     <property name="visible">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="xalign">0</property>
-                    <property name="yalign">0</property>
-                    <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
-                    <property name="selectable">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTextView" id="impactTextLabel">
+                        <property name="width_request">480</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="position">7</property>
@@ -7179,15 +7191,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="synopsisTextLabel">
-                    <property name="width_request">480</property>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow42">
                     <property name="visible">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="xalign">0</property>
-                    <property name="yalign">0</property>
-                    <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
-                    <property name="selectable">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTextView" id="synopsisTextLabel">
+                        <property name="width_request">480</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="position">3</property>
@@ -7216,15 +7232,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="workaroundTextLabel">
-                    <property name="width_request">480</property>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow43">
                     <property name="visible">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="xalign">0</property>
-                    <property name="yalign">0</property>
-                    <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
-                    <property name="selectable">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTextView" id="workaroundTextLabel">
+                        <property name="width_request">480</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="position">6</property>
@@ -7253,15 +7273,19 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="resolutionTextLabel">
-                    <property name="width_request">480</property>
+                  <widget class="GtkScrolledWindow" id="scrolledwindow44">
                     <property name="visible">True</property>
-                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                    <property name="xalign">0</property>
-                    <property name="yalign">0</property>
-                    <property name="use_markup">True</property>
-                    <property name="wrap">True</property>
-                    <property name="selectable">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <widget class="GtkTextView" id="resolutionTextLabel">
+                        <property name="width_request">480</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="wrap_mode">GTK_WRAP_WORD</property>
+                      </widget>
+                    </child>
                   </widget>
                   <packing>
                     <property name="position">9</property>

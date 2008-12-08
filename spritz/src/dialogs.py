@@ -4574,20 +4574,24 @@ class SecurityAdvisoryMenu(MenuSkel):
                 for item in data['description_items']:
                     desc_text += '\n\t%s %s' % ("<span foreground='#FF0000'>(*)</span>",item,)
         desc_text = desc_text.replace('!;\\n','')
-        desc_text = "<small>%s</small>" % (desc_text,)
-        self.advinfo_ui.descriptionTextLabel.set_markup(desc_text)
+        b = gtk.TextBuffer()
+        b.set_text(desc_text)
+        self.advinfo_ui.descriptionTextLabel.set_buffer(b)
 
         # background
         back_text = ' '.join([x.strip() for x in data['background'].split("\n")]).strip()
-        back_text = "<small>%s</small>" % (back_text,)
         back_text = back_text.replace('!;\\n','')
-        self.advinfo_ui.backgroundTextLabel.set_markup(back_text)
+        b = gtk.TextBuffer()
+        b.set_text(back_text)
+        self.advinfo_ui.backgroundTextLabel.set_buffer(b)
 
         # impact
         impact_text = ' '.join([x.strip() for x in data['impact'].split("\n")]).strip()
         impact_text = impact_text.replace('!;\\n','')
-        impact_text = "<small>%s</small>" % (impact_text,)
-        self.advinfo_ui.impactTextLabel.set_markup(impact_text)
+        b = gtk.TextBuffer()
+        b.set_text(back_text)
+        self.advinfo_ui.impactTextLabel.set_buffer(b)
+
         t = self.advinfo_ui.impactLabel.get_text()
         t = "<b>%s</b>" % (t,)
         t += " [<span foreground='darkgreen'>%s</span>:<span foreground='#0000FF'>%s</span>|<span foreground='darkgreen'>%s</span>:<span foreground='#FF0000'>%s</span>]" % (
@@ -4633,14 +4637,16 @@ class SecurityAdvisoryMenu(MenuSkel):
 
         # synopsis
         synopsis_text = ' '.join([x.strip() for x in data['synopsis'].split("\n")]).strip()
-        synopsis_text = "<small>%s</small>" % (synopsis_text,)
-        self.advinfo_ui.synopsisTextLabel.set_markup(synopsis_text)
+        b = gtk.TextBuffer()
+        b.set_text(synopsis_text)
+        self.advinfo_ui.synopsisTextLabel.set_buffer(b)
 
         # workaround
         workaround_text = ' '.join([x.strip() for x in data['workaround'].split("\n")]).strip()
         workaround_text = workaround_text.replace('!;\\n','')
-        workaround_text = "<small>%s</small>" % (workaround_text,)
-        self.advinfo_ui.workaroundTextLabel.set_markup(workaround_text)
+        b = gtk.TextBuffer()
+        b.set_text(workaround_text)
+        self.advinfo_ui.workaroundTextLabel.set_buffer(b)
 
         # resolution
 
@@ -4652,8 +4658,10 @@ class SecurityAdvisoryMenu(MenuSkel):
         else:
             resolution_text = data['resolution'].replace('!;\\n','')
             resolution_text = '\n'.join([x for x in resolution_text.strip().split("\n")])
-        resolution_text = "<small>%s</small>" % (resolution_text,)
-        self.advinfo_ui.resolutionTextLabel.set_markup(resolution_text)
+
+        b = gtk.TextBuffer()
+        b.set_text(resolution_text)
+        self.advinfo_ui.resolutionTextLabel.set_buffer(b)
 
         self.advinfo_ui.advInfo.show()
 
