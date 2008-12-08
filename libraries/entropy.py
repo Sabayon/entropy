@@ -19849,9 +19849,9 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
             return True
         return False
 
-    def does_username_exist(self, username):
+    def does_username_exist(self, username, username_clean):
         self.check_connection()
-        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username` = %s ', (username,))
+        self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username_clean` = %s OR LOWER(`username`) = %s', (username_clean,username.lower(),))
         data = self.cursor.fetchone()
         if not data: return False
         if not isinstance(data,dict): return False
@@ -19876,7 +19876,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if not data.has_key('disallow_id'): return True
         return False
 
-    def validate_username_string(self, username):
+    def validate_username_string(self, username, username_clean):
 
         try:
             x = unicode(username.encode('utf-8'),'raw_unicode_escape')
@@ -19893,7 +19893,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if not valid:
             return False,'Invalid username'
 
-        exists = self.does_username_exist(username)
+        exists = self.does_username_exist(username, username_clean)
         if exists: return False,'Username already taken'
 
         allowed = self.is_username_allowed(username)
@@ -19910,6 +19910,14 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         self.cursor.execute('UPDATE '+self.TABLE_PREFIX+'users SET user_type = %s WHERE `user_id` = %s', (self.USER_NORMAL,user_id,))
         return True, user_id
 
+    def generate_username_clean(self, username):
+        import re
+        username_clean = username.lower()
+        username_clean = re.sub(r'(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)', '', username_clean)
+        username_clean = re.sub(r' {2,}',' ',username_clean)
+        username_clean = username_clean.strip()
+        return username_clean
+
     def register_user(self, username, password, email, activate = False):
 
         if len(username) not in self.USERNAME_LENGTH_RANGE:
@@ -19920,8 +19928,11 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if not valid:
             return False,'Invalid email'
 
+        # create the clean one
+        username_clean = self.generate_username_clean(username)
+
         # check username validity
-        status, err_msg = self.validate_username_string(username)
+        status, err_msg = self.validate_username_string(username, username_clean)
         if not status: return False,err_msg
 
         # check email
@@ -19929,12 +19940,12 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
         if exists: return False,'Email already in use'
 
         # now cross fingers
-        user_id = self.__register(username, password, email, activate)
+        user_id = self.__register(username, username_clean, password, email, activate)
 
         return True, user_id
 
 
-    def __register(self, username, password, email, activate):
+    def __register(self, username, username_clean, password, email, activate):
 
         email_hash = self._generate_email_hash(email)
         password_hash = self._get_password_hash(password.encode('utf-8'))
@@ -19945,7 +19956,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
         registration_data = {
             'username': username,
-            'username_clean': username,
+            'username_clean': username_clean,
             'user_password': password_hash,
             'user_pass_convert': 0,
             'user_email': email.lower(),
