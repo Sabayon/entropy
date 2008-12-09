@@ -1945,7 +1945,7 @@ class EquoInterface(TextInterface):
     def packageSetMatch(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
 
         # support match in repository from shell
-        # atom@repo1,repo2,repo3
+        # set@repo1,repo2,repo3
         package_set, repos = self.entropyTools.dep_get_match_in_repos(package_set)
         if (matchRepo == None) and (repos != None):
             matchRepo = repos
@@ -2002,7 +2002,7 @@ class EquoInterface(TextInterface):
             break
 
         if multiMatch: return set_data
-        if not set_data: return {}
+        if not set_data: return ()
         return set_data.pop(0)
 
     def repository_move_clear_cache(self, repoid = None):
@@ -2343,7 +2343,7 @@ class EquoInterface(TextInterface):
     @input package: atomInfo (idpackage,reponame)
     @output: dependency tree dictionary, plus status code
     '''
-    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None):
+    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None, flat = False):
 
         usefilter = False
         if matchfilter != None:
@@ -2359,6 +2359,7 @@ class EquoInterface(TextInterface):
         # special events
         dependenciesNotFound = set()
         conflicts = set()
+        flat_tree = []
 
         mydep = (1,myatom)
         mybuffer = self.entropyTools.lifobuffer()
@@ -2473,12 +2474,13 @@ class EquoInterface(TextInterface):
             mydep = mybuffer.pop()
 
         newdeptree = {}
-        for x in deptree:
-            key = x[0]
-            item = x[1]
+        for key,item in deptree:
             if not newdeptree.has_key(key):
                 newdeptree[key] = set()
             newdeptree[key].add(item)
+            if flat:
+                if item not in flat_tree:
+                    flat_tree.append(item)
         del deptree
 
         if (dependenciesNotFound):
@@ -2489,9 +2491,7 @@ class EquoInterface(TextInterface):
         # conflicts
         newdeptree[0] = conflicts
 
-        treecache.clear()
-        matchcache.clear()
-
+        if flat: return flat_tree,0
         return newdeptree,0 # note: newtree[0] contains possible conflicts
 
     def _lookup_system_mask_repository_deps(self):
@@ -19926,6 +19926,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
                                         os.uname()[2],
         )
         self.TABLE_PREFIX = 'phpbb_'
+        self.do_update_session_table = True
 
     def validate_username_regex(self, username):
         allow_name_chars = self._get_config_value("allow_name_chars")
@@ -20653,7 +20654,7 @@ class phpbb3Authenticator(phpBB3AuthInterface,SocketAuthenticatorSkel):
             # fill login_data with fake information
             self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password', 'user_id': auth_id}
             ip_address = session_data.get('ip_address')
-            if ip_address:
+            if ip_address and self.do_update_session_table:
                 self._update_session_table(auth_id, ip_address)
 
     def docmd_login(self, arguments):
@@ -20691,7 +20692,7 @@ class phpbb3Authenticator(phpBB3AuthInterface,SocketAuthenticatorSkel):
             self.HostInterface.sessions[self.session]['developer'] = is_dev
             self.HostInterface.sessions[self.session]['moderator'] = is_mod
             self.HostInterface.sessions[self.session]['user'] = is_user
-            if ip_address and uid:
+            if ip_address and uid and self.do_update_session_table:
                 self._update_session_table(uid, ip_address)
             return True,user,uid,"ok"
         return rc,user,None,"login failed"
@@ -26986,7 +26987,10 @@ class UGCCacheInterface:
             return 0
         elif not cache.has_key(pkgkey):
             return 0
-        return cache[pkgkey]
+        try:
+            return int(cache[pkgkey])
+        except ValueError:
+            return 0
 
 class UGCClientInterface:
 

@@ -62,6 +62,7 @@ def is_user_in_entropy_group(uid = None):
     return True
 
 class TimeScheduled(threading.Thread):
+
     def __init__(self, function, delay, dictData = {}):
         threading.Thread.__init__(self)
         self.function = function
@@ -69,28 +70,48 @@ class TimeScheduled(threading.Thread):
         self.exc = SystemExit
         self.data = dictData
         self.accurate = True
+        self.delay_before = False
+
     def run(self):
         self.alive = 1
         while self.alive:
+
+            if self.delay_before:
+                do_break = self.do_delay()
+                if do_break: break
+
             if self.data:
                 self.function(self.data)
             else:
                 self.function()
-            try:
-                if (self.delay > 5) and not self.accurate:
-                    mydelay = int(self.delay)
-                    broke = False
-                    while mydelay:
-                        if not self.alive:
-                            broke = True
-                            break
-                        time.sleep(1)
-                        mydelay -= 1
-                    if broke: break
-                else:
-                    time.sleep(self.delay)
-            except:
-                pass
+
+            if not self.delay_before:
+                do_break = self.do_delay()
+                if do_break: break
+
+
+    def do_delay(self):
+
+        try:
+            if (self.delay > 5) and not self.accurate:
+                mydelay = int(self.delay)
+                broke = False
+                while mydelay:
+                    if not self.alive:
+                        broke = True
+                        break
+                    time.sleep(1)
+                    mydelay -= 1
+
+                if broke:
+                    return True
+            else:
+                time.sleep(self.delay)
+        except:
+            pass
+
+        return False
+
     def kill(self):
         self.alive = 0
 
