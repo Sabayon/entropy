@@ -22230,7 +22230,7 @@ class SystemSocketClientInterface:
                         header = self.output_header
                     )
                 return None
-            except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],):
+            except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],), e:
                 ssl_error_loop_count += 1
                 if ssl_error_loop_count > 3000000:
                     if not self.quiet:
@@ -33866,8 +33866,11 @@ class EntropyDatabaseInterface:
     def createPackagesetsIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS packagesetsindex ON packagesets ( setname )')
-                self.commitChanges()
+                try:
+                    self.cursor.execute('CREATE INDEX IF NOT EXISTS packagesetsindex ON packagesets ( setname )')
+                    self.commitChanges()
+                except self.dbapi2.OperationalError:
+                    pass
 
     def createNeededIndex(self):
         if self.indexing:
