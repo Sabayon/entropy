@@ -148,16 +148,13 @@ class SpritzQueue:
 
     def elaborateUndoremove(self, matches_to_be_removed, proposed_matches):
 
-        # look for items in queue that require the one we're going to remove
-        def is_found_as_dep_in_pkgs(mymatch):
-            dep_tree, st = self.Entropy.generate_dependency_tree(mymatch, flat = True)
-            if st != 0: return False # wtf?
-            for x in matches_to_be_removed:
-                if x in dep_tree:
-                    return True
-            return False
+        dep_tree, st = self.Entropy.get_required_packages(proposed_matches)
+        if st != 0: return proposed_matches, False # wtf?
+        dep_tree.pop(0)
+        new_deptree = set()
+        [new_deptree.update(dep_tree[x]) for x in dep_tree]
 
-        crying_items = [x for x in proposed_matches if is_found_as_dep_in_pkgs(x)]
+        crying_items = [x for x in proposed_matches if x in new_deptree]
         if not crying_items:
             return proposed_matches, False
 
