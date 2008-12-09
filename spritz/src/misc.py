@@ -123,7 +123,7 @@ class SpritzQueue:
                     cleanMarkupString(self.Entropy.clientDbconn.retrieveDescription(idpackage)),
                 )
                 atoms.append(mystring)
-        atoms.sort()
+        atoms = sorted(atoms)
 
 
         ok = True
@@ -146,6 +146,51 @@ class SpritzQueue:
             return new_proposed_idpackages_queue
         return idpackages_queued
 
+    def elaborateUndoremove(self, matches_to_be_removed, proposed_matches):
+
+        # look for items in queue that require the one we're going to remove
+        def is_found_as_dep_in_pkgs(mymatch):
+            dep_tree, st = self.Entropy.generate_dependency_tree(mymatch, flat = True)
+            if st != 0: return False # wtf?
+            for x in matches_to_be_removed:
+                if x in dep_tree:
+                    return True
+            return False
+
+        crying_items = [x for x in proposed_matches if is_found_as_dep_in_pkgs(x)]
+        if not crying_items:
+            return proposed_matches, False
+
+        atoms = []
+        for idpackage, repoid in crying_items:
+            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            mystring = "<span foreground='#FF0000'>%s</span>\n<small><span foreground='#418C0F'>%s</span></small>" % (
+                dbconn.retrieveAtom(idpackage),
+                cleanMarkupString(dbconn.retrieveDescription(idpackage)),
+            )
+            atoms.append(mystring)
+        atoms = sorted(atoms)
+
+        ok = False
+        confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
+            atoms,
+            top_text = _("These packages must be excluded"),
+            sub_text = _("These packages must be removed from the queue because they depend on your last selection. Do you agree?"),
+            bottom_text = '',
+            bottom_data = '',
+            simpleList = True
+        )
+        result = confirmDialog.run()
+        if result == -5: # ok
+            ok = True
+        confirmDialog.destroy()
+
+        if not ok: return proposed_matches, True
+
+        proposed_matches = [x for x in proposed_matches if x not in crying_items]
+
+        return proposed_matches, False
+
     def remove(self, pkgs, accept = False, accept_reinsert = False, always_ask = False):
 
         if type(pkgs) is not list:
@@ -155,8 +200,12 @@ class SpritzQueue:
         if action[0] in ("u","i","rr"): # update/install
 
             action = ["u","i","rr"]
-
             xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
+            pkgs_matches = [x.matched_atom for x in pkgs]
+
+            xlist, abort = self.elaborateUndoremove(pkgs_matches, xlist)
+            if abort: return -10,0
+
             self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
             for pkg in self.before:
                 pkg.queued = None

@@ -337,6 +337,7 @@ class rhnApplet:
         if self.current_state in [ "CRITICAL" ]: return
         if not self.refresh_timeout_tag:
             self.refresh_timeout_tag = entropyTools.TimeScheduled(self.refresh_handler, when/1000)
+            self.refresh_timeout_tag.delay_before = True
             self.refresh_timeout_tag.start()
 
     def disable_refresh_timer(self):
@@ -709,6 +710,7 @@ class rhnApplet:
         if self.current_state != "DISCONNECTED": return
         if not self.network_timeout_tag:
             self.network_timeout_tag = entropyTools.TimeScheduled(self.network_retry_handler, when/1000, dictData = {'force': force})
+            self.network_timeout_tag.delay_before = True
             self.network_timeout_tag.start()
 
     def disable_network_timer(self):

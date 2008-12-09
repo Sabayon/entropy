@@ -36,14 +36,22 @@ class DummyEntropyPackage:
         self.action = None
         self.dbconn = None
         self.masked = None
+        self.pkgset = False
         self.dummy_type = dummy_type
         self.onlyname = onlyname
+        self.set_names = set()
+        self.set_matches = set()
+        self.set_installed_matches = set()
+        self.set_from = None
+        self.set_cat_namedesc = None
+        self.set_category = False
 
 class EntropyPackage:
 
     import entropyTools
-    def __init__(self, matched_atom, avail, remote = None):
+    def __init__(self, matched_atom, avail, remote = None, pkgset = None):
 
+        self.pkgset = pkgset
         self.queued = None
         self.action = None
         self.dummy_type = None
@@ -53,16 +61,44 @@ class EntropyPackage:
         self.voted = 0
         self.color = SpritzConf.color_normal
         self.remote = remote
+        self.set_names = set()
+        self.set_matches = set()
+        self.set_installed_matches = set()
+        self.set_from = None
+        self.set_cat_namedesc = None
+        self.set_category = False
 
         self.matched_atom = matched_atom
         self.installed_match = None
 
-        if self.remote:
+        if self.pkgset:
+
+            # must be available!
+            set_from, set_name, set_deps = EquoConnection.packageSetMatch(self.matched_atom[1:])
+            self.from_installed = False
+            self.dbconn = None
+            self.dummy_type = -2
+            self.set_from = set_from
+            self.is_set_dep = True
+            self.set_name = set_name
+            self.cat = self.set_name
+            self.set_names = set()
+            self.set_cat_namedesc = self.set_name
+            self.set_matches = set_deps
+            self.onlyname = self.matched_atom
+            self.description = self.set_name
+            self.name = self.matched_atom
+            self.set_category = False
+
+        elif self.remote:
+
             self.dbconn = EquoConnection.openMemoryDatabase()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
             self.matched_atom = (idpackage,matched_atom[1])
             self.from_installed = False
+
         else:
+
             if matched_atom[1] == 0:
                 self.dbconn = EquoConnection.clientDbconn
                 self.from_installed = True
@@ -76,6 +112,8 @@ class EntropyPackage:
                 self.dbconn.closeDB()
 
     def __str__(self):
+        if self.pkgset:
+            return self.matched_atom
         return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
 
     def __cmp__(self, pkg):
@@ -87,18 +125,33 @@ class EntropyPackage:
         return self.matched_atom
 
     def getTag(self):
+        if self.pkgset: return ''
+
         return self.dbconn.retrieveVersionTag(self.matched_atom[0])
 
     def getName(self):
+        if self.pkgset:
+            return self.matched_atom
+
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     def isMasked(self):
+
+        if self.pkgset:
+            return False
+
         idpackage, idmask = self.dbconn.idpackageValidator(self.matched_atom[0])
         if idpackage != -1:
             return False
         return True
 
     def getNameDesc(self):
+
+        if self.pkgset:
+            t = self.matched_atom
+            desc = _("Recursive Package Set")
+            t += '\n<small><span foreground=\'#FF0000\'>%s</span></small>' % (cleanMarkupString(desc),)
+            return t
 
         ugc_string = ''
         atom = self.getName()
@@ -121,15 +174,30 @@ class EntropyPackage:
         return t
 
     def getOnlyName(self):
+        if self.pkgset:
+            return self.set_name
+
         return self.dbconn.retrieveName(self.matched_atom[0])
 
     def getTup(self):
+        if self.pkgset:
+            return self.matched_atom
+
         return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
 
     def versionData(self):
+        if self.pkgset:
+            return self.matched_atom
+
         return (self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
 
     def getRepoId(self):
+        if self.pkgset:
+            x = self.set_from
+            if x == etpConst['userpackagesetsid']:
+                x = _("User")
+            return x
+
         if self.matched_atom[1] == 0:
             return self.dbconn.retrievePackageFromInstalledTable(self.matched_atom[0])
         else:
@@ -139,9 +207,13 @@ class EntropyPackage:
         return self.matched_atom[0]
 
     def getRevision(self):
+        if self.pkgset: return 0
+
         return self.dbconn.retrieveRevision(self.matched_atom[0])
 
     def getSysPkg(self):
+        if self.pkgset: return False
+
         if not self.from_installed:
             return False
         # check if it's a system package
@@ -153,6 +225,8 @@ class EntropyPackage:
     # 2: updatable
     # 3: already updated to the latest
     def getInstallStatus(self):
+        if self.pkgset: return 0
+
         if self.from_installed:
             return 0
         key, slot = self.dbconn.retrieveKeySlot(self.matched_atom[0])
@@ -167,6 +241,8 @@ class EntropyPackage:
                 return 3
 
     def getVer(self):
+        if self.pkgset: return "0"
+
         tag = ""
         vtag = self.dbconn.retrieveVersionTag(self.matched_atom[0])
         if vtag:
@@ -175,85 +251,112 @@ class EntropyPackage:
         return self.dbconn.retrieveVersion(self.matched_atom[0])+tag
 
     def getOnlyVer(self):
+        if self.pkgset: return "0"
         return self.dbconn.retrieveVersion(self.matched_atom[0])
 
     def getDownloadURL(self):
+        if self.pkgset: return None
         return self.dbconn.retrieveDownloadURL(self.matched_atom[0])
 
     def getSlot(self):
+        if self.pkgset: return "0"
         return self.dbconn.retrieveSlot(self.matched_atom[0])
 
     def getDependencies(self):
+        if self.pkgset: self.set_matches
         return self.dbconn.retrieveDependencies(self.matched_atom[0])
 
     def getDependsFmt(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveDepends(self.matched_atom[0], atoms = True)
 
     def getConflicts(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveConflicts(self.matched_atom[0])
 
     def getLicense(self):
+        if self.pkgset: return ""
         return self.dbconn.retrieveLicense(self.matched_atom[0])
 
     def getDigest(self):
+        if self.pkgset: return "0"
         return self.dbconn.retrieveDigest(self.matched_atom[0])
 
     def getCategory(self):
+        if self.pkgset: return self.cat
         return self.dbconn.retrieveCategory(self.matched_atom[0])
 
     def getApi(self):
+        if self.pkgset: return "0"
         return self.dbconn.retrieveApi(self.matched_atom[0])
 
     def getUseflags(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveUseflags(self.matched_atom[0])
 
     def getTrigger(self):
+        if self.pkgset: return ""
         return self.dbconn.retrieveTrigger(self.matched_atom[0])
 
     def getConfigProtect(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveProtect(self.matched_atom[0])
 
     def getConfigProtectMask(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveProtectMask(self.matched_atom[0])
 
     def getKeywords(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveKeywords(self.matched_atom[0])
 
     def getNeeded(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveNeeded(self.matched_atom[0])
 
     def getCompileFlags(self):
+        if self.pkgset: return []
         flags = self.dbconn.retrieveCompileFlags(self.matched_atom[0])
         return flags
 
     def getSources(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveSources(self.matched_atom[0])
 
     def getEclasses(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveEclasses(self.matched_atom[0])
 
     def getHomepage(self):
+        if self.pkgset: return ""
         return self.dbconn.retrieveHomepage(self.matched_atom[0])
 
     def getMessages(self):
+        if self.pkgset: return []
         return self.dbconn.retrieveMessages(self.matched_atom[0])
 
     def getKeySlot(self):
+        if self.pkgset: return self.set_name,"0"
         return self.dbconn.retrieveKeySlot(self.matched_atom[0])
 
     def getDescriptionNoMarkup(self):
+        if self.pkgset: return self.set_cat_namedesc
         return self.getDescription(markup = False)
 
     def getDescription(self, markup = True):
+        if self.pkgset: return self.set_cat_namedesc
+
         if markup:
             return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
         else:
             return self.dbconn.retrieveDescription(self.matched_atom[0])
 
     def getDownSize(self):
+        if self.pkgset: return 0
         return self.dbconn.retrieveSize(self.matched_atom[0])
 
     def getDiskSize(self):
+        if self.pkgset: return 0
         return self.dbconn.retrieveOnDiskSize(self.matched_atom[0])
 
     def getIntelligentSize(self):
@@ -263,24 +366,30 @@ class EntropyPackage:
             return self.getDownSizeFmt()
 
     def getDownSizeFmt(self):
+        if self.pkgset: return 0
         return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_atom[0]))
 
     def getDiskSizeFmt(self):
+        if self.pkgset: return 0
         return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_atom[0]))
 
     def getArch(self):
         return etpConst['currentarch']
 
     def getEpoch(self):
+        if self.pkgset: return 0
         return self.dbconn.retrieveDateCreation(self.matched_atom[0])
 
     def getEpochFmt(self):
+        if self.pkgset: return 0
         return EquoConnection.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_atom[0])))
 
     def getRel(self):
+        if self.pkgset: return etpConst['branch']
         return self.dbconn.retrieveBranch(self.matched_atom[0])
 
     def getUGCPackageVote(self):
+        if self.pkgset: return -1
         atom = self.getName()
         if not atom: return None
         return EquoConnection.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
@@ -289,9 +398,10 @@ class EntropyPackage:
         return self.voted
 
     def getUGCPackageDownloads(self):
-        if self.from_installed: return False
+        if self.pkgset: return 0
+        if self.from_installed: return 0
         atom = self.getName()
-        if not atom: return None
+        if not atom: return 0
         key = self.entropyTools.dep_getkey(atom)
         return EquoConnection.UGC.UGCCache.get_package_downloads(self.matched_atom[1],key)
 
@@ -323,22 +433,23 @@ class EntropyPackage:
         return x
 
     def _get_time( self ):
+        if self.pkgset: return 0
         return self.dbconn.retrieveDateCreation(self.matched_atom[0])
 
     def get_changelog( self ):
         return "No ChangeLog"
 
     def get_filelist( self ):
+        if self.pkgset: return []
         mycont = sorted(list(self.dbconn.retrieveContent(self.matched_atom[0])))
         return mycont
 
     def get_filelist_ext( self ):
-        c = self.dbconn.retrieveContent(self.matched_atom[0], extended = True)
-        data = list(c)
-        data.sort()
-        return data
+        if self.pkgset: return []
+        return self.dbconn.retrieveContent(self.matched_atom[0], extended = True, order_by = 'file')
 
     def get_fullname( self ):
+        if self.pkgset: return self.set_name
         return self.dbconn.retrieveAtom(self.matched_atom[0])
 
     pkg =  property(fget=getPkg)

@@ -147,13 +147,17 @@ class EntropyPackages:
             yp = self.pkgCache[(pkgdata,avail)]
         else:
             new = True
-            yp = EntropyPackage(pkgdata, avail)
+            pkgset = None
+            if isinstance(pkgdata,basestring): # package set
+                pkgset = True
+            yp = EntropyPackage(pkgdata, avail, pkgset = pkgset)
             self.pkgCache[(pkgdata,avail)] = yp
         return yp, new
 
     def _getPackages(self,mask):
 
         if mask == 'installed':
+
             for idpackage in self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom'):
                 try:
                     yp, new = self.getPackageItem((idpackage,0),True)
@@ -164,6 +168,7 @@ class EntropyPackages:
                 yield yp
 
         elif mask == 'available':
+
             # Get the rest of the available packages.
             available = self.Entropy.calculate_available_packages()
             for pkgdata in available:
@@ -175,6 +180,7 @@ class EntropyPackages:
                 yield yp
 
         elif mask == 'updates':
+
             updates, remove, fine = self.Entropy.calculate_world_updates()
             del remove, fine
             for pkgdata in updates:
@@ -182,11 +188,15 @@ class EntropyPackages:
                     yp, new = self.getPackageItem(pkgdata,True)
                 except exceptionTools.RepositoryError:
                     continue
+                key, slot = yp.keyslot
+                installed_match = self.Entropy.clientDbconn.atomMatch(key, matchSlot = slot)
+                if installed_match[0] != -1: yp.installed_match = installed_match
                 yp.action = 'u'
                 yp.color = SpritzConf.color_update
                 yield yp
 
         elif mask == "reinstallable":
+
             pkgdata = self.Entropy.clientDbconn.listAllPackages(get_scope = True,order_by = 'atom')
             pkgdata = self.filterReinstallable(pkgdata)
             # (idpackage,(idpackage,repoid,))
@@ -201,6 +211,7 @@ class EntropyPackages:
                 yield yp
 
         elif mask == "masked":
+
             for match, idreason in self.getMaskedPackages():
                 try:
                     yp, new = self.getPackageItem(match,True)
@@ -218,6 +229,69 @@ class EntropyPackages:
                 yp.color = SpritzConf.color_install
                 yield yp
 
+        elif mask == "pkgsets":
+
+            # make sure updates will be marked as such
+            self.getPackages("updates")
+            # make sure unavailable packages are marked as such
+            self.getPackages("available")
+            # make sure reinstallable packages will be marked as such
+            self.getPackages("reinstallable")
+
+            my_set_from = _('Set from')
+            for set_from, set_name, set_deps in self.getPackageSets():
+
+                set_matches = []
+                set_installed_matches = []
+                for set_dep in set_deps:
+
+                    if set_dep.startswith(etpConst['packagesetprefix']):
+                        set_matches.append((set_dep,None,))
+                        set_installed_matches.append((set_dep,None,))
+                    else:
+                        set_match = self.Entropy.atomMatch(set_dep)
+                        if set_match[0] != -1:
+                            set_matches.append(set_match)
+                        set_installed_match = self.Entropy.clientDbconn.atomMatch(set_dep)
+                        if set_match[0] != -1:
+                            set_installed_matches.append(set_installed_match)
+
+                if not (set_matches and set_installed_matches): continue
+
+                set_from_desc = _('Unknown')
+                if set_from in self.Entropy.validRepositories:
+                    set_from_desc = etpRepositories[set_from]['description']
+                elif set_from == etpConst['userpackagesetsid']:
+                    set_from_desc = _("User configuration")
+
+                cat_namedesc = "%s: %s" % (my_set_from,set_from_desc,)
+
+                set_objects = []
+
+                satisfied = True
+                for match in set_matches:
+
+                    # set dependency
+                    if match[1] == None:
+                        yp, new = self.getPackageItem(match[0],True)
+                        yp.action = "i"
+                    else:
+                        try:
+                            yp, new = self.getPackageItem(match,True)
+                        except exceptionTools.RepositoryError:
+                            satisfied = False
+                            break
+                    yp.color = SpritzConf.color_install
+                    yp.set_cat_namedesc = cat_namedesc
+                    yp.set_names.add(set_name)
+                    yp.set_from = set_from
+                    yp.set_matches = set_matches
+                    yp.set_installed_matches = set_installed_matches
+                    set_objects.append(yp)
+
+                if satisfied:
+                    for obj in set_objects:
+                        yield obj
 
         elif mask == "fake_updates":
             # load a pixmap inside the treeview
@@ -239,6 +313,9 @@ class EntropyPackages:
                 continue
             return (repoid,idpackage,)
         return None
+
+    def getPackageSets(self):
+        return self.Entropy.packageSetList()
 
     def getMaskedPackages(self):
         maskdata = []

@@ -408,6 +408,7 @@ class SpritzApplication(Controller):
         self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
         self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
         self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
+        self.setupPkgRadio(self.ui.rbPkgSets,"pkgsets",_('Show Package Sets'))
 
     def setupPkgRadio(self, widget, tag, tip):
         widget.connect('toggled',self.on_pkgFilter_toggled,tag)
@@ -424,6 +425,8 @@ class SpritzApplication(Controller):
                 pix = self.ui.rbInstalledImage
             elif tag == "masked":
                 pix = self.ui.rbMaskedImage
+            elif tag == "pkgsets":
+                pix = self.ui.rbPackageSetsImage
             pix.set_from_pixbuf( p )
             pix.show()
         except gobject.GError:
@@ -1259,7 +1262,11 @@ class SpritzApplication(Controller):
         if bootstrap: time.sleep(3)
         self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
 
-        self.pkgView.populate(allpkgs, empty = empty)
+        show_pkgsets = False
+        if action == "pkgsets":
+            show_pkgsets = True
+
+        self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
         self.progress.total.show()
 
         if self.doProgress: self.progress.hide() #Hide Progress
