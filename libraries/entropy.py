@@ -13697,7 +13697,7 @@ class SocketHostInterface:
                 cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
                 if cmd == 'close':
                     # send KAPUTT signal JA!
-                    self.transmit(self.HostInterface.answers['cl'])
+                    self.server.processor.transmit(self.HostInterface.answers['cl'])
                     return True
                 self.buffered_data = ''
                 return False
