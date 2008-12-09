@@ -1909,7 +1909,7 @@ class EquoInterface(TextInterface):
             recursion_level += 1
             if recursion_level > max_recursion_level:
                 raise exceptionTools.InvalidPackageSet('InvalidPackageSet: corrupted, too many recursions: %s' % (myset,))
-            set_data = self.packageSetMatch(myset[1:])
+            set_data = self.packageSetMatch(myset[len(etpConst['packagesetprefix']):])
             if not set_data:
                 raise exceptionTools.InvalidPackageSet('InvalidPackageSet: not found: %s' % (myset,))
             (set_from, package_set, mydata,) = set_data
