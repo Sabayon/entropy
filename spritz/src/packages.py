@@ -38,6 +38,10 @@ class EntropyPackages:
         self.unmaskingPackages = set()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
+        self.queue = None
+
+    def connect_queue(self, queue):
+        self.queue = queue
 
     def clearPackages(self):
         self._packages.clear()
@@ -166,6 +170,13 @@ class EntropyPackages:
                 yp.action = 'r'
                 yp.color = SpritzConf.color_install
                 yield yp
+
+        elif mask == "queued":
+
+            for qkey in self.queue.packages:
+                for item in self.queue.packages[qkey]:
+                    yield item
+
 
         elif mask == 'available':
 

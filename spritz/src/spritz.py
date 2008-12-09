@@ -284,6 +284,7 @@ class SpritzApplication(Controller):
 
         self.settings = SpritzConf()
         self.queue = SpritzQueue()
+        self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main)
         self.filesView = EntropyFilesView(self.ui.filesView)
@@ -409,6 +410,7 @@ class SpritzApplication(Controller):
         self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
         self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
         self.setupPkgRadio(self.ui.rbPkgSets,"pkgsets",_('Show Package Sets'))
+        self.setupPkgRadio(self.ui.rbPkgQueued,"queued",_('Show Queued Packages'))
 
     def setupPkgRadio(self, widget, tag, tip):
         widget.connect('toggled',self.on_pkgFilter_toggled,tag)
@@ -427,6 +429,8 @@ class SpritzApplication(Controller):
                 pix = self.ui.rbMaskedImage
             elif tag == "pkgsets":
                 pix = self.ui.rbPackageSetsImage
+            elif tag == "queued":
+                pix = self.ui.rbQueuedImage
             pix.set_from_pixbuf( p )
             pix.show()
         except gobject.GError:
@@ -1942,6 +1946,11 @@ class SpritzApplication(Controller):
             self.populateAdvisories(None,'affected')
         self.setNotebookPage(const.PAGES[page])
 
+    def on_queueReviewAndInstall_clicked(self, widget):
+        rb = self.pageButtons["queue"]
+        rb.set_active(True)
+        self.on_PageButton_changed(widget, "queue")
+
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
         if rb.get_active(): # Only act on select, not deselect.
@@ -1952,11 +1961,17 @@ class SpritzApplication(Controller):
                 self.ui.updatesButtonbox.show()
             else:
                 self.ui.updatesButtonbox.hide()
+
             if action == "masked":
                 self.setupMaskedPackagesWarningBox()
                 self.ui.maskedWarningBox.show()
             else:
                 self.ui.maskedWarningBox.hide()
+
+            if action == "queued":
+                self.ui.queueReviewAndInstallBox.show()
+            else:
+                self.ui.queueReviewAndInstallBox.hide()
 
             self.addPackages()
             rb.grab_remove()
@@ -2156,6 +2171,7 @@ class SpritzApplication(Controller):
             flt.activate()
             lst = txt.split(' ')
             flt.setKeys(lst)
+            self.ui.pkgClr.show()
         else:
             flt.activate(False)
         action = self.lastPkgPB
@@ -2166,6 +2182,7 @@ class SpritzApplication(Controller):
         ''' Search Clear button handler'''
         self.ui.pkgFilter.set_text("")
         self.on_search_clicked(None)
+        self.ui.pkgClr.hide()
 
     def on_comps_cursor_changed(self, widget):
         self.setBusy()

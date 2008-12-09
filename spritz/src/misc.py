@@ -24,7 +24,6 @@ class SpritzQueue:
 
     def __init__(self):
         self.packages = {}
-        self.groups = {}
         self.before = []
         self.keyslotFilter = set()
         self._keyslotFilter = set()
@@ -49,9 +48,6 @@ class SpritzQueue:
         self.packages['u'] = []
         self.packages['r'] = []
         self.packages['rr'] = []
-        self.groups.clear()
-        self.groups['i'] = []
-        self.groups['r'] = []
         del self.before[:]
         self.keyslotFilter.clear()
 
