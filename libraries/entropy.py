@@ -7472,6 +7472,9 @@ class RepoInterface:
             )
             if os.path.lexists(repo_make_profile):
                 shutil.move(system_make_profile,"%s.entropy_old" % (system_make_profile,))
+            # broken symlink?
+            if os.path.islink(system_make_profile) and not os.path.isdir(system_make_profile):
+                os.remove(system_make_profile)
             os.symlink(repo_profile_link_data,system_make_profile)
             if not self.entropyTools.is_valid_path(system_make_profile):
                 # revert change, link does not exist yet
