@@ -1274,6 +1274,7 @@ def librariesTest(listfiles = False):
         print_info(red(" @@ ")+blue("%s:" % (_("Libraries/Executables statistics"),) ))
         if brokenlibs:
             print_info(brown(" ## ")+red("%s:" % (_("Not matched"),) ))
+            brokenlibs = sorted(list(brokenlibs))
             for lib in brokenlibs:
                 print_info(darkred("    => ")+red(lib))
         print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
