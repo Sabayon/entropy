@@ -101,6 +101,14 @@ def package(options):
     elif (options[0] == "libtest"):
         rc, garbage = librariesTest(listfiles = equoRequestListfiles)
 
+    elif (options[0] == "source"):
+
+        if myopts or mytbz2paths:
+            status, rc = downloadSources(myopts, deps = equoRequestDeps, deepdeps = equoRequestDeep, tbz2 = mytbz2paths)
+        else:
+            print_error(red(" %s." % (_("Nothing to do"),) ))
+            rc = 127
+
     elif (options[0] == "install"):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
             status, rc = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum)
@@ -275,6 +283,270 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 
     return 0,0
 
+def _scanPackages(packages, tbz2):
+
+    foundAtoms = []
+
+    # expand package
+    packages = Equo.packagesExpand(packages)
+
+    for package in packages:
+        # clear masking reasons
+        maskingReasonsStorage.clear()
+        match = Equo.atomMatch(package)
+        if match[0] == -1:
+            reasons = maskingReasonsStorage.get(package)
+            if reasons != None:
+                keyreasons = reasons.keys()
+                mytxt = "%s %s %s %s." % (
+                    bold("!!!"),
+                    red(_("Every package matching")), # every package matching app-foo is masked
+                    bold(package),
+                    red(_("is masked")),
+                )
+                print_warning(mytxt)
+                for key in keyreasons:
+                    reason = etpConst['packagemaskingreasons'][key]
+                    print_warning(bold("    # ")+red("Reason: ")+blue(reason))
+                    masked_packages = reasons[key]
+                    for m_idpackage, m_repo in masked_packages:
+                        dbconn = Equo.openRepositoryDatabase(m_repo)
+                        try:
+                            m_atom = dbconn.retrieveAtom(m_idpackage)
+                        except TypeError:
+                            m_atom = "idpackage: %s %s %s %s" % (
+                                m_idpackage,
+                                _("matching"),
+                                package,
+                                _("is broken"),
+                            )
+                        print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
+            else:
+                mytxt = "%s %s %s %s." % (
+                    bold("!!!"),
+                    red(_("No match for")),
+                    bold(package),
+                    red(_("in repositories")),
+                )
+                print_warning(mytxt)
+                # search similar packages
+                # you meant...?
+                if len(package) < 4:
+                    continue
+                items = Equo.get_meant_packages(package)
+                if items:
+                    items_cache = set()
+                    mytxt = "%s %s %s %s %s" % (
+                        bold("   ?"),
+                        red(_("When you wrote")),
+                        bold(package),
+                        darkgreen(_("You Meant(tm)")),
+                        red(_("one of these below?")),
+                    )
+                    print_info(mytxt)
+                    for m_idpackage, m_repo in items:
+                        dbc = Equo.openRepositoryDatabase(m_repo)
+                        key, slot = dbc.retrieveKeySlot(m_idpackage)
+                        if (key,slot) not in items_cache:
+                            print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
+                        items_cache.add((key, slot))
+                    del items_cache
+            continue
+        if match not in foundAtoms:
+            foundAtoms.append(match)
+
+    if tbz2:
+        for pkg in tbz2:
+            status, atomsfound = Equo.add_tbz2_to_repos(pkg)
+            if status == 0:
+                foundAtoms += atomsfound[:]
+                del atomsfound
+            elif status in (-1,-2,-3,-4,):
+                errtxt = _("is not a valid Entropy package")
+                if status == -3:
+                    errtxt = _("is not compiled with the same architecture of the system")
+                mytxt = "## %s: %s %s. %s ..." % (
+                    red(_("ATTENTION")),
+                    bold(os.path.basename(pkg)),
+                    red(errtxt),
+                    red(_("Skipped")),
+                )
+                print_warning(mytxt)
+                continue
+            else:
+                raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
+
+    return foundAtoms
+
+def _showPackageInfo(foundAtoms, deps):
+
+    if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
+        # now print the selected packages
+        print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
+        totalatoms = len(foundAtoms)
+        atomscounter = 0
+        for idpackage,reponame in foundAtoms:
+            atomscounter += 1
+            # open database
+            dbconn = Equo.openRepositoryDatabase(reponame)
+
+            # get needed info
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            if not pkgatom:
+                continue
+
+            pkgver = dbconn.retrieveVersion(idpackage)
+            pkgtag = dbconn.retrieveVersionTag(idpackage)
+            if not pkgtag:
+                pkgtag = "NoTag"
+            pkgrev = dbconn.retrieveRevision(idpackage)
+            pkgslot = dbconn.retrieveSlot(idpackage)
+
+            # client info
+            installedVer = _("Not installed")
+            installedTag = "NoTag"
+            installedRev = "NoRev"
+            installedRepo = _("Not available")
+            pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+            if (pkginstalled[1] == 0):
+                # found
+                idx = pkginstalled[0]
+                installedVer = Equo.clientDbconn.retrieveVersion(idx)
+                installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
+                installedRepo = Equo.clientDbconn.retrievePackageFromInstalledTable(idx)
+                if not installedTag:
+                    installedTag = "NoTag"
+                installedRev = Equo.clientDbconn.retrieveRevision(idx)
+
+            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
+            mytxt = "\t%s:\t %s / %s / %s %s %s / %s / %s" % (
+                red(_("Versions")),
+                blue(installedVer),
+                blue(installedTag),
+                blue(str(installedRev)),
+                bold("===>"),
+                darkgreen(pkgver),
+                darkgreen(pkgtag),
+                darkgreen(str(pkgrev)),
+            )
+            print_info(mytxt)
+            # tell wether we should update it
+            is_installed = True
+            if installedVer == _("Not installed"):
+                is_installed = False
+                installedVer = "0"
+            if installedRev == "NoRev":
+                installedRev = 0
+            pkgcmp = Equo.entropyTools.entropyCompareVersions(
+                (pkgver,pkgtag,pkgrev,),
+                (installedVer,installedTag,installedRev,)
+            )
+            if (pkgcmp == 0):
+                if installedRepo != reponame:
+                    mytxt = " | %s: " % (_("Switch repo"),)
+                    action = darkgreen(_("Reinstall"))+mytxt+blue(installedRepo)+" ===> "+darkgreen(reponame)
+                else:
+                    action = darkgreen(_("Reinstall"))
+            elif (pkgcmp > 0) or (not is_installed):
+                if (installedVer == "0"):
+                    action = darkgreen(_("Install"))
+                else:
+                    action = blue(_("Upgrade"))
+            else:
+                action = red(_("Downgrade"))
+            print_info("\t"+red("%s:\t\t" % (_("Action"),) )+" "+action)
+
+        if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
+            print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
+
+        if deps:
+            if (etpUi['ask']):
+                rc = Equo.askQuestion("     %s" % (_("Would you like to continue with dependencies calculation ?"),) )
+                if rc == "No":
+                    return True,(0,0)
+
+    return False,(0,0)
+
+def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
+
+    runQueue = []
+
+    if deps:
+        print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
+        runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
+        if status == -2:
+
+            print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
+            for x in runQueue:
+                reasons = maskingReasonsStorage.get(x)
+                if reasons != None:
+                    keyreasons = reasons.keys()
+                    for key in keyreasons:
+                        reason = etpConst['packagemaskingreasons'][key]
+                        print_warning(bold("    # ")+red("%s: " % (_("Reason"),) )+blue(reason))
+                        masked_packages = reasons[key]
+                        for m_match in masked_packages:
+                            dbconn = Equo.openRepositoryDatabase(m_match[1])
+                            m_atom = dbconn.retrieveAtom(m_match[0])
+                            print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
+                else:
+                    print_error(red("    # ")+blue("%s: " % (_("Not found"),) )+brown(x))
+                    crying_atoms = Equo.find_belonging_dependency([x])
+                    if crying_atoms:
+                        print_error(red("      # ")+blue("%s:" % (_("Probably needed by"),) ))
+                        for crying_atomdata in crying_atoms:
+                            print_error(red("        # ")+" ["+blue(_("from"))+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
+
+            return True, (127, -1)
+    else:
+        for atomInfo in foundAtoms:
+            runQueue.append(atomInfo)
+
+    return False, runQueue
+
+def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
+
+    # check if I am root
+    if (not Equo.entropyTools.isRoot()):
+        mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
+        print_warning(mytxt)
+        etpUi['pretend'] = True
+
+    foundAtoms = _scanPackages(packages, tbz2)
+    # are there packages in foundAtoms?
+    if not foundAtoms:
+        print_error( red("%s." % (_("No packages found"),) ))
+        return 127,-1
+
+    abort, myrc = _showPackageInfo(foundAtoms, deps)
+    if abort: return myrc
+
+    abort, runQueue = _generateRunQueue(foundAtoms, deps, False, deepdeps)
+    if abort: return runQueue
+
+    if etpUi['pretend']:
+        return 0,0
+
+    totalqueue = str(len(runQueue))
+    fetchqueue = 0
+    for packageInfo in runQueue:
+        fetchqueue += 1
+
+        Package = Equo.Package()
+        Package.prepare(packageInfo,"source")
+
+        xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+
+        rc = Package.run(xterm_header = xterm_header)
+        if rc != 0:
+            return -1,rc
+        Package.kill()
+
+        del Package
+
+    return 0,0
+
 def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, dochecksum = True):
 
     # check if I am root
@@ -297,95 +569,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if (atomsdata):
             foundAtoms = atomsdata
         else:
-            foundAtoms = []
-
-            # expand package
-            packages = Equo.packagesExpand(packages)
-
-            for package in packages:
-                # clear masking reasons
-                maskingReasonsStorage.clear()
-                match = Equo.atomMatch(package)
-                if match[0] == -1:
-                    reasons = maskingReasonsStorage.get(package)
-                    if reasons != None:
-                        keyreasons = reasons.keys()
-                        mytxt = "%s %s %s %s." % (
-                            bold("!!!"),
-                            red(_("Every package matching")), # every package matching app-foo is masked
-                            bold(package),
-                            red(_("is masked")),
-                        )
-                        print_warning(mytxt)
-                        for key in keyreasons:
-                            reason = etpConst['packagemaskingreasons'][key]
-                            print_warning(bold("    # ")+red("Reason: ")+blue(reason))
-                            masked_packages = reasons[key]
-                            for m_match in masked_packages:
-                                dbconn = Equo.openRepositoryDatabase(m_match[1])
-                                try:
-                                    m_atom = dbconn.retrieveAtom(m_match[0])
-                                except TypeError:
-                                    m_atom = "idpackage: %s %s %s %s" % (
-                                        m_match[0],
-                                        _("matching"),
-                                        package,
-                                        _("is broken"),
-                                    )
-                                print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
-                    else:
-                        mytxt = "%s %s %s %s." % (
-                            bold("!!!"),
-                            red(_("No match for")),
-                            bold(package),
-                            red(_("in repositories")),
-                        )
-                        print_warning(mytxt)
-                        # search similar packages
-                        # you meant...?
-                        if len(package) < 4:
-                            continue
-                        items = Equo.get_meant_packages(package)
-                        if items:
-                            items_cache = set()
-                            mytxt = "%s %s %s %s %s" % (
-                                bold("   ?"),
-                                red(_("When you wrote")),
-                                bold(package),
-                                darkgreen(_("You Meant(tm)")),
-                                red(_("one of these below?")),
-                            )
-                            print_info(mytxt)
-                            for match in items:
-                                dbc = Equo.openRepositoryDatabase(match[1])
-                                key, slot = dbc.retrieveKeySlot(match[0])
-                                if (key,slot) not in items_cache:
-                                    print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
-                                items_cache.add((key, slot))
-                            del items_cache
-                    continue
-                if match not in foundAtoms:
-                    foundAtoms.append(match)
-            if tbz2:
-                for pkg in tbz2:
-                    status, atomsfound = Equo.add_tbz2_to_repos(pkg)
-                    if status == 0:
-                        foundAtoms += atomsfound[:]
-                        del atomsfound
-                    elif status in (-1,-2,-3,-4,):
-                        errtxt = _("is not a valid Entropy package")
-                        if status == -3:
-                            errtxt = _("is not compiled with the same architecture of the system")
-                        mytxt = "## %s: %s %s. %s ..." % (
-                            red(_("ATTENTION")),
-                            bold(os.path.basename(pkg)),
-                            red(errtxt),
-                            red(_("Skipped")),
-                        )
-                        print_warning(mytxt)
-                        continue
-                    else:
-                        raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
+            foundAtoms = _scanPackages(packages, tbz2)
 
         # are there packages in foundAtoms?
         if (not foundAtoms):
@@ -393,126 +577,17 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             dirscleanup()
             return 127,-1
 
-        if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
-            # now print the selected packages
-            print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
-            totalatoms = len(foundAtoms)
-            atomscounter = 0
-            for idpackage,reponame in foundAtoms:
-                atomscounter += 1
-                # open database
-                dbconn = Equo.openRepositoryDatabase(reponame)
+        abort, myrc = _showPackageInfo(foundAtoms, deps)
+        if abort:
+            dirscleanup()
+            return myrc
 
-                # get needed info
-                pkgatom = dbconn.retrieveAtom(idpackage)
-                if not pkgatom:
-                    continue
-
-                pkgver = dbconn.retrieveVersion(idpackage)
-                pkgtag = dbconn.retrieveVersionTag(idpackage)
-                if not pkgtag:
-                    pkgtag = "NoTag"
-                pkgrev = dbconn.retrieveRevision(idpackage)
-                pkgslot = dbconn.retrieveSlot(idpackage)
-
-                # client info
-                installedVer = _("Not installed")
-                installedTag = "NoTag"
-                installedRev = "NoRev"
-                installedRepo = _("Not available")
-                pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
-                if (pkginstalled[1] == 0):
-                    # found
-                    idx = pkginstalled[0]
-                    installedVer = Equo.clientDbconn.retrieveVersion(idx)
-                    installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
-                    installedRepo = Equo.clientDbconn.retrievePackageFromInstalledTable(idx)
-                    if not installedTag:
-                        installedTag = "NoTag"
-                    installedRev = Equo.clientDbconn.retrieveRevision(idx)
-
-                print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
-                mytxt = "\t%s:\t %s / %s / %s %s %s / %s / %s" % (
-                    red(_("Versions")),
-                    blue(installedVer),
-                    blue(installedTag),
-                    blue(str(installedRev)),
-                    bold("===>"),
-                    darkgreen(pkgver),
-                    darkgreen(pkgtag),
-                    darkgreen(str(pkgrev)),
-                )
-                print_info(mytxt)
-                # tell wether we should update it
-                is_installed = True
-                if installedVer == _("Not installed"):
-                    is_installed = False
-                    installedVer = "0"
-                if installedRev == "NoRev":
-                    installedRev = 0
-                pkgcmp = Equo.entropyTools.entropyCompareVersions(
-                    (pkgver,pkgtag,pkgrev,),
-                    (installedVer,installedTag,installedRev,)
-                )
-                if (pkgcmp == 0):
-                    if installedRepo != reponame:
-                        mytxt = " | %s: " % (_("Switch repo"),)
-                        action = darkgreen(_("Reinstall"))+mytxt+blue(installedRepo)+" ===> "+darkgreen(reponame)
-                    else:
-                        action = darkgreen(_("Reinstall"))
-                elif (pkgcmp > 0) or (not is_installed):
-                    if (installedVer == "0"):
-                        action = darkgreen(_("Install"))
-                    else:
-                        action = blue(_("Upgrade"))
-                else:
-                    action = red(_("Downgrade"))
-                print_info("\t"+red("%s:\t\t" % (_("Action"),) )+" "+action)
-
-            if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
-                print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
-
-            if deps:
-                if (etpUi['ask']):
-                    rc = Equo.askQuestion("     %s" % (_("Would you like to continue with dependencies calculation ?"),) )
-                    if rc == "No":
-                        dirscleanup()
-                        return 0,0
-
-        runQueue = []
+        abort, runQueue = _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps)
+        if abort:
+            dirscleanup()
+            return runQueue
         removalQueue = [] # aka, conflicts
 
-        if deps:
-            print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
-            runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
-            if status == -2:
-
-                print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
-                for x in runQueue:
-                    reasons = maskingReasonsStorage.get(x)
-                    if reasons != None:
-                        keyreasons = reasons.keys()
-                        for key in keyreasons:
-                            reason = etpConst['packagemaskingreasons'][key]
-                            print_warning(bold("    # ")+red("%s: " % (_("Reason"),) )+blue(reason))
-                            masked_packages = reasons[key]
-                            for m_match in masked_packages:
-                                dbconn = Equo.openRepositoryDatabase(m_match[1])
-                                m_atom = dbconn.retrieveAtom(m_match[0])
-                                print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
-                    else:
-                        print_error(red("    # ")+blue("%s: " % (_("Not found"),) )+brown(x))
-                        crying_atoms = Equo.find_belonging_dependency([x])
-                        if crying_atoms:
-                            print_error(red("      # ")+blue("%s:" % (_("Probably needed by"),) ))
-                            for crying_atomdata in crying_atoms:
-                                print_error(red("        # ")+" ["+blue(_("from"))+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
-
-                dirscleanup()
-                return 127, -1
-        else:
-            for atomInfo in foundAtoms:
-                runQueue.append(atomInfo)
 
         if ((not runQueue) and (not removalQueue)):
             print_error(red("%s." % (_("Nothing to do"),) ))
@@ -529,7 +604,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         pkgsToDowngrade = 0
         pkgsToRemove = len(removalQueue)
 
-        if (runQueue):
+        if runQueue:
+
             if (etpUi['ask'] or etpUi['pretend']):
                 mytxt = "%s %s:" % (blue(_("These are the packages that would be")),bold(_("merged")),)
                 print_info(red(" @@ ")+mytxt)

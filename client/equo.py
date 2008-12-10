@@ -118,6 +118,10 @@ myopts = [
     (2,'--configfiles',1,_('makes old configuration files to be removed')),
     (2,'--nochecksum',1,_('disable package integrity check')),
     None,
+    (1,'source',2,_('download atoms source code')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
+    None,
     (1,'remove',2,_('remove one or more packages')),
     (2,'--deep',2,_('also pull unused dependencies where depends list is empty')),
     (2,'--configfiles',1,_('makes configuration files to be removed')),
@@ -418,7 +422,7 @@ try:
     elif options[0] == "moo":
         do_moo()
 
-    elif options[0] in ["install","remove","world","deptest","libtest"]:
+    elif options[0] in ["install","remove","world","deptest","libtest","source"]:
         import text_ui
         rc = text_ui.package(options)
         load_conf_cache()

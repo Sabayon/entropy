@@ -3451,10 +3451,11 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
-    def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None):
+    def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
         # remove old
         filename = os.path.basename(url)
-        filepath = etpConst['packagesbindir']+"/"+branch+"/"+filename
+        if not filepath:
+            filepath = etpConst['packagesbindir']+"/"+branch+"/"+filename
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir):
             os.makedirs(filepath_dir,0755)
@@ -3582,18 +3583,6 @@ class EquoInterface(TextInterface):
                             type = "info",
                             header = red("   ## ")
                         )
-                        '''
-                        if (self.UGC != None) and (package_name != None):
-                            def register_download(repository, package_name):
-                                try:
-                                    self.UGC.add_download(repository, package_name)
-                                except:
-                                    pass
-
-                            task = self.entropyTools.parallelTask(register_download, repository, package_name)
-                            task.parallel_wait()
-                            task.start()
-                        '''
 
                         return 0
                     elif resumed:
@@ -4247,9 +4236,10 @@ class PackageInterface:
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
-        self.valid_actions = ("fetch","remove","remove_conflict","install")
+        self.valid_actions = ("source","fetch","remove","remove_conflict","install")
         self.action = None
         self.fetch_abort_function = None
+        self.xterm_title = ''
 
     def kill(self):
         self.infoDict.clear()
@@ -5354,6 +5344,81 @@ class PackageInterface:
             return False
         return True
 
+    def sources_fetch_step(self):
+        self.error_on_not_prepared()
+        down_data = self.infoDict['download']
+        rc = 0
+        for key in sorted(down_data.keys()):
+            # first fine wins
+            for url in down_data[key]:
+                dest_file = os.path.join(self.infoDict['unpackdir'],os.path.basename(url))
+                rc = self._fetch_source(url, dest_file)
+                if not rc: break
+            if rc: break
+
+        return rc
+
+    def _fetch_source(self, url, dest_file):
+        try:
+            mytxt = "%s: %s" % (blue(_("Downloading")),brown(url),)
+            # now fetch the new one
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
+
+            rc, data_transfer, resumed = self.Entropy.fetch_file(
+                url,
+                None,
+                None,
+                False,
+                fetch_file_abort_function = self.fetch_abort_function,
+                filepath = dest_file
+            )
+            if rc == 0:
+                mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
+                mytxt += red(self.Entropy.entropyTools.spliturl(url)[1])
+                mytxt += " %s %s/%s" % (_("at"),self.Entropy.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = red("   ## ")
+                )
+                self.Entropy.updateProgress(
+                    "%s: %s" % (blue(_("Local path")),brown(dest_file),),
+                    importance = 1,
+                    type = "info",
+                    header = red("      # ")
+                )
+
+                return 0
+            else:
+                error_message = blue("%s: %s") % (
+                    _("Error downloading from"),
+                    red(self.Entropy.entropyTools.spliturl(url)[1]),
+                )
+                # something bad happened
+                if rc == -1:
+                    error_message += " - %s." % (_("file not available on this mirror"),)
+                elif rc == -3:
+                    error_message += " - not found."
+                elif rc == -4:
+                    error_message += " - %s." % (_("discarded download"),)
+                else:
+                    error_message += " - %s: %s" % (_("unknown reason"),rc,)
+                self.Entropy.updateProgress(
+                                    error_message,
+                                    importance = 1,
+                                    type = "warning",
+                                    header = red("   ## ")
+                                )
+                if rc == -4: # user discarded fetch
+                    return 1
+        except KeyboardInterrupt:
+            return 1
 
     def fetch_step(self):
         self.error_on_not_prepared()
@@ -5662,6 +5727,12 @@ class PackageInterface:
                 self.Entropy.setTitle(self.xterm_title)
                 rc = self.fetch_step()
 
+            elif step == "sources_fetch":
+                mytxt = _("Fetching sources")
+                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
+                self.Entropy.setTitle(self.xterm_title)
+                rc = self.sources_fetch_step()
+
             elif step == "checksum":
                 mytxt = _("Verifying")
                 self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
@@ -5806,6 +5877,8 @@ class PackageInterface:
             self.__generate_remove_metadata()
         elif self.action == "install":
             self.__generate_install_metadata()
+        elif self.action == "source":
+            self.__generate_fetch_metadata(sources = True)
         self.prepared = True
 
     def __generate_remove_metadata(self):
@@ -5840,8 +5913,7 @@ class PackageInterface:
     def __generate_install_metadata(self):
         self.infoDict.clear()
 
-        idpackage = self.matched_atom[0]
-        repository = self.matched_atom[1]
+        idpackage, repository = self.matched_atom
         self.infoDict['idpackage'] = idpackage
         self.infoDict['repository'] = repository
 
@@ -5987,12 +6059,10 @@ class PackageInterface:
 
         return 0
 
-
-    def __generate_fetch_metadata(self):
+    def __generate_fetch_metadata(self, sources = False):
         self.infoDict.clear()
 
-        idpackage = self.matched_atom[0]
-        repository = self.matched_atom[1]
+        idpackage, repository = self.matched_atom
         dochecksum = True
 
         # fetch abort function
@@ -6005,8 +6075,11 @@ class PackageInterface:
         self.infoDict['idpackage'] = idpackage
         dbconn = self.Entropy.openRepositoryDatabase(repository)
         self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
-        self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
-        self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
+        if sources:
+            self.infoDict['download'] = dbconn.retrieveSources(idpackage, extended = True)
+        else:
+            self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+            self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
 
         if not self.infoDict['download']:
             self.infoDict['fetch_not_available'] = True
@@ -6014,21 +6087,38 @@ class PackageInterface:
 
         self.infoDict['verified'] = False
         self.infoDict['steps'] = []
-        if not repository.endswith(etpConst['packagesext']):
+        if not repository.endswith(etpConst['packagesext']) and not sources:
             if self.Entropy.check_needed_package_download(self.infoDict['download'], None) < 0:
                 self.infoDict['steps'].append("fetch")
             if dochecksum:
                 self.infoDict['steps'].append("checksum")
-        # if file exists, first checksum then fetch
-        if os.path.isfile(os.path.join(etpConst['entropyworkdir'],self.infoDict['download'])):
-            # check size first
-            repo_size = dbconn.retrieveSize(idpackage)
-            f = open(os.path.join(etpConst['entropyworkdir'],self.infoDict['download']),"r")
-            f.seek(0,2)
-            disk_size = f.tell()
-            f.close()
-            if repo_size == disk_size:
-                self.infoDict['steps'].reverse()
+        elif sources:
+            self.infoDict['steps'].append("sources_fetch")
+
+        if sources:
+            # create sources destination directory
+            unpack_dir = etpConst['entropyunpackdir']+"/sources/"+self.infoDict['atom']
+            self.infoDict['unpackdir'] = unpack_dir
+            if os.path.lexists(unpack_dir):
+                if os.path.isfile(unpack_dir):
+                    os.remove(unpack_dir)
+                elif os.path.isdir(unpack_dir):
+                    shutil.rmtree(unpack_dir,True)
+            if not os.path.lexists(unpack_dir):
+                os.makedirs(unpack_dir,0775)
+            const_setup_perms(unpack_dir,etpConst['entropygid'])
+
+        else:
+            # if file exists, first checksum then fetch
+            if os.path.isfile(os.path.join(etpConst['entropyworkdir'],self.infoDict['download'])):
+                # check size first
+                repo_size = dbconn.retrieveSize(idpackage)
+                f = open(os.path.join(etpConst['entropyworkdir'],self.infoDict['download']),"r")
+                f.seek(0,2)
+                disk_size = f.tell()
+                f.close()
+                if repo_size == disk_size:
+                    self.infoDict['steps'].reverse()
         return 0
 
 class FileUpdatesInterface:
@@ -32542,9 +32632,26 @@ class EntropyDatabaseInterface:
             protect = protect[0]
         return protect
 
-    def retrieveSources(self, idpackage):
+    def retrieveSources(self, idpackage, extended = False):
         self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
-        return self.fetchall2set(self.cursor.fetchall())
+        sources = self.fetchall2set(self.cursor.fetchall())
+        if not extended:
+            return sources
+
+        source_data = {}
+        mirror_str = "mirror://"
+        for source in sources:
+            source_data[source] = set()
+            if source.startswith(mirror_str):
+                mirrorname = source.split("/")[2]
+                mirror_url =  source.split("/",3)[3:][0]
+                source_data[source] |= set([os.path.join(url,mirror_url) for url in self.retrieveMirrorInfo(mirrorname)])
+            else:
+                source_data[source].add(source)
+
+        return source_data
+
+
 
     def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False, order_by = ''):
 

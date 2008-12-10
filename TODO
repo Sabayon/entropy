@@ -4,7 +4,6 @@ TODO list
   - move etpConst['conflicting_tagged_packages'] elsewhere
   - cleanup EntropyDatabaseInterface.databaseStructureUpdates
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
-  - equo source (download sources + patches)
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
@@ -28,4 +27,4 @@ TODO list
     - package sets add/remove tool
     - allow package remasking
     - package source download
-    - fetch-only
+    - drag & drop packages to queue
