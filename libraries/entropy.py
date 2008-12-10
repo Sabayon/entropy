@@ -16362,7 +16362,40 @@ class ServerInterface(TextInterface):
             )
             dbconn.commitChanges()
 
-    def quickpkg(self, atom,storedir):
+    def check_config_file_updates(self):
+        self.updateProgress(
+            "[%s] %s" % (
+                red(_("config files")), # something short please
+                blue(_("checking system")),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ "),
+            back = True
+        )
+        # scanning for config files not updated
+        scandata = self.ClientService.FileUpdates.scanfs(dcache = False)
+        if scandata:
+            self.updateProgress(
+                "[%s] %s" % (
+                    red(_("config files")), # something short please
+                    blue(_("there are configuration files not updated yet")),
+                ),
+                importance = 1,
+                type = "error",
+                header = darkred(" @@ ")
+            )
+            for x in scandata:
+                self.updateProgress(
+                    "%s" % ( brown(etpConst['systemroot']+scandata[x]['destination']) ),
+                    importance = 1,
+                    type = "info",
+                    header = "\t"
+                )
+            return True
+        return False
+
+    def quickpkg(self, atom, storedir):
         return self.SpmService.quickpkg(atom,storedir)
 
 
@@ -22957,7 +22990,17 @@ class SystemManagerExecutorServerRepositoryInterface:
                 for repoid in remdata:
                     Entropy.remove_packages(remdata[repoid], repo = repoid)
 
-                if to_add: Entropy.updateProgress(_("Running package quickpkg"))
+                mydict = {
+                    'added_data': {},
+                    'remove_data': atoms_removed,
+                    'inject_data': {}
+                }
+
+                if to_add:
+                    problems = Entropy.check_config_file_updates()
+                    if problems:
+                        return False,mydict
+                    Entropy.updateProgress(_("Running package quickpkg"))
 
                 # run quickpkg
                 for repoid in to_add:
@@ -22991,11 +23034,6 @@ class SystemManagerExecutorServerRepositoryInterface:
 
                 Entropy.dependencies_test()
 
-                mydict = {
-                    'added_data': {},
-                    'remove_data': atoms_removed,
-                    'inject_data': {}
-                }
                 for idpackage, repoid in matches_added:
                     dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['added_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
@@ -29138,37 +29176,8 @@ class ServerMirrorsInterface:
                 )
                 return 3,set(),set()
 
-            self.Entropy.updateProgress(
-                "[repo:%s|%s] %s" % (
-                    brown(repo),
-                    red(_("config files")), # something short please
-                    blue(_("checking system")),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ "),
-                back = True
-            )
-            # scanning for config files not updated
-            scandata = self.Entropy.ClientService.FileUpdates.scanfs(dcache = False)
-            if scandata:
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s" % (
-                        brown(repo),
-                        red(_("config files")), # something short please
-                        blue(_("there are configuration files not updated yet")),
-                    ),
-                    importance = 1,
-                    type = "error",
-                    header = darkred(" @@ ")
-                )
-                for x in scandata:
-                    self.Entropy.updateProgress(
-                        "%s" % ( brown(etpConst['systemroot']+scandata[x]['destination']) ),
-                        importance = 1,
-                        type = "info",
-                        header = "\t"
-                    )
+            problems = self.Entropy.check_config_file_updates()
+            if problems:
                 return 4,set(),set()
 
             self.Entropy.updateProgress(
