@@ -1283,7 +1283,7 @@ class SpritzApplication(Controller):
         self.resetQueueProgressBars()
         self.disable_ugc = False
 
-    def processPackageQueue(self, pkgs, remove_repos = []):
+    def processPackageQueue(self, pkgs, remove_repos = [], fetch_only = False):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
@@ -1298,6 +1298,7 @@ class SpritzApplication(Controller):
         total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
         state = True
         if total > 0:
+
             self.startWorking(do_busy = True)
             normalCursor(self.ui.main)
             self.progress.show()
@@ -1308,9 +1309,10 @@ class SpritzApplication(Controller):
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
             if install_queue or removal_queue:
+
                 controller = QueueExecutor(self)
                 try:
-                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache)
+                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only)
                 except exceptionTools.QueueError:
                     e = 1
                 self.ui.skipMirror.hide()
@@ -1320,25 +1322,24 @@ class SpritzApplication(Controller):
                                 _("Attention. An error occured when processing the queue."
                                     "\nPlease have a look in the processing terminal.")
                     )
-                self.endWorking()
-                self.etpbase.clearPackages()
-                time.sleep(5)
+
             self.endWorking()
             self.progress.reset_progress()
-            self.etpbase.clearPackages()
-            self.etpbase.clearCache()
-            for myrepo in remove_repos:
-                self.Equo.removeRepository(myrepo)
-            self.Equo.closeAllRepositoryDatabases()
-            self.Equo.reopenClientDbconn()
-            # regenerate packages information
 
-            self.setupSpritz()
-            self.Equo.FileUpdates.scanfs(dcache = False)
-            if self.Equo.FileUpdates.scandata:
-                if len(self.Equo.FileUpdates.scandata) > 0:
-                    self.setPage('filesconf')
-            #self.progress.hide()
+            if not fetch_only:
+                self.etpbase.clearPackages()
+                self.etpbase.clearCache()
+                for myrepo in remove_repos:
+                    self.Equo.removeRepository(myrepo)
+                self.Equo.closeAllRepositoryDatabases()
+                self.Equo.reopenClientDbconn()
+                # regenerate packages information
+                self.setupSpritz()
+                self.Equo.FileUpdates.scanfs(dcache = False)
+                if self.Equo.FileUpdates.scandata:
+                    if len(self.Equo.FileUpdates.scandata) > 0:
+                        self.setPage('filesconf')
+
         else:
             self.setStatus( _( "No packages selected" ) )
 
@@ -2013,11 +2014,15 @@ class SpritzApplication(Controller):
             self.setStatus(_('No packages in queue'))
             return
 
-        rc = self.processPackageQueue(self.queue.packages)
+        fetch_only = self.ui.queueProcessFetchOnly.get_active()
+
+        rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only)
         self.resetQueueProgressBars()
-        if rc:
+        if rc and not fetch_only:
             self.queue.clear()       # Clear package queue
             self.queueView.refresh() # Refresh Package Queue
+        #if fetch_only:
+        #    self.setPage('queue')
 
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))

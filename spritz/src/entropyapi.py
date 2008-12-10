@@ -51,7 +51,7 @@ class QueueExecutor:
         else:
             return 0,licenses
 
-    def run(self, install_queue, removal_queue, do_purge_cache = []):
+    def run(self, install_queue, removal_queue, do_purge_cache = [], fetch_only = False):
 
         # unmask packages
         for match in self.Spritz.etpbase.unmaskingPackages:
@@ -79,7 +79,9 @@ class QueueExecutor:
             self.Entropy.clientDbconn.acceptLicense(lic)
 
         totalqueue = len(runQueue)
-        progress_step = float(1)/((totalqueue*2)+len(removalQueue))
+        steps_here = 2
+        if fetch_only: steps_here = 1
+        progress_step = float(1)/((totalqueue*steps_here)+len(removalQueue))
         step = progress_step
         myrange = []
         while progress_step < 1.0:
@@ -133,6 +135,9 @@ class QueueExecutor:
         t.start()
 
         self.Spritz.ui.skipMirror.hide()
+
+        if fetch_only:
+            return 0,0
 
         # then removalQueue
         # NOT conflicts! :-)
