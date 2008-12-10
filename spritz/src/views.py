@@ -68,8 +68,8 @@ class EntropyPackageView:
         self.show_reinstall = True
         self.show_purge = True
         self.loaded_widget = None
-        self.selected_obj_in_row = None
-        self.loaded_reinstallable = None
+        self.selected_objs = []
+        self.loaded_reinstallables = []
         self.loaded_event = None
         self.do_refresh_view = False
         self.main_window = main_window
@@ -140,6 +140,7 @@ class EntropyPackageView:
 
         treeview.set_fixed_height_mode(True)
         self.view = treeview
+        self.view.connect("button-press-event", self.on_view_button_press)
         self.view.connect("button-release-event", self.load_menu)
         self.view.connect("enter-notify-event",self.treeview_enter_notify)
         self.view.connect("leave-notify-event",self.treeview_leave_notify)
@@ -287,57 +288,73 @@ class EntropyPackageView:
         self.installed_reinstall.hide()
         self.installed_purge.hide()
 
-    def enable_properties_menu(self, pkg):
-        self.etpbase.selected_treeview_item = None
-        do = False
-        if pkg:
-            do = True
-            self.etpbase.selected_treeview_item = pkg
-        #try:
-        #    self.ui.pkgInfoButton.set_sensitive(do)
-        #except AttributeError:
-        #    pass
+    def collect_view_iters(self, widget = None):
+        if widget == None:
+            widget = self.view
+        model, paths = widget.get_selection().get_selected_rows()
+        if not model:
+            return [], model
+        data = []
+        for path in paths:
+            myiter = model.get_iter(path)
+            data.append(myiter)
+        return data, model
+
+    def collect_selected_items(self, widget = None):
+        myiters, model = self.collect_view_iters(widget)
+        if model == None: return []
+        items = []
+        for myiter in myiters:
+            obj = model.get_value(myiter, 0)
+            items.append(obj)
+        return items
+
+    def on_view_button_press(self, widget, event):
+        if event.button == 3:
+            return True
+        return False
 
     def load_menu(self, widget, event):
+
         self.loaded_widget = widget
         self.loaded_event = event
-        #if event.button != 3:
-        #    return True
+        if event.button != 3:
+            return False
 
-        obj = None
-        model, myiter = widget.get_selection().get_selected()
-        if myiter:
-            obj = model.get_value( myiter, 0 )
-            self.enable_properties_menu(obj)
-        else:
-            self.enable_properties_menu(None)
+        objs = self.collect_selected_items(widget)
 
         event_x = event.x
         if event_x < 10:
-            return
+            return True
 
         try:
             row, column, x, y = widget.get_path_at_pos(int(event_x),int(event.y))
         except TypeError:
-            return
+            return True
 
         self.event_click_pos = x,y
         if column.get_title() == self.pkgcolumn_text:
-            if obj:
-                my_sel_w_model, my_sel_w_iter = widget.get_selection().get_selected()
-                self.selected_obj_in_row = self.store.get_value( my_sel_w_iter, 0 )
-                if obj.set_category:
-                    self.run_set_menu_stuff(obj)
-                elif obj.pkgset and obj.action in ["i","r"]:
-                    new_obj = self.dummyCats.get(obj.name[len(etpConst['packagesetprefix']):])
-                    self.selected_obj_in_row = new_obj
-                    self.run_set_menu_stuff(new_obj)
-                elif obj.action in ["r","rr"]: # installed packages listing
-                    self.run_installed_menu_stuff(obj)
-                elif obj.action in ["u"]: # updatable packages listing
-                    self.run_updates_menu_stuff(obj)
-                elif obj.action in ["i"]:
-                    self.run_install_menu_stuff(obj)
+            if objs:
+
+                objs_len = len(objs)
+                set_categories = [obj for obj in objs if obj.set_category]
+                pkgsets = [obj for obj in objs if (obj.pkgset and obj.action in ["i","r"])]
+                installed_objs = [obj for obj in objs if obj.action in ["r","rr"]]
+                updatable_objs = [obj for obj in objs if obj.action in ["u"]]
+                installable_objs = [obj for obj in objs if obj.action in ["i"]]
+
+                if len(set_categories) == objs_len:
+                    self.run_set_menu_stuff(set_categories)
+                elif len(pkgsets) == objs_len:
+                    pfx_len = len(etpConst['packagesetprefix'])
+                    new_objs = [self.dummyCats.get(obj.name[pfx_len:]) for obj in objs if self.dummyCats.get(obj.name[pfx_len:])]
+                    self.run_set_menu_stuff(new_objs)
+                elif len(installed_objs) == objs_len: # installed packages listing
+                    self.run_installed_menu_stuff(installed_objs)
+                elif len(updatable_objs) == objs_len: # updatable packages listing
+                    self.run_updates_menu_stuff(updatable_objs)
+                elif len(installable_objs) == objs_len:
+                    self.run_install_menu_stuff(installable_objs)
 
         else:
             distance = 0
@@ -348,6 +365,8 @@ class EntropyPackageView:
                 obj.voted = vote
                 # submit vote
                 self.spawn_vote_submit(obj)
+
+        return True
 
     def reposition_menu(self, menu):
         # devo tradurre x=0,y=20 in posizioni assolute
@@ -360,210 +379,256 @@ class EntropyPackageView:
         abs_y += (self.selection_width-event_y)
         return int(abs_x),int(abs_y),True
 
-    def run_install_menu_stuff(self, obj):
+    def run_install_menu_stuff(self, objs):
         self.reset_install_menu()
-        if obj.queued:
+
+        objs_len = len(objs)
+        queued = [x for x in objs if x.queued]
+        not_queued = [x for x in objs if not x.queued]
+
+        do_show = True
+        if len(queued) == objs_len:
             self.hide_install_menu()
             self.install_undoinstall.show()
-        #self.install_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
-        self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
+        elif len(not_queued) != objs_len:
+            do_show = False
 
-    def run_updates_menu_stuff(self, obj):
+        if do_show:
+            self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
+
+    def run_updates_menu_stuff(self, objs):
         self.reset_updates_menu()
 
-        if obj.queued == "u":
+        objs_len = len(objs)
+        updatables = [x for x in objs if not x.queued]
+        queued_u = [x for x in objs if x.queued == "u"]
+        queued_r_p = [x for x in objs if x.queued == "r" and obj.do_purge]
+        queued_r_no_p = [x for x in objs if x.queued == "r" and not obj.do_purge]
+        installed_m = [x for x in objs if x.installed_match]
+        self.selected_objs = objs
+
+        do_show = True
+        if len(queued_u) == objs_len:
             self.updates_update.hide()
             self.updates_undoupdate.show()
-        elif (obj.queued == "r") and (obj.do_purge):
+        elif len(queued_r_p) == objs_len:
             self.updates_update.hide()
             self.updates_undopurge.show()
-        elif (obj.queued == "r") and (not obj.do_purge):
+        elif len(queued_r_no_p) == objs_len:
             self.updates_update.hide()
             self.updates_undoremove.show()
-        elif obj.installed_match:
+        elif len(installed_m) == objs_len:
             self.updates_remove.show()
             self.updates_purge.show()
+        elif len(updatables) != objs_len:
+            do_show = False
 
-        #self.updates_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time)
-        self.updates_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
+        if do_show:
+            self.updates_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
 
-    def run_set_menu_stuff(self, obj):
+    def run_set_menu_stuff(self, objs):
         self.reset_set_menu()
 
-        if not obj.queued:
+        not_queued = [x for x in objs if not x.queued]
+        installs = [x for x in objs if x.queued == "i"]
+        undorms = [x for x in objs if x.queued == "r"]
+        objs_len = len(objs)
+
+        self.selected_objs = objs
+        do_show = True
+        if len(not_queued) == objs_len:
             # show install + remove
             # hide undo install + undo remove
             self.pkgset_install.show()
             self.pkgset_remove.show()
-        elif obj.queued == "i":
+        elif len(installs) == objs_len:
             # show undo install
             self.pkgset_undoinstall.show()
-        elif obj.queued == "r":
+        elif len(undorms) == objs_len:
             # show undo remove
             self.pkgset_undoremove.show()
+        else:
+            do_show = False
 
-        self.pkgset_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
+        if do_show:
+            self.pkgset_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
 
 
-    def run_installed_menu_stuff(self, obj):
+    def run_installed_menu_stuff(self, objs):
         do_show = True
+
+        objs_len = len(objs)
+        masked = [x for x in objs if x.masked]
+        queued = [x for x in objs if x.queued]
+
         self.reset_installed_packages_menu()
-        if obj.masked:
-            # still ?
-            if obj.maskstat:
+        self.selected_objs = objs
+
+        if len(masked) == objs_len:
+            masked = [x for x in masked if x.maskstat]
+            if len(masked) == objs_len:
                 self.installed_unmask.show()
-        if obj.queued:
+
+        if len(queued) == objs_len:
+
             self.hide_installed_packages_menu()
-            if obj.queued == "r" and not obj.do_purge:
+
+            queued_r = [x for x in objs if (x.queued == "r" and not x.do_purge)]
+            queued_rr = [x for x in objs if (x.queued == "rr" and not x.do_purge)]
+            queued_r_purge = [x for x in objs if (x.queued == "r" and x.do_purge)]
+
+            if len(queued_r) == objs_len:
                 self.installed_undoremove.show()
-            elif obj.queued == "rr":
+            elif len(queued_rr) == objs_len:
                 self.installed_undoreinstall.show()
-                self.set_loaded_reinstallable(obj)
-            elif obj.queued == "r" and obj.do_purge:
+                self.set_loaded_reinstallable(objs)
+            elif len(queued_r_purge) == objs_len:
                 self.installed_undopurge.show()
+
         else:
 
+            syspkgs = [x for x in objs if x.syspkg]
+
             # is it a system package ?
-            if obj.syspkg:
+            if syspkgs:
                 self.installed_remove.hide()
                 self.installed_purge.hide()
 
-            reinstallable = self.etpbase.isReinstallable(obj.name, obj.slot, obj.revision)
-            if not reinstallable:
-                if obj.syspkg:
-                    do_show = False
+            reinstallables = self.get_reinstallables(objs)
+            if len(reinstallables) != objs_len:
+                if syspkgs: do_show = False
                 self.installed_reinstall.hide()
             else:
-                self.set_loaded_reinstallable(obj)
-                if not self.loaded_reinstallable:
+                self.loaded_reinstallables = reinstallables
+                if not self.loaded_reinstallables:
                     self.installed_reinstall.hide()
         if do_show:
             #self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
             self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
-    def set_loaded_reinstallable(self, obj):
+    def get_reinstallables(self, objs):
         reinstallables = self.etpbase.getPackages("reinstallable")
-        self.loaded_reinstallable = None
+        r_dict = {}
+        for obj in objs:
+            r_dict[obj.matched_atom] = obj
+        found = []
         for to_obj in reinstallables:
-            if str(obj) == str(to_obj):
-                self.loaded_reinstallable = to_obj
-                break
+            t_match = to_obj.installed_match
+            r_obj = r_dict.get(t_match)
+            if type(r_obj) != type(None):
+                found.append(to_obj)
+        return found
+
+    def set_loaded_reinstallable(self, objs):
+        self.loaded_reinstallables = self.get_reinstallables(objs)
 
     def on_unmask_activate(self, widget):
         busyCursor(self.main_window)
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
-
+        objs = self.selected_objs
         oldmask = self.etpbase.unmaskingPackages.copy()
-        mydialog = MaskedPackagesDialog(self.Equo, self.etpbase, self.ui.main, [obj])
+        mydialog = MaskedPackagesDialog(self.Equo, self.etpbase, self.ui.main, objs)
         result = mydialog.run()
         if result != -5:
             self.etpbase.unmaskingPackages = oldmask.copy()
         mydialog.destroy()
         normalCursor(self.main_window)
 
+    def do_remove(self, action, do_purge):
+
+        busyCursor(self.main_window)
+
+        new_objs = []
+        real_objs = self.selected_objs
+
+        for obj in self.selected_objs:
+            if obj.installed_match:
+                obj, new = self.etpbase.getPackageItem(obj.installed_match,True)
+            new_objs.append(obj)
+
+        q_cache = {}
+        for obj in self.selected_objs+new_objs:
+            q_cache[obj.matched_atom] = (obj.queued,obj.do_purge,)
+            obj.queued = action
+            if action:
+                obj.do_purge = do_purge
+
+        if action:
+            status = self.add_to_queue(new_objs, action)
+        else:
+            status = self.remove_queued(new_objs)
+        if status != 0:
+            for obj in self.selected_objs+new_objs:
+                queued, do_purge = q_cache[obj.matched_atom]
+                obj.queued = queued
+                obj.do_purge = do_purge
+
+        self.queueView.refresh()
+        normalCursor(self.main_window)
+
     def on_remove_activate(self, widget, do_purge = False):
-        busyCursor(self.main_window)
-
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
-
-        # if the object is one from a repository, we can just get the real one
-        real_obj = obj
-        if obj.installed_match:
-            inst_match = obj.installed_match
-            obj, new = self.etpbase.getPackageItem(inst_match,True)
-
-        oldqueued = obj.queued
-        old_realobjqueued = real_obj.queued
-        old_realobjpurge = real_obj.do_purge
-        oldpurge = obj.do_purge
-        obj.queued = "r"
-        real_obj.queued = "r"
-        if do_purge:
-            obj.do_purge = True
-            real_obj.do_purge = True
-        status, myaction = self.queue.add(obj)
-        if status != 0:
-            obj.queued = oldqueued
-            obj.do_purge = oldpurge
-            real_obj.queued = old_realobjqueued
-            real_obj.do_purge = old_realobjpurge
-        self.queueView.refresh()
-        normalCursor(self.main_window)
-
-    def on_reinstall_activate(self, widget):
-        busyCursor(self.main_window)
-
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
-
-        oldqueued = obj.queued
-        obj.queued = "rr"
-        oldqueued_reinstallable = self.loaded_reinstallable.queued
-        self.loaded_reinstallable.queued = "rr"
-        status, myaction = self.queue.add(self.loaded_reinstallable)
-        if status != 0:
-            obj.queued = oldqueued
-            self.loaded_reinstallable.queued = oldqueued_reinstallable
-        self.queueView.refresh()
-        normalCursor(self.main_window)
-
-    def on_undoreinstall_activate(self, widget):
-        busyCursor(self.main_window)
-
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
-
-        obj.queued = None
-        self.remove_queued(self.loaded_reinstallable)
-        self.queueView.refresh()
-        normalCursor(self.main_window)
+        return self.do_remove("r", do_purge)
 
     def on_undoremove_activate(self, widget):
+        return self.do_remove(None,None)
+
+    def do_reinstall(self, action):
+
         busyCursor(self.main_window)
 
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
+        q_cache = {}
+        for obj in self.selected_objs+self.loaded_reinstallables:
+            q_cache[obj.matched_atom] = obj.queued
+            obj.queued = action
 
-        # if the object is one from a repository, we can just get the real one
-        real_obj = obj
-        if obj.installed_match:
-            inst_match = obj.installed_match
-            obj, new = self.etpbase.getPackageItem(inst_match,True)
-
-        old_realobjqueued = real_obj.queued
-        old_realobjpurge = real_obj.do_purge
-        olddo_purge = obj.do_purge
-        status = self.remove_queued(obj)
-        if status != 0:
-            real_obj.queued = old_realobjqueued
-            real_obj.do_purge = old_realobjpurge
-            obj.do_purge = olddo_purge
+        if action:
+            status, myaction = self.queue.add(self.loaded_reinstallables)
         else:
-            obj.do_purge = False
-            real_obj.do_purge = False
-            real_obj.queued = None
+            status, myaction = self.queue.remove(self.loaded_reinstallables)
+
+        if status != 0:
+            for obj in self.selected_objs+self.loaded_reinstallables:
+                obj.queued = q_cache.get(obj.matched_atom)
+
         self.queueView.refresh()
         normalCursor(self.main_window)
 
-    def remove_queued(self, obj):
-        oldqueued = obj.queued
-        obj.queued = None
-        status, myaction = self.queue.remove(obj)
+
+    def on_reinstall_activate(self, widget):
+        self.do_reinstall("rr")
+
+    def on_undoreinstall_activate(self, widget):
+        self.do_reinstall(None)
+
+    def remove_queued(self, objs):
+
+        if not isinstance(objs,list):
+            objs = [objs]
+
+        q_cache = {}
+        for obj in objs:
+            q_cache[obj.matched_atom] = obj.queued
+            obj.queued = None
+
+        status, myaction = self.queue.remove(objs)
         if status != 0:
-            obj.queued = oldqueued
+            for obj in objs:
+                obj.queued = q_cache.get(obj.matched_atom)
         self.view.queue_draw()
+
+        return status
+
+    def add_to_queue(self, objs, action):
+
+        q_cache = {}
+        for obj in objs:
+            q_cache[obj.matched_atom] = obj.queued
+            obj.queued = action
+
+        status, myaction = self.queue.add(objs)
+        if status != 0:
+            for obj in objs:
+                obj.queued = q_cache.get(obj.matched_atom)
+
         return status
 
     def on_pkgsetUndoinstall_activate(self, widget):
@@ -572,27 +637,30 @@ class EntropyPackageView:
     def on_pkgsetInstall_activate(self, widget):
         return self.on_pkgset_install_undoinstall_activate(widget)
 
-    def _get_pkgset_data(self, item, add = True, remove_action = False):
+    def _get_pkgset_data(self, items, add = True, remove_action = False):
 
         pkgsets = set()
         realpkgs = set()
         if remove_action:
-            for mid,mrep in item.set_installed_matches:
-                if mrep == None:
-                    pkgsets.add(mid)
-                elif mid != -1:
-                    realpkgs.add((mid,mrep,))
+            for item in items:
+                for mid,mrep in item.set_installed_matches:
+                    if mrep == None:
+                        pkgsets.add(mid)
+                    elif mid != -1:
+                        realpkgs.add((mid,mrep,))
         else:
-            for mid,mrep in item.set_matches:
-                if mrep == None:
-                    pkgsets.add(mid)
-                else:
-                    realpkgs.add((mid,mrep,))
+            for item in items:
+                for mid,mrep in item.set_matches:
+                    if mrep == None:
+                        pkgsets.add(mid)
+                    else:
+                        realpkgs.add((mid,mrep,))
 
         # check for set depends :-)
         selected_sets = set()
         if not add:
-            selected_sets = [self.dummyCats.get(x) for x in self.dummyCats if x != item.set_category]
+            sets_categories = [x.set_category for x in items]
+            selected_sets = [self.dummyCats.get(x) for x in self.dummyCats if x not in sets_categories]
             selected_sets = set([x.set_category for x in selected_sets])
             selected_sets = set(["%s%s" % (etpConst['packagesetprefix'],x,) for x in selected_sets])
         pkgsets.update(selected_sets)
@@ -635,12 +703,7 @@ class EntropyPackageView:
     def on_pkgset_install_undoinstall_activate(self, widget, install = True):
 
         busyCursor(self.main_window)
-        item = self.selected_obj_in_row
-        if type(item) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            item = self.store.get_value( myiter, 0 )
-
-        pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(item, add = install)
+        pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(self.selected_objs, add = install)
 
         if not objs+set_objs: return
         q_cache = {}
@@ -666,17 +729,19 @@ class EntropyPackageView:
                 c_action = None
 
             # also disable/enable item if it's a dep of any other set
-            if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
-            else: myset = item.matched_atom
+            for item in self.selected_objs:
 
-            yp, new = self.etpbase.getPackageItem(myset,True)
-            yp.queued = c_action
+                if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
+                else: myset = item.matched_atom
 
-            for pkgset in pkgsets:
-                dummy_obj = self.dummyCats.get(pkgset[len(etpConst['packagesetprefix']):])
-                if not dummy_obj: continue
-                dummy_obj.queued = c_action
-            item.queued = c_action
+                yp, new = self.etpbase.getPackageItem(myset,True)
+                yp.queued = c_action
+
+                for pkgset in pkgsets:
+                    dummy_obj = self.dummyCats.get(pkgset[len(etpConst['packagesetprefix']):])
+                    if not dummy_obj: continue
+                    dummy_obj.queued = c_action
+                item.queued = c_action
 
         self.queueView.refresh()
         normalCursor(self.main_window)
@@ -685,13 +750,7 @@ class EntropyPackageView:
     def on_pkgset_remove_undoremove_activate(self, widget, remove = True):
 
         busyCursor(self.main_window)
-
-        item = self.selected_obj_in_row
-        if type(item) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            item = self.store.get_value( myiter, 0 )
-
-        pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(item, add = remove, remove_action = True)
+        pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(self.selected_objs, add = remove, remove_action = True)
         if not objs+set_objs: return
 
         repo_objs = []
@@ -721,24 +780,25 @@ class EntropyPackageView:
 
         if status != 0:
             for obj in joint_objs:
-                obj.queued = q_cache.get(str(obj))
+                obj.queued = q_cache.get(obj.matched_atom)
         else:
             c_action = "r"
             if not remove:
                 c_action = None
 
-            # also disable/enable item if it's a dep of any other set
-            if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
-            else: myset = item.matched_atom
+            for item in self.selected_objs:
+                # also disable/enable item if it's a dep of any other set
+                if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
+                else: myset = item.matched_atom
 
-            yp, new = self.etpbase.getPackageItem(myset,True)
-            yp.queued = c_action
+                yp, new = self.etpbase.getPackageItem(myset,True)
+                yp.queued = c_action
 
-            for pkgset in pkgsets:
-                dummy_obj = self.dummyCats.get(pkgset[len(etpConst['packagesetprefix']):])
-                if not dummy_obj: continue
-                dummy_obj.queued = c_action
-            item.queued = c_action
+                for pkgset in pkgsets:
+                    dummy_obj = self.dummyCats.get(pkgset[len(etpConst['packagesetprefix']):])
+                    if not dummy_obj: continue
+                    dummy_obj.queued = c_action
+                item.queued = c_action
 
 
         self.queueView.refresh()
@@ -748,8 +808,6 @@ class EntropyPackageView:
 
     def on_pkgsetRemove_activate(self, widget):
         return self.on_pkgset_remove_undoremove_activate(widget)
-
-
 
     def on_pkgsetUndoremove_activate(self, widget):
         return self.on_pkgset_remove_undoremove_activate(widget, remove = False)
@@ -780,30 +838,14 @@ class EntropyPackageView:
 
     def on_install_update_activate(self, widget, action):
         busyCursor(self.main_window)
-
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
-
-        oldqueued = obj.queued
-        obj.queued = action
-        status, myaction = self.queue.add(obj)
-        if status != 0:
-            obj.queued = oldqueued
+        self.add_to_queue(self.selected_objs, action)
         self.queueView.refresh()
         normalCursor(self.main_window)
         self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
         busyCursor(self.main_window)
-
-        obj = self.selected_obj_in_row
-        if type(obj) == type(None):
-            model, myiter = self.loaded_widget.get_selection().get_selected()
-            obj = self.store.get_value( myiter, 0 )
-
-        self.remove_queued(obj)
+        self.remove_queued(self.selected_objs)
         self.queueView.refresh()
         normalCursor(self.main_window)
         self.view.queue_draw()
@@ -811,6 +853,7 @@ class EntropyPackageView:
     def setupView( self ):
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
+        self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         self.view.set_model( store )
 
         myheight = 35

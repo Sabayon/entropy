@@ -214,10 +214,14 @@ class EntropyPackage:
     def getSysPkg(self):
         if self.pkgset: return False
 
-        if not self.from_installed:
+        match = self.matched_atom
+        if (not self.from_installed) and (not self.installed_match):
             return False
+        elif self.installed_match:
+            match = self.installed_match
+
         # check if it's a system package
-        s = EquoConnection.validatePackageRemoval(self.matched_atom[0])
+        s = EquoConnection.validatePackageRemoval(match[0])
         return not s
 
     # 0: from installed db, so it's installed for sure

@@ -2084,11 +2084,9 @@ class SpritzApplication(Controller):
 
     def on_pkg_doubleclick( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            pkg = model.get_value( iterator, 0 )
-            if pkg:
-                self.loadPkgInfoMenu(pkg)
+        objs = self.pkgView.collect_selected_items()
+        for obj in objs:
+            self.loadPkgInfoMenu(obj)
 
     def on_license_double_clicked( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
