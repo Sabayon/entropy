@@ -2,14 +2,12 @@ TODO list
 
   - rename exceptionTools
   - move etpConst['conflicting_tagged_packages'] elsewhere
-  - block package commit if there are config files not updated
   - cleanup EntropyDatabaseInterface.databaseStructureUpdates
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - equo source (download sources + patches)
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
-  - force a package to keep the current version
   - server-side messages collection
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash

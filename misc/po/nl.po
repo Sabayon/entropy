@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-12-09 23:51+0100\n"
+"POT-Creation-Date: 2008-12-10 12:50+0100\n"
 "PO-Revision-Date: 2008-11-11 22:56-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -466,7 +466,7 @@ msgid "unknown reason"
 msgstr "onbekende reden"
 
 #: ../../libraries/entropy.py:3886 ../../libraries/entropy.py:17072
-#: ../../libraries/entropy.py:28293
+#: ../../libraries/entropy.py:28298
 msgid "not supported"
 msgstr "niet ondersteund"
 
@@ -546,8 +546,8 @@ msgstr "Aanvaring gevonden tijdens verwijderen van"
 msgid "cannot overwrite"
 msgstr "kan niet overschrijven"
 
-#: ../../libraries/entropy.py:4525 ../../libraries/entropy.py:29280
-#: ../../libraries/entropy.py:30120
+#: ../../libraries/entropy.py:4525 ../../libraries/entropy.py:29332
+#: ../../libraries/entropy.py:30172
 msgid "remove"
 msgstr "verwijder"
 
@@ -936,7 +936,7 @@ msgid "Skipping configuration files update, you are not root."
 msgstr "Overslaan van configuratie bestanden update, je bent geen root."
 
 #: ../../libraries/entropy.py:7364 ../../libraries/entropy.py:7484
-#: ../../libraries/entropy.py:27704 ../../client/text_security.py:73
+#: ../../libraries/entropy.py:27709 ../../client/text_security.py:73
 #: ../../client/text_smart.py:88
 msgid "does not exist"
 msgstr "bestaat niet"
@@ -1030,8 +1030,8 @@ msgstr "Probeer opnieuw in een paar minuten"
 msgid "Injecting downloaded dump"
 msgstr "Injecteren van gedownloade dump"
 
-#: ../../libraries/entropy.py:7710 ../../libraries/entropy.py:33484
-#: ../../spritz/src/spritz.glade.h:258
+#: ../../libraries/entropy.py:7710 ../../libraries/entropy.py:33536
+#: ../../spritz/src/spritz.glade.h:257
 msgid "please wait"
 msgstr "even wachten"
 
@@ -1454,9 +1454,9 @@ msgstr "installeren"
 msgid "Invalid backend"
 msgstr "Ongeldig backend-type"
 
-#: ../../libraries/entropy.py:12013 ../../libraries/entropy.py:28497
-#: ../../libraries/entropy.py:28648 ../../libraries/entropy.py:28743
-#: ../../libraries/entropy.py:29941
+#: ../../libraries/entropy.py:12013 ../../libraries/entropy.py:28502
+#: ../../libraries/entropy.py:28653 ../../libraries/entropy.py:28748
+#: ../../libraries/entropy.py:29993
 msgid "error"
 msgstr "fout"
 
@@ -1525,7 +1525,7 @@ msgstr "beveiligde repository ID, kan deze niet gebruiken, sorry dude..."
 msgid "migrating database path from"
 msgstr "migreren van database pad vanaf"
 
-#: ../../libraries/entropy.py:15190 ../../libraries/entropy.py:30983
+#: ../../libraries/entropy.py:15190 ../../libraries/entropy.py:31035
 #: ../../client/text_configuration.py:113
 msgid "to"
 msgstr "naar"
@@ -1596,7 +1596,7 @@ msgid "database"
 msgstr "database"
 
 #: ../../libraries/entropy.py:15520 ../../libraries/entropy.py:17247
-#: ../../libraries/entropy.py:28938 ../../libraries/entropy.py:29252
+#: ../../libraries/entropy.py:28943 ../../libraries/entropy.py:29304
 #: ../../spritz/src/dialogs.py:2129
 msgid "download"
 msgstr "download"
@@ -1718,7 +1718,7 @@ msgstr "Nieuwe tag"
 
 #. ask to continue
 #: ../../libraries/entropy.py:15982 ../../libraries/entropy.py:17020
-#: ../../libraries/entropy.py:17258 ../../libraries/entropy.py:30132
+#: ../../libraries/entropy.py:17258 ../../libraries/entropy.py:30184
 #: ../../server/server_reagent.py:362 ../../server/server_reagent.py:405
 #: ../../server/server_reagent.py:450
 msgid "Would you like to continue ?"
@@ -1785,7 +1785,7 @@ msgstr "invoeren compleet"
 msgid "removing package"
 msgstr "Pakket verwijderen"
 
-#: ../../libraries/entropy.py:16392 ../../libraries/entropy.py:29607
+#: ../../libraries/entropy.py:16392 ../../libraries/entropy.py:29659
 msgid "removal complete"
 msgstr "verwijderen compleet"
 
@@ -1801,8 +1801,8 @@ msgstr "terugzetten naar 0"
 msgid "Initializing Entropy database"
 msgstr "Initialiseren van Entropy database"
 
-#: ../../libraries/entropy.py:16762 ../../libraries/entropy.py:30715
-#: ../../libraries/entropy.py:30733 ../../libraries/entropy.py:30923
+#: ../../libraries/entropy.py:16762 ../../libraries/entropy.py:30767
+#: ../../libraries/entropy.py:30785 ../../libraries/entropy.py:30975
 msgid "WARNING"
 msgstr "WAARSCHUWING"
 
@@ -1881,9 +1881,9 @@ msgid "failed for unknown reasons"
 msgstr "mislukt om onbekende reden"
 
 #: ../../libraries/entropy.py:17103 ../../libraries/entropy.py:17364
-#: ../../libraries/entropy.py:27702 ../../libraries/entropy.py:27721
-#: ../../libraries/entropy.py:27755 ../../libraries/entropy.py:27770
-#: ../../libraries/entropy.py:27789
+#: ../../libraries/entropy.py:27707 ../../libraries/entropy.py:27726
+#: ../../libraries/entropy.py:27760 ../../libraries/entropy.py:27775
+#: ../../libraries/entropy.py:27794
 msgid "package"
 msgstr "pakket"
 
@@ -2686,517 +2686,541 @@ msgstr "repository is niet beschikbaar"
 msgid "repository metadata is malformed"
 msgstr "repository metadata is misvormd"
 
-#: ../../libraries/entropy.py:27104 ../../libraries/entropy.py:27149
+#: ../../libraries/entropy.py:27099 ../../libraries/entropy.py:27144
 msgid "ok"
 msgstr "ok"
 
-#: ../../libraries/entropy.py:27108
+#: ../../libraries/entropy.py:27103
 msgid "repository does not support EAPI3"
 msgstr "repository ondersteund geen EAPI3"
 
-#: ../../libraries/entropy.py:27118 ../../spritz/src/dialogs.py:196
+#: ../../libraries/entropy.py:27113 ../../spritz/src/dialogs.py:196
 #: ../../spritz/src/spritz.glade.h:213
 msgid "Username"
 msgstr "Gebruikersnaam"
 
-#: ../../libraries/entropy.py:27119 ../../spritz/src/spritz.glade.h:118
+#: ../../libraries/entropy.py:27114 ../../spritz/src/spritz.glade.h:118
 msgid "Password"
 msgstr "Wachtwoord"
 
-#: ../../libraries/entropy.py:27122
+#: ../../libraries/entropy.py:27117
 msgid "Please login against"
 msgstr "A.u.b. inloggen op"
 
-#: ../../libraries/entropy.py:27122 ../../server/server_reagent.py:78
+#: ../../libraries/entropy.py:27117 ../../server/server_reagent.py:78
 #: ../../server/server_reagent.py:81 ../../server/server_reagent.py:90
 #: ../../server/server_reagent.py:93 ../../server/server_reagent.py:125
 #: ../../server/server_reagent.py:145
 msgid "repository"
 msgstr "Repository"
 
-#: ../../libraries/entropy.py:27127
+#: ../../libraries/entropy.py:27122
 msgid "login abort"
 msgstr "inloggen afbreken"
 
-#: ../../libraries/entropy.py:27132
+#: ../../libraries/entropy.py:27127
 msgid "connection issues"
 msgstr "verbindings problemen"
 
-#: ../../libraries/entropy.py:27138
+#: ../../libraries/entropy.py:27133
 msgid "Access denied. Login failed"
 msgstr "Toegang geweigerd. inloggen mislukt"
 
-#: ../../libraries/entropy.py:27145
+#: ../../libraries/entropy.py:27140
 msgid "Login successful. Do you want to save these credentials ?"
 msgstr "Inloggen succesvol. Wilt u deze gegevens opslaan ?"
 
-#: ../../libraries/entropy.py:27325
+#: ../../libraries/entropy.py:27330
 msgid "A valid ServerInterface based instance is needed"
 msgstr "Een geldige ServerInterface gebaseerde instantie is nodig"
 
-#: ../../libraries/entropy.py:27332
+#: ../../libraries/entropy.py:27337
 msgid "Entropy Server Mirrors Interface loaded"
 msgstr "Entropy Server Mirrors Interface geladen"
 
-#: ../../libraries/entropy.py:27339 ../../libraries/entropy.py:27370
+#: ../../libraries/entropy.py:27344 ../../libraries/entropy.py:27375
 msgid "mirror"
 msgstr "mirror"
 
-#: ../../libraries/entropy.py:27363 ../../libraries/entropy.py:27439
+#: ../../libraries/entropy.py:27368 ../../libraries/entropy.py:27444
 msgid "unlocking"
 msgstr "ontgrendelen"
 
-#: ../../libraries/entropy.py:27364 ../../libraries/entropy.py:27440
-#: ../../libraries/entropy.py:28670 ../../libraries/entropy.py:28690
+#: ../../libraries/entropy.py:27369 ../../libraries/entropy.py:27445
+#: ../../libraries/entropy.py:28675 ../../libraries/entropy.py:28695
 msgid "locking"
 msgstr "vergrendelen"
 
-#: ../../libraries/entropy.py:27387 ../../libraries/entropy.py:28671
+#: ../../libraries/entropy.py:27392 ../../libraries/entropy.py:28676
 msgid "mirror already locked"
 msgstr "mirror is reeds vergrendeld"
 
-#: ../../libraries/entropy.py:27400
+#: ../../libraries/entropy.py:27405
 msgid "mirror already unlocked"
 msgstr "mirror is al vrijgemaakt"
 
-#: ../../libraries/entropy.py:27446
+#: ../../libraries/entropy.py:27451
 msgid "mirror for download"
 msgstr "mirror voor download"
 
-#: ../../libraries/entropy.py:27463
+#: ../../libraries/entropy.py:27468
 msgid "mirror already locked for download"
 msgstr "mirror is al afgesloten voor download"
 
-#: ../../libraries/entropy.py:27476
+#: ../../libraries/entropy.py:27481
 msgid "mirror already unlocked for download"
 msgstr "mirror is al vrijgegeven voor download"
 
-#: ../../libraries/entropy.py:27515
+#: ../../libraries/entropy.py:27520
 msgid "for download"
 msgstr "voor download"
 
-#: ../../libraries/entropy.py:27525
+#: ../../libraries/entropy.py:27530
 msgid "mirror successfully locked"
 msgstr "mirror succesvol vergrendeld"
 
-#: ../../libraries/entropy.py:27539
+#: ../../libraries/entropy.py:27544
 msgid "mirror not locked"
 msgstr "mirror niet vergrendeld"
 
-#: ../../libraries/entropy.py:27578
+#: ../../libraries/entropy.py:27583
 msgid "mirror successfully unlocked"
 msgstr "mirror succesvol vrijgemaakt"
 
-#: ../../libraries/entropy.py:27593
+#: ../../libraries/entropy.py:27598
 msgid "unlock error"
 msgstr "deblokkeer fout"
 
-#: ../../libraries/entropy.py:27595
+#: ../../libraries/entropy.py:27600
 msgid "mirror not unlocked"
 msgstr "mirror niet vergrendeld"
 
-#: ../../libraries/entropy.py:27666
+#: ../../libraries/entropy.py:27671
 msgid "connecting to download package"
 msgstr "verbinden om pakket te downloaden"
 
-#: ../../libraries/entropy.py:27684
+#: ../../libraries/entropy.py:27689
 msgid "downloading package"
 msgstr "pakket wordt gedownload"
 
-#: ../../libraries/entropy.py:27723
+#: ../../libraries/entropy.py:27728
 msgid "is not listed in the current repository database!!"
 msgstr "staat niet in de lijst van de huidige repository database!!"
 
-#: ../../libraries/entropy.py:27738
+#: ../../libraries/entropy.py:27743
 msgid "verifying checksum of package"
 msgstr "verifiëren van controlesom van het pakket"
 
-#: ../../libraries/entropy.py:27757
+#: ../../libraries/entropy.py:27762
 msgid "downloaded successfully"
 msgstr "succesvol gedownload"
 
-#: ../../libraries/entropy.py:27772
+#: ../../libraries/entropy.py:27777
 msgid "checksum does not match. re-downloading..."
 msgstr "controlesom komt niet overeen. opnieuw downloaden..."
 
-#: ../../libraries/entropy.py:27791
+#: ../../libraries/entropy.py:27796
 msgid "seems broken. Consider to re-package it. Giving up!"
 msgstr ""
 "blijkt gebroken. Denk er aan om het opnieuw in te pakken. Ik geef het op!"
 
-#: ../../libraries/entropy.py:27821
+#: ../../libraries/entropy.py:27826
 msgid "mirror doesn't have a valid directory structure"
 msgstr "mirror heeft geen geldige mappen structuur"
 
-#: ../../libraries/entropy.py:27832
+#: ../../libraries/entropy.py:27837
 msgid "Wrong database compression method passed"
 msgstr "Verkeerde database compressie methode gepasseerd"
 
-#: ../../libraries/entropy.py:27853
+#: ../../libraries/entropy.py:27858
 msgid "mirror doesn't have a valid database revision file"
 msgstr "mirror heeft geen geldige database revisie bestand"
 
-#: ../../libraries/entropy.py:27911
+#: ../../libraries/entropy.py:27916
 msgid "downloading notice board from mirrors to"
 msgstr "Downloaden van notitie bord vanaf mirrors naar"
 
-#: ../../libraries/entropy.py:27932
+#: ../../libraries/entropy.py:27937
 msgid "notice board downloaded successfully from"
 msgstr "notitie bord is succesvol gedownload vanaf"
 
-#: ../../libraries/entropy.py:27956
+#: ../../libraries/entropy.py:27961
 msgid "uploading notice board from"
 msgstr "uploaden van notitie bord vanaf"
 
-#: ../../libraries/entropy.py:27979
+#: ../../libraries/entropy.py:27984
 msgid "notice board upload failed on"
 msgstr "notitie bord upload gefaald op"
 
-#: ../../libraries/entropy.py:27990
+#: ../../libraries/entropy.py:27995
 msgid "notice board upload success"
 msgstr "notitie bord upload succesvol"
 
-#: ../../libraries/entropy.py:28226
+#: ../../libraries/entropy.py:28231
 msgid "uris must be a list instance"
 msgstr "uris moeten een lijst instantie zijn"
 
-#: ../../libraries/entropy.py:28229
+#: ../../libraries/entropy.py:28234
 msgid "files_to_upload must be a list or dict instance"
 msgstr "files_to_upload moet een lijst of 'dict' instantie zijn"
 
-#: ../../libraries/entropy.py:28270
+#: ../../libraries/entropy.py:28275
 msgid "verifying upload (if supported)"
 msgstr "upload verifiëren (wanneer gesupport)"
 
-#: ../../libraries/entropy.py:28291 ../../libraries/entropy.py:28307
-#: ../../libraries/entropy.py:28326 ../../libraries/entropy.py:28342
-#: ../../libraries/entropy.py:28358
+#: ../../libraries/entropy.py:28296 ../../libraries/entropy.py:28312
+#: ../../libraries/entropy.py:28331 ../../libraries/entropy.py:28347
+#: ../../libraries/entropy.py:28363
 msgid "digest verification"
 msgstr "'digest' verificatie"
 
-#: ../../libraries/entropy.py:28309
+#: ../../libraries/entropy.py:28314
 msgid "file not found"
 msgstr "bestand niet gevonden"
 
-#: ../../libraries/entropy.py:28328
+#: ../../libraries/entropy.py:28333
 msgid "so far, so good!"
 msgstr "tot zo ver, alles OK!"
 
-#: ../../libraries/entropy.py:28344
+#: ../../libraries/entropy.py:28349
 msgid "invalid checksum"
 msgstr "onjuiste controlesom"
 
-#: ../../libraries/entropy.py:28360
+#: ../../libraries/entropy.py:28365
 msgid "unknown data returned"
 msgstr "onbekende data teruggekregen"
 
-#: ../../libraries/entropy.py:28386
+#: ../../libraries/entropy.py:28391
 msgid "connecting to mirror"
 msgstr "verbinden met mirror"
 
-#: ../../libraries/entropy.py:28398
+#: ../../libraries/entropy.py:28403
 msgid "changing directory to"
 msgstr "veranderen van map naar"
 
-#: ../../libraries/entropy.py:28460
+#: ../../libraries/entropy.py:28465
 msgid "successful"
 msgstr "succesvol"
 
-#: ../../libraries/entropy.py:28477
+#: ../../libraries/entropy.py:28482
 msgid "failed, retrying"
 msgstr "gefaald, opnieuw proberen"
 
-#: ../../libraries/entropy.py:28511
+#: ../../libraries/entropy.py:28516
 msgid "not critical"
 msgstr "Niet kritisch"
 
-#: ../../libraries/entropy.py:28513
+#: ../../libraries/entropy.py:28518
 msgid "continuing"
 msgstr "verder gaan"
 
-#: ../../libraries/entropy.py:28540
+#: ../../libraries/entropy.py:28545
 msgid "preparing uncompressed database for the upload"
 msgstr "voorbereiden van gedecomprimeerde database voor de upload"
 
-#: ../../libraries/entropy.py:28547 ../../libraries/entropy.py:28571
-#: ../../libraries/entropy.py:28611
+#: ../../libraries/entropy.py:28552 ../../libraries/entropy.py:28576
+#: ../../libraries/entropy.py:28616
 msgid "database path"
 msgstr "database pad"
 
-#: ../../libraries/entropy.py:28564
+#: ../../libraries/entropy.py:28569
 msgid "creating compressed database dump + checksum"
 msgstr "gecomprimeerde database dump + controlesom creëren"
 
-#: ../../libraries/entropy.py:28577
+#: ../../libraries/entropy.py:28582
 msgid "dump"
 msgstr "dump"
 
-#: ../../libraries/entropy.py:28583
+#: ../../libraries/entropy.py:28588
 msgid "dump checksum"
 msgstr "dump controlesom"
 
-#: ../../libraries/entropy.py:28589 ../../libraries/entropy.py:28629
+#: ../../libraries/entropy.py:28594 ../../libraries/entropy.py:28634
 msgid "opener"
 msgstr "opener"
 
-#: ../../libraries/entropy.py:28603
+#: ../../libraries/entropy.py:28608
 msgid "compressing database + checksum"
 msgstr "comprimeren van database + controlesom"
 
-#: ../../libraries/entropy.py:28617
+#: ../../libraries/entropy.py:28622
 msgid "compressed database path"
 msgstr "gecomprimeerde database pad"
 
-#: ../../libraries/entropy.py:28623
+#: ../../libraries/entropy.py:28628
 msgid "compressed checksum"
 msgstr "gecomprimeerde controlesom"
 
-#: ../../libraries/entropy.py:28646
+#: ../../libraries/entropy.py:28651
 msgid "cannot create mirror directory"
 msgstr "Kan geen mirror map aanmaken"
 
-#: ../../libraries/entropy.py:28672
+#: ../../libraries/entropy.py:28677
 msgid "waiting up to 2 minutes before giving up"
 msgstr "wacht nog 2 minuten voor opgeven"
 
-#: ../../libraries/entropy.py:28691
+#: ../../libraries/entropy.py:28696
 msgid "mirror unlocked"
 msgstr "mirror vrijgemaakt"
 
-#: ../../libraries/entropy.py:28742
+#: ../../libraries/entropy.py:28747
 msgid "Troubles with treeupdates"
 msgstr "Problemen met boomupdates"
 
-#: ../../libraries/entropy.py:28745
+#: ../../libraries/entropy.py:28750
 msgid "Bumping old data back"
 msgstr "Terug zetten van de oude gegevens"
 
-#: ../../libraries/entropy.py:28783 ../../libraries/entropy.py:28923
+#: ../../libraries/entropy.py:28788 ../../libraries/entropy.py:28928
 msgid "wrong database compression method passed"
 msgstr "verkeerde database compressie methode gepasseerd"
 
-#: ../../libraries/entropy.py:28804 ../../libraries/entropy.py:29238
+#: ../../libraries/entropy.py:28809 ../../libraries/entropy.py:29290
 #: ../../spritz/src/dialogs.py:2127
 msgid "upload"
 msgstr "upload"
 
-#: ../../libraries/entropy.py:28805
+#: ../../libraries/entropy.py:28810
 msgid "preparing to upload database to mirror"
 msgstr "Bezig met het versturen van database naar mirror"
 
-#: ../../libraries/entropy.py:28864 ../../libraries/entropy.py:28979
+#: ../../libraries/entropy.py:28869 ../../libraries/entropy.py:28984
 msgid "errors"
 msgstr "fouten"
 
-#: ../../libraries/entropy.py:28865
+#: ../../libraries/entropy.py:28870
 msgid "failed to upload to mirror, not unlocking and continuing"
 msgstr "upload naar mirror gefaald, niet deblokkeren en doorgaan"
 
-#: ../../libraries/entropy.py:28874 ../../libraries/entropy.py:28989
-#: ../../libraries/entropy.py:29688 ../../libraries/entropy.py:29749
-#: ../../libraries/entropy.py:30173
+#: ../../libraries/entropy.py:28879 ../../libraries/entropy.py:28994
+#: ../../libraries/entropy.py:29740 ../../libraries/entropy.py:29801
+#: ../../libraries/entropy.py:30225
 msgid "reason"
 msgstr "reden"
 
-#: ../../libraries/entropy.py:28939
+#: ../../libraries/entropy.py:28944
 msgid "preparing to download database from mirror"
 msgstr "Bezig met binnenhalen van database vanaf de mirror"
 
-#: ../../libraries/entropy.py:28948
+#: ../../libraries/entropy.py:28953
 msgid "download path"
 msgstr "download pad"
 
-#: ../../libraries/entropy.py:28980
+#: ../../libraries/entropy.py:28985
 msgid "failed to download from mirror"
 msgstr "download vanaf mirror gefaald"
 
-#: ../../libraries/entropy.py:29080
+#: ../../libraries/entropy.py:29085
 msgid ""
 "At the moment, mirrors are locked, someone is working on their databases"
 msgstr ""
 "Op dit moment is iemand bezig in de databases, mirrors zijn geblokkeerd"
 
-#: ../../libraries/entropy.py:29081
+#: ../../libraries/entropy.py:29086
 msgid "try again later"
 msgstr "probeer later opnieuw"
 
-#: ../../libraries/entropy.py:29092 ../../libraries/entropy.py:29108
-#: ../../libraries/entropy.py:29126 ../../libraries/entropy.py:29142
-#: ../../libraries/entropy.py:29156 ../../libraries/entropy.py:29605
-#: ../../libraries/entropy.py:29745 ../../libraries/entropy.py:29761
-#: ../../libraries/entropy.py:29781 ../../libraries/entropy.py:29805
-#: ../../libraries/entropy.py:29822 ../../libraries/entropy.py:29839
-#: ../../libraries/entropy.py:29874 ../../libraries/entropy.py:29919
-#: ../../libraries/entropy.py:29937 ../../libraries/entropy.py:29962
+#: ../../libraries/entropy.py:29097 ../../libraries/entropy.py:29113
+#: ../../libraries/entropy.py:29131 ../../libraries/entropy.py:29194
+#: ../../libraries/entropy.py:29208 ../../libraries/entropy.py:29657
+#: ../../libraries/entropy.py:29797 ../../libraries/entropy.py:29813
+#: ../../libraries/entropy.py:29833 ../../libraries/entropy.py:29857
+#: ../../libraries/entropy.py:29874 ../../libraries/entropy.py:29891
+#: ../../libraries/entropy.py:29926 ../../libraries/entropy.py:29971
+#: ../../libraries/entropy.py:29989 ../../libraries/entropy.py:30014
 msgid "sync"
 msgstr "sync"
 
 #. something short please
-#: ../../libraries/entropy.py:29093
+#: ../../libraries/entropy.py:29098
 msgid "database already in sync"
 msgstr "database al reeds in sync"
 
-#: ../../libraries/entropy.py:29109 ../../libraries/entropy.py:29143
+#: ../../libraries/entropy.py:29114 ../../libraries/entropy.py:29195
 msgid "database sync failed"
 msgstr "database sync gefaald"
 
-#: ../../libraries/entropy.py:29110
+#: ../../libraries/entropy.py:29115
 msgid "download issues"
 msgstr "download problemen"
 
-#: ../../libraries/entropy.py:29127
+#: ../../libraries/entropy.py:29132
 msgid "database sync forbidden"
 msgstr "database sync niet toegestaan"
 
-#: ../../libraries/entropy.py:29128
+#: ../../libraries/entropy.py:29133
 msgid "dependencies_test() reported errors"
 msgstr "dependencies_test() heeft fouten gerapporteerd"
 
-#: ../../libraries/entropy.py:29144
+#: ../../libraries/entropy.py:29144 ../../libraries/entropy.py:29158
+#: ../../libraries/entropy.py:29177
+#, fuzzy
+msgid "config files"
+msgstr "Configuratie bestanden"
+
+#. something short please
+#: ../../libraries/entropy.py:29145
+#, fuzzy
+msgid "checking system"
+msgstr "checken van hash"
+
+#. something short please
+#: ../../libraries/entropy.py:29159
+#, fuzzy
+msgid "there are configuration files not updated yet"
+msgstr "geef configuratie bestanden voor update weer"
+
+#. something short please
+#: ../../libraries/entropy.py:29178
+#, fuzzy
+msgid "no configuration files to commit. All fine."
+msgstr "geef configuratie bestanden voor update weer"
+
+#: ../../libraries/entropy.py:29196
 msgid "upload issues"
 msgstr "upload problemen"
 
-#: ../../libraries/entropy.py:29157
+#: ../../libraries/entropy.py:29209
 msgid "database sync completed successfully"
 msgstr "database sync met succes voltooid"
 
-#: ../../libraries/entropy.py:29201
+#: ../../libraries/entropy.py:29253
 msgid "Local statistics"
 msgstr "Lokale statistieken"
 
-#: ../../libraries/entropy.py:29208
+#: ../../libraries/entropy.py:29260
 msgid "upload directory"
 msgstr "upload map"
 
-#: ../../libraries/entropy.py:29210 ../../libraries/entropy.py:29221
+#: ../../libraries/entropy.py:29262 ../../libraries/entropy.py:29273
 msgid "files ready"
 msgstr "bestanden gereed"
 
-#: ../../libraries/entropy.py:29219
+#: ../../libraries/entropy.py:29271
 msgid "packages directory"
 msgstr "pakketten map"
 
-#: ../../libraries/entropy.py:29266
+#: ../../libraries/entropy.py:29318
 msgid "copy"
 msgstr "kopie"
 
-#: ../../libraries/entropy.py:29291
+#: ../../libraries/entropy.py:29343
 msgid "Packages to be removed"
 msgstr "Pakketten voor verwijdering"
 
-#: ../../libraries/entropy.py:29300
+#: ../../libraries/entropy.py:29352
 msgid "Packages to be moved locally"
 msgstr "Pakketten die lokaal verplaatst worden"
 
-#: ../../libraries/entropy.py:29309
+#: ../../libraries/entropy.py:29361
 msgid "Packages to be uploaded"
 msgstr "Pakketten die worden geüpload"
 
-#: ../../libraries/entropy.py:29319
+#: ../../libraries/entropy.py:29371
 msgid "Total removal size"
 msgstr "Totale grootte van verwijdering"
 
-#: ../../libraries/entropy.py:29329
+#: ../../libraries/entropy.py:29381
 msgid "Total upload size"
 msgstr "Totale grootte van upload"
 
-#: ../../libraries/entropy.py:29338
+#: ../../libraries/entropy.py:29390
 msgid "Total download size"
 msgstr "Totale grootte van download"
 
-#: ../../libraries/entropy.py:29384
+#: ../../libraries/entropy.py:29436
 msgid "Remote statistics for"
 msgstr "Externe statistieken voor"
 
-#: ../../libraries/entropy.py:29396
+#: ../../libraries/entropy.py:29448
 msgid "remote packages"
 msgstr "externe pakketten"
 
-#: ../../libraries/entropy.py:29398
+#: ../../libraries/entropy.py:29450
 msgid "files stored"
 msgstr "bestanden opgeslagen"
 
-#: ../../libraries/entropy.py:29405
+#: ../../libraries/entropy.py:29457
 msgid "Calculating queues"
 msgstr "Bereken queues"
 
-#: ../../libraries/entropy.py:29588
+#: ../../libraries/entropy.py:29640
 msgid "removing package+hash"
 msgstr "pakket+hash worden verwijderd"
 
-#: ../../libraries/entropy.py:29632
+#: ../../libraries/entropy.py:29684
 msgid "copying file+hash to repository"
 msgstr "kopiëren van bestand+hash naar repository"
 
-#: ../../libraries/entropy.py:29686
+#: ../../libraries/entropy.py:29738
 msgid "upload errors"
 msgstr "upload fouten"
 
-#: ../../libraries/entropy.py:29700
+#: ../../libraries/entropy.py:29752
 msgid "upload completed successfully"
 msgstr "upload met succes voltooid"
 
-#: ../../libraries/entropy.py:29747
+#: ../../libraries/entropy.py:29799
 msgid "download errors"
 msgstr "download fouten"
 
-#: ../../libraries/entropy.py:29763
+#: ../../libraries/entropy.py:29815
 msgid "download completed successfully"
 msgstr "download met succes voltooid"
 
-#: ../../libraries/entropy.py:29782
+#: ../../libraries/entropy.py:29834
 msgid "starting packages sync"
 msgstr "starten van pakketten sync"
 
-#: ../../libraries/entropy.py:29807
+#: ../../libraries/entropy.py:29859
 msgid "packages sync"
 msgstr "pakketten sync"
 
-#: ../../libraries/entropy.py:29824
+#: ../../libraries/entropy.py:29876
 msgid "socket error"
 msgstr "socket fout"
 
-#: ../../libraries/entropy.py:29826
+#: ../../libraries/entropy.py:29878
 msgid "on"
 msgstr "aan"
 
-#: ../../libraries/entropy.py:29841
+#: ../../libraries/entropy.py:29893
 msgid "nothing to do on"
 msgstr "Niets te doen voor"
 
-#: ../../libraries/entropy.py:29852
+#: ../../libraries/entropy.py:29904
 msgid "Expanding queues"
 msgstr "Uitbreidende wachtrijen"
 
-#: ../../libraries/entropy.py:29876
+#: ../../libraries/entropy.py:29928
 msgid "nothing to sync for"
 msgstr "niets te synchroniseren voor"
 
-#: ../../libraries/entropy.py:29892
+#: ../../libraries/entropy.py:29944
 msgid "Would you like to run the steps above ?"
 msgstr "Wilt u de gegeven stappen volgen ?"
 
-#: ../../libraries/entropy.py:29921
+#: ../../libraries/entropy.py:29973
 msgid "keyboard interrupt !"
 msgstr "toetsenbord onderbreking !"
 
-#: ../../libraries/entropy.py:29939
+#: ../../libraries/entropy.py:29991
 msgid "exception caught"
 msgstr "exceptie opgevangen"
 
-#: ../../libraries/entropy.py:29964
+#: ../../libraries/entropy.py:30016
 msgid "at least one mirror has been sync'd properly, hooray!"
 msgstr "op z'n minst is een mirror juist gesynced, Hoera! "
 
-#: ../../libraries/entropy.py:30044
+#: ../../libraries/entropy.py:30096
 msgid "tidy"
 msgstr "geordend"
 
-#: ../../libraries/entropy.py:30046
+#: ../../libraries/entropy.py:30098
 msgid "collecting expired packages"
 msgstr "verzamelen van verlopen pakketten"
 
-#: ../../libraries/entropy.py:30062
+#: ../../libraries/entropy.py:30114
 msgid ""
 "not the latest branch, skipping tidy for consistence. This branch entered "
 "the maintenance mode."
@@ -3204,213 +3228,213 @@ msgstr ""
 "niet de laatste branche, overslaan van opruimen voor consistentie. Deze "
 "branche is in onderhoud."
 
-#: ../../libraries/entropy.py:30074
+#: ../../libraries/entropy.py:30126
 msgid "collecting expired packages in the selected branches"
 msgstr "verzamelen van verlopen pakketten in de geselecteerde branche's"
 
-#: ../../libraries/entropy.py:30099
+#: ../../libraries/entropy.py:30151
 msgid "nothing to remove on this branch"
 msgstr "Niets te verwijderen in deze branche"
 
-#: ../../libraries/entropy.py:30110
+#: ../../libraries/entropy.py:30162
 msgid "these are the expired packages"
 msgstr "dit zijn de verlopen pakketten"
 
-#: ../../libraries/entropy.py:30146
+#: ../../libraries/entropy.py:30198
 msgid "removing packages remotely"
 msgstr "verwijderen van pakketten op afstand"
 
-#: ../../libraries/entropy.py:30171
+#: ../../libraries/entropy.py:30223
 msgid "remove errors"
 msgstr "verwijder fouten"
 
-#: ../../libraries/entropy.py:30186
+#: ../../libraries/entropy.py:30238
 msgid "removing packages locally"
 msgstr "verwijderen van lokale pakketten"
 
-#: ../../libraries/entropy.py:30203
+#: ../../libraries/entropy.py:30255
 msgid "removing"
 msgstr "verwijderen"
 
-#: ../../libraries/entropy.py:30247
+#: ../../libraries/entropy.py:30299
 msgid "valid database path needed"
 msgstr "geldig database pad is nodig"
 
-#: ../../libraries/entropy.py:30343
+#: ../../libraries/entropy.py:30395
 msgid "Mirrors have not been unlocked. Remember to sync them."
 msgstr "Mirrors zijn niet gedeblokkeerd. Vergeet ze niet te synchroniseren."
 
-#: ../../libraries/entropy.py:30430
+#: ../../libraries/entropy.py:30482
 msgid "can't do that on a readonly database"
 msgstr "kan niet op een alleen-lezen database"
 
-#: ../../libraries/entropy.py:30507 ../../libraries/entropy.py:30577
-#: ../../libraries/entropy.py:30942 ../../libraries/entropy.py:34021
-#: ../../libraries/entropy.py:34041 ../../client/text_rescue.py:72
+#: ../../libraries/entropy.py:30559 ../../libraries/entropy.py:30629
+#: ../../libraries/entropy.py:30994 ../../libraries/entropy.py:34076
+#: ../../libraries/entropy.py:34096 ../../client/text_rescue.py:72
 #: ../../client/text_rescue.py:224 ../../client/text_rescue.py:232
 #: ../../client/text_rescue.py:237 ../../client/text_ui.py:380
 #: ../../client/text_ui.py:960
 msgid "ATTENTION"
 msgstr "ATTENTIE"
 
-#: ../../libraries/entropy.py:30508
+#: ../../libraries/entropy.py:30560
 msgid "forcing package updates"
 msgstr "forceren van pakket updates"
 
-#: ../../libraries/entropy.py:30509
+#: ../../libraries/entropy.py:30561
 msgid "Syncing with"
 msgstr "Synchroniseren met"
 
-#: ../../libraries/entropy.py:30578
+#: ../../libraries/entropy.py:30630
 msgid "forcing packages metadata update"
 msgstr "forceren van pakketten metadata update"
 
-#: ../../libraries/entropy.py:30579
+#: ../../libraries/entropy.py:30631
 msgid "Updating system database using repository id"
 msgstr "Updaten van systeem database middels repository id"
 
-#: ../../libraries/entropy.py:30668 ../../libraries/entropy.py:30980
+#: ../../libraries/entropy.py:30720 ../../libraries/entropy.py:31032
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy.py:30669
+#: ../../libraries/entropy.py:30721
 msgid "Running fixpackages"
 msgstr "Uitvoeren van fixpackages"
 
-#: ../../libraries/entropy.py:30670
+#: ../../libraries/entropy.py:30722
 msgid "it could take a while"
 msgstr "Het kan even duren"
 
-#: ../../libraries/entropy.py:30692
+#: ../../libraries/entropy.py:30744
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy.py:30693
+#: ../../libraries/entropy.py:30745
 msgid "action"
 msgstr "actie"
 
-#: ../../libraries/entropy.py:30716
+#: ../../libraries/entropy.py:30768
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Kan quickpkg voor atomen niet afronden"
 
-#: ../../libraries/entropy.py:30718 ../../libraries/entropy.py:30926
+#: ../../libraries/entropy.py:30770 ../../libraries/entropy.py:30978
 msgid "do it manually"
 msgstr "doe het handmatig"
 
-#: ../../libraries/entropy.py:30734
+#: ../../libraries/entropy.py:30786
 msgid "Cannot run SPM cleanup, error"
 msgstr "Kan SPM opruiming niet starten, fout"
 
-#: ../../libraries/entropy.py:30785 ../../libraries/entropy.py:30858
+#: ../../libraries/entropy.py:30837 ../../libraries/entropy.py:30910
 msgid "INJECT"
 msgstr "INJECTEREN"
 
-#: ../../libraries/entropy.py:30787 ../../libraries/entropy.py:30860
+#: ../../libraries/entropy.py:30839 ../../libraries/entropy.py:30912
 msgid "has been injected"
 msgstr "is geïnjecteerd"
 
-#: ../../libraries/entropy.py:30788 ../../libraries/entropy.py:30861
+#: ../../libraries/entropy.py:30840 ../../libraries/entropy.py:30913
 msgid "You need to quickpkg it manually to update the embedded database"
 msgstr "Je moet handmatig quickpkg doen om de embedded database bij te werken"
 
-#: ../../libraries/entropy.py:30789 ../../libraries/entropy.py:30862
+#: ../../libraries/entropy.py:30841 ../../libraries/entropy.py:30914
 msgid "Repository database will be updated anyway"
 msgstr "Repository database zal toch worden geüpdate"
 
-#: ../../libraries/entropy.py:30908
+#: ../../libraries/entropy.py:30960
 msgid "repackaging"
 msgstr "opnieuw verpakken"
 
-#: ../../libraries/entropy.py:30924
+#: ../../libraries/entropy.py:30976
 msgid "Cannot complete quickpkg for atom"
 msgstr "Kan quickpkg voor atoom niet afronden"
 
-#: ../../libraries/entropy.py:30943
+#: ../../libraries/entropy.py:30995
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr "runTreeUpdatesQuickpkgAction is niet juist uitgevoerd"
 
-#: ../../libraries/entropy.py:30944
+#: ../../libraries/entropy.py:30996
 msgid "Please update packages manually"
 msgstr "update de pakketten handmatig a.u.b."
 
-#: ../../libraries/entropy.py:30981
+#: ../../libraries/entropy.py:31033
 msgid "Moving old entry"
 msgstr "Verplaatsen van oude ingang"
 
-#: ../../libraries/entropy.py:33376 ../../libraries/entropy.py:33401
+#: ../../libraries/entropy.py:33428 ../../libraries/entropy.py:33453
 #: ../../client/text_rescue.py:427
 msgid "Entropy database"
 msgstr "Entropy database"
 
-#: ../../libraries/entropy.py:33376
+#: ../../libraries/entropy.py:33428
 msgid "regenerating indexes after migration"
 msgstr "Hergenereren van indexen na migratie"
 
-#: ../../libraries/entropy.py:33401
+#: ../../libraries/entropy.py:33453
 msgid "migrating table"
 msgstr "tabel migreren"
 
-#: ../../libraries/entropy.py:33453
+#: ../../libraries/entropy.py:33505
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 "baseinfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy.py:33458
+#: ../../libraries/entropy.py:33510
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 "extrainfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy.py:33484
+#: ../../libraries/entropy.py:33536
 msgid "Syncing current database"
 msgstr "Synchroniseren van huidige database"
 
-#: ../../libraries/entropy.py:33496
+#: ../../libraries/entropy.py:33548
 msgid "Removing entry"
 msgstr "Verwijderen van ingang"
 
-#: ../../libraries/entropy.py:33511
+#: ../../libraries/entropy.py:33563
 msgid "Adding entry"
 msgstr "Toevoegen van ingang"
 
-#: ../../libraries/entropy.py:33549
+#: ../../libraries/entropy.py:33601
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr "Repository EAPI > Entropy EAPI. update Equo/Entropy zo snel mogelijk !"
 
-#: ../../libraries/entropy.py:33568
+#: ../../libraries/entropy.py:33620
 msgid "Exporting database table"
 msgstr "Database tabel exporteren"
 
-#: ../../libraries/entropy.py:33607
+#: ../../libraries/entropy.py:33659
 msgid "Database Export completed."
 msgstr "Database Export voltooid."
 
-#: ../../libraries/entropy.py:34022
+#: ../../libraries/entropy.py:34077
 msgid "cannot open Spm counter file for"
 msgstr "kan Spm teller bestand niet openen voor"
 
-#: ../../libraries/entropy.py:34042
+#: ../../libraries/entropy.py:34097
 msgid "counter for atom is duplicated, ignoring"
 msgstr "teller voor atoom is gedupliceerd, negeren"
 
-#: ../../libraries/entropy.py:34923
+#: ../../libraries/entropy.py:34978
 msgid "comparison between"
 msgstr "vergelijking tussen"
 
-#: ../../libraries/entropy.py:34925
+#: ../../libraries/entropy.py:34980
 msgid "and"
 msgstr "en"
 
-#: ../../libraries/entropy.py:34927 ../../libraries/entropy.py:34939
+#: ../../libraries/entropy.py:34982 ../../libraries/entropy.py:34994
 msgid "failed"
 msgstr "mislukt"
 
-#: ../../libraries/entropy.py:34928
+#: ../../libraries/entropy.py:34983
 msgid "Wrong syntax for"
 msgstr "verkeerde invoer voor"
 
-#: ../../libraries/entropy.py:34936
+#: ../../libraries/entropy.py:34991
 msgid "from atom"
 msgstr "van atoom"
 
@@ -8720,31 +8744,27 @@ msgid "gtk-ok"
 msgstr "gtk-sluiten"
 
 #: ../../spritz/src/spritz.glade.h:254
-msgid "gtk-undo"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:255
 msgid "http://www.sabayon.org"
 msgstr "http://www.sabayon.org"
 
-#: ../../spritz/src/spritz.glade.h:256
+#: ../../spritz/src/spritz.glade.h:255
 #, fuzzy
 msgid "kB/sec"
 msgstr "kb/sec"
 
-#: ../../spritz/src/spritz.glade.h:257
+#: ../../spritz/src/spritz.glade.h:256
 msgid "localhost"
 msgstr "locale host"
 
-#: ../../spritz/src/spritz.glade.h:259
+#: ../../spritz/src/spritz.glade.h:258
 msgid "root"
 msgstr "root"
 
-#: ../../spritz/src/spritz.glade.h:260
+#: ../../spritz/src/spritz.glade.h:259
 msgid "type your password here"
 msgstr "voer uw password hier in"
 
-#: ../../spritz/src/spritz.glade.h:261
+#: ../../spritz/src/spritz.glade.h:260
 msgid "type your username here"
 msgstr "voer uw gebruikersnaam hier in"
 

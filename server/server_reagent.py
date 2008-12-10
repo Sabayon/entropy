@@ -257,6 +257,7 @@ def update(options):
                     Entropy.remove_packages(remdata[repoid], repo = repoid)
 
         if toBeAdded:
+
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
             items = sorted([x[0] for x in toBeAdded])
             for item in items:
@@ -270,6 +271,10 @@ def update(options):
                 )
                 if rc == "No":
                     return 0
+
+            problems = Entropy.check_config_file_updates()
+            if problems:
+                return 1
 
         # package them
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
