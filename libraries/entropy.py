@@ -469,7 +469,7 @@ class EquoInterface(TextInterface):
 
         # add to etpRepositories
         repodata = {
-            'repoid': sets_repo_id,
+            'repoid': repoid,
             'in_memory': True,
             'description': description,
             'packages': package_mirrors,
@@ -29137,6 +29137,53 @@ class ServerMirrorsInterface:
                     header = darkred(" !!! ")
                 )
                 return 3,set(),set()
+
+            self.Entropy.updateProgress(
+                "[repo:%s|%s] %s" % (
+                    brown(repo),
+                    red(_("config files")), # something short please
+                    blue(_("checking system")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
+            # scanning for config files not updated
+            scandata = self.Entropy.ClientService.FileUpdates.scanfs(dcache = False)
+            if scandata:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s] %s" % (
+                        brown(repo),
+                        red(_("config files")), # something short please
+                        blue(_("there are configuration files not updated yet")),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" @@ ")
+                )
+                for x in scandata:
+                    self.Entropy.updateProgress(
+                        "%s" % ( brown(etpConst['systemroot']+scandata[x]['destination']) ),
+                        importance = 1,
+                        type = "info",
+                        header = "\t"
+                    )
+                return 4,set(),set()
+
+            self.Entropy.updateProgress(
+                "[repo:%s|%s] %s" % (
+                    brown(repo),
+                    red(_("config files")), # something short please
+                    blue(_("no configuration files to commit. All fine.")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ "),
+                back = True
+            )
+            #             for x in scandata:
+            #    
 
             uris = [x[0] for x in upload_queue]
             errors, fine_uris, broken_uris = self.upload_database(uris, repo = repo)
