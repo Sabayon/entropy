@@ -1283,7 +1283,7 @@ class SpritzApplication(Controller):
         self.resetQueueProgressBars()
         self.disable_ugc = False
 
-    def processPackageQueue(self, pkgs, remove_repos = [], fetch_only = False):
+    def processPackageQueue(self, pkgs, remove_repos = [], fetch_only = False, download_sources = False):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
@@ -1312,7 +1312,7 @@ class SpritzApplication(Controller):
 
                 controller = QueueExecutor(self)
                 try:
-                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only)
+                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
                 except exceptionTools.QueueError:
                     e = 1
                 self.ui.skipMirror.hide()
@@ -1326,7 +1326,7 @@ class SpritzApplication(Controller):
             self.endWorking()
             self.progress.reset_progress()
 
-            if not fetch_only:
+            if (not fetch_only) and (not download_sources):
                 self.etpbase.clearPackages()
                 self.etpbase.clearCache()
                 for myrepo in remove_repos:
@@ -2015,8 +2015,9 @@ class SpritzApplication(Controller):
             return
 
         fetch_only = self.ui.queueProcessFetchOnly.get_active()
+        download_sources = self.ui.queueProcessDownloadSource.get_active()
 
-        rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only)
+        rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
         self.resetQueueProgressBars()
         if rc and not fetch_only:
             self.queue.clear()       # Clear package queue

@@ -51,7 +51,7 @@ class QueueExecutor:
         else:
             return 0,licenses
 
-    def run(self, install_queue, removal_queue, do_purge_cache = [], fetch_only = False):
+    def run(self, install_queue, removal_queue, do_purge_cache = [], fetch_only = False, download_sources = False):
 
         # unmask packages
         for match in self.Spritz.etpbase.unmaskingPackages:
@@ -96,6 +96,13 @@ class QueueExecutor:
         # first fetch all
         fetchqueue = 0
         mykeys = {}
+
+        fetch_action = "fetch"
+        fetch_string = "%s: " % (_("Fetching"),)
+        if download_sources:
+            fetch_string = "%s: " % (_("Downloading sources"),)
+            fetch_action = "source"
+
         for packageInfo in runQueue:
 
             self.Spritz.queue_bombing()
@@ -104,7 +111,7 @@ class QueueExecutor:
             Package = self.Entropy.Package()
             metaopts = {}
             metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
-            Package.prepare(packageInfo,"fetch",metaopts)
+            Package.prepare(packageInfo,fetch_action,metaopts)
 
             myrepo = Package.infoDict['repository']
             if not mykeys.has_key(myrepo):
@@ -112,7 +119,7 @@ class QueueExecutor:
             mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(Package.infoDict['atom']))
 
             self.Entropy.updateProgress(
-                "Fetching: "+Package.infoDict['atom'],
+                fetch_string+Package.infoDict['atom'],
                 importance = 2,
                 count = (fetchqueue,totalqueue)
             )
@@ -131,12 +138,13 @@ class QueueExecutor:
                         self.Entropy.UGC.add_downloads(myrepo, mypkgkeys)
             except:
                 pass
-        t = self.Entropy.entropyTools.parallelTask(spawn_ugc)
-        t.start()
+        if not download_sources:
+            t = self.Entropy.entropyTools.parallelTask(spawn_ugc)
+            t.start()
 
         self.Spritz.ui.skipMirror.hide()
 
-        if fetch_only:
+        if fetch_only or download_sources:
             return 0,0
 
         # then removalQueue
