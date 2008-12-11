@@ -33138,7 +33138,7 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)', ("%"+keyword+"%",))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom'):
+    def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom', just_id = False):
 
         searchkeywords = ["%"+keyword+"%"]
         slotstring = ''
@@ -33157,10 +33157,15 @@ class EntropyDatabaseInterface:
         if order_by in ("atom","idpackage","branch",):
             order_by_string = ' order by %s' % (order_by,)
 
+        search_elements = 'atom,idpackage,branch'
+        if just_id: search_elements = 'idpackage'
+
         if (sensitive):
-            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
+            self.cursor.execute('SELECT '+search_elements+' FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
         else:
-            self.cursor.execute('SELECT atom,idpackage,branch FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
+            self.cursor.execute('SELECT '+search_elements+' FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
+        if just_id:
+            return self.fetchall2set(self.cursor.fetchall())
         return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None, justid = False):
