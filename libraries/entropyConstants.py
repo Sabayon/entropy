@@ -686,6 +686,8 @@ def const_defaultSettings(rootdir):
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {
+            'ebuild_file_extension': "ebuild",
+            'ebuild_pkg_tag_var': "ENTROPY_PROJECT_TAG",
             'global_make_conf': rootdir+"/etc/make.conf",
             'global_package_keywords': rootdir+"/etc/portage/package.keywords",
             'global_package_use': rootdir+"/etc/portage/package.use",

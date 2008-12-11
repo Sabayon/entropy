@@ -4006,6 +4006,17 @@ class EquoInterface(TextInterface):
 
         return pkg_links
 
+    def _extract_pkg_metadata_ebuild_entropy_tag(self, ebuild):
+        search_tag = etpConst['spm']['ebuild_pkg_tag_var']
+        ebuild_tag = ''
+        f = open(ebuild,"r")
+        tags = [x.strip() for x in f.readlines() if x.strip() and x.strip().startswith(search_tag)]
+        f.close()
+        if not tags: return ebuild_tag
+        tag = tags[-1]
+        tag = tag.split("=")[-1].strip('"').strip("'").strip()
+        return tag
+
     # This function extracts all the info from a .tbz2 file and returns them
     def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
 
@@ -4120,6 +4131,14 @@ class EquoInterface(TextInterface):
                 data['slot'] = kmodver # if you change this behaviour,
                                        # you must change "reagent update"
                                        # and "equo database gentoosync" consequentially
+
+        file_ext = etpConst['spm']['ebuild_file_extension']
+        ebuilds_in_path = [x for x in os.listdir(tbz2TmpDir) if x.endswith(".%s" % (file_ext,))]
+        if not data['versiontag'] and ebuilds_in_path:
+            # has the user specified a custom package tag inside the ebuild
+            ebuild_path = os.path.join(tbz2TmpDir,ebuilds_in_path[0])
+            data['versiontag'] = self._extract_pkg_metadata_ebuild_entropy_tag(ebuild_path)
+
 
         data['download'] = etpConst['packagesrelativepath'] + data['branch'] + "/"
         data['download'] += self.entropyTools.create_package_filename(data['category'], data['name'], data['version'], data['versiontag'])
