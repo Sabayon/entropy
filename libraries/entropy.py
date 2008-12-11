@@ -33165,7 +33165,7 @@ class EntropyDatabaseInterface:
         else:
             self.cursor.execute('SELECT '+search_elements+' FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
         if just_id:
-            return self.fetchall2set(self.cursor.fetchall())
+            return self.fetchall2list(self.cursor.fetchall())
         return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None, justid = False):
