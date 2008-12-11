@@ -26,5 +26,4 @@ TODO list
   Spritz:
     - package sets add/remove tool
     - allow package remasking
-    - package source download
     - drag & drop packages to queue
