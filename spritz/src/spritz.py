@@ -1989,6 +1989,7 @@ class SpritzApplication(Controller):
         self.repoView.get_selected()
         self.setPage('output')
         self.cleanEntropyCaches(alone = True)
+        self.setPage('repos')
 
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
