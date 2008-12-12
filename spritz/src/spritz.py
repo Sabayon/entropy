@@ -376,6 +376,16 @@ class SpritzApplication(Controller):
         self.setupUgc()
         self.setupAds()
 
+    def show_wait_window(self):
+        self.wait_ui.waitWindow.show_all()
+        self.wait_ui.waitWindow.queue_draw()
+        self.ui.main.queue_draw()
+        while gtk.events_pending():
+           gtk.main_iteration()
+
+    def hide_wait_window(self):
+        self.wait_ui.waitWindow.hide()
+
     def packagesInstall(self):
 
         packages_install = os.getenv("SPRITZ_PACKAGES")
@@ -631,20 +641,25 @@ class SpritzApplication(Controller):
         return True
 
     def on_dbBackupButton_clicked(self, widget):
+        self.show_wait_window()
         self.startWorking()
         status, err_msg = self.Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
         if not status:
+            self.hide_wait_window()
             okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),err_msg,) )
             return
         okDialog( self.ui.main, "%s" % (_("Backup complete"),) )
         self.fillPreferencesDbBackupPage()
         self.dbBackupView.queue_draw()
+        self.hide_wait_window()
+
 
     def on_dbRestoreButton_clicked(self, widget):
         model, myiter = self.dbBackupView.get_selection().get_selected()
         if myiter == None: return
         dbpath = model.get_value(myiter, 0)
+        self.show_wait_window()
         self.startWorking()
         status, err_msg = self.Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
@@ -656,10 +671,12 @@ class SpritzApplication(Controller):
         self.pkgView.clear()
         self.addPackages()
         if not status:
+            self.hide_wait_window()
             okDialog( self.ui.main, "%s: %s" % (_("Error during restore"),err_msg,) )
             return
         self.fillPreferencesDbBackupPage()
         self.dbBackupView.queue_draw()
+        self.hide_wait_window()
         okDialog( self.ui.main, "%s" % (_("Restore complete"),) )
 
     def on_dbDeleteButton_clicked(self, widget):
@@ -1428,6 +1445,7 @@ class SpritzApplication(Controller):
 
     def add_atoms_to_queue(self, atoms, always_ask = False):
 
+        self.show_wait_window()
         self.setBusy()
         # resolve atoms
         matches = set()
@@ -1436,6 +1454,7 @@ class SpritzApplication(Controller):
             if match[0] != -1:
                 matches.add(match)
         if not matches:
+            self.hide_wait_window()
             okDialog( self.ui.main, _("Packages not found in repositories, try again later.") )
             self.unsetBusy()
             return
@@ -1465,6 +1484,7 @@ class SpritzApplication(Controller):
             self.queueView.refresh()
             self.ui.viewPkg.queue_draw()
 
+        self.hide_wait_window()
         self.unsetBusy()
         return rc
 
@@ -2120,22 +2140,25 @@ class SpritzApplication(Controller):
 
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''
+        self.show_wait_window()
         self.setBusy()
         self.startWorking()
-        self.wait_ui.waitWindow.show_all()
         busyCursor(self.wait_ui.waitWindow)
         self.pkgView.selectAll()
         self.endWorking()
         self.unsetBusy()
         normalCursor(self.wait_ui.waitWindow)
-        self.wait_ui.waitWindow.hide()
+        self.hide_wait_window()
 
     def on_deselect_clicked(self,widget):
         ''' Package Remove All button handler '''
         self.on_clear_clicked(widget)
+        self.show_wait_window()
         self.setBusy()
         self.pkgView.deselectAll()
+        self.hide_wait_window()
         self.unsetBusy()
+
 
     def on_skipMirror_clicked(self,widget):
         self.skipMirrorNow = True
