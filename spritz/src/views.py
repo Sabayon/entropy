@@ -382,6 +382,7 @@ class EntropyPackageView:
     def run_install_menu_stuff(self, objs):
         self.reset_install_menu()
 
+        self.selected_objs = objs
         objs_len = len(objs)
         queued = [x for x in objs if x.queued]
         not_queued = [x for x in objs if not x.queued]
@@ -838,7 +839,8 @@ class EntropyPackageView:
 
     def on_install_update_activate(self, widget, action):
         busyCursor(self.main_window)
-        self.add_to_queue(self.selected_objs, action)
+        if self.selected_objs:
+            self.add_to_queue(self.selected_objs, action)
         self.queueView.refresh()
         normalCursor(self.main_window)
         self.view.queue_draw()
