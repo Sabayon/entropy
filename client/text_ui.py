@@ -1313,7 +1313,7 @@ def dependenciesTest():
             import time
             time.sleep(10)
 
-        installPackages(depsNotMatched)
+        installPackages(list(depsNotMatched))
 
     return 0,0
 
