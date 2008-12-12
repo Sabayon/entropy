@@ -659,7 +659,6 @@
                                 <property name="group">rbUpdates</property>
                                 <child>
                                   <widget class="GtkVBox" id="vbox45">
-                                    <property name="width_request">52</property>
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                     <child>
@@ -684,8 +683,6 @@
                                 </child>
                               </widget>
                               <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
                                 <property name="position">4</property>
                               </packing>
                             </child>
@@ -814,6 +811,14 @@
                                       </widget>
                                     </child>
                                   </widget>
+                                </child>
+                                <child>
+                                  <widget class="GtkLabel" id="UGCMessageLabel">
+                                    <property name="visible">True</property>
+                                  </widget>
+                                  <packing>
+                                    <property name="position">1</property>
+                                  </packing>
                                 </child>
                               </widget>
                             </child>

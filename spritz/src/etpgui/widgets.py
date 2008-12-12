@@ -171,13 +171,14 @@ class CellRendererStars(gtk.GenericCellRenderer):
     def on_render(self, window, widget, background_area, cell_area, expose_area, flags):
 
         (x_offset, y_offset, width, height) = self.on_get_size(widget, cell_area)
-        widget.style.paint_box(window,
-                               gtk.STATE_NORMAL,
-                               gtk.SHADOW_IN,
-                               None, widget, "trough",
-                               cell_area.x+x_offset,
-                               cell_area.y+y_offset,
-                               width, height)
+        if isinstance(window,gtk.gdk.Window):
+            widget.style.paint_box(window,
+                                gtk.STATE_NORMAL,
+                                gtk.SHADOW_IN,
+                                None, widget, "trough",
+                                cell_area.x+x_offset,
+                                cell_area.y+y_offset,
+                                width, height)
         if ((self.value > -1) and (self.value < 6)) or (self.value_voted > 0):
 
             xt = widget.style.xthickness

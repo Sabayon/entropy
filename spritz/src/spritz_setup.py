@@ -124,10 +124,10 @@ class const:
                 "Fabio Erculiani (Italian)",
                 "Roger Calvò (Catalan)",
                 "Daniel Halens (Spanish)",
-                "??? (French)",
-                "??? (German)",
-                "??? (Polish)",
-                "??? (Russian)",
+                "N/A (French)",
+                "N/A (German)",
+                "N/A (Polish)",
+                "N/A (Russian)",
                 )
             ),
 

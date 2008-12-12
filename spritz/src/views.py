@@ -318,8 +318,6 @@ class EntropyPackageView:
 
         self.loaded_widget = widget
         self.loaded_event = event
-        if event.button != 3:
-            return False
 
         objs = self.collect_selected_items(widget)
 
@@ -334,6 +332,10 @@ class EntropyPackageView:
 
         self.event_click_pos = x,y
         if column.get_title() == self.pkgcolumn_text:
+
+            if event.button != 3:
+                return False
+
             if objs:
 
                 objs_len = len(objs)
@@ -356,7 +358,8 @@ class EntropyPackageView:
                 elif len(installable_objs) == objs_len:
                     self.run_install_menu_stuff(installable_objs)
 
-        else:
+        elif len(objs) == 1:
+            obj = objs[0]
             distance = 0
             for col in self.view.get_columns()[0:2]:
                 distance += col.get_width()
@@ -365,6 +368,7 @@ class EntropyPackageView:
                 obj.voted = vote
                 # submit vote
                 self.spawn_vote_submit(obj)
+            return False
 
         return True
 
@@ -857,6 +861,9 @@ class EntropyPackageView:
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         self.view.set_model( store )
+        # 1 == identifier, don't duplicate it
+        # Drag & drop? here we are, future!
+        #self.view.enable_model_drag_source(gtk.gdk.BUTTON1_MASK, [('text/plain', gtk.TARGET_SAME_APP,1,)], gtk.gdk.ACTION_DEFAULT)
 
         myheight = 35
         # selection pixmap
