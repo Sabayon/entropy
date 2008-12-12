@@ -2229,9 +2229,7 @@ class SpritzApplication(Controller):
         obj = model.get_value( myiter, 0 )
         if obj:
             logged_data = self.Equo.UGC.read_login(obj['repoid'])
-            if logged_data:
-                self.Equo.UGC.remove_login(obj['repoid'])
-            self.Equo.UGC.login(obj['repoid'])
+            self.Equo.UGC.login(obj['repoid'], force = True)
             self.load_ugc_repositories()
 
     def on_ugcClearLoginButton_clicked(self, widget):
@@ -2274,7 +2272,11 @@ class SpritzApplication(Controller):
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
         for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
-            self.ugcRepositoriesModel.append([etpRepositories[repoid]])
+            repodata = etpRepositories.get(repoid)
+            if repodata == None:
+                repodata = etpRepositoriesExcluded.get(repoid)
+            if repodata == None: continue # wtf?
+            self.ugcRepositoriesModel.append([repodata])
 
     def on_repoManagerMenuItem_activate(self, widget):
         mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)

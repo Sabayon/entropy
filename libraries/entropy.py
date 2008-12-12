@@ -27232,10 +27232,10 @@ class UGCClientInterface:
     def remove_login(self, repository):
         return self.store.remove_login(repository)
 
-    def do_login(self, repository):
+    def do_login(self, repository, force = False):
 
         login_data = self.read_login(repository)
-        if login_data != None:
+        if (login_data != None) and not force:
             return True,_('ok')
 
         aware = self.is_repository_eapi3_aware(repository)
@@ -27284,13 +27284,13 @@ class UGCClientInterface:
             return True,_('ok')
 
 
-    def login(self, repository):
+    def login(self, repository, force = False):
 
         if not self.TxLocks.has_key(repository):
             self.TxLocks[repository] = self.threading.Lock()
 
         with self.TxLocks[repository]:
-            return self.do_login(repository)
+            return self.do_login(repository, force = force)
 
 
     def logout(self, repository):
