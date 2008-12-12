@@ -1525,16 +1525,6 @@ class SpritzApplication(Controller):
         os.system(diffcmd)
         self.runEditor(randomfile, delete = True)
 
-    def on_switchBranch_clicked( self, widget ):
-        branch = inputBox(self.ui.main, _("Branch switching"), _("Enter a valid branch you want to switch to")+"     ", input_text = etpConst['branch'])
-        branches = self.Equo.listAllAvailableBranches()
-        if branch not in branches:
-            okDialog( self.ui.main, _("The selected branch is not available.") )
-        else:
-            self.Equo.move_to_branch(branch)
-            msg = "%s %s. %s." % (_("New branch is"),etpConst['branch'],_("It is suggested to synchronize repositories"),)
-            okDialog( self.ui.main, msg )
-
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self.__getSelectedRepoIndex()
         if idx != None:

@@ -897,13 +897,6 @@ class EquoInterface(TextInterface):
         etpRepositories[repoid]['configprotect'] += [etpConst['systemroot']+x for x in etpConst['configprotect'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotect']]
         etpRepositories[repoid]['configprotectmask'] += [etpConst['systemroot']+x for x in etpConst['configprotectmask'] if etpConst['systemroot']+x not in etpRepositories[repoid]['configprotectmask']]
 
-    def listAllAvailableBranches(self):
-        branches = set()
-        for repo in self.validRepositories:
-            dbconn = self.openRepositoryDatabase(repo)
-            branches.update(dbconn.listAllBranches())
-        return branches
-
     def openGenericDatabase(self, dbfile, dbname = None, xcache = None, readOnly = False, indexing_override = None, skipChecks = False):
         if xcache == None:
             xcache = self.xcache
