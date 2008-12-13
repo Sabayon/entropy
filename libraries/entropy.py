@@ -3727,11 +3727,13 @@ class EquoInterface(TextInterface):
             return dirpath
         return None
 
-    def inject_entropy_database_into_package(self, package_filename, data):
+    def inject_entropy_database_into_package(self, package_filename, data, treeupdates_actions = None):
         dbpath = self.get_tmp_dbpath()
         dbconn = self.openGenericDatabase(dbpath)
         dbconn.initializeDatabase()
         dbconn.addPackage(data, revision = data['revision'])
+        if treeupdates_actions != None:
+            dbconn.bumpTreeUpdatesActions(treeupdates_actions)
         dbconn.commitChanges()
         dbconn.closeDB()
         self.entropyTools.aggregateEdb(tbz2file = package_filename, dbfile = dbpath)
@@ -16428,9 +16430,7 @@ class ServerInterface(TextInterface):
         )
 
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-        for pkgdata in injection_data:
-            idpackage = pkgdata[0]
-            package_path = pkgdata[1]
+        for idpackage,package_path in injection_data:
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
                             darkgreen(repo),
@@ -16444,7 +16444,8 @@ class ServerInterface(TextInterface):
                 back = True
             )
             data = dbconn.getPackageData(idpackage)
-            dbpath = self.ClientService.inject_entropy_database_into_package(package_path, data)
+            treeupdates_actions = dbconn.listAllTreeUpdatesActions()
+            dbpath = self.ClientService.inject_entropy_database_into_package(package_path, data, treeupdates_actions)
             digest = self.entropyTools.md5sum(package_path)
             # update digest
             dbconn.setDigest(idpackage,digest)
@@ -16755,17 +16756,17 @@ class ServerInterface(TextInterface):
         server_repos = etpConst['server_repositories'].keys()
 
         # packages to be added
-        for x in installed_packages:
+        for spm_atom,spm_counter in installed_packages:
             found = False
             for server_repo in server_repos:
-                installed_counters.add(x[1])
+                installed_counters.add(spm_counter)
                 server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
-                counter = server_dbconn.isCounterAvailable(x[1], branch = etpConst['branch'])
+                counter = server_dbconn.isCounterAvailable(spm_counter, branch = etpConst['branch'])
                 if counter:
                     found = True
                     break
             if not found:
-                toBeAdded.add(tuple(x))
+                toBeAdded.add((spm_atom,spm_counter,))
 
         # packages to be removed from the database
         database_counters = {}
@@ -16779,15 +16780,12 @@ class ServerInterface(TextInterface):
                 ordered_counters.add((data,server_repo))
         database_counters = ordered_counters
 
-        for x in database_counters:
+        for (counter,idpackage,),xrepo in database_counters:
 
-            xrepo = x[1]
-            x = x[0]
-
-            if x[0] < 0:
+            if counter < 0:
                 continue # skip packages without valid counter
 
-            if x[0] in installed_counters:
+            if counter in installed_counters:
                 continue
 
             dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = xrepo)
@@ -16797,15 +16795,15 @@ class ServerInterface(TextInterface):
             if toBeAdded:
 
                 dorm = False
-                atom = dbconn.retrieveAtom(x[1])
+                atom = dbconn.retrieveAtom(idpackage)
                 atomkey = self.entropyTools.dep_getkey(atom)
                 atomtag = self.entropyTools.dep_gettag(atom)
-                atomslot = dbconn.retrieveSlot(x[1])
+                atomslot = dbconn.retrieveSlot(idpackage)
 
                 add = True
-                for pkgdata in toBeAdded:
-                    addslot = self.SpmService.get_installed_package_slot(pkgdata[0])
-                    addkey = self.entropyTools.dep_getkey(pkgdata[0])
+                for spm_atom, spm_counter in toBeAdded:
+                    addslot = self.SpmService.get_installed_package_slot(spm_atom)
+                    addkey = self.entropyTools.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
                     if addslot == None:
                         addslot = '0'                                              # handle tagged packages correctly
@@ -16819,22 +16817,22 @@ class ServerInterface(TextInterface):
                 dorm = True
 
             if dorm:
-                trashed = self.is_counter_trashed(x[0])
+                trashed = self.is_counter_trashed(counter)
                 if trashed:
                     # search into portage then
                     try:
-                        key, slot = dbconn.retrieveKeySlot(x[1])
+                        key, slot = dbconn.retrieveKeySlot(idpackage)
                         trashed = self.SpmService.get_installed_atom(key+":"+slot)
                     except TypeError: # referred to retrieveKeySlot
                         trashed = True
                 if not trashed:
-                    dbtag = dbconn.retrieveVersionTag(x[1])
+                    dbtag = dbconn.retrieveVersionTag(idpackage)
                     if dbtag != '':
-                        is_injected = dbconn.isInjected(x[1])
+                        is_injected = dbconn.isInjected(idpackage)
                         if not is_injected:
-                            toBeInjected.add((x[1],xrepo))
+                            toBeInjected.add((idpackage,xrepo))
                     else:
-                        toBeRemoved.add((x[1],xrepo))
+                        toBeRemoved.add((idpackage,xrepo))
 
         return toBeAdded, toBeRemoved, toBeInjected
 
