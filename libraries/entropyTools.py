@@ -2322,8 +2322,7 @@ def extract_packages_from_set_file(filepath):
     return items
 
 def collectLinkerPaths():
-    if linkerPaths:
-        return linkerPaths
+
     ldpaths = []
     try:
         f = open(etpConst['systemroot']+"/etc/ld.so.conf","r")
@@ -2334,7 +2333,7 @@ def collectLinkerPaths():
                 if path[0] == "/":
                     ldpaths.append(os.path.normpath(path))
         f.close()
-    except:
+    except (IOError,OSError,TypeError,ValueError,IndexError,):
         pass
 
     # can happen that /lib /usr/lib are not in LDPATH
@@ -2343,9 +2342,7 @@ def collectLinkerPaths():
     if "/usr/lib" not in ldpaths:
         ldpaths.append("/usr/lib")
 
-    del linkerPaths[:]
-    linkerPaths.extend(ldpaths)
-    return ldpaths[:]
+    return ldpaths
 
 def collectPaths():
     path = set()

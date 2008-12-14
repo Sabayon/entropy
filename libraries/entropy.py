@@ -355,6 +355,8 @@ class EquoInterface(TextInterface):
         self.QACache = {}
         self.spmCache = {}
         self.mirrorDownloadFailures = {}
+        self.repo_error_messages_cache = {}
+        self.package_match_validator_cache = {}
         self.memoryDbInstances = {}
         self.validRepositories = []
 
@@ -429,6 +431,9 @@ class EquoInterface(TextInterface):
         initConfig_clientConstants()
 
     def validate_repositories(self):
+        self.mirrorDownloadFailures.clear()
+        self.repo_error_messages_cache.clear()
+        self.package_match_validator_cache.clear()
         # valid repositories
         del self.validRepositories[:]
         for repoid in etpRepositoriesOrder:
@@ -637,7 +642,6 @@ class EquoInterface(TextInterface):
     def switchChroot(self, chroot = ""):
         # clean caches
         self.purge_cache()
-        const_resetCache()
         self.closeAllRepositoryDatabases()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
@@ -823,51 +827,51 @@ class EquoInterface(TextInterface):
     @output: database class instance
     NOTE: DO NOT USE THIS DIRECTLY, BUT USE EquoInterface.openRepositoryDatabase
     '''
-    def loadRepositoryDatabase(self, repositoryName, xcache = True, indexing = True):
+    def loadRepositoryDatabase(self, repoid, xcache = True, indexing = True):
 
-        if isinstance(repositoryName,basestring):
-            if repositoryName.endswith(etpConst['packagesext']):
+        if isinstance(repoid,basestring):
+            if repoid.endswith(etpConst['packagesext']):
                 xcache = False
 
-        if repositoryName not in etpRepositories:
+        if repoid not in etpRepositories:
             t = _("bad repository id specified")
-            if repositoryName not in repo_error_messages_cache:
+            if repoid not in self.repo_error_messages_cache:
                 self.updateProgress(
                     darkred(t),
                     importance = 2,
                     type = "warning"
                 )
-                repo_error_messages_cache.add(repositoryName)
+                self.repo_error_messages_cache.add(repoid)
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (t,))
 
-        dbfile = etpRepositories[repositoryName]['dbpath']+"/"+etpConst['etpdatabasefile']
+        dbfile = etpRepositories[repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
-            t = _("Repository %s hasn't been downloaded yet.") % (repositoryName,)
-            if repositoryName not in repo_error_messages_cache:
+            t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
+            if repoid not in self.repo_error_messages_cache:
                 self.updateProgress(
                     darkred(t),
                     importance = 2,
                     type = "warning"
                 )
-                repo_error_messages_cache.add(repositoryName)
+                self.repo_error_messages_cache.add(repoid)
             raise exceptionTools.RepositoryError("RepositoryError: %s" % (t,))
 
         conn = EntropyDatabaseInterface(
             readOnly = True,
             dbFile = dbfile,
             clientDatabase = True,
-            dbname = etpConst['dbnamerepoprefix']+repositoryName,
+            dbname = etpConst['dbnamerepoprefix']+repoid,
             xcache = xcache,
             indexing = indexing,
             OutputInterface = self,
             ServiceInterface = self
         )
         # initialize CONFIG_PROTECT
-        if (etpRepositories[repositoryName]['configprotect'] == None) or \
-            (etpRepositories[repositoryName]['configprotectmask'] == None):
-                self.loadRepositoryConfigProtect(repositoryName, conn)
+        if (etpRepositories[repoid]['configprotect'] == None) or \
+            (etpRepositories[repoid]['configprotectmask'] == None):
+                self.loadRepositoryConfigProtect(repoid, conn)
 
-        if (repositoryName not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repositoryName.endswith(etpConst['packagesext'])):
+        if (repoid not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repoid.endswith(etpConst['packagesext'])):
             updated = False
             try:
                 updated = conn.clientUpdatePackagesData(self.clientDbconn)
@@ -1051,7 +1055,6 @@ class EquoInterface(TextInterface):
        Cache stuff :: begin
     '''
     def purge_cache(self, showProgress = True, client_purge = True):
-        const_resetCache()
         if self.entropyTools.is_user_in_entropy_group():
             skip = set()
             if not client_purge:
@@ -1593,22 +1596,6 @@ class EquoInterface(TextInterface):
         else:
             mhash = "-1"
         return mhash
-
-    def fetch_repository_if_not_available(self, reponame):
-        if fetch_repository_if_not_available_cache.has_key(reponame):
-            return fetch_repository_if_not_available_cache.get(reponame)
-        # open database
-        rc = 0
-        dbfile = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']
-        if not os.path.isfile(dbfile):
-            # sync
-            repoConn = self.Repositories(reponames = [reponame], noEquoCheck = True)
-            rc = repoConn.sync()
-            del repoConn
-            if os.path.isfile(dbfile):
-                rc = 0
-        fetch_repository_if_not_available_cache[reponame] = rc
-        return rc
 
     def update_ugc_cache(self, repository):
         if not self.UGC.is_repository_eapi3_aware(repository):
@@ -3194,7 +3181,7 @@ class EquoInterface(TextInterface):
         self.clear_dump_cache(etpCache['dbMatch']+"/"+match[1]+"/")
         self.clear_dump_cache(etpCache['dbSearch']+"/"+match[1]+"/")
 
-        idpackageValidatorCache.clear()
+        self.package_match_validator_cache.clear()
 
         return done
 
@@ -9143,7 +9130,7 @@ class TriggerInterface:
 
             if (x.startswith("/etc/conf.d") or x.startswith("/etc/init.d")) and ("conftouch" not in functions):
                 functions.append('conftouch')
-            
+
             if x.startswith('/lib/modules/') and ("kernelmod" not in functions):
                 if "ebuild_postinstall" in functions:
                     # disabling gentoo postinstall since we reimplemented it
@@ -9721,8 +9708,7 @@ class TriggerInterface:
         os.system("ldconfig -r "+myroot+" &> /dev/null")
 
     def trigger_env_update(self):
-        # clear linker paths cache
-        del linkerPaths[:]
+
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
@@ -15228,6 +15214,8 @@ class ServerInterface(TextInterface):
         self.FtpInterface = FtpInterface
         self.rssFeed = rssFeed
         self.serverDbCache = {}
+        self.repository_treeupdate_digests = {}
+        self.package_match_validator_cache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
 
@@ -30602,8 +30590,10 @@ class EntropyDatabaseInterface:
         portage_dirs_digest = "0"
         if not doRescan:
 
-            if repositoryUpdatesDigestCache_disk.has_key(self.server_repo):
-                portage_dirs_digest = repositoryUpdatesDigestCache_disk.get(self.server_repo)
+            treeupdates_dict = self.ServiceInterface.repository_treeupdate_digests
+
+            if treeupdates_dict.has_key(self.server_repo):
+                portage_dirs_digest = treeupdates_dict.get(self.server_repo)
             else:
                 SpmIntf = SpmInterface(self.OutputInterface)
                 Spm = SpmIntf.intf
@@ -30621,7 +30611,7 @@ class EntropyDatabaseInterface:
                             block = f.read(1024)
                         f.close()
                     portage_dirs_digest = mdigest.hexdigest()
-                    repositoryUpdatesDigestCache_disk[self.server_repo] = portage_dirs_digest
+                    treeupdates_dict[self.server_repo] = portage_dirs_digest
                 del updates_dir
 
         if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
@@ -30687,13 +30677,6 @@ class EntropyDatabaseInterface:
             # store new digest into database
             self.setRepositoryUpdatesDigest(self.server_repo, portage_dirs_digest)
 
-    # client side, no portage dependency
-    # lxnay: it is indeed very similar to serverUpdatePackagesData() but I prefer keeping both separate
-    # also, we reuse the same caching dictionaries of the server function
-    # repositoryUpdatesDigestCache_disk -> client database cache
-    # check for repository packages updates
-    # this will read database treeupdates* tables and do
-    # changes required if running as root.
     def clientUpdatePackagesData(self, clientDbconn, force = False):
 
         if clientDbconn == None:
@@ -34492,7 +34475,7 @@ class EntropyDatabaseInterface:
             user_package_mask_ids = self.ServiceInterface.PackageSettings[reponame+'mask_ids']
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            idpackageValidatorCache[(idpackage,reponame,live)] = -1,1
+            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,1
             return -1,1
 
     def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
@@ -34507,7 +34490,7 @@ class EntropyDatabaseInterface:
                 self.ServiceInterface.PackageSettings[reponame+'unmask_ids'] |= set(matches[0])
             user_package_unmask_ids = self.ServiceInterface.PackageSettings[reponame+'unmask_ids']
         if idpackage in user_package_unmask_ids:
-            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,3
+            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,3
             return idpackage,3
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
@@ -34527,7 +34510,7 @@ class EntropyDatabaseInterface:
                     repos_mask[mask_repo_id] |= set(matches[0])
                 repomask_ids = repos_mask[mask_repo_id]
             if idpackage in repomask_ids:
-                idpackageValidatorCache[(idpackage,reponame,live)] = -1,8
+                self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,8
                 return -1,8
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
@@ -34537,7 +34520,7 @@ class EntropyDatabaseInterface:
             if mylicenses:
                 for mylicense in mylicenses:
                     if mylicense in self.ServiceInterface.PackageSettings['license_mask']:
-                        idpackageValidatorCache[(idpackage,reponame,live)] = -1,10
+                        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,10
                         return -1,10
 
     def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
@@ -34550,7 +34533,7 @@ class EntropyDatabaseInterface:
         for key in etpConst['keywords']:
             if key in mykeywords:
                 # found! all fine
-                idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,2
+                self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,2
                 return idpackage,2
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
@@ -34562,7 +34545,7 @@ class EntropyDatabaseInterface:
                     keyword_data = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame].get(keyword)
                     if keyword_data:
                         if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,4
+                            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,4
                             return idpackage,4
                         keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame].get(keyword+"_ids")
                         if keyword_data_ids == None:
@@ -34574,7 +34557,7 @@ class EntropyDatabaseInterface:
                                 self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame][keyword+"_ids"] |= matches[0]
                             keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame][keyword+"_ids"]
                         if idpackage in keyword_data_ids:
-                            idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,5
+                            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,5
                             return idpackage,5
 
         # if we get here, it means we didn't find a match in repositories
@@ -34597,13 +34580,13 @@ class EntropyDatabaseInterface:
                         keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['packages'][reponame+keyword+"_ids"]
                     if idpackage in keyword_data_ids:
                         # valid!
-                        idpackageValidatorCache[(idpackage,reponame,live)] = idpackage,6
+                        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,6
                         return idpackage,6
 
 
 
     # function that validate one atom by reading keywords settings
-    # idpackageValidatorCache = {} >> function cache
+    # self.ServiceInterface.package_match_validator_cache = {} >> function cache
     def idpackageValidator(self,idpackage, live = True):
 
         if self.dbname == etpConst['clientdbid']:
@@ -34617,12 +34600,12 @@ class EntropyDatabaseInterface:
             return idpackage,0
 
         reponame = self.dbname[5:]
-        cached = idpackageValidatorCache.get((idpackage,reponame,live))
+        cached = self.ServiceInterface.package_match_validator_cache.get((idpackage,reponame,live))
         if cached != None:
             return cached
         # avoid memleaks
-        if len(idpackageValidatorCache) > 6000:
-            idpackageValidatorCache.clear()
+        if len(self.ServiceInterface.package_match_validator_cache) > 10000:
+            self.ServiceInterface.package_match_validator_cache.clear()
 
         if live:
             data = self._idpackageValidator_live(idpackage, reponame)
@@ -34644,7 +34627,7 @@ class EntropyDatabaseInterface:
         if data: return data
 
         # holy crap, can't validate
-        idpackageValidatorCache[(idpackage,reponame,live)] = -1,7
+        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,7
         return -1,7
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:

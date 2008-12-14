@@ -429,21 +429,6 @@ etpRSSMessages = {
     'light': {} # this stuff will be pushed to the light rss
 }
 
-# CACHING dictionaries
-idpackageValidatorCache = {}
-linkerPaths = []
-# repository atoms updates digest cache
-repositoryUpdatesDigestCache_disk = {}
-fetch_repository_if_not_available_cache = {}
-repo_error_messages_cache = set()
-
-### Application disk cache
-def const_resetCache():
-    idpackageValidatorCache.clear()
-    del linkerPaths[:]
-    repositoryUpdatesDigestCache_disk.clear()
-    fetch_repository_if_not_available_cache.clear()
-    repo_error_messages_cache.clear()
 
 # Client packages/database repositories
 etpRepositories = {}
@@ -470,7 +455,6 @@ def initConfig_entropyConstants(rootdir):
     else:
         backed_up_settings = {}
 
-    const_resetCache()
     const_defaultSettings(rootdir)
     const_readEntropyRelease()
     const_createWorkingDirectories()
