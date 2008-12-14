@@ -11713,6 +11713,13 @@ class PortageInterface:
         self.portage_const = portage_const
 
         try:
+            from portage.versions import best
+            self.portage_best = best
+        except ImportError:
+            from portage_versions import best
+            self.portage_best = best
+
+        try:
             import portage.util as portage_util
         except ImportError:
             import portage_util
@@ -11948,12 +11955,7 @@ class PortageInterface:
     # same as above but includes masked ebuilds
     def get_best_masked_atom(self, atom):
         atoms = self.portage.portdb.xmatch("match-all",str(atom))
-        # find the best
-        try:
-            from portage_versions import best
-        except ImportError:
-            from portage.versions import best
-        return best(atoms)
+        return self.portage_best(atoms)
 
     def get_category_description_data(self, category):
         from xml.dom import minidom
@@ -18029,6 +18031,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.initialize_doctypes()
         self.setup_store_path(store_path)
         self.system_name = etpConst['systemname']
+        from datetime import datetime
+        self.datetime = datetime
         try:
             import gdata
             import gdata.youtube
@@ -18168,9 +18172,8 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_date(self):
         mytime = time.time()
-        from datetime import datetime
-        mydate = datetime.fromtimestamp(mytime)
-        mydate = datetime(mydate.year,mydate.month,mydate.day)
+        mydate = self.datetime.fromtimestamp(mytime)
+        mydate = self.datetime(mydate.year,mydate.month,mydate.day)
         return mydate
 
     def get_iddownload(self, key, ddate):
@@ -18720,7 +18723,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def insert_flood_control_check(self, userid):
         self.check_connection()
-        from datetime import datetime
         self.execute_query('SELECT max(`ts`) as ts FROM entropy_docs WHERE `userid` = %s', (userid,))
         data = self.fetchone()
         if not data:
@@ -18729,7 +18731,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return False
         elif data['ts'] == None:
             return False
-        delta = datetime.fromtimestamp(time.time()) - data['ts']
+        delta = self.datetime.fromtimestamp(time.time()) - data['ts']
         if (delta.days == 0) and (delta.seconds <= self.FLOOD_INTERVAL):
             return True
         return False
@@ -25093,6 +25095,8 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.queue_loaded = False
         import entropyTools, dumpTools
         self.entropyTools, self.dumpTools = entropyTools, dumpTools
+        from datetime import datetime
+        self.datetime = datetime
 
         self.setup_stdout_storage_dir()
 
@@ -25278,8 +25282,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
 
     def get_ts(self):
-        from datetime import datetime
-        return datetime.fromtimestamp(time.time())
+        return self.datetime.fromtimestamp(time.time())
 
     def swap_items_in_queue(self, queue_id1, queue_id2):
         self.queue_lock_acquire()
@@ -26591,6 +26594,8 @@ class SystemManagerClientInterface:
 
         import socket, struct, entropyTools
         self.socket, self.struct, self.entropyTools = socket, struct, entropyTools
+        from datetime import datetime
+        self.datetime = datetime
         self.Entropy = EntropyInstance
         self.hostname = None
         self.hostport = None
@@ -26688,8 +26693,7 @@ class SystemManagerClientInterface:
             srv.disconnect()
 
     def get_ts(self):
-        from datetime import datetime
-        return datetime.fromtimestamp(time.time())
+        return self.datetime.fromtimestamp(time.time())
 
     def setup_connection(self, hostname, port, username, password, ssl):
         self.hostname = hostname
