@@ -1467,6 +1467,7 @@ class EquoInterface(TextInterface):
             return -1
 
     def get_meant_packages(self, search_term, from_installed = False, valid_repos = [], branch = etpConst['branch']):
+        # strip numbers
         import re
         match_string = ''
         for x in search_term:
@@ -3067,7 +3068,7 @@ class EquoInterface(TextInterface):
                     do_continue = True
                     break
                 try:
-                    idpackage = match[0][0]
+                    m_idpackage = match[0][0]
                 except TypeError:
                     if not use_match_cache: raise
                     use_match_cache = False
@@ -3078,21 +3079,24 @@ class EquoInterface(TextInterface):
             # version: mystrictdata[2]
             # tag: mystrictdata[3]
             # revision: mystrictdata[4]
-            if (idpackage != -1):
+            if (m_idpackage != -1):
                 repoid = match[1]
                 version = match[0][1]
                 tag = match[0][2]
                 revision = match[0][3]
                 if empty_deps:
-                    update.append((idpackage,repoid))
+                    if (m_idpackage,repoid) not in update:
+                        update.append((m_idpackage,repoid))
                     continue
                 elif (mystrictdata[2] != version):
                     # different versions
-                    update.append((idpackage,repoid))
+                    if (m_idpackage,repoid) not in update:
+                        update.append((m_idpackage,repoid))
                     continue
                 elif (mystrictdata[3] != tag):
                     # different tags
-                    update.append((idpackage,repoid))
+                    if (m_idpackage,repoid) not in update:
+                        update.append((m_idpackage,repoid))
                     continue
                 elif (mystrictdata[4] != revision):
                     # different revision
@@ -3101,7 +3105,8 @@ class EquoInterface(TextInterface):
                         fine.append(mystrictdata[5])
                         continue
                     else:
-                        update.append((idpackage,repoid))
+                        if (m_idpackage,repoid) not in update:
+                            update.append((m_idpackage,repoid))
                         continue
                 else:
                     # no difference
@@ -3116,7 +3121,7 @@ class EquoInterface(TextInterface):
                 matchresults = self.atomMatch(mystrictdata[0], matchBranches = (branch,))
                 if matchresults[0] != -1:
                     m_action = self.get_package_action(matchresults)
-                    if m_action > 0:
+                    if m_action > 0 and (matchresults not in update):
                         update.append(matchresults)
 
         if self.xcache:
