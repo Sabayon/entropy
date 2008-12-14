@@ -21,11 +21,7 @@
 '''
 
 
-import random
-import sys
-import os
-import stat
-import exceptionTools
+import random, sys, os, stat, exceptionTools
 from entropy_i18n import _
 
 
@@ -435,7 +431,6 @@ etpRSSMessages = {
 
 # CACHING dictionaries
 idpackageValidatorCache = {}
-maskingReasonsStorage = {}
 linkerPaths = []
 # repository atoms updates digest cache
 repositoryUpdatesDigestCache_disk = {}
@@ -449,16 +444,11 @@ def const_resetCache():
     repositoryUpdatesDigestCache_disk.clear()
     fetch_repository_if_not_available_cache.clear()
     repo_error_messages_cache.clear()
-    maskingReasonsStorage.clear()
 
 # Client packages/database repositories
 etpRepositories = {}
 etpRepositoriesExcluded = {}
 etpRepositoriesOrder = []
-
-# remote section
-etpRemoteFailures = {}  # dict of excluded mirrors due to failures, 
-                        # it contains mirror name and failure count | > 5 == ignore mirror
 
 # your bible
 etpConst = {}
@@ -611,6 +601,7 @@ def const_defaultSettings(rootdir):
 
         'packagesetprefix': "@",
         'userpackagesetsid': "__user__",
+        'setsconffilename': "sets.conf",
         'packagesext': ".tbz2",
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
@@ -1465,13 +1456,6 @@ def const_extractServerRepositoryParameters(repostring):
     return repoid, mydata
 
 def const_configureServerRepoPaths():
-
-    #'packagesserverstoredir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_STOREDIR,
-    #'packagesserveruploaddir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_UPLOADDIR,
-    #'packagesserverbindir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_REPODIR,
-    #'etpdatabasedir': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_DBDIR,
-    #'etpdatabasefilepath': ETP_DIR+"/server/"+ETP_DBREPODIR+"/"+ETP_DBDIR+"/"+ETP_DBFILE,
-    # etpConst['server_repositories']
 
     for repoid in etpConst['server_repositories']:
         etpConst['server_repositories'][repoid]['packages_dir'] = \

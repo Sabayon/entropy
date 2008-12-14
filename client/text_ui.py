@@ -292,12 +292,11 @@ def _scanPackages(packages, tbz2):
 
     for package in packages:
         # clear masking reasons
-        maskingReasonsStorage.clear()
         match = Equo.atomMatch(package)
         if match[0] == -1:
-            reasons = maskingReasonsStorage.get(package)
-            if reasons != None:
-                keyreasons = reasons.keys()
+            masked_matches = Equo.atomMatch(package, packagesFilter = False, multiMatch = True)
+            if masked_matches[1] == 0:
+
                 mytxt = "%s %s %s %s." % (
                     bold("!!!"),
                     red(_("Every package matching")), # every package matching app-foo is masked
@@ -305,11 +304,18 @@ def _scanPackages(packages, tbz2):
                     red(_("is masked")),
                 )
                 print_warning(mytxt)
-                for key in keyreasons:
-                    reason = etpConst['packagemaskingreasons'][key]
+
+                m_reasons = {}
+                for match in masked_matches[0]:
+                    masked, idreason, reason = Equo.get_masked_package_reason(match)
+                    if not masked: continue
+                    if not m_reasons.has_key((idreason,reason,)):
+                        m_reasons[(idreason,reason,)] = []
+                    m_reasons[(idreason,reason,)].append(match)
+
+                for idreason, reason in sorted(m_reasons.keys()):
                     print_warning(bold("    # ")+red("Reason: ")+blue(reason))
-                    masked_packages = reasons[key]
-                    for m_idpackage, m_repo in masked_packages:
+                    for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
                         dbconn = Equo.openRepositoryDatabase(m_repo)
                         try:
                             m_atom = dbconn.retrieveAtom(m_idpackage)

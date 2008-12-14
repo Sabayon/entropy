@@ -354,6 +354,7 @@ class EquoInterface(TextInterface):
         self.securityCache = {}
         self.QACache = {}
         self.spmCache = {}
+        self.mirrorDownloadFailures = {}
         self.memoryDbInstances = {}
         self.validRepositories = []
 
@@ -2243,6 +2244,14 @@ class EquoInterface(TextInterface):
 
         return unsatisfiedDeps, satisfiedDeps
 
+    def get_masked_package_reason(self, match):
+        idpackage, repoid = match
+        dbconn = self.openRepositoryDatabase(repoid)
+        idpackage, idreason = dbconn.idpackageValidator(idpackage)
+        masked = False
+        if idpackage == -1: masked = True
+        return masked, idreason, etpConst['packagemaskingreasons'].get(idreason)
+
     def get_masked_packages_tree(self, atomInfo, atoms = False, flat = False, matchfilter = None):
 
         usefilter = False
@@ -2658,9 +2667,6 @@ class EquoInterface(TextInterface):
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
 
-        # clear masking reasons
-        maskingReasonsStorage.clear()
-
         if self.xcache:
             c_data = sorted(list(matched_atoms))
             client_checksum = self.clientDbconn.database_checksum()
@@ -2931,9 +2937,6 @@ class EquoInterface(TextInterface):
     # this function searches all the not installed packages available in the repositories
     def calculate_available_packages(self, use_cache = True):
 
-        # clear masking reasons
-        maskingReasonsStorage.clear()
-
         c_hash = self.get_available_packages_chash(etpConst['branch'])
 
         if use_cache and self.xcache:
@@ -3026,9 +3029,6 @@ class EquoInterface(TextInterface):
             ignore_spm_downgrades = etpConst['spm']['ignore-spm-downgrades'],
             use_cache = True
         ):
-
-        # clear masking reasons
-        maskingReasonsStorage.clear()
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
@@ -3373,9 +3373,6 @@ class EquoInterface(TextInterface):
 
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):
 
-        # clear masking reasons
-        maskingReasonsStorage.clear()
-
         install = []
         removal = []
         treepackages, result = self.get_required_packages(matched_atoms, empty_deps, deep_deps)
@@ -3483,15 +3480,15 @@ class EquoInterface(TextInterface):
         return 0, data_transfer, resumed
 
     def add_failing_mirror(self, mirrorname,increment = 1):
-        item = etpRemoteFailures.get(mirrorname)
+        item = self.mirrorDownloadFailures.get(mirrorname)
         if item == None:
-            etpRemoteFailures[mirrorname] = increment
+            self.mirrorDownloadFailures[mirrorname] = increment
         else:
-            etpRemoteFailures[mirrorname] += increment # add a failure
-        return etpRemoteFailures[mirrorname]
+            self.mirrorDownloadFailures[mirrorname] += increment # add a failure
+        return self.mirrorDownloadFailures[mirrorname]
 
     def get_failing_mirror_status(self, mirrorname):
-        item = etpRemoteFailures.get(mirrorname)
+        item = self.mirrorDownloadFailures.get(mirrorname)
         if item == None:
             return 0
         else:
@@ -3519,7 +3516,7 @@ class EquoInterface(TextInterface):
             # check if uri is sane
             if self.get_failing_mirror_status(uri) >= 30:
                 # ohohoh!
-                etpRemoteFailures[uri] = 30 # set to 30 for convenience
+                self.mirrorDownloadFailures[uri] = 30 # set to 30 for convenience
                 mytxt = mirrorCountText
                 mytxt += blue(" %s: ") % (_("Mirror"),)
                 mytxt += red(self.entropyTools.spliturl(url)[1])
@@ -3539,7 +3536,7 @@ class EquoInterface(TextInterface):
                         self.add_failing_mirror(uri,-4)
                     else:
                         # put to 0 - reenable mirror, welcome back uri!
-                        etpRemoteFailures[uri] = 0
+                        self.mirrorDownloadFailures[uri] = 0
 
                 if uri in remaining:
                     remaining.remove(uri)
@@ -5868,9 +5865,6 @@ class PackageInterface:
         @input action(string): is an action to take, which must be one in self.valid_actions
     '''
     def prepare(self, matched_atom, action, metaopts = {}):
-
-        # clear masking reasons
-        maskingReasonsStorage.clear()
 
         self.error_on_prepared()
         self.check_action_validity(action)
@@ -12974,11 +12968,11 @@ class PortageInterface:
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
         setconfigpaths = []
         if builtin_sets:
-            setconfigpaths += [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, "sets.conf")]
-        setconfigpaths.append(os.path.join(settings["PORTDIR"], "sets.conf"))
-        setconfigpaths += [os.path.join(x, "sets.conf") for x in settings["PORTDIR_OVERLAY"].split()]
+            setconfigpaths += [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
+        setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
+        setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
-            self.portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), "sets.conf"))
+            self.portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
         return self.portage_sets.SetConfig(setconfigpaths, settings, trees)
 
     def get_set_config(self, builtin_sets = True):
@@ -34626,6 +34620,9 @@ class EntropyDatabaseInterface:
         cached = idpackageValidatorCache.get((idpackage,reponame,live))
         if cached != None:
             return cached
+        # avoid memleaks
+        if len(idpackageValidatorCache) > 6000:
+            idpackageValidatorCache.clear()
 
         if live:
             data = self._idpackageValidator_live(idpackage, reponame)
@@ -34660,16 +34657,9 @@ class EntropyDatabaseInterface:
 
         newresults = set()
         for idpackage in results:
-            rc = self.idpackageValidator(idpackage)
-            if rc[0] != -1:
-                newresults.add(idpackage)
-            else:
-                idreason = rc[1]
-                if not maskingReasonsStorage.has_key(atom):
-                    maskingReasonsStorage[atom] = {}
-                if not maskingReasonsStorage[atom].has_key(idreason):
-                    maskingReasonsStorage[atom][idreason] = set()
-                maskingReasonsStorage[atom][idreason].add((idpackage,self.dbname[5:]))
+            idpackage, reason = self.idpackageValidator(idpackage)
+            if idpackage == -1: continue
+            newresults.add(idpackage)
         return newresults
 
     def __filterSlot(self, idpackage, slot):
