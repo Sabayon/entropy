@@ -2016,7 +2016,7 @@ class EquoInterface(TextInterface):
                 # no need # etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
                 etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
                 smart_package = repodata.get('smartpackage')
-                if smart_package: etpRepositories[repodata['repoid']]['smartpackage'] = smart_package
+                if smart_package != None: etpRepositories[repodata['repoid']]['smartpackage'] = smart_package
                 etpRepositories[repodata['repoid']]['dbpath'] = repodata.get('dbpath')
                 etpRepositories[repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
             except KeyError:
