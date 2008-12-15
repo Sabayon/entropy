@@ -487,7 +487,6 @@ def spm(options):
 
     if not options:
         return 0
-    options = options[1:]
 
     opts = []
     do_list = False
@@ -501,9 +500,10 @@ def spm(options):
 
     action = options[0]
 
-    if action == "categories":
+    if action == "compile":
 
-        if len(options) < 2:
+        options = options[1:]
+        if not options:
             return 0
         categories = list(set(options[1:]))
         categories.sort()
