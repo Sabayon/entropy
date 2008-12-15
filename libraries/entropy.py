@@ -15956,7 +15956,7 @@ class ServerInterface(TextInterface):
             if not tree_atom:
                 not_found[installed_package] = pkg_atom
                 self.updateProgress(
-                    "%s: %s" % (blue(installed_package),darkred(_("not found anymore")),),
+                    "%s: %s" % (blue(pkg_atom),darkred(_("not found anymore")),),
                     importance = 0,
                     type = "warning",
                     count = (count,length),
