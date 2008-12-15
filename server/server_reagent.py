@@ -517,5 +517,5 @@ def spm(options):
 
     elif action == "orphans":
 
-        Entropy.orphaned_spm_packages_test()
+        not_found = Entropy.orphaned_spm_packages_test()
         return 0

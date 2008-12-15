@@ -15963,6 +15963,16 @@ class ServerInterface(TextInterface):
                     header = darkred(" @@ ")
                 )
 
+        if not_found:
+            not_found_list = ' '.join(sorted(not_found.keys()))
+            self.updateProgress(
+                "%s: %s" % (blue(_("Packages string")),not_found_list,),
+                importance = 0,
+                type = "warning",
+                count = (count,length),
+                header = darkred(" @@ ")
+            )
+
         return not_found
 
     def depends_table_initialize(self, repo = None):
