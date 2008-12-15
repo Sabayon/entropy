@@ -15964,7 +15964,7 @@ class ServerInterface(TextInterface):
                 )
 
         if not_found:
-            not_found_list = ' '.join(sorted(not_found.keys()))
+            not_found_list = ' '.join([not_found[x] for x in sorted(not_found.keys())])
             self.updateProgress(
                 "%s: %s" % (blue(_("Packages string")),not_found_list,),
                 importance = 0,
