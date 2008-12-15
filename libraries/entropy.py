@@ -355,7 +355,7 @@ class EquoInterface(TextInterface):
         self.QACache = {}
         self.spmCache = {}
         self.mirrorDownloadFailures = {}
-        self.repo_error_messages_cache = {}
+        self.repo_error_messages_cache = set()
         self.package_match_validator_cache = {}
         self.memoryDbInstances = {}
         self.validRepositories = []
