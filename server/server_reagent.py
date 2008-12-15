@@ -485,7 +485,7 @@ def database(options):
 
 def spm(options):
 
-    if len(options) < 2:
+    if not options:
         return 0
     options = options[1:]
 
