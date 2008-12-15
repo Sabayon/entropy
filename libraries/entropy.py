@@ -15928,6 +15928,43 @@ class ServerInterface(TextInterface):
 
         return 0,packages
 
+    def orphaned_spm_packages_test(self):
+
+        mytxt = "%s %s" % (blue(_("Running orphaned SPM packages test")),red("..."),)
+        self.updateProgress(
+            mytxt,
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
+        installed_packages, length = self.SpmService.get_installed_packages()
+        not_found = {}
+        count = 0
+        for installed_package in installed_packages:
+            count += 1
+            self.updateProgress(
+                "%s: %s" % (darkgreen(_("Scanning package")),brown(installed_package),),
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (count,length),
+                header = darkred(" @@ ")
+            )
+            key, slot = self.entropyTools.dep_getkey(installed_package),self.SpmService.get_installed_package_slot(installed_package)
+            pkg_atom = "%s:%s" % (key,slot,)
+            tree_atom = self.SpmService.get_best_atom(pkg_atom)
+            if not tree_atom:
+                not_found[installed_package] = pkg_atom
+                self.updateProgress(
+                    "%s: %s" % (blue(installed_package),darkred(_("not found anymore")),),
+                    importance = 0,
+                    type = "warning",
+                    count = (count,length),
+                    header = darkred(" @@ ")
+                )
+
+        return not_found
+
     def depends_table_initialize(self, repo = None):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         dbconn.regenerateDependsTable()

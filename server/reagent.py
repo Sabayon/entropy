@@ -92,6 +92,7 @@ myopts = [
         (2,'compile',4,_('compilation function')),
             (3,'categories',2,_('compile packages belonging to the provided categories')),
                 (4,'--list',2,_('just list packages')),
+        (2,'orphans',4,_('scan orphaned packages on SPM')),
     None,
     (1,'deptest',3,_('look for unsatisfied dependencies')),
     (1,'libtest',3,_('look for missing libraries')),

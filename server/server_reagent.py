@@ -502,6 +502,7 @@ def spm(options):
     action = options[0]
 
     if action == "categories":
+
         if len(options) < 2:
             return 0
         categories = list(set(options[1:]))
@@ -513,3 +514,8 @@ def spm(options):
             print ' '.join(["="+x for x in packages])
         else:
             os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
+
+    elif action == "orphans":
+
+        Entropy.orphaned_spm_packages_test()
+        return 0
