@@ -279,18 +279,22 @@ class SpritzQueue:
 
         else: # remove
 
-            mypkgs = []
-            for pkg in pkgs:
+            def myfilter(pkg):
                 if not self.checkSystemPackage(pkg):
-                    continue
-                mypkgs.append(pkg)
-            pkgs = mypkgs
+                    return False
+                return True
+
+            def mymap(pkg):
+                return pkg.matched_atom[0]
+
+            pkgs = filter(myfilter,pkgs)
 
             if not pkgs:
                 return -2,1
 
-            tmpqueue = [x for x in pkgs if x not in self.packages['r']]
-            xlist = [x.matched_atom[0] for x in self.packages['r']+tmpqueue]
+            tmpqueue = pkgs
+            if self.packages['r']: tmpqueue = [x for x in pkgs if x not in self.packages['r']]
+            xlist = map(mymap,self.packages['r']+tmpqueue)
             status = self.elaborateRemoval(xlist,False,accept,always_ask)
             return status,1
 
@@ -436,7 +440,10 @@ class SpritzQueue:
         if nodeps:
             return 0
 
-        r_cache = set([x.matched_atom[0] for x in self.packages['r']])
+        def r_cache_map(x):
+            return x.matched_atom[0]
+
+        r_cache = set(map(r_cache_map,self.packages['r']))
         removalQueue = self.Entropy.retrieveRemovalQueue(mylist)
 
         if removalQueue:
