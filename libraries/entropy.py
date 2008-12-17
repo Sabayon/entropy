@@ -10447,6 +10447,7 @@ class PackageSettings:
             'mask': etpConst['confpackagesdir']+"/package.mask", # masking configuration files
             'license_mask': etpConst['confpackagesdir']+"/license.mask", # masking configuration files
             'repos_system_mask': {},
+            'system_mask': etpConst['confpackagesdir']+"/system.mask",
             'repos_mask': {},
             'repos_license_whitelist': {},
             'system_package_sets': {},
@@ -10457,6 +10458,7 @@ class PackageSettings:
             'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime",
             'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime",
             'license_mask_mtime': etpConst['dumpstoragedir']+"/license_mask.mtime",
+            'system_mask_mtime': etpConst['dumpstoragedir']+"/system_mask.mtime",
             'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {},
@@ -10490,7 +10492,7 @@ class PackageSettings:
         self.__settings['repos_system_mask_installed_keys'] = {}
         if self.Entropy.clientDbconn != None:
             mc_cache = set()
-            for atom in self.__settings['repos_system_mask']:
+            for atom in self.__settings['repos_system_mask']+list(self.__settings['system_mask']):
                 match = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
                 if match[1] != 0: continue
                 mykey = self.entropyTools.dep_getkey(atom)
@@ -10509,25 +10511,35 @@ class PackageSettings:
         if self.__settings == None: self.scan()
         if mykey in self.__persistent_settings: # backup here too
             self.__persistent_settings[mykey] = myvalue
+            self.__settings.update(self.__persistent_settings)
         self.__settings[mykey] = myvalue
 
     def __getitem__(self, mykey):
         if self.__settings == None: self.scan()
+        if mykey in self.__persistent_settings: # backup here too
+            return self.__persistent_settings[mykey]
         return self.__settings[mykey]
 
     def __contains__(self, mykey):
         if self.__settings == None: self.scan()
+        here = mykey in self.__persistent_settings
+        if here: return here
         return mykey in self.__settings
 
     def __cmp__(self, other):
+        if self.__settings == None: self.scan()
         return cmp(self.__settings,other)
 
     def get(self, mykey):
         if self.__settings == None: self.scan()
+        if mykey in self.__persistent_settings:
+            return self.__persistent_settings.get(mykey)
         return self.__settings.get(mykey)
 
     def has_key(self, mykey):
         if self.__settings == None: self.scan()
+        here = mykey in self.__persistent_settings
+        if here: return True
         return mykey in self.__settings
 
     def parse(self):
@@ -10658,6 +10670,20 @@ class PackageSettings:
         data = set()
         if os.path.isfile(self.etpMaskFiles['mask']):
             f = open(self.etpMaskFiles['mask'],"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                data.add(line)
+        return data
+
+    def system_mask_parser(self):
+        self.__validateEntropyCache(self.etpMaskFiles['system_mask'],self.etpMtimeFiles['system_mask_mtime'])
+
+        data = set()
+        if os.path.isfile(self.etpMaskFiles['system_mask']):
+            f = open(self.etpMaskFiles['system_mask'],"r")
             content = f.readlines()
             f.close()
             # filter comments and white lines
@@ -32457,6 +32483,10 @@ class EntropyDatabaseInterface:
 
     def retrievePackageSet(self, setname):
         self.cursor.execute('SELECT dependency FROM packagesets WHERE setname = (?)', (setname,))
+        return self.fetchall2set(self.cursor.fetchall())
+
+    def retrieveSystemPackages(self,idpackage):
+        self.cursor.execute('SELECT idpackage FROM systempackages')
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveAtom(self, idpackage):

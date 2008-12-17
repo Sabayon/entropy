@@ -27,3 +27,4 @@ TODO list
     - package sets add/remove tool
     - allow package remasking
     - ability to change colours
+    - misc.py: use map() and filter()
