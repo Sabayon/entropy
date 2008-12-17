@@ -32485,7 +32485,7 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT dependency FROM packagesets WHERE setname = (?)', (setname,))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def retrieveSystemPackages(self,idpackage):
+    def retrieveSystemPackages(self):
         self.cursor.execute('SELECT idpackage FROM systempackages')
         return self.fetchall2set(self.cursor.fetchall())
 
@@ -34718,7 +34718,7 @@ class EntropyDatabaseInterface:
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [608,1867]
-    def packagesFilter(self, results, atom):
+    def packagesFilter(self, results):
         # keywordsFilter ONLY FILTERS results if
         # self.dbname.startswith(etpConst['dbnamerepoprefix']) => repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
@@ -34907,7 +34907,7 @@ class EntropyDatabaseInterface:
         if foundIDs:
             foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
             if packagesFilter: # keyword filtering
-                foundIDs = self.packagesFilter(foundIDs, atom)
+                foundIDs = self.packagesFilter(foundIDs)
         ### END FILTERING
 
         if foundIDs:
