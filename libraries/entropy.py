@@ -11871,7 +11871,22 @@ class PortageInterface:
         mydb[myroot]['porttree'] = self._get_portage_portagetree(myroot)
         mydb[myroot]['bintree'] = self._get_portage_binarytree(myroot)
         mydb[myroot]['virtuals'] = self.portage.settings.getvirtuals(myroot)
-        self.portage._global_updates(mydb, {}) # always force
+        if etpUi['mute']:
+            pid = os.fork()
+            if pid > 0:
+                os.waitpid(pid, 0)
+            else:
+                f = open("/dev/null","w")
+                old_stdout = sys.stdout
+                old_stderr = sys.stderr
+                sys.stdout = f
+                sys.stderr = f
+                self.portage._global_updates(mydb, {})
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+                f.close()
+        else:
+            self.portage._global_updates(mydb, {}) # always force
 
     def get_world_file(self):
         return os.path.join(etpConst['systemroot'],"/",self.portage_const.WORLD_FILE)
