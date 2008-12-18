@@ -279,7 +279,7 @@ class urlFetcher:
 
     def updateProgress(self):
 
-        mytxt = _("Fetch")
+        mytxt = _("[F]")
         eta_txt = _("ETA")
         sec_txt = _("sec") # as in XX kb/sec
 
@@ -1162,19 +1162,19 @@ class EquoInterface(TextInterface):
 
         deps_not_matched = set()
         # now look
-        length = str((len(installedPackages)))
+        length = len(installedPackages)
         count = 0
         for xidpackage in installedPackages:
             count += 1
             atom = dbconn.retrieveAtom(xidpackage)
             self.updateProgress(
-                                    darkgreen(_("Checking %s") % (bold(atom),)),
-                                    importance = 0,
-                                    type = "info",
-                                    back = True,
-                                    count = (count,length),
-                                    header = darkred(" @@ ")
-                                )
+                darkgreen(_("Checking %s") % (bold(atom),)),
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (count,length),
+                header = darkred(" @@ ")
+            )
 
             xdeps = dbconn.retrieveDependencies(xidpackage)
             needed_deps = set()
@@ -2393,8 +2393,7 @@ class EquoInterface(TextInterface):
                 m_idpackage, m_repo = atomInfo
                 dbconn = self.openRepositoryDatabase(m_repo)
                 myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
-                if myidpackage == -1:
-                    match = (-1,m_repo)
+                if myidpackage == -1: m_idpackage = -1
             else:
                 m_idpackage, m_repo = self.atomMatch(dep_atom)
             if m_idpackage == -1:
@@ -2477,7 +2476,7 @@ class EquoInterface(TextInterface):
                     flat_tree.append(item)
         del deptree
 
-        if (dependenciesNotFound):
+        if dependenciesNotFound:
             # Houston, we've got a problem
             flatview = list(dependenciesNotFound)
             return flatview,-2
@@ -33714,6 +33713,13 @@ class EntropyDatabaseInterface:
         removed_ids = myids - outids
         return added_ids, removed_ids
 
+    def uniformBranch(self, branch):
+        self.checkReadOnly()
+        with self.WriteLock:
+            self.cursor.execute('UPDATE baseinfo SET branch = (?)', (branch,))
+            self.commitChanges()
+            self.clearCache()
+
     def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
 
         added_ids, removed_ids = self.getIdpackagesDifferences(dbconn.listAllIdpackages())
@@ -34876,13 +34882,14 @@ class EntropyDatabaseInterface:
                 direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
 
                 justname = self.entropyTools.isjustname(strippedAtom)
-                if not justname:
+                pkgkey = strippedAtom
+                if justname == 0:
                     # get version
                     data = self.entropyTools.catpkgsplit(strippedAtom)
                     if data == None: break # badly formatted
                     pkgversion = data[2]+"-"+data[3]
+                    pkgkey = self.entropyTools.dep_getkey(strippedAtom)
 
-                pkgkey = self.entropyTools.dep_getkey(strippedAtom)
                 splitkey = pkgkey.split("/")
                 if (len(splitkey) == 2):
                     pkgname = splitkey[1]
