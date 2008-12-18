@@ -30828,20 +30828,22 @@ class EntropyDatabaseInterface:
 
             doaction = action.split()
             if doaction[0] == "slotmove":
+
                 # slot move
                 atom = doaction[1]
                 from_slot = doaction[2]
                 to_slot = doaction[3]
-                category = atom.split("/")[0]
-                matches = self.atomMatch(atom, multiMatch = True)
+                atom_key = self.entropyTools.dep_getkey(atom)
+                category = atom_key.split("/")[0]
+                matches = self.atomMatch(atom, matchSlot = from_slot, multiMatch = True)
                 found = False
                 if matches[1] == 0:
-                    # found atom, check slot and category
+                    # found atoms, check category
                     for idpackage in matches[0]:
-                        myslot = str(self.retrieveSlot(idpackage))
+                        myslot = self.retrieveSlot(idpackage)
                         mycategory = self.retrieveCategory(idpackage)
                         if mycategory == category:
-                            if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
+                            if  (myslot != to_slot) and (action not in new_actions):
                                 new_actions.append(action)
                                 found = True
                                 break
@@ -30849,14 +30851,15 @@ class EntropyDatabaseInterface:
                         continue
                 # if we get here it means found == False
                 # search into dependencies
-                atom_key = self.entropyTools.dep_getkey(atom)
                 dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) and self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
+
             elif doaction[0] == "move":
                 atom = doaction[1] # usually a key
-                category = atom.split("/")[0]
+                atom_key = self.entropyTools.dep_getkey(atom)
+                category = atom_key.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
                 found = False
                 if matches[1] == 0:
@@ -30870,7 +30873,6 @@ class EntropyDatabaseInterface:
                         continue
                 # if we get here it means found == False
                 # search into dependencies
-                atom_key = self.entropyTools.dep_getkey(atom)
                 dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
@@ -31058,7 +31060,8 @@ class EntropyDatabaseInterface:
 
         if matches[1] == 0:
 
-            for idpackage in matches[0]:
+            matched_idpackages = matches[0]
+            for idpackage in matched_idpackages:
 
                 ### UPDATE DATABASE
                 # update slot
@@ -31087,21 +31090,25 @@ class EntropyDatabaseInterface:
                             header = darkred(" * ")
                         )
 
-        iddeps = self.searchDependency(atomkey, like = True, multi = True)
-        for iddep in iddeps:
-            # update string
-            mydep = self.retrieveDependencyFromIddependency(iddep)
-            mydep_key = self.entropyTools.dep_getkey(mydep)
-            if mydep_key != atomkey:
-                continue
-            if not mydep.endswith(":"+slot_from): # probably slotted dep
-                continue
-            mydep = mydep.replace(":"+slot_from,":"+slot_to)
-            # now update
-            # dependstable on server is always re-generated
-            self.setDependency(iddep, mydep)
-            # we have to repackage also package owning this iddep
-            iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
+            # only if we've found VALID matches !
+            iddeps = self.searchDependency(atomkey, like = True, multi = True)
+            for iddep in iddeps:
+                # update string
+                mydep = self.retrieveDependencyFromIddependency(iddep)
+                mydep_key = self.entropyTools.dep_getkey(mydep)
+                if mydep_key != atomkey:
+                    continue
+                if not mydep.endswith(":"+slot_from): # probably slotted dep
+                    continue
+                mydep_match = self.atomMatch(mydep)
+                if mydep_match not in matched_idpackages:
+                    continue
+                mydep = mydep.replace(":"+slot_from,":"+slot_to)
+                # now update
+                # dependstable on server is always re-generated
+                self.setDependency(iddep, mydep)
+                # we have to repackage also package owning this iddep
+                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
 
         self.commitChanges()
         for idpackage_owner in iddependencies_idpackages:
