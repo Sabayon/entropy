@@ -4384,6 +4384,7 @@ class PackageInterface:
                 os.waitpid(pid, 0)
             else:
                 self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
+                os._exit(0)
 
         # unpack xpak ?
         if etpConst['gentoo-compat']:
@@ -11885,6 +11886,7 @@ class PortageInterface:
                 sys.stdout = old_stdout
                 sys.stderr = old_stderr
                 f.close()
+                os._exit(0)
         else:
             self.portage._global_updates(mydb, {}) # always force
 
@@ -13870,6 +13872,7 @@ class SocketHostInterface:
                             break
                 else:
                     self.do_handle()
+                    os._exit(0)
             else:
                 self.do_handle()
             #self.entropyTools.spawnFunction(self.do_handle)
