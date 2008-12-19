@@ -483,21 +483,46 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
         if status == -2:
 
             print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
-            for x in runQueue:
-                reasons = maskingReasonsStorage.get(x)
-                if reasons != None:
-                    keyreasons = reasons.keys()
-                    for key in keyreasons:
-                        reason = etpConst['packagemaskingreasons'][key]
-                        print_warning(bold("    # ")+red("%s: " % (_("Reason"),) )+blue(reason))
-                        masked_packages = reasons[key]
-                        for m_match in masked_packages:
-                            dbconn = Equo.openRepositoryDatabase(m_match[1])
-                            m_atom = dbconn.retrieveAtom(m_match[0])
+            for package in runQueue:
+
+                masked_matches = Equo.atomMatch(package, packagesFilter = False, multiMatch = True)
+                if masked_matches[1] == 0:
+
+                    mytxt = "%s %s %s %s." % (
+                        bold("!!!"),
+                        red(_("Every package matching")), # every package matching app-foo is masked
+                        bold(package),
+                        red(_("is masked")),
+                    )
+                    print_warning(mytxt)
+
+                    m_reasons = {}
+                    for match in masked_matches[0]:
+                        masked, idreason, reason = Equo.get_masked_package_reason(match)
+                        if not masked: continue
+                        if not m_reasons.has_key((idreason,reason,)):
+                            m_reasons[(idreason,reason,)] = []
+                        m_reasons[(idreason,reason,)].append(match)
+
+                    for idreason, reason in sorted(m_reasons.keys()):
+                        print_warning(bold("    # ")+red("Reason: ")+blue(reason))
+                        for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
+                            dbconn = Equo.openRepositoryDatabase(m_repo)
+                            try:
+                                m_atom = dbconn.retrieveAtom(m_idpackage)
+                            except TypeError:
+                                m_atom = "idpackage: %s %s %s %s" % (
+                                    m_idpackage,
+                                    _("matching"),
+                                    package,
+                                    _("is broken"),
+                                )
                             print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
+
                 else:
-                    print_error(red("    # ")+blue("%s: " % (_("Not found"),) )+brown(x))
-                    crying_atoms = Equo.find_belonging_dependency([x])
+
+                    print_error(red("    # ")+blue("%s: " % (_("Not found"),) )+brown(package))
+                    crying_atoms = Equo.find_belonging_dependency([package])
                     if crying_atoms:
                         print_error(red("      # ")+blue("%s:" % (_("Probably needed by"),) ))
                         for crying_atomdata in crying_atoms:

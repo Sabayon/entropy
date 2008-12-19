@@ -1,0 +1,8 @@
+# system.mask example file
+#
+# This file contains atoms that are considered part of the core system, one per line
+
+dev-lang/python
+dev-db/sqlite:3
+sys-libs/openrc
+

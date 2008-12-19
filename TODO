@@ -1,7 +1,9 @@
 TODO list
 
+  - automatic client db backup
   - rename exceptionTools
   - move etpConst['conflicting_tagged_packages'] elsewhere
+  - rewrite EquoInterface.get_meant_packages using soundex
   - cleanup EntropyDatabaseInterface.databaseStructureUpdates
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - UGC: personal package sets
@@ -27,3 +29,4 @@ TODO list
     - package sets add/remove tool
     - allow package remasking
     - ability to change colours
+    - misc.py: use map() and filter()

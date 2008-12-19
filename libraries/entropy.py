@@ -279,7 +279,7 @@ class urlFetcher:
 
     def updateProgress(self):
 
-        mytxt = _("Fetch")
+        mytxt = _("[F]")
         eta_txt = _("ETA")
         sec_txt = _("sec") # as in XX kb/sec
 
@@ -355,7 +355,7 @@ class EquoInterface(TextInterface):
         self.QACache = {}
         self.spmCache = {}
         self.mirrorDownloadFailures = {}
-        self.repo_error_messages_cache = {}
+        self.repo_error_messages_cache = set()
         self.package_match_validator_cache = {}
         self.memoryDbInstances = {}
         self.validRepositories = []
@@ -1162,19 +1162,19 @@ class EquoInterface(TextInterface):
 
         deps_not_matched = set()
         # now look
-        length = str((len(installedPackages)))
+        length = len(installedPackages)
         count = 0
         for xidpackage in installedPackages:
             count += 1
             atom = dbconn.retrieveAtom(xidpackage)
             self.updateProgress(
-                                    darkgreen(_("Checking %s") % (bold(atom),)),
-                                    importance = 0,
-                                    type = "info",
-                                    back = True,
-                                    count = (count,length),
-                                    header = darkred(" @@ ")
-                                )
+                darkgreen(_("Checking %s") % (bold(atom),)),
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (count,length),
+                header = darkred(" @@ ")
+            )
 
             xdeps = dbconn.retrieveDependencies(xidpackage)
             needed_deps = set()
@@ -2016,7 +2016,7 @@ class EquoInterface(TextInterface):
                 # no need # etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
                 etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
                 smart_package = repodata.get('smartpackage')
-                if smart_package: etpRepositories[repodata['repoid']]['smartpackage'] = smart_package
+                if smart_package != None: etpRepositories[repodata['repoid']]['smartpackage'] = smart_package
                 etpRepositories[repodata['repoid']]['dbpath'] = repodata.get('dbpath')
                 etpRepositories[repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
             except KeyError:
@@ -2393,8 +2393,7 @@ class EquoInterface(TextInterface):
                 m_idpackage, m_repo = atomInfo
                 dbconn = self.openRepositoryDatabase(m_repo)
                 myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
-                if myidpackage == -1:
-                    match = (-1,m_repo)
+                if myidpackage == -1: m_idpackage = -1
             else:
                 m_idpackage, m_repo = self.atomMatch(dep_atom)
             if m_idpackage == -1:
@@ -2477,7 +2476,7 @@ class EquoInterface(TextInterface):
                     flat_tree.append(item)
         del deptree
 
-        if (dependenciesNotFound):
+        if dependenciesNotFound:
             # Houston, we've got a problem
             flatview = list(dependenciesNotFound)
             return flatview,-2
@@ -4385,6 +4384,7 @@ class PackageInterface:
                 os.waitpid(pid, 0)
             else:
                 self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
+                os._exit(0)
 
         # unpack xpak ?
         if etpConst['gentoo-compat']:
@@ -10447,6 +10447,7 @@ class PackageSettings:
             'mask': etpConst['confpackagesdir']+"/package.mask", # masking configuration files
             'license_mask': etpConst['confpackagesdir']+"/license.mask", # masking configuration files
             'repos_system_mask': {},
+            'system_mask': etpConst['confpackagesdir']+"/system.mask",
             'repos_mask': {},
             'repos_license_whitelist': {},
             'system_package_sets': {},
@@ -10457,6 +10458,7 @@ class PackageSettings:
             'unmask_mtime': etpConst['dumpstoragedir']+"/unmask.mtime",
             'mask_mtime': etpConst['dumpstoragedir']+"/mask.mtime",
             'license_mask_mtime': etpConst['dumpstoragedir']+"/license_mask.mtime",
+            'system_mask_mtime': etpConst['dumpstoragedir']+"/system_mask.mtime",
             'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {},
@@ -10490,7 +10492,7 @@ class PackageSettings:
         self.__settings['repos_system_mask_installed_keys'] = {}
         if self.Entropy.clientDbconn != None:
             mc_cache = set()
-            for atom in self.__settings['repos_system_mask']:
+            for atom in self.__settings['repos_system_mask']+list(self.__settings['system_mask']):
                 match = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
                 if match[1] != 0: continue
                 mykey = self.entropyTools.dep_getkey(atom)
@@ -10509,25 +10511,35 @@ class PackageSettings:
         if self.__settings == None: self.scan()
         if mykey in self.__persistent_settings: # backup here too
             self.__persistent_settings[mykey] = myvalue
+            self.__settings.update(self.__persistent_settings)
         self.__settings[mykey] = myvalue
 
     def __getitem__(self, mykey):
         if self.__settings == None: self.scan()
+        if mykey in self.__persistent_settings: # backup here too
+            return self.__persistent_settings[mykey]
         return self.__settings[mykey]
 
     def __contains__(self, mykey):
         if self.__settings == None: self.scan()
+        here = mykey in self.__persistent_settings
+        if here: return here
         return mykey in self.__settings
 
     def __cmp__(self, other):
+        if self.__settings == None: self.scan()
         return cmp(self.__settings,other)
 
     def get(self, mykey):
         if self.__settings == None: self.scan()
+        if mykey in self.__persistent_settings:
+            return self.__persistent_settings.get(mykey)
         return self.__settings.get(mykey)
 
     def has_key(self, mykey):
         if self.__settings == None: self.scan()
+        here = mykey in self.__persistent_settings
+        if here: return True
         return mykey in self.__settings
 
     def parse(self):
@@ -10658,6 +10670,20 @@ class PackageSettings:
         data = set()
         if os.path.isfile(self.etpMaskFiles['mask']):
             f = open(self.etpMaskFiles['mask'],"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                data.add(line)
+        return data
+
+    def system_mask_parser(self):
+        self.__validateEntropyCache(self.etpMaskFiles['system_mask'],self.etpMtimeFiles['system_mask_mtime'])
+
+        data = set()
+        if os.path.isfile(self.etpMaskFiles['system_mask']):
+            f = open(self.etpMaskFiles['system_mask'],"r")
             content = f.readlines()
             f.close()
             # filter comments and white lines
@@ -11846,7 +11872,23 @@ class PortageInterface:
         mydb[myroot]['porttree'] = self._get_portage_portagetree(myroot)
         mydb[myroot]['bintree'] = self._get_portage_binarytree(myroot)
         mydb[myroot]['virtuals'] = self.portage.settings.getvirtuals(myroot)
-        self.portage._global_updates(mydb, {}) # always force
+        if etpUi['mute']:
+            pid = os.fork()
+            if pid > 0:
+                os.waitpid(pid, 0)
+            else:
+                f = open("/dev/null","w")
+                old_stdout = sys.stdout
+                old_stderr = sys.stderr
+                sys.stdout = f
+                sys.stderr = f
+                self.portage._global_updates(mydb, {})
+                sys.stdout = old_stdout
+                sys.stderr = old_stderr
+                f.close()
+                os._exit(0)
+        else:
+            self.portage._global_updates(mydb, {}) # always force
 
     def get_world_file(self):
         return os.path.join(etpConst['systemroot'],"/",self.portage_const.WORLD_FILE)
@@ -13830,6 +13872,7 @@ class SocketHostInterface:
                             break
                 else:
                     self.do_handle()
+                    os._exit(0)
             else:
                 self.do_handle()
             #self.entropyTools.spawnFunction(self.do_handle)
@@ -15927,6 +15970,53 @@ class ServerInterface(TextInterface):
             )
 
         return 0,packages
+
+    def orphaned_spm_packages_test(self):
+
+        mytxt = "%s %s" % (blue(_("Running orphaned SPM packages test")),red("..."),)
+        self.updateProgress(
+            mytxt,
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
+        installed_packages, length = self.SpmService.get_installed_packages()
+        not_found = {}
+        count = 0
+        for installed_package in installed_packages:
+            count += 1
+            self.updateProgress(
+                "%s: %s" % (darkgreen(_("Scanning package")),brown(installed_package),),
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (count,length),
+                header = darkred(" @@ ")
+            )
+            key, slot = self.entropyTools.dep_getkey(installed_package),self.SpmService.get_installed_package_slot(installed_package)
+            pkg_atom = "%s:%s" % (key,slot,)
+            tree_atom = self.SpmService.get_best_atom(pkg_atom)
+            if not tree_atom:
+                not_found[installed_package] = pkg_atom
+                self.updateProgress(
+                    "%s: %s" % (blue(pkg_atom),darkred(_("not found anymore")),),
+                    importance = 0,
+                    type = "warning",
+                    count = (count,length),
+                    header = darkred(" @@ ")
+                )
+
+        if not_found:
+            not_found_list = ' '.join([not_found[x] for x in sorted(not_found.keys())])
+            self.updateProgress(
+                "%s: %s" % (blue(_("Packages string")),not_found_list,),
+                importance = 0,
+                type = "warning",
+                count = (count,length),
+                header = darkred(" @@ ")
+            )
+
+        return not_found
 
     def depends_table_initialize(self, repo = None):
         dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
@@ -30756,20 +30846,22 @@ class EntropyDatabaseInterface:
 
             doaction = action.split()
             if doaction[0] == "slotmove":
+
                 # slot move
                 atom = doaction[1]
                 from_slot = doaction[2]
                 to_slot = doaction[3]
-                category = atom.split("/")[0]
-                matches = self.atomMatch(atom, multiMatch = True)
+                atom_key = self.entropyTools.dep_getkey(atom)
+                category = atom_key.split("/")[0]
+                matches = self.atomMatch(atom, matchSlot = from_slot, multiMatch = True)
                 found = False
                 if matches[1] == 0:
-                    # found atom, check slot and category
+                    # found atoms, check category
                     for idpackage in matches[0]:
-                        myslot = str(self.retrieveSlot(idpackage))
+                        myslot = self.retrieveSlot(idpackage)
                         mycategory = self.retrieveCategory(idpackage)
                         if mycategory == category:
-                            if (myslot == from_slot) and (myslot != to_slot) and (action not in new_actions):
+                            if  (myslot != to_slot) and (action not in new_actions):
                                 new_actions.append(action)
                                 found = True
                                 break
@@ -30777,14 +30869,15 @@ class EntropyDatabaseInterface:
                         continue
                 # if we get here it means found == False
                 # search into dependencies
-                atom_key = self.entropyTools.dep_getkey(atom)
                 dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) and self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
+
             elif doaction[0] == "move":
                 atom = doaction[1] # usually a key
-                category = atom.split("/")[0]
+                atom_key = self.entropyTools.dep_getkey(atom)
+                category = atom_key.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
                 found = False
                 if matches[1] == 0:
@@ -30798,7 +30891,6 @@ class EntropyDatabaseInterface:
                         continue
                 # if we get here it means found == False
                 # search into dependencies
-                atom_key = self.entropyTools.dep_getkey(atom)
                 dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
@@ -30986,7 +31078,8 @@ class EntropyDatabaseInterface:
 
         if matches[1] == 0:
 
-            for idpackage in matches[0]:
+            matched_idpackages = matches[0]
+            for idpackage in matched_idpackages:
 
                 ### UPDATE DATABASE
                 # update slot
@@ -31015,21 +31108,25 @@ class EntropyDatabaseInterface:
                             header = darkred(" * ")
                         )
 
-        iddeps = self.searchDependency(atomkey, like = True, multi = True)
-        for iddep in iddeps:
-            # update string
-            mydep = self.retrieveDependencyFromIddependency(iddep)
-            mydep_key = self.entropyTools.dep_getkey(mydep)
-            if mydep_key != atomkey:
-                continue
-            if not mydep.endswith(":"+slot_from): # probably slotted dep
-                continue
-            mydep = mydep.replace(":"+slot_from,":"+slot_to)
-            # now update
-            # dependstable on server is always re-generated
-            self.setDependency(iddep, mydep)
-            # we have to repackage also package owning this iddep
-            iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
+            # only if we've found VALID matches !
+            iddeps = self.searchDependency(atomkey, like = True, multi = True)
+            for iddep in iddeps:
+                # update string
+                mydep = self.retrieveDependencyFromIddependency(iddep)
+                mydep_key = self.entropyTools.dep_getkey(mydep)
+                if mydep_key != atomkey:
+                    continue
+                if not mydep.endswith(":"+slot_from): # probably slotted dep
+                    continue
+                mydep_match = self.atomMatch(mydep)
+                if mydep_match not in matched_idpackages:
+                    continue
+                mydep = mydep.replace(":"+slot_from,":"+slot_to)
+                # now update
+                # dependstable on server is always re-generated
+                self.setDependency(iddep, mydep)
+                # we have to repackage also package owning this iddep
+                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
 
         self.commitChanges()
         for idpackage_owner in iddependencies_idpackages:
@@ -32412,6 +32509,10 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT dependency FROM packagesets WHERE setname = (?)', (setname,))
         return self.fetchall2set(self.cursor.fetchall())
 
+    def retrieveSystemPackages(self):
+        self.cursor.execute('SELECT idpackage FROM systempackages')
+        return self.fetchall2set(self.cursor.fetchall())
+
     def retrieveAtom(self, idpackage):
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         atom = self.cursor.fetchone()
@@ -33637,6 +33738,13 @@ class EntropyDatabaseInterface:
         removed_ids = myids - outids
         return added_ids, removed_ids
 
+    def uniformBranch(self, branch):
+        self.checkReadOnly()
+        with self.WriteLock:
+            self.cursor.execute('UPDATE baseinfo SET branch = (?)', (branch,))
+            self.commitChanges()
+            self.clearCache()
+
     def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
 
         added_ids, removed_ids = self.getIdpackagesDifferences(dbconn.listAllIdpackages())
@@ -34641,7 +34749,7 @@ class EntropyDatabaseInterface:
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [608,1867]
-    def packagesFilter(self, results, atom):
+    def packagesFilter(self, results):
         # keywordsFilter ONLY FILTERS results if
         # self.dbname.startswith(etpConst['dbnamerepoprefix']) => repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
@@ -34799,13 +34907,14 @@ class EntropyDatabaseInterface:
                 direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
 
                 justname = self.entropyTools.isjustname(strippedAtom)
-                if not justname:
+                pkgkey = strippedAtom
+                if justname == 0:
                     # get version
                     data = self.entropyTools.catpkgsplit(strippedAtom)
                     if data == None: break # badly formatted
                     pkgversion = data[2]+"-"+data[3]
+                    pkgkey = self.entropyTools.dep_getkey(strippedAtom)
 
-                pkgkey = self.entropyTools.dep_getkey(strippedAtom)
                 splitkey = pkgkey.split("/")
                 if (len(splitkey) == 2):
                     pkgname = splitkey[1]
@@ -34830,7 +34939,7 @@ class EntropyDatabaseInterface:
         if foundIDs:
             foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
             if packagesFilter: # keyword filtering
-                foundIDs = self.packagesFilter(foundIDs, atom)
+                foundIDs = self.packagesFilter(foundIDs)
         ### END FILTERING
 
         if foundIDs:
