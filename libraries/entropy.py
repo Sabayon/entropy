@@ -5720,92 +5720,107 @@ class PackageInterface:
             rc = self.fetch_not_available_step()
             return rc
 
+        def do_fetch():
+            mytxt = _("Fetching")
+            self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.fetch_step()
+
+        def do_sources_fetch():
+            mytxt = _("Fetching sources")
+            self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.sources_fetch_step()
+
+        def do_checksum():
+            mytxt = _("Verifying")
+            self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.checksum_step()
+
+        def do_unpack():
+            if not self.infoDict['merge_from']:
+                mytxt = _("Unpacking")
+                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
+            else:
+                mytxt = _("Merging")
+                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.unpack_step()
+
+        def do_remove_conflicts():
+            return self.removeconflict_step()
+
+        def do_install():
+            mytxt = _("Installing")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.install_step()
+
+        def do_remove():
+            mytxt = _("Removing")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.remove_step()
+
+        def do_showmessages():
+            return self.messages_step()
+
+        def do_logmessages():
+            return self.logmessages_step()
+
+        def do_cleanup():
+            mytxt = _("Cleaning")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.cleanup_step()
+
+        def do_postinstall():
+            mytxt = _("Postinstall")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.postinstall_step()
+
+        def do_preinstall():
+            mytxt = _("Preinstall")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.preinstall_step()
+
+        def do_preremove():
+            mytxt = _("Preremove")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.preremove_step()
+
+        def do_postremove():
+            mytxt = _("Postremove")
+            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.postremove_step()
+
+        steps_data = {
+            "fetch": do_fetch,
+            "sources_fetch": do_sources_fetch,
+            "checksum": do_checksum,
+            "unpack": do_unpack,
+            "remove_conflicts": do_remove_conflicts,
+            "install": do_install,
+            "remove": do_remove,
+            "showmessages": do_showmessages,
+            "logmessages": do_logmessages,
+            "cleanup": do_cleanup,
+            "postinstall": do_postinstall,
+            "preinstall": do_preinstall,
+            "postremove": do_postremove,
+            "preremove": do_preremove,
+        }
+
         rc = 0
         for step in self.infoDict['steps']:
             self.xterm_title = xterm_header
-
-            if step == "fetch":
-                mytxt = _("Fetching")
-                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.fetch_step()
-
-            elif step == "sources_fetch":
-                mytxt = _("Fetching sources")
-                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.sources_fetch_step()
-
-            elif step == "checksum":
-                mytxt = _("Verifying")
-                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.checksum_step()
-
-            elif step == "unpack":
-                if not self.infoDict['merge_from']:
-                    mytxt = _("Unpacking")
-                    self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
-                else:
-                    mytxt = _("Merging")
-                    self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.unpack_step()
-
-            elif step == "remove_conflicts":
-                rc = self.removeconflict_step()
-
-            elif step == "install":
-                mytxt = _("Installing")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.install_step()
-
-            elif step == "remove":
-                mytxt = _("Removing")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.remove_step()
-
-            elif step == "showmessages":
-                rc = self.messages_step()
-
-            elif step == "logmessages":
-                rc = self.logmessages_step()
-
-            elif step == "cleanup":
-                mytxt = _("Cleaning")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.cleanup_step()
-
-            elif step == "postinstall":
-                mytxt = _("Postinstall")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.postinstall_step()
-
-            elif step == "preinstall":
-                mytxt = _("Preinstall")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.preinstall_step()
-
-            elif step == "preremove":
-                mytxt = _("Preremove")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.preremove_step()
-
-            elif step == "postremove":
-                mytxt = _("Postremove")
-                self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
-                self.Entropy.setTitle(self.xterm_title)
-                rc = self.postremove_step()
-
-            if rc != 0:
-                break
-
+            rc = steps_data.get(step)()
+            if rc != 0: break
         return rc
 
 
@@ -11973,22 +11988,24 @@ class PortageInterface:
         etpConst['spm']['cache']['portage']['binarytree'][root] = mytree
         return mytree
 
-    def _get_portage_config(self, config_root, root):
+    def _get_portage_config(self, config_root, root, use_cache = True):
 
-        if not etpConst['spm']['cache'].has_key('portage'):
-            etpConst['spm']['cache']['portage'] = {}
-        if not etpConst['spm']['cache']['portage'].has_key('config'):
-            etpConst['spm']['cache']['portage']['config'] = {}
+        if use_cache:
+            if not etpConst['spm']['cache'].has_key('portage'):
+                etpConst['spm']['cache']['portage'] = {}
+            if not etpConst['spm']['cache']['portage'].has_key('config'):
+                etpConst['spm']['cache']['portage']['config'] = {}
 
-        cached = etpConst['spm']['cache']['portage']['config'].get((config_root,root))
-        if cached != None:
-            return cached
+            cached = etpConst['spm']['cache']['portage']['config'].get((config_root,root))
+            if cached != None:
+                return cached
 
         try:
             mysettings = self.portage.config(config_root = config_root, target_root = root, config_incrementals = self.portage_const.INCREMENTALS)
         except Exception, e:
             raise exceptionTools.SPMError("SPMError: %s: %s" % (Exception,e,))
-        etpConst['spm']['cache']['portage']['config'][(config_root,root)] = mysettings
+        if use_cache:
+            etpConst['spm']['cache']['portage']['config'][(config_root,root)] = mysettings
         return mysettings
 
     # resolve atoms automagically (best, not current!)
@@ -13086,18 +13103,15 @@ class PortageInterface:
         return newcounter
 
 
-    def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
-
-        rc = self.entropyTools.spawnFunction(
-            self._portage_doebuild,
-            myebuild,
-            mydo,
-            tree,
-            cpv,
-            portage_tmpdir,
-            licenses
-        )
-        return rc
+    def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = [], fork = False):
+        if fork:
+            # memory leak: some versions of portage were memleaking here
+            return self.entropyTools.spawnFunction(
+                self._portage_doebuild, myebuild,
+                mydo, tree, cpv,
+                portage_tmpdir, licenses
+            )
+        return self._portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir, licenses)
 
     def _portage_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
