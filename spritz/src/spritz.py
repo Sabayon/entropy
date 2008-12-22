@@ -355,7 +355,6 @@ class SpritzApplication(Controller):
         self.quitNow = False
         self.isWorking = False
         self.lastPkgPB = "updates"
-        self.etpbase.setFilter(filters.spritzFilter.processFilters)
         self.Equo.connect_to_gui(self)
         self.setupEditor()
 
@@ -1344,12 +1343,16 @@ class SpritzApplication(Controller):
             self.progress.reset_progress()
 
             if (not fetch_only) and (not download_sources):
+                self.pkgView.clear()
                 self.etpbase.clearPackages()
                 self.etpbase.clearCache()
                 for myrepo in remove_repos:
                     self.Equo.removeRepository(myrepo)
                 self.Equo.closeAllRepositoryDatabases()
+                self.pkgView.clear()
                 self.Equo.reopenClientDbconn()
+                self.etpbase.clearPackages()
+                self.etpbase.clearCache()
                 # regenerate packages information
                 self.setupSpritz()
                 self.Equo.FileUpdates.scanfs(dcache = False)
@@ -1964,28 +1967,26 @@ class SpritzApplication(Controller):
 
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
-        if rb.get_active(): # Only act on select, not deselect.
-            rb.grab_add()
-            self.lastPkgPB = action
-            # Only show add/remove all when showing updates
-            if action == 'updates':
-                self.ui.updatesButtonbox.show()
-            else:
-                self.ui.updatesButtonbox.hide()
+        if not rb.get_active(): return
 
-            if action == "masked":
-                self.setupMaskedPackagesWarningBox()
-                self.ui.maskedWarningBox.show()
-            else:
-                self.ui.maskedWarningBox.hide()
+        rb.grab_add()
+        self.lastPkgPB = action
 
-            if action == "queued":
-                self.ui.queueReviewAndInstallBox.show()
-            else:
-                self.ui.queueReviewAndInstallBox.hide()
+        # Only show add/remove all when showing updates
+        if action == 'updates': self.ui.updatesButtonbox.show()
+        else: self.ui.updatesButtonbox.hide()
 
-            self.addPackages()
-            rb.grab_remove()
+        if action == "masked":
+            self.setupMaskedPackagesWarningBox()
+            self.ui.maskedWarningBox.show()
+        else:
+            self.ui.maskedWarningBox.hide()
+
+        if action == "queued": self.ui.queueReviewAndInstallBox.show()
+        else: self.ui.queueReviewAndInstallBox.hide()
+
+        self.addPackages()
+        rb.grab_remove()
 
     def on_repoRefresh_clicked(self,widget):
         repos = self.repoView.get_selected()
@@ -2182,6 +2183,7 @@ class SpritzApplication(Controller):
             raise exceptionTools.OnlineMirrorError('OnlineMirrorError %s' % (mytxt,))
 
     def on_search_clicked(self,widget):
+        self.etpbase.setFilter(filters.spritzFilter.processFilters)
         ''' Search entry+button handler'''
         txt = self.ui.pkgFilter.get_text()
         flt = filters.spritzFilter.get('KeywordFilter')
@@ -2197,6 +2199,7 @@ class SpritzApplication(Controller):
         self.on_pkgFilter_toggled(rb,action)
 
     def on_clear_clicked(self,widget):
+        self.etpbase.setFilter()
         ''' Search Clear button handler'''
         self.ui.pkgFilter.set_text("")
         self.on_search_clicked(None)

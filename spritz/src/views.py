@@ -965,12 +965,11 @@ class EntropyPackageView:
     def clear(self):
         self.store.clear()
 
-    def populate(self, pkgs, widget = None, empty = False, pkgsets = False):
+    def populate(self, pkgs, widget = None, empty = False, pkgsets = False): 
         self.dummyCats.clear()
         self.clear()
         search_col = 0
-        if widget == None:
-            widget = self.ui.viewPkg
+        if widget == None: widget = self.ui.viewPkg
 
         widget.set_model(None)
         widget.set_model(self.store)
@@ -986,24 +985,28 @@ class EntropyPackageView:
 
             categories = {}
             cat_descs = {}
-            for po in pkgs:
-                if pkgsets:
+            if pkgsets:
+                for po in pkgs:
                     for set_name in po.set_names:
                         if not categories.has_key(set_name):
                             categories[set_name] = []
                         cat_descs[set_name] = po.set_cat_namedesc
                         if po not in categories[set_name]:
                             categories[set_name].append(po)
-                else:
+            else:
+                def fm(po):
                     mycat = po.cat
                     if not categories.has_key(mycat):
                         categories[mycat] = []
                     categories[mycat].append(po)
+                    return 0
+                map(fm,pkgs)
 
             cats = sorted(categories.keys())
+            orig_cat_desc = _("No description")
             for category in cats:
 
-                cat_desc = _("No description")
+                cat_desc = orig_cat_desc
                 cat_desc_data = self.Equo.get_category_description_data(category)
                 if cat_desc_data.has_key(_LOCALE):
                     cat_desc = cat_desc_data[_LOCALE]
@@ -1013,11 +1016,7 @@ class EntropyPackageView:
                     cat_desc = cat_descs.get(category)
 
                 cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
-                mydummy = DummyEntropyPackage(
-                        namedesc = cat_text,
-                        dummy_type = SpritzConf.dummy_category,
-                        onlyname = category
-                )
+                mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
                 mydummy.color = '#9C7234'
                 if pkgsets:
                     j = categories[category][0]
