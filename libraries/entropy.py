@@ -2905,11 +2905,8 @@ class EquoInterface(TextInterface):
     def get_available_packages_chash(self, branch):
         repo_digest = self.all_repositories_checksum()
         # client digest not needed, cache is kept updated
-        c_hash = str(hash(repo_digest)) + \
-                 str(hash(branch)) + \
-                 str(hash(tuple(self.validRepositories)))
-        c_hash = str(hash(c_hash))
-        return c_hash
+        c_hash = "%s%s%s" % (hash(repo_digest),hash(branch),hash(tuple(self.validRepositories)),)
+        return str(hash(c_hash))
 
     def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
         if myhash == None:
@@ -3001,12 +2998,10 @@ class EquoInterface(TextInterface):
                     return None
 
     def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
-        c_hash = str(hash(db_digest)) + \
-                    str(hash(empty_deps)) + \
-                    str(hash(tuple(self.validRepositories))) + \
-                    str(hash(tuple(etpRepositoriesOrder))) + \
-                    str(hash(branch)) + \
-                    str(hash(ignore_spm_downgrades))
+        c_hash = "%s%s%s%s%s%s" % ( 
+            hash(db_digest),hash(empty_deps),hash(tuple(self.validRepositories)),
+            hash(tuple(etpRepositoriesOrder)), hash(branch), hash(ignore_spm_downgrades),
+        )
         return str(hash(c_hash))
 
     def calculate_world_updates(
@@ -5015,27 +5010,26 @@ class PackageInterface:
 
         # fetch info
         dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
-        data = dbconn.getPackageData(self.infoDict['idpackage'])
+        data = dbconn.getPackageData(self.infoDict['idpackage'], content_insert_formatted = True)
         # open client db
         # always set data['injected'] to False
         # installed packages database SHOULD never have more than one package for scope (key+slot)
         data['injected'] = False
         data['counter'] = -1 # gentoo counter will be set in self._install_package_into_gentoo_database()
 
-        idpk, rev, x = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'])
-        del data
+        idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
         ctime = self.Entropy.entropyTools.getCurrentUnixTime()
-        self.Entropy.clientDbconn.setDateCreation(idpk, str(ctime))
+        self.Entropy.clientDbconn.setDateCreation(idpackage, str(ctime))
 
         # add idpk to the installedtable
-        self.Entropy.clientDbconn.removePackageFromInstalledTable(idpk)
-        self.Entropy.clientDbconn.addPackageToInstalledTable(idpk,self.infoDict['repository'])
-        # update dependstable
-        self.Entropy.clientDbconn.regenerateDependsTable(output = False)
+        self.Entropy.clientDbconn.removePackageFromInstalledTable(idpackage)
+        self.Entropy.clientDbconn.addPackageToInstalledTable(idpackage,self.infoDict['repository'])
 
-        return idpk
+        # clear depends table, this will make clientdb dependstable to be regenerated during the next request (retrieveDepends)
+        self.Entropy.clientDbconn.clearDependsTable()
+        return idpackage
 
     def __fill_image_dir(self, mergeFrom, imageDir):
 
@@ -16359,7 +16353,6 @@ class ServerInterface(TextInterface):
                     mydata['name'],
                     mydata['category'],
                     mydata['slot'],
-                    etpConst['branch'],
                     mydata['injected']
             )
             for myitem in mylist:
@@ -31256,39 +31249,42 @@ class EntropyDatabaseInterface:
                 shutil.move(mydir,to_path)
 
 
-    # this function manages the submitted package
-    # if it does not exist, it fires up addPackage
-    # otherwise it fires up updatePackage
-    def handlePackage(self, etpData, forcedRevision = -1):
+    def handlePackage(self, etpData, forcedRevision = -1, formattedContent = False):
 
         self.checkReadOnly()
 
-        # build atom string
+        if self.clientDatabase:
+            return self.addPackage(etpData, revision = forcedRevision, formatted_content = formattedContent)
+
+        # build atom string, server side
         pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
-
         foundid = self.isPackageAvailable(pkgatom)
-        if (foundid < 0): # same atom doesn't exist in any branch
-            return self.addPackage(etpData, revision = forcedRevision)
-        else:
-            return self.updatePackage(etpData, forcedRevision) # only when the same atom exists
+        if foundid < 0: # same atom doesn't exist in any branch
+            return self.addPackage(etpData, revision = forcedRevision, formatted_content = formattedContent)
 
-    def retrieve_packages_to_remove(self, name, category, slot, branch, injected):
+        idpackage = self.getIDPackage(pkgatom)
+        curRevision = forcedRevision
+        if forcedRevision == -1:
+            curRevision = 0
+            if idpackage != -1:
+                curRevision = self.retrieveRevision(idpackage)
+
+        if idpackage != -1: # remove old package atom, we do it here because othersie
+            # injected packages wouldn't be removed by addPackages
+            self.removePackage(idpackage)
+            if forcedRevision == -1: curRevision += 1
+
+        # add the new one
+        return self.addPackage(etpData, revision = curRevision, formatted_content = formattedContent)
+
+    def retrieve_packages_to_remove(self, name, category, slot, injected):
         removelist = set()
 
-        # we need to find other packages with the same key and slot, and remove them
-        if self.clientDatabase: # client database can't care about branch
-            searchsimilar = self.searchPackagesByNameAndCategory(
-                name = name,
-                category = category,
-                sensitive = True
-            )
-        else: # server doesn't support multiple branches inside a db but this is ininfluent
-            searchsimilar = self.searchPackagesByNameAndCategory(
-                name = name,
-                category = category,
-                sensitive = True,
-                branch = branch
-            )
+        searchsimilar = self.searchPackagesByNameAndCategory(
+            name = name,
+            category = category,
+            sensitive = True
+        )
 
         if not injected:
             # read: if package has been injected, we'll skip
@@ -31297,11 +31293,9 @@ class EntropyDatabaseInterface:
                 # get the package slot
                 idpackage = oldpkg[1]
                 myslot = self.retrieveSlot(idpackage)
-                isinjected = self.isInjected(idpackage)
-                if isinjected:
-                    continue
-                    # we merely ignore packages with
-                    # negative counters, since they're the injected ones
+                # we merely ignore packages with
+                # negative counters, since they're the injected ones
+                if self.isInjected(idpackage): continue
                 if slot == myslot:
                     # remove!
                     removelist.add(idpackage)
@@ -31327,7 +31321,6 @@ class EntropyDatabaseInterface:
                             etpData['name'],
                             etpData['category'],
                             etpData['slot'],
-                            self.db_branch,
                             etpData['injected']
             )
             for pkg in removelist:
@@ -31436,10 +31429,10 @@ class EntropyDatabaseInterface:
         self.insertConfigProtect(idpackage, idprotect)
         self.insertConfigProtect(idpackage, idprotect_mask, mask = True)
         # injected?
-        if etpData['injected']:
+        if etpData.get('injected'):
             self.setInjected(idpackage, do_commit = False)
         # is it a system package?
-        if etpData['systempackage']:
+        if etpData.get('systempackage'):
             self.setSystemPackage(idpackage, do_commit = False)
 
         self.clearCache()
@@ -31449,27 +31442,7 @@ class EntropyDatabaseInterface:
         ### RSS Atom support
         ### dictionary will be elaborated by activator
         if etpConst['rss-feed'] and not self.clientDatabase:
-            rssAtom = pkgatom+"~"+str(revision)
-            # store addPackage action
-            rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-            global etpRSSMessages
-            if rssObj:
-                etpRSSMessages = rssObj.copy()
-            if not isinstance(etpRSSMessages,dict):
-                etpRSSMessages = {}
-            if not etpRSSMessages.has_key('added'):
-                etpRSSMessages['added'] = {}
-            if not etpRSSMessages.has_key('removed'):
-                etpRSSMessages['removed'] = {}
-            if rssAtom in etpRSSMessages['removed']:
-                del etpRSSMessages['removed'][rssAtom]
-            etpRSSMessages['added'][rssAtom] = {}
-            etpRSSMessages['added'][rssAtom]['description'] = etpData['description']
-            etpRSSMessages['added'][rssAtom]['homepage'] = etpData['homepage']
-            etpRSSMessages['light'][rssAtom] = {}
-            etpRSSMessages['light'][rssAtom]['description'] = etpData['description']
-            # save
-            self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
+            self._write_rss_for_added_package(pkgatom, revision, etpData['description'], etpData['homepage'])
 
         # Update category description
         if not self.clientDatabase:
@@ -31484,45 +31457,51 @@ class EntropyDatabaseInterface:
 
         return idpackage, revision, etpData
 
-    # Update already available atom in db
-    # returns True,revision if the package has been updated
-    # returns False,revision if not
-    def updatePackage(self, etpData, forcedRevision = -1):
+    def _write_rss_for_added_package(self, pkgatom, revision, description, homepage):
+        rssAtom = pkgatom+"~"+str(revision)
+        rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
+        global etpRSSMessages
+        if rssObj: etpRSSMessages = rssObj.copy()
+        if not isinstance(etpRSSMessages,dict):
+            etpRSSMessages = {}
+        if not etpRSSMessages.has_key('added'):
+            etpRSSMessages['added'] = {}
+        if not etpRSSMessages.has_key('removed'):
+            etpRSSMessages['removed'] = {}
+        if rssAtom in etpRSSMessages['removed']:
+            del etpRSSMessages['removed'][rssAtom]
+        etpRSSMessages['added'][rssAtom] = {}
+        etpRSSMessages['added'][rssAtom]['description'] = description
+        etpRSSMessages['added'][rssAtom]['homepage'] = homepage
+        etpRSSMessages['light'][rssAtom] = {}
+        etpRSSMessages['light'][rssAtom]['description'] = description
+        self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
-        self.checkReadOnly()
-
-        # build atom string
-        pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
-
-        # for client database - the atom if present, must be overwritten with the new one regardless its branch
-        if (self.clientDatabase):
-
-            atomid = self.isPackageAvailable(pkgatom)
-            if atomid > -1:
-                self.removePackage(atomid)
-
-            return self.addPackage(etpData, revision = forcedRevision)
-
-        else:
-            # update package in etpData['branch']
-            # get its package revision
-            idpackage = self.getIDPackage(pkgatom,etpData['branch'])
-            if (forcedRevision == -1):
-                if (idpackage != -1):
-                    curRevision = self.retrieveRevision(idpackage)
-                else:
-                    curRevision = 0
-            else:
-                curRevision = forcedRevision
-
-            if (idpackage != -1): # remove old package in branch
-                self.removePackage(idpackage)
-                if (forcedRevision == -1):
-                    curRevision += 1
-
-            # add the new one
-            return self.addPackage(etpData, revision = curRevision)
-
+    def _write_rss_for_removed_package(self, idpackage):
+        rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
+        global etpRSSMessages
+        if rssObj: etpRSSMessages = rssObj.copy()
+        rssAtom = self.retrieveAtom(idpackage)
+        rssRevision = self.retrieveRevision(idpackage)
+        rssAtom += "~"+str(rssRevision)
+        if not isinstance(etpRSSMessages,dict):
+            etpRSSMessages = {}
+        if not etpRSSMessages.has_key('added'):
+            etpRSSMessages['added'] = {}
+        if not etpRSSMessages.has_key('removed'):
+            etpRSSMessages['removed'] = {}
+        if rssAtom in etpRSSMessages['added']:
+            del etpRSSMessages['added'][rssAtom]
+        etpRSSMessages['removed'][rssAtom] = {}
+        try:
+            etpRSSMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
+        except:
+            etpRSSMessages['removed'][rssAtom]['description'] = "N/A"
+        try:
+            etpRSSMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+        except:
+            etpRSSMessages['removed'][rssAtom]['homepage'] = ""
+        self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
 
@@ -31533,77 +31512,34 @@ class EntropyDatabaseInterface:
         ### dictionary will be elaborated by activator
         if etpConst['rss-feed'] and (not self.clientDatabase) and do_rss:
             # store addPackage action
-            rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-            global etpRSSMessages
-            if rssObj:
-                etpRSSMessages = rssObj.copy()
-            rssAtom = self.retrieveAtom(idpackage)
-            rssRevision = self.retrieveRevision(idpackage)
-            rssAtom += "~"+str(rssRevision)
-            if not isinstance(etpRSSMessages,dict):
-                etpRSSMessages = {}
-            if not etpRSSMessages.has_key('added'):
-                etpRSSMessages['added'] = {}
-            if not etpRSSMessages.has_key('removed'):
-                etpRSSMessages['removed'] = {}
-            if rssAtom in etpRSSMessages['added']:
-                del etpRSSMessages['added'][rssAtom]
-            etpRSSMessages['removed'][rssAtom] = {}
-            try:
-                etpRSSMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
-            except:
-                etpRSSMessages['removed'][rssAtom]['description'] = "N/A"
-            try:
-                etpRSSMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
-            except:
-                etpRSSMessages['removed'][rssAtom]['homepage'] = ""
-            # save
-            self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
+            self._write_rss_for_removed_package(idpackage)
 
         with self.WriteLock:
 
-            # baseinfo
-            self.cursor.execute('DELETE FROM baseinfo WHERE idpackage = (?)',(idpackage,))
-            # extrainfo
-            self.cursor.execute('DELETE FROM extrainfo WHERE idpackage = (?)',(idpackage,))
-            # content
-            self.cursor.execute('DELETE FROM content WHERE idpackage = (?)',(idpackage,))
-            # dependencies
-            self.cursor.execute('DELETE FROM dependencies WHERE idpackage = (?)',(idpackage,))
-            # provide
-            self.cursor.execute('DELETE FROM provide WHERE idpackage = (?)',(idpackage,))
-            # conflicts
-            self.cursor.execute('DELETE FROM conflicts WHERE idpackage = (?)',(idpackage,))
-            # protect
-            self.cursor.execute('DELETE FROM configprotect WHERE idpackage = (?)',(idpackage,))
-            # protect_mask
-            self.cursor.execute('DELETE FROM configprotectmask WHERE idpackage = (?)',(idpackage,))
-            # sources
-            self.cursor.execute('DELETE FROM sources WHERE idpackage = (?)',(idpackage,))
-            # useflags
-            self.cursor.execute('DELETE FROM useflags WHERE idpackage = (?)',(idpackage,))
-            # keywords
-            self.cursor.execute('DELETE FROM keywords WHERE idpackage = (?)',(idpackage,))
+            r_tup = (idpackage,)*20
+            self.cursor.executescript("""
+                DELETE FROM baseinfo WHERE idpackage = %d;
+                DELETE FROM extrainfo WHERE idpackage = %d;
+                DELETE FROM dependencies WHERE idpackage = %d;
+                DELETE FROM provide WHERE idpackage = %d;
+                DELETE FROM conflicts WHERE idpackage = %d;
+                DELETE FROM configprotect WHERE idpackage = %d;
+                DELETE FROM configprotectmask WHERE idpackage = %d;
+                DELETE FROM sources WHERE idpackage = %d;
+                DELETE FROM useflags WHERE idpackage = %d;
+                DELETE FROM keywords WHERE idpackage = %d;
+                DELETE FROM content WHERE idpackage = %d;
+                DELETE FROM messages WHERE idpackage = %d;
+                DELETE FROM counters WHERE idpackage = %d;
+                DELETE FROM sizes WHERE idpackage = %d;
+                DELETE FROM eclasses WHERE idpackage = %d;
+                DELETE FROM needed WHERE idpackage = %d;
+                DELETE FROM triggers WHERE idpackage = %d;
+                DELETE FROM systempackages WHERE idpackage = %d;
+                DELETE FROM injected WHERE idpackage = %d;
+                DELETE FROM installedtable WHERE idpackage = %d;
+            """ % r_tup)
 
-            if self.doesTableExist('messages'):
-                self.cursor.execute('DELETE FROM messages WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('systempackages'):
-                self.cursor.execute('DELETE FROM systempackages WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('counters'):
-                self.cursor.execute('DELETE FROM counters WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('sizes'):
-                self.cursor.execute('DELETE FROM sizes WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('eclasses'):
-                self.cursor.execute('DELETE FROM eclasses WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('needed'):
-                self.cursor.execute('DELETE FROM needed WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('triggers'):
-                self.cursor.execute('DELETE FROM triggers WHERE idpackage = (?)',(idpackage,))
-            if self.doesTableExist('injected'):
-                self.cursor.execute('DELETE FROM injected WHERE idpackage = (?)',(idpackage,))
-
-        # Remove from installedtable if exists
-        self.removePackageFromInstalledTable(idpackage)
         # Remove from dependstable if exists
         self.removePackageFromDependsTable(idpackage)
 
@@ -31841,37 +31777,29 @@ class EntropyDatabaseInterface:
 
     def insertContent(self, idpackage, content, already_formatted = False):
 
-        do_encode = False
-        for item in content:
-            if type(item) is unicode:
-                do_encode = True
-                break
-
-        def myiter():
-            for xfile in content:
-                contenttype = content[xfile]
-                if do_encode:
-                    xfile = xfile.encode('raw_unicode_escape')
-                yield (idpackage,xfile,contenttype,)
-
         with self.WriteLock:
             if already_formatted:
-                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',content)
-            else:
-                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',myiter())
+                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',[(idpackage,b,c,) for a,b,c in content])
+                return
+            do_encode = [x for x in content if type(x) is unicode]
+            def my_cmap(xfile):
+                contenttype = content[xfile]
+                if do_encode: xfile = xfile.encode('raw_unicode_escape')
+                return (idpackage,xfile,contenttype,)
+            self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap,content))
 
     def insertLicenses(self, licenses_data):
 
         mylicenses = licenses_data.keys()
-        mydata = set()
-        for mylicense in mylicenses:
-            found = self.isLicensedataKeyAvailable(mylicense)
-            if found:
-                continue
-            mydata.add((mylicense,buffer(licenses_data[mylicense]),0,))
+        is_lic_avail = self.isLicensedataKeyAvailable
+        def my_mf(mylicense):
+            return not is_lic_avail(mylicense)
+
+        def my_mm(mylicense):
+            return (mylicense,buffer(licenses_data.get(mylicense)),0,)
 
         with self.WriteLock:
-            self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',mydata)
+            self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',map(my_mm,list(set(filter(my_mf,mylicenses)))))
 
     def insertConfigProtect(self, idpackage, idprotect, mask = False):
 
@@ -32378,9 +32306,9 @@ class EntropyDatabaseInterface:
             dump_dir = os.path.dirname(dump_path)
             if os.path.isdir(dump_dir):
                 for item in os.listdir(dump_dir):
-                    item = os.path.join(dump_dir,item)
-                    if os.path.isfile(item):
-                        os.remove(item)
+                    try: os.remove(os.path.join(dump_dir,item))
+                    except OSError: pass
+
         do_clear(etpCache['dbMatch']+"/"+self.dbname+"/")
         do_clear(etpCache['dbSearch']+"/"+self.dbname+"/")
         if depends:
@@ -32786,7 +32714,7 @@ class EntropyDatabaseInterface:
         if order_by:
             order_by_string = ' order by %s' % (order_by,)
 
-        self.cursor.execute('SELECT '+extstring_idpackage+'file'+extstring+' FROM content WHERE idpackage = (?) '+contentstring+order_by_string, searchkeywords)
+        self.cursor.execute('SELECT %s file%s FROM content WHERE idpackage = (?) %s%s' % (extstring_idpackage,extstring,contentstring,order_by_string,), searchkeywords)
 
         if extended and insert_formatted:
             fl = self.cursor.fetchall()
@@ -32912,6 +32840,7 @@ class EntropyDatabaseInterface:
 
     def retrieveDepends(self, idpackage, atoms = False, key_slot = False):
 
+        # XXX: never remove this, otherwise equo.db (client database) dependstable will be always broken (trust me)
         # sanity check on the table
         if not self.isDependsTableSane(): # is empty, need generation
             self.regenerateDependsTable(output = False)
@@ -32930,7 +32859,6 @@ class EntropyDatabaseInterface:
 
     # You must provide the full atom to this function
     # WARNING: this function does not support branches
-    # NOTE: server side uses this regardless branch specification because it already handles it in updatePackage()
     def isPackageAvailable(self,pkgatom):
         pkgatom = self.entropyTools.removePackageOperators(pkgatom)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
@@ -34026,7 +33954,7 @@ class EntropyDatabaseInterface:
             try:
                 self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
                 return 0
-            except:
+            except (self.dbapi2.OperationalError,):
                 return 1 # need reinit
 
     def removeDependencyFromDependsTable(self, iddependency):
@@ -34046,13 +33974,7 @@ class EntropyDatabaseInterface:
             self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
             self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
             # this will be removed when dependstable is refilled properly
-            self.cursor.execute(
-                    'INSERT into dependstable VALUES '
-                    '(?,?)'
-                    , (	-1,
-                            -1,
-                            )
-            )
+            self.cursor.execute('INSERT into dependstable VALUES (?,?)', (-1,-1,))
             if self.indexing:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependsindex_idpackage ON dependstable ( idpackage )')
             self.commitChanges()
@@ -34065,15 +33987,14 @@ class EntropyDatabaseInterface:
     def isDependsTableSane(self):
         try:
             self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
-        except:
+        except (self.dbapi2.OperationalError,):
             return False # table does not exist, please regenerate and re-run
         status = self.cursor.fetchone()
-        if status:
-            return False
+        if status: return False
 
         self.cursor.execute('select count(*) from dependstable')
         dependstable_count = self.cursor.fetchone()
-        if dependstable_count == 0:
+        if dependstable_count < 2:
             return False
         return True
 
@@ -34512,17 +34433,23 @@ class EntropyDatabaseInterface:
 
     def addDependRelationToDependsTable(self, iddependency, idpackage):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into dependstable VALUES '
-                    '(?,?)'
-                    , (	iddependency,
-                            idpackage,
-                            )
-            )
+            self.cursor.execute( 'INSERT into dependstable VALUES (?,?)', (iddependency, idpackage,))
             if (self.entropyTools.is_user_in_entropy_group()) and \
                 (self.dbname.startswith(etpConst['serverdbid'])):
                     # force commit even if readonly, this will allow to automagically fix dependstable server side
                     self.connection.commit() # we don't care much about syncing the database since it's quite trivial
+
+    def addDependsRelationToDependsTable(self, iterable):
+        with self.WriteLock:
+            self.cursor.executemany('INSERT into dependstable VALUES (?,?)', iterable)
+            if (self.entropyTools.is_user_in_entropy_group()) and \
+                (self.dbname.startswith(etpConst['serverdbid'])):
+                    # force commit even if readonly, this will allow to automagically fix dependstable server side
+                    self.connection.commit() # we don't care much about syncing the database since it's quite trivial
+
+    def clearDependsTable(self):
+        if not self.doesTableExist("dependstable"): return
+        self.cursor.execute("DROP TABLE IF EXISTS dependstable")
 
     '''
        @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests
@@ -34530,24 +34457,26 @@ class EntropyDatabaseInterface:
        @output: Nothing
     '''
     def regenerateDependsTable(self, output = True):
+
         self.createDependsTable()
         depends = self.listAllDependencies()
         count = 0
         total = len(depends)
+        mydata = set()
+        am = self.atomMatch
+        up = self.updateProgress
         for iddep,atom in depends:
             count += 1
             if output:
-                self.updateProgress(
-                                        red("Resolving %s") % (atom,),
-                                        importance = 0,
-                                        type = "info",
-                                        back = True,
-                                        count = (count,total)
-                                    )
-            idpackage, rc = self.atomMatch(atom)
-            if (idpackage != -1):
-                self.addDependRelationToDependsTable(iddep,idpackage)
-        del depends
+                up( red("Resolving %s") % (atom,), importance = 0,
+                    type = "info", back = True, count = (count,total)
+                )
+            idpackage, rc = am(atom)
+            if idpackage == -1: continue
+            mydata.add((iddep,idpackage))
+
+        if mydata: self.addDependsRelationToDependsTable(mydata)
+
         # now validate dependstable
         self.sanitizeDependsTable()
 
