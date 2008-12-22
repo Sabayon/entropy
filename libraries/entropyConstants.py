@@ -168,6 +168,11 @@ CREATE TABLE dependenciesreference (
     dependency VARCHAR
 );
 
+CREATE TABLE dependstable (
+    iddependency INTEGER PRIMARY KEY,
+    idpackage INTEGER
+);
+
 CREATE TABLE conflicts (
     idpackage INTEGER,
     conflict VARCHAR
