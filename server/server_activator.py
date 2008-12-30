@@ -69,9 +69,9 @@ def sync(options, justTidy = False):
             elif not mirrors_errors:
                 if mirrors_tainted:
                     if (not do_noask) and etpConst['rss-feed']:
-                        etpRSSMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )
+                        Entropy.rssMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )
                     elif etpConst['rss-feed']:
-                        etpRSSMessages['commitmessage'] = "Autodriven Update"
+                        Entropy.rssMessages['commitmessage'] = "Autodriven Update"
                 errors, fine, broken = sync_remote_databases()
                 if not errors:
                     Entropy.MirrorsService.lock_mirrors(lock = False)

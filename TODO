@@ -1,10 +1,9 @@
 TODO list
 
+  - split entropy.py into entropy package
+  - implement pdepend support in dependencies sorting
   - automatic client db backup
-  - rename exceptionTools
   - move etpConst['conflicting_tagged_packages'] elsewhere
-  - rewrite EquoInterface.get_meant_packages using soundex
-  - cleanup EntropyDatabaseInterface.databaseStructureUpdates
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - UGC: personal package sets
   - UGC: bug report documents?
@@ -12,8 +11,6 @@ TODO list
   - server-side messages collection
   - community repos: add repository handling on dependencies to avoid library breakages
   - External trigger: rewrite support and use bash
-  - split entropy.py into entropy package
-  - implement pdepend support in dependencies sorting
   - use expiration as a base to have and handle multiple packages in repo?
   - add changelog to packages
   - documentation + man page

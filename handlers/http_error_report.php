@@ -54,6 +54,7 @@ $message .= insert_attachment($_POST['errordata'],$boundary,'errordata.txt',0.1)
 $message .= insert_attachment($_POST['processes'],$boundary,'processes.txt',0.2);
 $message .= insert_attachment($_POST['lspci'],$boundary,'lspci.txt',0.3);
 $message .= insert_attachment($_POST['dmesg'],$boundary,'dmesg.txt',0.4);
+$message .= insert_attachment($_POST['locale'],$boundary,'locale.txt',0.5);
 
 $message .= "--".$boundary."--\n";
 

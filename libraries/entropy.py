@@ -21,7 +21,7 @@
 '''
 
 from __future__ import with_statement
-import shutil, commands, urllib2, time, thread, copy
+import shutil, commands, urllib2, time, thread, copy, subprocess
 from entropyConstants import *
 from outputTools import TextInterface, \
     print_info, print_warning, print_error, \
@@ -421,6 +421,8 @@ class EquoInterface(TextInterface):
                 del self.clientDbconn
         if hasattr(self,'FileUpdates'):
             del self.FileUpdates
+        if hasattr(self,'clientLog'):
+            del self.clientLog
 
         self.closeAllRepositoryDatabases()
         self.closeAllSecurity()
@@ -1277,7 +1279,7 @@ class EquoInterface(TextInterface):
         else:
             myroot = etpConst['systemroot']+"/"
         # run ldconfig first
-        os.system("ldconfig -r "+myroot+" &> /dev/null")
+        subprocess.call("ldconfig -r %s &> /dev/null" % (myroot,), shell = True)
         # open /etc/ld.so.conf
         if not os.path.isfile(etpConst['systemroot']+"/etc/ld.so.conf"):
             self.updateProgress(
@@ -1466,24 +1468,14 @@ class EquoInterface(TextInterface):
         else:
             return -1
 
-    def get_meant_packages(self, search_term, from_installed = False, valid_repos = [], branch = etpConst['branch']):
-        # strip numbers
-        import re
-        match_string = ''
-        for x in search_term:
-            if x.isalpha():
-                x = "(%s{1,})?" % (x,)
-                match_string += x
-        try:
-            match_exp = re.compile(match_string,re.IGNORECASE)
-        except AssertionError: # too many groups
-            return []
+    def get_meant_packages(self, search_term, from_installed = False, valid_repos = []):
 
-        matched = {}
-        if not valid_repos:
-            valid_repos = self.validRepositories
-        if from_installed:
-            valid_repos = [1]
+        pkg_data = []
+        atom_srch = False
+        if "/" in search_term: atom_srch = True
+
+        if not valid_repos: valid_repos = self.validRepositories
+        if from_installed: valid_repos = [1]
         for repo in valid_repos:
             if isinstance(repo,basestring):
                 dbconn = self.openRepositoryDatabase(repo)
@@ -1493,38 +1485,9 @@ class EquoInterface(TextInterface):
                 dbconn = self.clientDbconn
             else:
                 continue
-            # get names
-            idpackages = dbconn.listAllIdpackages(branch = branch, branch_operator = "<=")
-            for idpackage in idpackages:
-                name = dbconn.retrieveName(idpackage)
-                if len(name) < len(search_term):
-                    continue
-                mymatches = match_exp.findall(name)
-                found_matches = []
-                for mymatch in mymatches:
-                    items = len([x for x in mymatch if x != ""])
-                    if items < 1:
-                        continue
-                    calc = float(items)/len(mymatch)
-                    if calc > 0.0:
-                        found_matches.append(calc)
-                if not found_matches:
-                    continue
-                maxpoint = max(found_matches)
-                if not matched.has_key(maxpoint):
-                    matched[maxpoint] = set()
-                matched[maxpoint].add((idpackage,repo))
-        if matched:
-            mydata = []
-            while len(mydata) < 5:
-                try:
-                    most = max(matched.keys())
-                except ValueError:
-                    break
-                popped = matched.pop(most)
-                mydata.extend(list(popped))
-            return mydata
-        return []
+            pkg_data.extend([(x,repo,) for x in dbconn.searchSimilarPackages(search_term, atom = atom_srch)])
+
+        return pkg_data
 
     # better to use key:slot
     def check_package_update(self, atom, deep = False):
@@ -1547,8 +1510,7 @@ class EquoInterface(TextInterface):
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag != None:
                 pkg_match += "#%s" % (mytag,)
-            pkg_unsatisfied,x = self.filterSatisfiedDependencies([pkg_match], deep_deps = deep)
-            del x
+            pkg_unsatisfied = self.get_unsatisfied_dependencies([pkg_match], deep_deps = deep)
             if pkg_unsatisfied:
                 found = True
             del pkg_unsatisfied
@@ -2129,108 +2091,93 @@ class EquoInterface(TextInterface):
             self.reload_constants()
         self.validate_repositories()
 
-
-    '''
-    @description: filter the already installed dependencies
-    @input dependencies: list of dependencies to check
-    @output: filtered list, aka the needed ones and the ones satisfied
-    '''
-    def filterSatisfiedDependencies(self, dependencies, deep_deps = False):
+    def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = {}):
 
         if self.xcache:
             c_data = sorted(list(dependencies))
             client_checksum = self.clientDbconn.database_checksum()
             c_hash = str(hash(tuple(c_data)))+str(hash(deep_deps))+client_checksum
-            c_hash = str(hash(c_hash))
-            del c_data
+            c_hash = "unsat_%s" % (hash(c_hash),)
             cached = self.dumpTools.loadobj(etpCache['filter_satisfied_deps']+c_hash)
-            if cached != None:
-                return cached
+            if cached != None: return cached
 
-        unsatisfiedDeps = set()
-        satisfiedDeps = set()
+        cdb_am = self.clientDbconn.atomMatch
+        am = self.atomMatch
+        open_repo = self.openRepositoryDatabase
+        intf_error = self.dbapi2.InterfaceError
+        cdb_getversioning = self.clientDbconn.getVersioningData
+        cdb_retrieveneededraw = self.clientDbconn.retrieveNeededRaw
+        etp_cmp = self.entropyTools.entropyCompareVersions
+        do_needed_check = True
 
-        for dependency in dependencies:
+        def fm_dep(dependency):
 
-            depsatisfied = set()
-            depunsatisfied = set()
+            cached = depcache.get(dependency)
+            if cached != None: return cached
 
             ### conflict
-            if dependency[0] == "!":
-                testdep = dependency[1:]
-                xmatch = self.clientDbconn.atomMatch(testdep)
-                if xmatch[0] != -1:
-                    unsatisfiedDeps.add(dependency)
-                else:
-                    satisfiedDeps.add(dependency)
-                continue
+            if dependency.startswith("!"):
+                idpackage,rc = cdb_am(dependency[1:])
+                if idpackage != -1:
+                    depcache[dependency] = dependency
+                    return dependency
+                depcache[dependency] = 0
+                return 0
 
-            repoMatch = self.atomMatch(dependency)
-            if repoMatch[0] != -1:
-                dbconn = self.openRepositoryDatabase(repoMatch[1])
-                try:
-                    repo_pkgver = dbconn.retrieveVersion(repoMatch[0])
-                    repo_pkgtag = dbconn.retrieveVersionTag(repoMatch[0])
-                    repo_pkgrev = dbconn.retrieveRevision(repoMatch[0])
-                except self.dbapi2.InterfaceError:
-                    # package entry is broken
-                    unsatisfiedDeps.add(dependency)
-                    continue
-            else:
-                # dependency does not exist in our database
-                unsatisfiedDeps.add(dependency)
-                continue
+            c_id,c_rc = cdb_am(dependency)
+            if c_id == -1:
+                depcache[dependency] = dependency
+                return dependency
 
-            clientMatch = self.clientDbconn.atomMatch(dependency)
-            if clientMatch[0] != -1:
+            if not deep_deps and not do_needed_check:
+                depcache[dependency] = 0
+                return 0
 
-                try:
-                    installedVer = self.clientDbconn.retrieveVersion(clientMatch[0])
-                    installedTag = self.clientDbconn.retrieveVersionTag(clientMatch[0])
-                    installedRev = self.clientDbconn.retrieveRevision(clientMatch[0])
-                except TypeError: # corrupted entry?
-                    installedVer = "0"
-                    installedTag = ''
-                    installedRev = 0
-                #if installedRev == 9999: # any revision is fine
-                #    repo_pkgrev = 9999
+            r_id,r_repo = am(dependency)
+            if r_id == -1:
+                depcache[dependency] = dependency
+                return dependency
 
-                if (deep_deps):
-                    vcmp = self.entropyTools.entropyCompareVersions(
-                                (repo_pkgver,repo_pkgtag,repo_pkgrev),
-                                (installedVer,installedTag,installedRev)
-                    )
-                    if vcmp != 0:
-                        depunsatisfied.add(dependency)
-                    else:
-                        # check if needed is the same?
-                        depsatisfied.add(dependency)
-                else:
-                    depsatisfied.add(dependency)
-            else:
-                # not the same version installed
-                depunsatisfied.add(dependency)
+            if do_needed_check:
+                dbconn = open_repo(r_repo)
+                installed_needed = cdb_retrieveneededraw(c_id)
+                repo_needed = dbconn.retrieveNeededRaw(r_id)
+                if installed_needed != repo_needed:
+                    return dependency
+                elif not deep_deps:
+                    return 0
 
-            '''
-            if depsatisfied:
-                # check if it's really satisfied by looking at needed
-                installedNeeded = self.clientDbconn.retrieveNeeded(clientMatch[0])
-                repo_needed = dbconn.retrieveNeeded(repoMatch[0])
-                if installedNeeded != repo_needed:
-                    depunsatisfied.update(depsatisfied)
-                    depsatisfied.clear()
-            '''
+            dbconn = open_repo(r_repo)
+            try:
+                repo_pkgver, repo_pkgtag, repo_pkgrev = dbconn.getVersioningData(r_id)
+            except (intf_error,TypeError,):
+                # package entry is broken
+                return dependency
 
-            unsatisfiedDeps |= depunsatisfied
-            satisfiedDeps |= depsatisfied
+            try:
+                installedVer, installedTag, installedRev = cdb_getversioning(c_id)
+            except TypeError: # corrupted entry?
+                installedVer = "0"
+                installedTag = ''
+                installedRev = 0
+
+            vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,), (installedVer,installedTag,installedRev,))
+            if vcmp != 0:
+                depcache[dependency] = dependency
+                return dependency
+            depcache[dependency] = 0
+            return 0
+
+        unsatisfied = map(fm_dep,dependencies)
+        unsatisfied = set([x for x in unsatisfied if x != 0])
 
         if self.xcache:
             try:
-                self.dumpTools.dumpobj(etpCache['filter_satisfied_deps']+c_hash,(unsatisfiedDeps,satisfiedDeps))
+                self.dumpTools.dumpobj(etpCache['filter_satisfied_deps']+c_hash,unsatisfied)
             except IOError:
                 pass
 
-        return unsatisfiedDeps, satisfiedDeps
+        return unsatisfied
 
     def get_masked_package_reason(self, match):
         idpackage, repoid = match
@@ -2329,12 +2276,7 @@ class EquoInterface(TextInterface):
         return maskedtree
 
 
-    '''
-    @description: generates a dependency tree using unsatisfied dependencies
-    @input package: atomInfo (idpackage,reponame)
-    @output: dependency tree dictionary, plus status code
-    '''
-    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None, flat = False):
+    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None, flat = False, filter_unsat_cache = {}):
 
         usefilter = False
         if matchfilter != None:
@@ -2362,6 +2304,13 @@ class EquoInterface(TextInterface):
             deptree.add((1,atomInfo))
 
         virgin = True
+        open_repo = self.openRepositoryDatabase
+        atom_match = self.atomMatch
+        cdb_atom_match = self.clientDbconn.atomMatch
+        lookup_conflict_replacement = self._lookup_conflict_replacement
+        lookup_library_breakages = self._lookup_library_breakages
+        lookup_inverse_dependencies = self._lookup_inverse_dependencies
+        get_unsatisfied_deps = self.get_unsatisfied_dependencies
         while mydep:
 
             dep_level, dep_atom = mydep
@@ -2377,9 +2326,9 @@ class EquoInterface(TextInterface):
 
             # conflicts
             if dep_atom[0] == "!":
-                c_idpackage, xst = self.clientDbconn.atomMatch(dep_atom[1:])
+                c_idpackage, xst = cdb_atom_match(dep_atom[1:])
                 if c_idpackage != -1:
-                    myreplacement = self._lookup_conflict_replacement(dep_atom[1:], c_idpackage, deep_deps = deep_deps)
+                    myreplacement = lookup_conflict_replacement(dep_atom[1:], c_idpackage, deep_deps = deep_deps)
                     if myreplacement != None:
                         mybuffer.push((dep_level+1,myreplacement))
                     else:
@@ -2391,18 +2340,18 @@ class EquoInterface(TextInterface):
             if virgin:
                 virgin = False
                 m_idpackage, m_repo = atomInfo
-                dbconn = self.openRepositoryDatabase(m_repo)
+                dbconn = open_repo(m_repo)
                 myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
                 if myidpackage == -1: m_idpackage = -1
             else:
-                m_idpackage, m_repo = self.atomMatch(dep_atom)
+                m_idpackage, m_repo = atom_match(dep_atom)
             if m_idpackage == -1:
                 dependenciesNotFound.add(dep_atom)
                 mydep = mybuffer.pop()
                 continue
 
             # check if atom has been already pulled in
-            matchdb = self.openRepositoryDatabase(m_repo)
+            matchdb = open_repo(m_repo)
             matchatom = matchdb.retrieveAtom(m_idpackage)
             matchkey, matchslot = matchdb.retrieveKeySlot(m_idpackage)
             if matchatom in treecache:
@@ -2440,10 +2389,10 @@ class EquoInterface(TextInterface):
             deptree.add((dep_level,match)) # add match
 
             # extra hooks
-            clientmatch = self.clientDbconn.atomMatch(matchkey, matchSlot = matchslot)
-            if clientmatch[0] != -1:
-                broken_atoms = self._lookup_library_breakages(match, clientmatch, deep_deps = deep_deps)
-                inverse_deps = self._lookup_inverse_dependencies(match, clientmatch)
+            cm_idpackage, cm_result = cdb_atom_match(matchkey, matchSlot = matchslot)
+            if cm_idpackage != -1:
+                broken_atoms = lookup_library_breakages(match, (cm_idpackage, cm_result,), deep_deps = deep_deps)
+                inverse_deps = lookup_inverse_dependencies(match, (cm_idpackage, cm_result,))
                 if inverse_deps:
                     deptree.remove((dep_level,match))
                     for ikey,islot in inverse_deps:
@@ -2458,9 +2407,8 @@ class EquoInterface(TextInterface):
                         #treecache.add(x) DO NOT DO THIS
 
             myundeps = matchdb.retrieveDependenciesList(m_idpackage)
-            if (not empty_deps):
-                myundeps, xxx = self.filterSatisfiedDependencies(myundeps, deep_deps = deep_deps)
-                del xxx
+            if not empty_deps:
+                myundeps = get_unsatisfied_deps(myundeps, deep_deps = deep_deps, depcache = filter_unsat_cache)
             for x in myundeps:
                 mybuffer.push((treedepth,x))
 
@@ -2681,6 +2629,7 @@ class EquoInterface(TextInterface):
                 matched_atoms |= set(forced_matches)
 
         sort_dep_text = _("Sorting dependencies")
+        filter_unsat_cache = {}
         for atomInfo in matched_atoms:
 
             count += 1
@@ -2688,30 +2637,22 @@ class EquoInterface(TextInterface):
                 self.updateProgress(sort_dep_text, importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
 
             # check if atomInfo is in matchfilter
-            newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, matchfilter = matchfilter)
+            newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache)
 
             if result == -2: # deps not found
                 error_generated = -2
                 error_tree |= set(newtree) # it is a list, we convert it into set and update error_tree
             elif (result != 0):
                 return newtree, result
-            elif (newtree):
-                parent_keys = deptree.keys()
+            elif newtree:
                 # add conflicts
-                max_parent_key = parent_keys[-1]
-                deptree[0].update(newtree[0])
-                # reverse dict
+                max_parent_key = max(deptree)
+                mycf = newtree.pop(0)
+                if mycf: deptree[0] |= mycf
                 levelcount = 0
-                reversetree = {}
-                for key in newtree.keys()[::-1]:
-                    if key == 0:
-                        continue
+                for mylevel in sorted(newtree.keys(), reverse = True):
                     levelcount += 1
-                    reversetree[levelcount] = newtree[key]
-                del newtree
-                for mylevel in reversetree.keys():
-                    deptree[max_parent_key+mylevel] = reversetree[mylevel].copy()
-                del reversetree
+                    deptree[max_parent_key+levelcount] = newtree.get(mylevel)
 
         matchfilter.clear()
         del matchfilter
@@ -2732,8 +2673,7 @@ class EquoInterface(TextInterface):
             mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
             for mydep in mydeps:
                 matches, rslt = self.clientDbconn.atomMatch(mydep, multiMatch = True)
-                if rslt == 1:
-                    continue
+                if rslt == 1: continue
                 if idpackage in matches and len(matches) > 1:
                     # are all in depends?
                     for mymatch in matches:
@@ -2828,30 +2768,17 @@ class EquoInterface(TextInterface):
                     del tree[treedepth] # probably the last one is empty then
                 break
 
-        newtree = tree.copy() # tree list
-        if (tree):
-            # now filter newtree
-            treelength = len(newtree)
-            for count in range(treelength)[::-1]:
-                x = 0
-                while x < count:
-                    # remove dups in this list
-                    for z in newtree[count]:
-                        try:
-                            while 1:
-                                newtree[x].remove(z)
-                        except:
-                            pass
-                    x += 1
-
-        del tree
+        # now filter newtree
+        for count in sorted(tree.keys(), reverse = True):
+            x = 0
+            while x < count:
+                tree[x] -= tree[count]
+                x += 1
 
         if self.xcache:
-            try:
-                self.dumpTools.dumpobj(etpCache['depends_tree']+c_hash,(newtree,0))
-            except IOError:
-                pass
-        return newtree,0 # treeview is used to show deps while tree is used to run the dependency code.
+            try: self.dumpTools.dumpobj(etpCache['depends_tree']+c_hash,(tree,0))
+            except IOError: pass
+        return tree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
     def list_repo_categories(self):
         categories = set()
@@ -2987,8 +2914,7 @@ class EquoInterface(TextInterface):
 
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
         if self.xcache:
-            if db_digest == None:
-                db_digest = self.all_repositories_checksum()
+            if db_digest == None: db_digest = self.all_repositories_checksum()
             c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
             disk_cache = self.dumpTools.loadobj(etpCache['world_update']+c_hash)
             if disk_cache != None:
@@ -2999,8 +2925,8 @@ class EquoInterface(TextInterface):
 
     def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
         c_hash = "%s%s%s%s%s%s" % ( 
-            hash(db_digest),hash(empty_deps),hash(tuple(self.validRepositories)),
-            hash(tuple(etpRepositoriesOrder)), hash(branch), hash(ignore_spm_downgrades),
+            hash(db_digest),empty_deps,hash(tuple(self.validRepositories)),
+            hash(tuple(etpRepositoriesOrder)), branch, ignore_spm_downgrades,
         )
         return str(hash(c_hash))
 
@@ -3367,38 +3293,30 @@ class EquoInterface(TextInterface):
             return treepackages,removal,result
 
         # format
-        for x in range(len(treepackages)):
-            if x == 0:
-                # conflicts
-                for a in treepackages[x]:
-                    removal.append(a)
-            else:
-                for a in treepackages[x]:
-                    install.append(a)
+        removal = treepackages.pop(0)
+        for x in sorted(treepackages.keys()):
+            install.extend(list(treepackages[x]))
 
         # filter out packages that are in actionQueue comparing key + slot
         if install and removal:
             myremmatch = {}
             for x in removal:
+                atom = self.clientDbconn.retrieveAtom(x)
                 # XXX check if stupid users removed idpackage while this whole instance is running
-                if not self.clientDbconn.isIDPackageAvailable(x):
-                    continue
-                myremmatch.update({(self.entropyTools.dep_getkey(self.clientDbconn.retrieveAtom(x)),self.clientDbconn.retrieveSlot(x)): x})
-            for packageInfo in install:
-                dbconn = self.openRepositoryDatabase(packageInfo[1])
-                testtuple = (
-                    self.entropyTools.dep_getkey(dbconn.retrieveAtom(packageInfo[0])),
-                    dbconn.retrieveSlot(packageInfo[0])
-                )
+                if atom == None: continue
+                myremmatch.update({(self.entropyTools.dep_getkey(atom),self.clientDbconn.retrieveSlot(x)): x})
+            for pkg_id, pkg_repo in install:
+                dbconn = self.openRepositoryDatabase(pkg_repo)
+                testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(pkg_id)),dbconn.retrieveSlot(pkg_id))
                 if testtuple in myremmatch:
                     # remove from removalQueue
-                    if myremmatch[testtuple] in removal:
-                        removal.remove(myremmatch[testtuple])
+                    try: removal.remove(myremmatch[testtuple])
+                    except KeyError: pass
                 del testtuple
             del myremmatch
 
         del treepackages
-        return install, removal, 0
+        return install, list(removal), 0
 
     # this function searches into client database for a package matching provided key + slot
     # and returns its idpackage or -1 if none found
@@ -4365,6 +4283,13 @@ class PackageInterface:
                 except EOFError:
                     self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"EOFError on "+self.infoDict['pkgpath'])
                     rc = 1
+                except (UnicodeEncodeError,UnicodeDecodeError,):
+                    # this will make devs to actually catch the right exception and prepare a fix
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Raising Unicode Error for "+self.infoDict['pkgpath'])
+                    rc = self.Entropy.entropyTools.uncompressTarBz2(
+                        self.infoDict['pkgpath'],self.infoDict['imagedir'],
+                        catchEmpty = True
+                    )
                 if rc == 0:
                     break
                 if unpack_tries <= 0:
@@ -5089,13 +5014,9 @@ class PackageInterface:
 
         # setup imageDir properly
         imageDir = self.infoDict['imagedir']
-        # XXX Python 2.4 workaround
-        if sys.version[:3] == "2.4":
-            imageDir = imageDir.encode('raw_unicode_escape')
-        # XXX Python 2.4 workaround
 
         # merge data into system
-        for currentdir,subdirs,files in os.walk(imageDir):
+        for currentdir,subdirs,files in os.walk(imageDir.encode('utf-8')):
             # create subdirs
             for subdir in subdirs:
 
@@ -5155,13 +5076,6 @@ class PackageInterface:
                 #tofile_encoded = tofile
                 # redecode to bytestring
 
-                # XXX Python 2.4 bug workaround
-                # If Python 2.4, .encode fails
-                if sys.version[:3] != "2.4":
-                    fromfile = fromfile.encode('raw_unicode_escape')
-                    tofile = tofile.encode('raw_unicode_escape')
-                # XXX Python 2.4 bug workaround
-
                 if etpConst['collisionprotect'] > 1:
                     todbfile = fromfile[len(imageDir):]
                     myrc = self._handle_install_collision_protect(tofile, todbfile)
@@ -5211,16 +5125,29 @@ class PackageInterface:
                     # XXX
                     # XXX moving file using the raw format like portage does
                     # XXX
-                    shutil.move(fromfile_encoded,tofile)
+                    try:
+                        shutil.move(fromfile_encoded,tofile)
+                    except shutil.Error, e:
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "WARNING!!! Error during file move to system: %s" % (e,)
+                        )
+                        mytxt = "%s: %s, %s" % (_("File move error"),e,_("please report"),)
+                        self.Entropy.updateProgress(
+                            red("QA: ")+darkred(mytxt),
+                            importance = 1,
+                            type = "warning",
+                            header = red(" !!! ")
+                        )
 
                 except IOError, e:
                     if e.errno == 2:
                         # better to pass away, sometimes gentoo packages are fucked up and contain broken things
                         pass
                     else:
-                        rc = os.system("mv "+fromfile+" "+tofile)
-                        if (rc != 0):
-                            return 4
+                        rc = subprocess.call("mv %s %s" % (fromfile,tofile,), shell = True)
+                        if rc != 0: return 4
                 if protected:
                     # add to disk cache
                     oldquiet = etpUi['quiet']
@@ -6399,7 +6326,7 @@ class FileUpdatesInterface:
                         # if it's broken, skip diff and automerge
                         if not os.path.exists(filepath):
                             return mydict
-                    result = os.system('diff -Bbua '+filepath+' '+tofilepath+' | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'')
+                    result = subprocess.call('diff -Bbua "%s" "%s" | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'' % (filepath,tofilepath,), shell = True)
                     if result == 1:
                         mydict['automerge'] = True
                 except:
@@ -6505,7 +6432,6 @@ class RepoInterface:
         if not os.access("/usr/bin/sqlite3",os.X_OK) or self.entropyTools.islive():
             self.dbformat_eapi = 1
         else:
-            import subprocess
             rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null", shell = True)
             if rc != 0: self.dbformat_eapi = 1
 
@@ -9129,9 +9055,6 @@ class TriggerInterface:
         if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
             functions.append("binutilsswitch")
 
-        if (self.pkgdata['category']+"/"+self.pkgdata['name'] == "net-www/netscape-flash") and (etpSys['arch'] == "amd64"):
-            functions.append("nspluginwrapper_fix_flash")
-
         # opengl configuration
         if (self.pkgdata['category'] == "x11-drivers") and (self.pkgdata['name'].startswith("nvidia-") or self.pkgdata['name'].startswith("ati-")):
             if "ebuild_postinstall" in functions:
@@ -9325,28 +9248,6 @@ class TriggerInterface:
         os.remove(triggerfile)
         return my_ext_status
 
-    def trigger_nspluginwrapper_fix_flash(self):
-        # check if nspluginwrapper is installed
-        if os.access("/usr/bin/nspluginwrapper",os.X_OK):
-            mytxt = "%s: nspluginwrapper flash plugin" % (_("Regenerating"),)
-            self.Entropy.updateProgress(
-                brown(mytxt),
-                importance = 0,
-                header = red("   ##")
-            )
-            quietstring = ''
-            if etpUi['quiet']: quietstring = " &>/dev/null"
-            cmds = [
-                "nspluginwrapper -r /usr/lib64/nsbrowser/plugins/npwrapper.libflashplayer.so"+quietstring,
-                "nspluginwrapper -i /usr/lib32/nsbrowser/plugins/libflashplayer.so"+quietstring
-            ]
-            if not etpConst['systemroot']:
-                for cmd in cmds:
-                    os.system(cmd)
-            else:
-                for cmd in cmds:
-                    os.system('echo "'+cmd+'" | chroot '+etpConst['systemroot']+quietstring)
-
     def trigger_purgecache(self):
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
@@ -9449,21 +9350,30 @@ class TriggerInterface:
         for item in self.pkgdata['removecontent']:
             item = etpConst['systemroot']+item
             if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[POST] Removing boot service: %s" % (os.path.basename(item),)
-                )
-                mytxt = "%s: %s" % (brown(_("Removing boot service")),os.path.basename(item),)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
                 myroot = "/"
                 if etpConst['systemroot']:
                     myroot = etpConst['systemroot']+"/"
-                os.system('ROOT="'+myroot+'" rc-update del '+os.path.basename(item))
+                runlevels_dir = etpConst['systemroot']+"/etc/runlevels"
+                runlevels = []
+                if os.path.isdir(runlevels_dir) and os.access(runlevels_dir,os.R_OK):
+                    runlevels = [x for x in os.listdir(runlevels_dir) \
+                        if os.path.isdir(os.path.join(runlevels_dir,x)) \
+                        and os.path.isfile(os.path.join(runlevels_dir,x,os.path.basename(item)))
+                    ]
+                for runlevel in runlevels:
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "[POST] Removing boot service: %s, runlevel: %s" % (os.path.basename(item),runlevel,)
+                    )
+                    mytxt = "%s: %s : %s" % (brown(_("Removing boot service")),os.path.basename(item),runlevel,)
+                    self.Entropy.updateProgress(
+                        mytxt,
+                        importance = 0,
+                        header = red("   ## ")
+                    )
+                    cmd = 'ROOT="%s" rc-update del %s %s' % (myroot, os.path.basename(item), runlevel)
+                    subprocess.call(cmd, shell = True)
 
     def trigger_initinform(self):
         for item in self.pkgdata['content']:
@@ -9488,7 +9398,7 @@ class TriggerInterface:
         elif self.pkgdata['name'] == "ati-drivers":
             opengl = "ati"
         # is there eselect ?
-        eselect = os.system("eselect opengl &> /dev/null")
+        eselect = subprocess.call("eselect opengl &> /dev/null", shell = True)
         if eselect == 0:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -9504,9 +9414,9 @@ class TriggerInterface:
             quietstring = ''
             if etpUi['quiet']: quietstring = " &>/dev/null"
             if etpConst['systemroot']:
-                os.system('echo "eselect opengl set --use-old '+opengl+'" | chroot '+etpConst['systemroot']+quietstring)
+                subprocess.call('echo "eselect opengl set --use-old %s" | chroot %s %s' % (opengl,etpConst['systemroot'],quietstring,), shell = True)
             else:
-                os.system('eselect opengl set --use-old '+opengl+quietstring)
+                subprocess.call('eselect opengl set --use-old %s %s' % (opengl,quietstring,), shell = True)
         else:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -9521,7 +9431,7 @@ class TriggerInterface:
             )
 
     def trigger_openglsetup_xorg(self):
-        eselect = os.system("eselect opengl &> /dev/null")
+        eselect = subprocess.call("eselect opengl &> /dev/null", shell = True)
         if eselect == 0:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -9537,9 +9447,9 @@ class TriggerInterface:
             quietstring = ''
             if etpUi['quiet']: quietstring = " &>/dev/null"
             if etpConst['systemroot']:
-                os.system('echo "eselect opengl set xorg-x11" | chroot '+etpConst['systemroot']+quietstring)
+                subprocess.call('echo "eselect opengl set xorg-x11" | chroot %s %s' % (etpConst['systemroot'],quietstring,), shell = True)
             else:
-                os.system('eselect opengl set xorg-x11'+quietstring)
+                subprocess.call('eselect opengl set xorg-x11 %s' % (quietstring,), shell = True)
         else:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -9625,7 +9535,7 @@ class TriggerInterface:
                     if fsline[1] == "/boot":
                         if not os.path.ismount("/boot"):
                             # trigger mount /boot
-                            rc = os.system("mount /boot &> /dev/null")
+                            rc = subprocess.call("mount /boot &> /dev/null", shell = True)
                             if rc == 0:
                                 self.Entropy.clientLog.log(
                                     ETP_LOGPRI_INFO,
@@ -9719,7 +9629,7 @@ class TriggerInterface:
             importance = 0,
             header = red("   ## ")
         )
-        os.system("ldconfig -r "+myroot+" &> /dev/null")
+        subprocess.call("ldconfig -r %s &> /dev/null" % (myroot,), shell = True)
 
     def trigger_env_update(self):
 
@@ -9736,9 +9646,9 @@ class TriggerInterface:
                 header = red("   ## ")
             )
             if etpConst['systemroot']:
-                os.system("echo 'env-update --no-ldconfig' | chroot "+etpConst['systemroot']+" &> /dev/null")
+                subprocess.call("echo 'env-update --no-ldconfig' | chroot %s &> /dev/null" % (etpConst['systemroot'],), shell = True)
             else:
-                os.system('env-update --no-ldconfig &> /dev/null')
+                subprocess.call('env-update --no-ldconfig &> /dev/null')
 
     def trigger_ebuild_postinstall(self):
         stdfile = open("/dev/null","w")
@@ -10149,9 +10059,9 @@ class TriggerInterface:
             if etpUi['quiet']:
                 redirect = " &> /dev/null"
             if etpConst['systemroot']:
-                os.system("echo '/usr/bin/gcc-config "+profile+"' | chroot "+etpConst['systemroot']+redirect)
+                subprocess.call("echo '/usr/bin/gcc-config %s' | chroot %s %s" % (profile,etpConst['systemroot'],redirect,), shell = True)
             else:
-                os.system('/usr/bin/gcc-config '+profile+redirect)
+                subprocess.call('/usr/bin/gcc-config %s %s' % (profile,redirect,), shell = True)
         return 0
 
     '''
@@ -10164,9 +10074,9 @@ class TriggerInterface:
             if etpUi['quiet']:
                 redirect = " &> /dev/null"
             if etpConst['systemroot']:
-                os.system("echo '/usr/bin/binutils-config "+profile+"' | chroot "+etpConst['systemroot']+redirect)
+                subprocess.call("echo '/usr/bin/binutils-config %s' | chroot %s %s" % (profile,etpConst['systemroot'],redirect,), shell = True)
             else:
-                os.system('/usr/bin/binutils-config '+profile+redirect)
+                subprocess.call('/usr/bin/binutils-config %s %s' % (profile,redirect,), shell = True)
         return 0
 
     '''
@@ -10198,7 +10108,7 @@ class TriggerInterface:
                 myroot = "/"
             else:
                 myroot = etpConst['systemroot']+"/"
-            os.system('/sbin/depmod -a -b '+myroot+' -r '+name+' &> /dev/null')
+            subprocess.call('/sbin/depmod -a -b %s -r %s &> /dev/null' % (myroot,name,), shell = True)
         return 0
 
     def __get_entropy_kernel_grub_line(self, kernel):
@@ -10296,7 +10206,7 @@ timeout=10
         if etpConst['systemroot']:
             return "(hd0,0)"
         import re
-        df_avail = os.system("which df &> /dev/null")
+        df_avail = subprocess.call("which df &> /dev/null", shell = True)
         if df_avail != 0:
             mytxt = "%s: %s! %s. %s (hd0,0)." % (
                 bold(_("QA")),
@@ -10310,7 +10220,7 @@ timeout=10
                 header = red("   ## ")
             )
             return "(hd0,0)"
-        grub_avail = os.system("which grub &> /dev/null")
+        grub_avail = subprocess.call("which grub &> /dev/null", shell = True)
         if grub_avail != 0:
             mytxt = "%s: %s! %s. %s (hd0,0)." % (
                 bold(_("QA")),
@@ -10390,7 +10300,7 @@ timeout=10
             if os.path.isfile(device_map):
                 os.remove(device_map)
             # generate device.map
-            os.system('echo "quit" | grub --device-map='+device_map+' --no-floppy --batch &> /dev/null')
+            subprocess.call('echo "quit" | grub --device-map="%s" --no-floppy --batch &> /dev/null' % (device_map,), shell = True)
             if os.path.isfile(device_map):
                 f = open(device_map,"r")
                 device_map_file = f.readlines()
@@ -10939,6 +10849,7 @@ class ErrorReportInterface:
             urllib2._opener = None
 
     def prepare(self, tb_text, name, email, report_data = "", description = ""):
+
         self.params['arch'] = etpConst['currentarch']
         self.params['stacktrace'] = tb_text
         self.params['name'] = name
@@ -10949,35 +10860,17 @@ class ErrorReportInterface:
         self.params['arguments'] = ' '.join(sys.argv)
         self.params['uid'] = etpConst['uid']
         self.params['system_version'] = "N/A"
-        self.params['processes'] = ''
-        self.params['lspci'] = ''
-        self.params['dmesg'] = ''
         if os.access(etpConst['systemreleasefile'],os.R_OK):
             f = open(etpConst['systemreleasefile'],"r")
             self.params['system_version'] = f.readlines()
             f.close()
 
-        myprocesses = []
-        try:
-            myprocesses = commands.getoutput('ps auxf').split("\n")
-        except:
-            pass
-        for line in myprocesses:
-            mycount = 0
-            for mychar in line:
-                mycount += 1
-                self.params['processes'] += mychar
-                if mycount == 80:
-                    self.params['processes'] += "\n"
-                    mycount = 0
-            if mycount != 0:
-                self.params['processes'] += "\n"
+        self.params['processes'] = commands.getoutput('ps auxf')
+        self.params['lspci'] = commands.getoutput('/usr/sbin/lspci')
+        self.params['dmesg'] = commands.getoutput('dmesg')
+        self.params['locale'] = commands.getoutput('locale -v')
+        self.params['stacktrace'] += "\n\n"+self.params['locale'] # just for a while, won't hurt
 
-        try:
-            self.params['lspci'] = commands.getoutput('/usr/sbin/lspci')
-            self.params['dmesg'] = commands.getoutput('dmesg')
-        except:
-            pass
         self.generated = True
 
     # params is a dict, key(HTTP post item name): value
@@ -13223,11 +13116,12 @@ class LogFile:
         self.logFile = None
         self.open(filename)
 
-    def close (self):
-        try:
-            self.logFile.close()
-        except:
-            pass
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        try: self.logFile.close()
+        except: pass
 
     def flush(self):
         self.logFile.flush()
@@ -14785,6 +14679,8 @@ class SocketHostInterface:
         self.start_python_garbage_collector()
 
     def killall(self):
+        if hasattr(self,'socketLog'):
+            self.socketLog.close()
         if self.Server != None:
             self.Server.alive = False
         if self.Gc != None:
@@ -15276,6 +15172,12 @@ class ServerInterface(TextInterface):
         self.package_match_validator_cache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
+        self.rssMessages = {
+            'added': {},
+            'removed': {},
+            'commitmessage': "",
+            'light': {},
+        }
 
 
         if self.default_repository not in etpConst['server_repositories']:
@@ -15296,6 +15198,8 @@ class ServerInterface(TextInterface):
         self.switch_default_repository(self.default_repository)
 
     def __del__(self):
+        if hasattr(self,'serverLog'):
+            self.serverLog.close()
         self.close_server_databases()
 
     def ensure_paths(self, repo):
@@ -19036,7 +18940,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if not os.access(filepath,os.R_OK):
             return False,None
 
-        import subprocess
         args = [self.VIRUS_CHECK_EXEC]
         args += self.VIRUS_CHECK_ARGS
         args += [filepath]
@@ -22666,8 +22569,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             import pickle
         self.pickle = pickle
 
-        import subprocess, entropyTools
-        self.subprocess = subprocess
+        import entropyTools
         self.entropyTools = entropyTools
         self.SystemManagerExecutor = SystemManagerExecutorInstance
         self.args = args
@@ -22787,7 +22689,7 @@ class SystemManagerExecutorServerRepositoryInterface:
 
         cmd = ["emerge", "--sync"]
         try:
-            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
+            p = subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
@@ -22839,7 +22741,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
+            p = subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
@@ -22871,7 +22773,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
+            p = subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
@@ -22997,7 +22899,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
+            p = subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
@@ -23024,7 +22926,7 @@ class SystemManagerExecutorServerRepositoryInterface:
         stdout_err.flush()
 
         try:
-            p = self.subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
+            p = subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
@@ -23557,7 +23459,7 @@ class SystemManagerExecutorServerRepositoryInterface:
                         if mirrors_tainted and etpConst['rss-feed']:
                             commit_msg = repository_data[repoid]['commit_msg']
                             if not commit_msg: commit_msg = "Autodriven update"
-                            etpRSSMessages['commitmessage'] = commit_msg
+                            Entropy.rssMessages['commitmessage'] = commit_msg
 
                         errors, fine, broken = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
                         repo_data[repoid]['db_errors'] = errors
@@ -25184,7 +25086,7 @@ class SystemManagerServerInterface(SocketHostInterface):
             }
 
         def hello_world(self):
-            rc = os.system('echo hello world')
+            rc = subprocess.call('echo hello world', shell = True)
             return True,rc
 
 
@@ -28283,8 +28185,8 @@ class ServerMirrorsInterface:
             except (IOError, OSError):
                 revision = "N/A"
             commitmessage = ''
-            if etpRSSMessages['commitmessage']:
-                commitmessage = ' :: '+etpRSSMessages['commitmessage']
+            if self.Entropy.rssMessages['commitmessage']:
+                commitmessage = ' :: '+self.Entropy.rssMessages['commitmessage']
             title = ": "+etpConst['systemname']+" "+etpConst['product'][0].upper()+etpConst['product'][1:]+" "+etpConst['branch']+" :: Revision: "+revision+commitmessage
             link = etpConst['rss-base-url']
             # create description
@@ -28309,7 +28211,7 @@ class ServerMirrorsInterface:
                 rssLight.writeChanges()
 
         Rss.writeChanges()
-        etpRSSMessages.clear()
+        self.Entropy.rssMessages.clear()
         self.dumpTools.removeobj(rss_dump_name)
 
 
@@ -31460,48 +31362,46 @@ class EntropyDatabaseInterface:
     def _write_rss_for_added_package(self, pkgatom, revision, description, homepage):
         rssAtom = pkgatom+"~"+str(revision)
         rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-        global etpRSSMessages
-        if rssObj: etpRSSMessages = rssObj.copy()
-        if not isinstance(etpRSSMessages,dict):
-            etpRSSMessages = {}
-        if not etpRSSMessages.has_key('added'):
-            etpRSSMessages['added'] = {}
-        if not etpRSSMessages.has_key('removed'):
-            etpRSSMessages['removed'] = {}
-        if rssAtom in etpRSSMessages['removed']:
-            del etpRSSMessages['removed'][rssAtom]
-        etpRSSMessages['added'][rssAtom] = {}
-        etpRSSMessages['added'][rssAtom]['description'] = description
-        etpRSSMessages['added'][rssAtom]['homepage'] = homepage
-        etpRSSMessages['light'][rssAtom] = {}
-        etpRSSMessages['light'][rssAtom]['description'] = description
-        self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
+        if rssObj: self.ServiceInterface.rssMessages = rssObj.copy()
+        if not isinstance(self.ServiceInterface.rssMessages,dict):
+            self.ServiceInterface.rssMessages = {}
+        if not self.ServiceInterface.rssMessages.has_key('added'):
+            self.ServiceInterface.rssMessages['added'] = {}
+        if not self.ServiceInterface.rssMessages.has_key('removed'):
+            self.ServiceInterface.rssMessages['removed'] = {}
+        if rssAtom in self.ServiceInterface.rssMessages['removed']:
+            del self.ServiceInterface.rssMessages['removed'][rssAtom]
+        self.ServiceInterface.rssMessages['added'][rssAtom] = {}
+        self.ServiceInterface.rssMessages['added'][rssAtom]['description'] = description
+        self.ServiceInterface.rssMessages['added'][rssAtom]['homepage'] = homepage
+        self.ServiceInterface.rssMessages['light'][rssAtom] = {}
+        self.ServiceInterface.rssMessages['light'][rssAtom]['description'] = description
+        self.dumpTools.dumpobj(etpConst['rss-dump-name'],self.ServiceInterface.rssMessages)
 
     def _write_rss_for_removed_package(self, idpackage):
         rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-        global etpRSSMessages
-        if rssObj: etpRSSMessages = rssObj.copy()
+        if rssObj: self.ServiceInterface.rssMessages = rssObj.copy()
         rssAtom = self.retrieveAtom(idpackage)
         rssRevision = self.retrieveRevision(idpackage)
         rssAtom += "~"+str(rssRevision)
-        if not isinstance(etpRSSMessages,dict):
-            etpRSSMessages = {}
-        if not etpRSSMessages.has_key('added'):
-            etpRSSMessages['added'] = {}
-        if not etpRSSMessages.has_key('removed'):
-            etpRSSMessages['removed'] = {}
-        if rssAtom in etpRSSMessages['added']:
-            del etpRSSMessages['added'][rssAtom]
-        etpRSSMessages['removed'][rssAtom] = {}
+        if not isinstance(self.ServiceInterface.rssMessages,dict):
+            self.ServiceInterface.rssMessages = {}
+        if not self.ServiceInterface.rssMessages.has_key('added'):
+            self.ServiceInterface.rssMessages['added'] = {}
+        if not self.ServiceInterface.rssMessages.has_key('removed'):
+            self.ServiceInterface.rssMessages['removed'] = {}
+        if rssAtom in self.ServiceInterface.rssMessages['added']:
+            del self.ServiceInterface.rssMessages['added'][rssAtom]
+        self.ServiceInterface.rssMessages['removed'][rssAtom] = {}
         try:
-            etpRSSMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
+            self.ServiceInterface.rssMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
         except:
-            etpRSSMessages['removed'][rssAtom]['description'] = "N/A"
+            self.ServiceInterface.rssMessages['removed'][rssAtom]['description'] = "N/A"
         try:
-            etpRSSMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+            self.ServiceInterface.rssMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
         except:
-            etpRSSMessages['removed'][rssAtom]['homepage'] = ""
-        self.dumpTools.dumpobj(etpConst['rss-dump-name'],etpRSSMessages)
+            self.ServiceInterface.rssMessages['removed'][rssAtom]['homepage'] = ""
+        self.dumpTools.dumpobj(etpConst['rss-dump-name'],self.ServiceInterface.rssMessages)
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
 
@@ -32123,6 +32023,10 @@ class EntropyDatabaseInterface:
         if idcat: return idcat[0]
         return -1
 
+    def getVersioningData(self, idpackage):
+        self.cursor.execute('SELECT version,versiontag,revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
+        return self.cursor.fetchone()
+
     def getStrictData(self, idpackage):
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.version,baseinfo.versiontag,baseinfo.revision,baseinfo.atom FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         return self.cursor.fetchone()
@@ -32458,14 +32362,12 @@ class EntropyDatabaseInterface:
     def retrieveAtom(self, idpackage):
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         atom = self.cursor.fetchone()
-        if atom:
-            return atom[0]
+        if atom: return atom[0]
 
     def retrieveBranch(self, idpackage):
         self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         br = self.cursor.fetchone()
-        if br:
-            return br[0]
+        if br: return br[0]
 
     def retrieveTrigger(self, idpackage, get_unicode = False):
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
@@ -32481,27 +32383,23 @@ class EntropyDatabaseInterface:
     def retrieveDownloadURL(self, idpackage):
         self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         download = self.cursor.fetchone()
-        if download:
-            return download[0]
+        if download: return download[0]
 
     def retrieveDescription(self, idpackage):
         self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         description = self.cursor.fetchone()
-        if description:
-            return description[0]
+        if description: return description[0]
 
     def retrieveHomepage(self, idpackage):
         self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         home = self.cursor.fetchone()
-        if home:
-            return home[0]
+        if home: return home[0]
 
     def retrieveCounter(self, idpackage):
         counter = -1
         self.cursor.execute('SELECT counters.counter FROM counters,baseinfo WHERE counters.idpackage = (?) AND baseinfo.idpackage = counters.idpackage AND baseinfo.branch = counters.branch', (idpackage,))
         mycounter = self.cursor.fetchone()
-        if mycounter:
-            return mycounter[0]
+        if mycounter: return mycounter[0]
         return counter
 
     def retrieveMessages(self, idpackage):
@@ -32517,30 +32415,25 @@ class EntropyDatabaseInterface:
     def retrieveSize(self, idpackage):
         self.cursor.execute('SELECT size FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone()
-        if size:
-            return size[0]
+        if size: return size[0]
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
         self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone() # do not use [0]!
-        if not size:
-            size = 0
-        else:
-            size = size[0]
+        if not size: size = 0
+        else: size = size[0]
         return size
 
     def retrieveDigest(self, idpackage):
         self.cursor.execute('SELECT digest FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         digest = self.cursor.fetchone()
-        if digest:
-            return digest[0]
+        if digest: return digest[0]
 
     def retrieveName(self, idpackage):
         self.cursor.execute('SELECT name FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         name = self.cursor.fetchone()
-        if name:
-            return name[0]
+        if name: return name[0]
 
     def retrieveKeySlot(self, idpackage):
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
@@ -32555,26 +32448,22 @@ class EntropyDatabaseInterface:
     def retrieveVersion(self, idpackage):
         self.cursor.execute('SELECT version FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         ver = self.cursor.fetchone()
-        if ver:
-            return ver[0]
+        if ver: return ver[0]
 
     def retrieveRevision(self, idpackage):
         self.cursor.execute('SELECT revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         rev = self.cursor.fetchone()
-        if rev:
-            return rev[0]
+        if rev: return rev[0]
 
     def retrieveDateCreation(self, idpackage):
         self.cursor.execute('SELECT datecreation FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         date = self.cursor.fetchone()
-        if date:
-            return date[0]
+        if date: return date[0]
 
     def retrieveApi(self, idpackage):
         self.cursor.execute('SELECT etpapi FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         api = self.cursor.fetchone()
-        if api:
-            return api[0]
+        if api: return api[0]
 
     def retrieveUseflags(self, idpackage):
         self.cursor.execute('SELECT flagname FROM useflags,useflagsreference WHERE useflags.idpackage = (?) and useflags.idflag = useflagsreference.idflag', (idpackage,))
@@ -32584,14 +32473,15 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = (?) and eclasses.idclass = eclassesreference.idclass', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def retrieveNeeded(self, idpackage, extended = False, format = False):
+    def retrieveNeededRaw(self, idpackage):
+        self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+        return self.fetchall2set(self.cursor.fetchall())
 
-        if extended and not self.doesColumnInTableExist("needed","elfclass"):
-            return {}
+    def retrieveNeeded(self, idpackage, extended = False, format = False):
 
         if extended:
             self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded order by library', (idpackage,))
-            needed = sorted(self.cursor.fetchall())
+            needed = self.cursor.fetchall()
         else:
             self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded order by library', (idpackage,))
             needed = self.fetchall2list(self.cursor.fetchall())
@@ -32613,13 +32503,8 @@ class EntropyDatabaseInterface:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependenciesList(self, idpackage):
-        deps = self.retrieveDependencies(idpackage)
-        conflicts = self.retrieveConflicts(idpackage)
-        for x in conflicts:
-            if x[0] != "!":
-                x = "!"+x
-            deps.add(x)
-        return deps
+        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency UNION SELECT "!" || conflict FROM conflicts WHERE idpackage = (?)', (idpackage,idpackage,))
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None):
 
@@ -32656,19 +32541,15 @@ class EntropyDatabaseInterface:
     def retrieveProtect(self, idpackage):
         self.cursor.execute('SELECT protect FROM configprotect,configprotectreference WHERE configprotect.idpackage = (?) and configprotect.idprotect = configprotectreference.idprotect', (idpackage,))
         protect = self.cursor.fetchone()
-        if not protect:
-            protect = ''
-        else:
-            protect = protect[0]
+        if not protect: protect = ''
+        else: protect = protect[0]
         return protect
 
     def retrieveProtectMask(self, idpackage):
         self.cursor.execute('SELECT protect FROM configprotectmask,configprotectreference WHERE idpackage = (?) and configprotectmask.idprotect= configprotectreference.idprotect', (idpackage,))
         protect = self.cursor.fetchone()
-        if not protect:
-            protect = ''
-        else:
-            protect = protect[0]
+        if not protect: protect = ''
+        else: protect = protect[0]
         return protect
 
     def retrieveSources(self, idpackage, extended = False):
@@ -32737,14 +32618,12 @@ class EntropyDatabaseInterface:
     def retrieveSlot(self, idpackage):
         self.cursor.execute('SELECT slot FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         slot = self.cursor.fetchone()
-        if slot:
-            return slot[0]
+        if slot: return slot[0]
 
     def retrieveVersionTag(self, idpackage):
         self.cursor.execute('SELECT versiontag FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         vtag = self.cursor.fetchone()
-        if vtag:
-            return vtag[0]
+        if vtag: return vtag[0]
 
     def retrieveMirrorInfo(self, mirrorname):
         self.cursor.execute('SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
@@ -32754,8 +32633,7 @@ class EntropyDatabaseInterface:
     def retrieveCategory(self, idpackage):
         self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         cat = self.cursor.fetchone()
-        if cat:
-            return cat[0]
+        if cat: return cat[0]
 
     def retrieveCategoryDescription(self, category):
         data = {}
@@ -32828,8 +32706,7 @@ class EntropyDatabaseInterface:
     def retrieveLicense(self, idpackage):
         self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = (?) and baseinfo.idlicense = licenses.idlicense', (idpackage,))
         licname = self.cursor.fetchone()
-        if licname:
-            return licname[0]
+        if licname: return licname[0]
 
     def retrieveCompileFlags(self, idpackage):
         self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags,extrainfo WHERE extrainfo.idpackage = (?) and extrainfo.idflags = flags.idflags', (idpackage,))
@@ -32863,8 +32740,7 @@ class EntropyDatabaseInterface:
         pkgatom = self.entropyTools.removePackageOperators(pkgatom)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
         result = self.cursor.fetchone()
-        if result:
-            return result[0]
+        if result: return result[0]
         return -1
 
     def isIDPackageAvailable(self,idpackage):
@@ -32877,16 +32753,14 @@ class EntropyDatabaseInterface:
     def isCategoryAvailable(self,category):
         self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isProtectAvailable(self,protect):
         self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isFileAvailable(self, myfile, get_id = False):
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
@@ -32934,44 +32808,38 @@ class EntropyDatabaseInterface:
     def isSourceAvailable(self,source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isDependencyAvailable(self,dependency):
         self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = (?)', (dependency,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isKeywordAvailable(self,keyword):
         self.cursor.execute('SELECT idkeyword FROM keywordsreference WHERE keywordname = (?)', (keyword,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isUseflagAvailable(self,useflag):
         self.cursor.execute('SELECT idflag FROM useflagsreference WHERE flagname = (?)', (useflag,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isEclassAvailable(self,eclass):
         self.cursor.execute('SELECT idclass FROM eclassesreference WHERE classname = (?)', (eclass,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isNeededAvailable(self,needed):
         self.cursor.execute('SELECT idneeded FROM neededreference WHERE library = (?)', (needed,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isCounterAvailable(self, counter, branch = None, branch_operator = "="):
         params = [counter]
@@ -33021,9 +32889,8 @@ class EntropyDatabaseInterface:
             pkglicense = ' '
         self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def isSystemPackage(self,idpackage):
         self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
@@ -33045,9 +32912,8 @@ class EntropyDatabaseInterface:
             (chost,cflags,cxxflags,)
         )
         result = self.cursor.fetchone()
-        if not result:
-            return -1
-        return result[0]
+        if result: return result[0]
+        return -1
 
     def searchBelongs(self, file, like = False, branch = None, branch_operator = "="):
 
@@ -33157,6 +33023,12 @@ class EntropyDatabaseInterface:
     def searchSets(self, keyword):
         self.cursor.execute('SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)', ("%"+keyword+"%",))
         return self.fetchall2set(self.cursor.fetchall())
+
+    def searchSimilarPackages(self, mystring, atom = False):
+        s_item = 'name'
+        if atom: s_item = 'atom'
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE soundex(%s) = soundex((?)) ORDER BY %s' % (s_item,s_item,), (mystring,))
+        return self.fetchall2list(self.cursor.fetchall())
 
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom', just_id = False):
 
@@ -33448,30 +33320,19 @@ class EntropyDatabaseInterface:
 
     def listAllCategories(self, order_by = ''):
         order_by_string = ''
-        if order_by:
-            order_by_string = ' order by %s' % (order_by,)
-        self.cursor.execute('SELECT idcategory,category FROM categories'+order_by_string)
+        if order_by: order_by_string = ' order by %s' % (order_by,)
+        self.cursor.execute('SELECT idcategory,category FROM categories %s' % (order_by_string,))
         return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
-        query = 'SELECT max(idprotect) FROM configprotect'
-        if mask:
-            query += 'mask'
-        self.cursor.execute(query)
-        r = self.cursor.fetchone()
-        if not r:
-            return []
-
-        mymax = r[0]
-        self.cursor.execute('SELECT protect FROM configprotectreference where idprotect >= (?) and idprotect <= (?) order by protect', (1,mymax,))
-        results = self.cursor.fetchall()
-        dirs = []
-        for row in results:
-            mydirs = row[0].split()
-            for x in mydirs:
-                if x not in dirs:
-                    dirs.append(x)
-        return dirs
+        mask_t = ''
+        if mask: mask_t = 'mask'
+        self.cursor.execute('SELECT DISTINCT(protect) FROM configprotectreference where idprotect >= 1 and idprotect <= (SELECT max(idprotect) FROM configprotect%s) order by protect' % (mask_t,))
+        results = self.fetchall2set(self.cursor.fetchall())
+        dirs = set()
+        for mystr in results:
+            dirs |= set(map(unicode,mystr.split()))
+        return sorted(list(dirs))
 
     def switchBranch(self, idpackage, tobranch):
         self.checkReadOnly()
@@ -33500,64 +33361,11 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("licenses_accepted") and (self.dbname == etpConst['clientdbid']):
             self.createLicensesAcceptedTable()
 
-        if not self.doesColumnInTableExist("baseinfo","trigger"):
-            self.createTriggerColumn()
-
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-        elif not self.doesColumnInTableExist("counters","branch"):
-            self.createCountersBranchColumn()
-
         if not self.doesTableExist("trashedcounters"):
             self.createTrashedcountersTable()
 
-        if not self.doesTableExist("sizes"):
-            self.createSizesTable()
-
-        if not self.doesTableExist("triggers"):
-            self.createTriggerTable()
-
-        if not self.doesTableExist("messages"):
-            self.createMessagesTable()
-
-        if not self.doesTableExist("injected"):
-            self.createInjectedTable()
-
-        if not self.doesTableExist("systempackages"):
-            self.createSystemPackagesTable()
-
-        if (not self.doesTableExist("configprotect")) or (not self.doesTableExist("configprotectreference")):
-            self.createProtectTable()
-
-        if not self.doesColumnInTableExist("content","type"):
-            self.createContentTypeColumn()
-
-        if not self.doesTableExist("eclasses"):
-            self.createEclassesTable()
-
-        if not self.doesTableExist("treeupdates"):
-            self.createTreeupdatesTable()
-
-        if not self.doesTableExist("treeupdatesactions"):
-            self.createTreeupdatesactionsTable()
-        elif not self.doesColumnInTableExist("treeupdatesactions","branch"):
-            self.createTreeupdatesactionsBranchColumn()
-        elif not self.doesColumnInTableExist("treeupdatesactions","date"):
-            self.createTreeupdatesactionsDateColumn()
-
-        if not self.doesTableExist("needed"):
-            self.createNeededTable()
-        elif not self.doesColumnInTableExist("needed","elfclass"):
-            self.createNeededElfclassColumn()
-
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
-
-        if not self.doesTableExist("entropy_misc_counters"):
-            self.createEntropyMiscCountersTable()
-
-        if not self.doesColumnInTableExist("dependencies","type"):
-            self.createDependenciesTypeColumn()
 
         if not self.doesTableExist("categoriesdescription"):
             self.createCategoriesdescriptionTable()
@@ -33565,98 +33373,8 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist('packagesets'):
             self.createPackagesetsTable()
 
-        # these are the tables moved to INTEGER PRIMARY KEY AUTOINCREMENT
-        autoincrement_tables = [
-            'treeupdatesactions',
-            'neededreference',
-            'eclassesreference',
-            'configprotectreference',
-            'flags',
-            'licenses',
-            'categories',
-            'keywordsreference',
-            'useflagsreference',
-            'sourcesreference',
-            'dependenciesreference',
-            'baseinfo'
-        ]
-        autoinc = False
-        for table in autoincrement_tables:
-            x = self.migrateTableToAutoincrement(table)
-            if x: autoinc = True
-        if autoinc:
-            mytxt = red("%s: %s.") % (_("Entropy database"),_("regenerating indexes after migration"),)
-            self.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "warning",
-                header = blue(" !!! ")
-            )
-            self.createAllIndexes()
-
         self.readOnly = old_readonly
         self.connection.commit()
-
-    def migrateTableToAutoincrement(self, table):
-
-        self.cursor.execute('select sql from sqlite_master where type = (?) and name = (?);', ("table",table))
-        schema = self.cursor.fetchone()
-        if not schema:
-            return False
-        schema = schema[0]
-        if schema.find("AUTOINCREMENT") != -1:
-            return False
-        schema = schema.replace('PRIMARY KEY','PRIMARY KEY AUTOINCREMENT')
-        new_schema = schema
-        totable = table+"_autoincrement"
-        schema = schema.replace('CREATE TABLE '+table,'CREATE TEMPORARY TABLE '+totable)
-        mytxt = "%s: %s %s" % (red(_("Entropy database")),red(_("migrating table")),blue(table),)
-        self.updateProgress(
-            mytxt,
-            importance = 1,
-            type = "warning",
-            header = blue(" !!! ")
-        )
-        with self.WriteLock:
-            # create table
-            self.cursor.execute('DROP TABLE IF EXISTS '+totable)
-            self.cursor.execute(schema)
-            columns = ','.join(self.getColumnsInTable(table))
-
-            temp_query = 'INSERT INTO '+totable+' SELECT '+columns+' FROM '+table
-            self.cursor.execute(temp_query)
-
-            self.cursor.execute('DROP TABLE '+table)
-            self.cursor.execute(new_schema)
-
-            temp_query = 'INSERT INTO '+table+' SELECT '+columns+' FROM '+totable
-            self.cursor.execute(temp_query)
-
-            self.cursor.execute('DROP TABLE '+totable)
-            self.commitChanges()
-            return True
-
-    def getForcedAtomsUpdateId(self):
-        self.cursor.execute(
-            'SELECT counter FROM entropy_misc_counters WHERE idtype = (?)',
-            (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
-        )
-        myid = self.cursor.fetchone()
-        if not myid:
-            return self.setForcedAtomsUpdateId(0)
-        return myid[0]
-
-    def setForcedAtomsUpdateId(self, myid):
-        with self.WriteLock:
-            self.cursor.execute(
-                'DELETE FROM entropy_misc_counters WHERE idtype = (?)',
-                (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],)
-            )
-            self.cursor.execute(
-                'INSERT INTO entropy_misc_counters VALUES (?,?)',
-                (etpConst['misc_counters']['forced_atoms_update_ids']['__idtype__'],myid)
-            )
-            return myid
 
     def validateDatabase(self):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table","baseinfo"))
@@ -33772,7 +33490,6 @@ class EntropyDatabaseInterface:
             )
 
     def doDatabaseImport(self, dumpfile, dbfile):
-        import subprocess
         sqlite3_exec = "/usr/bin/sqlite3 %s < %s" % (dbfile,dumpfile,)
         retcode = subprocess.call(sqlite3_exec, shell = True)
         return retcode
@@ -33868,10 +33585,10 @@ class EntropyDatabaseInterface:
         license_order = ''
         flags_order = ''
         if do_order:
-            idpackage_order = ' order by idpackage'
-            category_order = ' order by category'
-            license_order = ' order by license'
-            flags_order = ' order by chost'
+            idpackage_order = 'order by idpackage'
+            category_order = 'order by category'
+            license_order = 'order by license'
+            flags_order = 'order by chost'
 
         def do_update_md5(m, cursor):
             mydata = cursor.fetchall()
@@ -33883,17 +33600,17 @@ class EntropyDatabaseInterface:
             import hashlib
             m = hashlib.md5()
 
-        self.cursor.execute('select idpackage,atom,name,version,versiontag,revision,branch,slot,etpapi,trigger from baseinfo'+idpackage_order)
+        self.cursor.execute('select idpackage,atom,name,version,versiontag,revision,branch,slot,etpapi,trigger from baseinfo %s' % (idpackage_order,))
         if strings:
             do_update_md5(m,self.cursor)
         else:
             a_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select idpackage,description,homepage,download,size,digest,datecreation from extrainfo'+idpackage_order)
+        self.cursor.execute('select idpackage,description,homepage,download,size,digest,datecreation from extrainfo %s' % (idpackage_order,))
         if strings:
             do_update_md5(m,self.cursor)
         else:
             b_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select category from categories'+category_order)
+        self.cursor.execute('select category from categories %s' % (category_order,))
         if strings:
             do_update_md5(m,self.cursor)
         else:
@@ -33901,20 +33618,19 @@ class EntropyDatabaseInterface:
         d_hash = '0'
         e_hash = '0'
         if strict:
-            self.cursor.execute('select * from licenses'+license_order)
+            self.cursor.execute('select * from licenses %s' % (license_order,))
             if strings:
                 do_update_md5(m,self.cursor)
             else:
                 d_hash = hash(tuple(self.cursor.fetchall()))
-            self.cursor.execute('select * from flags'+flags_order)
+            self.cursor.execute('select * from flags %s' % (flags_order,))
             if strings:
                 do_update_md5(m,self.cursor)
             else:
                 e_hash = hash(tuple(self.cursor.fetchall()))
         if strings:
             return m.hexdigest()
-        else:
-            return str(a_hash)+":"+str(b_hash)+":"+str(c_hash)+":"+str(d_hash)+":"+str(e_hash)
+        return "%s:%s:%s:%s:%s" % (a_hash,b_hash,c_hash,d_hash,e_hash,)
 
 
 ########################################################
@@ -33971,10 +33687,11 @@ class EntropyDatabaseInterface:
     def createDependsTable(self):
         self.checkReadOnly()
         with self.WriteLock:
-            self.cursor.execute('DROP TABLE IF EXISTS dependstable;')
-            self.cursor.execute('CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );')
-            # this will be removed when dependstable is refilled properly
-            self.cursor.execute('INSERT into dependstable VALUES (?,?)', (-1,-1,))
+            self.cursor.executescript("""
+                DROP TABLE IF EXISTS dependstable;
+                CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
+                INSERT into dependstable VALUES (-1,-1);
+            """)
             if self.indexing:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependsindex_idpackage ON dependstable ( idpackage )')
             self.commitChanges()
@@ -34006,10 +33723,7 @@ class EntropyDatabaseInterface:
 
     def storeXpakMetadata(self, idpackage, blob):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into xpakdata VALUES '
-                    '(?,?)', ( int(idpackage), buffer(blob), )
-            )
+            self.cursor.execute('INSERT into xpakdata VALUES (?,?)', (int(idpackage),buffer(blob),))
             self.commitChanges()
 
     def retrieveXpakMetadata(self, idpackage):
@@ -34018,16 +33732,16 @@ class EntropyDatabaseInterface:
             mydata = self.cursor.fetchone()
             if not mydata:
                 return ""
-            else:
-                return mydata[0]
+            return mydata[0]
         except:
             return ""
-            pass
 
     def createCountersTable(self):
         with self.WriteLock:
-            self.cursor.execute('DROP TABLE IF EXISTS counters;')
-            self.cursor.execute('CREATE TABLE counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );')
+            self.cursor.executescript("""
+                DROP TABLE IF EXISTS counters;
+                CREATE TABLE counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );
+            """)
 
     def CreatePackedDataTable(self):
         with self.WriteLock:
@@ -34087,10 +33801,12 @@ class EntropyDatabaseInterface:
     def createNeededIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( elfclass )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library );
+                    CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded );
+                    CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed ( idpackage );
+                    CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( elfclass );
+                """)
                 self.commitChanges()
 
     def createMessagesIndex(self):
@@ -34108,16 +33824,20 @@ class EntropyDatabaseInterface:
     def createUseflagsIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage ON useflags ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage ON useflags ( idpackage );
+                    CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag );
+                    CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname );
+                """)
                 self.commitChanges()
 
     def createContentIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage );
+                    CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );
+                """)
                 self.commitChanges()
 
     def createConfigProtectReferenceIndex(self):
@@ -34129,10 +33849,12 @@ class EntropyDatabaseInterface:
     def createBaseinfoIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS baseindex_idcategory ON baseinfo ( idcategory )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom );
+                    CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch );
+                    CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch );
+                    CREATE INDEX IF NOT EXISTS baseindex_idcategory ON baseinfo ( idcategory );
+                """)
                 self.commitChanges()
 
     def createLicensedataIndex(self):
@@ -34158,46 +33880,58 @@ class EntropyDatabaseInterface:
     def createKeywordsIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword ON keywords ( idkeyword )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname );
+                    CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage );
+                    CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword ON keywords ( idkeyword );
+                """)
                 self.commitChanges()
 
     def createDependenciesIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage ON dependencies ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage ON dependencies ( idpackage );
+                    CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency );
+                    CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency );
+                """)
                 self.commitChanges()
 
     def createCountersIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage );
+                    CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter );
+                """)
                 self.commitChanges()
 
     def createSourcesIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesindex_idpackage ON sources ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source ON sourcesreference ( source )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS sourcesindex_idpackage ON sources ( idpackage );
+                    CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource );
+                    CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source ON sourcesreference ( source );
+                """)
                 self.commitChanges()
 
     def createProvideIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage );
+                    CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom );
+                """)
                 self.commitChanges()
 
     def createConflictsIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage );
+                    CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict );
+                """)
                 self.commitChanges()
 
     def createExtrainfoIndex(self):
@@ -34209,9 +33943,11 @@ class EntropyDatabaseInterface:
     def createEclassesIndex(self):
         if self.indexing:
             with self.WriteLock:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesindex_idpackage ON eclasses ( idpackage )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname ON eclassesreference ( classname )')
+                self.cursor.executescript("""
+                    CREATE INDEX IF NOT EXISTS eclassesindex_idpackage ON eclasses ( idpackage );
+                    CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass );
+                    CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname ON eclassesreference ( classname );
+                """)
                 self.commitChanges()
 
     def regenerateCountersTable(self, vdb_path, output = False):
@@ -34224,7 +33960,7 @@ class EntropyDatabaseInterface:
             myatom = self.retrieveAtom(myid)
             mybranch = self.retrieveBranch(myid)
             myatom = self.entropyTools.remove_tag(myatom)
-            myatomcounterpath = vdb_path+myatom+"/"+etpConst['spm']['xpak_entries']['counter']
+            myatomcounterpath = "%s%s/%s" % (vdb_path,myatom,etpConst['spm']['xpak_entries']['counter'],)
             if os.path.isfile(myatomcounterpath):
                 try:
                     f = open(myatomcounterpath,"r")
@@ -34495,7 +34231,7 @@ class EntropyDatabaseInterface:
         if self.xcache:
             c_hash = str(hash(tuple(args)))
             try:
-                cached = self.dumpTools.loadobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash)
+                cached = self.dumpTools.loadobj("%s/%s/%s" % (etpCache['dbMatch'],self.dbname,c_hash,))
                 if cached != None:
                     return cached
             except (EOFError, IOError):
@@ -34506,9 +34242,9 @@ class EntropyDatabaseInterface:
             c_hash = str(hash(tuple(args)))
             try:
                 sperms = False
-                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],etpCache['dbMatch']+"/"+self.dbname)):
+                if not os.path.isdir(os.path.join(etpConst['dumpstoragedir'],"%s/%s" % (etpCache['dbMatch'],self.dbname,))):
                     sperms = True
-                self.dumpTools.dumpobj(etpCache['dbMatch']+"/"+self.dbname+"/"+c_hash,kwargs['result'])
+                self.dumpTools.dumpobj("%s/%s/%s" % (etpCache['dbMatch'],self.dbname,c_hash,),kwargs['result'])
                 if sperms:
                     const_setup_perms(etpConst['dumpstoragedir'],etpConst['entropygid'])
             except IOError:
@@ -34751,24 +34487,23 @@ class EntropyDatabaseInterface:
 
     def __filterSlotTagUse(self, foundIDs, slot, tag, use, operators):
 
-        newlist = set()
-        for idpackage in foundIDs:
+        def myfilter(idpackage):
 
             idpackage = self.__filterSlot(idpackage, slot)
             if not idpackage:
-                continue
+                return False
 
             idpackage = self.__filterUse(idpackage, use)
             if not idpackage:
-                continue
+                return False
 
             idpackage = self.__filterTag(idpackage, tag, operators)
             if not idpackage:
-                continue
+                return False
 
-            newlist.add(idpackage)
+            return True
 
-        return newlist
+        return set(filter(myfilter,foundIDs))
 
     '''
        @description: matches the user chosen package name+ver, if possibile, in a single repository
@@ -34789,15 +34524,9 @@ class EntropyDatabaseInterface:
 
         if useCache:
             cached = self.atomMatchFetchCache(
-                atom,
-                caseSensitive,
-                matchSlot,
-                multiMatch,
-                matchBranches,
-                matchTag,
-                matchUse,
-                packagesFilter,
-                matchRevision,
+                atom, caseSensitive, matchSlot,
+                multiMatch, matchBranches, matchTag,
+                matchUse, packagesFilter, matchRevision,
                 extendedResults
             )
             if isinstance(cached,tuple):
@@ -35020,7 +34749,7 @@ class EntropyDatabaseInterface:
 
                 # if we found something at least...
                 if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual","null")):
-                    foundCat = list(cats)[0]
+                    foundCat = sorted(list(cats))[0]
 
                 if not foundCat:
                     # got the issue
@@ -35058,11 +34787,9 @@ class EntropyDatabaseInterface:
                     foundCat = self.retrieveCategory(idpackage)
                     if mypkgcat == foundCat:
                         foundIDs.add(idpackage)
-                    else:
-                        continue
-                else:
-                    foundIDs.add(idpackage)
-                    break
+                    continue
+                foundIDs.add(idpackage)
+                break
 
         return foundIDs
 

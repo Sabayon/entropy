@@ -1710,32 +1710,25 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         return -1
 
     try:
-        directories = []
-        for tarinfo in tar:
+
+        def mymf(tarinfo):
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
-                try:
-                    os.makedirs(os.path.join(extractPath, tarinfo.name), 0777)
-                except EnvironmentError:
-                    pass
-                directories.append(tarinfo)
-            else:
-                try:
-                    tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
-                except:  # default encoding failed
-                    tarinfo.name = tarinfo.name.decode("latin1") # try to convert to latin1 and then back to sys.getfilesystemencoding()
-                    tarinfo.name = tarinfo.name.encode(sys.getfilesystemencoding())
-                tar.extract(tarinfo, extractPath.encode(sys.getfilesystemencoding()))
+                try: os.makedirs(os.path.join(extractPath.encode('utf-8'), tarinfo.name), 0777)
+                except EnvironmentError: pass
+                return tarinfo
+            tar.extract(tarinfo, extractPath.encode('utf-8'))
             del tar.members[:]
+            return 0
 
-        # Reverse sort directories.
-        #'''
-        directories.sort(lambda a, b: cmp(a.name, b.name))
-        directories.reverse()
+        def mycmp(a,b):
+            return cmp(a.name,b.name)
+
+        directories = sorted([x for x in map(mymf,tar) if type(x) != int], mycmp, reverse = True)
 
         # Set correct owner, mtime and filemode on directories.
-        for tarinfo in directories:
+        def mymf2(tarinfo):
             epath = os.path.join(extractPath, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
@@ -1744,6 +1737,8 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     raise
+        done = map(mymf2,directories)
+        del done
 
     except EOFError:
         return -1

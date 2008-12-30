@@ -425,16 +425,6 @@ etpExitMessages = {
     7: _("Go to hell."),
 }
 
-# information about what has been done on the database,
-# those dicts will be dumped to a file and used by activator to update and upload .rss
-etpRSSMessages = {
-    'added': {}, # packages that has been added
-    'removed': {}, # packages that has been removed
-    'commitmessage': "", # commit message from the guy who is going to submit a repository update
-    'light': {} # this stuff will be pushed to the light rss
-}
-
-
 # Client packages/database repositories
 etpRepositories = {}
 etpRepositoriesExcluded = {}
@@ -455,10 +445,8 @@ def initConfig_entropyConstants(rootdir):
         raise exceptionTools.FileNotFound("FileNotFound: not a valid chroot.")
 
     # save backed up settings
-    if etpConst.has_key('backed_up'):
-        backed_up_settings = etpConst.pop('backed_up')
-    else:
-        backed_up_settings = {}
+    if etpConst.has_key('backed_up'): backed_up_settings = etpConst.pop('backed_up')
+    else: backed_up_settings = {}
 
     const_defaultSettings(rootdir)
     const_readEntropyRelease()
@@ -582,7 +570,7 @@ def const_defaultSettings(rootdir):
         'rss-light-name': "updates.rss", # light version
         'rss-base-url': "http://packages.sabayonlinux.org/", # default URL to the entropy web interface (overridden in reagent.conf)
         'rss-website-url': "http://www.sabayonlinux.org/", # default URL to the Operating System website (overridden in reagent.conf)
-        'rss-dump-name': "rss_database_actions", # xml file where will be dumped etpRSSMessages dictionary
+        'rss-dump-name': "rss_database_actions", # xml file where will be dumped ServerInterface.rssMessages dictionary
         'rss-max-entries': 10000, # maximum rss entries
         'rss-light-max-entries': 300, # max entries for the light version
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
@@ -1051,9 +1039,7 @@ def const_readSocketSettings():
 def const_readEntropySettings():
     # entropy section
     if os.path.isfile(etpConst['entropyconf']):
-
         const_secure_config_file(etpConst['entropyconf'])
-
         f = open(etpConst['entropyconf'],"r")
         entropyconf = f.readlines()
         f.close()
