@@ -2108,7 +2108,7 @@ class EquoInterface(TextInterface):
         cdb_getversioning = self.clientDbconn.getVersioningData
         cdb_retrieveneededraw = self.clientDbconn.retrieveNeededRaw
         etp_cmp = self.entropyTools.entropyCompareVersions
-        do_needed_check = True
+        do_needed_check = False
 
         def fm_dep(dependency):
 
@@ -2129,9 +2129,9 @@ class EquoInterface(TextInterface):
                 depcache[dependency] = dependency
                 return dependency
 
-            if not deep_deps and not do_needed_check:
-                depcache[dependency] = 0
-                return 0
+            #if not deep_deps and not do_needed_check:
+            #    depcache[dependency] = 0
+            #    return 0
 
             r_id,r_repo = am(dependency)
             if r_id == -1:
@@ -2144,8 +2144,8 @@ class EquoInterface(TextInterface):
                 repo_needed = dbconn.retrieveNeededRaw(r_id)
                 if installed_needed != repo_needed:
                     return dependency
-                elif not deep_deps:
-                    return 0
+                #elif not deep_deps:
+                #    return 0
 
             dbconn = open_repo(r_repo)
             try:
@@ -2163,6 +2163,9 @@ class EquoInterface(TextInterface):
 
             vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,), (installedVer,installedTag,installedRev,))
             if vcmp != 0:
+                if not deep_deps and ((repo_pkgver,repo_pkgtag,) == (installedVer,installedTag,)) and (repo_pkgrev != installedRev):
+                    depcache[dependency] = 0
+                    return 0
                 depcache[dependency] = dependency
                 return dependency
             depcache[dependency] = 0
@@ -2408,7 +2411,7 @@ class EquoInterface(TextInterface):
 
             myundeps = matchdb.retrieveDependenciesList(m_idpackage)
             if not empty_deps:
-                myundeps = get_unsatisfied_deps(myundeps, deep_deps = deep_deps, depcache = filter_unsat_cache)
+                myundeps = get_unsatisfied_deps(myundeps, deep_deps, depcache = filter_unsat_cache)
             for x in myundeps:
                 mybuffer.push((treedepth,x))
 

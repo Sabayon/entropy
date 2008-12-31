@@ -360,7 +360,7 @@ def applicationLockCheck(option = None, gentle = False, silent = False):
             print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
             print_error(red("If I am lying (maybe). Please remove ")+bold(etpConst['pidfile']))
         if not gentle:
-            sys.exit(10)
+            raise SystemExit(10)
         else:
             return True
     return False

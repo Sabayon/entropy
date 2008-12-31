@@ -1150,7 +1150,7 @@ def const_setupEntropyPid(just_read = False):
         f.close()
         if foundPid != str(pid):
             # is foundPid still running ?
-            if os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],foundPid,)):
+            if os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],foundPid,)) and foundPid:
                 etpConst['applicationlock'] = True
             elif not just_read:
                 # if root, write new pid
