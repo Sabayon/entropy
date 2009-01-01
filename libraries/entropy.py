@@ -9654,7 +9654,7 @@ class TriggerInterface:
             if etpConst['systemroot']:
                 subprocess.call("echo 'env-update --no-ldconfig' | chroot %s &> /dev/null" % (etpConst['systemroot'],), shell = True)
             else:
-                subprocess.call('env-update --no-ldconfig &> /dev/null')
+                subprocess.call('env-update --no-ldconfig &> /dev/null', shell = True)
 
     def trigger_ebuild_postinstall(self):
         stdfile = open("/dev/null","w")
