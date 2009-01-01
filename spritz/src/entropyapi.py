@@ -320,7 +320,7 @@ class GuiUrlFetcher(urlFetcher):
         if self.progress == None: return
 
         myavg = abs(int(round(float(self.average),1)))
-        if abs((myavg - self.gui_last_avg)) < 5: return
+        if abs((myavg - self.gui_last_avg)) < 1: return
 
         if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
 

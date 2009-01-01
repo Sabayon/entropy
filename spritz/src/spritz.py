@@ -282,6 +282,7 @@ class SpritzApplication(Controller):
             sys.stderr = self.output
             sys.stdin = self.input
 
+        self.onInstall = False
         self.settings = SpritzConf()
         self.queue = SpritzQueue(self)
         self.etpbase.connect_queue(self.queue)
@@ -1326,11 +1327,30 @@ class SpritzApplication(Controller):
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
             if install_queue or removal_queue:
 
+                self.onInstall = True
+                # activate UI lock
+                self.uiLock(True)
+
                 controller = QueueExecutor(self)
-                try:
-                    e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
-                except exceptionTools.QueueError:
-                    e = 1
+                gtk.gdk.threads_enter()
+
+                self.my_inst_errors = None
+                def run_tha_bstrd():
+                    try: e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
+                    except: e,i = 1,None
+                    self.my_inst_errors = (e,i,)
+
+                t = self.Equo.entropyTools.parallelTask(run_tha_bstrd)
+                t.start()
+                while t.isAlive():
+                    time.sleep(0.2)
+                    while gtk.events_pending():
+                        gtk.main_iteration()
+
+                e,i = self.my_inst_errors
+
+                gtk.gdk.threads_leave()
+
                 self.ui.skipMirror.hide()
                 self.ui.abortQueue.hide()
                 if e != 0:
@@ -1338,6 +1358,9 @@ class SpritzApplication(Controller):
                                 _("Attention. An error occured when processing the queue."
                                     "\nPlease have a look in the processing terminal.")
                     )
+                # deactivate UI lock
+                self.uiLock(False)
+                self.onInstall = False
 
             self.endWorking()
             self.progress.reset_progress()
@@ -1375,6 +1398,10 @@ class SpritzApplication(Controller):
     def populateCategoryPackages(self, cat):
         pkgs = self.etpbase.getPackagesByCategory(cat)
         self.catPackages.populate(pkgs,self.ui.tvCatPackages)
+
+    def uiLock(self, lock):
+        self.ui.content.set_sensitive(not lock)
+        self.ui.menubar.set_sensitive(not lock)
 
 ####### events
 
