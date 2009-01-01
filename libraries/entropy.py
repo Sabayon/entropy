@@ -414,10 +414,10 @@ class EquoInterface(TextInterface):
         if load_ugc:
             self.UGC = UGCClientInterface(self)
 
-
-    def __del__(self):
+    def destroy(self):
         if hasattr(self,'clientDbconn'):
             if self.clientDbconn != None:
+                self.clientDbconn.closeDB()
                 del self.clientDbconn
         if hasattr(self,'FileUpdates'):
             del self.FileUpdates
@@ -427,6 +427,9 @@ class EquoInterface(TextInterface):
         self.closeAllRepositoryDatabases()
         self.closeAllSecurity()
         self.closeAllQA()
+
+    def __del__(self):
+        self.destroy()
 
     def reload_constants(self):
         initConfig_entropyConstants(etpSys['rootdir'])
