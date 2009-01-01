@@ -203,7 +203,7 @@ class SpritzProgress:
         self.ui.progressExtraLabel.set_text( "" )
 
     def set_subLabel( self, text ):
-        self.ui.progressSubLabel.set_markup( "%s" % text )
+        self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(text),) )
         self.ui.progressExtraLabel.set_text( "" )
 
     def set_extraLabel( self, text ):
@@ -283,7 +283,7 @@ class SpritzApplication(Controller):
             sys.stdin = self.input
 
         self.settings = SpritzConf()
-        self.queue = SpritzQueue()
+        self.queue = SpritzQueue(self)
         self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main)
@@ -1936,7 +1936,14 @@ class SpritzApplication(Controller):
         normalCursor(self.ui.main)
         self.setPage('output')
 
-        rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+        try:
+            rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+        except:
+            if self.do_debug:
+                import pdb; pdb.set_trace()
+            else:
+                raise
+
         self.resetQueueProgressBars()
         if rc:
             self.queue.clear()
@@ -2029,7 +2036,12 @@ class SpritzApplication(Controller):
         fetch_only = self.ui.queueProcessFetchOnly.get_active()
         download_sources = self.ui.queueProcessDownloadSource.get_active()
 
-        rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
+        try:
+            rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
+        except:
+            if self.do_debug:
+                import pdb; pdb.set_trace()
+            else: raise
         self.resetQueueProgressBars()
         if rc and not fetch_only:
             self.queue.clear()       # Clear package queue
@@ -2040,7 +2052,7 @@ class SpritzApplication(Controller):
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
         if fn:
-            pkgdata = self.queue.get()
+            pkgdata = self.queue.get().copy()
             for key in pkgdata.keys():
                 if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
             self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
