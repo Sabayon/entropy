@@ -422,7 +422,7 @@ class EquoInterface(TextInterface):
         if hasattr(self,'FileUpdates'):
             del self.FileUpdates
         if hasattr(self,'clientLog'):
-            del self.clientLog
+            self.clientLog.close()
 
         self.closeAllRepositoryDatabases()
         self.closeAllSecurity()
@@ -13123,8 +13123,10 @@ class LogFile:
         self.close()
 
     def close(self):
-        try: self.logFile.close()
-        except: pass
+        try:
+            self.logFile.close()
+        except (IOError,OSError,):
+            pass
 
     def flush(self):
         self.logFile.flush()
@@ -13154,12 +13156,12 @@ class LogFile:
         return self.logFile.truncate()
 
     def open (self, file = None):
-        if type(file) == type("hello"):
-            try:
+        if isinstance(file,basestring):
+            if os.access(file,os.W_OK) and os.path.isfile(file):
                 self.logFile = open(file, "aw")
-            except:
+            else:
                 self.logFile = open("/dev/null", "aw")
-        elif file:
+        elif hasattr(file,'write'):
             self.logFile = file
         else:
             self.logFile = sys.stderr
@@ -13182,7 +13184,7 @@ class LogFile:
 
     def log(self, messagetype, level, message):
         if self.level >= level and not etpUi['nolog']:
-            self.handler(self.getTimeDateHeader()+messagetype+' '+self.header+' '+message)
+            self.handler("%s%s %s %s" % (self.getTimeDateHeader(),messagetype,self.header,message,))
 
     def write(self, s):
         self.handler(s)
