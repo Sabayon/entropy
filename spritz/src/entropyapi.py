@@ -309,7 +309,7 @@ class Equo(EquoInterface):
 
 class GuiUrlFetcher(urlFetcher):
 
-    gui_last_avg = 0
+    gui_last_avg = 100
 
     def connect_to_gui(self, progress):
         self.progress = progress
@@ -319,7 +319,9 @@ class GuiUrlFetcher(urlFetcher):
 
         if self.progress == None: return
 
-        myavg = int(round(float(self.average),1))
+        myavg = abs(int(round(float(self.average),1)))
+        if abs((myavg - self.gui_last_avg)) < 5: return
+
         if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
             self.progress.set_progress( round(float(self.average)/100,1), str(myavg)+"%" )
