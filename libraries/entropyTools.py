@@ -1622,15 +1622,6 @@ def compressTarBz2(storepath,pathtocompress):
     rc = spawnCommand("cd "+pathtocompress+" && "+cmd, "&> /dev/null")
     return rc
 
-# OLD tar.bz2 uncompress function...
-def compat_uncompressTarBz2(filepath, extractPath = None):
-
-    cmd = "tar xjf "+filepath+" -C "+extractPath+" &> /dev/null"
-    rc = os.system(cmd)
-    if rc != 0:
-        return -1
-    return 0
-
 def spawnFunction(f, *args, **kwds):
 
     uid = kwds.get('spf_uid')
@@ -1694,11 +1685,6 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         import tarfile
     except ImportError:
         _tarfile = False
-
-    ### XXX dirty bastard workaround for buggy python2.4's tarfile
-    if sys.version[:3] == "2.4" or not _tarfile:
-        rc = compat_uncompressTarBz2(filepath, extractPath)
-        return rc
 
     try:
         tar = tarfile.open(filepath,"r")
