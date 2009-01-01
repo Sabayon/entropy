@@ -22,7 +22,7 @@ from spritz_setup import cleanMarkupString, SpritzConf
 
 class SpritzQueue:
 
-    def __init__(self):
+    def __init__(self, SpritzApplication):
         self.packages = {}
         self.before = []
         self.keyslotFilter = set()
@@ -32,6 +32,7 @@ class SpritzQueue:
         self.etpbase = None
         self.pkgView = None
         self.queueView = None
+        self.Spritz = SpritzApplication
         import dialogs
         self.dialogs = dialogs
 
@@ -186,117 +187,127 @@ class SpritzQueue:
 
     def remove(self, pkgs, accept = False, accept_reinsert = False, always_ask = False):
 
-        if type(pkgs) is not list:
-            pkgs = [pkgs]
+        self.Spritz.show_wait_window()
 
-        action = [pkgs[0].action]
-        if action[0] in ("u","i","rr"): # update/install
+        try:
+            if type(pkgs) is not list:
+                pkgs = [pkgs]
 
-            action = ["u","i","rr"]
-            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
-            pkgs_matches = [x.matched_atom for x in pkgs]
+            action = [pkgs[0].action]
+            if action[0] in ("u","i","rr"): # update/install
 
-            xlist, abort = self.elaborateUndoremove(pkgs_matches, xlist)
-            if abort: return -10,0
+                action = ["u","i","rr"]
+                xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
+                pkgs_matches = [x.matched_atom for x in pkgs]
 
-            self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
-            for pkg in self.before:
-                pkg.queued = None
-            del self.packages['u'][:]
-            del self.packages['i'][:]
-            del self.packages['rr'][:]
+                xlist, abort = self.elaborateUndoremove(pkgs_matches, xlist)
+                if abort: return -10,0
 
-            mybefore = set([x.keyslot for x in self.before])
-            self.keyslotFilter -= mybefore
+                self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
+                for pkg in self.before:
+                    pkg.queued = None
+                del self.packages['u'][:]
+                del self.packages['i'][:]
+                del self.packages['rr'][:]
 
-            if xlist:
-                status = self.elaborateInstall(xlist,action,False,accept,always_ask)
-                del self.before[:]
-                return status,0
+                mybefore = set([x.keyslot for x in self.before])
+                self.keyslotFilter -= mybefore
 
-            del self.before[:]
-            return 0,0
-
-        else:
-
-            xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
-            #toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
-            mydepends = set(self.Entropy.retrieveRemovalQueue([x.matched_atom[0] for x in pkgs]))
-            mydependencies = set()
-            myQA = self.Entropy.QA()
-            for pkg in pkgs:
-                mydeps = myQA._get_deep_dependency_list(self.Entropy.clientDbconn, pkg.matched_atom[0])
-                mydependencies |= set([x for x in mydeps if x in xlist])
-            # what are in queue?
-            mylist = set(xlist)
-            mylist -= mydepends
-            mylist |= mydependencies
-            if mylist:
-                xlist = self.elaborateReinsert(mylist, xlist, accept_reinsert)
-
-            self.before = self.packages[action[0]][:]
-            # clean, will be refilled
-            for pkg in self.before:
-                pkg.queued = None
-            del self.packages[action[0]][:]
-
-            if xlist:
-
-                status = self.elaborateRemoval(xlist,False,accept,always_ask)
-                if status == -10:
-                    del self.packages[action[0]][:]
-                    self.packages[action[0]] = self.before[:]
+                if xlist:
+                    status = self.elaborateInstall(xlist,action,False,accept,always_ask)
+                    del self.before[:]
+                    return status,0
 
                 del self.before[:]
-                return status,1
+                return 0,0
 
-            del self.before[:]
-            return 0,1
+            else:
+
+                xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
+                #toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
+                mydepends = set(self.Entropy.retrieveRemovalQueue([x.matched_atom[0] for x in pkgs]))
+                mydependencies = set()
+                myQA = self.Entropy.QA()
+                for pkg in pkgs:
+                    mydeps = myQA._get_deep_dependency_list(self.Entropy.clientDbconn, pkg.matched_atom[0])
+                    mydependencies |= set([x for x in mydeps if x in xlist])
+                # what are in queue?
+                mylist = set(xlist)
+                mylist -= mydepends
+                mylist |= mydependencies
+                if mylist:
+                    xlist = self.elaborateReinsert(mylist, xlist, accept_reinsert)
+
+                self.before = self.packages[action[0]][:]
+                # clean, will be refilled
+                for pkg in self.before:
+                    pkg.queued = None
+                del self.packages[action[0]][:]
+
+                if xlist:
+
+                    status = self.elaborateRemoval(xlist,False,accept,always_ask)
+                    if status == -10:
+                        del self.packages[action[0]][:]
+                        self.packages[action[0]] = self.before[:]
+
+                    del self.before[:]
+                    return status,1
+
+                del self.before[:]
+                return 0,1
+        finally:
+            self.Spritz.hide_wait_window()
 
     def add(self, pkgs, accept = False, always_ask = False):
 
-        if type(pkgs) is not list:
-            pkgs = [pkgs]
+        self.Spritz.show_wait_window()
 
-        action = [pkgs[0].queued]
+        try:
+            if type(pkgs) is not list:
+                pkgs = [pkgs]
 
-        if action[0] in ("u","i","rr"): # update/install
+            action = [pkgs[0].queued]
 
-            self._keyslotFilter.clear()
-            blocked = self.keySlotFiltering(pkgs)
-            if blocked:
-                self.showKeySlotErrorMessage(blocked)
-                return 1,0
+            if action[0] in ("u","i","rr"): # update/install
 
-            action = ["u","i","rr"]
-            tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
-            xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
-            xlist = list(set(xlist))
-            status = self.elaborateInstall(xlist,action,False,accept,always_ask)
-            if status == 0:
-                self.keyslotFilter |= self._keyslotFilter
-            return status,0
+                self._keyslotFilter.clear()
+                blocked = self.keySlotFiltering(pkgs)
+                if blocked:
+                    self.showKeySlotErrorMessage(blocked)
+                    return 1,0
 
-        else: # remove
+                action = ["u","i","rr"]
+                tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
+                xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
+                xlist = list(set(xlist))
+                status = self.elaborateInstall(xlist,action,False,accept,always_ask)
+                if status == 0:
+                    self.keyslotFilter |= self._keyslotFilter
+                return status,0
 
-            def myfilter(pkg):
-                if not self.checkSystemPackage(pkg):
-                    return False
-                return True
+            else: # remove
 
-            def mymap(pkg):
-                return pkg.matched_atom[0]
+                def myfilter(pkg):
+                    if not self.checkSystemPackage(pkg):
+                        return False
+                    return True
 
-            pkgs = filter(myfilter,pkgs)
+                def mymap(pkg):
+                    return pkg.matched_atom[0]
 
-            if not pkgs:
-                return -2,1
+                pkgs = filter(myfilter,pkgs)
 
-            tmpqueue = pkgs
-            if self.packages['r']: tmpqueue = [x for x in pkgs if x not in self.packages['r']]
-            xlist = map(mymap,self.packages['r']+tmpqueue)
-            status = self.elaborateRemoval(xlist,False,accept,always_ask)
-            return status,1
+                if not pkgs:
+                    return -2,1
+
+                tmpqueue = pkgs
+                if self.packages['r']: tmpqueue = [x for x in pkgs if x not in self.packages['r']]
+                xlist = map(mymap,self.packages['r']+tmpqueue)
+                status = self.elaborateRemoval(xlist,False,accept,always_ask)
+                return status,1
+        finally:
+            self.Spritz.hide_wait_window()
 
     def elaborateMaskedPackages(self, matches):
 
