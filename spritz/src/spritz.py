@@ -377,6 +377,7 @@ class SpritzApplication(Controller):
         self.setupAds()
 
     def show_wait_window(self):
+        self.ui.main.set_sensitive(False)
         self.wait_ui.waitWindow.show_all()
         self.wait_ui.waitWindow.queue_draw()
         self.ui.main.queue_draw()
@@ -385,6 +386,7 @@ class SpritzApplication(Controller):
 
     def hide_wait_window(self):
         self.wait_ui.waitWindow.hide()
+        self.ui.main.set_sensitive(True)
 
     def packagesInstall(self):
 
