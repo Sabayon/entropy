@@ -19,6 +19,7 @@
 
 from entropy_i18n import _
 from spritz_setup import cleanMarkupString, SpritzConf
+import time
 
 class SpritzQueue:
 
@@ -197,15 +198,15 @@ class SpritzQueue:
             if action[0] in ("u","i","rr"): # update/install
 
                 action = ["u","i","rr"]
-                xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr'] if x not in pkgs]
                 pkgs_matches = [x.matched_atom for x in pkgs]
+                myq = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']]
+                xlist = [x for x in myq if x not in pkgs_matches]
 
                 xlist, abort = self.elaborateUndoremove(pkgs_matches, xlist)
                 if abort: return -10,0
 
                 self.before = self.packages['u'][:]+self.packages['i'][:]+self.packages['rr'][:]
-                for pkg in self.before:
-                    pkg.queued = None
+                for pkg in self.before: pkg.queued = None
                 del self.packages['u'][:]
                 del self.packages['i'][:]
                 del self.packages['rr'][:]
@@ -278,9 +279,8 @@ class SpritzQueue:
                     return 1,0
 
                 action = ["u","i","rr"]
-                tmpqueue = [x for x in pkgs if x not in self.packages['u']+self.packages['i']+self.packages['rr']]
-                xlist = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']+tmpqueue]
-                xlist = list(set(xlist))
+                myq = [x.matched_atom for x in self.packages['u']+self.packages['i']+self.packages['rr']]
+                xlist = myq+[x.matched_atom for x in pkgs if x.matched_atom not in myq]
                 status = self.elaborateInstall(xlist,action,False,accept,always_ask)
                 if status == 0:
                     self.keyslotFilter |= self._keyslotFilter
@@ -293,27 +293,23 @@ class SpritzQueue:
                         return False
                     return True
 
-                def mymap(pkg):
-                    return pkg.matched_atom[0]
-
                 pkgs = filter(myfilter,pkgs)
-
-                if not pkgs:
-                    return -2,1
-
-                tmpqueue = pkgs
-                if self.packages['r']: tmpqueue = [x for x in pkgs if x not in self.packages['r']]
-                xlist = map(mymap,self.packages['r']+tmpqueue)
-                status = self.elaborateRemoval(xlist,False,accept,always_ask)
+                if not pkgs: return -2,1
+                myq = [x.matched_atom[0] for x in self.packages['r']]
+                pkgs = [x.matched_atom[0] for x in pkgs if x.matched_atom[0] not in myq]+myq
+                status = self.elaborateRemoval(pkgs,False,accept,always_ask)
                 return status,1
+
         finally:
             self.Spritz.hide_wait_window()
 
     def elaborateMaskedPackages(self, matches):
 
+
+        matchfilter = set()
         masks = {}
         for match in matches:
-            mymasks = self.Entropy.get_masked_packages_tree(match, atoms = False, flat = True)
+            mymasks = self.Entropy.get_masked_packages_tree(match, atoms = False, flat = True, matchfilter = matchfilter)
             masks.update(mymasks)
         # run dialog if found some
         if not masks:
@@ -352,7 +348,7 @@ class SpritzQueue:
         if status != 0:
             return status
 
-        (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps)
+        (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps, quiet = True)
         if status == -2: # dependencies not found
             confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                         runQueue,
@@ -385,7 +381,7 @@ class SpritzQueue:
                     if not dep_pkg:
                         continue
                     install_todo.append(dep_pkg)
-                del my_icache,icache
+
 
             if removalQueue:
                 my_rcache = set()
@@ -402,14 +398,15 @@ class SpritzQueue:
                     if not rem_pkg:
                         continue
                     remove_todo.append(rem_pkg)
-                del my_rcache,rcache
 
             if install_todo or remove_todo:
                 ok = True
 
-                items_before = [x for x in install_todo+remove_todo if x not in self.before]
+                mybefore = [x.matched_atom for x in self.before]
+                items_before = [x for x in install_todo+remove_todo if x.matched_atom not in mybefore]
 
                 if ((len(items_before) > 1) and (not accept)) or (always_ask):
+
                     ok = False
                     size = 0
                     for x in install_todo:
@@ -434,13 +431,21 @@ class SpritzQueue:
                     confirmDialog.destroy()
 
                 if ok:
+
+                    mycache = {
+                        'r': [x.matched_atom for x in self.packages['r']],
+                        'u': [x.matched_atom for x in self.packages['u']],
+                        'rr': [x.matched_atom for x in self.packages['rr']],
+                        'i': [x.matched_atom for x in self.packages['i']],
+                    }
+
                     for rem_pkg in remove_todo:
                         rem_pkg.queued = rem_pkg.action
-                        if rem_pkg not in self.packages['r']:
+                        if rem_pkg.matched_atom not in mycache['r']:
                             self.packages['r'].append(rem_pkg)
                     for dep_pkg in install_todo:
                         dep_pkg.queued = dep_pkg.action
-                        if dep_pkg not in self.packages[dep_pkg.action]:
+                        if dep_pkg.matched_atom not in mycache[dep_pkg.action]:
                             self.packages[dep_pkg.action].append(dep_pkg)
                 else:
                     return -10

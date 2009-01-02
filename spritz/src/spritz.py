@@ -522,7 +522,8 @@ class SpritzApplication(Controller):
 
     def setupUgc(self):
         self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 300)
-        self.ugcTask.start()
+        if "--nougc" not in sys.argv:
+            self.ugcTask.start()
 
     def spawnAdRotation(self):
         if self.do_debug: print "entering ad rotation"
