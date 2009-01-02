@@ -27,6 +27,7 @@ import exceptionTools
 import re
 import threading
 import time
+import commands
 
 def isRoot():
     if (etpConst['uid'] == 0):
@@ -2203,36 +2204,37 @@ def is_elf_file(elf_file):
         return True
     return False
 
+readelf_avail_check = False
+ldd_avail_check = False
+
 # FIXME: reimplement this
 def read_elf_dynamic_libraries(elf_file):
-    import commands
-    if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
-        raise exceptionTools.FileNotFound('FileNotFound: no readelf')
-    data = commands.getoutput('readelf -d %s' % (elf_file,)).split("\n")
-    mylibs = set()
-    for line in data:
-        if line.find("(NEEDED)") == -1:
-            continue
-        mylib = line.strip().split()[-1]
-        if not (mylib.endswith("]") and mylib.startswith("[")):
-            continue
-        mylibs.add(mylib[1:-1])
-    return mylibs
+    global readelf_avail_check
+    if not readelf_avail_check:
+        if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
+            raise exceptionTools.FileNotFound('FileNotFound: no readelf')
+        readelf_avail_check = True
+    return set([x.strip().split()[-1][1:-1] for x in commands.getoutput('/usr/bin/readelf -d %s' % (elf_file,)).split("\n") if (x.find("(NEEDED)") != -1)])
+
+def read_elf_broken_symbols(elf_file):
+    global ldd_avail_check
+    if not ldd_avail_check:
+        if not os.access(etpConst['systemroot']+"/usr/bin/ldd",os.X_OK):
+            raise exceptionTools.FileNotFound('FileNotFound: no ldd')
+        ldd_avail_check = True
+    return set([x.strip().split("\t")[0].split()[-1] for x in commands.getoutput('/usr/bin/ldd -r %s' % (elf_file,)).split("\n") if (x.find("undefined symbol:") != -1)])
+
 
 # FIXME: reimplement this
 def read_elf_linker_paths(elf_file):
-    import commands
-    if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
-        raise exceptionTools.FileNotFound('FileNotFound: no readelf')
-    data = commands.getoutput('readelf -d %s' % (elf_file,)).split("\n")
+    global readelf_avail_check
+    if not readelf_avail_check:
+        if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
+            raise exceptionTools.FileNotFound('FileNotFound: no readelf')
+        readelf_avail_check = True
+    data = [x.strip().split()[-1][1:-1].split(":") for x in commands.getoutput('readelf -d %s' % (elf_file,)).split("\n") if not ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
     mypaths = []
-    for line in data:
-        if (line.find("(RPATH)") == -1) and (line.find("(RUNPATH)") == -1):
-            continue
-        mylib = line.strip().split()[-1]
-        if not (mylib.endswith("]") and mylib.startswith("[")):
-            continue
-        mypath = mylib[1:-1].split(":")
+    for mypath in data:
         for xpath in mypath:
             xpath = xpath.replace("$ORIGIN",os.path.dirname(elf_file))
             mypaths.append(xpath)

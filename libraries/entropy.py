@@ -1265,7 +1265,7 @@ class EquoInterface(TextInterface):
             editor = "/bin/emacs"
         return editor
 
-    def libraries_test(self, dbconn = None):
+    def libraries_test(self, dbconn = None, broken_symbols = False):
 
         if dbconn == None:
             dbconn = self.clientDbconn
@@ -1307,7 +1307,7 @@ class EquoInterface(TextInterface):
         executables = set()
         total = len(ldpaths)
         count = 0
-        # FIXME: merge the two for cycles below
+        sys_root_len = len(etpConst['systemroot'])
         for ldpath in ldpaths:
             count += 1
             self.updateProgress(
@@ -1320,18 +1320,27 @@ class EquoInterface(TextInterface):
                 header = "  "
             )
             ldpath = ldpath.encode(sys.getfilesystemencoding())
-            for currentdir,subdirs,files in os.walk(etpConst['systemroot']+ldpath):
-                for item in files:
+            mywalk_iter = os.walk(etpConst['systemroot']+ldpath)
+
+            def mywimf(dt):
+
+                currentdir, subdirs, files = dt
+
+                def mymf(item):
                     filepath = os.path.join(currentdir,item)
                     if filepath in etpConst['libtest_files_blacklist']:
-                        continue
-                    if not os.path.isfile(filepath):
-                        continue
+                        return 0
                     if not os.access(filepath,os.R_OK):
-                        continue
+                        return 0
+                    if not os.path.isfile(filepath):
+                        return 0
                     if not self.entropyTools.is_elf_file(filepath):
-                        continue
-                    executables.add(filepath[len(etpConst['systemroot']):])
+                        return 0
+                    return filepath[sys_root_len:]
+
+                return set([x for x in map(mymf,files) if type(x) != int])
+
+            for x in map(mywimf,mywalk_iter): executables |= x
 
         self.updateProgress(
             blue(_("Collecting broken executables")),
@@ -1367,24 +1376,35 @@ class EquoInterface(TextInterface):
                     header = "  "
                 )
             myelfs = self.entropyTools.read_elf_dynamic_libraries(etpConst['systemroot']+executable)
-            mylibs = set()
-            for mylib in myelfs:
-                found = myQA.resolve_dynamic_library(mylib, executable)
-                if found:
-                    continue
-                mylibs.add(mylib)
-            if not mylibs:
+            def mymf(mylib):
+                return not myQA.resolve_dynamic_library(mylib, executable)
+            mylibs = set(filter(mymf,myelfs))
+            broken_sym_found = set()
+            if broken_symbols and not mylibs: broken_sym_found |= self.entropyTools.read_elf_broken_symbols(etpConst['systemroot']+executable)
+            if not (mylibs or broken_sym_found):
                 continue
 
-            alllibs = blue(' :: ').join(list(mylibs))
-            self.updateProgress(
-                red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
-                importance = 1,
-                type = "info",
-                percent = True,
-                count = (count,total),
-                header = "  "
-            )
+            if mylibs:
+                alllibs = blue(' :: ').join(list(mylibs))
+                self.updateProgress(
+                    red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
+                    importance = 1,
+                    type = "info",
+                    percent = True,
+                    count = (count,total),
+                    header = "  "
+                )
+            elif broken_sym_found:
+                allsyms = darkred(' :: ').join([brown(x) for x in list(broken_sym_found)])
+                if len(allsyms) > 50: allsyms = brown(_('various broken symbols'))
+                self.updateProgress(
+                    red(etpConst['systemroot']+executable)+" { "+allsyms+" }",
+                    importance = 1,
+                    type = "info",
+                    percent = True,
+                    count = (count,total),
+                    header = "  "
+                )
             plain_brokenexecs.add(executable)
 
         del executables
@@ -15823,7 +15843,7 @@ class ServerInterface(TextInterface):
 
         # load db
         dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-        packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn)
+        packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn, broken_symbols = True)
         if status != 0:
             return 1,None
 
