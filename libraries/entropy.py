@@ -44,21 +44,6 @@ except ImportError: # fallback to embedded pysqlite
             )
         )
 
-class matchContainer:
-    def __init__(self):
-        self.data = set()
-
-    def inside(self, match):
-        if match in self.data:
-            return True
-        return False
-
-    def add(self, match):
-        self.data.add(match)
-
-    def clear(self):
-        self.data.clear()
-
 class urlFetcher:
 
     def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
@@ -1376,9 +1361,9 @@ class EquoInterface(TextInterface):
                     header = "  "
                 )
             myelfs = self.entropyTools.read_elf_dynamic_libraries(etpConst['systemroot']+executable)
-            def mymf(mylib):
+            def mymf2(mylib):
                 return not myQA.resolve_dynamic_library(mylib, executable)
-            mylibs = set(filter(mymf,myelfs))
+            mylibs = set(filter(mymf2,myelfs))
             broken_sym_found = set()
             if broken_symbols and not mylibs: broken_sym_found |= self.entropyTools.read_elf_broken_symbols(etpConst['systemroot']+executable)
             if not (mylibs or broken_sym_found):
@@ -1473,23 +1458,17 @@ class EquoInterface(TextInterface):
         dbconn = self.openRepositoryDatabase(match[1])
         pkgkey, pkgslot = dbconn.retrieveKeySlot(match[0])
         results = self.clientDbconn.searchKeySlot(pkgkey, pkgslot)
-        if not results:
-            return 1
+        if not results: return 1
 
         installed_idpackage = results[0][0]
-        pkgver = dbconn.retrieveVersion(match[0])
-        pkgtag = dbconn.retrieveVersionTag(match[0])
-        pkgrev = dbconn.retrieveRevision(match[0])
-        installedVer = self.clientDbconn.retrieveVersion(installed_idpackage)
-        installedTag = self.clientDbconn.retrieveVersionTag(installed_idpackage)
-        installedRev = self.clientDbconn.retrieveRevision(installed_idpackage)
+        pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
+        installedVer, installedTag, installedRev = self.clientDbconn.getVersioningData(installed_idpackage)
         pkgcmp = self.entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
         if pkgcmp == 0:
             return 0
         elif pkgcmp > 0:
             return 2
-        else:
-            return -1
+        return -1
 
     def get_meant_packages(self, search_term, from_installed = False, valid_repos = []):
 
@@ -2213,24 +2192,15 @@ class EquoInterface(TextInterface):
         if idpackage == -1: masked = True
         return masked, idreason, etpConst['packagemaskingreasons'].get(idreason)
 
-    def get_masked_packages_tree(self, atomInfo, atoms = False, flat = False, matchfilter = None):
+    def get_masked_packages_tree(self, atomInfo, atoms = False, flat = False, matchfilter = set()):
 
-        usefilter = False
-        if matchfilter != None:
-            usefilter = True
+        if not isinstance(matchfilter,set):
+            matchfilter = set()
+
         maskedtree = {}
         mybuffer = self.entropyTools.lifobuffer()
-        matchcache = set()
         depcache = set()
         treelevel = -1
-
-        do = True
-        if usefilter:
-            if matchfilter.inside(atomInfo):
-                do = False
-
-        if not do:
-            return {}
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
@@ -2248,85 +2218,74 @@ class EquoInterface(TextInterface):
                 maskedtree[treelevel].update(mydict)
 
         mydeps = mydbconn.retrieveDependencies(atomInfo[0])
-        for mydep in mydeps:
-            mybuffer.push(mydep)
+        for mydep in mydeps: mybuffer.push(mydep)
         mydep = mybuffer.pop()
 
-        while mydep != None:
+        open_db = self.openRepositoryDatabase
+        am = self.atomMatch
+        while mydep:
 
             if mydep in depcache:
                 mydep = mybuffer.pop()
                 continue
+            depcache.add(mydep)
 
-            idpackage, repoid = self.atomMatch(mydep)
-            if (idpackage, repoid) in matchcache:
+            idpackage, repoid = am(mydep)
+            if (idpackage, repoid) in matchfilter:
                 mydep = mybuffer.pop()
                 continue
 
-            # already analyzed by the calling function
-            if usefilter:
-                if matchfilter.inside((idpackage, repoid)):
-                    mydep = mybuffer.pop()
-                    continue
+            if idpackage != -1:
+                # doing even here because atomMatch with packagesFilter = False can pull
+                # something different
                 matchfilter.add((idpackage, repoid))
 
             # collect masked
             if idpackage == -1:
-                idpackage, repoid = self.atomMatch(mydep, packagesFilter = False)
+                idpackage, repoid = am(mydep, packagesFilter = False)
                 if idpackage != -1:
                     treelevel += 1
                     if not maskedtree.has_key(treelevel) and not flat:
                         maskedtree[treelevel] = {}
-                    dbconn = self.openRepositoryDatabase(repoid)
+                    dbconn = open_db(repoid)
                     vidpackage, idreason = dbconn.idpackageValidator(idpackage)
                     if atoms:
                         mydict = {dbconn.retrieveAtom(idpackage): idreason}
                     else:
                         mydict = {(idpackage,repoid): idreason}
-                    if flat:
-                        maskedtree.update(mydict)
-                    else:
-                        maskedtree[treelevel].update(mydict)
+                    if flat: maskedtree.update(mydict)
+                    else: maskedtree[treelevel].update(mydict)
 
             # push its dep into the buffer
             if idpackage != -1:
-                matchcache.add((idpackage, repoid))
-                dbconn = self.openRepositoryDatabase(repoid)
+                matchfilter.add((idpackage, repoid))
+                dbconn = open_db(repoid)
                 owndeps = dbconn.retrieveDependencies(idpackage)
                 for owndep in owndeps:
                     mybuffer.push(owndep)
 
-            depcache.add(mydep)
             mydep = mybuffer.pop()
 
         return maskedtree
 
 
-    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None, flat = False, filter_unsat_cache = {}):
+    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = set(), flat = False, filter_unsat_cache = {}, treecache = set(), keyslotcache = set()):
 
-        usefilter = False
-        if matchfilter != None:
-            usefilter = True
+        if not isinstance(matchfilter,set):
+            matchfilter = set()
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
 
         # caches
-        treecache = set()
-        matchcache = set()
-        keyslotcache = set()
         # special events
-        dependenciesNotFound = set()
+        deps_not_found = set()
         conflicts = set()
-        flat_tree = []
 
         mydep = (1,myatom)
         mybuffer = self.entropyTools.lifobuffer()
         deptree = set()
-        if usefilter:
-            if not matchfilter.inside(atomInfo):
-                deptree.add((1,atomInfo))
-        else:
+        if atomInfo not in matchfilter:
             deptree.add((1,atomInfo))
 
         virgin = True
@@ -2337,6 +2296,12 @@ class EquoInterface(TextInterface):
         lookup_library_breakages = self._lookup_library_breakages
         lookup_inverse_dependencies = self._lookup_inverse_dependencies
         get_unsatisfied_deps = self.get_unsatisfied_dependencies
+
+        def my_dep_filter(x):
+            if x in treecache: return False
+            if tuple(x.split(":")) in keyslotcache: return False
+            return True
+
         while mydep:
 
             dep_level, dep_atom = mydep
@@ -2345,6 +2310,7 @@ class EquoInterface(TextInterface):
             if dep_atom in treecache:
                 mydep = mybuffer.pop()
                 continue
+            treecache.add(dep_atom)
 
             if dep_atom == None: # corrupted entry
                 mydep = mybuffer.pop()
@@ -2355,7 +2321,7 @@ class EquoInterface(TextInterface):
                 c_idpackage, xst = cdb_atom_match(dep_atom[1:])
                 if c_idpackage != -1:
                     myreplacement = lookup_conflict_replacement(dep_atom[1:], c_idpackage, deep_deps = deep_deps)
-                    if myreplacement != None:
+                    if (myreplacement != None) and (myreplacement not in treecache):
                         mybuffer.push((dep_level+1,myreplacement))
                     else:
                         conflicts.add(c_idpackage)
@@ -2372,7 +2338,7 @@ class EquoInterface(TextInterface):
             else:
                 m_idpackage, m_repo = atom_match(dep_atom)
             if m_idpackage == -1:
-                dependenciesNotFound.add(dep_atom)
+                deps_not_found.add(dep_atom)
                 mydep = mybuffer.pop()
                 continue
 
@@ -2380,13 +2346,11 @@ class EquoInterface(TextInterface):
             matchdb = open_repo(m_repo)
             matchatom = matchdb.retrieveAtom(m_idpackage)
             matchkey, matchslot = matchdb.retrieveKeySlot(m_idpackage)
-            if matchatom in treecache:
+            if (dep_atom != matchatom) and (matchatom in treecache):
                 mydep = mybuffer.pop()
                 continue
-            else:
-                treecache.add(matchatom)
 
-            treecache.add(dep_atom)
+            treecache.add(matchatom)
 
             # check if key + slot has been already pulled in
             if (matchslot,matchkey) in keyslotcache:
@@ -2396,22 +2360,21 @@ class EquoInterface(TextInterface):
                 keyslotcache.add((matchslot,matchkey))
 
             match = (m_idpackage, m_repo,)
-            # already analyzed by the calling function
-            if usefilter:
-                if matchfilter.inside(match):
-                    mydep = mybuffer.pop()
-                    continue
-                matchfilter.add(match)
-
             # result already analyzed?
-            if match in matchcache:
+            if match in matchfilter:
                 mydep = mybuffer.pop()
                 continue
+
+            # already analyzed by the calling function
+            if match in matchfilter:
+                mydep = mybuffer.pop()
+                continue
+            matchfilter.add(match)
 
             treedepth = dep_level+1
 
             # all checks passed, well done
-            matchcache.add(match)
+            matchfilter.add(match)
             deptree.add((dep_level,match)) # add match
 
             # extra hooks
@@ -2422,44 +2385,37 @@ class EquoInterface(TextInterface):
                 if inverse_deps:
                     deptree.remove((dep_level,match))
                     for ikey,islot in inverse_deps:
-                        if (ikey,islot) not in keyslotcache:
-                            mybuffer.push((dep_level,ikey+":"+islot))
+                        iks_str = '%s:%s' % (ikey,islot,)
+                        if ((ikey,islot) not in keyslotcache) and (iks_str not in treecache):
+                            mybuffer.push((dep_level,iks_str))
                             keyslotcache.add((ikey,islot))
                     deptree.add((treedepth,match))
                     treedepth += 1
                 for x in broken_atoms:
-                    if x not in treecache:
+                    if (tuple(x.split(":")) not in keyslotcache) and (x not in treecache):
                         mybuffer.push((treedepth,x))
-                        #treecache.add(x) DO NOT DO THIS
 
-            myundeps = matchdb.retrieveDependenciesList(m_idpackage)
+            myundeps = filter(my_dep_filter,matchdb.retrieveDependenciesList(m_idpackage))
             if not empty_deps:
-                myundeps = get_unsatisfied_deps(myundeps, deep_deps, depcache = filter_unsat_cache)
-            for x in myundeps:
-                mybuffer.push((treedepth,x))
+                myundeps = filter(my_dep_filter,get_unsatisfied_deps(myundeps, deep_deps, depcache = filter_unsat_cache))
+            for x in myundeps: mybuffer.push((treedepth,x))
 
             mydep = mybuffer.pop()
 
+        if deps_not_found:
+            return list(deps_not_found),-2
+
+        if flat: return [x[1] for x in deptree],0
+
         newdeptree = {}
         for key,item in deptree:
-            if not newdeptree.has_key(key):
-                newdeptree[key] = set()
+            if key not in newdeptree: newdeptree[key] = set()
             newdeptree[key].add(item)
-            if flat:
-                if item not in flat_tree:
-                    flat_tree.append(item)
-        del deptree
-
-        if dependenciesNotFound:
-            # Houston, we've got a problem
-            flatview = list(dependenciesNotFound)
-            return flatview,-2
-
         # conflicts
         newdeptree[0] = conflicts
 
-        if flat: return flat_tree,0
         return newdeptree,0 # note: newtree[0] contains possible conflicts
+
 
     def _lookup_system_mask_repository_deps(self):
 
@@ -2496,30 +2452,38 @@ class EquoInterface(TextInterface):
     def _lookup_inverse_dependencies(self, match, clientmatch):
 
         cmpstat = self.get_package_action(match)
-        if cmpstat == 0:
-            return set()
+        if cmpstat == 0: return set()
 
         keyslots = set()
         mydepends = self.clientDbconn.retrieveDepends(clientmatch[0])
+        am = self.atomMatch
+        cdb_rdeps = self.clientDbconn.retrieveDependencies
+        cdb_rks = self.clientDbconn.retrieveKeySlot
+        gpa = self.get_package_action
+        keyslots_cache = set()
+        match_cache = {}
+
         for idpackage in mydepends:
-            key, slot = self.clientDbconn.retrieveKeySlot(idpackage)
-            if (key,slot) in keyslots:
-                continue
+            key, slot = cdb_rks(idpackage)
+            if (key,slot) in keyslots_cache: continue
+            keyslots_cache.add((key,slot))
+            if (key,slot) in keyslots: continue
             # grab its deps
-            mydeps = self.clientDbconn.retrieveDependencies(idpackage)
+            mydeps = cdb_rdeps(idpackage)
             found = False
             for mydep in mydeps:
-                mymatch = self.atomMatch(mydep)
-                if mymatch[0] == match[0]:
+                mymatch = match_cache.get(mydep, 0)
+                if mymatch == 0:
+                    mymatch = am(mydep)
+                    match_cache[mydep] = mymatch
+                if mymatch == match:
                     found = True
                     break
             if not found:
-                mymatch = self.atomMatch(key, matchSlot = slot)
-                if mymatch[0] == -1:
-                    continue
-                cmpstat = self.get_package_action(mymatch)
-                if cmpstat == 0:
-                    continue
+                mymatch = am(key, matchSlot = slot)
+                if mymatch[0] == -1: continue
+                cmpstat = gpa(mymatch)
+                if cmpstat == 0: continue
                 keyslots.add((key,slot))
 
         return keyslots
@@ -2544,8 +2508,8 @@ class EquoInterface(TextInterface):
         client_atoms = set()
 
         matchdb = self.openRepositoryDatabase(match[1])
-        reponeeded = matchdb.retrieveNeeded(match[0], extended = True, format = True) # use extended = True in future
-        clientneeded = self.clientDbconn.retrieveNeeded(clientmatch[0], extended = True, format = True) # use extended = True in future
+        reponeeded = matchdb.retrieveNeeded(match[0], extended = True, format = True)
+        clientneeded = self.clientDbconn.retrieveNeeded(clientmatch[0], extended = True, format = True)
         repo_split = [x.split(".so")[0] for x in reponeeded]
         client_split = [x.split(".so")[0] for x in clientneeded]
         client_side = [x for x in clientneeded if (x not in reponeeded) and (x.split(".so")[0] in repo_split)]
@@ -2554,15 +2518,13 @@ class EquoInterface(TextInterface):
 
         # all the packages in client_side should be pulled in and updated
         client_idpackages = set()
-        for needed in client_side:
-            client_idpackages |= self.clientDbconn.searchNeeded(needed)
+        for needed in client_side: client_idpackages |= self.clientDbconn.searchNeeded(needed)
 
         client_keyslots = set()
-        for idpackage in client_idpackages:
-            if idpackage == clientmatch[0]:
-                continue
-            key, slot = self.clientDbconn.retrieveKeySlot(idpackage)
-            client_keyslots.add((key,slot))
+        def mymf(idpackage):
+            if idpackage == clientmatch[0]: return 0
+            return self.clientDbconn.retrieveKeySlot(idpackage)
+        client_keyslots = set([x for x in map(mymf,client_idpackages) if x != 0])
 
         # all the packages in repo_side should be pulled in too
         repodata = {}
@@ -2626,7 +2588,7 @@ class EquoInterface(TextInterface):
         return client_atoms
 
 
-    def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False):
+    def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False, quiet = False):
 
         if self.xcache:
             c_data = sorted(list(matched_atoms))
@@ -2642,7 +2604,6 @@ class EquoInterface(TextInterface):
         deptree[0] = set()
 
         atomlen = len(matched_atoms); count = 0
-        matchfilter = matchContainer()
         error_generated = 0
         error_tree = set()
 
@@ -2656,14 +2617,22 @@ class EquoInterface(TextInterface):
 
         sort_dep_text = _("Sorting dependencies")
         filter_unsat_cache = {}
+        treecache = set()
+        keyslotcache = set()
+        matchfilter = set()
         for atomInfo in matched_atoms:
 
-            count += 1
-            if (count%10 == 0) or (count == atomlen) or (count == 1):
-                self.updateProgress(sort_dep_text, importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
+            if not quiet:
+                count += 1
+                if (count%10 == 0) or (count == atomlen) or (count == 1):
+                    self.updateProgress(sort_dep_text, importance = 0, type = "info", back = True, header = ":: ", footer = " ::", percent = True, count = (count,atomlen))
 
-            # check if atomInfo is in matchfilter
-            newtree, result = self.generate_dependency_tree(atomInfo, empty_deps, deep_deps, matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache)
+            if atomInfo in matchfilter: continue
+            newtree, result = self.generate_dependency_tree(
+                atomInfo, empty_deps, deep_deps,
+                matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache, treecache = treecache,
+                keyslotcache = keyslotcache
+            )
 
             if result == -2: # deps not found
                 error_generated = -2
@@ -2673,15 +2642,11 @@ class EquoInterface(TextInterface):
             elif newtree:
                 # add conflicts
                 max_parent_key = max(deptree)
-                mycf = newtree.pop(0)
-                if mycf: deptree[0] |= mycf
+                deptree[0] |= newtree.pop(0)
                 levelcount = 0
                 for mylevel in sorted(newtree.keys(), reverse = True):
                     levelcount += 1
                     deptree[max_parent_key+levelcount] = newtree.get(mylevel)
-
-        matchfilter.clear()
-        del matchfilter
 
         if error_generated != 0:
             return error_tree,error_generated
@@ -2891,7 +2856,8 @@ class EquoInterface(TextInterface):
             except (exceptionTools.RepositoryError,exceptionTools.SystemDatabaseError):
                 self.cycleDone()
                 continue
-            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')
+            idpackages = [  x for x in dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom') \
+                            if dbconn.idpackageValidator(x)[0] != -1  ]
             count = 0
             maxlen = len(idpackages)
             myavailable = []
@@ -2911,10 +2877,6 @@ class EquoInterface(TextInterface):
                         percent = True,
                         footer = " ::"
                     )
-                # ignore masked packages
-                idpackage, idreason = dbconn.idpackageValidator(idpackage)
-                if idpackage == -1:
-                    continue
                 # get key + slot
                 try:
                     key, slot = dbconn.retrieveKeySlot(idpackage)
@@ -2923,8 +2885,7 @@ class EquoInterface(TextInterface):
                     self.cycleDone()
                     do_break = True
                     continue
-                if not matches:
-                    myavailable.append((idpackage,repo))
+                if not matches: myavailable.append((idpackage,repo))
             available += myavailable[:]
             self.cycleDone()
 
@@ -3309,11 +3270,11 @@ class EquoInterface(TextInterface):
                     queue.append(y)
         return queue
 
-    def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps):
+    def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps, quiet = False):
 
         install = []
         removal = []
-        treepackages, result = self.get_required_packages(matched_atoms, empty_deps, deep_deps)
+        treepackages, result = self.get_required_packages(matched_atoms, empty_deps, deep_deps, quiet = quiet)
 
         if result == -2:
             return treepackages,removal,result
@@ -5888,9 +5849,7 @@ class PackageInterface:
         self.infoDict['triggers'] = {}
         self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
         self.infoDict['slot'] = dbconn.retrieveSlot(idpackage)
-        self.infoDict['version'] = dbconn.retrieveVersion(idpackage)
-        self.infoDict['versiontag'] = dbconn.retrieveVersionTag(idpackage)
-        self.infoDict['revision'] = dbconn.retrieveRevision(idpackage)
+        self.infoDict['version'], self.infoDict['versiontag'], self.infoDict['revision'] = dbconn.getVersioningData(idpackage)
         self.infoDict['category'] = dbconn.retrieveCategory(idpackage)
         self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
         self.infoDict['name'] = dbconn.retrieveName(idpackage)
@@ -5962,20 +5921,10 @@ class PackageInterface:
 
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
-            installedVer = self.Entropy.clientDbconn.retrieveVersion(self.infoDict['removeidpackage'])
-            installedTag = self.Entropy.clientDbconn.retrieveVersionTag(self.infoDict['removeidpackage'])
-            installedRev = self.Entropy.clientDbconn.retrieveRevision(self.infoDict['removeidpackage'])
+            installedVer, installedTag, installedRev = self.Entropy.clientDbconn.getVersioningData(self.infoDict['removeidpackage'])
             pkgcmp = self.Entropy.entropyTools.entropyCompareVersions(
-                (
-                    self.infoDict['version'],
-                    self.infoDict['versiontag'],
-                    self.infoDict['revision'],
-                ),
-                (
-                    installedVer,
-                    installedTag,
-                    installedRev,
-                )
+                (self.infoDict['version'], self.infoDict['versiontag'], self.infoDict['revision'],),
+                (installedVer, installedTag, installedRev,)
             )
             if pkgcmp == 0:
                 self.infoDict['removeidpackage'] = -1
@@ -8364,7 +8313,7 @@ class QAInterface:
             mybuffer.push(mydep)
         mydep = mybuffer.pop()
 
-        while mydep != None:
+        while mydep:
 
             if mydep in depcache:
                 mydep = mybuffer.pop()
@@ -8378,8 +8327,7 @@ class QAInterface:
 
             if mymatch[0] != -1:
                 owndeps = dbconn.retrieveDependencies(mymatch[0])
-                for owndep in owndeps:
-                    mybuffer.push(owndep)
+                for owndep in owndeps: mybuffer.push(owndep)
 
             depcache.add(mydep)
             mydep = mybuffer.pop()
@@ -15843,7 +15791,7 @@ class ServerInterface(TextInterface):
 
         # load db
         dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
-        packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn, broken_symbols = True)
+        packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn, broken_symbols = False)
         if status != 0:
             return 1,None
 
@@ -33005,15 +32953,14 @@ class EntropyDatabaseInterface:
     def searchKeySlot(self, key, slot, branch = None):
 
         branchstring = ''
-        params = [key,slot]
+        cat,name = key.split("/")
+        params = [cat,name,slot]
         if branch:
             params.append(branch)
-            branchstring = ' and baseinfo.branch = (?)'
+            branchstring = 'and baseinfo.branch = (?)'
 
-        self.cursor.execute('SELECT idpackage FROM baseinfo,categories WHERE categories.category || "/" || baseinfo.name = (?) and baseinfo.slot = (?) and baseinfo.idcategory = categories.idcategory'+branchstring, params)
-        data = self.cursor.fetchall()
-
-        return data
+        self.cursor.execute('SELECT idpackage FROM baseinfo,categories WHERE baseinfo.idcategory = categories.idcategory AND categories.category = (?) AND baseinfo.name = (?) AND baseinfo.slot = (?) %s' % (branchstring,), params)
+        return self.cursor.fetchall()
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword, like = False):
@@ -33032,7 +32979,7 @@ class EntropyDatabaseInterface:
         item = 'iddependency'
         if strings:
             item = 'dependency'
-        self.cursor.execute('SELECT '+item+' FROM dependenciesreference WHERE dependency '+sign+' (?)', (dep,))
+        self.cursor.execute('SELECT %s FROM dependenciesreference WHERE dependency %s (?)' % (item,sign,), (dep,))
         if multi:
             return self.fetchall2set(self.cursor.fetchall())
         else:
