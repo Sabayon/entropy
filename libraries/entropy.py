@@ -5238,7 +5238,7 @@ class PackageInterface:
         # EntropyDatabaseInterface.contentDiff for obvious reasons (think about stuff in /usr/lib and /usr/lib64,
         # where the latter is just a symlink to the former)
         if self.infoDict.get('removecontent'):
-            my_remove_content = set([x for x in self.infoDict['removecontent'] if os.path.join(os.path.realpath(os.path.dirname(x)),os.path.basename(x)) in items_installed])
+            my_remove_content = set([x for x in self.infoDict['removecontent'] if os.path.join(os.path.realpath(os.path.dirname("%s%s" % (etpConst['systemroot'],x,))),os.path.basename(x)) in items_installed])
             self.infoDict['removecontent'] -= my_remove_content
 
         return 0
