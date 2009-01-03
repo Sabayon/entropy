@@ -19,6 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+from __future__ import with_statement
 from entropyConstants import *
 try:
     import cPickle as pickle
@@ -45,13 +46,12 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
                 dmpfile = dump_path+".dmp"
             if os.path.isfile(dmpfile):
                 os.remove(dmpfile)
-            f = open(dmpfile,"wb")
-            pickle.dump(object,f)
-            os.chmod(dmpfile,0664)
-            if etpConst['entropygid'] != None:
-                os.chown(dmpfile,-1,etpConst['entropygid'])
-            f.flush()
-            f.close()
+            with open(dmpfile,"wb") as f:
+                pickle.dump(object,f)
+                os.chmod(dmpfile,0664)
+                if etpConst['entropygid'] != None:
+                    os.chown(dmpfile,-1,etpConst['entropygid'])
+                f.flush()
         except (EOFError,IOError,OSError):
             if not ignoreExceptions:
                 raise
@@ -110,14 +110,13 @@ def loadobj(name, completePath = False):
             #dump_name = os.path.basename(dump_path)
             dmpfile = dump_path+".dmp"
         if os.path.isfile(dmpfile) and os.access(dmpfile,os.R_OK):
-            f = open(dmpfile,"rb")
-            x = None
-            try:
-                x = pickle.load(f)
-            except (ValueError,EOFError,IOError,OSError,pickle.UnpicklingError):
-                pass
-            f.close()
-            return x
+            with open(dmpfile,"rb") as f:
+                x = None
+                try:
+                    x = pickle.load(f)
+                except (ValueError,EOFError,IOError,OSError,pickle.UnpicklingError):
+                    pass
+                return x
         break
 
 def getobjmtime(name):
