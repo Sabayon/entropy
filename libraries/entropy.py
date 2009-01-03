@@ -5057,7 +5057,7 @@ class PackageInterface:
                     os.chown(rootdir,user,group)
                     shutil.copystat(imagepathDir,rootdir)
 
-                items_installed.add(rootdir)
+                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(rootdir)),os.path.basename(rootdir)))
 
             for item in files:
 
@@ -5137,7 +5137,7 @@ class PackageInterface:
                         rc = subprocess.call(["mv",fromfile,tofile])
                         if rc != 0: return 4
 
-                items_installed.add(tofile)
+                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(tofile)),os.path.basename(tofile)))
                 if protected:
                     # add to disk cache
                     self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
