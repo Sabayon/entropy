@@ -4355,7 +4355,7 @@ class PackageInterface:
         # clear on-disk cache
         self.__clear_cache()
 
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: "+str(self.infoDict['removeatom']))
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: %s" % (self.infoDict['removeatom'],))
 
         # remove from database
         if self.infoDict['removeidpackage'] != -1:
@@ -4468,8 +4468,7 @@ class PackageInterface:
                         pass
 
         # now handle directories
-        directories = list(directories)
-        directories.reverse()
+        directories = sorted(list(directories), reverse = True)
         while 1:
             taint = False
             for directory in directories:
@@ -4998,6 +4997,9 @@ class PackageInterface:
         # load CONFIG_PROTECT and its mask
         protect = etpRepositories[self.infoDict['repository']]['configprotect']
         mask = etpRepositories[self.infoDict['repository']]['configprotectmask']
+        sys_root = etpConst['systemroot']
+        col_protect = etpConst['collisionprotect']
+        items_installed = set()
 
         # setup imageDir properly
         imageDir = self.infoDict['imagedir']
@@ -5007,8 +5009,8 @@ class PackageInterface:
             # create subdirs
             for subdir in subdirs:
 
-                imagepathDir = currentdir + "/" + subdir
-                rootdir = etpConst['systemroot']+imagepathDir[len(imageDir):]
+                imagepathDir = "%s/%s" % (currentdir,subdir,)
+                rootdir = "%s%s" % (sys_root,imagepathDir[len(imageDir):],)
 
                 # handle broken symlinks
                 if os.path.islink(rootdir) and not os.path.exists(rootdir):# broken symlink
@@ -5021,7 +5023,7 @@ class PackageInterface:
                         ETP_LOGLEVEL_NORMAL,
                         "WARNING!!! %s is a file when it should be a directory !! Removing in 20 seconds..." % (rootdir,)
                     )
-                    mytxt = darkred(_("%s is a file when should be a directory !! Removing in 20 seconds...") % (rootdir,))
+                    mytxt = darkred(_("%s is a file when should be a directory !! Removing in 20 seconds..." % (rootdir,)))
                     self.Entropy.updateProgress(
                         red("QA: ")+mytxt,
                         importance = 1,
@@ -5055,15 +5057,14 @@ class PackageInterface:
                     os.chown(rootdir,user,group)
                     shutil.copystat(imagepathDir,rootdir)
 
+                items_installed.add(rootdir)
+
             for item in files:
 
-                fromfile = currentdir+"/"+item
-                tofile = etpConst['systemroot']+fromfile[len(imageDir):]
-                fromfile_encoded = fromfile
-                #tofile_encoded = tofile
-                # redecode to bytestring
+                fromfile = "%s/%s" % (currentdir,item,)
+                tofile = "%s%s" % (sys_root,fromfile[len(imageDir):],)
 
-                if etpConst['collisionprotect'] > 1:
+                if col_protect > 1:
                     todbfile = fromfile[len(imageDir):]
                     myrc = self._handle_install_collision_protect(tofile, todbfile)
                     if not myrc:
@@ -5079,7 +5080,7 @@ class PackageInterface:
                         # there is a serious issue here, better removing tofile, happened to someone:
                         try: # try to cope...
                             os.remove(tofile)
-                        except:
+                        except OSError:
                             pass
 
                     # if our file is a dir on the live system
@@ -5113,7 +5114,7 @@ class PackageInterface:
                     # XXX moving file using the raw format like portage does
                     # XXX
                     try:
-                        shutil.move(fromfile_encoded,tofile)
+                        shutil.move(fromfile,tofile)
                     except shutil.Error, e:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
@@ -5133,14 +5134,21 @@ class PackageInterface:
                         # better to pass away, sometimes gentoo packages are fucked up and contain broken things
                         pass
                     else:
-                        rc = subprocess.call("mv %s %s" % (fromfile,tofile,), shell = True)
+                        rc = subprocess.call(["mv",fromfile,tofile])
                         if rc != 0: return 4
+
+                items_installed.add(tofile)
                 if protected:
                     # add to disk cache
-                    oldquiet = etpUi['quiet']
-                    etpUi['quiet'] = True
-                    self.Entropy.FileUpdates.add_to_cache(tofile)
-                    etpUi['quiet'] = oldquiet
+                    self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
+
+        # this is useful to avoid the removal of installed files by __remove_package just because
+        # there's a difference in the directory path, perhaps, which is not handled correctly by
+        # EntropyDatabaseInterface.contentDiff for obvious reasons (think about stuff in /usr/lib and /usr/lib64,
+        # where the latter is just a symlink to the former)
+        if self.infoDict.get('removecontent'):
+            my_remove_content = set([x for x in self.infoDict['removecontent'] if os.path.join(os.path.realpath(os.path.dirname(x)),os.path.basename(x)) in items_installed])
+            self.infoDict['removecontent'] -= my_remove_content
 
         return 0
 
@@ -6089,7 +6097,7 @@ class FileUpdatesInterface:
     @description: scan for files that need to be merged
     @output: dictionary using filename as key
     '''
-    def scanfs(self, dcache = True):
+    def scanfs(self, dcache = True, quiet = False):
 
         if dcache:
 
@@ -6142,47 +6150,50 @@ class FileUpdatesInterface:
 
                         mydict = self.generate_dict(filepath)
                         if mydict['automerge']:
-                            mytxt = _("Automerging file")
-                            self.Entropy.updateProgress(
-                                darkred("%s: %s") % (
-                                    mytxt,
-                                    darkgreen(etpConst['systemroot'] + mydict['source']),
-                                ),
-                                importance = 0,
-                                type = "info"
-                            )
+                            if not quiet:
+                                mytxt = _("Automerging file")
+                                self.Entropy.updateProgress(
+                                    darkred("%s: %s") % (
+                                        mytxt,
+                                        darkgreen(etpConst['systemroot'] + mydict['source']),
+                                    ),
+                                    importance = 0,
+                                    type = "info"
+                                )
                             if os.path.isfile(etpConst['systemroot']+mydict['source']):
                                 try:
                                     shutil.move(    etpConst['systemroot']+mydict['source'],
                                                     etpConst['systemroot']+mydict['destination']
                                     )
                                 except IOError, e:
-                                    mytxt = "%s :: %s: %s. %s: %s" % (
-                                        red(_("I/O Error")),
-                                        red(_("Cannot automerge file")),
-                                        brown(etpConst['systemroot'] + mydict['source']),
-                                        blue("Error"),
-                                        e,
-                                    )
-                                    self.Entropy.updateProgress(
-                                        mytxt,
-                                        importance = 1,
-                                        type = "warning"
-                                    )
+                                    if not quiet:
+                                        mytxt = "%s :: %s: %s. %s: %s" % (
+                                            red(_("I/O Error")),
+                                            red(_("Cannot automerge file")),
+                                            brown(etpConst['systemroot'] + mydict['source']),
+                                            blue("Error"),
+                                            e,
+                                        )
+                                        self.Entropy.updateProgress(
+                                            mytxt,
+                                            importance = 1,
+                                            type = "warning"
+                                        )
                             continue
                         else:
                             counter += 1
                             scandata[counter] = mydict.copy()
 
-                        try:
-                            self.Entropy.updateProgress(
-                                "("+blue(str(counter))+") " + red(" file: ") + \
-                                os.path.dirname(filepath) + "/" + os.path.basename(filepath)[10:],
-                                importance = 1,
-                                type = "info"
-                            )
-                        except:
-                            pass # possible encoding issues
+                        if not quiet:
+                            try:
+                                self.Entropy.updateProgress(
+                                    "("+blue(str(counter))+") " + red(" file: ") + \
+                                    os.path.dirname(filepath) + "/" + os.path.basename(filepath)[10:],
+                                    importance = 1,
+                                    type = "info"
+                                )
+                            except:
+                                pass # possible encoding issues
         # store data
         try:
             self.Entropy.dumpTools.dumpobj(etpCache['configfiles'],scandata)
@@ -6230,8 +6241,8 @@ class FileUpdatesInterface:
     @description: prints information about config files that should be updated
     @attention: please be sure that filepath is properly formatted before using this function
     '''
-    def add_to_cache(self, filepath):
-        self.scanfs(dcache = True)
+    def add_to_cache(self, filepath, quiet = False):
+        self.scanfs(dcache = True, quiet = quiet)
         keys = self.scandata.keys()
         try:
             for key in keys:
@@ -6287,7 +6298,7 @@ class FileUpdatesInterface:
                     # if it's broken, skip diff and automerge
                     if not os.path.exists(filepath):
                         return mydict
-                result = commands.getoutput('diff -Nua '+filepath+' '+tofilepath+' | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'')
+                result = commands.getoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath,tofilepath,))
                 if not result:
                     mydict['automerge'] = True
             except:
@@ -31877,24 +31888,25 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
-        randomtable = "cdiff"+str(self.entropyTools.getRandomNumber())
+        randomtable = "cdiff%s" % (self.entropyTools.getRandomNumber(),)
         while self.doesTableExist(randomtable):
-            randomtable = "cdiff"+str(self.entropyTools.getRandomNumber())
-        self.cursor.execute('CREATE TEMPORARY TABLE '+randomtable+' ( file VARCHAR )')
+            randomtable = "cdiff%s" % (self.entropyTools.getRandomNumber(),)
+        self.cursor.execute('CREATE TEMPORARY TABLE %s ( file VARCHAR )' % (randomtable,))
+
         try:
             dbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
             dbconn.cursor.execute('select file from content where idpackage = (?)', (dbconn_idpackage,))
             xfile = dbconn.cursor.fetchone()
             while xfile:
-                self.cursor.execute('INSERT INTO '+randomtable+' VALUES (?)', (xfile[0],))
+                self.cursor.execute('INSERT INTO %s VALUES (?)' % (randomtable,), (xfile[0],))
                 xfile = dbconn.cursor.fetchone()
 
             # now compare
-            self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from '+randomtable+') ', (idpackage,))
+            self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from %s)' % (randomtable,), (idpackage,))
             diff = self.fetchall2set(self.cursor.fetchall())
             return diff
         finally:
-            self.cursor.execute('DROP TABLE IF EXISTS '+randomtable)
+            self.cursor.execute('DROP TABLE IF EXISTS %s' % (randomtable,))
 
     def doCleanups(self):
         self.cleanupUseflags()
