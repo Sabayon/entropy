@@ -132,6 +132,9 @@ myopts = [
     (2,'--ask',2,_('ask before making any changes')),
     (2,'--pretend',1,_('just show what would be done')),
     None,
+    (1,'unusedpackages',2,_('look for unused packages (pay attention)')),
+    (2,'--quiet',2,_('show less details (useful for scripting)')),
+    None,
     (1,'libtest',2,_('look for missing libraries')),
     (2,'--listfiles',1,_('print broken files to stdout')),
     (2,'--quiet',2,_('show less details (useful for scripting)')),
@@ -422,7 +425,7 @@ try:
     elif options[0] == "moo":
         do_moo()
 
-    elif options[0] in ["install","remove","world","deptest","libtest","source"]:
+    elif options[0] in ["install","remove","world","deptest","unusedpackages","libtest","source"]:
         import text_ui
         rc = text_ui.package(options)
         load_conf_cache()

@@ -1143,6 +1143,10 @@ class EquoInterface(TextInterface):
        Cache stuff :: end
     '''
 
+    def unused_packages_test(self, dbconn = None):
+        if dbconn == None: dbconn = self.clientDbconn
+        return [x for x in dbconn.retrieveUnusedIdpackages() if self.validatePackageRemoval(x)]
+
     def dependencies_test(self, dbconn = None):
 
         if dbconn == None:
@@ -4385,16 +4389,18 @@ class PackageInterface:
         # so our dicts are already filled
         protect = etpConst['dbconfigprotect']
         mask = etpConst['dbconfigprotectmask']
+        sys_root = etpConst['systemroot']
+        col_protect = etpConst['collisionprotect']
 
         # remove files from system
         directories = set()
         for item in self.infoDict['removecontent']:
             # collision check
-            if etpConst['collisionprotect'] > 0:
+            if col_protect > 0:
 
-                if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(etpConst['systemroot']+item):
+                if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(sys_root+item):
                     # in this way we filter out directories
-                    mytxt = red(_("Collision found during removal of")) + " " + etpConst['systemroot']+item + " - "
+                    mytxt = red(_("Collision found during removal of")) + " " + sys_root+item + " - "
                     mytxt += red(_("cannot overwrite"))
                     self.Entropy.updateProgress(
                         mytxt,
@@ -4405,13 +4411,13 @@ class PackageInterface:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "Collision found during remove of "+etpConst['systemroot']+item+" - cannot overwrite"
+                        "Collision found during remove of "+sys_root+item+" - cannot overwrite"
                     )
                     continue
 
             protected = False
             if (not self.infoDict['removeconfig']) and (not self.infoDict['diffremoval']):
-                protected_item_test = etpConst['systemroot']+item
+                protected_item_test = sys_root+item
                 protected, x, do_continue = self._handle_config_protect(protect, mask, None, protected_item_test, do_allocation_check = False)
                 if do_continue: protected = True
 
@@ -4419,12 +4425,12 @@ class PackageInterface:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_VERBOSE,
-                    "[remove] Protecting config file: "+etpConst['systemroot']+item
+                    "[remove] Protecting config file: "+sys_root+item
                 )
                 mytxt = "[%s] %s: %s" % (
                     red(_("remove")),
                     brown(_("Protecting config file")),
-                    etpConst['systemroot']+item,
+                    sys_root+item,
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -4434,7 +4440,7 @@ class PackageInterface:
                 )
             else:
                 try:
-                    os.lstat(etpConst['systemroot']+item)
+                    os.lstat(sys_root+item)
                 except OSError:
                     continue # skip file, does not exist
                 except UnicodeEncodeError:
@@ -4447,19 +4453,19 @@ class PackageInterface:
                     )
                     continue # file has a really bad encoding
 
-                if os.path.isdir(etpConst['systemroot']+item) and os.path.islink(etpConst['systemroot']+item):
+                if os.path.isdir(sys_root+item) and os.path.islink(sys_root+item):
                     # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                     # valid directory symlink
-                    directories.add((etpConst['systemroot']+item,"link"))
-                elif os.path.isdir(etpConst['systemroot']+item):
+                    directories.add((sys_root+item,"link"))
+                elif os.path.isdir(sys_root+item):
                     # plain directory
-                    directories.add((etpConst['systemroot']+item,"dir"))
+                    directories.add((sys_root+item,"dir"))
                 else: # files, symlinks or not
                     # just a file or symlink or broken directory symlink (remove now)
                     try:
-                        os.remove(etpConst['systemroot']+item)
+                        os.remove(sys_root+item)
                         # add its parent directory
-                        dirfile = os.path.dirname(etpConst['systemroot']+item)
+                        dirfile = os.path.dirname(sys_root+item)
                         if os.path.isdir(dirfile) and os.path.islink(dirfile):
                             directories.add((dirfile,"link"))
                         elif os.path.isdir(dirfile):
@@ -4471,9 +4477,9 @@ class PackageInterface:
         directories = sorted(list(directories), reverse = True)
         while 1:
             taint = False
-            for directory in directories:
-                mydir = etpConst['systemroot']+directory[0]
-                if directory[1] == "link":
+            for directory, dirtype in directories:
+                mydir = "%s%s" % (sys_root,directory,)
+                if dirtype == "link":
                     try:
                         mylist = os.listdir(mydir)
                         if not mylist:
@@ -4484,7 +4490,7 @@ class PackageInterface:
                                 pass
                     except OSError:
                         pass
-                elif directory[1] == "dir":
+                elif dirtype == "dir":
                     try:
                         mylist = os.listdir(mydir)
                         if not mylist:
@@ -32721,6 +32727,14 @@ class EntropyDatabaseInterface:
             result = self.fetchall2set(self.cursor.fetchall())
 
         return result
+
+    def retrieveUnusedIdpackages(self):
+        # XXX: never remove this, otherwise equo.db (client database) dependstable will be always broken (trust me)
+        # sanity check on the table
+        if not self.isDependsTableSane(): # is empty, need generation
+            self.regenerateDependsTable(output = False)
+        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage NOT IN (SELECT idpackage FROM dependstable) ORDER BY atom')
+        return self.fetchall2list(self.cursor.fetchall())
 
     # You must provide the full atom to this function
     # WARNING: this function does not support branches

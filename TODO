@@ -1,5 +1,6 @@
 TODO list
 
+  - equo short options
   - split entropy.py into entropy package
   - implement pdepend support in dependencies sorting
   - automatic client db backup
@@ -16,6 +17,7 @@ TODO list
   - documentation + man page
   - find a way to better handle real smartapps deps (need split PDEPEND?)
   - server-side: packages upload through socket? (removing handlers s*it)
+  - shrink sql indexes (remove branch?)
 
   Repository Manager:
     - fix queue length issue with extended commands on the repository manager server
@@ -26,4 +28,4 @@ TODO list
     - package sets add/remove tool
     - allow package remasking
     - ability to change colours
-    - misc.py: use map() and filter()
+    - deptest/libtest

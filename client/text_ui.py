@@ -98,6 +98,9 @@ def package(options):
     if (options[0] == "deptest"):
         rc, garbage = dependenciesTest()
 
+    elif (options[0] == "unusedpackages"):
+        rc, garbage = unusedPackagesTest()
+
     elif (options[0] == "libtest"):
         rc, garbage = librariesTest(listfiles = equoRequestListfiles)
 
@@ -1303,6 +1306,19 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
     print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
     return 0,0
 
+def unusedPackagesTest():
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue("%s ..." % (_("Running unused packages test, pay attention, there are false positives"),) ))
+    unused = Equo.unused_packages_test()
+    atoms = [Equo.clientDbconn.retrieveAtom(x) for x in unused]
+    if etpUi['quiet']:
+        print '\n'.join(atoms)
+        #print
+        #print "%s: %s" % (darkgreen(_("Atom string")),' '.join(atoms),)
+    else:
+        for atom in atoms:
+            print_info("  # %s" % (darkblue(atom),))
+    return 0,0
 
 def dependenciesTest():
 
