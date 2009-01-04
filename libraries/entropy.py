@@ -11666,6 +11666,12 @@ class PortageInterface:
         else: # portage <2.2 workaround
             self.portage_exception = Exception
 
+        self.builtin_pkg_sets = [
+            "system","world","installed","module-rebuild",
+            "security","preserved-rebuild","live-rebuild",
+            "downgrade","unavailable"
+        ]
+
     def write_to_log(self, message):
         spmLog = LogFile(
             level = etpConst['spmloglevel'],
@@ -12894,52 +12900,46 @@ class PortageInterface:
                 installedAtoms.add((os.path.basename(current_dirpath)+"/"+mypv,counter))
         return installedAtoms
 
-    def _load_sets_config(self, settings, trees, builtin_sets = True):
-        builtin_pkg_sets = [
-            "system","world","installed","module-rebuild",
-            "security","preserved-rebuild","live-rebuild",
-            "downgrade","unavailable"
-        ]
+    def _load_sets_config(self, settings, trees):
+
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
-        setconfigpaths = []
-        setconfigpaths += [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
+        setconfigpaths = [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
         setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
         setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
             self.portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
-        setconf = self.portage_sets.SetConfig(setconfigpaths, settings, trees)
-        if not builtin_sets:
-            builtin_pkg_sets = [x for x in builtin_pkg_sets if x in setconf]
-            for pkg_set in builtin_pkg_sets:
-                setconf.pop(pkg_set)
-        return setconf
+        return self.portage_sets.SetConfig(setconfigpaths, settings, trees)
 
-    def get_set_config(self, builtin_sets = True):
+    def get_set_config(self):
         # old portage
         if self.portage_sets == None: return
         myroot = etpConst['systemroot']+"/"
-        setconfig = self._load_sets_config(
+        return self._load_sets_config(
             self.portage.settings,
-            self.portage.db[myroot],
-            builtin_sets = builtin_sets
+            self.portage.db[myroot]
         )
-        return setconfig
 
     def get_sets(self, builtin_sets):
-        config = self.get_set_config(builtin_sets)
+        config = self.get_set_config()
         if config == None: return {}
-        return config.getSets()
+        mysets = config.getSets()
+        if not builtin_sets:
+            builtin_pkg_sets = [x for x in self.builtin_pkg_sets if x in mysets]
+            for pkg_set in builtin_pkg_sets: mysets.pop(pkg_set)
+        return mysets
+
 
     def get_sets_expanded(self, builtin_sets = True):
-        config = self.get_set_config(builtin_sets)
+        config = self.get_set_config()
         if config == None: return {}
         mysets = {}
         sets = config.getSets()
+        if not builtin_sets:
+            builtin_pkg_sets = [x for x in self.builtin_pkg_sets if x in sets]
+            for pkg_set in builtin_pkg_sets: sets.pop(pkg_set)
         for myset in sorted(sets):
-            try:
-                atoms = config.getSetAtoms(myset).copy()
-            except:
-                continue
+            try: atoms = config.getSetAtoms(myset).copy()
+            except: continue
             mysets[myset] = atoms
         return mysets
 
