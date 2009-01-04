@@ -12895,15 +12895,24 @@ class PortageInterface:
         return installedAtoms
 
     def _load_sets_config(self, settings, trees, builtin_sets = True):
+        builtin_pkg_sets = [
+            "system","world","installed","module-rebuild",
+            "security","preserved-rebuild","live-rebuild",
+            "downgrade","unavailable"
+        ]
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
         setconfigpaths = []
-        if builtin_sets:
-            setconfigpaths += [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
+        setconfigpaths += [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
         setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
         setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
             self.portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
-        return self.portage_sets.SetConfig(setconfigpaths, settings, trees)
+        setconf = self.portage_sets.SetConfig(setconfigpaths, settings, trees)
+        if not builtin_sets:
+            builtin_pkg_sets = [x for x in builtin_pkg_sets if x in setconf]
+            for pkg_set in builtin_pkg_sets:
+                setconf.pop(pkg_set)
+        return setconf
 
     def get_set_config(self, builtin_sets = True):
         # old portage
