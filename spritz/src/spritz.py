@@ -1344,12 +1344,16 @@ class SpritzApplication(Controller):
             self.progress.reset_progress()
 
             if (not fetch_only) and (not download_sources):
+                self.pkgView.clear()
                 self.etpbase.clearPackages()
                 self.etpbase.clearCache()
                 for myrepo in remove_repos:
                     self.Equo.removeRepository(myrepo)
                 self.Equo.closeAllRepositoryDatabases()
+                self.pkgView.clear()
                 self.Equo.reopenClientDbconn()
+                self.etpbase.clearPackages()
+                self.etpbase.clearCache()
                 # regenerate packages information
                 self.setupSpritz()
                 self.Equo.FileUpdates.scanfs(dcache = False)
