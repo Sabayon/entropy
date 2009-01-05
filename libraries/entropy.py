@@ -31708,7 +31708,7 @@ class EntropyDatabaseInterface:
         mytable = 'configprotect'
         if mask: mytable += 'mask'
         with self.WriteLock:
-            self.cursor.execute('INSERT into '+mytable+' VALUES (?,?)', (idpackage,idprotect,))
+            self.cursor.execute('INSERT into %s VALUES (?,?)' % (mytable,), (idpackage,idprotect,))
 
     def insertMirrors(self, mirrors):
 
@@ -32336,13 +32336,13 @@ class EntropyDatabaseInterface:
     def insertPackageSets(self, sets_data):
         self.checkReadOnly()
 
-        def myiter():
-            for setname in sorted(sets_data.keys()):
-                for dependency in sorted(list(sets_data[setname])):
-                    yield (setname,dependency,)
+        mysets = []
+        for setname in sorted(sets_data.keys()):
+            for dependency in sorted(list(sets_data[setname])):
+                mysets.append((setname,dependency,))
 
         with self.WriteLock:
-            self.cursor.executemany('INSERT into packagesets VALUES (?,?)', myiter())
+            self.cursor.executemany('INSERT INTO packagesets VALUES (?,?)', mysets)
 
     def retrievePackageSets(self):
         self.cursor.execute('SELECT setname,dependency FROM packagesets')
@@ -33651,13 +33651,7 @@ class EntropyDatabaseInterface:
     def addPackageToInstalledTable(self, idpackage, repositoryName):
         self.checkReadOnly()
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into installedtable VALUES '
-                    '(?,?)'
-                    , (	idpackage,
-                            repositoryName,
-                            )
-            )
+            self.cursor.execute('INSERT into installedtable VALUES (?,?)', (idpackage, repositoryName,))
             self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
