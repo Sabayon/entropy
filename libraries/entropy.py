@@ -32337,9 +32337,9 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
 
         def myiter():
-            for setname in sets_data:
-                for dependency in sets_data[setname]:
-                    yield (setname,dependency)
+            for setname in sorted(sets_data.keys()):
+                for dependency in sorted(list(sets_data[setname])):
+                    yield (setname,dependency,)
 
         with self.WriteLock:
             self.cursor.executemany('INSERT into packagesets VALUES (?,?)', myiter())
