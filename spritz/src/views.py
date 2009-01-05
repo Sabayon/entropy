@@ -312,7 +312,6 @@ class EntropyPackageView:
     def on_view_button_press(self, widget, event):
         if event.button == 3:
             return True
-        return False
 
     def load_menu(self, widget, event):
 
@@ -370,7 +369,7 @@ class EntropyPackageView:
                 self.spawn_vote_submit(obj)
             return False
 
-        return True
+        return False
 
     def reposition_menu(self, menu):
         # devo tradurre x=0,y=20 in posizioni assolute

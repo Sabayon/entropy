@@ -469,7 +469,6 @@ class SpritzApplication(Controller):
         else:
             button = gtk.RadioButton( self.firstButton )
         button.connect( "clicked", self.on_PageButton_changed, page )
-        #button.connect( "pressed", self.on_PageButton_pressed, page )
 
         button.set_relief( gtk.RELIEF_NONE )
         button.set_mode( False )
@@ -1983,9 +1982,6 @@ class SpritzApplication(Controller):
             clean_n_quit(newrepo)
             return False
 
-
-    def on_PageButton_pressed( self, widget, page ):
-        pass
 
     def on_PageButton_changed( self, widget, page ):
 
