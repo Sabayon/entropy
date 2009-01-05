@@ -15699,7 +15699,7 @@ class ServerInterface(TextInterface):
             cur_sets = conn.retrievePackageSets()
             sys_sets = self.get_configured_package_sets(repo)
             if cur_sets != sys_sets:
-                self.update_database_package_sets(repo)
+                self.update_database_package_sets(repo, dbconn = conn)
             conn.commitChanges()
 
         return conn
@@ -17735,12 +17735,11 @@ class ServerInterface(TextInterface):
 
         return sets_data
 
-    def update_database_package_sets(self, repo = None):
+    def update_database_package_sets(self, repo = None, dbconn = None):
 
         if repo == None: repo = self.default_repository
-
         package_sets = self.get_configured_package_sets(repo)
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        if dbconn == None: dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
         # clear old
         dbconn.clearPackageSets()
         if package_sets: dbconn.insertPackageSets(package_sets)
@@ -31652,8 +31651,7 @@ class EntropyDatabaseInterface:
         deps = set()
         for dep in depdata:
 
-            if dep in dcache:
-                continue
+            if dep in dcache: continue
 
             iddep = self.isDependencyAvailable(dep)
             if (iddep == -1):
@@ -31683,7 +31681,7 @@ class EntropyDatabaseInterface:
             if already_formatted:
                 self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',[(idpackage,b,c,) for a,b,c in content])
                 return
-            do_encode = [x for x in content if type(x) is unicode]
+            do_encode = [1 for x in content if type(x) is unicode]
             def my_cmap(xfile):
                 contenttype = content[xfile]
                 if do_encode: xfile = xfile.encode('raw_unicode_escape')
