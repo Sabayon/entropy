@@ -31647,24 +31647,23 @@ class EntropyDatabaseInterface:
     def insertDependencies(self, idpackage, depdata):
 
         dcache = set()
-        deps = set()
-        for dep in depdata:
+        add_dep = self.addDependency
+        is_dep_avail = self.isDependencyAvailable
+        def mymf(dep):
 
-            if dep in dcache: continue
+            if dep in dcache: return 0
+            iddep = is_dep_avail(dep)
+            if iddep == -1: iddep = add_dep(dep)
 
-            iddep = self.isDependencyAvailable(dep)
-            if (iddep == -1):
-                # create category
-                iddep = self.addDependency(dep)
-
-            if type(depdata) is dict:
+            deptype = 0
+            if isinstance(depdata,dict):
                 deptype = depdata[dep]
-            else:
-                deptype = 0
 
-            deps.add((idpackage,iddep,deptype,))
             dcache.add(dep)
+            return (idpackage,iddep,deptype,)
 
+        # do not place inside the with statement, otherwise there'll be an obvious lockup
+        deps = [x for x in map(mymf,depdata) if type(x) != int]
         with self.WriteLock:
             self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
 
@@ -32336,7 +32335,10 @@ class EntropyDatabaseInterface:
         mysets = []
         for setname in sorted(sets_data.keys()):
             for dependency in sorted(sets_data[setname]):
-                mysets.append((unicode(setname),unicode(dependency),))
+                try:
+                    mysets.append((unicode(setname),unicode(dependency),))
+                except (UnicodeDecodeError,UnicodeEncodeError,):
+                    continue
 
         with self.WriteLock:
             self.cursor.executemany('INSERT INTO packagesets VALUES (?,?)', mysets)
