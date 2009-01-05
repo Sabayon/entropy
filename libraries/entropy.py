@@ -17740,7 +17740,6 @@ class ServerInterface(TextInterface):
         if repo == None: repo = self.default_repository
         package_sets = self.get_configured_package_sets(repo)
         if dbconn == None: dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
-        # clear old
         dbconn.clearPackageSets()
         if package_sets: dbconn.insertPackageSets(package_sets)
         dbconn.commitChanges()
@@ -32336,8 +32335,8 @@ class EntropyDatabaseInterface:
 
         mysets = []
         for setname in sorted(sets_data.keys()):
-            for dependency in sorted(list(sets_data[setname])):
-                mysets.append((setname,dependency,))
+            for dependency in sorted(sets_data[setname]):
+                mysets.append((unicode(setname),unicode(dependency),))
 
         with self.WriteLock:
             self.cursor.executemany('INSERT INTO packagesets VALUES (?,?)', mysets)
@@ -33304,13 +33303,16 @@ class EntropyDatabaseInterface:
         return set(self.cursor.fetchall())
 
     def listBranchPackagesTbz2(self, branch, do_sort = True, full_path = False):
-        self.cursor.execute('SELECT extrainfo.download FROM baseinfo,extrainfo WHERE baseinfo.branch = (?) AND baseinfo.idpackage = extrainfo.idpackage', (branch,))
-        results = self.fetchall2set(self.cursor.fetchall())
-        if not full_path:
-            results = set([os.path.basename(x) for x in results])
-        if do_sort:
-            results = sorted(list(results))
-        return results
+        order_string = ''
+        if do_sort: order_string = 'ORDER BY extrainfo.download'
+        self.cursor.execute('SELECT extrainfo.download FROM baseinfo,extrainfo WHERE baseinfo.branch = (?) AND baseinfo.idpackage = extrainfo.idpackage %s' % (order_string,), (branch,))
+
+        if do_sort: results = self.fetchall2list(self.cursor.fetchall())
+        else: results = self.fetchall2set(self.cursor.fetchall())
+
+        if not full_path: results = [os.path.basename(x) for x in results]
+        if do_sort: return results
+        return set(results)
 
     def listAllFiles(self, clean = False, count = False):
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
