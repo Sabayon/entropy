@@ -32325,6 +32325,7 @@ class EntropyDatabaseInterface:
             self.cursor.executemany('INSERT INTO packagesets VALUES (?,?)', mysets)
 
     def retrievePackageSets(self):
+        if not self.doesTableExist("packagesets"): return {}
         self.cursor.execute('SELECT setname,dependency FROM packagesets')
         data = self.cursor.fetchall()
         sets = {}
@@ -33357,6 +33358,9 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist("trashedcounters"):
             self.createTrashedcountersTable()
 
+        if not self.doesTableExist("counters"):
+            self.createCountersTable()
+
         if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
@@ -33725,10 +33729,7 @@ class EntropyDatabaseInterface:
 
     def createCountersTable(self):
         with self.WriteLock:
-            self.cursor.executescript("""
-                DROP TABLE IF EXISTS counters;
-                CREATE TABLE counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );
-            """)
+            self.cursor.execute("CREATE TABLE IF NOT EXISTS counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );")
 
     def CreatePackedDataTable(self):
         with self.WriteLock:
