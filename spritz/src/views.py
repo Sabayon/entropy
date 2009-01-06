@@ -141,7 +141,7 @@ class EntropyPackageView:
         treeview.set_fixed_height_mode(True)
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
-        self.view.connect("button-release-event", self.load_menu)
+        #self.view.connect("button-release-event", self.load_menu)
         self.view.connect("enter-notify-event",self.treeview_enter_notify)
         self.view.connect("leave-notify-event",self.treeview_leave_notify)
         #self.view.connect("button-press-event", self.load_properties_button)
@@ -310,15 +310,24 @@ class EntropyPackageView:
         return items
 
     def on_view_button_press(self, widget, event):
-        if event.button == 3:
+        objs = self.collect_selected_items(widget)
+
+        try:
+            row, column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+        except TypeError:
             return True
 
-    def load_menu(self, widget, event):
+        if column.get_title() == self.pkgcolumn_text:
+            self.load_menu(widget,event,objs = objs)
+            return True
+
+    def load_menu(self, widget, event, objs = None):
 
         self.loaded_widget = widget
         self.loaded_event = event
 
-        objs = self.collect_selected_items(widget)
+        if objs == None:
+            objs = self.collect_selected_items(widget)
 
         event_x = event.x
         if event_x < 10:
@@ -332,9 +341,11 @@ class EntropyPackageView:
         self.event_click_pos = x,y
         if column.get_title() == self.pkgcolumn_text:
 
-            if event.button != 3:
-                return False
+            #if event.button != 3:
+            #    return False
 
+            # filter dummy objs
+            objs = [obj for obj in objs if not isinstance(obj,DummyEntropyPackage)]
             if objs:
 
                 objs_len = len(objs)

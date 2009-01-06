@@ -2330,13 +2330,6 @@ class SpritzApplication(Controller):
 
 if __name__ == "__main__":
 
-    def killThreads():
-        # kill threads
-        threads = entropyTools.threading.enumerate()
-        for thread in threads:
-            if thread.getName().startswith("download::"): # equo current download speed thread
-                thread.kill()
-
     gtkEventThread = ProcessGtkEventsThread()
     try:
         gtkEventThread.start()
@@ -2349,17 +2342,14 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
-        killThreads()
     except SystemExit:
         print "Quit by User"
         gtkEventThread.doQuit()
-        killThreads()
-        raise SystemExit
+        raise SystemExit(0)
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
         gtkEventThread.doQuit()
-        killThreads()
-        raise SystemExit
+        raise SystemExit(0)
     except: # catch other exception and write it to the logger.
 
         etype = sys.exc_info()[0]
@@ -2389,8 +2379,7 @@ if __name__ == "__main__":
             else:
                 okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
         gtkEventThread.doQuit()
-        killThreads()
-        sys.exit(1)
+        raise SystemExit(1)
 
     gtkEventThread.doQuit()
     killThreads()
