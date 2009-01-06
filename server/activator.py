@@ -88,22 +88,29 @@ if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(option
         print_error("not enough parameters")
     raise SystemExit(1)
 
+import re
+opt_r = re.compile("^(\\-)([a-z]+)$")
+for n in range(len(options)):
+    if opt_r.match(options[n]):
+        x = options[n]
+        del options[n]
+        options.extend(["-%s" % (d,) for d in x[1:]])
+
 # preliminary options parsing
 _options = []
 for opt in options:
-    if (opt == "--nocolor"):
+    if opt == "--nocolor":
         nocolor()
+    elif opt in ["--quiet","-q"]:
+        etpUi['quiet'] = True
+    elif opt in ["--verbose","-v"]:
+        etpUi['verbose'] = True
+    elif opt in ["--ask","-a"]:
+        etpUi['ask'] = True
+    elif opt in ["--pretend","-p"]:
+        etpUi['pretend'] = True
     else:
-        if (opt == "--quiet"):
-            etpUi['quiet'] = True
-        elif (opt == "--verbose"):
-            etpUi['verbose'] = True
-        elif (opt == "--ask"):
-            etpUi['ask'] = True
-        elif (opt == "--pretend"):
-            etpUi['pretend'] = True
-        else:
-            _options.append(opt)
+        _options.append(opt)
 options = _options
 
 if not entropyTools.isRoot():

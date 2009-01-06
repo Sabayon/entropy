@@ -1,7 +1,6 @@
 TODO list
 
-  - equo short options
-  - split entropy.py into entropy package
+  - split entropy.py into entropy package (move exceptionTools to something saner)
   - implement pdepend support in dependencies sorting
   - automatic client db backup
   - move etpConst['conflicting_tagged_packages'] elsewhere

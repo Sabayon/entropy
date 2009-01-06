@@ -297,32 +297,37 @@ myopts = [
 ]
 
 
-options = sys.argv[1:]
-
 import exceptionTools
-
-# preliminary options parsing
+options = sys.argv[1:]
 _options = []
+
+import re
+opt_r = re.compile("^(\\-)([a-z]+)$")
+for n in range(len(options)):
+    if opt_r.match(options[n]):
+        x = options[n]
+        del options[n]
+        options.extend(["-%s" % (d,) for d in x[1:]])
+
 for opt in options:
-    if (opt == "--nocolor"):
+    if opt in ["--nocolor","-N"]:
         nocolor()
-    elif (opt == "--debug"):
+    elif opt == "--debug":
         continue
+    elif opt in ["--quiet","-q"]:
+        etpUi['quiet'] = True
+    elif opt in ["--verbose","-v"]:
+        etpUi['verbose'] = True
+    elif opt in ["--ask","-a"]:
+        etpUi['ask'] = True
+    elif opt in ["--pretend","-p"]:
+        etpUi['pretend'] = True
+    elif (opt == "--ihateprint"):
+        etpUi['mute'] = True
+    elif (opt == "--clean"):
+        etpUi['clean'] = True
     else:
-        if (opt == "--quiet"):
-            etpUi['quiet'] = True
-        elif (opt == "--verbose"):
-            etpUi['verbose'] = True
-        elif (opt == "--ask"):
-            etpUi['ask'] = True
-        elif (opt == "--pretend"):
-            etpUi['pretend'] = True
-        elif (opt == "--ihateprint"):
-            etpUi['mute'] = True
-        elif (opt == "--clean"):
-            etpUi['clean'] = True
-        else:
-            _options.append(opt)
+        _options.append(opt)
 options = _options
 
 # print help
