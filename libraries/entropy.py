@@ -3302,7 +3302,7 @@ class EquoInterface(TextInterface):
             return treepackages,removal,result
 
         # format
-        removal = treepackages.pop(0)
+        removal = treepackages.pop(0, [])
         for x in sorted(treepackages.keys()):
             install.extend(list(treepackages[x]))
 
