@@ -45,4 +45,4 @@ if os.getuid() == 0:
     rc = os.system(spritz_path)
 else:
     rc = os.system(su_cmd)
-sys.exit(rc)
+raise SystemExit(rc)
