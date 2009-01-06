@@ -50,7 +50,8 @@ def repositories(options):
 
     repoid = None
     repoid_dest = None
-    cmd = options[0]
+    if not options: cmd = ""
+    else: cmd = options[0]
     myopts = []
     for opt in options[1:]:
         if cmd in ["enable","disable"]:

@@ -79,20 +79,20 @@ options = sys.argv[1:]
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
     print_generic("activator: "+etpConst['entropyversion'])
-    sys.exit(0)
+    raise SystemExit(0)
 
 # print help
 if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_menu(myopts)
     if len(options) < 1:
-	print_error("not enough parameters")
-    sys.exit(1)
+        print_error("not enough parameters")
+    raise SystemExit(1)
 
 # preliminary options parsing
 _options = []
 for opt in options:
     if (opt == "--nocolor"):
-	nocolor()
+        nocolor()
     else:
         if (opt == "--quiet"):
             etpUi['quiet'] = True
@@ -108,25 +108,27 @@ options = _options
 
 if not entropyTools.isRoot():
     print_error("you must be root in order to run activator")
-    sys.exit(2)
+    raise SystemExit(2)
 elif (options[0] == "sync"):
     import server_activator
     server_activator.sync(options[1:])
-    raise SystemExit
+    raise SystemExit(0)
 elif (options[0] == "tidy"):
     import server_activator
     server_activator.sync(options[1:], justTidy = True)
-    raise SystemExit
+    raise SystemExit(0)
 elif (options[0] == "database"):
     import server_activator
     server_activator.database(options[1:])
-    raise SystemExit
+    raise SystemExit(0)
 elif (options[0] == "packages"):
     import server_activator
     server_activator.packages(options[1:])
-    raise SystemExit
+    raise SystemExit(0)
 # database tool
 elif (options[0] == "notice"):
     import server_activator
     server_activator.notice(options[1:])
-    raise SystemExit
+    raise SystemExit(0)
+
+raise SystemExit(1)

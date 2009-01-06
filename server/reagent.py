@@ -107,14 +107,14 @@ options = sys.argv[1:]
 # print version
 if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
     print_generic("reagent: "+etpConst['entropyversion'])
-    sys.exit(0)
+    raise SystemExit(0)
 
 # print help
 if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
     print_menu(myopts)
     if len(options) < 1:
 	print_error("not enough parameters")
-    sys.exit(1)
+    raise SystemExit(1)
 
 # preliminary options parsing
 _options = []
@@ -141,58 +141,60 @@ elif (options[0] == "update"):
     import server_reagent
     rc = server_reagent.update(options[1:])
     server_reagent.Entropy.close_server_databases()
-    sys.exit(rc)
+    raise SystemExit(rc)
 
 elif (options[0] == "inject"):
     import server_reagent
     rc = server_reagent.inject(options[1:])
     server_reagent.Entropy.close_server_databases()
-    sys.exit(rc)
+    raise SystemExit(rc)
 
 # database tool
 elif (options[0] == "database"):
     import server_reagent
     server_reagent.database(options[1:])
     server_reagent.Entropy.close_server_databases()
-    sys.exit(0)
+    raise SystemExit(0)
 
 elif (options[0] == "query"):
     import server_query
     rc = server_query.query(options[1:])
-    sys.exit(rc)
+    raise SystemExit(rc)
 
 elif (options[0] == "repo"):
     import server_reagent
     rc = server_reagent.repositories(options[1:])
-    sys.exit(rc)
+    raise SystemExit(rc)
 
 elif (options[0] == "deptest"):
     import server_reagent
     server_reagent.Entropy.dependencies_test()
     server_reagent.Entropy.close_server_databases()
-    sys.exit(0)
+    raise SystemExit(0)
 
 elif (options[0] == "libtest"):
     import server_reagent
     rc = server_reagent.Entropy.libraries_test()
     x = server_reagent.Entropy.close_server_databases()
-    sys.exit(0)
+    raise SystemExit(0)
 
 # deptest tool
 elif (options[0] == "depends"):
     import server_reagent
     rc = server_reagent.Entropy.depends_table_initialize()
     server_reagent.Entropy.close_server_databases()
-    sys.exit(rc)
+    raise SystemExit(rc)
 
 # cleanup
 elif (options[0] == "cleanup"):
     rc = entropyTools.cleanup()
-    sys.exit(rc)
+    raise SystemExit(rc)
 
 # deptest tool
 elif (options[0] == "spm"):
     import server_reagent
     rc = server_reagent.spm(options[1:])
     server_reagent.Entropy.close_server_databases()
-    sys.exit(rc)
+    raise SystemExit(rc)
+
+raise SystemExit(1)
