@@ -21,6 +21,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+from __future__ import with_statement
 from outputTools import *
 from entropyConstants import *
 import exceptionTools
@@ -73,6 +74,9 @@ class TimeScheduled(threading.Thread):
         self.accurate = True
         self.delay_before = False
 
+    def set_delay(self, d):
+        self.delay = d
+
     def run(self):
         self.alive = 1
         while self.alive:
@@ -81,6 +85,7 @@ class TimeScheduled(threading.Thread):
                 do_break = self.do_delay()
                 if do_break: break
 
+            if self.function == None: break
             if self.data:
                 self.function(self.data)
             else:
@@ -93,23 +98,22 @@ class TimeScheduled(threading.Thread):
 
     def do_delay(self):
 
-        try:
-            if (self.delay > 5) and not self.accurate:
-                mydelay = int(self.delay)
-                broke = False
-                while mydelay:
-                    if not self.alive:
-                        broke = True
-                        break
-                    time.sleep(1)
-                    mydelay -= 1
+        if (self.delay > 5) and not self.accurate:
+            mydelay = int(self.delay)
+            broke = False
+            while mydelay:
+                if not self.alive:
+                    broke = True
+                    break
+                if time == None: return True # shut down?
+                time.sleep(1)
+                mydelay -= 1
 
-                if broke:
-                    return True
-            else:
-                time.sleep(self.delay)
-        except:
-            pass
+            if broke:
+                return True
+        else:
+            if time == None: return True # shut down?
+            time.sleep(self.delay)
 
         return False
 
@@ -1960,16 +1964,28 @@ class lifobuffer:
     def __init__(self):
         self.counter = -1
         self.buf = {}
+        self.L = threading.Lock()
 
     def push(self,item):
-        self.counter += 1
-        self.buf[self.counter] = item
+        with self.L:
+            self.counter += 1
+            self.buf[self.counter] = item
+
+    def clear(self):
+        self.counter = -1
+        self.buf.clear()
+
+    def is_filled(self):
+        if self.counter == -1:
+            return False
+        return True
 
     def pop(self):
-        if self.counter == -1:
-            return None
-        self.counter -= 1
-        return self.buf[self.counter+1]
+        with self.L:
+            if self.counter == -1:
+                return None
+            self.counter -= 1
+            return self.buf.get(self.counter+1)
 
 def read_repositories_conf():
     content = []
