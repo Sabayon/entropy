@@ -518,7 +518,7 @@ class TextInterface:
         except (EOFError, KeyboardInterrupt):
             print "%s." % (_("Interrupted"),)
             xtermTitleReset()
-            sys.exit(100)
+            raise SystemExit(100)
         xtermTitleReset()
         flush_stdouterr()
 
