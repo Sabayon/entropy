@@ -330,18 +330,18 @@ if (not options) or ("--help" in options):
     print_menu(myopts)
     if not options:
         print_error("not enough parameters")
-    sys.exit()
+    raise SystemExit(1)
 # sure we don't need this after
 del myopts
 
 # print version
 if (options[0] == "--version"):
     print_generic("Equo: v"+etpConst['entropyversion'])
-    sys.exit(0)
+    raise SystemExit(0)
 elif (options[0] == "--info"):
     import text_rescue
     text_rescue.getinfo()
-    sys.exit(0)
+    raise SystemExit(0)
 
 def do_moo():
     t = """ _____________
@@ -616,42 +616,38 @@ try:
         rc = 10
     else:
         writeerrorstatus(0)
-    # kill threads
-    threads = entropyTools.threading.enumerate()
-    for thread in threads:
-        if thread.getName().startswith("download::"): # equo current download speed thread
-            thread.kill()
-    sys.exit(rc)
+    raise SystemExit(rc)
+
 except exceptionTools.SystemDatabaseError:
     reset_cache()
     print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
-    sys.exit(101)
+    raise SystemExit(101)
 except exceptionTools.OnlineMirrorError, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
-    sys.exit(101)
+    raise SystemExit(101)
 except exceptionTools.RepositoryError, e:
     reset_cache()
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
-    sys.exit(101)
+    raise SystemExit(101)
 except exceptionTools.FtpError, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
-    sys.exit(101)
+    raise SystemExit(101)
 except exceptionTools.PermissionDenied, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
-    sys.exit(1)
+    raise SystemExit(1)
 except exceptionTools.FileNotFound, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
-    sys.exit(1)
+    raise SystemExit(1)
 except exceptionTools.SPMError, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
-    sys.exit(1)
+    raise SystemExit(1)
 except dbapi2Exceptions['OperationalError'], e:
     if unicode(e).find("disk I/O error") == -1:
         raise
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
-    sys.exit(101)
+    raise SystemExit(101)
 except SystemExit:
-    pass
+    raise
 except IOError, e:
     reset_cache()
     if e.errno != 32:
@@ -660,11 +656,11 @@ except OSError, e:
     if e.errno == 28:
         entropyTools.printException()
         print_error(darkred(_("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-(")))
-        sys.exit(5)
+        raise SystemExit(5)
     else:
         raise
 except KeyboardInterrupt:
-    sys.exit(0)
+    raise SystemExit(1)
 #except Timeout:
 #    pass
 except:
@@ -701,7 +697,7 @@ except:
     except Exception, e:
         print
         print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org.")))
-        sys.exit(1)
+        raise SystemExit(1)
 
     print
     print_error(blue(_("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?")))
@@ -712,10 +708,10 @@ except:
         rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
         if rc == "No":
             print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
-            sys.exit(2)
+            raise SystemExit(2)
     else:
         print_error(darkgreen(_("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
-        sys.exit(3)
+        raise SystemExit(3)
 
     print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
     name = readtext(_("Your Full name:"))
@@ -729,4 +725,6 @@ except:
         print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
     else:
         print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
-        sys.exit(4)
+        raise SystemExit(4)
+
+raise SystemExit(1)
