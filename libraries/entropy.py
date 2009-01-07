@@ -1781,7 +1781,7 @@ class EquoInterface(TextInterface):
             use_cache = useCache
             while 1:
                 try:
-                    query = dbconn.atomMatch(
+                    query_data,query_rc = dbconn.atomMatch(
                         atom,
                         caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
@@ -1792,12 +1792,12 @@ class EquoInterface(TextInterface):
                         extendedResults = extendedResults,
                         useCache = use_cache
                     )
-                    if query[1] == 0:
+                    if query_rc == 0:
                         # package found, add to our dictionary
                         if extendedResults:
-                            repoResults[repo] = (query[0][0],query[0][2],query[0][3],query[0][4])
+                            repoResults[repo] = (query_data[0],query_data[2],query_data[3],query_data[4])
                         else:
-                            repoResults[repo] = query[0]
+                            repoResults[repo] = query_data
                 except TypeError:
                     if not use_cache:
                         raise
@@ -1834,27 +1834,27 @@ class EquoInterface(TextInterface):
             if dbpkginfo[1] != 1: # can be "0" or a string, but 1 means failure
                 if multiRepo:
                     data = set()
-                    for match in dbpkginfo[0]:
-                        dbconn = open_db(match[1])
-                        matches = dbconn.atomMatch( atom,
-                                                    caseSensitive = caseSensitive,
-                                                    matchSlot = matchSlot,
-                                                    matchBranches = matchBranches,
-                                                    matchTag = matchTag,
-                                                    packagesFilter = packagesFilter,
-                                                    multiMatch = True,
-                                                    extendedResults = extendedResults
-                                                   )
+                    for q_id,q_repo in dbpkginfo[0]:
+                        dbconn = open_db(q_repo)
+                        query_data, query_rc = dbconn.atomMatch(
+                            atom,
+                            caseSensitive = caseSensitive,
+                            matchSlot = matchSlot,
+                            matchBranches = matchBranches,
+                            matchTag = matchTag,
+                            packagesFilter = packagesFilter,
+                            multiMatch = True,
+                            extendedResults = extendedResults
+                        )
                         if extendedResults:
-                            for item in matches[0]:
-                                data.add(((item[0],item[2],item[3],item[4]),match[1]))
+                            for item in query_data:
+                                data.add(((item[0],item[2],item[3],item[4]),q_repo))
                         else:
-                            for repoidpackage in matches[0]:
-                                data.add((repoidpackage,match[1]))
+                            for x in query_data: data.add((x,q_repo))
                     dbpkginfo = (data,0)
                 else:
                     dbconn = open_db(dbpkginfo[1])
-                    matches = dbconn.atomMatch(
+                    query_data, query_rc = dbconn.atomMatch(
                                                 atom,
                                                 caseSensitive = caseSensitive,
                                                 matchSlot = matchSlot,
@@ -1865,9 +1865,9 @@ class EquoInterface(TextInterface):
                                                 extendedResults = extendedResults
                                                )
                     if extendedResults:
-                        dbpkginfo = (set([((x[0],x[2],x[3],x[4]),dbpkginfo[1]) for x in matches[0]]),0)
+                        dbpkginfo = (set([((x[0],x[2],x[3],x[4]),dbpkginfo[1]) for x in query_data]),0)
                     else:
-                        dbpkginfo = (set([(x,dbpkginfo[1]) for x in matches[0]]),0)
+                        dbpkginfo = (set([(x,dbpkginfo[1]) for x in query_data]),0)
 
         if self.xcache and useCache:
             self.Cacher.push(c_hash,dbpkginfo)
@@ -7165,7 +7165,6 @@ class RepoInterface:
                         skip_this_repo = True
                         continue
                     db_down_status = self.handle_database_checksum_download(repo, cmethod)
-
                     break
 
                 elif self.dbformat_eapi == 3 and not (os.path.isfile(dbfile) and os.access(dbfile,os.W_OK)):
@@ -7256,7 +7255,7 @@ class RepoInterface:
                 # re-validate
                 if not os.path.isfile(dbfile):
                     do_db_update_transfer = False
-                elif os.path.isfile(dbfile) and not do_db_update_transfer:
+                elif os.path.isfile(dbfile) and not do_db_update_transfer and (self.dbformat_eapi != 1):
                     os.remove(dbfile)
 
                 if self.dbformat_eapi == 2:
