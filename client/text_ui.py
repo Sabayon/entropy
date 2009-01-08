@@ -1328,15 +1328,33 @@ def dependenciesTest():
     if depsNotMatched:
 
         crying_atoms = {}
-        for atom in depsNotMatched:
-            riddep = Equo.clientDbconn.searchDependency(atom)
+        found_deps = set()
+        for dep in depsNotMatched:
+
+            riddep = Equo.clientDbconn.searchDependency(dep)
             if riddep != -1:
                 ridpackages = Equo.clientDbconn.searchIdpackageFromIddependency(riddep)
                 for i in ridpackages:
                     iatom = Equo.clientDbconn.retrieveAtom(i)
-                    if not crying_atoms.has_key(atom):
-                        crying_atoms[atom] = set()
-                    crying_atoms[atom].add(iatom)
+                    if not crying_atoms.has_key(dep):
+                        crying_atoms[dep] = set()
+                    crying_atoms[dep].add(iatom)
+
+            match = Equo.atomMatch(dep)
+            if match[0] != -1:
+                found_deps.add(dep)
+                continue
+            else:
+                iddep = Equo.clientDbconn.searchDependency(dep)
+                if iddep == -1: continue
+                c_idpackages = Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
+                for c_idpackage in c_idpackages:
+                    key, slot = Equo.clientDbconn.retrieveKeySlot(c_idpackage)
+                    key_slot = "%s:%s" % (key,slot,)
+                    match = Equo.atomMatch(key, matchSlot = slot)
+                    if match[0] != -1:
+                        found_deps.add(key_slot)
+                        continue
 
         print_info(red(" @@ ")+blue("%s:" % (_("These are the dependencies not found"),) ))
         for atom in depsNotMatched:
@@ -1360,7 +1378,7 @@ def dependenciesTest():
             import time
             time.sleep(10)
 
-        installPackages(list(depsNotMatched))
+        installPackages(list(found_deps))
 
     return 0,0
 
