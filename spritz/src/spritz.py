@@ -250,7 +250,7 @@ class SpritzApplication(Controller):
             if hasattr(thread,'nuke'):
                 thread.nuke()
 
-        gtkEventThread.doQuit()
+        #gtkEventThread.doQuit()
         if self.isWorking:
             self.quitNow = True
 
@@ -283,7 +283,6 @@ class SpritzApplication(Controller):
             sys.stdin = self.input
 
         self.onInstall = False
-        self.settings = SpritzConf()
         self.queue = SpritzQueue(self)
         self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
@@ -309,13 +308,57 @@ class SpritzApplication(Controller):
         self.lastPkgPB = 'updates'
         self.tooltip =  gtk.Tooltips()
 
+        # color settings mapping dictionary
+        self.colorSettingsMap = {
+            "color_console_font": self.ui.color_console_font_picker,
+            "color_normal": self.ui.color_normal_picker,
+            "color_update": self.ui.color_update_picker,
+            "color_install": self.ui.color_install_picker,
+            "color_install": self.ui.color_install_picker,
+            "color_remove": self.ui.color_remove_picker,
+            "color_reinstall": self.ui.color_reinstall_picker,
+            "color_title": self.ui.color_title_picker,
+            "color_title2": self.ui.color_title2_picker,
+            "color_pkgdesc": self.ui.color_pkgdesc_picker,
+            "color_pkgsubtitle": self.ui.color_pkgsubtitle_picker,
+            "color_subdesc": self.ui.color_subdesc_picker,
+            "color_error": self.ui.color_error_picker,
+            "color_good": self.ui.color_good_picker,
+            "color_background_good": self.ui.color_background_good_picker,
+            "color_background_error": self.ui.color_background_error_picker,
+            "color_good_on_color_background": self.ui.color_good_on_color_background_picker,
+            "color_error_on_color_background": self.ui.color_error_on_color_background_picker,
+            "color_package_category": self.ui.color_package_category_picker,
+        }
+        self.colorSettingsReverseMap = {
+            self.ui.color_console_font_picker: "color_console_font",
+            self.ui.color_normal_picker: "color_normal",
+            self.ui.color_update_picker: "color_update",
+            self.ui.color_install_picker: "color_install",
+            self.ui.color_install_picker: "color_install",
+            self.ui.color_remove_picker: "color_remove",
+            self.ui.color_reinstall_picker: "color_reinstall",
+            self.ui.color_title_picker: "color_title",
+            self.ui.color_title2_picker:  "color_title2",
+            self.ui.color_pkgdesc_picker: "color_pkgdesc",
+            self.ui.color_pkgsubtitle_picker: "color_pkgsubtitle",
+            self.ui.color_subdesc_picker: "color_subdesc",
+            self.ui.color_error_picker: "color_error",
+            self.ui.color_good_picker: "color_good",
+            self.ui.color_background_good_picker: "color_background_good",
+            self.ui.color_background_error_picker: "color_background_error",
+            self.ui.color_good_on_color_background_picker: "color_good_on_color_background",
+            self.ui.color_error_on_color_background_picker: "color_error_on_color_background",
+            self.ui.color_package_category_picker: "color_package_category",
+        }
+
         # setup add repository window
         self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="entropy" )
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
         ''' Setup the GUI'''
-        self.ui.main.set_title( "%s %s %s" % (self.settings.branding_title, const.__spritz_version__, self.safe_mode_txt) )
+        self.ui.main.set_title( "%s %s %s" % (SpritzConf.branding_title, const.__spritz_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
         self.ui.notebook.set_show_tabs( False )
         self.ui.main.present()
@@ -323,7 +366,7 @@ class SpritzApplication(Controller):
         self.setPage(self.activePage)
 
         # put self.console in place
-        self.console = SpritzConsole(self.settings)
+        self.console = SpritzConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
         self.console.connect("button-press-event", self.on_console_click)
@@ -374,7 +417,7 @@ class SpritzApplication(Controller):
         self.setupPreferences()
 
         self.setupUgc()
-        self.setupAds()
+        #self.setupAds()
 
     def show_wait_window(self):
         self.ui.main.set_sensitive(False)
@@ -970,6 +1013,7 @@ class SpritzApplication(Controller):
                 else:
                     fillfunc(name, mytype, wgwrite, setting)
 
+        SpritzConf.save()
         self.on_Preferences_toggled(None,False)
 
     def setupMaskedPackagesWarningBox(self):
@@ -1027,13 +1071,13 @@ class SpritzApplication(Controller):
         if do_busy:
             busyCursor(self.ui.main)
         self.ui.progressVBox.grab_add()
-        gtkEventThread.startProcessing()
+        #gtkEventThread.startProcessing()
 
     def endWorking(self):
         self.isWorking = False
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
-        gtkEventThread.endProcessing()
+        #gtkEventThread.endProcessing()
 
     def setupSpritz(self):
         msg = _('Generating metadata. Please wait.')
@@ -1826,7 +1870,7 @@ class SpritzApplication(Controller):
                         )
         initConfig_entropyConstants(etpConst['systemroot'])
         # re-read configprotect
-        self.Equo.parse_masking_settings()
+        self.Equo.PackageSettings.clear()
         self.Equo.reloadRepositoriesConfigProtect()
         self.setupPreferences()
 
@@ -2258,12 +2302,14 @@ class SpritzApplication(Controller):
         self.quit()
 
     def on_HelpAbout( self, widget = None ):
-        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,self.settings.branding_title)
+        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,SpritzConf.branding_title)
         about.show()
 
     def on_notebook1_switch_page(self, widget, page, page_num):
         if page_num == const.PREF_PAGES['ugc']:
             self.load_ugc_repositories()
+        elif page_num == const.PREF_PAGES['colors']:
+            self.load_color_settings()
 
     def on_ugcLoginButton_clicked(self, widget):
         if self.Equo.UGC == None: return
@@ -2312,6 +2358,35 @@ class SpritzApplication(Controller):
     def on_bannerEventBox_leave_notify_event(self, widget, event):
         busyCursor(self.ui.main, cur = CURRENT_CURSOR)
 
+    def on_repoManagerMenuItem_activate(self, widget):
+        mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
+        rc = mymenu.load()
+        if not rc: del mymenu
+
+    def on_noticeBoardMenuItem_activate(self, widget):
+        self.showNoticeBoard()
+
+    def on_color_reset(self, widget):
+        # get parent
+        parent = widget.get_parent()
+        if parent == None: return
+        col_button = [x for x in parent.get_children() if isinstance(x,gtk.ColorButton)][0]
+        setting = self.colorSettingsReverseMap.get(col_button)
+        if setting == None: return
+        default_color = SpritzConf.default_colors_config.get(setting)
+        col_button.set_color(gtk.gdk.color_parse(default_color))
+        self.on_Preferences_toggled(None,True)
+        setattr(SpritzConf,setting,default_color)
+
+    def on_ui_color_set(self, widget):
+        key = self.colorSettingsReverseMap.get(widget)
+        if not hasattr(SpritzConf,key):
+            print "WARNING: no %s in SpritzConf" % (key,)
+            return
+        w_col = widget.get_color().to_string()
+        self.on_Preferences_toggled(None,True)
+        setattr(SpritzConf,key,w_col)
+
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
         for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
@@ -2321,20 +2396,19 @@ class SpritzApplication(Controller):
             if repodata == None: continue # wtf?
             self.ugcRepositoriesModel.append([repodata])
 
-    def on_repoManagerMenuItem_activate(self, widget):
-        mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
-        rc = mymenu.load()
-        if not rc: del mymenu
-
-    def on_noticeBoardMenuItem_activate(self, widget):
-        self.showNoticeBoard()
-
+    def load_color_settings(self):
+        for key,s_widget in self.colorSettingsMap.items():
+            if not hasattr(SpritzConf,key):
+                if self.do_debug: print "WARNING: no %s in SpritzConf" % (key,)
+                continue
+            color = getattr(SpritzConf,key)
+            s_widget.set_color(gtk.gdk.color_parse(color))
 
 if __name__ == "__main__":
 
-    gtkEventThread = ProcessGtkEventsThread()
+    #gtkEventThread = ProcessGtkEventsThread()
     try:
-        gtkEventThread.start()
+        #gtkEventThread.start()
         try:
             gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
         except gobject.GError:
@@ -2346,11 +2420,11 @@ if __name__ == "__main__":
         gtk.gdk.threads_leave()
     except SystemExit:
         print "Quit by User"
-        gtkEventThread.doQuit()
+        #gtkEventThread.doQuit()
         raise SystemExit(0)
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        gtkEventThread.doQuit()
+        #gtkEventThread.doQuit()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
 
@@ -2380,8 +2454,7 @@ if __name__ == "__main__":
                 okDialog(None,_("Your report has been submitted successfully! Thanks a lot."))
             else:
                 okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
-        gtkEventThread.doQuit()
+        #gtkEventThread.doQuit()
         raise SystemExit(1)
 
-    gtkEventThread.doQuit()
-    killThreads()
+    #gtkEventThread.doQuit()

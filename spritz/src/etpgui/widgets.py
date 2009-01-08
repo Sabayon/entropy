@@ -23,7 +23,7 @@ import etpgui
 import gobject
 import types
 import sys, os
-from spritz_setup import const
+from spritz_setup import const, SpritzConf
 import vte
 
 def hex2float(myhex):
@@ -244,11 +244,9 @@ gobject.type_register(CellRendererStars)
 
 class SpritzConsole(vte.Terminal):
 
-    def __init__(self, settings):
+    def __init__(self):
         vte.Terminal.__init__(self)
-        self.settings = settings
-        self.myfontcolor = gtk.gdk.color_parse(self.settings.color_console_font)
-        self._dosettings()
+        self.reset()
 
     def _dosettings(self):
         imgpath = os.path.join(const.PIXMAPS_PATH,'sabayon-console-background.png')
@@ -256,7 +254,8 @@ class SpritzConsole(vte.Terminal):
             self.set_background_image_file(imgpath)
         self.set_background_saturation(0.4)
         self.set_opacity(65535)
-        self.set_color_foreground(self.myfontcolor)
+        myfc = gtk.gdk.color_parse(SpritzConf.color_console_font)
+        self.set_color_foreground(myfc)
 
     def reset (self):
         vte.Terminal.reset(self, True, True)

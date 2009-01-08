@@ -309,7 +309,6 @@ class SpritzQueue:
 
     def elaborateMaskedPackages(self, matches):
 
-
         matchfilter = set()
         masks = {}
         for match in matches:
@@ -333,6 +332,7 @@ class SpritzQueue:
             pkg, new = self.etpbase.getPackageItem(match,True)
             pkgs.append(pkg)
 
+        self.Spritz.hide_wait_window()
         # save old
         oldmask = self.etpbase.unmaskingPackages.copy()
         maskDialog = self.dialogs.MaskedPackagesDialog(self.Entropy, self.etpbase, self.ui.main, pkgs)
@@ -343,6 +343,7 @@ class SpritzQueue:
             # discard changes
             self.etpbase.unmaskingPackages = oldmask.copy()
         maskDialog.destroy()
+        self.Spritz.show_wait_window()
 
         return result
 

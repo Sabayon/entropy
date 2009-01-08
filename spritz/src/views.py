@@ -1027,7 +1027,7 @@ class EntropyPackageView:
 
                 cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
                 mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
-                mydummy.color = '#9C7234'
+                mydummy.color = SpritzConf.color_package_category
                 if pkgsets:
                     j = categories[category][0]
                     mydummy.set_from = j.set_from
@@ -1321,7 +1321,7 @@ class EntropyQueueView:
                     dummy_type = SpritzConf.dummy_category,
                     onlyname = category
             )
-            mydummy.color = '#9C7234'
+            mydummy.color = SpritzConf.color_package_category
             parent = self.model.append( grandfather, (mydummy.namedesc,) )
             for po in categories[category]:
                 self.model.append( parent, (po.namedesc,) )

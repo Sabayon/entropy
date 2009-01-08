@@ -18,10 +18,12 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import os, sys
+import entropyTools
 from entropyConstants import *
 from entropy_i18n import _
 
 class const:
+
     ''' This Class contains all the Constants in Yumex'''
     __spritz_version__   = etpConst['entropyversion']
     # Paths
@@ -38,6 +40,10 @@ class const:
         ICONS_PATH = '/usr/share/pixmaps/spritz'
     else:
         ICONS_PATH = MAIN_PATH+'/pixmaps'
+
+    home = os.getenv("HOME")
+    if not home: home = "/tmp"
+    SETTINGS_FILE = os.path.join(home, ".config/entropy/spritz.conf")
 
     pkg_pixmap = PIXMAPS_PATH+'/package-x-generic.png'
     ugc_small_pixmap = PIXMAPS_PATH+'/ugc.png'
@@ -93,10 +99,12 @@ class const:
     PREF_PAGE_SYSTEM = 0
     PREF_PAGE_NETWORKING = 1
     PREF_PAGE_UGC = 2
+    PREF_PAGE_COLORS = 3
     PREF_PAGES = {
         'system': PREF_PAGE_SYSTEM,
         'networking': PREF_PAGE_NETWORKING,
-        'ugc': PREF_PAGE_UGC
+        'ugc': PREF_PAGE_UGC,
+        'colors': PREF_PAGE_COLORS
     }
 
     PACKAGE_PROGRESS_STEPS = ( 0.1, # Depsolve
@@ -138,6 +146,7 @@ class const:
 
           )
 
+
 class SpritzConf:
     """ Yum Extender Config Setting"""
     autorefresh = True
@@ -149,8 +158,7 @@ class SpritzConf:
     font_console = 'Monospace 8'
     font_pkgdesc = 'Monospace 8'
 
-    color_console_background = '#FFFFFF'
-    color_console_font = '#000000' # black
+    color_console_font = '#FFFFFF' # black
     color_normal = '#000000' # black
     color_install = '#418C0F' # dark green
     color_update = '#418C0F' #  dark green
@@ -169,6 +177,7 @@ class SpritzConf:
     color_background_error = '#A71B1B' # dark green
     color_good_on_color_background = '#FFFFFF'
     color_error_on_color_background = '#FFFFFF'
+    color_package_category = '#9C7234' # brown
 
     filelist = True
     changelog = False
@@ -177,13 +186,81 @@ class SpritzConf:
     dummy_empty = 0
     dummy_category = 1
 
+    @staticmethod
+    def getconf():
+        config_data = {
+            "color_console_font": SpritzConf.color_console_font,
+            "color_normal": SpritzConf.color_normal,
+            "color_install": SpritzConf.color_install,
+            "color_update": SpritzConf.color_update,
+            "color_remove": SpritzConf.color_remove,
+            "color_reinstall": SpritzConf.color_reinstall,
+            "color_title": SpritzConf.color_title,
+            "color_title2": SpritzConf.color_title2,
+            "color_pkgdesc": SpritzConf.color_pkgdesc,
+            "color_pkgsubtitle": SpritzConf.color_pkgsubtitle,
+            "color_subdesc": SpritzConf.color_subdesc,
+            "color_error": SpritzConf.color_error,
+            "color_good": SpritzConf.color_good,
+            "color_background_good": SpritzConf.color_background_good,
+            "color_background_error": SpritzConf.color_background_error,
+            "color_good_on_color_background": SpritzConf.color_good_on_color_background,
+            "color_error_on_color_background": SpritzConf.color_error_on_color_background,
+            "color_package_category": SpritzConf.color_package_category,
+        }
+        return config_data
+
+    @staticmethod
+    def save():
+
+        def do_save():
+            if not os.path.isdir(os.path.dirname(const.SETTINGS_FILE)):
+                os.makedirs(os.path.dirname(const.SETTINGS_FILE))
+            myxml = entropyTools.xml_from_dict_extended(SpritzConf.getconf())
+            f = open(const.SETTINGS_FILE,"w")
+            f.write(myxml+"\n")
+            f.flush()
+            f.close()
+
+        try:
+            do_save()
+        except:
+            entropyTools.printTraceback()
+            return False
+        return True
+
+    @staticmethod
+    def read():
+
+        def do_read():
+            if os.path.isfile(const.SETTINGS_FILE) and os.access(const.SETTINGS_FILE,os.R_OK):
+                f = open(const.SETTINGS_FILE,"r")
+                xml_string = f.read()
+                f.close()
+                return entropyTools.dict_from_xml_extended(xml_string)
+
+        try:
+            return do_read()
+        except:
+            return None
+
+    @staticmethod
+    # update config reading it from user settings
+    def update():
+        saved_conf = SpritzConf.read()
+        if not saved_conf: return
+        if not isinstance(saved_conf,dict): return
+        for key, val in saved_conf.items():
+            if not hasattr(SpritzConf,key): continue
+            setattr(SpritzConf,key,val)
+
+SpritzConf.default_colors_config = SpritzConf.getconf()
+SpritzConf.update()
+
 def cleanMarkupString(msg):
     import gobject
     msg = str(msg) # make sure it is a string
     msg = gobject.markup_escape_text(msg)
-    #msg = msg.replace('@',' AT ')
-    #msg = msg.replace('<','[')
-    #msg = msg.replace('>',']')
     return msg
 
 from htmlentitydefs import codepoint2name

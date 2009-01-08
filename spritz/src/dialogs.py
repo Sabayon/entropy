@@ -457,8 +457,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         from etpgui.widgets import SpritzConsole
         self.SpritzConsole = SpritzConsole
-        self.settings = SpritzConf()
-        self.console = self.SpritzConsole(self.settings)
+        self.console = self.SpritzConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
         self.console.set_pty(self.pty[0])
@@ -5172,7 +5171,7 @@ class MaskedPackagesDialog(MenuSkel):
                     dummy_type = SpritzConf.dummy_category,
                     onlyname = category
             )
-            mydummy.color = '#9C7234'
+            mydummy.color = SpritzConf.color_package_category
             parent = model.append( None, (mydummy,) )
             for po in categories[category]:
                 model.append( parent, (po,) )
