@@ -3599,7 +3599,6 @@ class SmPinboardMenu(MenuSkel):
         self.sm_ui.smPinboardInfo.show_all()
 
 
-
 class RmNoticeBoardMenu(MenuSkel):
 
     def __init__(self, window):

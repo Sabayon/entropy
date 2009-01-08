@@ -1546,21 +1546,29 @@ class SpritzApplication(Controller):
 
         rc = True
 
+        found_objs = []
         for obj in resolved:
             if obj in self.queue.packages['i'] + \
                         self.queue.packages['u'] + \
                         self.queue.packages['r'] + \
                         self.queue.packages['rr']:
                 continue
+            found_objs.append(obj)
 
-            oldqueued = obj.queued
+
+        q_cache = {}
+        for obj in found_objs:
+            q_cache[obj.matched_atom] = obj.queued
             obj.queued = 'u'
-            status, myaction = self.queue.add(obj, always_ask = always_ask)
-            if status != 0:
-                rc = False
-                obj.queued = oldqueued
-            self.queueView.refresh()
-            self.ui.viewPkg.queue_draw()
+
+        status, myaction = self.queue.add(found_objs, always_ask = always_ask)
+        if status != 0:
+            rc = False
+            for obj in found_objs:
+                obj.queued = q_cache.get(obj.matched_atom)
+
+        self.queueView.refresh()
+        self.ui.viewPkg.queue_draw()
 
         self.hide_wait_window()
         self.unsetBusy()
@@ -2365,6 +2373,51 @@ class SpritzApplication(Controller):
 
     def on_noticeBoardMenuItem_activate(self, widget):
         self.showNoticeBoard()
+
+    def on_deptestButton_clicked(self, widget):
+        self.on_PageButton_changed(widget, "output")
+        deps_not_matched = self.Equo.dependencies_test()
+        if not deps_not_matched:
+            okDialog(self.ui.main,_("No missing dependencies found."))
+            self.on_PageButton_changed(widget, "preferences")
+
+        found_deps = set()
+        not_all = False
+        for dep in deps_not_matched:
+            match = self.Equo.atomMatch(dep)
+            if match[0] != -1:
+                found_deps.add(dep)
+                continue
+            else:
+                iddep = self.Equo.clientDbconn.searchDependency(dep)
+                if iddep == -1: continue
+                c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
+                for c_idpackage in c_idpackages:
+                    key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
+                    key_slot = "%s:%s" % (key,slot,)
+                    match = self.Equo.atomMatch(key, matchSlot = slot)
+                    if match[0] != -1:
+                        found_deps.add(key_slot)
+                        continue
+                    else:
+                        not_all = True
+                continue
+            not_all = True
+
+        if not found_deps:
+            okDialog(self.ui.main,_("Missing dependencies found, but none of them are on the repositories."))
+            self.on_PageButton_changed(widget, "preferences")
+        if not_all:
+            okDialog(self.ui.main,_("Some missing dependencies have not been matched, others are going to be added to the queue."))
+        else:
+            okDialog(self.ui.main,_("All the missing dependencies are going to be added to the queue"))
+
+        rc = self.add_atoms_to_queue(found_deps)
+        if rc: self.on_PageButton_changed(widget, "queue")
+        else: self.on_PageButton_changed(widget, "preferences")
+
+    def on_libtestButton_clicked(self, widget):
+        pass
 
     def on_color_reset(self, widget):
         # get parent
