@@ -1352,7 +1352,11 @@ def dependenciesTest():
                     key, slot = Equo.clientDbconn.retrieveKeySlot(c_idpackage)
                     key_slot = "%s:%s" % (key,slot,)
                     match = Equo.atomMatch(key, matchSlot = slot)
+
+                    cmpstat = 0
                     if match[0] != -1:
+                        cmpstat = Equo.get_package_action(match)
+                    if cmpstat != 0:
                         found_deps.add(key_slot)
                         continue
 
