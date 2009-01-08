@@ -649,7 +649,7 @@ class EquoInterface(TextInterface):
                         self.repository_move_clear_cache(repoid)
                     except IOError:
                         pass
-        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder))
+        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder)[:])
 
     def backup_setting(self, setting_name):
         if etpConst.has_key(setting_name):
@@ -1155,7 +1155,7 @@ class EquoInterface(TextInterface):
                 self.retrieveInstallQueue(update, False, False)
             self.calculate_available_packages()
             # otherwise world cache will be trashed at the next initialization
-            self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder))
+            self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder)[:])
         except:
             pass
 
@@ -1569,7 +1569,7 @@ class EquoInterface(TextInterface):
         del match
 
         if self.xcache:
-            self.Cacher.push(c_hash,(found,matched))
+            self.Cacher.push(c_hash,(found,matched)[:])
 
         return found, matched
 
@@ -1870,7 +1870,7 @@ class EquoInterface(TextInterface):
                         dbpkginfo = (set([(x,dbpkginfo[1]) for x in query_data]),0)
 
         if self.xcache and useCache:
-            self.Cacher.push(c_hash,dbpkginfo)
+            self.Cacher.push(c_hash,dbpkginfo[:])
 
         return dbpkginfo
 
@@ -2619,7 +2619,7 @@ class EquoInterface(TextInterface):
         client_atoms |= repo_atoms
 
         if self.xcache:
-            self.Cacher.push(c_hash,client_atoms)
+            self.Cacher.push(c_hash,client_atoms.copy())
 
         return client_atoms
 
@@ -2686,7 +2686,7 @@ class EquoInterface(TextInterface):
             return error_tree,error_generated
 
         if self.xcache:
-            self.Cacher.push(c_hash,(deptree,0))
+            self.Cacher.push(c_hash,(deptree,0)[:])
 
         return deptree,0
 
@@ -2795,7 +2795,7 @@ class EquoInterface(TextInterface):
                 x += 1
 
         if self.xcache:
-            self.Cacher.push(c_hash,(tree,0))
+            self.Cacher.push(c_hash,(tree,0)[:])
         return tree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
     def list_repo_categories(self):
@@ -2920,7 +2920,7 @@ class EquoInterface(TextInterface):
             data = {}
             data['chash'] = c_hash
             data['available'] = available
-            self.Cacher.push(etpCache['world_available'],data)
+            self.Cacher.push(etpCache['world_available'],data.copy())
         return available
 
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
@@ -3060,7 +3060,7 @@ class EquoInterface(TextInterface):
                 'r': (update, remove, fine,),
                 'empty_deps': empty_deps,
             }
-            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,), data)
+            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,), data.copy())
 
         return update, remove, fine
 
@@ -4698,7 +4698,7 @@ class PackageInterface:
                         if self.matched_atom in disk_cache['available']:
                             disk_cache['available'].remove(self.matched_atom)
 
-                        self.Entropy.Cacher.push(etpCache['world_available'],disk_cache)
+                        self.Entropy.Cacher.push(etpCache['world_available'],disk_cache.copy())
 
                 except KeyError:
                     self.Entropy.Cacher.push(etpCache['world_available'],{})
@@ -6211,7 +6211,7 @@ class FileUpdatesInterface:
                             except:
                                 pass # possible encoding issues
         # store data
-        self.Entropy.Cacher.push(etpCache['configfiles'],scandata)
+        self.Entropy.Cacher.push(etpCache['configfiles'],scandata.copy())
         self.scandata = scandata.copy()
         return scandata
 
@@ -6259,7 +6259,7 @@ class FileUpdatesInterface:
         index += 1
         mydata = self.generate_dict(filepath)
         self.scandata[index] = mydata.copy()
-        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata)
+        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata.copy())
 
     def remove_from_cache(self, key):
         self.scanfs(dcache = True)
@@ -6267,7 +6267,7 @@ class FileUpdatesInterface:
             del self.scandata[key]
         except:
             pass
-        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata)
+        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata.copy())
         return self.scandata
 
     def generate_dict(self, filepath):
@@ -11041,7 +11041,7 @@ class SecurityInterface:
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
             c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
-            self.Entropy.Cacher.push(c_hash,adv_metadata)
+            self.Entropy.Cacher.push(c_hash,adv_metadata.copy())
 
     def get_advisories_list(self):
         if not self.check_advisories_availability():
@@ -32221,7 +32221,7 @@ class EntropyDatabaseInterface:
     def storeSearchCache(self, key, function, search_cache_data, extra_hash = 0):
         if self.xcache:
             c_hash = "%s/%s/%s/%s" % (self.dbSearchCacheKey,self.dbname,key,"%s%s" % (hash(function),extra_hash,),)
-            if self.ServiceInterface: self.ServiceInterface.Cacher.push(c_hash, search_cache_data)
+            if self.ServiceInterface: self.ServiceInterface.Cacher.push(c_hash, search_cache_data.copy())
             else: self.dumpTools.dumpobj(c_hash,search_cache_data)
 
     def retrieveRepositoryUpdatesDigest(self, repository):
@@ -34217,9 +34217,9 @@ class EntropyDatabaseInterface:
     def atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
             if self.ServiceInterface:
-                self.ServiceInterface.Cacher.push("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result'))
+                self.ServiceInterface.Cacher.push("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
             else:
-                self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result'))
+                self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
 
     def _idpackageValidator_live(self, idpackage, reponame):
         if (idpackage,reponame) in self.ServiceInterface.PackageSettings['live_packagemasking']['mask_matches']:
