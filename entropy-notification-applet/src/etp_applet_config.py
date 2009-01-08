@@ -31,9 +31,8 @@ APPLET_ENABLED = 1
 ANIMATION_TOTAL_TIME = 0.75
 
 home = os.getenv("HOME")
-if not home:
-    home = "/tmp"
-SETTINGS_FILE = os.path.join(home, ".config/entropy/settings")
+if not home: home = "/tmp"
+SETTINGS_FILE = os.path.join(home, ".config/entropy/entropy-notification-applet.conf")
 
 def save_settings(settings):
     global SETTINGS_FILE

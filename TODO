@@ -1,22 +1,14 @@
 TODO list
 
+  - server-side db backup tool
+  - add changelog to packages
   - split entropy.py into entropy package (move exceptionTools to something saner)
   - implement pdepend support in dependencies sorting
-  - automatic client db backup
   - move etpConst['conflicting_tagged_packages'] elsewhere
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
-  - UGC: personal package sets
-  - UGC: bug report documents?
-  - UGC: bbcode docs?
-  - server-side messages collection
-  - community repos: add repository handling on dependencies to avoid library breakages
-  - External trigger: rewrite support and use bash
-  - use expiration as a base to have and handle multiple packages in repo?
-  - add changelog to packages
-  - documentation + man page
+  - automatic client db backup
   - find a way to better handle real smartapps deps (need split PDEPEND?)
-  - server-side: packages upload through socket? (removing handlers s*it)
-  - shrink sql indexes (remove branch?)
+  - documentation + man page
 
   Repository Manager:
     - fix queue length issue with extended commands on the repository manager server
@@ -26,5 +18,11 @@ TODO list
   Spritz:
     - package sets add/remove tool
     - allow package remasking
-    - ability to change colours
     - deptest/libtest
+
+Proposed for Entropy >1.0 (require API changes):
+  - UGC: personal package sets
+  - UGC: bug report documents?
+  - UGC: bbcode docs?
+  - External trigger: rewrite support and use bash
+  - use expiration as a base to have and handle multiple packages in repo?
