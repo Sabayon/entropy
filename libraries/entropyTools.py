@@ -2256,6 +2256,73 @@ def read_elf_linker_paths(elf_file):
             mypaths.append(xpath)
     return mypaths
 
+def xml_from_dict_extended(dictionary):
+    from xml.dom import minidom
+    doc = minidom.Document()
+    ugc = doc.createElement("entropy")
+    for key, value in dictionary.items():
+        item = doc.createElement('item')
+        item.setAttribute('value',key)
+        if isinstance(value,str):
+            mytype = "str"
+        elif isinstance(value,unicode):
+            mytype = "unicode"
+        elif isinstance(value,list):
+            mytype = "list"
+        elif isinstance(value,set):
+            mytype = "set"
+        elif isinstance(value,frozenset):
+            mytype = "frozenset"
+        elif isinstance(value,dict):
+            mytype = "dict"
+        elif isinstance(value,tuple):
+            mytype = "tuple"
+        elif isinstance(value,int):
+            mytype = "int"
+        elif isinstance(value,float):
+            mytype = "float"
+        else: raise TypeError
+        item.setAttribute('type',mytype)
+        item_value = doc.createTextNode("%s" % (value,))
+        item.appendChild(item_value)
+        ugc.appendChild(item)
+    doc.appendChild(ugc)
+    return doc.toxml()
+
+def dict_from_xml_extended(xml_string):
+    from xml.dom import minidom
+    doc = minidom.parseString(xml_string)
+    entropies = doc.getElementsByTagName("entropy")
+    if not entropies: return {}
+    entropy = entropies[0]
+    items = entropy.getElementsByTagName('item')
+
+    my_map = {
+        "str": str,
+        "unicode": unicode,
+        "list": list,
+        "set": set,
+        "frozenset": frozenset,
+        "dict": dict,
+        "tuple": tuple,
+        "int": int,
+        "float": float,
+    }
+
+    mydict = {}
+    for item in items:
+        key = item.getAttribute('value')
+        if not key: continue
+        mytype = item.getAttribute('type')
+        mytype_m = my_map.get(mytype)
+        if mytype_m == None: raise TypeError
+        try:
+            data = item.firstChild.data
+        except AttributeError:
+            data = ''
+        mydict[key] = mytype_m(data)
+    return mydict
+
 def xml_from_dict(dictionary):
     from xml.dom import minidom
     doc = minidom.Document()
