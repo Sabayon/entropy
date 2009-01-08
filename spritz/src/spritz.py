@@ -1068,6 +1068,7 @@ class SpritzApplication(Controller):
 
     def populateAdvisories(self, widget, show):
         self.setBusy()
+        self.show_wait_window()
         cached = None
         try:
             cached = self.Advisories.get_advisories_cache()
@@ -1085,6 +1086,7 @@ class SpritzApplication(Controller):
         if cached:
             self.advisoriesView.populate(self.Advisories, cached, show)
         self.unsetBusy()
+        self.hide_wait_window()
 
     def populateFilesUpdate(self):
         # load filesUpdate interface and fill self.filesView

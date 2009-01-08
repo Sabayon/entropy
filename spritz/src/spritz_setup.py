@@ -148,13 +148,28 @@ class SpritzConf:
     proxy = ""
     font_console = 'Monospace 8'
     font_pkgdesc = 'Monospace 8'
+
     color_console_background = '#FFFFFF'
-    color_console_font = '#000000'
-    color_pkgdesc = '#68228B'
-    color_normal = 'black'
-    color_install = 'darkgreen'
-    color_update = 'darkgreen'
-    color_obsolete = 'red'
+    color_console_font = '#000000' # black
+    color_normal = '#000000' # black
+    color_install = '#418C0F' # dark green
+    color_update = '#418C0F' #  dark green
+    color_remove = '#A71B1B' # red
+    color_reinstall = '#A71B1B'
+    color_title = '#A71B1B' # red
+    color_title2 = '#2A6AFF' # light blue
+    # description below package atoms
+    color_pkgdesc = '#FF1D1D' # red
+    # description for masked packages and for pkg description in dialogs, notice board desc items
+    color_pkgsubtitle = '#418C0F' # dark green
+    color_subdesc = '#837350' # brown
+    color_error = '#A71B1B' # red
+    color_good = '#418C0F' # dark green
+    color_background_good = '#418C0F' # red
+    color_background_error = '#A71B1B' # dark green
+    color_good_on_color_background = '#FFFFFF'
+    color_error_on_color_background = '#FFFFFF'
+
     filelist = True
     changelog = False
     disable_repo_page = False

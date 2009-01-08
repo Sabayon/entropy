@@ -3650,12 +3650,12 @@ class RmNoticeBoardMenu(MenuSkel):
         ]
         for item in bold_items:
             t = item.get_text()
-            item.set_markup("<span foreground='#DE4A4C'><small><b>%s</b></small></span>" % (t,))
+            item.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SpritzConf.color_title,t,))
         for item in small_items:
             t = item.get_text()
-            item.set_markup("<span foreground='#1673DE'><small>%s</small></span>" % (t,))
+            item.set_markup("<span foreground='%s'><small>%s</small></span>" % (SpritzConf.color_pkgsubtitle,t,))
         t = self.rm_ui.rmNoticeBoardTextLabel.get_text()
-        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='#837350'><small>%s</small></span>" % (t,))
+        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SpritzConf.color_subdesc,t,))
         self.rm_ui.rmNoticeBoardInfo.show_all()
 
 class SmQueueMenu(MenuSkel):
@@ -4120,9 +4120,9 @@ class PkgInfoMenu(MenuSkel):
         status, err_msg = self.Entropy.UGC.add_vote(self.repository, self.pkgkey, vote)
         if status:
             self.set_stars_from_repository()
-            msg = "<small><span foreground='#339101'>%s</span>: %s</small>" % (_("Vote registered successfully"),vote,)
+            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SpritzConf.color_good,_("Vote registered successfully"),vote,)
         else:
-            msg = "<small><span foreground='#FF0000'>%s</span>: %s</small>" % (_("Error registering vote"),err_msg,)
+            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SpritzConf.color_error,_("Error registering vote"),err_msg,)
 
         self.pkginfo_ui.ugcMessageBox.set_markup(msg)
 
@@ -4532,7 +4532,7 @@ class SecurityAdvisoryMenu(MenuSkel):
         adv_pixmap = const.PIXMAPS_PATH+'/button-glsa.png'
         self.advinfo_ui.advImage.set_from_file(adv_pixmap)
 
-        glsa_idtext = "<b>GLSA</b>#<span foreground='#FF0000' weight='bold'>%s</span>" % (key,)
+        glsa_idtext = "<b>GLSA</b>#<span foreground='%s' weight='bold'>%s</span>" % (SpritzConf.color_title,key,)
         self.advinfo_ui.labelIdentifier.set_markup(glsa_idtext)
 
         bold_items = [
@@ -4565,14 +4565,14 @@ class SecurityAdvisoryMenu(MenuSkel):
         myurl = ''
         if data.has_key('url'):
             myurl = data['url']
-        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='#0000FF'>%s</span></small>" % (data['title'],myurl,))
+        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='%s'>%s</span></small>" % (SpritzConf.color_title2,data['title'],myurl,)) 
 
         # description
         desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()
         if data.has_key('description_items'):
             if data['description_items']:
                 for item in data['description_items']:
-                    desc_text += '\n\t%s %s' % ("<span foreground='#FF0000'>(*)</span>",item,)
+                    desc_text += '\n\t%s %s' % ("<span foreground='%s'>(*)</span>" % (SpritzConf.color_title,),item,)
         desc_text = desc_text.replace('!;\\n','')
         b = gtk.TextBuffer()
         b.set_text(desc_text)
@@ -4594,10 +4594,13 @@ class SecurityAdvisoryMenu(MenuSkel):
 
         t = self.advinfo_ui.impactLabel.get_text()
         t = "<b>%s</b>" % (t,)
-        t += " [<span foreground='darkgreen'>%s</span>:<span foreground='#0000FF'>%s</span>|<span foreground='darkgreen'>%s</span>:<span foreground='#FF0000'>%s</span>]" % (
+        t += " [<span foreground='darkgreen'>%s</span>:<span foreground='%s'>%s</span>|<span foreground='%s'>%s</span>:<span foreground='%s'>%s</span>]" % (
                     _("impact"),
+                    SpritzConf.color_title2,
                     data['impacttype'],
+                    SpritzConf.color_subdesc,
                     _("access"),
+                    SpritzConf.color_pkgsubtitle,
                     data['access'],
         )
         self.advinfo_ui.impactLabel.set_markup(t)
@@ -4842,7 +4845,7 @@ class UGCAddMenu(MenuSkel):
 
         self.hide_loading()
         if not rslt:
-            txt = "<small><span foreground='#FF0000'><b>%s</b></span>: %s | %s</small>" % (_("UGC Error"),rslt,data,)
+            txt = "<small><span foreground='%s'><b>%s</b></span>: %s | %s</small>" % (SpritzConf.color_error,_("UGC Error"),rslt,data,)
             self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
             return False
         else:
@@ -4990,7 +4993,7 @@ class MaskedPackagesDialog(MenuSkel):
         if top_text == None:
             top_text = _("These are the packages that must be enabled to satisfy your request")
 
-        tit = "<b><span foreground='#0087C1' size='large'>%s</span></b>\n" % (_("Some packages are masked"),)
+        tit = "<b><span foreground='%s' size='large'>%s</span></b>\n" % (SpritzConf.color_title,_("Some packages are masked"),)
         tit += top_text
         self.action.set_markup( tit )
         if sub_text != None: self.subaction.set_markup( sub_text )
@@ -5321,8 +5324,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
-                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_reinstall,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if install:
             label = "<b>%s</b>" % _("To be installed")
@@ -5332,8 +5335,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
-                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_install,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if update:
             label = "<b>%s</b>" % _("To be updated")
@@ -5343,8 +5346,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
-                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_update,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if remove:
             label = "<b>%s</b>" % _("To be removed")
@@ -5354,14 +5357,15 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='#418C0F'>%s</span></small>" % (desc,)
-                mypkg = "<span foreground='#FF0000'>%s</span>" % (str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_remove,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
 
     def destroy( self ):
         return self.dialog.destroy()
 
 class ErrorDialog:
+
     def __init__( self, parent, title, text, longtext, modal ):
         self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="entropy" )
         self.dialog = self.xml.get_widget( "errDialog" )
@@ -5380,7 +5384,7 @@ class ErrorDialog:
         self.reportTable = self.xml.get_widget( "reportTable" )
         self.style_err = gtk.TextTag( "error" )
         self.style_err.set_property( "style", pango.STYLE_ITALIC )
-        self.style_err.set_property( "foreground", "red" )
+        self.style_err.set_property( "foreground", "#760000" )
         self.style_err.set_property( "family", "Monospace" )
         self.style_err.set_property( "size_points", 8 )
         self.longtext.get_buffer().get_tag_table().add( self.style_err )

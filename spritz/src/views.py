@@ -950,9 +950,9 @@ class EntropyPackageView:
     def vote_submit_thread(self, repository, key, obj):
         status, err_msg = self.Equo.UGC.add_vote(repository, key, obj.voted)
         if status:
-            msg = "<small><span foreground='#339101'><b>%s</b></span>: %s</small>" % (_("Vote registered successfully"),obj.voted,)
+            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SpritzConf.color_good,_("Vote registered successfully"),obj.voted,)
         else:
-            msg = "<small><span foreground='#FF0000'><b>%s</b></span>: %s</small>" % (_("Error registering vote"),err_msg,)
+            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SpritzConf.color_error,_("Error registering vote"),err_msg,)
         gtk.gdk.threads_enter()
         self.ui.UGCMessageLabel.set_markup(msg)
         gtk.gdk.threads_leave()
@@ -1475,11 +1475,11 @@ class EntropyAdvisoriesView:
         if key == None:
             affected = False
         if affected:
-            cell.set_property('background',"#A71B1B")
-            cell.set_property('foreground',"#FFFFFF")
+            cell.set_property('background',SpritzConf.color_background_error)
+            cell.set_property('foreground',SpritzConf.color_error_on_color_background)
         else:
-            cell.set_property('background',"darkgreen")
-            cell.set_property('foreground',"#FFFFFF")
+            cell.set_property('background',SpritzConf.color_background_good)
+            cell.set_property('foreground',SpritzConf.color_good_on_color_background)
 
 
     def populate( self, securityConn, adv_metadata, show ):

@@ -116,8 +116,10 @@ class SpritzQueue:
 
         for idpackage in to_be_reinserted:
             if idpackage not in newdepends:
-                mystring = "<span foreground='#FF0000'>%s</span>\n<small><span foreground='#418C0F'>%s</span></small>" % (
+                mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
+                    SpritzConf.color_title,
                     self.Entropy.clientDbconn.retrieveAtom(idpackage),
+                    SpritzConf.color_pkgsubtitle,
                     cleanMarkupString(self.Entropy.clientDbconn.retrieveDescription(idpackage)),
                 )
                 atoms.append(mystring)
@@ -159,8 +161,10 @@ class SpritzQueue:
         atoms = []
         for idpackage, repoid in crying_items:
             dbconn = self.Entropy.openRepositoryDatabase(repoid)
-            mystring = "<span foreground='#FF0000'>%s</span>\n<small><span foreground='#418C0F'>%s</span></small>" % (
+            mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
+                SpritzConf.color_title,
                 dbconn.retrieveAtom(idpackage),
+                SpritzConf.color_pkgsubtitle,
                 cleanMarkupString(dbconn.retrieveDescription(idpackage)),
             )
             atoms.append(mystring)

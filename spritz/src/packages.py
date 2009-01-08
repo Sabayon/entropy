@@ -66,40 +66,24 @@ class EntropyPackages:
         self._categoryPackages = pkgdict
 
     def getPackagesByCategory(self,cat=None):
-        if not cat:
-           cat =  self.currentCategory
-        else:
-           self.currentCategory = cat
-        if not self._categoryPackages.has_key(cat):
-            self.populateCategory(cat)
+        if not cat: cat =  self.currentCategory
+        else: self.currentCategory = cat
+        if not self._categoryPackages.has_key(cat): self.populateCategory(cat)
         return self._categoryPackages[cat]
 
     def populateCategory(self, category):
 
+        self.getAllPackages()
         catsdata = self.Entropy.list_repo_packages_in_category(category)
-        catsdata.update(set([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)]))
+        catsdata.extend([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)])
         pkgsdata = []
-        for pkgdata in catsdata:
+        def mymf(pkgdata):
             try:
                 yp, new = self.getPackageItem(pkgdata,True)
             except exceptionTools.RepositoryError:
-                continue
-            install_status = yp.install_status
-            ok = False
-            if install_status == 1:
-                yp.action = 'i'
-                ok = True
-            elif install_status == 2:
-                yp.action = 'u'
-                yp.color = SpritzConf.color_update
-                ok = True
-            #elif install_status == 3:
-            #    yp.action = 'r'
-            #    yp.color = SpritzConf.color_install
-            #    ok = True
-            if ok: pkgsdata.append(yp)
-        del catsdata
-        self._categoryPackages[category] = pkgsdata
+                return 0
+            return yp
+        self._categoryPackages[category] = [x for x in map(mymf,catsdata) if type(x) != int]
 
     def populateCategories(self):
         self.categories = self.Entropy.list_repo_categories()
@@ -288,11 +272,12 @@ class EntropyPackages:
         # load a pixmap inside the treeview
         msg2 = _("Try clicking the %s button in the %s page") % ( _("Update Repositories"),_("Repository Selection"),)
 
-        msg = "<big><b><span foreground='#FF0000'>%s</span></b></big>\n<span foreground='darkblue'>%s.\n%s</span>" % (
-                _('No updates available'),
-                _("It seems that your system is already up-to-date. Good!"),
-                msg2,
-            )
+        msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
+            SpritzConf.color_title,
+            _('No updates available'),
+            _("It seems that your system is already up-to-date. Good!"),
+            msg2,
+        )
         myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SpritzConf.dummy_empty)
         return [myobj]
 

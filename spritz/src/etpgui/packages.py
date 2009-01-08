@@ -106,15 +106,16 @@ class EntropyPackage:
                 self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
                 self.from_installed = False
 
+        self.matched_id, self.matched_repo = self.matched_atom
+
     def __del__(self):
         if hasattr(self,'remote'):
             if self.remote:
                 self.dbconn.closeDB()
 
     def __str__(self):
-        if self.pkgset:
-            return self.matched_atom
-        return str(self.dbconn.retrieveAtom(self.matched_atom[0])+"~"+str(self.dbconn.retrieveRevision(self.matched_atom[0])))
+        if self.pkgset: return self.matched_atom
+        return str(self.dbconn.retrieveAtom(self.matched_id)+"~"+str(self.dbconn.retrieveRevision(self.matched_id)))
 
     def __cmp__(self, pkg):
         if pkg.matched_atom == self.matched_atom:
@@ -127,20 +128,18 @@ class EntropyPackage:
     def getTag(self):
         if self.pkgset: return ''
 
-        return self.dbconn.retrieveVersionTag(self.matched_atom[0])
+        return self.dbconn.retrieveVersionTag(self.matched_id)
 
     def getName(self):
-        if self.pkgset:
-            return self.matched_atom
-
-        return self.dbconn.retrieveAtom(self.matched_atom[0])
+        if self.pkgset: return self.matched_atom
+        return self.dbconn.retrieveAtom(self.matched_id)
 
     def isMasked(self):
 
         if self.pkgset:
             return False
 
-        idpackage, idmask = self.dbconn.idpackageValidator(self.matched_atom[0])
+        idpackage, idmask = self.dbconn.idpackageValidator(self.matched_id)
         if idpackage != -1:
             return False
         return True
@@ -150,66 +149,60 @@ class EntropyPackage:
         if self.pkgset:
             t = self.matched_atom
             desc = _("Recursive Package Set")
-            t += '\n<small><span foreground=\'#FF0000\'>%s</span></small>' % (cleanMarkupString(desc),)
+            t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SpritzConf.color_pkgdesc,cleanMarkupString(desc),)
             return t
 
         ugc_string = ''
         atom = self.getName()
-        if self.from_installed:
-            repo = self.getRepoId()
-        else:
-            repo = self.matched_atom[1]
+        if self.from_installed: repo = self.getRepoId()
+        else: repo = self.matched_repo
         key = self.entropyTools.dep_getkey(atom)
         downloads = EquoConnection.UGC.UGCCache.get_package_downloads(repo,key)
         ugc_string = "<small>[%s]</small> " % (downloads,)
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
-            t +=  " <small>[<span foreground='#016AA3'>%s</span>]</small>" % (etpConst['packagemaskingreasons'][self.masked],)
+            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SpritzConf.color_title2,etpConst['packagemaskingreasons'][self.masked],)
 
         desc = self.getDescription(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
-        t += '\n<small><span foreground=\'#FF0000\'>%s</span></small>' % (cleanMarkupString(desc),)
+        t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SpritzConf.color_pkgdesc,cleanMarkupString(desc),)
         return t
 
     def getOnlyName(self):
         if self.pkgset:
             return self.set_name
 
-        return self.dbconn.retrieveName(self.matched_atom[0])
+        return self.dbconn.retrieveName(self.matched_id)
 
     def getTup(self):
         if self.pkgset:
             return self.matched_atom
 
-        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
+        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_id),self.dbconn.retrieveVersionTag(self.matched_id),self.dbconn.retrieveRevision(self.matched_id))
 
     def versionData(self):
         if self.pkgset:
             return self.matched_atom
 
-        return (self.dbconn.retrieveVersion(self.matched_atom[0]),self.dbconn.retrieveVersionTag(self.matched_atom[0]),self.dbconn.retrieveRevision(self.matched_atom[0]))
+        return (self.dbconn.retrieveVersion(self.matched_id),self.dbconn.retrieveVersionTag(self.matched_id),self.dbconn.retrieveRevision(self.matched_id))
 
     def getRepoId(self):
         if self.pkgset:
             x = self.set_from
-            if x == etpConst['userpackagesetsid']:
-                x = _("User")
+            if x == etpConst['userpackagesetsid']: x = _("User")
             return x
-
-        if self.matched_atom[1] == 0:
-            return self.dbconn.retrievePackageFromInstalledTable(self.matched_atom[0])
-        else:
-            return self.matched_atom[1]
+        if self.matched_atom[1] == 0: return self.dbconn.retrievePackageFromInstalledTable(self.matched_id)
+        else: return self.matched_repo
 
     def getIdpackage(self):
-        return self.matched_atom[0]
+        return self.matched_id
 
     def getRevision(self):
         if self.pkgset: return 0
 
-        return self.dbconn.retrieveRevision(self.matched_atom[0])
+        return self.dbconn.retrieveRevision(self.matched_id)
 
     def getSysPkg(self):
         if self.pkgset: return False
@@ -233,7 +226,7 @@ class EntropyPackage:
 
         if self.from_installed:
             return 0
-        key, slot = self.dbconn.retrieveKeySlot(self.matched_atom[0])
+        key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
         matches = EquoConnection.clientDbconn.searchKeySlot(key,slot)
         if not matches: # not installed, new!
             return 1
@@ -248,100 +241,100 @@ class EntropyPackage:
         if self.pkgset: return "0"
 
         tag = ""
-        vtag = self.dbconn.retrieveVersionTag(self.matched_atom[0])
+        vtag = self.dbconn.retrieveVersionTag(self.matched_id)
         if vtag:
             tag = "#"+vtag
-        tag += "~"+str(self.dbconn.retrieveRevision(self.matched_atom[0]))
-        return self.dbconn.retrieveVersion(self.matched_atom[0])+tag
+        tag += "~"+str(self.dbconn.retrieveRevision(self.matched_id))
+        return self.dbconn.retrieveVersion(self.matched_id)+tag
 
     def getOnlyVer(self):
         if self.pkgset: return "0"
-        return self.dbconn.retrieveVersion(self.matched_atom[0])
+        return self.dbconn.retrieveVersion(self.matched_id)
 
     def getDownloadURL(self):
         if self.pkgset: return None
-        return self.dbconn.retrieveDownloadURL(self.matched_atom[0])
+        return self.dbconn.retrieveDownloadURL(self.matched_id)
 
     def getSlot(self):
         if self.pkgset: return "0"
-        return self.dbconn.retrieveSlot(self.matched_atom[0])
+        return self.dbconn.retrieveSlot(self.matched_id)
 
     def getDependencies(self):
         if self.pkgset: self.set_matches
-        return self.dbconn.retrieveDependencies(self.matched_atom[0])
+        return self.dbconn.retrieveDependencies(self.matched_id)
 
     def getDependsFmt(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveDepends(self.matched_atom[0], atoms = True)
+        return self.dbconn.retrieveDepends(self.matched_id, atoms = True)
 
     def getConflicts(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveConflicts(self.matched_atom[0])
+        return self.dbconn.retrieveConflicts(self.matched_id)
 
     def getLicense(self):
         if self.pkgset: return ""
-        return self.dbconn.retrieveLicense(self.matched_atom[0])
+        return self.dbconn.retrieveLicense(self.matched_id)
 
     def getDigest(self):
         if self.pkgset: return "0"
-        return self.dbconn.retrieveDigest(self.matched_atom[0])
+        return self.dbconn.retrieveDigest(self.matched_id)
 
     def getCategory(self):
         if self.pkgset: return self.cat
-        return self.dbconn.retrieveCategory(self.matched_atom[0])
+        return self.dbconn.retrieveCategory(self.matched_id)
 
     def getApi(self):
         if self.pkgset: return "0"
-        return self.dbconn.retrieveApi(self.matched_atom[0])
+        return self.dbconn.retrieveApi(self.matched_id)
 
     def getUseflags(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveUseflags(self.matched_atom[0])
+        return self.dbconn.retrieveUseflags(self.matched_id)
 
     def getTrigger(self):
         if self.pkgset: return ""
-        return self.dbconn.retrieveTrigger(self.matched_atom[0])
+        return self.dbconn.retrieveTrigger(self.matched_id)
 
     def getConfigProtect(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveProtect(self.matched_atom[0])
+        return self.dbconn.retrieveProtect(self.matched_id)
 
     def getConfigProtectMask(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveProtectMask(self.matched_atom[0])
+        return self.dbconn.retrieveProtectMask(self.matched_id)
 
     def getKeywords(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveKeywords(self.matched_atom[0])
+        return self.dbconn.retrieveKeywords(self.matched_id)
 
     def getNeeded(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveNeeded(self.matched_atom[0])
+        return self.dbconn.retrieveNeeded(self.matched_id)
 
     def getCompileFlags(self):
         if self.pkgset: return []
-        flags = self.dbconn.retrieveCompileFlags(self.matched_atom[0])
+        flags = self.dbconn.retrieveCompileFlags(self.matched_id)
         return flags
 
     def getSources(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveSources(self.matched_atom[0])
+        return self.dbconn.retrieveSources(self.matched_id)
 
     def getEclasses(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveEclasses(self.matched_atom[0])
+        return self.dbconn.retrieveEclasses(self.matched_id)
 
     def getHomepage(self):
         if self.pkgset: return ""
-        return self.dbconn.retrieveHomepage(self.matched_atom[0])
+        return self.dbconn.retrieveHomepage(self.matched_id)
 
     def getMessages(self):
         if self.pkgset: return []
-        return self.dbconn.retrieveMessages(self.matched_atom[0])
+        return self.dbconn.retrieveMessages(self.matched_id)
 
     def getKeySlot(self):
         if self.pkgset: return self.set_name,"0"
-        return self.dbconn.retrieveKeySlot(self.matched_atom[0])
+        return self.dbconn.retrieveKeySlot(self.matched_id)
 
     def getDescriptionNoMarkup(self):
         if self.pkgset: return self.set_cat_namedesc
@@ -351,17 +344,17 @@ class EntropyPackage:
         if self.pkgset: return self.set_cat_namedesc
 
         if markup:
-            return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
+            return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_id))
         else:
-            return self.dbconn.retrieveDescription(self.matched_atom[0])
+            return self.dbconn.retrieveDescription(self.matched_id)
 
     def getDownSize(self):
         if self.pkgset: return 0
-        return self.dbconn.retrieveSize(self.matched_atom[0])
+        return self.dbconn.retrieveSize(self.matched_id)
 
     def getDiskSize(self):
         if self.pkgset: return 0
-        return self.dbconn.retrieveOnDiskSize(self.matched_atom[0])
+        return self.dbconn.retrieveOnDiskSize(self.matched_id)
 
     def getIntelligentSize(self):
         if self.from_installed:
@@ -371,26 +364,26 @@ class EntropyPackage:
 
     def getDownSizeFmt(self):
         if self.pkgset: return 0
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_atom[0]))
+        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_id))
 
     def getDiskSizeFmt(self):
         if self.pkgset: return 0
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_atom[0]))
+        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_id))
 
     def getArch(self):
         return etpConst['currentarch']
 
     def getEpoch(self):
         if self.pkgset: return 0
-        return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+        return self.dbconn.retrieveDateCreation(self.matched_id)
 
     def getEpochFmt(self):
         if self.pkgset: return 0
-        return EquoConnection.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_atom[0])))
+        return EquoConnection.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_id)))
 
     def getRel(self):
         if self.pkgset: return etpConst['branch']
-        return self.dbconn.retrieveBranch(self.matched_atom[0])
+        return self.dbconn.retrieveBranch(self.matched_id)
 
     def getUGCPackageVote(self):
         if self.pkgset: return -1
@@ -407,54 +400,54 @@ class EntropyPackage:
         atom = self.getName()
         if not atom: return 0
         key = self.entropyTools.dep_getkey(atom)
-        return EquoConnection.UGC.UGCCache.get_package_downloads(self.matched_atom[1],key)
+        return EquoConnection.UGC.UGCCache.get_package_downloads(self.matched_repo,key)
 
     def getAttr(self,attr):
         x = None
         if attr == "description":
-            x = cleanMarkupString(self.dbconn.retrieveDescription(self.matched_atom[0]))
+            x = cleanMarkupString(self.dbconn.retrieveDescription(self.matched_id))
         elif attr == "category":
-            x = self.dbconn.retrieveCategory(self.matched_atom[0])
+            x = self.dbconn.retrieveCategory(self.matched_id)
         elif attr == "license":
-            x = self.dbconn.retrieveLicense(self.matched_atom[0])
+            x = self.dbconn.retrieveLicense(self.matched_id)
         elif attr == "creationdate":
-            x = self.dbconn.retrieveDateCreation(self.matched_atom[0])
+            x = self.dbconn.retrieveDateCreation(self.matched_id)
         elif attr == "version":
-            x = self.dbconn.retrieveVersion(self.matched_atom[0])
+            x = self.dbconn.retrieveVersion(self.matched_id)
         elif attr == "revision":
-            x = self.dbconn.retrieveRevision(self.matched_atom[0])
+            x = self.dbconn.retrieveRevision(self.matched_id)
         elif attr == "versiontag":
-            x = self.dbconn.retrieveVersionTag(self.matched_atom[0])
+            x = self.dbconn.retrieveVersionTag(self.matched_id)
             if not x: x = "None"
         elif attr == "branch":
-            x = self.dbconn.retrieveBranch(self.matched_atom[0])
+            x = self.dbconn.retrieveBranch(self.matched_id)
         elif attr == "name":
-            x = self.dbconn.retrieveName(self.matched_atom[0])
+            x = self.dbconn.retrieveName(self.matched_id)
         elif attr == "namedesc":
             x = self.getNameDesc()
         elif attr == "slot":
-            x = self.dbconn.retrieveSlot(self.matched_atom[0])
+            x = self.dbconn.retrieveSlot(self.matched_id)
         return x
 
     def _get_time( self ):
         if self.pkgset: return 0
-        return self.dbconn.retrieveDateCreation(self.matched_atom[0])
+        return self.dbconn.retrieveDateCreation(self.matched_id)
 
     def get_changelog( self ):
         return "No ChangeLog"
 
     def get_filelist( self ):
         if self.pkgset: return []
-        mycont = sorted(list(self.dbconn.retrieveContent(self.matched_atom[0])))
+        mycont = sorted(list(self.dbconn.retrieveContent(self.matched_id)))
         return mycont
 
     def get_filelist_ext( self ):
         if self.pkgset: return []
-        return self.dbconn.retrieveContent(self.matched_atom[0], extended = True, order_by = 'file')
+        return self.dbconn.retrieveContent(self.matched_id, extended = True, order_by = 'file')
 
     def get_fullname( self ):
         if self.pkgset: return self.set_name
-        return self.dbconn.retrieveAtom(self.matched_atom[0])
+        return self.dbconn.retrieveAtom(self.matched_id)
 
     pkg =  property(fget=getPkg)
     name =  property(fget=getName)
