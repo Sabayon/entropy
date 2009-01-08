@@ -2417,7 +2417,12 @@ class SpritzApplication(Controller):
         else: self.on_PageButton_changed(widget, "preferences")
 
     def on_libtestButton_clicked(self, widget):
-        pass
+        packages_matched,broken_execs,status = self.Equo.libraries_test()
+        print packages_matched
+        print "--"
+        print broken_execs
+        print "--"
+        print status
 
     def on_color_reset(self, widget):
         # get parent
