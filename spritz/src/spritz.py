@@ -1392,44 +1392,76 @@ class SpritzApplication(Controller):
                 t.start()
                 while t.isAlive():
                     time.sleep(0.2)
+                    if self.do_debug:
+                        print "processPackageQueue: QueueExecutor thread still alive"
                     while gtk.events_pending():
+                        if self.do_debug:
+                            print "processPackageQueue: QueueExecutor, events pending"
                         gtk.main_iteration()
 
                 e,i = self.my_inst_errors
 
+                if self.do_debug:
+                    print "processPackageQueue: threads leave?"
                 gtk.gdk.threads_leave()
+                if self.do_debug:
+                    print "processPackageQueue: ok, left"
 
                 self.ui.skipMirror.hide()
                 self.ui.abortQueue.hide()
+                if self.do_debug:
+                    print "processPackageQueue: buttons now hidden"
                 if e != 0:
                     okDialog(   self.ui.main,
                                 _("Attention. An error occured when processing the queue."
                                     "\nPlease have a look in the processing terminal.")
                     )
                 # deactivate UI lock
+                if self.do_debug:
+                    print "processPackageQueue: unlocking gui?"
                 self.uiLock(False)
                 self.onInstall = False
+                if self.do_debug:
+                    print "processPackageQueue: gui unlocked"
 
+            if self.do_debug:
+                print "processPackageQueue: endWorking?"
             self.endWorking()
             self.progress.reset_progress()
+            if self.do_debug:
+                print "processPackageQueue: endWorked"
 
             if (not fetch_only) and (not download_sources):
+
                 self.pkgView.clear()
                 self.etpbase.clearPackages()
                 self.etpbase.clearCache()
+                if self.do_debug:
+                    print "processPackageQueue: cleared caches"
+
                 for myrepo in remove_repos:
                     self.Equo.removeRepository(myrepo)
                 self.Equo.closeAllRepositoryDatabases()
+                if self.do_debug:
+                    print "processPackageQueue: closed repo dbs"
                 self.pkgView.clear()
                 self.Equo.reopenClientDbconn()
                 self.etpbase.clearPackages()
                 self.etpbase.clearCache()
+                if self.do_debug:
+                    print "processPackageQueue: cleared caches (again)"
                 # regenerate packages information
+                if self.do_debug:
+                    print "processPackageQueue: setting up Spritz"
                 self.setupSpritz()
-                self.Equo.FileUpdates.scanfs(dcache = False)
+                if self.do_debug:
+                    print "processPackageQueue: scanning for new files"
+                self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
                 if self.Equo.FileUpdates.scandata:
                     if len(self.Equo.FileUpdates.scandata) > 0:
                         self.setPage('filesconf')
+                if self.do_debug:
+                    print "processPackageQueue: all done"
 
         else:
             self.setStatus( _( "No packages selected" ) )
@@ -2116,6 +2148,7 @@ class SpritzApplication(Controller):
         fetch_only = self.ui.queueProcessFetchOnly.get_active()
         download_sources = self.ui.queueProcessDownloadSource.get_active()
 
+        rc = True
         try:
             rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
         except:
@@ -2396,7 +2429,10 @@ class SpritzApplication(Controller):
                     key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
                     key_slot = "%s:%s" % (key,slot,)
                     match = self.Equo.atomMatch(key, matchSlot = slot)
+                    cmpstat = 0
                     if match[0] != -1:
+                        cmpstat = self.Equo.get_package_action(match)
+                    if cmpstat != 0:
                         found_deps.add(key_slot)
                         continue
                     else:
@@ -2407,6 +2443,8 @@ class SpritzApplication(Controller):
         if not found_deps:
             okDialog(self.ui.main,_("Missing dependencies found, but none of them are on the repositories."))
             self.on_PageButton_changed(widget, "preferences")
+            return
+
         if not_all:
             okDialog(self.ui.main,_("Some missing dependencies have not been matched, others are going to be added to the queue."))
         else:
