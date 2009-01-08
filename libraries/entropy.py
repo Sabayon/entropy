@@ -2807,11 +2807,11 @@ class EquoInterface(TextInterface):
         return categories
 
     def list_repo_packages_in_category(self, category):
-        pkg_matches = set()
+        pkg_matches = []
         for repo in self.validRepositories:
             dbconn = self.openRepositoryDatabase(repo)
             catsdata = dbconn.searchPackagesByCategory(category, branch = etpConst['branch'])
-            pkg_matches.update(set([(x[1],repo) for x in catsdata]))
+            pkg_matches.extend([(x[1],repo,) for x in catsdata if (x[1],repo,) not in pkg_matches])
         return pkg_matches
 
     def get_category_description_data(self, category):
@@ -15588,7 +15588,8 @@ class ServerInterface(TextInterface):
             warnings = True,
             do_cache = True,
             use_branch = None,
-            lock_remote = True
+            lock_remote = True,
+            is_new = False
         ):
 
         if repo == None:
@@ -15648,8 +15649,8 @@ class ServerInterface(TextInterface):
             # sometimes, when filling a new server db, we need to avoid tree updates
             if valid:
                 conn.serverUpdatePackagesData()
-            elif warnings:
-                mytxt = _( "Entropy database is probably empty. If you don't agree with what I'm saying, then it's probably corrupted! I won't stop you here btw...")
+            elif warnings and not is_new:
+                mytxt = _( "Entropy database is probably corrupted! I won't stop you here btw...")
                 self.updateProgress(
                     darkred(mytxt),
                     importance = 1,
@@ -15688,7 +15689,7 @@ class ServerInterface(TextInterface):
             )] = conn
 
         # auto-update package sets
-        if not read_only:
+        if (not read_only) and (not is_new):
             cur_sets = conn.retrievePackageSets()
             sys_sets = self.get_configured_package_sets(repo)
             if cur_sets != sys_sets:
@@ -16897,7 +16898,7 @@ class ServerInterface(TextInterface):
 
 
         # initialize
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo, is_new = True)
         dbconn.initializeDatabase()
 
         if not empty:
@@ -31554,11 +31555,7 @@ class EntropyDatabaseInterface:
         self.checkReadOnly()
         with self.WriteLock:
             if not self.isInjected(idpackage):
-                self.cursor.execute(
-                    'INSERT into injected VALUES '
-                    '(?)'
-                    , ( idpackage, )
-                )
+                self.cursor.execute('INSERT into injected VALUES (?)', (idpackage,))
             if do_commit:
                 self.commitChanges()
 
@@ -33113,16 +33110,14 @@ class EntropyDatabaseInterface:
         branchstring = ''
         if branch:
             searchkeywords.append(branch)
-            branchstring = ' and branch = (?)'
+            branchstring = 'and branch = (?)'
 
         if like:
-            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category LIKE (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
+            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category LIKE (?) and baseinfo.idcategory = categories.idcategory %s' % (branchstring,), searchkeywords)
         else:
-            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
+            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category = (?) and baseinfo.idcategory = categories.idcategory %s' % (branchstring,), searchkeywords)
 
-        results = self.cursor.fetchall()
-
-        return results
+        return self.cursor.fetchall()
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None, justid = False):
 
