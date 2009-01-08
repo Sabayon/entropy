@@ -110,13 +110,16 @@ def loadobj(name, completePath = False):
             #dump_name = os.path.basename(dump_path)
             dmpfile = dump_path+".dmp"
         if os.path.isfile(dmpfile) and os.access(dmpfile,os.R_OK):
-            with open(dmpfile,"rb") as f:
-                x = None
-                try:
-                    x = pickle.load(f)
-                except (ValueError,EOFError,IOError,OSError,pickle.UnpicklingError):
-                    pass
-                return x
+            try:
+                with open(dmpfile,"rb") as f:
+                    x = None
+                    try:
+                        x = pickle.load(f)
+                    except (ValueError,EOFError,IOError,OSError,pickle.UnpicklingError):
+                        pass
+                    return x
+            except (IOError,OSError,):
+                pass
         break
 
 def getobjmtime(name):
