@@ -52,6 +52,9 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
                 if etpConst['entropygid'] != None:
                     os.chown(dmpfile,-1,etpConst['entropygid'])
                 f.flush()
+        except RuntimeError:
+            try: os.remove(dmpfile)
+            except OSError: pass
         except (EOFError,IOError,OSError):
             if not ignoreExceptions:
                 raise
