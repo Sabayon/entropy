@@ -1181,7 +1181,8 @@ class EquoInterface(TextInterface):
             for item in files:
                 if item.endswith(".dmp"):
                     item = os.path.join(path,item)
-                    os.remove(item)
+                    try: os.remove(item)
+                    except OSError: pass
             if not os.listdir(path):
                 os.rmdir(path)
 
@@ -1300,7 +1301,7 @@ class EquoInterface(TextInterface):
             editor = "/bin/emacs"
         return editor
 
-    def libraries_test(self, dbconn = None, broken_symbols = False):
+    def libraries_test(self, dbconn = None, broken_symbols = False, task_bombing_func = None):
 
         if dbconn == None:
             dbconn = self.clientDbconn
@@ -1333,7 +1334,7 @@ class EquoInterface(TextInterface):
         # speed up when /usr/lib is a /usr/lib64 symlink
         if "/usr/lib64" in ldpaths and "/usr/lib" in ldpaths:
             if os.path.realpath("/usr/lib64") == "/usr/lib":
-                ldpaths.remove("/usr/lib")
+                ldpaths.discard("/usr/lib")
         # some crappy packages put shit here too
         ldpaths.add("/usr/share")
         # always force /usr/libexec too
@@ -1344,6 +1345,7 @@ class EquoInterface(TextInterface):
         count = 0
         sys_root_len = len(etpConst['systemroot'])
         for ldpath in ldpaths:
+            if callable(task_bombing_func): task_bombing_func()
             count += 1
             self.updateProgress(
                 blue("Tree: ")+red(etpConst['systemroot']+ldpath),
@@ -1399,6 +1401,7 @@ class EquoInterface(TextInterface):
         count = 0
         scan_txt = blue("%s ..." % (_("Scanning libraries"),))
         for executable in executables:
+            if callable(task_bombing_func): task_bombing_func()
             count += 1
             if (count%10 == 0) or (count == total) or (count == 1):
                 self.updateProgress(
@@ -3287,9 +3290,7 @@ class EquoInterface(TextInterface):
             return queue
         treeview, status = self.generate_depends_tree(idpackages, deep = deep)
         if status == 0:
-            for x in range(len(treeview))[::-1]:
-                for y in treeview[x]:
-                    queue.append(y)
+            for x in range(len(treeview))[::-1]: queue.extend(treeview[x])
         return queue
 
     def retrieveInstallQueue(self, matched_atoms, empty_deps, deep_deps, quiet = False):
@@ -3302,30 +3303,24 @@ class EquoInterface(TextInterface):
             return treepackages,removal,result
 
         # format
-        removal = treepackages.pop(0, [])
-        for x in sorted(treepackages.keys()):
-            install.extend(list(treepackages[x]))
+        removal = treepackages.pop(0, set())
+        for x in sorted(treepackages.keys()): install.extend(treepackages[x])
 
         # filter out packages that are in actionQueue comparing key + slot
+        remove_from_removal = set()
         if install and removal:
             myremmatch = {}
             for x in removal:
                 atom = self.clientDbconn.retrieveAtom(x)
-                # XXX check if stupid users removed idpackage while this whole instance is running
+                # XXX check if users removed idpackage while this whole instance is running
                 if atom == None: continue
-                myremmatch.update({(self.entropyTools.dep_getkey(atom),self.clientDbconn.retrieveSlot(x)): x})
+                myremmatch[(self.entropyTools.dep_getkey(atom),self.clientDbconn.retrieveSlot(x),)] = x
             for pkg_id, pkg_repo in install:
                 dbconn = self.openRepositoryDatabase(pkg_repo)
                 testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(pkg_id)),dbconn.retrieveSlot(pkg_id))
-                if testtuple in myremmatch:
-                    # remove from removalQueue
-                    try: removal.remove(myremmatch[testtuple])
-                    except KeyError: pass
-                del testtuple
-            del myremmatch
+                removal.discard(myremmatch.get(testtuple))
 
-        del treepackages
-        return install, list(removal), 0
+        return install, sorted(removal), 0
 
     # this function searches into client database for a package matching provided key + slot
     # and returns its idpackage or -1 if none found
@@ -4913,8 +4908,7 @@ class PackageInterface:
                 if keyslot not in world_atoms and \
                     os.access(os.path.dirname(world_file),os.W_OK) and \
                     self.Entropy.entropyTools.istextfile(world_file):
-                        if key in world_atoms:
-                            world_atoms.remove(key)
+                        world_atoms.discard(key)
                         world_atoms.add(keyslot)
                         world_atoms = sorted(list(world_atoms))
                         world_file_tmp = world_file+".entropy_inst"
@@ -8343,7 +8337,7 @@ class QAInterface:
             mydep = mybuffer.pop()
 
         if atoms and -1 in matchcache:
-            matchcache.remove(-1)
+            matchcache.discard(-1)
 
         return matchcache
 
@@ -12330,15 +12324,13 @@ class PortageInterface:
             for flag in use_data[myatom]:
                 if flag.startswith("-"):
                     myflag = flag[1:]
-                    if myflag in data['enabled']:
-                        data['enabled'].remove(myflag)
+                    data['enabled'].discard(myflag)
                     data['disabled'].add(myflag)
                 else:
                     myflag = flag
                     if myflag.startswith("+"):
                         myflag = myflag[1:]
-                    if myflag in data['disabled']:
-                        data['disabled'].remove(myflag)
+                    data['disabled'].discard(myflag)
                     data['enabled'].add(myflag)
 
         return data
@@ -21208,8 +21200,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
         self.repositories[repo_tuple]['enabled'] = False
         mydbpath = os.path.join(self.repositories[repo_tuple]['dbpath'],etpConst['etpdatabasefile'])
         if os.path.isfile(mydbpath) and os.access(mydbpath, os.W_OK):
-            if repo_tuple in self.syscache['dbs_not_available']:
-                self.syscache['dbs_not_available'].remove(repo_tuple)
+            self.syscache['dbs_not_available'].discard(repo_tuple)
             self.repositories[repo_tuple]['enabled'] = True
 
     def is_repository_available(self, repo_tuple):
