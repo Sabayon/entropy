@@ -1327,7 +1327,7 @@ class EquoInterface(TextInterface):
                 type = "error",
                 header = red(" @@ ")
             )
-            return set(),set(),-1
+            return {},set(),-1
 
         ldpaths = set(self.entropyTools.collectLinkerPaths())
         ldpaths |= self.entropyTools.collectPaths()
