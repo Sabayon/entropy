@@ -172,7 +172,6 @@ class EntropyPackages:
         return [x for x in map(fm,updates) if type(x) != int]
 
     def _pkg_get_reinstallable(self):
-        gp_call = self.getPackageItem
         def fm(match):
             idpackage, matched = match
             try:
@@ -283,7 +282,6 @@ class EntropyPackages:
 
     def _getPackages(self,mask):
 
-        gp_call = self.getPackageItem
         calls_dict = {
             "installed": self._pkg_get_installed,
             "queued": self._pkg_get_queued,

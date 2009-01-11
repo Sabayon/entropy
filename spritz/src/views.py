@@ -417,8 +417,8 @@ class EntropyPackageView:
         objs_len = len(objs)
         updatables = [x for x in objs if not x.queued]
         queued_u = [x for x in objs if x.queued == "u"]
-        queued_r_p = [x for x in objs if x.queued == "r" and obj.do_purge]
-        queued_r_no_p = [x for x in objs if x.queued == "r" and not obj.do_purge]
+        queued_r_p = [x for x in objs if x.queued == "r" and x.do_purge]
+        queued_r_no_p = [x for x in objs if x.queued == "r" and not x.do_purge]
         installed_m = [x for x in objs if x.installed_match]
         self.selected_objs = objs
 

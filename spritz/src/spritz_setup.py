@@ -305,7 +305,6 @@ class fakeoutfile:
 
     def write(self, s):
         os.write(self.fn,s)
-        #os.fsync(self.fn)
         self.text_written.append(s)
         # cut at 1024 entries
         if len(self.text_written) > 1024:

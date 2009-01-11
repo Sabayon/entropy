@@ -48,7 +48,6 @@ from views import *
 import filters
 from dialogs import *
 
-
 class ProgressTotal:
     def __init__( self, widget ):
         self.progress = widget
@@ -124,8 +123,7 @@ class ProgressTotal:
     def setAbsProgress( self, now, prefix=None ):
         if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
             return
-        while gtk.events_pending():      # process gtk events
-           gtk.main_iteration()
+        self.gtkLoop()
         self.lastFrac = now+0.01
         procent = long( self._percent( 1, now ) )
         self.progress.set_fraction( now )
@@ -134,6 +132,10 @@ class ProgressTotal:
         else:
             text = "%3i%%" % procent
         self.progress.set_text( text )
+
+    def gtkLoop(self):
+        while gtk.events_pending():
+           gtk.main_iteration()
 
 class SpritzProgress:
 
@@ -190,30 +192,39 @@ class SpritzProgress:
             self.ui.progressBar.set_text( text )
 
         self.lastFrac = frac
-
-        while gtk.events_pending():
-           gtk.main_iteration()
+        self.gtkLoop()
 
     def set_text(self, text):
         self.ui.progressBar.set_text( text )
 
     def set_mainLabel( self, text ):
-        self.ui.progressMainLabel.set_markup( "<b>%s</b>" % text )
+        self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
         self.ui.progressSubLabel.set_text( "" )
         self.ui.progressExtraLabel.set_text( "" )
 
     def set_subLabel( self, text ):
-        self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(text),) )
+        mytxt = unicode(text)
+        if len(mytxt) > 80:
+            mytxt = mytxt[:80].strip()+"..."
+        self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
         self.ui.progressExtraLabel.set_text( "" )
 
     def set_extraLabel( self, text ):
-        self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(text) )
+        mytxt = unicode(text)
+        if len(mytxt) > 80:
+            mytxt = mytxt[:80].strip()+"..."
+        self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
         self.lastFrac = -1
+
+    def gtkLoop(self):
+        while gtk.events_pending():
+           gtk.main_iteration()
 
 class SpritzApplication(Controller):
 
     def __init__(self):
 
+        self.do_debug = False
         self.Equo = EquoConnection
         locked = self.Equo._resources_run_check_lock()
         if locked:
@@ -257,10 +268,12 @@ class SpritzApplication(Controller):
         self.exitNow()
 
     def exitNow(self):
-        try:
-            gtk.main_quit()
-        except RuntimeError:
-            pass
+        try: gtk.main_quit()
+        except RuntimeError: pass
+
+    def gtkLoop(self):
+        while gtk.events_pending():
+           gtk.main_iteration()
 
     def load_url(self, url):
         import subprocess
@@ -424,8 +437,7 @@ class SpritzApplication(Controller):
         self.wait_ui.waitWindow.show_all()
         self.wait_ui.waitWindow.queue_draw()
         self.ui.main.queue_draw()
-        while gtk.events_pending():
-           gtk.main_iteration()
+        self.gtkLoop()
 
     def hide_wait_window(self):
         self.wait_ui.waitWindow.hide()
@@ -505,7 +517,7 @@ class SpritzApplication(Controller):
         self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
         self.createButton( _( "Output" ), "button-output.png", 'output' )
 
-    def createButton( self, text, icon, page,first = None ):
+    def createButton( self, text, icon, page, first = None ):
         if first:
             button = gtk.RadioButton( None )
             self.firstButton = button
@@ -1141,7 +1153,7 @@ class SpritzApplication(Controller):
             pass
         if cached == None:
             self.setBusy()
-            cached = self.Equo.FileUpdates.scanfs()
+            cached = self.Equo.FileUpdates.scanfs(quiet = True)
             self.unsetBusy()
         if cached:
             self.filesView.populate(cached)
@@ -1261,16 +1273,30 @@ class SpritzApplication(Controller):
     def progressLog(self, msg, extra = None):
         self.progress.set_subLabel( msg )
         self.progress.set_progress( 0, " " ) # Blank the progress bar.
-        if extra:
-            self.output.write_line(extra+": "+msg+"\n")
-        else:
-            self.output.write_line(msg+"\n")
 
-    def progressLogWrite(self, msg, extra = None):
-        if extra:
-            self.output.write_line(extra+": "+msg+"\n")
-        else:
-            self.output.write_line(msg+"\n")
+        mytxt = []
+        slice_count = self.console.get_column_count()
+        while msg:
+            my = msg[:slice_count]
+            msg = msg[slice_count:]
+            mytxt.append(my)
+
+        for txt in mytxt:
+            if extra:
+                self.output.write_line("%s: %s\n" % (extra,txt,))
+                continue
+            self.output.write_line("%s\n" % (txt,))
+
+    def progressLogWrite(self, msg):
+
+        mytxt = []
+        slice_count = self.console.get_column_count()
+        while msg:
+            my = msg[:slice_count]
+            msg = msg[slice_count:]
+            mytxt.append(my)
+
+        for txt in mytxt: self.output.write_line("%s\n" % (txt,))
 
     def enableSkipMirror(self):
         self.ui.skipMirror.show()
@@ -1394,10 +1420,7 @@ class SpritzApplication(Controller):
                     time.sleep(0.2)
                     if self.do_debug:
                         print "processPackageQueue: QueueExecutor thread still alive"
-                    while gtk.events_pending():
-                        if self.do_debug:
-                            print "processPackageQueue: QueueExecutor, events pending"
-                        gtk.main_iteration()
+                    self.gtkLoop()
 
                 e,i = self.my_inst_errors
 
@@ -1483,6 +1506,11 @@ class SpritzApplication(Controller):
         self.ui.content.set_sensitive(not lock)
         self.ui.menubar.set_sensitive(not lock)
 
+    def switchNotebookPage(self, page):
+        rb = self.pageButtons[page]
+        rb.set_active(True)
+        self.on_PageButton_changed(None, page)
+
 ####### events
 
     def __getSelectedRepoIndex( self ):
@@ -1553,16 +1581,16 @@ class SpritzApplication(Controller):
         rc = self.add_atoms_to_queue(atoms, always_ask = True)
         if rc: okDialog( self.ui.main, _("Packages in all Advisories have been queued.") )
 
-    def add_atoms_to_queue(self, atoms, always_ask = False):
+    def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
 
         self.show_wait_window()
         self.setBusy()
-        # resolve atoms
-        matches = set()
-        for atom in atoms:
-            match = self.Equo.atomMatch(atom)
-            if match[0] != -1:
-                matches.add(match)
+        if not matches:
+            # resolve atoms ?
+            for atom in atoms:
+                match = self.Equo.atomMatch(atom)
+                if match[0] != -1:
+                    matches.add(match)
         if not matches:
             self.hide_wait_window()
             okDialog( self.ui.main, _("Packages not found in repositories, try again later.") )
@@ -2080,9 +2108,7 @@ class SpritzApplication(Controller):
         self.setNotebookPage(const.PAGES[page])
 
     def on_queueReviewAndInstall_clicked(self, widget):
-        rb = self.pageButtons["queue"]
-        rb.set_active(True)
-        self.on_PageButton_changed(widget, "queue")
+        self.switchNotebookPage("queue")
 
     def on_pkgFilter_toggled(self,rb,action):
         ''' Package Type Selection Handler'''
@@ -2290,10 +2316,9 @@ class SpritzApplication(Controller):
         self.skipMirrorNow = True
 
     def on_abortQueue_clicked(self,widget):
-        msg = _("You have chosen to interrupt the queue processing. Doing so could be risky and you should let Entropy to close all its tasks. Are you sure you want it?")
+        msg = _("You have chosen to interrupt the processing. Are you sure you want to do it ?")
         rc = questionDialog(self.ui.main, msg)
-        if rc:
-            self.abortQueueNow = True
+        if rc: self.abortQueueNow = True
 
     def queue_bombing(self):
         if self.abortQueueNow:
@@ -2358,7 +2383,7 @@ class SpritzApplication(Controller):
         if (myiter == None) or (model == None): return
         obj = model.get_value( myiter, 0 )
         if obj:
-            logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            #logged_data = self.Equo.UGC.read_login(obj['repoid'])
             self.Equo.UGC.login(obj['repoid'], force = True)
             self.load_ugc_repositories()
 
@@ -2408,11 +2433,17 @@ class SpritzApplication(Controller):
         self.showNoticeBoard()
 
     def on_deptestButton_clicked(self, widget):
-        self.on_PageButton_changed(widget, "output")
+        self.switchNotebookPage("output")
+        self.uiLock(True)
+        self.startWorking()
         deps_not_matched = self.Equo.dependencies_test()
         if not deps_not_matched:
             okDialog(self.ui.main,_("No missing dependencies found."))
-            self.on_PageButton_changed(widget, "preferences")
+            self.switchNotebookPage("preferences")
+            self.uiLock(False)
+            self.endWorking()
+            self.progress.reset_progress()
+            return
 
         found_deps = set()
         not_all = False
@@ -2442,7 +2473,10 @@ class SpritzApplication(Controller):
 
         if not found_deps:
             okDialog(self.ui.main,_("Missing dependencies found, but none of them are on the repositories."))
-            self.on_PageButton_changed(widget, "preferences")
+            self.switchNotebookPage("preferences")
+            self.uiLock(False)
+            self.endWorking()
+            self.progress.reset_progress()
             return
 
         if not_all:
@@ -2451,16 +2485,76 @@ class SpritzApplication(Controller):
             okDialog(self.ui.main,_("All the missing dependencies are going to be added to the queue"))
 
         rc = self.add_atoms_to_queue(found_deps)
-        if rc: self.on_PageButton_changed(widget, "queue")
-        else: self.on_PageButton_changed(widget, "preferences")
+        if rc: self.switchNotebookPage("queue")
+        else: self.switchNotebookPage("preferences")
+        self.uiLock(False)
+        self.endWorking()
+        self.progress.reset_progress()
 
     def on_libtestButton_clicked(self, widget):
-        packages_matched,broken_execs,status = self.Equo.libraries_test()
-        print packages_matched
-        print "--"
-        print broken_execs
-        print "--"
-        print status
+
+        def do_start():
+            self.switchNotebookPage("output")
+            self.startWorking()
+            self.uiLock(True)
+            self.ui.abortQueue.show()
+
+        def do_stop():
+            self.endWorking()
+            self.ui.abortQueue.hide()
+            self.uiLock(False)
+            self.progress.reset_progress()
+
+        def task_bombing():
+            if self.abortQueueNow:
+                self.abortQueueNow = False
+                mytxt = _("Aborting queue tasks.")
+                self.ui.abortQueue.hide()
+                raise exceptionTools.QueueError('QueueError %s' % (mytxt,))
+
+        do_start()
+
+        packages_matched, broken_execs = {},set()
+        self.libtest_abort = False
+        def exec_task():
+            try:
+                x, y, z = self.Equo.libraries_test(task_bombing_func = task_bombing)
+                packages_matched.update(x)
+                broken_execs.update(y)
+            except exceptionTools.QueueError:
+                self.libtest_abort = True
+
+        t = self.Equo.entropyTools.parallelTask(exec_task)
+        t.start()
+        while t.isAlive():
+            time.sleep(0.2)
+            self.gtkLoop()
+
+        if self.do_debug and self.libtest_abort:
+            print "on_libtestButton_clicked: scan abort"
+        if self.do_debug:
+            print "on_libtestButton_clicked: done scanning"
+
+        if self.libtest_abort:
+            do_stop()
+            okDialog(self.ui.main,_("Libraries test aborted"))
+            return
+
+        matches = set()
+        for key in packages_matched.keys():
+            matches |= packages_matched[key]
+
+        if broken_execs:
+            okDialog(self.ui.main,_("Some broken packages have not been matched, others are going to be added to the queue."))
+        else:
+            okDialog(self.ui.main,_("All the broken packages are going to be added to the queue"))
+
+        rc = self.add_atoms_to_queue([], matches = matches)
+        if rc: self.switchNotebookPage("queue")
+        else: self.switchNotebookPage("preferences")
+
+        do_stop()
+
 
     def on_color_reset(self, widget):
         # get parent
