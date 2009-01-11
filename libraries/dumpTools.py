@@ -43,7 +43,7 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
                 if not os.path.isdir(dump_dir):
                     os.makedirs(dump_dir,0775)
                     const_setup_perms(dump_dir,etpConst['entropygid'])
-                dmpfile = dump_path+".dmp"
+                dmpfile = dump_path+etpConst['cachedumpext']
             if os.path.isfile(dmpfile):
                 os.remove(dmpfile)
             with open(dmpfile,"wb") as f:
@@ -111,7 +111,7 @@ def loadobj(name, completePath = False):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
             #dump_dir = os.path.dirname(dump_path)
             #dump_name = os.path.basename(dump_path)
-            dmpfile = dump_path+".dmp"
+            dmpfile = dump_path+etpConst['cachedumpext']
         if os.path.isfile(dmpfile) and os.access(dmpfile,os.R_OK):
             try:
                 with open(dmpfile,"rb") as f:
@@ -127,14 +127,14 @@ def loadobj(name, completePath = False):
 
 def getobjmtime(name):
     mtime = 0
-    dump_path = os.path.join(etpConst['dumpstoragedir'],name+".dmp")
+    dump_path = os.path.join(etpConst['dumpstoragedir'],name+etpConst['cachedumpext'])
     if os.path.isfile(dump_path) and os.access(dump_path,os.R_OK):
         mtime = os.path.getmtime(dump_path)
     return int(mtime)
 
 def removeobj(name):
-    if os.path.isfile(etpConst['dumpstoragedir']+"/"+name+".dmp"):
+    if os.path.isfile(etpConst['dumpstoragedir']+"/"+name+etpConst['cachedumpext']):
         try:
-            os.remove(etpConst['dumpstoragedir']+"/"+name+".dmp")
+            os.remove(etpConst['dumpstoragedir']+"/"+name+etpConst['cachedumpext'])
         except OSError:
             pass

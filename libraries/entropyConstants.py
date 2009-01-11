@@ -579,6 +579,7 @@ def const_defaultSettings(rootdir):
         'packagesetprefix': "@",
         'userpackagesetsid': "__user__",
         'setsconffilename': "sets.conf",
+        'cachedumpext': ".dmp",
         'packagesext': ".tbz2",
         'packageshashfileext': ".md5", # Extension of the file that contains the checksum of its releated package file
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
