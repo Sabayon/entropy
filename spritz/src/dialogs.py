@@ -4400,7 +4400,7 @@ class PkgInfoMenu(MenuSkel):
         masked = 'False'
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
         if idpackage_masked == -1:
-            masked = 'True, %s' % (etpConst['packagemaskingreasons'][idmasking_reason],)
+            masked = 'True, %s' % (self.Entropy.PackageSettings['pkg_masking_reasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
 
         # sources view

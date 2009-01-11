@@ -711,22 +711,6 @@ def const_defaultSettings(rootdir):
         'securitydir': ETP_DIR+ETP_SECURITYDIR, # where GLSAs are stored
         'securityurl': "http://community.sabayonlinux.org/security/security-advisories.tar.bz2",
 
-        # packages keywords/mask/unmask live settings
-        'packagemaskingreasons': {
-            0: _('reason not available'),
-            1: _('user package.mask'),
-            2: _('system keywords'),
-            3: _('user package.unmask'),
-            4: _('user repo package.keywords (all packages)'),
-            5: _('user repo package.keywords'),
-            6: _('user package.keywords'),
-            7: _('completely masked'),
-            8: _('repository general packages.db.mask'),
-            9: _('repository in branch packages.db.mask'), # FIXME: this has been removed
-            10: _('user license.mask'),
-            11: _('user live unmask'),
-            12: _('user live mask'),
-        },
         'safemodeerrors': {
             'clientdb': 1,
         },

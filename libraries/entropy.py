@@ -2236,7 +2236,7 @@ class EquoInterface(TextInterface):
         idpackage, idreason = dbconn.idpackageValidator(idpackage)
         masked = False
         if idpackage == -1: masked = True
-        return masked, idreason, etpConst['packagemaskingreasons'].get(idreason)
+        return masked, idreason, self.PackageSettings['pkg_masking_reasons'].get(idreason)
 
     def get_masked_packages_tree(self, atomInfo, atoms = False, flat = False, matchfilter = set()):
 
@@ -3087,6 +3087,12 @@ class EquoInterface(TextInterface):
         if idpackage != -1:
             return False
         return True
+
+    def is_match_masked_by_user(self, match, live_check = True):
+        pass
+
+    def is_match_unmasked_by_user(self, match, live_check = True):
+        pass
 
     def unmask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
 
@@ -10367,6 +10373,36 @@ class PackageSettings:
             'live_packagemasking': {
                 'unmask_matches': set(),
                 'mask_matches': set(),
+            },
+            'pkg_masking_reasons': {
+                0: _('reason not available'),
+                1: _('user package.mask'),
+                2: _('system keywords'),
+                3: _('user package.unmask'),
+                4: _('user repo package.keywords (all packages)'),
+                5: _('user repo package.keywords'),
+                6: _('user package.keywords'),
+                7: _('completely masked'),
+                8: _('repository general packages.db.mask'),
+                9: _('repository in branch packages.db.mask'), # FIXME: this has been removed
+                10: _('user license.mask'),
+                11: _('user live unmask'),
+                12: _('user live mask'),
+            },
+            'pkg_masking_reference': {
+                'reason_not_avail': 0,
+                'user_package_mask': 1,
+                'system_keyword': 2,
+                'user_package_unmask': 3,
+                'user_repo_package_keywords_all': 4,
+                'user_repo_package_keywords': 5,
+                'user_package_keywords': 6,
+                'completely_masked': 7,
+                'repository_packages_db_mask': 8,
+                'repository_in_branch_pacakges_db_mask': 9,
+                'user_license_mask': 10,
+                'user_live_unmask': 11,
+                'user_live_mask': 12,
             },
         }
 
@@ -34215,9 +34251,9 @@ class EntropyDatabaseInterface:
     def _idpackageValidator_live(self, idpackage, reponame):
         if (idpackage,reponame) in self.ServiceInterface.PackageSettings['live_packagemasking']['mask_matches']:
             # do not cache this
-            return -1,12
+            return -1,self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_live_mask']
         elif (idpackage,reponame) in self.ServiceInterface.PackageSettings['live_packagemasking']['unmask_matches']:
-            return idpackage,11
+            return idpackage,self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_live_unmask']
 
     def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
         # check if user package.mask needs it masked
@@ -34233,8 +34269,9 @@ class EntropyDatabaseInterface:
             user_package_mask_ids = self.ServiceInterface.PackageSettings[reponame+'mask_ids']
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,1
-            return -1,1
+            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_package_mask']
+            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
+            return -1,myr
 
     def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
         # see if we can unmask by just lookin into user package.unmask stuff -> self.ServiceInterface.PackageSettings['unmask']
@@ -34248,8 +34285,9 @@ class EntropyDatabaseInterface:
                 self.ServiceInterface.PackageSettings[reponame+'unmask_ids'] |= set(matches[0])
             user_package_unmask_ids = self.ServiceInterface.PackageSettings[reponame+'unmask_ids']
         if idpackage in user_package_unmask_ids:
-            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,3
-            return idpackage,3
+            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_package_unmask']
+            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
+            return idpackage,myr
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
         # check if repository packages.db.mask needs it masked
@@ -34268,8 +34306,9 @@ class EntropyDatabaseInterface:
                     repos_mask[mask_repo_id] |= set(matches[0])
                 repomask_ids = repos_mask[mask_repo_id]
             if idpackage in repomask_ids:
-                self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,8
-                return -1,8
+                myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['repository_packages_db_mask']
+                self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
+                return -1,myr
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
         if self.ServiceInterface.PackageSettings['license_mask']:
@@ -34278,8 +34317,9 @@ class EntropyDatabaseInterface:
             if mylicenses:
                 for mylicense in mylicenses:
                     if mylicense in self.ServiceInterface.PackageSettings['license_mask']:
-                        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,10
-                        return -1,10
+                        myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_license_mask']
+                        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
+                        return -1,myr
 
     def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
 
@@ -34291,8 +34331,9 @@ class EntropyDatabaseInterface:
         for key in etpConst['keywords']:
             if key in mykeywords:
                 # found! all fine
-                self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,2
-                return idpackage,2
+                myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['system_keyword']
+                self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
+                return idpackage,myr
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
         # we need to seek self.ServiceInterface.PackageSettings['keywords']
@@ -34303,8 +34344,9 @@ class EntropyDatabaseInterface:
                     keyword_data = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame].get(keyword)
                     if keyword_data:
                         if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,4
-                            return idpackage,4
+                            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_repo_package_keywords_all']
+                            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
+                            return idpackage,myr
                         keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame].get(keyword+"_ids")
                         if keyword_data_ids == None:
                             self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame][keyword+"_ids"] = set()
@@ -34315,8 +34357,9 @@ class EntropyDatabaseInterface:
                                 self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame][keyword+"_ids"] |= matches[0]
                             keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame][keyword+"_ids"]
                         if idpackage in keyword_data_ids:
-                            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,5
-                            return idpackage,5
+                            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_repo_package_keywords']
+                            self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
+                            return idpackage,myr
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
@@ -34338,8 +34381,9 @@ class EntropyDatabaseInterface:
                         keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['packages'][reponame+keyword+"_ids"]
                     if idpackage in keyword_data_ids:
                         # valid!
-                        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,6
-                        return idpackage,6
+                        myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_package_keywords']
+                        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
+                        return idpackage,myr
 
 
 
@@ -34385,8 +34429,9 @@ class EntropyDatabaseInterface:
         if data: return data
 
         # holy crap, can't validate
-        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,7
-        return -1,7
+        myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['completely_masked']
+        self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
+        return -1,myr
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [608,1867]

@@ -265,7 +265,7 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
                 print_info(blue(" %s: " % (_("Matched"),) )+bold("\t"+found_atom))
                 masking_reason = ''
                 if repoMasked:
-                    masking_reason = ", "+etpConst['packagemaskingreasons'].get(idmasking_reason)
+                    masking_reason = ", %s" % (Equo.PackageSettings['pkg_masking_reasons'].get(idmasking_reason),)
                 print_info(blue(" %s: " % (_("Masked"),) )+bold("\t"+str(repoMasked))+masking_reason)
                 if (matchInRepo):
                     where = " %s %s" % (_("from repository"),result[1],)
@@ -1075,7 +1075,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     idpackage_masked, idmasking_reason = dbconn.idpackageValidator(idpackage)
     if idpackage_masked == -1:
         pkgmasked = True
-        masking_reason = ", "+etpConst['packagemaskingreasons'].get(idmasking_reason)
+        masking_reason = ", %s" % (Equo.PackageSettings['pkg_masking_reasons'].get(idmasking_reason),)
 
     if (not clientSearch):
 
