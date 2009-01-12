@@ -344,6 +344,7 @@ class EntropyCacher:
             time.sleep(0.01)
 
     def push(self, key, data):
+        if not self.alive: return
         with self.CacheLock:
             self.CacheBuffer.push((key,data,))
 
@@ -369,8 +370,8 @@ class EntropyCacher:
 
     def stop(self):
         if hasattr(self,"CacheBuffer"):
-            wd = 500
-            if self.CacheBuffer:
+            if self.CacheBuffer and self.alive:
+                wd = 500
                 while self.CacheBuffer.is_filled() and wd:
                     wd -= 1
                     time.sleep(0.01)
@@ -403,8 +404,6 @@ class EquoInterface(TextInterface):
         self.package_match_validator_cache = {}
         self.memoryDbInstances = {}
         self.validRepositories = []
-        self.Cacher = EntropyCacher()
-        self.Cacher.start()
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
 
@@ -429,6 +428,7 @@ class EquoInterface(TextInterface):
         shell_xcache = os.getenv("ETP_NOCACHE")
         if shell_xcache:
             self.xcache = False
+        self.Cacher = EntropyCacher()
 
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
@@ -444,6 +444,9 @@ class EquoInterface(TextInterface):
                 self.purge_cache(False)
             except:
                 pass
+
+        if self.xcache:
+            self.Cacher.start()
 
         if self.openclientdb:
             self.openClientDatabase()
@@ -1992,8 +1995,9 @@ class EquoInterface(TextInterface):
                         set_data.append((etpConst['userpackagesetsid'], myset, mydata.copy(),))
                 else:
                     mydata = self.PackageSettings['system_package_sets'].get(package_set)
-                    if mydata != None: set_data.append((etpConst['userpackagesetsid'], package_set, mydata,))
-                    if not multiMatch: break
+                    if mydata != None:
+                        set_data.append((etpConst['userpackagesetsid'], package_set, mydata,))
+                        if not multiMatch: break
 
             for repoid in valid_repos:
                 dbconn = open_db(repoid)
@@ -3085,30 +3089,33 @@ class EquoInterface(TextInterface):
         return update, remove, fine
 
     def get_match_conflicts(self, match):
-        dbconn = self.openRepositoryDatabase(match[1])
-        conflicts = dbconn.retrieveConflicts(match[0])
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        conflicts = dbconn.retrieveConflicts(m_id)
         found_conflicts = set()
         for conflict in conflicts:
-            mymatch = self.clientDbconn.atomMatch(conflict)
-            if mymatch[0] != -1:
+            my_m_id, my_m_rc = self.clientDbconn.atomMatch(conflict)
+            if my_m_id != -1:
                 # check if the package shares the same slot
-                match_data = dbconn.retrieveKeySlot(match[0])
-                installed_match_data = self.clientDbconn.retrieveKeySlot(mymatch[0])
+                match_data = dbconn.retrieveKeySlot(m_id)
+                installed_match_data = self.clientDbconn.retrieveKeySlot(my_m_id)
                 if match_data != installed_match_data:
-                    found_conflicts.add(mymatch[0])
+                    found_conflicts.add(my_m_id)
         return found_conflicts
 
     def is_match_masked(self, match, live_check = True):
-        dbconn = self.openRepositoryDatabase(match[1])
-        idpackage, idreason = dbconn.idpackageValidator(match[0], live = live_check)
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1:
             return False
         return True
 
     def is_match_masked_by_user(self, match, live_check = True):
         # (query_status,masked?,)
-        dbconn = self.openRepositoryDatabase(match[1])
-        idpackage, idreason = dbconn.idpackageValidator(match[0], live = live_check)
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1: return False,False
         myr = self.PackageSettings['pkg_masking_reference']
         user_masks = [myr['user_package_mask'],myr['user_license_mask'],myr['user_live_mask']]
@@ -3118,8 +3125,9 @@ class EquoInterface(TextInterface):
 
     def is_match_unmasked_by_user(self, match, live_check = True):
         # (query_status,unmasked?,)
-        dbconn = self.openRepositoryDatabase(match[1])
-        idpackage, idreason = dbconn.idpackageValidator(match[0], live = live_check)
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage == -1: return False,False
         myr = self.PackageSettings['pkg_masking_reference']
         user_masks = [
@@ -3129,7 +3137,6 @@ class EquoInterface(TextInterface):
         if idreason in user_masks:
             return True,True
         return False,True
-
 
     def mask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
         if self.is_match_masked(match, live_check = False): return True
@@ -3182,36 +3189,40 @@ class EquoInterface(TextInterface):
         return done
 
     def unmask_match_by_atom(self, match, dry_run = False):
-        dbconn = self.openRepositoryDatabase(match[1])
-        atom = dbconn.retrieveAtom(match[0])
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        atom = dbconn.retrieveAtom(m_id)
         return self.unmask_match_generic(match, atom, dry_run = dry_run)
 
     def unmask_match_by_keyslot(self, match, dry_run = False):
-        dbconn = self.openRepositoryDatabase(match[1])
-        keyslot = "%s:%s" % dbconn.retrieveKeySlot(match[0])
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        keyslot = "%s:%s" % dbconn.retrieveKeySlot(m_id)
         return self.unmask_match_generic(match, keyslot, dry_run = dry_run)
 
     def mask_match_by_atom(self, match, dry_run = False):
-        dbconn = self.openRepositoryDatabase(match[1])
-        atom = dbconn.retrieveAtom(match[0])
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        atom = dbconn.retrieveAtom(m_id)
         return self.mask_match_generic(match, atom, dry_run = dry_run)
 
     def mask_match_by_keyslot(self, match, dry_run = False):
-        dbconn = self.openRepositoryDatabase(match[1])
-        keyslot = "%s:%s" % dbconn.retrieveKeySlot(match[0])
+        m_id, m_repo = match
+        dbconn = self.openRepositoryDatabase(m_repo)
+        keyslot = "%s:%s" % dbconn.retrieveKeySlot(m_id)
         return self.mask_match_generic(match, keyslot, dry_run = dry_run)
 
     def unmask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
         m_file = self.PackageSettings.etpMaskFiles['unmask']
-        return self._mask_unmask_match_generic(match, keyword, m_file, dry_run = dry_run)
+        return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
 
     def mask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
         m_file = self.PackageSettings.etpMaskFiles['mask']
-        return self._mask_unmask_match_generic(match, keyword, m_file, dry_run = dry_run)
+        return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
 
-    def _mask_unmask_match_generic(self, match, keyword, m_file, dry_run = False):
+    def _mask_unmask_match_generic(self, keyword, m_file, dry_run = False):
         exist = False
         if not os.path.isfile(m_file):
             if not os.access(os.path.dirname(m_file),os.W_OK):
@@ -3389,7 +3400,6 @@ class EquoInterface(TextInterface):
         for x in sorted(treepackages.keys()): install.extend(treepackages[x])
 
         # filter out packages that are in actionQueue comparing key + slot
-        remove_from_removal = set()
         if install and removal:
             myremmatch = {}
             for x in removal:
