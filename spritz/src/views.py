@@ -345,7 +345,7 @@ class EntropyPackageView:
             #    return False
 
             # filter dummy objs
-            objs = [obj for obj in objs if not isinstance(obj,DummyEntropyPackage)]
+            objs = [obj for obj in objs if (not isinstance(obj,DummyEntropyPackage)) or obj.set_category]
             if objs:
 
                 objs_len = len(objs)

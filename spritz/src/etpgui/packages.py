@@ -89,6 +89,8 @@ class EntropyPackage:
             self.description = self.set_name
             self.name = self.matched_atom
             self.set_category = False
+            self.matched_id = "@"
+            self.matched_repo = set_name
 
         elif self.remote:
 
@@ -106,7 +108,8 @@ class EntropyPackage:
                 self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
                 self.from_installed = False
 
-        self.matched_id, self.matched_repo = self.matched_atom
+        if isinstance(self.matched_atom,tuple):
+            self.matched_id, self.matched_repo = self.matched_atom
 
     def __del__(self):
         if hasattr(self,'remote'):
