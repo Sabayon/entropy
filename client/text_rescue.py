@@ -637,11 +637,14 @@ def database(options):
             ('db',('combo',(_('Select the database you want to restore'),mydblist),),fake_cb,True)
         ]
 
-        data = Equo.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
-        if data == None:
-            return 1
-        myid, dbx = data['db']
-        dbpath = dblist[myid]
+        while 1:
+            data = Equo.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
+            if data == None:
+                return 1
+            myid, dbx = data['db']
+            dbpath = dblist.get(myid)
+            if dbpath == None: continue
+            break
 
         status, err_msg = Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
         if status:
