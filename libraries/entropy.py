@@ -343,10 +343,13 @@ class EntropyCacher:
             if not wait: wd -= 1
             time.sleep(0.01)
 
-    def push(self, key, data):
+    def push(self, key, data, async = True):
         if not self.alive: return
-        with self.CacheLock:
-            self.CacheBuffer.push((key,data,))
+        if async:
+            with self.CacheLock:
+                self.CacheBuffer.push((key,data,))
+        else:
+            self.dumpTools.dumpobj(key,data)
 
     def pop(self, key):
         with self.CacheLock:
@@ -429,6 +432,10 @@ class EquoInterface(TextInterface):
         if shell_xcache:
             self.xcache = False
         self.Cacher = EntropyCacher()
+        # needs to be started here otherwise repository cache will be
+        # always dropped, trust me, it will be stopped later in the init
+        # if xcache is disabled.
+        self.Cacher.start()
 
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
@@ -445,8 +452,7 @@ class EquoInterface(TextInterface):
             except:
                 pass
 
-        if self.xcache:
-            self.Cacher.start()
+        if not self.xcache: self.Cacher.stop()
 
         if self.openclientdb:
             self.openClientDatabase()
@@ -655,19 +661,15 @@ class EquoInterface(TextInterface):
             # invalidate matching cache
             try: self.repository_move_clear_cache()
             except IOError: pass
-        elif type(cached) is tuple:
-            # compare
-            myrepolist = tuple(etpRepositoriesOrder)
-            if cached != myrepolist:
-                cached = set(cached)
-                myrepolist = set(myrepolist)
-                difflist = cached - myrepolist # before minus now
-                for repoid in difflist:
-                    try:
-                        self.repository_move_clear_cache(repoid)
-                    except IOError:
-                        pass
-        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder)[:])
+        elif isinstance(cached,tuple):
+            difflist = [x for x in cached if x not in etpRepositoriesOrder]
+            for repoid in difflist:
+                try: self.repository_move_clear_cache(repoid)
+                except IOError: pass
+        self.store_repository_list_cache()
+
+    def store_repository_list_cache(self):
+        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder)[:], async = False)
 
     def backup_setting(self, setting_name):
         if etpConst.has_key(setting_name):
@@ -1172,8 +1174,6 @@ class EquoInterface(TextInterface):
             if do_install_queue:
                 self.retrieveInstallQueue(update, False, False)
             self.calculate_available_packages()
-            # otherwise world cache will be trashed at the next initialization
-            self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder)[:])
         except:
             pass
 
