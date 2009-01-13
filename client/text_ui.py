@@ -252,9 +252,8 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
     remove = [x for x in remove if Equo.clientDbconn.isIDPackageAvailable(x)]
 
-    if (remove):
-        remove = list(remove)
-        remove.sort()
+    if remove:
+        remove = sorted(remove)
         print_info(red(" @@ ") + \
             blue("%s." % (
                     _("On the system there are packages that are not available anymore in the online repositories"),

@@ -389,23 +389,22 @@ def reset_cache():
         pass
 
 def load_conf_cache():
-    try:
-        import text_configuration
-    except exceptionTools.FileNotFound:
-        return
+    from entropy import EquoInterface
+    Equo = EquoInterface(noclientdb = 2)
     if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
     try:
         oldquiet = etpUi['quiet']
         etpUi['quiet'] = True
         while 1:
             try:
-                scandata = text_configuration.Equo.FileUpdates.scanfs(dcache = True)
+                scandata = Equo.FileUpdates.scanfs(dcache = True)
                 break
             except KeyboardInterrupt:
                 continue
         etpUi['quiet'] = oldquiet
     except:
         if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching not run.")))
+        Equo.destroy()
         return
     if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching complete.")))
     if scandata: # can be None
@@ -419,6 +418,7 @@ def load_conf_cache():
                 print_warning(darkgreen(mytxt))
                 mytxt = "%s: %s" % (red(_("Please run")),bold("equo conf update"))
                 print_warning(mytxt)
+    Equo.destroy()
 
 try:
     rc = 0
