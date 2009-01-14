@@ -1184,6 +1184,7 @@ class EquoInterface(TextInterface):
         )
 
     def clear_dump_cache(self, dump_name, skip = []):
+        self.Cacher.sync(wait = True)
         dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
         dump_dir = os.path.dirname(dump_path)
         #dump_file = os.path.basename(dump_path)
@@ -3114,29 +3115,31 @@ class EquoInterface(TextInterface):
     def is_match_masked_by_user(self, match, live_check = True):
         # (query_status,masked?,)
         m_id, m_repo = match
+        if m_repo not in self.validRepositories: return False
         dbconn = self.openRepositoryDatabase(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
-        if idpackage != -1: return False,False
+        if idpackage != -1: return False #,False
         myr = self.PackageSettings['pkg_masking_reference']
         user_masks = [myr['user_package_mask'],myr['user_license_mask'],myr['user_live_mask']]
         if idreason in user_masks:
-            return True,True
-        return False,True
+            return True #,True
+        return False #,True
 
     def is_match_unmasked_by_user(self, match, live_check = True):
         # (query_status,unmasked?,)
         m_id, m_repo = match
+        if m_repo not in self.validRepositories: return False
         dbconn = self.openRepositoryDatabase(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
-        if idpackage == -1: return False,False
+        if idpackage == -1: return False #,False
         myr = self.PackageSettings['pkg_masking_reference']
         user_masks = [
             myr['user_package_unmask'],myr['user_live_unmask'],myr['user_package_keywords'],
             myr['user_repo_package_keywords_all'], myr['user_repo_package_keywords']
         ]
         if idreason in user_masks:
-            return True,True
-        return False,True
+            return True #,True
+        return False #,True
 
     def mask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
         if self.is_match_masked(match, live_check = False): return True
@@ -3172,7 +3175,6 @@ class EquoInterface(TextInterface):
         done = f(match, dry_run)
         if done: self.PackageSettings.clear()
 
-        self.Cacher.sync(wait = True)
         # clear atomMatch cache anyway
         if clean_all_cache and not dry_run:
             self.clear_dump_cache(etpCache['world_available'])
