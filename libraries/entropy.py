@@ -447,10 +447,8 @@ class EquoInterface(TextInterface):
             self.validate_repositories_cache()
 
         if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
-            try:
-                self.purge_cache(False)
-            except:
-                pass
+            try: self.purge_cache(False)
+            except: pass
 
         if not self.xcache: self.Cacher.stop()
 
@@ -706,10 +704,8 @@ class EquoInterface(TextInterface):
         self.validate_repositories()
         self.reopenClientDbconn()
         if chroot:
-            try:
-                self.clientDbconn.resetTreeupdatesDigests()
-            except:
-                pass
+            try: self.clientDbconn.resetTreeupdatesDigests()
+            except: pass
         # I don't think it's safe to keep them open
         # isn't it?
         self.closeAllSecurity()
@@ -1921,8 +1917,8 @@ class EquoInterface(TextInterface):
             recursion_level += 1
             if recursion_level > max_recursion_level:
                 raise exceptionTools.InvalidPackageSet('InvalidPackageSet: corrupted, too many recursions: %s' % (myset,))
-            set_data = self.packageSetMatch(myset[len(etpConst['packagesetprefix']):])
-            if not set_data:
+            set_data, set_rc = self.packageSetMatch(myset[len(etpConst['packagesetprefix']):])
+            if not set_rc:
                 raise exceptionTools.InvalidPackageSet('InvalidPackageSet: not found: %s' % (myset,))
             (set_from, package_set, mydata,) = set_data
 
@@ -1947,12 +1943,12 @@ class EquoInterface(TextInterface):
         return mylist
 
     def packageSetList(self, server_repos = [], serverInstance = None):
-        return self.packageSetMatch('', server_repos = server_repos, serverInstance = serverInstance, search = True)
+        return self.packageSetMatch('', server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
 
     def packageSetSearch(self, package_set, server_repos = [], serverInstance = None):
         # search support
         if package_set == '*': package_set = ''
-        return self.packageSetMatch(package_set, server_repos = server_repos, serverInstance = serverInstance, search = True)
+        return self.packageSetMatch(package_set, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
 
     def packageSetMatch(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
 
@@ -1993,11 +1989,11 @@ class EquoInterface(TextInterface):
                     mysets = [x for x in self.PackageSettings['system_package_sets'].keys() if (x.find(package_set) != -1)]
                     for myset in mysets:
                         mydata = self.PackageSettings['system_package_sets'].get(myset)
-                        set_data.append((etpConst['userpackagesetsid'], myset, mydata.copy(),))
+                        set_data.append((etpConst['userpackagesetsid'], unicode(myset), mydata.copy(),))
                 else:
                     mydata = self.PackageSettings['system_package_sets'].get(package_set)
                     if mydata != None:
-                        set_data.append((etpConst['userpackagesetsid'], package_set, mydata,))
+                        set_data.append((etpConst['userpackagesetsid'], unicode(package_set), mydata,))
                         if not multiMatch: break
 
             for repoid in valid_repos:
@@ -2014,9 +2010,9 @@ class EquoInterface(TextInterface):
 
             break
 
-        if multiMatch: return set_data
-        if not set_data: return ()
-        return set_data.pop(0)
+        if not set_data: return (),False
+        if multiMatch: return set_data,True
+        return set_data.pop(0),True
 
     def repository_move_clear_cache(self, repoid = None):
         self.clear_dump_cache(etpCache['world_available'])
@@ -3292,6 +3288,64 @@ class EquoInterface(TextInterface):
             f.close()
             newf.close()
             shutil.move(tmpfile,mask_file)
+
+    def add_user_package_set(self, set_name, set_atoms):
+
+        def _ensure_package_sets_dir():
+            sets_dir = etpConst['confsetsdir']
+            if not os.path.isdir(sets_dir):
+                if os.path.lexists(sets_dir):
+                    os.remove(sets_dir)
+                os.makedirs(sets_dir,0755)
+                const_setup_perms(sets_dir, etpConst['entropygid'])
+
+        try:
+            set_name = str(set_name)
+        except (UnicodeEncodeError,UnicodeDecodeError,):
+            raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name,_("must be an ASCII string"),))
+
+        if set_name.startswith(etpConst['packagesetprefix']):
+            raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
+        set_match, rc = self.packageSetMatch(set_name)
+        if rc: return -1 # already exists
+
+        _ensure_package_sets_dir()
+        set_file = os.path.join(etpConst['confsetsdir'],set_name)
+        if os.path.isfile(set_file) and os.access(set_file,os.W_OK):
+            try:
+                os.remove(set_file)
+            except OSError:
+                return -2 # cannot rm the file
+        if not os.access(os.path.dirname(set_file),os.W_OK):
+            return -3 # cannot create the file
+
+        f = open(set_file,"w")
+        for x in set_atoms: f.write("%s\n" % (x,))
+        f.flush()
+        f.close()
+        return 0
+
+    def remove_user_package_set(self, set_name, set_atoms):
+
+        try:
+            set_name = str(set_name)
+        except (UnicodeEncodeError,UnicodeDecodeError,):
+            raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name,_("must be an ASCII string"),))
+
+        if set_name.startswith(etpConst['packagesetprefix']):
+            raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
+
+        set_match, rc = self.packageSetMatch(set_name)
+        if not rc: return -1 # already removed
+        set_id, set_x, set_y = set_match
+
+        if set_id != etpConst['userpackagesetsid']:
+            return -2 # not a user set
+        set_file = os.path.join(etpConst['confsetsdir'],set_name)
+        if os.path.isfile(set_file) and os.access(set_file,os.W_OK):
+            os.remove(set_file)
+            return 0
+        return -3 # not found / cannot remove
 
     # every tbz2 file that would be installed must pass from here
     def add_tbz2_to_repos(self, tbz2file):
