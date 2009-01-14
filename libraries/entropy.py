@@ -3307,7 +3307,7 @@ class EquoInterface(TextInterface):
         if set_name.startswith(etpConst['packagesetprefix']):
             raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
         set_match, rc = self.packageSetMatch(set_name)
-        if rc: return -1 # already exists
+        if rc: return -1,_("Name already taken")
 
         _ensure_package_sets_dir()
         set_file = os.path.join(etpConst['confsetsdir'],set_name)
@@ -3315,17 +3315,18 @@ class EquoInterface(TextInterface):
             try:
                 os.remove(set_file)
             except OSError:
-                return -2 # cannot rm the file
+                return -2,_("Cannot remove the old element")
         if not os.access(os.path.dirname(set_file),os.W_OK):
-            return -3 # cannot create the file
+            return -3,_("Cannot create the element")
 
         f = open(set_file,"w")
         for x in set_atoms: f.write("%s\n" % (x,))
         f.flush()
         f.close()
-        return 0
+        self.PackageSettings['system_package_sets'][set_name] = set(set_atoms)
+        return 0,_("All fine")
 
-    def remove_user_package_set(self, set_name, set_atoms):
+    def remove_user_package_set(self, set_name):
 
         try:
             set_name = str(set_name)
@@ -3336,16 +3337,18 @@ class EquoInterface(TextInterface):
             raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
 
         set_match, rc = self.packageSetMatch(set_name)
-        if not rc: return -1 # already removed
+        if not rc: return -1,_("Already removed")
         set_id, set_x, set_y = set_match
 
         if set_id != etpConst['userpackagesetsid']:
-            return -2 # not a user set
+            return -2,_("Not defined by user")
         set_file = os.path.join(etpConst['confsetsdir'],set_name)
         if os.path.isfile(set_file) and os.access(set_file,os.W_OK):
             os.remove(set_file)
-            return 0
-        return -3 # not found / cannot remove
+            if set_name in self.PackageSettings['system_package_sets']:
+                del self.PackageSettings['system_package_sets'][set_name]
+            return 0,_("All fine")
+        return -3,_("Set not found or unable to remove")
 
     # every tbz2 file that would be installed must pass from here
     def add_tbz2_to_repos(self, tbz2file):
