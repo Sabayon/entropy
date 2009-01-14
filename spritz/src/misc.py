@@ -150,7 +150,8 @@ class SpritzQueue:
 
         dep_tree, st = self.Entropy.get_required_packages(proposed_matches)
         if st != 0: return proposed_matches, False # wtf?
-        dep_tree.pop(0)
+        if 0 in dep_tree:
+            dep_tree.pop(0)
         new_deptree = set()
         [new_deptree.update(dep_tree[x]) for x in dep_tree]
 
