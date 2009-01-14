@@ -3,7 +3,6 @@ TODO list
   - server-side db backup tool
   - implement pdepend support in dependencies sorting
   - add changelog to packages
-  - split entropy.py into entropy package (move exceptionTools to something saner)
   - move etpConst['conflicting_tagged_packages'] elsewhere
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
   - automatic client db backup
@@ -16,10 +15,10 @@ TODO list
     - implement packages.db.system_mask management
 
   Spritz:
-    - package sets add/remove tool
-    - allow package remasking
+    -
 
 Proposed for Entropy >1.0 (require API changes):
+  - entropy.py refactoring (incl. exceptionTools)
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?

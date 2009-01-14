@@ -226,18 +226,20 @@ class EntropyPackages:
     def _pkg_get_pkgset_matches_installed_matches(self, set_deps):
         set_matches = []
         set_installed_matches = []
+        install_incomplete = False
+        remove_incomplete = False
         for set_dep in set_deps:
             if set_dep.startswith(etpConst['packagesetprefix']):
                 set_matches.append((set_dep,None,))
                 set_installed_matches.append((set_dep,None,))
             else:
                 set_match = self.Entropy.atomMatch(set_dep)
-                if set_match[0] != -1:
-                    set_matches.append(set_match)
+                if set_match[0] != -1: set_matches.append(set_match)
+                else: install_incomplete = True
                 set_installed_match = self.Entropy.clientDbconn.atomMatch(set_dep)
-                if set_match[0] != -1:
-                    set_installed_matches.append(set_installed_match)
-        return set_matches,set_installed_matches
+                if set_match[0] != -1: set_installed_matches.append(set_installed_match)
+                else: remove_incomplete = True
+        return set_matches, set_installed_matches, install_incomplete, remove_incomplete
 
     def _pkg_get_pkgset_set_from_desc(self, set_from):
         my_set_from = _('Set from')
@@ -264,7 +266,7 @@ class EntropyPackages:
         pkgsets = self.getPackageSets()
         for set_from, set_name, set_deps in pkgsets:
 
-            set_matches, set_installed_matches = self._pkg_get_pkgset_matches_installed_matches(set_deps)
+            set_matches, set_installed_matches, install_incomplete, remove_incomplete = self._pkg_get_pkgset_matches_installed_matches(set_deps)
             if not (set_matches and set_installed_matches): continue
             cat_namedesc = self._pkg_get_pkgset_set_from_desc(set_from)
             set_objects = []
@@ -277,10 +279,8 @@ class EntropyPackages:
                 yp.set_matches = set_matches
                 yp.set_installed_matches = set_installed_matches
 
-            # add myself, to make sure we have an element in cache
-            #yp, new = gp_call("%s%s" % (etpConst['packagesetprefix'],set_name,),True)
-            #update_yp(yp)
-
+            myobjs = []
+            broken = False
             for match in set_matches:
                 # set dependency
                 if match[1] == None:
@@ -290,9 +290,14 @@ class EntropyPackages:
                     try:
                         yp, new = gp_call(match,True)
                     except exceptionTools.RepositoryError:
-                        continue
-                update_yp(yp)
-                objects.append(yp)
+                        broken = True
+                        break
+                myobjs.append(yp)
+            if broken: continue
+
+            for yp in myobjs: yp.set_names.clear()
+            for yp in myobjs: update_yp(yp)
+            objects += myobjs
 
         return objects
 

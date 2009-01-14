@@ -771,8 +771,13 @@ class EntropyPackageView:
         pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(self.selected_objs, add = install)
 
         if not objs+set_objs: return
-        q_cache = {}
 
+        install_incomplete = [x for x in self.selected_objs if x.set_install_incomplete]
+        remove_incomplete = [x for x in self.selected_objs if x.set_remove_incomplete]
+        if (install and install_incomplete) or ((not install) and remove_incomplete):
+            okDialog(self.ui.main,_("There are incomplete package sets, continue at your own risk"))
+
+        q_cache = {}
         for obj in objs+set_objs:
             q_cache[obj.matched_atom] = obj.queued
             if install:
@@ -1113,13 +1118,11 @@ class EntropyPackageView:
                 mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
                 mydummy.color = SpritzConf.color_package_category
                 if pkgsets:
-
                     set_from, set_name, set_deps = self.Equo.packageSetMatch(category)[0]
                     mydummy.set_category = category
                     mydummy.set_from = set_from
-                    mydummy.set_matches, mydummy.set_installed_matches = self.etpbase._pkg_get_pkgset_matches_installed_matches(set_deps)
+                    mydummy.set_matches, mydummy.set_installed_matches, mydummy.set_install_incomplete, mydummy.set_remove_incomplete = self.etpbase._pkg_get_pkgset_matches_installed_matches(set_deps)
                     mydummy.namedesc = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(self.etpbase._pkg_get_pkgset_set_from_desc(set_from)),)
-
                 self.dummyCats[category] = mydummy
                 parent = self.store.append( None, (mydummy,) )
                 for po in categories[category]:

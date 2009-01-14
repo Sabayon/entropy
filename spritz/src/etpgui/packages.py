@@ -45,6 +45,8 @@ class DummyEntropyPackage:
         self.set_from = None
         self.set_cat_namedesc = None
         self.set_category = False
+        self.set_install_incomplete = False
+        self.set_remove_incomplete = False
 
 class EntropyPackage:
 
@@ -67,6 +69,8 @@ class EntropyPackage:
         self.set_from = None
         self.set_cat_namedesc = None
         self.set_category = False
+        self.set_install_incomplete = False
+        self.set_remove_incomplete = False
 
         self.matched_atom = matched_atom
         self.installed_match = None

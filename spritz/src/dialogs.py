@@ -5651,13 +5651,16 @@ class InputDialog:
     def __init__(self, parent, title, input_parameters, cancel = True):
 
         mywin = gtk.Window()
+        # avoids to taint the returning elements
+        # when running nested
+        self.parameters = self.parameters.copy()
 
         mywin.set_title(_("Please fill the following form"))
         myvbox = gtk.VBox()
         mylabel = gtk.Label()
         mylabel.set_markup(cleanMarkupString(title))
         myhbox = gtk.HBox()
-        myvbox.pack_start(mylabel)
+        myvbox.pack_start(mylabel, expand = False, fill = False)
         mytable = gtk.Table(rows = len(input_parameters), columns = 2)
         self.identifiers_table = {}
         self.cb_table = {}
@@ -5678,16 +5681,65 @@ class InputDialog:
                 input_label.set_markup(text)
 
                 if input_type == "checkbox":
+
                     input_widget = gtk.CheckButton(text)
                     input_widget.set_alignment(0.0,0.5)
                     input_widget.set_active(passworded)
+
                 elif input_type == "combo":
+
                     input_widget = gtk.combo_box_new_text()
                     for opt in combo_options:
                         input_widget.append_text(opt)
                     if combo_options:
                         input_widget.set_active(0)
                     mytable.attach(input_label, 0, 1, row_count, row_count+1)
+
+                elif input_type == "list":
+
+                    myhbox_l = gtk.HBox()
+                    input_widget = gtk.ListStore(gobject.TYPE_STRING)
+                    view = gtk.TreeView()
+                    cell = gtk.CellRendererText()
+                    column = gtk.TreeViewColumn( text, cell, markup = 0 )
+                    column.set_resizable( True )
+                    column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+                    column.set_expand(True)
+                    view.append_column( column )
+                    view.set_model(input_widget)
+                    for opt in combo_options:
+                        input_widget.append((opt,))
+                    myhbox_l.pack_start(view, expand = True, fill = True)
+
+                    myvbox_l = gtk.VBox()
+                    add_button = gtk.Button()
+                    add_image = gtk.Image()
+                    add_image.set_from_stock("gtk-add", gtk.ICON_SIZE_BUTTON)
+                    add_button.add(add_image)
+                    rm_button = gtk.Button()
+                    rm_image = gtk.Image()
+                    rm_image.set_from_stock("gtk-remove", gtk.ICON_SIZE_BUTTON)
+                    rm_button.add(rm_image)
+                    myvbox_l.pack_start(add_button, expand = False, fill = False)
+                    myvbox_l.pack_start(rm_button, expand = False, fill = False)
+
+                    def on_add_button(widget):
+                        mydata = inputDialog(mywin, _("Add atom"), [('atom',_('Atom'),input_cb,False)], True)
+                        if mydata == None: return
+                        atom = mydata.get('atom')
+                        input_widget.append((atom,))
+
+                    def on_remove_button(widget):
+                        model, iterator = view.get_selection().get_selected()
+                        if iterator == None: return
+                        model.remove(iterator)
+
+                    add_button.connect("clicked",on_add_button)
+                    rm_button.connect("clicked",on_remove_button)
+
+                    myhbox_l.pack_start(myvbox_l, expand = False, fill = False)
+                    mytable.attach(myhbox_l, 0, 2, row_count, row_count+1)
+
                 elif input_type == "text":
 
                     def rescroll_output(adj, scroll):
@@ -5710,13 +5762,16 @@ class InputDialog:
                     scrolled_win.add_with_viewport(my_tv)
                     mytable.attach(input_label, 0, 1, row_count, row_count+1)
                     mytable.attach(scrolled_win, 1, 2, row_count, row_count+1)
+
                 else:
                     continue
 
                 self.entry_text_table[input_id] = text
                 self.identifiers_table[input_id] = input_widget
+                if input_type in ["list"]:
+                    def input_cb(s): return s
                 self.cb_table[input_widget] = input_cb
-                if input_type != "text":
+                if input_type not in ["text","list"]:
                     mytable.attach(input_widget, 1, 2, row_count, row_count+1)
 
 
@@ -5747,7 +5802,7 @@ class InputDialog:
             mycancel = gtk.Button(stock = "gtk-cancel")
             mycancel.connect('clicked', self.do_cancel )
             bbox.pack_start(mycancel)
-        myvbox.pack_start(bbox)
+        myvbox.pack_start(bbox, expand = False, fill = False)
         myvbox.set_spacing(10)
         myvbox.show()
         myhbox.pack_start(myvbox, padding = 10)
@@ -5778,6 +5833,12 @@ class InputDialog:
                 content = mywidget.get_active(),mywidget.get_active_text()
             elif isinstance(mywidget,gtk.TextBuffer):
                 content = mywidget.get_text(mywidget.get_start_iter(),mywidget.get_end_iter(), True)
+            elif isinstance(mywidget,(gtk.ListStore,gtk.TreeStore,)):
+                myiter = mywidget.get_iter_first()
+                content = []
+                while myiter:
+                    content.append(mywidget.get_value(myiter, 0))
+                    myiter = mywidget.iter_next(myiter)
             else:
                 continue
             verify_cb = self.cb_table.get(mywidget)

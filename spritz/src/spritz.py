@@ -2128,6 +2128,9 @@ class SpritzApplication(Controller):
         else:
             self.ui.maskedWarningBox.hide()
 
+        if action == "pkgsets": self.ui.pkgsetsButtonBox.show()
+        else: self.ui.pkgsetsButtonBox.hide()
+
         if action == "queued": self.ui.queueReviewAndInstallBox.show()
         else: self.ui.queueReviewAndInstallBox.hide()
 
@@ -2433,6 +2436,72 @@ class SpritzApplication(Controller):
     def on_noticeBoardMenuItem_activate(self, widget):
         self.showNoticeBoard()
 
+    def on_pkgsetAddButton_clicked(self, widget):
+
+        current_sets = self.Equo.packageSetList()
+        def fake_callback(s):
+            if (s not in current_sets) and (" " not in s) and (not s.startswith(etpConst['packagesetprefix'])):
+                return True
+            return False
+
+        def lv_callback(atom):
+            c_id, c_rc = self.Equo.clientDbconn.atomMatch(atom)
+            if c_id != -1: return True
+            c_id, c_rc = self.Equo.atomMatch(atom)
+            if c_id != -1: return True
+            return False
+
+        input_params = [
+            ('name',_("Package Set name"),fake_callback,False),
+            ('atoms',('list',(_('Package atoms'),[],),),lv_callback,False)
+        ]
+
+        data = self.Equo.inputBox(
+            _('Choose what Package Set you want to add'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+
+        rc, msg = self.Equo.add_user_package_set(data.get("name"), data.get("atoms"))
+        if rc != 0:
+            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+            return
+
+        self.etpbase.clearPackagesSingle("pkgsets")
+        self.addPackages()
+
+    def on_pkgsetRemoveButton_clicked(self, widget):
+
+        def mymf(m):
+            set_from, set_name, set_deps = m
+            if set_from == etpConst['userpackagesetsid']:
+                return set_name
+            return 0
+        avail_pkgsets = [x for x in map(mymf,self.Equo.packageSetList()) if x != 0]
+
+        def fake_callback(s):
+            return True
+        input_params = [
+            ('pkgset',('combo',(_('Removable Package Set'),avail_pkgsets),),fake_callback,False)
+        ]
+
+        data = self.Equo.inputBox(
+            _('Choose what Package Set you want to remove'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        x_id,set_name = data.get("pkgset")
+
+        rc, msg = self.Equo.remove_user_package_set(set_name)
+        if rc != 0:
+            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+            return
+
+        self.etpbase.clearPackagesSingle("pkgsets")
+        self.addPackages()
+
     def on_deptestButton_clicked(self, widget):
         self.switchNotebookPage("output")
         self.uiLock(True)
@@ -2555,7 +2624,6 @@ class SpritzApplication(Controller):
         else: self.switchNotebookPage("preferences")
 
         do_stop()
-
 
     def on_color_reset(self, widget):
         # get parent
