@@ -147,6 +147,22 @@ class EntropyPackage:
             return False
         return True
 
+    def isUserMasked(self):
+        if self.from_installed:
+            key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
+            m_id, m_r = EquoConnection.atomMatch(key, matchSlot = slot)
+            if m_id == -1: return False
+            return EquoConnection.is_match_masked_by_user((m_id, m_r,))
+        return EquoConnection.is_match_masked_by_user(self.matched_atom)
+
+    def isUserUnmasked(self):
+        if self.from_installed:
+            key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
+            m_id, m_r = EquoConnection.atomMatch(key, matchSlot = slot)
+            if m_id == -1: return False
+            return EquoConnection.is_match_unmasked_by_user((m_id, m_r,))
+        return EquoConnection.is_match_unmasked_by_user(self.matched_atom)
+
     def getNameDesc(self):
 
         if self.pkgset:
@@ -176,7 +192,6 @@ class EntropyPackage:
     def getOnlyName(self):
         if self.pkgset:
             return self.set_name
-
         return self.dbconn.retrieveName(self.matched_id)
 
     def getTup(self):
@@ -186,9 +201,7 @@ class EntropyPackage:
         return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_id),self.dbconn.retrieveVersionTag(self.matched_id),self.dbconn.retrieveRevision(self.matched_id))
 
     def versionData(self):
-        if self.pkgset:
-            return self.matched_atom
-
+        if self.pkgset: return self.matched_atom
         return (self.dbconn.retrieveVersion(self.matched_id),self.dbconn.retrieveVersionTag(self.matched_id),self.dbconn.retrieveRevision(self.matched_id))
 
     def getRepoId(self):
@@ -235,10 +248,8 @@ class EntropyPackage:
             return 1
         else:
             rc, matched = EquoConnection.check_package_update(key+":"+slot, deep = True)
-            if rc:
-                return 2
-            else:
-                return 3
+            if rc: return 2
+            return 3
 
     def getVer(self):
         if self.pkgset: return "0"
@@ -503,3 +514,5 @@ class EntropyPackage:
     vote = property(fget=getUGCPackageVote)
     voted = property(fget=getUGCPackageVoted)
     downloads = property(fget=getUGCPackageDownloads)
+    user_unmasked = property(fget=isUserUnmasked)
+    user_masked = property(fget=isUserMasked)

@@ -299,14 +299,14 @@ class SpritzApplication(Controller):
         self.queue = SpritzQueue(self)
         self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main, self)
         self.filesView = EntropyFilesView(self.ui.filesView)
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView, self.ui, self.etpbase)
         self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
         #self.catView = SpritzCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catsView.etpbase = self.etpbase
-        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase, self.ui.main)
+        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase, self.ui.main, self)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
@@ -651,6 +651,8 @@ class SpritzApplication(Controller):
         if self.do_debug: print "entering UGC"
         try:
             self.ugc_update()
+        except (SystemExit,):
+            raise
         except:
             pass
         if self.do_debug: print "quitting UGC"
@@ -720,8 +722,6 @@ class SpritzApplication(Controller):
         self.startWorking()
         status, err_msg = self.Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
         self.Equo.reopenClientDbconn()
         self.etpbase.clearPackages()
         self.etpbase.clearCache()
@@ -1325,7 +1325,8 @@ class SpritzApplication(Controller):
             self.setPage('output')
         self.progress.total.hide()
 
-        self.etpbase.clearPackages()
+        #for flt in masks:
+        #    self.etpbase.clearPackagesSingle(flt)
         if bootstrap:
             self.etpbase.clearCache()
             self.startWorking()
@@ -1354,7 +1355,7 @@ class SpritzApplication(Controller):
             allpkgs = self.etpbase.getPackages('fake_updates')
             empty = True
 
-        if bootstrap: time.sleep(3)
+        #if bootstrap: time.sleep(1)
         self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
 
         show_pkgsets = False

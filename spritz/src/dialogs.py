@@ -5217,7 +5217,7 @@ class ConfirmationDialog:
         if sub_text == None:
             sub_text = ""
 
-        tit = "<span size='x-large'>%s</span>" % (top_text,)
+        tit = "<b>%s</b>" % (top_text,)
         self.action.set_markup( tit )
         if bottom_text != None: self.bottomTitle.set_markup( bottom_text )
         if bottom_data != None: self.bottomData.set_text( bottom_data )

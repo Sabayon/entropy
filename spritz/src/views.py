@@ -27,7 +27,7 @@ from entropyapi import EquoConnection
 from etpgui import *
 from entropyConstants import *
 from entropy_i18n import _,_LOCALE
-from dialogs import MaskedPackagesDialog
+from dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
 
 TOGGLE_WIDTH = 12
 
@@ -59,14 +59,17 @@ class SpritzCategoryView:
                 self.model.append(None,[el,el])
 
 class EntropyPackageView:
-    def __init__( self, treeview, qview, ui, etpbase, main_window ):
+
+    def __init__( self, treeview, qview, ui, etpbase, main_window, spritz_app = None ):
 
         self.Equo = EquoConnection
+        self.Spritz = spritz_app
         self.pkgcolumn_text = _("Selection")
         self.stars_col_size = 100
         self.selection_width = 34
         self.show_reinstall = True
         self.show_purge = True
+        self.show_mask = True
         self.loaded_widget = None
         self.selected_objs = []
         self.loaded_reinstallables = []
@@ -165,6 +168,7 @@ class EntropyPackageView:
         self.installed_remove = self.installed_menu_xml.get_widget( "remove" )
         self.installed_undoremove = self.installed_menu_xml.get_widget( "undoremove" )
         self.installed_unmask = self.installed_menu_xml.get_widget( "unmask" )
+        self.installed_mask = self.installed_menu_xml.get_widget( "mask" )
         self.installed_reinstall.set_image(self.img_pkg_reinstall)
         self.installed_undoreinstall.set_image(self.img_pkg_undoreinstall)
         self.installed_remove.set_image(self.img_pkg_remove)
@@ -183,6 +187,7 @@ class EntropyPackageView:
         self.updates_undoremove = self.updates_menu_xml.get_widget( "updateUndoRemove" )
         self.updates_purge = self.updates_menu_xml.get_widget( "updatePurge" )
         self.updates_undopurge = self.updates_menu_xml.get_widget( "updateUndoPurge" )
+        self.updates_mask = self.updates_menu_xml.get_widget( "updateMask" )
 
         self.updates_remove.set_image(self.img_pkg_update_remove)
         self.updates_undoremove.set_image(self.img_pkg_update_undoremove)
@@ -198,8 +203,9 @@ class EntropyPackageView:
         self.install_menu_xml.signal_autoconnect(self)
         self.install_install = self.install_menu_xml.get_widget( "install" )
         self.install_undoinstall = self.install_menu_xml.get_widget( "undoinstall" )
+        self.install_mask = self.install_menu_xml.get_widget( "maskinstall" )
         self.install_install.set_image(self.img_pkg_install)
-        self.updates_undoupdate.set_image(self.img_pkg_undoinstall)
+        self.install_undoinstall.set_image(self.img_pkg_undoinstall)
 
         # package set right click menu
         self.pkgset_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageSet", domain="entropy" )
@@ -239,10 +245,12 @@ class EntropyPackageView:
     def reset_install_menu(self):
         self.install_install.show()
         self.install_undoinstall.hide()
+        self.install_mask.hide()
 
     def hide_install_menu(self):
         self.install_install.hide()
         self.install_undoinstall.hide()
+        self.install_mask.hide()
 
     def reset_updates_menu(self):
         self.updates_undoupdate.hide()
@@ -251,6 +259,7 @@ class EntropyPackageView:
         self.updates_undoremove.hide()
         self.updates_purge.hide()
         self.updates_undopurge.hide()
+        self.updates_mask.hide()
 
     def reset_set_menu(self):
         self.pkgset_install.hide()
@@ -265,6 +274,7 @@ class EntropyPackageView:
         self.updates_undoremove.hide()
         self.updates_purge.hide()
         self.updates_undopurge.hide()
+        self.updates_mask.hide()
 
     def reset_installed_packages_menu(self):
         self.installed_unmask.hide()
@@ -273,6 +283,7 @@ class EntropyPackageView:
         self.installed_undopurge.hide()
         self.installed_remove.show()
         self.installed_reinstall.hide()
+        self.installed_mask.hide()
         if self.show_reinstall:
             self.installed_reinstall.show()
         self.installed_purge.hide()
@@ -287,6 +298,7 @@ class EntropyPackageView:
         self.installed_remove.hide()
         self.installed_reinstall.hide()
         self.installed_purge.hide()
+        self.installed_mask.hide()
 
     def collect_view_iters(self, widget = None):
         if widget == None:
@@ -325,6 +337,7 @@ class EntropyPackageView:
 
         self.loaded_widget = widget
         self.loaded_event = event
+        del self.loaded_reinstallables[:]
 
         if objs == None:
             objs = self.collect_selected_items(widget)
@@ -407,6 +420,10 @@ class EntropyPackageView:
             self.install_undoinstall.show()
         elif len(not_queued) != objs_len:
             do_show = False
+        else:
+            user_unmasked = [x for x in objs if x.user_unmasked]
+            if len(user_unmasked) == objs_len:
+                self.install_mask.show()
 
         if do_show:
             self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
@@ -415,28 +432,38 @@ class EntropyPackageView:
         self.reset_updates_menu()
 
         objs_len = len(objs)
-        updatables = [x for x in objs if not x.queued]
-        queued_u = [x for x in objs if x.queued == "u"]
-        queued_r_p = [x for x in objs if x.queued == "r" and x.do_purge]
-        queued_r_no_p = [x for x in objs if x.queued == "r" and not x.do_purge]
-        installed_m = [x for x in objs if x.installed_match]
         self.selected_objs = objs
 
         do_show = True
-        if len(queued_u) == objs_len:
-            self.updates_update.hide()
-            self.updates_undoupdate.show()
-        elif len(queued_r_p) == objs_len:
-            self.updates_update.hide()
-            self.updates_undopurge.show()
-        elif len(queued_r_no_p) == objs_len:
-            self.updates_update.hide()
-            self.updates_undoremove.show()
-        elif len(installed_m) == objs_len:
-            self.updates_remove.show()
-            self.updates_purge.show()
-        elif len(updatables) != objs_len:
-            do_show = False
+        while 1:
+            queued_u = [x for x in objs if x.queued == "u"]
+            if len(queued_u) == objs_len:
+                self.updates_update.hide()
+                self.updates_undoupdate.show()
+                break
+            queued_r_p = [x for x in objs if x.queued == "r" and x.do_purge]
+            if len(queued_r_p) == objs_len:
+                self.updates_update.hide()
+                self.updates_undopurge.show()
+                break
+            queued_r_no_p = [x for x in objs if x.queued == "r" and not x.do_purge]
+            if len(queued_r_no_p) == objs_len:
+                self.updates_update.hide()
+                self.updates_undoremove.show()
+                break
+            installed_m = [x for x in objs if x.installed_match]
+            if len(installed_m) == objs_len:
+                self.updates_remove.show()
+                self.updates_purge.show()
+            updatables = [x for x in objs if not x.queued]
+            if len(updatables) != objs_len:
+                do_show = False
+                break
+            user_unmasked = [x for x in objs if x.user_unmasked]
+            if len(user_unmasked) == objs_len:
+                self.updates_mask.show()
+                break
+            break
 
         if do_show:
             self.updates_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
@@ -515,8 +542,14 @@ class EntropyPackageView:
                 self.installed_reinstall.hide()
             else:
                 self.loaded_reinstallables = reinstallables
-                if not self.loaded_reinstallables:
+                if not reinstallables:
                     self.installed_reinstall.hide()
+
+            if self.show_mask:
+                user_unmasked = [x for x in objs if x.user_unmasked]
+                if len(user_unmasked) == objs_len:
+                    self.installed_mask.show()
+
         if do_show:
             #self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
             self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
@@ -607,7 +640,6 @@ class EntropyPackageView:
         self.queueView.refresh()
         normalCursor(self.main_window)
 
-
     def on_reinstall_activate(self, widget):
         self.do_reinstall("rr")
 
@@ -645,6 +677,24 @@ class EntropyPackageView:
                 obj.queued = q_cache.get(obj.matched_atom)
 
         return status
+
+    def add_to_package_mask(self, objs):
+        confirmDialog = ConfirmationDialog( self.ui.main,
+            objs,
+            top_text = _("These are the packages that would be disabled"),
+            bottom_text = _("Once confirmed, these packages will be considered masked."),
+            simpleList = True
+        )
+        result = confirmDialog.run()
+        confirmDialog.destroy()
+        if result != -5: return
+        for obj in objs: self.Equo.mask_match(obj.matched_atom, clean_all_cache = True)
+        # clear cache
+        self.clear()
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
+        if self.Spritz != None:
+            self.Spritz.addPackages()
 
     def on_pkgsetUndoinstall_activate(self, widget):
         return self.on_pkgset_install_undoinstall_activate(widget, install = False)
@@ -862,6 +912,40 @@ class EntropyPackageView:
     def on_undoinstall_undoupdate_activate(self, widget):
         busyCursor(self.main_window)
         self.remove_queued(self.selected_objs)
+        self.queueView.refresh()
+        normalCursor(self.main_window)
+        self.view.queue_draw()
+
+    # installed packages mask action
+    def on_mask_activate(self, widget):
+
+        objs = []
+        for x in self.selected_objs:
+            key, slot = x.keyslot
+            m = self.Equo.atomMatch(key, matchSlot = slot)
+            if m[0] != -1: objs.append(m)
+
+        busyCursor(self.main_window)
+        if objs:
+            self.add_to_package_mask(objs)
+        self.queueView.refresh()
+        normalCursor(self.main_window)
+        self.view.queue_draw()
+
+    # updatable packages mask action
+    def on_updateMask_activate(self, widget):
+        busyCursor(self.main_window)
+        if self.selected_objs:
+            self.add_to_package_mask(self.selected_objs)
+        self.queueView.refresh()
+        normalCursor(self.main_window)
+        self.view.queue_draw()
+
+    # available packages mask action
+    def on_maskinstall_activate(self, widget):
+        busyCursor(self.main_window)
+        if self.selected_objs:
+            self.add_to_package_mask(self.selected_objs)
         self.queueView.refresh()
         normalCursor(self.main_window)
         self.view.queue_draw()
@@ -1578,8 +1662,7 @@ class EntropyRepoView:
         self.store = self.setup_view()
         self.Equo = EquoConnection
         self.ui = ui
-        import dialogs
-        self.okDialog = dialogs.okDialog
+        self.okDialog = okDialog
 
     def on_active_toggled( self, widget, path):
         """ Repo select/unselect handler """

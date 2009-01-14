@@ -5978,6 +5978,21 @@ gz</property>
         </child>
       </widget>
     </child>
+    <child>
+      <widget class="GtkImageMenuItem" id="mask">
+        <property name="visible">True</property>
+        <property name="tooltip" translatable="yes">Mask the selected packages</property>
+        <property name="label" translatable="yes">Disable</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_mask_activate"/>
+        <child internal-child="image">
+          <widget class="GtkImage" id="menu-item-image29">
+            <property name="visible">True</property>
+            <property name="stock">gtk-stop</property>
+          </widget>
+        </child>
+      </widget>
+    </child>
   </widget>
   <widget class="GtkMenu" id="packageUpdates">
     <child>
@@ -6067,6 +6082,21 @@ gz</property>
         </child>
       </widget>
     </child>
+    <child>
+      <widget class="GtkImageMenuItem" id="updateMask">
+        <property name="visible">True</property>
+        <property name="tooltip" translatable="yes">Mask this package</property>
+        <property name="label" translatable="yes">Disable</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_updateMask_activate"/>
+        <child internal-child="image">
+          <widget class="GtkImage" id="menu-item-image28">
+            <property name="visible">True</property>
+            <property name="stock">gtk-stop</property>
+          </widget>
+        </child>
+      </widget>
+    </child>
   </widget>
   <widget class="GtkMenu" id="packageInstall">
     <child>
@@ -6097,6 +6127,21 @@ gz</property>
             <property name="visible">True</property>
             <property name="stock">gtk-undo</property>
             <property name="icon_size">1</property>
+          </widget>
+        </child>
+      </widget>
+    </child>
+    <child>
+      <widget class="GtkImageMenuItem" id="maskinstall">
+        <property name="visible">True</property>
+        <property name="tooltip" translatable="yes">Mask this package</property>
+        <property name="label" translatable="yes">Disable</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_maskinstall_activate"/>
+        <child internal-child="image">
+          <widget class="GtkImage" id="menu-item-image27">
+            <property name="visible">True</property>
+            <property name="stock">gtk-stop</property>
           </widget>
         </child>
       </widget>

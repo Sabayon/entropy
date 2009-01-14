@@ -50,6 +50,14 @@ class EntropyPackages:
         self._categoryPackages.clear()
         self.unmaskingPackages.clear()
 
+    def clearPackagesSingle(self, mask):
+        if mask in self._packages:
+            del self._packages[mask]
+        self.selected_treeview_item = None
+        self.selected_advisory_item = None
+        self._categoryPackages.clear()
+        self.unmaskingPackages.clear()
+
     def clearCache(self):
         self.pkgCache.clear()
         self.selected_treeview_item = None
@@ -58,8 +66,8 @@ class EntropyPackages:
     def populatePackages(self,masks):
         for flt in masks: self.populateSingle(flt)
 
-    def populateSingle(self, mask):
-        if self._packages.has_key(mask): return
+    def populateSingle(self, mask, force = False):
+        if self._packages.has_key(mask) and not force: return
         self._packages[mask] = self._getPackages(mask)
 
     def setCategoryPackages(self,pkgdict = {}):
@@ -207,6 +215,14 @@ class EntropyPackages:
             return yp
         return [x for x in map(fm,self.getMaskedPackages()) if type(x) != 0]
 
+    def _pkg_get_user_masked(self):
+        masked_objs = self.getPackages("masked")
+        return [x for x in masked_objs if x.user_masked]
+
+    def _pkg_get_user_unmasked(self):
+        objs = self.getPackages("updates") + self.getPackages("available") + self.getPackages('reinstallable')
+        return [x for x in objs if x.user_unmasked]
+
     def _pkg_get_pkgsets(self):
 
         gp_call = self.getPackageItem
@@ -289,6 +305,8 @@ class EntropyPackages:
             "updates": self._pkg_get_updates,
             "reinstallable": self._pkg_get_reinstallable,
             "masked": self._pkg_get_masked,
+            "user_masked": self._pkg_get_user_masked,
+            "user_unmasked": self._pkg_get_user_unmasked,
             "pkgsets": self._pkg_get_pkgsets,
             "fake_updates": self._pkg_get_fake_updates,
         }
