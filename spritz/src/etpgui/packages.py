@@ -74,7 +74,7 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_from, set_name, set_deps = EquoConnection.packageSetMatch(self.matched_atom[1:])
+            set_from, set_name, set_deps = EquoConnection.packageSetMatch(self.matched_atom[1:])[0]
             self.from_installed = False
             self.dbconn = None
             self.dummy_type = -2
@@ -274,7 +274,7 @@ class EntropyPackage:
         return self.dbconn.retrieveSlot(self.matched_id)
 
     def getDependencies(self):
-        if self.pkgset: self.set_matches
+        if self.pkgset: self.set_matches.copy()
         return self.dbconn.retrieveDependencies(self.matched_id)
 
     def getDependsFmt(self):

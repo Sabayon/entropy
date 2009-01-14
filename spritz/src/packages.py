@@ -223,12 +223,34 @@ class EntropyPackages:
         objs = self.getPackages("updates") + self.getPackages("available") + self.getPackages('reinstallable')
         return [x for x in objs if x.user_unmasked]
 
+    def _pkg_get_pkgset_matches_installed_matches(self, set_deps):
+        set_matches = []
+        set_installed_matches = []
+        for set_dep in set_deps:
+            if set_dep.startswith(etpConst['packagesetprefix']):
+                set_matches.append((set_dep,None,))
+                set_installed_matches.append((set_dep,None,))
+            else:
+                set_match = self.Entropy.atomMatch(set_dep)
+                if set_match[0] != -1:
+                    set_matches.append(set_match)
+                set_installed_match = self.Entropy.clientDbconn.atomMatch(set_dep)
+                if set_match[0] != -1:
+                    set_installed_matches.append(set_installed_match)
+        return set_matches,set_installed_matches
+
+    def _pkg_get_pkgset_set_from_desc(self, set_from):
+        my_set_from = _('Set from')
+        set_from_desc = _('Unknown')
+        if set_from in self.Entropy.validRepositories:
+            set_from_desc = etpRepositories[set_from]['description']
+        elif set_from == etpConst['userpackagesetsid']:
+            set_from_desc = _("User configuration")
+        return "%s: %s" % (my_set_from,set_from_desc,)
+
     def _pkg_get_pkgsets(self):
 
         gp_call = self.getPackageItem
-        cdb_atomMatch = self.Entropy.clientDbconn.atomMatch
-        atomMatch = self.Entropy.atomMatch
-        valid_repos = self.Entropy.validRepositories
 
         # make sure updates will be marked as such
         self.getPackages("updates")
@@ -238,30 +260,28 @@ class EntropyPackages:
         self.getPackages("reinstallable")
 
         objects = []
-        my_set_from = _('Set from')
-        for set_from, set_name, set_deps in self.getPackageSets():
-            set_matches = []
-            set_installed_matches = []
-            for set_dep in set_deps:
-                if set_dep.startswith(etpConst['packagesetprefix']):
-                    set_matches.append((set_dep,None,))
-                    set_installed_matches.append((set_dep,None,))
-                else:
-                    set_match = atomMatch(set_dep)
-                    if set_match[0] != -1:
-                        set_matches.append(set_match)
-                    set_installed_match =cdb_atomMatch(set_dep)
-                    if set_match[0] != -1:
-                        set_installed_matches.append(set_installed_match)
+
+        pkgsets = self.getPackageSets()
+        for set_from, set_name, set_deps in pkgsets:
+
+            set_matches, set_installed_matches = self._pkg_get_pkgset_matches_installed_matches(set_deps)
             if not (set_matches and set_installed_matches): continue
-            set_from_desc = _('Unknown')
-            if set_from in valid_repos:
-                set_from_desc = etpRepositories[set_from]['description']
-            elif set_from == etpConst['userpackagesetsid']:
-                set_from_desc = _("User configuration")
-            cat_namedesc = "%s: %s" % (my_set_from,set_from_desc,)
+            cat_namedesc = self._pkg_get_pkgset_set_from_desc(set_from)
             set_objects = []
-            def fm(match):
+
+            def update_yp(yp):
+                yp.color = SpritzConf.color_install
+                yp.set_cat_namedesc = cat_namedesc
+                yp.set_names.add(set_name)
+                yp.set_from = set_from
+                yp.set_matches = set_matches
+                yp.set_installed_matches = set_installed_matches
+
+            # add myself, to make sure we have an element in cache
+            #yp, new = gp_call("%s%s" % (etpConst['packagesetprefix'],set_name,),True)
+            #update_yp(yp)
+
+            for match in set_matches:
                 # set dependency
                 if match[1] == None:
                     yp, new = gp_call(match[0],True)
@@ -270,17 +290,10 @@ class EntropyPackages:
                     try:
                         yp, new = gp_call(match,True)
                     except exceptionTools.RepositoryError:
-                        return 0
-                yp.color = SpritzConf.color_install
-                yp.set_cat_namedesc = cat_namedesc
-                yp.set_names.add(set_name)
-                yp.set_from = set_from
-                yp.set_matches = set_matches
-                yp.set_installed_matches = set_installed_matches
-                return yp
-            set_objects = map(fm,set_matches)
-            if int in [type(x) for x in set_objects]: continue
-            objects += set_objects
+                        continue
+                update_yp(yp)
+                objects.append(yp)
+
         return objects
 
     def _pkg_get_fake_updates(self):

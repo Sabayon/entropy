@@ -1113,12 +1113,13 @@ class EntropyPackageView:
                 mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
                 mydummy.color = SpritzConf.color_package_category
                 if pkgsets:
-                    j = categories[category][0]
-                    mydummy.set_from = j.set_from
-                    mydummy.set_names = j.set_names
-                    mydummy.set_matches = j.set_matches
-                    mydummy.set_installed_matches = j.set_installed_matches
+
+                    set_from, set_name, set_deps = self.Equo.packageSetMatch(category)[0]
                     mydummy.set_category = category
+                    mydummy.set_from = set_from
+                    mydummy.set_matches, mydummy.set_installed_matches = self.etpbase._pkg_get_pkgset_matches_installed_matches(set_deps)
+                    mydummy.namedesc = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(self.etpbase._pkg_get_pkgset_set_from_desc(set_from)),)
+
                 self.dummyCats[category] = mydummy
                 parent = self.store.append( None, (mydummy,) )
                 for po in categories[category]:
