@@ -1093,8 +1093,9 @@ class EquoInterface(TextInterface):
         self.purge_cache()
         return True, _("All fine")
 
-    def list_backedup_client_databases(self):
-        client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
+    def list_backedup_client_databases(self, client_dbdir = None):
+        if not client_dbdir:
+            client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
         return [os.path.join(client_dbdir,x) for x in os.listdir(client_dbdir) \
                     if x.startswith(etpConst['dbbackupprefix']) and \
                     os.access(os.path.join(client_dbdir,x),os.R_OK)

@@ -484,6 +484,59 @@ def database(options):
         if databaseRequestSync:
             errors, fine, broken = Entropy.MirrorsService.sync_databases()
 
+    elif (options[0] == "backup"):
+
+        db_path = Entropy.get_local_database_file()
+        rc, err_msg = Entropy.ClientService.backupDatabase(db_path, backup_dir = os.path.dirname(db_path))
+        if not rc:
+            print_info(darkred(" ** ")+red("%s: %s" % (_("Error"),err_msg,) ))
+            return 1
+        return 0
+
+    elif (options[0] == "restore"):
+
+
+        db_file = Entropy.get_local_database_file()
+        db_dir = os.path.dirname(db_file)
+        dblist = Entropy.ClientService.list_backedup_client_databases(client_dbdir = db_dir)
+        if not dblist:
+            print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
+            return 1
+
+        mydblist = []
+        db_data = []
+        for mydb in dblist:
+            ts = Entropy.entropyTools.getFileUnixMtime(mydb)
+            mytime = Entropy.entropyTools.convertUnixTimeToHumanTime(ts)
+            mydblist.append("[%s] %s" % (mytime,mydb,))
+            db_data.append(mydb)
+
+        def fake_cb(s):
+            return s
+
+        input_params = [
+            ('db',('combo',(_('Select the database you want to restore'),mydblist),),fake_cb,True)
+        ]
+
+        while 1:
+            data = Entropy.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
+            if data == None:
+                return 1
+            myid, dbx = data['db']
+            print dbx
+            try:
+                dbpath = db_data.pop(myid)
+            except IndexError:
+                continue
+            if not os.path.isfile(dbpath): continue
+            break
+
+        status, err_msg = Entropy.ClientService.restoreDatabase(dbpath, db_file)
+        if status:
+            return 0
+        return 1
+
+
 def spm(options):
 
     if not options:

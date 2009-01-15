@@ -625,10 +625,12 @@ def database(options):
             return 1
 
         mydblist = []
+        db_data = []
         for mydb in dblist:
             ts = Equo.entropyTools.getFileUnixMtime(mydb)
             mytime = Equo.entropyTools.convertUnixTimeToHumanTime(ts)
             mydblist.append("[%s] %s" % (mytime,mydb,))
+            db_data.append(mydb)
 
         def fake_cb(s):
             return s
@@ -642,8 +644,11 @@ def database(options):
             if data == None:
                 return 1
             myid, dbx = data['db']
-            dbpath = dblist.get(myid)
-            if dbpath == None: continue
+            try:
+                dbpath = db_data.pop(myid)
+            except IndexError:
+                continue
+            if not os.path.isfile(dbpath): continue
             break
 
         status, err_msg = Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])

@@ -78,6 +78,8 @@ myopts = [
         (2,'switchbranch <from branch> <to branch>',3,_('switch to the specified branch the repository')),
         (2,'md5check',3,_('verify integrity of the provided atoms (or world)')),
         (2,'md5remote',3,_('verify remote integrity of the provided atoms (or world)')),
+        (2,'backup',4,_('backup current repository database')),
+        (2,'restore',4,_('restore a previously backed-up repository database')),
     None,
     (1,'repo',3,_('manage a repository')),
         (2,'enable <repo>',3,_('enable the specified repository')),

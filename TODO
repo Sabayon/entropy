@@ -1,6 +1,5 @@
 TODO list
 
-  - server-side db backup tool
   - implement pdepend support in dependencies sorting
   - add changelog to packages
   - move etpConst['conflicting_tagged_packages'] elsewhere
@@ -18,7 +17,7 @@ TODO list
     -
 
 Proposed for Entropy >1.0 (require API changes):
-  - entropy.py refactoring (incl. exceptionTools)
+  - Entropy structure refactoring
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
