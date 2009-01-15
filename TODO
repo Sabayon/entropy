@@ -1,6 +1,5 @@
 TODO list
 
-  - implement pdepend support in dependencies sorting
   - add changelog to packages
   - move etpConst['conflicting_tagged_packages'] elsewhere
   - move etpConst['filesystemdirs'] and etpConst['filesystemdirsmask'] to config file
