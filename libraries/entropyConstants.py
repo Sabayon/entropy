@@ -621,7 +621,7 @@ def const_defaultSettings(rootdir):
         'edbcounter': edbCOUNTER,
         'filesystemdirs': ['/bin','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
         'filesystemdirsmask': [
-                                    '/var/cache','/var/db','/var/empty','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d', '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage', '/var/spool', '/var/lib', '/usr/lib/locale','/lib64/splash/cache'
+            '/var/cache','/var/db','/var/empty','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d', '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage', '/var/spool', '/var/lib', '/usr/lib/locale','/lib64/splash/cache'
         ],
         'libtest_blacklist': [],
         'libtest_files_blacklist': [],
@@ -655,6 +655,7 @@ def const_defaultSettings(rootdir):
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {
+            'pdepend_id': 1,
             'ebuild_file_extension': "ebuild",
             'ebuild_pkg_tag_var': "ENTROPY_PROJECT_TAG",
             'global_make_conf': rootdir+"/etc/make.conf",

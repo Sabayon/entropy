@@ -2463,8 +2463,14 @@ class EquoInterface(TextInterface):
             myundeps = filter(my_dep_filter,matchdb.retrieveDependenciesList(m_idpackage))
             if not empty_deps:
                 myundeps = filter(my_dep_filter,get_unsatisfied_deps(myundeps, deep_deps, depcache = filter_unsat_cache))
-            for x in myundeps: mybuffer.push((treedepth,x))
 
+            # PDEPENDs support
+            if myundeps:
+                post_deps = [x for x in matchdb.retrievePostDependencies(m_idpackage) if x in myundeps]
+                myundeps = [x for x in myundeps if x not in post_deps]
+                for x in post_deps: mybuffer.push((-1,x)) # always after the package itself
+
+            for x in myundeps: mybuffer.push((treedepth,x))
             mydep = mybuffer.pop()
 
         if deps_not_found:
@@ -4230,7 +4236,7 @@ class EquoInterface(TextInterface):
         for x in portage_metadata['PDEPEND'].split():
             if x.startswith("!") or (x in ("(","||",")","")):
                 continue
-            data['dependencies'][x] = 1
+            data['dependencies'][x] = etpConst['spm']['pdepend_id']
         data['conflicts'] = [x[1:] for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
 
         if (kernelstuff) and (not kernelstuff_kernel):
@@ -32655,7 +32661,11 @@ class EntropyDatabaseInterface:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependenciesList(self, idpackage):
-        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency UNION SELECT "!" || conflict FROM conflicts WHERE idpackage = (?)', (idpackage,idpackage,))
+        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) AND dependencies.iddependency = dependenciesreference.iddependency UNION SELECT "!" || conflict FROM conflicts WHERE idpackage = (?)', (idpackage,idpackage,))
+        return self.fetchall2set(self.cursor.fetchall())
+
+    def retrievePostDependencies(self, idpackage):
+        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) AND dependencies.iddependency = dependenciesreference.iddependency AND dependencies.type = (?)', (idpackage,etpConst['spm']['pdepend_id'],))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None):
