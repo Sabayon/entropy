@@ -2356,7 +2356,7 @@ class SpritzApplication(Controller):
         flt = filters.spritzFilter.get('KeywordFilter')
         if txt != '':
             flt.activate()
-            lst = txt.split(' ')
+            lst = txt.split()
             flt.setKeys(lst)
             self.ui.pkgClr.show()
         else:

@@ -70,30 +70,23 @@ class SpritzFilter:
 class KeywordFilter(SpritzFilter):
     def __init__(self):
         SpritzFilter.__init__(self)
-        self.reList = []
+        self.keywordList = []
         self.fields = ['name']#, 'description']
 
     def setKeys(self,criteria):
-        self.reList = []
-        for string in criteria:
-            try:
-                crit_re = re.compile(string, flags=re.I)
-                self.reList.append(crit_re)
-            except:
-                pass
+        self.keywordList = criteria[:]
 
     def getName(self):
         return "KeywordFilter"
 
     def process(self,pkg):
+        if pkg.dummy_type != None: return False
         if self._state: # is filter enabled ?
-            for crit_re in self.reList:
+            for crit in self.keywordList:
                 found = False
                 for field in self.fields:
-                    if pkg.dummy_type != None:
-                        continue
-                    value = pkg.getAttr( field )
-                    if value and crit_re.search(value):
+                    value = getattr(pkg,field)
+                    if value and crit in value:
                         found = True
                 if found:    # This search criteria was found
                     continue # Check the next one
