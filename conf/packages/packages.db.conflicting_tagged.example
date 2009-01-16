@@ -1,0 +1,17 @@
+# Server side packages.db.conflicting_tagged file, containing tagged/slotted package
+# keys that cannot installed at the same time.
+# For example, even if nvidia-drivers packages are slotted and tagged by kernel release
+# you cannot have more than one installed due to obvious libGL issues
+
+# LINE CONSTRUCTION:
+# <package key (only key!)> <conflicting package atom 1> <conflicting package atom 2> ...
+# See examples below
+
+# EXAMPLE:
+# x11-drivers/nvidia-drivers x11-drivers/nvidia-drivers
+# x11-drivers/foo x11-drivers/foo-old x11-drivers/foo-veryold
+
+# PRESET:
+x11-drivers/nvidia-drivers x11-drivers/nvidia-drivers
+x11-drivers/ati-drivers x11-drivers/ati-drivers
+

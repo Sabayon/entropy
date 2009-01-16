@@ -1,9 +1,7 @@
 TODO list
 
   - add changelog to packages
-  - move etpConst['conflicting_tagged_packages'] elsewhere
   - decide what to do about smart apps and if it's better waiting for app-directory packages support
-  - reorganize etpConst parser
   - documentation + man page
 
   Repository Manager:
@@ -12,7 +10,6 @@ TODO list
     - implement packages.db.system_mask management
 
 Proposed for Entropy >1.0 (require API changes):
-  - Entropy structure refactoring
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?

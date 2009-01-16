@@ -538,6 +538,7 @@ def const_defaultSettings(rootdir):
         'entropyxpakdatarelativepath': "data", # Gentoo xpak metadata directory path
         'entropyxpakfilename': "metadata.xpak", # Gentoo xpak metadata file name
 
+        'etpdatabaseconflictingtaggedfile': ETP_DBFILE+".conflicting_tagged", # file containing a list of packages that are strictly required by the repository, thus forced 
         'etpdatabasesytemmaskfile': ETP_DBFILE+".system_mask", # file containing a list of packages that are strictly required by the repository, thus forced 
         'etpdatabasemaskfile': ETP_DBFILE+".mask",
         'etpdatabaseupdatefile': ETP_DBFILE+".repo_updates",
@@ -722,12 +723,6 @@ def const_defaultSettings(rootdir):
                 '__idtype__': 1,
                 'kde': 1,
             },
-        },
-
-        # packages whose need their other installs (different tag), to be removed
-        'conflicting_tagged_packages': {
-            'x11-drivers/nvidia-drivers': ['x11-drivers/nvidia-drivers'],
-            'x11-drivers/ati-drivers': ['x11-drivers/ati-drivers'],
         },
 
         'clientserverrepoid': "__system__",
@@ -1116,7 +1111,7 @@ def const_readEquoSettings():
             elif line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
                 configprotect = line.split("|")[1].strip()
                 for x in configprotect.split():
-                    etpConst['configprotectskip'].append(etpConst['systemroot']+x)
+                    etpConst['configprotectskip'].append(etpConst['systemroot']+unicode(x,'raw_unicode_escape'))
 
 def const_setupEntropyPid(just_read = False):
 

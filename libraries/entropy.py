@@ -4242,11 +4242,12 @@ class EquoInterface(TextInterface):
         if (kernelstuff) and (not kernelstuff_kernel):
             # add kname to the dependency
             data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver] = 0
-            key = data['category']+"/"+data['name']
-            if etpConst['conflicting_tagged_packages'].has_key(key):
-                myconflicts = etpConst['conflicting_tagged_packages'][key]
-                for conflict in myconflicts:
-                    data['conflicts'].append(conflict)
+
+        # Conflicting tagged packages support
+        key = data['category']+"/"+data['name']
+        confl_data = self.SystemSettings['conflicting_tagged_packages'].get(key)
+        if confl_data != None:
+            for conflict in confl_data: data['conflicts'].append(conflict)
 
         # Get License text if possible
         licenses_dir = os.path.join(Spm.get_spm_setting('PORTDIR'),'licenses')
@@ -6488,7 +6489,7 @@ class RepoInterface:
 
         self.supported_download_items = (
             "db","rev","ck",
-            "lock","mask","system_mask","dbdump",
+            "lock","mask","system_mask","dbdump", "conflicting_tagged",
             "dbdumpck","lic_whitelist","make.conf",
             "package.mask","package.unmask","package.keywords","profile.link",
             "package.use","server.cert","ca.cert",
@@ -6639,6 +6640,9 @@ class RepoInterface:
         elif item == "system_mask":
             url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasesytemmaskfile']
             filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasesytemmaskfile']
+        elif item == "conflicting_tagged":
+            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaseconflictingtaggedfile']
+            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaseconflictingtaggedfile']
         elif item == "make.conf":
             myfile = os.path.basename(etpConst['spm']['global_make_conf'])
             url = etpRepositories[repo]['database'] + "/" + myfile
@@ -7937,6 +7941,16 @@ class RepoInterface:
                 "%s %s %s" % (
                     red(_("Downloading packages system mask")),
                     darkgreen(etpConst['etpdatabasesytemmaskfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "conflicting_tagged",
+                etpConst['etpdatabaseconflictingtaggedfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading conflicting tagged packages file")),
+                    darkgreen(etpConst['etpdatabaseconflictingtaggedfile']),
                     red("..."),
                 )
             ),
@@ -10505,6 +10519,7 @@ class SystemSettings:
             'repos_mask': {},
             'repos_license_whitelist': {},
             'system_package_sets': {},
+            'conflicting_tagged_packages': {},
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
         }
@@ -10526,7 +10541,6 @@ class SystemSettings:
             'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {},
-            'system_package_sets': {},
         }
 
         self.__settings = None
@@ -10651,6 +10665,7 @@ class SystemSettings:
             maskpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasemaskfile'])
             wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
             sm_path = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasesytemmaskfile'])
+            ct_path = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaseconflictingtaggedfile'])
             if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
                 self.etpSettingFiles['repos_mask'][repoid] = maskpath
                 self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
@@ -10660,6 +10675,8 @@ class SystemSettings:
             if os.path.isfile(sm_path) and os.access(sm_path,os.R_OK):
                 self.etpSettingFiles['repos_system_mask'][repoid] = sm_path
                 self.etpMtimeFiles['repos_system_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasesytemmaskfile']+".mtime"
+            if os.path.isfile(ct_path) and os.access(ct_path,os.R_OK):
+                self.etpSettingFiles['conflicting_tagged_packages'][repoid] = ct_path
 
         # user defined package sets
         sets_dir = etpConst['confsetsdir']
@@ -10670,9 +10687,7 @@ class SystemSettings:
                     set_file = str(set_file)
                 except (UnicodeDecodeError,UnicodeEncodeError,):
                     continue
-                set_filepath = os.path.join(sets_dir,set_file)
-                self.etpSettingFiles['system_package_sets'][set_file] = set_filepath
-                self.etpMtimeFiles['system_package_sets'][set_file] = etpConst['dumpstoragedir']+"/system_package_set_"+set_file+".mtime"
+                self.etpSettingFiles['system_package_sets'][set_file] = os.path.join(sets_dir,set_file)
 
         data = {}
         for item in self.etpSettingFiles:
@@ -10791,13 +10806,29 @@ class SystemSettings:
     def system_dirs_mask_parser(self):
         return self.__generic_parser(self.etpSettingFiles['system_dirs_mask'])
 
+    def conflicting_tagged_packages_parser(self):
+        data = {}
+        # keep priority order
+        repoids = [x for x in etpRepositoriesOrder if x in self.etpSettingFiles['conflicting_tagged_packages']]
+        for repoid in repoids:
+            filepath = self.etpSettingFiles['conflicting_tagged_packages'].get(repoid)
+            if os.path.isfile(filepath) and os.access(filepath,os.R_OK):
+                f = open(filepath,"r")
+                content = f.readlines()
+                f.close()
+                content = [x.strip().rsplit("#",1)[0].strip().split() for x in content if not x.startswith("#") and x.strip()]
+                for mydata in content:
+                    if len(mydata) < 2: continue
+                    data[mydata[0]] = mydata[1:]
+        return data
+
     '''
     internal functions
     '''
 
     def __generic_parser(self, filepath):
         data = []
-        if os.path.isfile(filepath):
+        if os.path.isfile(filepath) and os.access(filepath,os.R_OK):
             f = open(filepath,"r")
             content = f.readlines()
             f.close()
@@ -16716,6 +16747,11 @@ class ServerInterface(TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasesytemmaskfile'])
+
+    def get_local_database_confl_tagged_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseconflictingtaggedfile'])
 
     def get_local_database_licensewhitelist_file(self, repo = None, branch = None):
         if repo == None:
@@ -28384,6 +28420,12 @@ class ServerMirrorsInterface:
             data['database_package_system_mask_file'] = database_package_mask_file
             if not download:
                 critical.append(data['database_package_system_mask_file'])
+
+        database_package_confl_tagged_file = self.Entropy.get_local_database_confl_tagged_file(repo)
+        if os.path.isfile(database_package_confl_tagged_file) or download:
+            data['database_package_confl_tagged_file'] = database_package_confl_tagged_file
+            if not download:
+                critical.append(data['database_package_confl_tagged_file'])
 
         database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
         if os.path.isfile(database_license_whitelist_file) or download:
