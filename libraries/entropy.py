@@ -329,19 +329,23 @@ class EntropyCacher:
     def __init__(self):
         self.alive = False
         self.CacheBuffer = self.entropyTools.lifobuffer()
-        self.CacheWriter = self.entropyTools.TimeScheduled(self.Cacher,0.5)
+        self.CacheWriter = self.entropyTools.TimeScheduled(self.Cacher,1)
         self.CacheLock = self.threading.Lock()
 
     def start(self):
-        self.alive = True
+        self.CacheWriter.delay_before = True
         self.CacheWriter.start()
+        while not self.CacheWriter.isAlive():
+            continue
+        self.alive = True
 
     def sync(self, wait = False):
         if not self.alive: return
         wd = 1000
-        while self.CacheBuffer.is_filled() and ((wd > 0) or wait):
+        filled = self.CacheBuffer.is_filled()
+        while filled and ((wd > 0) or wait):
             if not wait: wd -= 1
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     def push(self, key, data, async = True):
         if not self.alive: return
@@ -432,11 +436,8 @@ class EquoInterface(TextInterface):
         if shell_xcache:
             self.xcache = False
         self.Cacher = EntropyCacher()
-        # needs to be started here otherwise repository cache will be
-        # always dropped, trust me, it will be stopped later in the init
-        # if xcache is disabled.
-        self.Cacher.start()
 
+        do_validate_repo_cache = False
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
         if self.entropyTools.islive():
@@ -444,13 +445,11 @@ class EquoInterface(TextInterface):
         elif (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
             self.xcache = False
         elif not user_xcache:
-            self.validate_repositories_cache()
+            do_validate_repo_cache = True
 
         if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
             try: self.purge_cache(False)
             except: pass
-
-        if not self.xcache: self.Cacher.stop()
 
         if self.openclientdb:
             self.openClientDatabase()
@@ -461,6 +460,14 @@ class EquoInterface(TextInterface):
         # settle settings, especially package masking ones
         # useful for third party softwares that use this interface directly
         self.SystemSettings.scan()
+
+        # needs to be started here otherwise repository cache will be
+        # always dropped, trust me, it will be stopped later in the init
+        # if xcache is disabled.
+        self.Cacher.start()
+
+        if do_validate_repo_cache:
+            self.validate_repositories_cache()
 
         if self.repo_validation:
             self.validate_repositories()
