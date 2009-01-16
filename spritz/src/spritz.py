@@ -307,7 +307,7 @@ class SpritzApplication(Controller):
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catsView.etpbase = self.etpbase
         self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase, self.ui.main, self)
-        self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui)
+        self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
@@ -1110,7 +1110,6 @@ class SpritzApplication(Controller):
                 count -= 1
                 continue
             break
-        self.populateCategories()
 
     def cleanEntropyCaches(self, alone = False):
         if alone:
@@ -1307,8 +1306,9 @@ class SpritzApplication(Controller):
         self.ui.skipMirror.hide()
         self.skipMirror = False
 
-    def addPackages(self):
+    def addPackages(self, back_to_page = None):
 
+        self.uiLock(True)
         action = self.lastPkgPB
         if action == 'all':
             masks = ['installed','available']
@@ -1367,10 +1367,13 @@ class SpritzApplication(Controller):
         self.progress.total.show()
 
         if self.doProgress: self.progress.hide() #Hide Progress
-        if bootstrap:
+        if back_to_page:
+            self.setPage(back_to_page)
+        elif bootstrap:
             self.setPage('packages')
 
         self.unsetBusy()
+        self.uiLock(False)
         # reset labels
         self.resetProgressText()
         self.resetQueueProgressBars()
@@ -1458,21 +1461,16 @@ class SpritzApplication(Controller):
 
             if (not fetch_only) and (not download_sources):
 
-                self.pkgView.clear()
-                self.etpbase.clearPackages()
-                self.etpbase.clearCache()
                 if self.do_debug:
                     print "processPackageQueue: cleared caches"
 
                 for myrepo in remove_repos:
                     self.Equo.removeRepository(myrepo)
-                self.Equo.closeAllRepositoryDatabases()
+
+                self.resetSpritzCacheStatus()
                 if self.do_debug:
                     print "processPackageQueue: closed repo dbs"
-                self.pkgView.clear()
                 self.Equo.reopenClientDbconn()
-                self.etpbase.clearPackages()
-                self.etpbase.clearCache()
                 if self.do_debug:
                     print "processPackageQueue: cleared caches (again)"
                 # regenerate packages information
@@ -1803,10 +1801,22 @@ class SpritzApplication(Controller):
             self.Equo.removeRepository(repodata['repoid'], disable = disable)
             if not disable:
                 self.Equo.addRepository(repodata)
+            self.resetSpritzCacheStatus()
+
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
             msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
             okDialog( self.ui.main, msg )
+
+    def resetSpritzCacheStatus(self):
+        self.catPackages.clear()
+        self.catsView.clear()
+        self.pkgView.clear()
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
+        self.queue.clear()
+        self.queueView.refresh()
+        self.Equo.closeAllRepositoryDatabases()
 
     def __validateRepoSubmit(self, repodata, edit = False):
         errors = []
@@ -1856,6 +1866,7 @@ class SpritzApplication(Controller):
         errors = self.__validateRepoSubmit(repodata)
         if not errors:
             self.Equo.addRepository(repodata)
+            self.resetSpritzCacheStatus()
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
             msg = "%s '%s' %s" % (_("You should press the button"),_("Update Repositories"),_("now"))
@@ -1890,6 +1901,7 @@ class SpritzApplication(Controller):
                 okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
                 return True
             self.Equo.removeRepository(repoid)
+            self.resetSpritzCacheStatus()
             self.setupRepoView()
             msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),_("Update Repositories"),_("or the"),_("Regenerate Cache"),_("now"))
             okDialog( self.ui.main, msg )
@@ -2050,10 +2062,8 @@ class SpritzApplication(Controller):
             return
 
         def clean_n_quit(newrepo):
-            self.etpbase.clearPackages()
-            self.etpbase.clearCache()
             self.Equo.removeRepository(newrepo)
-            self.Equo.closeAllRepositoryDatabases()
+            self.resetSpritzCacheStatus()
             self.Equo.reopenClientDbconn()
             # regenerate packages information
             self.setupSpritz()
@@ -2107,6 +2117,8 @@ class SpritzApplication(Controller):
             self.populateFilesUpdate()
         elif page == "glsa":
             self.populateAdvisories(None,'affected')
+        elif page == "group":
+            self.populateCategories()
         self.setNotebookPage(const.PAGES[page])
 
     def on_queueReviewAndInstall_clicked(self, widget):

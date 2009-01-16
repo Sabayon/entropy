@@ -1656,17 +1656,21 @@ class CategoriesView:
         for cat in data:
             self.model.append([cat])
 
+    def clear(self):
+        self.model.clear()
+
 class EntropyRepoView:
     """ 
     This class controls the repo TreeView
     """
-    def __init__( self, widget, ui):
+    def __init__( self, widget, ui, spritz_app):
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
         self.store = self.setup_view()
         self.Equo = EquoConnection
         self.ui = ui
         self.okDialog = okDialog
+        self.Spritz = spritz_app
 
     def on_active_toggled( self, widget, path):
         """ Repo select/unselect handler """
@@ -1681,8 +1685,8 @@ class EntropyRepoView:
             else:
                 self.Equo.enableRepository(repoid)
                 initConfig_entropyConstants(etpSys['rootdir'])
-            msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
-            self.okDialog(self.ui.main,msg)
+            self.Spritz.resetSpritzCacheStatus()
+            self.Spritz.addPackages(back_to_page = "repos")
             self.store.set_value(myiter,0, not state)
 
     def on_update_toggled( self, widget, path):
