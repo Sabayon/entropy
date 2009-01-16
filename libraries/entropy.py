@@ -10584,20 +10584,26 @@ class SystemSettings:
         # match installed packages of system_mask
         self.__settings['repos_system_mask_installed'] = []
         self.__settings['repos_system_mask_installed_keys'] = {}
-        if self.Entropy.clientDbconn != None:
-            mc_cache = set()
-            m_list = self.__settings['repos_system_mask']+self.__settings['system_mask']
-            for atom in m_list:
-                m_ids,m_r = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
-                if m_r != 0: continue
-                mykey = self.entropyTools.dep_getkey(atom)
-                if mykey not in self.__settings['repos_system_mask_installed_keys']:
-                    self.__settings['repos_system_mask_installed_keys'][mykey] = set()
-                for xm in m_ids:
-                    if xm in mc_cache: continue
-                    mc_cache.add(xm)
-                    self.__settings['repos_system_mask_installed'].append(xm)
-                    self.__settings['repos_system_mask_installed_keys'][mykey].add(xm)
+        if isinstance(self.Entropy.clientDbconn,EntropyDatabaseInterface):
+            while 1:
+                try:
+                    self.Entropy.clientDbconn.validateDatabase()
+                except exceptionTools.SystemDatabaseError:
+                    break
+                mc_cache = set()
+                m_list = self.__settings['repos_system_mask']+self.__settings['system_mask']
+                for atom in m_list:
+                    m_ids,m_r = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
+                    if m_r != 0: continue
+                    mykey = self.entropyTools.dep_getkey(atom)
+                    if mykey not in self.__settings['repos_system_mask_installed_keys']:
+                        self.__settings['repos_system_mask_installed_keys'][mykey] = set()
+                    for xm in m_ids:
+                        if xm in mc_cache: continue
+                        mc_cache.add(xm)
+                        self.__settings['repos_system_mask_installed'].append(xm)
+                        self.__settings['repos_system_mask_installed_keys'][mykey].add(xm)
+                break
 
         # Live package masking
         self.__settings.update(self.__persistent_settings)
