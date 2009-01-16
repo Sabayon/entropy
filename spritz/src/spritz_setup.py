@@ -217,17 +217,20 @@ class SpritzConf:
             if not os.path.isdir(os.path.dirname(const.SETTINGS_FILE)):
                 os.makedirs(os.path.dirname(const.SETTINGS_FILE))
             myxml = entropyTools.xml_from_dict_extended(SpritzConf.getconf())
-            f = open(const.SETTINGS_FILE,"w")
+            try:
+                f = open(const.SETTINGS_FILE,"w")
+            except (IOError,OSError,), e:
+                return False, e
             f.write(myxml+"\n")
             f.flush()
             f.close()
+            return True, None
 
         try:
-            do_save()
-        except:
-            entropyTools.printTraceback()
-            return False
-        return True
+            return do_save()
+        except Exception, e:
+            return False,e
+        return True,None
 
     @staticmethod
     def read():

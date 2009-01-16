@@ -1025,7 +1025,8 @@ class SpritzApplication(Controller):
                 else:
                     fillfunc(name, mytype, wgwrite, setting)
 
-        SpritzConf.save()
+        rc, e = SpritzConf.save()
+        if not rc: okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"),e) )
         self.on_Preferences_toggled(None,False)
 
     def setupMaskedPackagesWarningBox(self):
