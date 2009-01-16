@@ -15632,7 +15632,7 @@ class ServerInterface(TextInterface):
         valid = do_validate(dbc)
         self.close_server_database(dbc)
         if not valid: # check online?
-            dbc = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            dbc = self.openServerDatabase(read_only = False, no_upload = True, repo = repo, is_new = True)
             valid = do_validate(dbc)
             self.close_server_database(dbc)
 
