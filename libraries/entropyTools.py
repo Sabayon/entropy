@@ -1972,8 +1972,9 @@ class lifobuffer:
             self.buf[self.counter] = item
 
     def clear(self):
-        self.counter = -1
-        self.buf.clear()
+        with self.L:
+            self.counter = -1
+            self.buf.clear()
 
     def is_filled(self):
         if self.counter == -1:
@@ -1985,7 +1986,10 @@ class lifobuffer:
             if self.counter == -1:
                 return None
             self.counter -= 1
-            return self.buf.get(self.counter+1)
+            try:
+                return self.buf.pop(self.counter+1)
+            except KeyError:
+                pass
 
 def read_repositories_conf():
     content = []
