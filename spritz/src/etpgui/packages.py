@@ -185,7 +185,7 @@ class EntropyPackage:
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
-            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SpritzConf.color_title2,EquoConnection.PackageSettings['pkg_masking_reasons'][self.masked],)
+            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SpritzConf.color_title2,EquoConnection.SystemSettings['pkg_masking_reasons'][self.masked],)
 
         desc = self.getDescription(markup = False)
         if len(desc) > 56:

@@ -457,10 +457,10 @@ class EquoInterface(TextInterface):
         self.FileUpdates = self.FileUpdatesInterfaceLoader()
 
         # setup package settings (masking and other stuff)
-        self.PackageSettings = PackageSettings(self)
+        self.SystemSettings = SystemSettings(self)
         # settle settings, especially package masking ones
         # useful for third party softwares that use this interface directly
-        self.PackageSettings.scan()
+        self.SystemSettings.scan()
 
         if self.repo_validation:
             self.validate_repositories()
@@ -743,7 +743,7 @@ class EquoInterface(TextInterface):
         for item in self.repoDbCache:
             self.repoDbCache[item].closeDB()
         self.repoDbCache.clear()
-        if mask_clear: self.PackageSettings.clear()
+        if mask_clear: self.SystemSettings.clear()
 
     def openClientDatabase(self):
 
@@ -867,7 +867,7 @@ class EquoInterface(TextInterface):
             return self.repoDbCache.get((repoid,etpConst['systemroot'],t_ident,))
 
     def is_installed_idpackage_in_system_mask(self, idpackage):
-        if idpackage in self.PackageSettings['repos_system_mask_installed']:
+        if idpackage in self.SystemSettings['repos_system_mask_installed']:
             return True
         return False
 
@@ -1267,7 +1267,7 @@ class EquoInterface(TextInterface):
         for match in install_queue:
             repoid = match[1]
             dbconn = self.openRepositoryDatabase(repoid)
-            wl = self.PackageSettings['repos_license_whitelist'].get(repoid)
+            wl = self.SystemSettings['repos_license_whitelist'].get(repoid)
             if not wl:
                 continue
             keys = dbconn.retrieveLicensedataKeys(match[0])
@@ -1984,15 +1984,15 @@ class EquoInterface(TextInterface):
 
         while 1:
 
-            # check inside PackageSettings
+            # check inside SystemSettings
             if not server_repos:
                 if search:
-                    mysets = [x for x in self.PackageSettings['system_package_sets'].keys() if (x.find(package_set) != -1)]
+                    mysets = [x for x in self.SystemSettings['system_package_sets'].keys() if (x.find(package_set) != -1)]
                     for myset in mysets:
-                        mydata = self.PackageSettings['system_package_sets'].get(myset)
+                        mydata = self.SystemSettings['system_package_sets'].get(myset)
                         set_data.append((etpConst['userpackagesetsid'], unicode(myset), mydata.copy(),))
                 else:
-                    mydata = self.PackageSettings['system_package_sets'].get(package_set)
+                    mydata = self.SystemSettings['system_package_sets'].get(package_set)
                     if mydata != None:
                         set_data.append((etpConst['userpackagesetsid'], unicode(package_set), mydata,))
                         if not multiMatch: break
@@ -2253,7 +2253,7 @@ class EquoInterface(TextInterface):
         idpackage, idreason = dbconn.idpackageValidator(idpackage)
         masked = False
         if idpackage == -1: masked = True
-        return masked, idreason, self.PackageSettings['pkg_masking_reasons'].get(idreason)
+        return masked, idreason, self.SystemSettings['pkg_masking_reasons'].get(idreason)
 
     def get_masked_packages_tree(self, match, atoms = False, flat = False, matchfilter = set()):
 
@@ -2490,7 +2490,7 @@ class EquoInterface(TextInterface):
 
     def _lookup_system_mask_repository_deps(self):
 
-        data = self.PackageSettings['repos_system_mask']
+        data = self.SystemSettings['repos_system_mask']
         if not data: return []
         mydata = []
         cached_items = set()
@@ -3122,7 +3122,7 @@ class EquoInterface(TextInterface):
         dbconn = self.openRepositoryDatabase(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1: return False #,False
-        myr = self.PackageSettings['pkg_masking_reference']
+        myr = self.SystemSettings['pkg_masking_reference']
         user_masks = [myr['user_package_mask'],myr['user_license_mask'],myr['user_live_mask']]
         if idreason in user_masks:
             return True #,True
@@ -3135,7 +3135,7 @@ class EquoInterface(TextInterface):
         dbconn = self.openRepositoryDatabase(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage == -1: return False #,False
-        myr = self.PackageSettings['pkg_masking_reference']
+        myr = self.SystemSettings['pkg_masking_reference']
         user_masks = [
             myr['user_package_unmask'],myr['user_live_unmask'],myr['user_package_keywords'],
             myr['user_repo_package_keywords_all'], myr['user_repo_package_keywords']
@@ -3152,8 +3152,8 @@ class EquoInterface(TextInterface):
         }
         rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run, clean_all_cache = clean_all_cache)
         if dry_run: # inject if done "live"
-            self.PackageSettings['live_packagemasking']['unmask_matches'].discard(match)
-            self.PackageSettings['live_packagemasking']['mask_matches'].add(match)
+            self.SystemSettings['live_packagemasking']['unmask_matches'].discard(match)
+            self.SystemSettings['live_packagemasking']['mask_matches'].add(match)
         return rc
 
     def unmask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
@@ -3164,8 +3164,8 @@ class EquoInterface(TextInterface):
         }
         rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run, clean_all_cache = clean_all_cache)
         if dry_run: # inject if done "live"
-            self.PackageSettings['live_packagemasking']['unmask_matches'].add(match)
-            self.PackageSettings['live_packagemasking']['mask_matches'].discard(match)
+            self.SystemSettings['live_packagemasking']['unmask_matches'].add(match)
+            self.SystemSettings['live_packagemasking']['mask_matches'].discard(match)
         return rc
 
     def _mask_unmask_match(self, match, method, methods_reference, dry_run = False, clean_all_cache = False):
@@ -3176,7 +3176,7 @@ class EquoInterface(TextInterface):
 
         self.Cacher.sync(wait = True)
         done = f(match, dry_run)
-        if done: self.PackageSettings.clear()
+        if done: self.SystemSettings.clear()
 
         # clear atomMatch cache anyway
         if clean_all_cache and not dry_run:
@@ -3219,12 +3219,12 @@ class EquoInterface(TextInterface):
 
     def unmask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
-        m_file = self.PackageSettings.etpMaskFiles['unmask']
+        m_file = self.SystemSettings.etpSettingFiles['unmask']
         return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
 
     def mask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
-        m_file = self.PackageSettings.etpMaskFiles['mask']
+        m_file = self.SystemSettings.etpSettingFiles['mask']
         return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
 
     def _mask_unmask_match_generic(self, keyword, m_file, dry_run = False):
@@ -3256,13 +3256,13 @@ class EquoInterface(TextInterface):
         return True
 
     def clear_match_mask(self, match, dry_run = False):
-        masking_list = [self.PackageSettings.etpMaskFiles['mask'],self.PackageSettings.etpMaskFiles['unmask']]
+        masking_list = [self.SystemSettings.etpSettingFiles['mask'],self.SystemSettings.etpSettingFiles['unmask']]
         return self._clear_match_generic(match, masking_list = masking_list, dry_run = dry_run)
 
     def _clear_match_generic(self, match, masking_list = [], dry_run = False):
 
-        self.PackageSettings['live_packagemasking']['unmask_matches'].discard(match)
-        self.PackageSettings['live_packagemasking']['mask_matches'].discard(match)
+        self.SystemSettings['live_packagemasking']['unmask_matches'].discard(match)
+        self.SystemSettings['live_packagemasking']['mask_matches'].discard(match)
 
         if dry_run: return
 
@@ -3330,7 +3330,7 @@ class EquoInterface(TextInterface):
         for x in set_atoms: f.write("%s\n" % (x,))
         f.flush()
         f.close()
-        self.PackageSettings['system_package_sets'][set_name] = set(set_atoms)
+        self.SystemSettings['system_package_sets'][set_name] = set(set_atoms)
         return 0,_("All fine")
 
     def remove_user_package_set(self, set_name):
@@ -3352,8 +3352,8 @@ class EquoInterface(TextInterface):
         set_file = os.path.join(etpConst['confsetsdir'],set_name)
         if os.path.isfile(set_file) and os.access(set_file,os.W_OK):
             os.remove(set_file)
-            if set_name in self.PackageSettings['system_package_sets']:
-                del self.PackageSettings['system_package_sets'][set_name]
+            if set_name in self.SystemSettings['system_package_sets']:
+                del self.SystemSettings['system_package_sets'][set_name]
             return 0,_("All fine")
         return -3,_("Set not found or unable to remove")
 
@@ -3426,7 +3426,7 @@ class EquoInterface(TextInterface):
         pkgkey = self.entropyTools.dep_getkey(pkgatom)
 
         if self.is_installed_idpackage_in_system_mask(idpackage):
-            idpackages = self.PackageSettings['repos_system_mask_installed_keys'].get(pkgkey)
+            idpackages = self.SystemSettings['repos_system_mask_installed_keys'].get(pkgkey)
             if not idpackages: return False
             if len(idpackages) > 1:
                 return True
@@ -8530,9 +8530,10 @@ class FtpInterface:
             try:
                 self.ftpconn = self.ftplib.FTP(self.ftphost)
                 break
+            except (self.socket.gaierror,), e:
+                raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
             except:
-                if not count:
-                    raise
+                if not count: raise
                 continue
 
         if self.verbose:
@@ -10484,7 +10485,7 @@ timeout=10
             )
             return "(hd0,0)"
 
-class PackageSettings:
+class SystemSettings:
 
     import entropyTools
     def __init__(self, EquoInstance):
@@ -10494,7 +10495,7 @@ class PackageSettings:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
 
-        self.etpMaskFiles = {
+        self.etpSettingFiles = {
             'keywords': etpConst['confpackagesdir']+"/package.keywords", # keywording configuration files
             'unmask': etpConst['confpackagesdir']+"/package.unmask", # unmasking configuration files
             'mask': etpConst['confpackagesdir']+"/package.mask", # masking configuration files
@@ -10504,7 +10505,17 @@ class PackageSettings:
             'repos_mask': {},
             'repos_license_whitelist': {},
             'system_package_sets': {},
+            'system_dirs': etpConst['confdir']+"/fsdirs.conf",
+            'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
         }
+
+        ## XXX trunk support, for a while - exp. date 10/10/2009
+        trunk_fsdirs_conf = "../conf/fsdirs.conf"
+        trunk_fsdirsmask_conf = "../conf/fsdirsmask.conf"
+        if os.path.isfile(trunk_fsdirs_conf):
+            self.etpSettingFiles['system_dirs'] = trunk_fsdirs_conf
+        if os.path.isfile(trunk_fsdirsmask_conf):
+            self.etpSettingFiles['system_dirs_mask'] = trunk_fsdirsmask_conf
 
         self.etpMtimeFiles = {
             'keywords_mtime': etpConst['dumpstoragedir']+"/keywords.mtime",
@@ -10575,7 +10586,7 @@ class PackageSettings:
         self.__settings['repos_system_mask_installed_keys'] = {}
         if self.Entropy.clientDbconn != None:
             mc_cache = set()
-            m_list = self.__settings['repos_system_mask']+list(self.__settings['system_mask'])
+            m_list = self.__settings['repos_system_mask']+self.__settings['system_mask']
             for atom in m_list:
                 m_ids,m_r = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
                 if m_r != 0: continue
@@ -10635,13 +10646,13 @@ class PackageSettings:
             wlpath = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabaselicwhitelistfile'])
             sm_path = os.path.join(etpRepositories[repoid]['dbpath'],etpConst['etpdatabasesytemmaskfile'])
             if os.path.isfile(maskpath) and os.access(maskpath,os.R_OK):
-                self.etpMaskFiles['repos_mask'][repoid] = maskpath
+                self.etpSettingFiles['repos_mask'][repoid] = maskpath
                 self.etpMtimeFiles['repos_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasemaskfile']+".mtime"
             if os.path.isfile(wlpath) and os.access(wlpath,os.R_OK):
-                self.etpMaskFiles['repos_license_whitelist'][repoid] = wlpath
+                self.etpSettingFiles['repos_license_whitelist'][repoid] = wlpath
                 self.etpMtimeFiles['repos_license_whitelist'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabaselicwhitelistfile']+".mtime"
             if os.path.isfile(sm_path) and os.access(sm_path,os.R_OK):
-                self.etpMaskFiles['repos_system_mask'][repoid] = sm_path
+                self.etpSettingFiles['repos_system_mask'][repoid] = sm_path
                 self.etpMtimeFiles['repos_system_mask'][repoid] = etpConst['dumpstoragedir']+"/repo_"+repoid+"_"+etpConst['etpdatabasesytemmaskfile']+".mtime"
 
         # user defined package sets
@@ -10654,14 +10665,15 @@ class PackageSettings:
                 except (UnicodeDecodeError,UnicodeEncodeError,):
                     continue
                 set_filepath = os.path.join(sets_dir,set_file)
-                self.etpMaskFiles['system_package_sets'][set_file] = set_filepath
+                self.etpSettingFiles['system_package_sets'][set_file] = set_filepath
                 self.etpMtimeFiles['system_package_sets'][set_file] = etpConst['dumpstoragedir']+"/system_package_set_"+set_file+".mtime"
 
         data = {}
-        for item in self.etpMaskFiles:
+        for item in self.etpSettingFiles:
             myattr = '%s_parser' % (item,)
             if not hasattr(self,myattr): continue
-            data[item] = eval('self.'+myattr)()
+            f = getattr(self,myattr)
+            data[item] = f()
         return data
 
 
@@ -10670,194 +10682,125 @@ class PackageSettings:
     '''
     def keywords_parser(self):
 
-        self.__validateEntropyCache(self.etpMaskFiles['keywords'],self.etpMtimeFiles['keywords_mtime'])
-
         data = {
                 'universal': set(),
                 'packages': {},
                 'repositories': {},
         }
-        if os.path.isfile(self.etpMaskFiles['keywords']):
-            f = open(self.etpMaskFiles['keywords'],"r")
-            content = f.readlines()
-            f.close()
-            # filter comments and white lines
-            content = [x.strip().rsplit('#')[0] for x in content if not x.startswith("#") and x.strip()]
-            for line in content:
-                keywordinfo = line.split()
-                # skip wrong lines
-                if len(keywordinfo) > 3:
-                    sys.stderr.write(">> "+line+" << is invalid!!")
-                    continue
-                if len(keywordinfo) == 1: # inversal keywording, check if it's not repo=
-                    # repo=?
-                    if keywordinfo[0].startswith("repo="):
-                        sys.stderr.write(">> "+line+" << is invalid!!")
-                        continue
-                    # atom? is it worth it? it would take a little bit to parse uhm... >50 entries...!?
-                    #kinfo = keywordinfo[0]
-                    if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
-                    data['universal'].add(keywordinfo[0])
-                    continue # needed?
-                if len(keywordinfo) in (2,3): # inversal keywording, check if it's not repo=
-                    # repo=?
-                    if keywordinfo[0].startswith("repo="):
-                        sys.stderr.write(">> "+line+" << is invalid!!")
-                        continue
-                    # add to repo?
-                    items = keywordinfo[1:]
-                    if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
-                    reponame = [x for x in items if x.startswith("repo=") and (len(x.split("=")) == 2)]
-                    if reponame:
-                        reponame = reponame[0].split("=")[1]
-                        if reponame not in data['repositories']:
-                            data['repositories'][reponame] = {}
-                        # repository unmask or package in repository unmask?
-                        if keywordinfo[0] not in data['repositories'][reponame]:
-                            data['repositories'][reponame][keywordinfo[0]] = set()
-                        if len(items) == 1:
-                            # repository unmask
-                            data['repositories'][reponame][keywordinfo[0]].add('*')
-                        else:
-                            if "*" not in data['repositories'][reponame][keywordinfo[0]]:
-                                item = [x for x in items if not x.startswith("repo=")]
-                                data['repositories'][reponame][keywordinfo[0]].add(item[0])
+
+        self.__validateEntropyCache(self.etpSettingFiles['keywords'],self.etpMtimeFiles['keywords_mtime'])
+        content = [x.split() for x in self.__generic_parser(self.etpSettingFiles['keywords']) if len(x.split()) < 4]
+        for keywordinfo in content:
+            # skip wrong lines
+            if len(keywordinfo) > 3: continue
+            if len(keywordinfo) == 1: # inversal keywording, check if it's not repo=
+                # repo=?
+                if keywordinfo[0].startswith("repo="): continue
+                #kinfo = keywordinfo[0]
+                if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
+                data['universal'].add(keywordinfo[0])
+                continue # needed?
+            if len(keywordinfo) in (2,3): # inversal keywording, check if it's not repo=
+                # repo=?
+                if keywordinfo[0].startswith("repo="): continue
+                # add to repo?
+                items = keywordinfo[1:]
+                if keywordinfo[0] == "**": keywordinfo[0] = "" # convert into entropy format
+                reponame = [x for x in items if x.startswith("repo=") and (len(x.split("=")) == 2)]
+                if reponame:
+                    reponame = reponame[0].split("=")[1]
+                    if reponame not in data['repositories']:
+                        data['repositories'][reponame] = {}
+                    # repository unmask or package in repository unmask?
+                    if keywordinfo[0] not in data['repositories'][reponame]:
+                        data['repositories'][reponame][keywordinfo[0]] = set()
+                    if len(items) == 1:
+                        # repository unmask
+                        data['repositories'][reponame][keywordinfo[0]].add('*')
                     else:
-                        # it's going to be a faulty line!!??
-                        if len(items) == 2: # can't have two items and no repo=
-                            sys.stderr.write(">> "+line+" << is invalid!!")
-                            continue
-                        # add keyword to packages
-                        if keywordinfo[0] not in data['packages']:
-                            data['packages'][keywordinfo[0]] = set()
-                        data['packages'][keywordinfo[0]].add(items[0])
+                        if "*" not in data['repositories'][reponame][keywordinfo[0]]:
+                            item = [x for x in items if not x.startswith("repo=")]
+                            data['repositories'][reponame][keywordinfo[0]].add(item[0])
+                else:
+                    # it's going to be a faulty line!!??
+                    if len(items) == 2: # can't have two items and no repo=
+                        continue
+                    # add keyword to packages
+                    if keywordinfo[0] not in data['packages']:
+                        data['packages'][keywordinfo[0]] = set()
+                    data['packages'][keywordinfo[0]].add(items[0])
         return data
 
 
     def unmask_parser(self):
-        self.__validateEntropyCache(self.etpMaskFiles['unmask'],self.etpMtimeFiles['unmask_mtime'])
-
-        data = set()
-        if os.path.isfile(self.etpMaskFiles['unmask']):
-            f = open(self.etpMaskFiles['unmask'],"r")
-            content = f.readlines()
-            f.close()
-            # filter comments and white lines
-            content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-            for line in content:
-                data.add(line)
-        return data
+        self.__validateEntropyCache(self.etpSettingFiles['unmask'],self.etpMtimeFiles['unmask_mtime'])
+        return self.__generic_parser(self.etpSettingFiles['unmask'])
 
     def mask_parser(self):
-        self.__validateEntropyCache(self.etpMaskFiles['mask'],self.etpMtimeFiles['mask_mtime'])
-
-        data = set()
-        if os.path.isfile(self.etpMaskFiles['mask']):
-            f = open(self.etpMaskFiles['mask'],"r")
-            content = f.readlines()
-            f.close()
-            # filter comments and white lines
-            content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-            for line in content:
-                data.add(line)
-        return data
+        self.__validateEntropyCache(self.etpSettingFiles['mask'],self.etpMtimeFiles['mask_mtime'])
+        return self.__generic_parser(self.etpSettingFiles['mask'])
 
     def system_mask_parser(self):
-        self.__validateEntropyCache(self.etpMaskFiles['system_mask'],self.etpMtimeFiles['system_mask_mtime'])
-
-        data = set()
-        if os.path.isfile(self.etpMaskFiles['system_mask']):
-            f = open(self.etpMaskFiles['system_mask'],"r")
-            content = f.readlines()
-            f.close()
-            # filter comments and white lines
-            content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-            for line in content:
-                data.add(line)
-        return data
+        self.__validateEntropyCache(self.etpSettingFiles['system_mask'],self.etpMtimeFiles['system_mask_mtime'])
+        return self.__generic_parser(self.etpSettingFiles['system_mask'])
 
     def license_mask_parser(self):
-        self.__validateEntropyCache(self.etpMaskFiles['license_mask'],self.etpMtimeFiles['license_mask_mtime'])
-
-        data = set()
-        if os.path.isfile(self.etpMaskFiles['license_mask']):
-            f = open(self.etpMaskFiles['license_mask'],"r")
-            content = f.readlines()
-            f.close()
-            # filter comments and white lines
-            content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-            for line in content:
-                data.add(line)
-        return data
+        self.__validateEntropyCache(self.etpSettingFiles['license_mask'],self.etpMtimeFiles['license_mask_mtime'])
+        return self.__generic_parser(self.etpSettingFiles['license_mask'])
 
     def repos_license_whitelist_parser(self):
         data = {}
-        for repoid in self.etpMaskFiles['repos_license_whitelist']:
-            data[repoid] = set()
-
-            self.__validateEntropyCache(self.etpMaskFiles['repos_license_whitelist'][repoid],self.etpMtimeFiles['repos_license_whitelist'][repoid], repoid = repoid)
-
-            if os.path.isfile(self.etpMaskFiles['repos_license_whitelist'][repoid]):
-                f = open(self.etpMaskFiles['repos_license_whitelist'][repoid],"r")
-                content = f.readlines()
-                f.close()
-                # filter comments and white lines
-                content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-                for mylicense in content:
-                    data[repoid].add(mylicense)
+        for repoid in self.etpSettingFiles['repos_license_whitelist']:
+            self.__validateEntropyCache(self.etpSettingFiles['repos_license_whitelist'][repoid],self.etpMtimeFiles['repos_license_whitelist'][repoid], repoid = repoid)
+            data[repoid] = self.__generic_parser(self.etpSettingFiles['repos_license_whitelist'][repoid])
         return data
 
     def repos_mask_parser(self):
-
         data = {}
-        for repoid in self.etpMaskFiles['repos_mask']:
-
-            data[repoid] = set()
-
-            self.__validateEntropyCache(self.etpMaskFiles['repos_mask'][repoid],self.etpMtimeFiles['repos_mask'][repoid], repoid = repoid)
-            if os.path.isfile(self.etpMaskFiles['repos_mask'][repoid]):
-                f = open(self.etpMaskFiles['repos_mask'][repoid],"r")
-                content = f.readlines()
-                f.close()
-                # filter comments and white lines
-                content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-                for line in content:
-                    line = line.split()[0]
-                    data[repoid].add(line)
+        for repoid in self.etpSettingFiles['repos_mask']:
+            self.__validateEntropyCache(self.etpSettingFiles['repos_mask'][repoid],self.etpMtimeFiles['repos_mask'][repoid], repoid = repoid)
+            data[repoid] = self.__generic_parser(self.etpSettingFiles['repos_mask'][repoid])
+            # why ? line = line.split()[0] in the previous one?
         return data
 
     def repos_system_mask_parser(self):
-
         data = []
-        for repoid in self.etpMaskFiles['repos_system_mask']:
-
-            self.__validateEntropyCache(self.etpMaskFiles['repos_system_mask'][repoid],self.etpMtimeFiles['repos_system_mask'][repoid], repoid = repoid)
-            if os.path.isfile(self.etpMaskFiles['repos_system_mask'][repoid]):
-                f = open(self.etpMaskFiles['repos_system_mask'][repoid],"r")
-                content = f.readlines()
-                f.close()
-                # filter comments and white lines
-                content = [x.strip().rsplit("#",1)[0] for x in content if not x.startswith("#") and x.strip()]
-                for line in content: # preserving order
-                    line = line.split()[0]
-                    if line not in data: data.append(line)
-
+        for repoid in self.etpSettingFiles['repos_system_mask']:
+            self.__validateEntropyCache(self.etpSettingFiles['repos_system_mask'][repoid],self.etpMtimeFiles['repos_system_mask'][repoid], repoid = repoid)
+            data += [x for x in self.__generic_parser(self.etpSettingFiles['repos_system_mask'][repoid]) if x not in data]
+            # why ? line = line.split()[0] in the previous one?
         return data
 
     def system_package_sets_parser(self):
-
         data = {}
-        for set_name in self.etpMaskFiles['system_package_sets']:
-            set_filepath = self.etpMaskFiles['system_package_sets'][set_name]
+        for set_name in self.etpSettingFiles['system_package_sets']:
+            set_filepath = self.etpSettingFiles['system_package_sets'][set_name]
             set_elements = self.entropyTools.extract_packages_from_set_file(set_filepath)
             if set_elements: data[set_name] = set_elements.copy()
-
         return data
 
+    def system_dirs_parser(self):
+        return self.__generic_parser(self.etpSettingFiles['system_dirs'])
+
+    def system_dirs_mask_parser(self):
+        return self.__generic_parser(self.etpSettingFiles['system_dirs_mask'])
 
     '''
     internal functions
     '''
+
+    def __generic_parser(self, filepath):
+        data = []
+        if os.path.isfile(filepath):
+            f = open(filepath,"r")
+            content = f.readlines()
+            f.close()
+            # filter comments and white lines
+            content = [x.strip().rsplit("#",1)[0].strip() for x in content if not x.startswith("#") and x.strip()]
+            for line in content:
+                if line in data: continue
+                data.append(line)
+        return data
 
     def __removeRepoCache(self, repoid = None):
         if os.path.isdir(etpConst['dumpstoragedir']):
@@ -15451,7 +15394,7 @@ class ServerInterface(TextInterface):
         self.Cacher = self.ClientService.Cacher
         self.ClientService.updateProgress = self.updateProgress
         self.ClientService.FtpInterface = self.FtpInterface
-        self.PackageSettings = self.ClientService.PackageSettings
+        self.SystemSettings = self.ClientService.SystemSettings
         self.validRepositories = self.ClientService.validRepositories
         self.entropyTools = self.ClientService.entropyTools
         self.dumpTools = self.ClientService.dumpTools
@@ -34358,8 +34301,8 @@ class EntropyDatabaseInterface:
     '''
     def regenerateDependsTable(self, output = True):
 
-        self.createDependsTable()
         depends = self.listAllDependencies()
+        self.createDependsTable()
         count = 0
         total = len(depends)
         mydata = set()
@@ -34404,49 +34347,49 @@ class EntropyDatabaseInterface:
                 self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
 
     def _idpackageValidator_live(self, idpackage, reponame):
-        if (idpackage,reponame) in self.ServiceInterface.PackageSettings['live_packagemasking']['mask_matches']:
+        if (idpackage,reponame) in self.ServiceInterface.SystemSettings['live_packagemasking']['mask_matches']:
             # do not cache this
-            return -1,self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_live_mask']
-        elif (idpackage,reponame) in self.ServiceInterface.PackageSettings['live_packagemasking']['unmask_matches']:
-            return idpackage,self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_live_unmask']
+            return -1,self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_live_mask']
+        elif (idpackage,reponame) in self.ServiceInterface.SystemSettings['live_packagemasking']['unmask_matches']:
+            return idpackage,self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_live_unmask']
 
     def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
         # check if user package.mask needs it masked
 
         mykw = "%smask_ids" % (reponame,)
-        user_package_mask_ids = self.ServiceInterface.PackageSettings.get(mykw)
+        user_package_mask_ids = self.ServiceInterface.SystemSettings.get(mykw)
         if not isinstance(user_package_mask_ids,set):
             user_package_mask_ids = set()
-            for atom in self.ServiceInterface.PackageSettings['mask']:
+            for atom in self.ServiceInterface.SystemSettings['mask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                 if r != 0: continue
                 user_package_mask_ids |= set(matches)
-            self.ServiceInterface.PackageSettings[mykw] = user_package_mask_ids
+            self.ServiceInterface.SystemSettings[mykw] = user_package_mask_ids
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_package_mask']
+            myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_package_mask']
             self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
             return -1,myr
 
     def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
-        # see if we can unmask by just lookin into user package.unmask stuff -> self.ServiceInterface.PackageSettings['unmask']
+        # see if we can unmask by just lookin into user package.unmask stuff -> self.ServiceInterface.SystemSettings['unmask']
         mykw = "%sunmask_ids" % (reponame,)
-        user_package_unmask_ids = self.ServiceInterface.PackageSettings.get(mykw)
+        user_package_unmask_ids = self.ServiceInterface.SystemSettings.get(mykw)
         if not isinstance(user_package_unmask_ids,set):
             user_package_unmask_ids = set()
-            for atom in self.ServiceInterface.PackageSettings['unmask']:
+            for atom in self.ServiceInterface.SystemSettings['unmask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                 if r != 0: continue
                 user_package_unmask_ids |= set(matches)
-            self.ServiceInterface.PackageSettings[mykw] = user_package_unmask_ids
+            self.ServiceInterface.SystemSettings[mykw] = user_package_unmask_ids
         if idpackage in user_package_unmask_ids:
-            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_package_unmask']
+            myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_package_unmask']
             self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
             return idpackage,myr
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
         # check if repository packages.db.mask needs it masked
-        repos_mask = self.ServiceInterface.PackageSettings['repos_mask']
+        repos_mask = self.ServiceInterface.SystemSettings['repos_mask']
         repomask = repos_mask.get(reponame)
         if isinstance(repomask,set):
             # first, seek into generic masking, all branches
@@ -34460,18 +34403,18 @@ class EntropyDatabaseInterface:
                     repomask_ids |= set(matches)
                 repos_mask[mask_repo_id] = repomask_ids
             if idpackage in repomask_ids:
-                myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['repository_packages_db_mask']
+                myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['repository_packages_db_mask']
                 self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
                 return -1,myr
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
-        if self.ServiceInterface.PackageSettings['license_mask']:
+        if self.ServiceInterface.SystemSettings['license_mask']:
             mylicenses = self.retrieveLicense(idpackage)
             mylicenses = mylicenses.strip().split()
-            lic_mask = self.ServiceInterface.PackageSettings['license_mask']
+            lic_mask = self.ServiceInterface.SystemSettings['license_mask']
             for mylicense in mylicenses:
                 if mylicense not in lic_mask: continue
-                myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_license_mask']
+                myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_license_mask']
                 self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
                 return -1,myr
 
@@ -34484,45 +34427,45 @@ class EntropyDatabaseInterface:
         # (universal keywords have been merged from package.mask)
         for key in etpConst['keywords']:
             if key not in mykeywords: continue
-            myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['system_keyword']
+            myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['system_keyword']
             self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
             return idpackage,myr
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
-        # we need to seek self.ServiceInterface.PackageSettings['keywords']
+        # we need to seek self.ServiceInterface.SystemSettings['keywords']
         # seek in repository first
-        if reponame in self.ServiceInterface.PackageSettings['keywords']['repositories']:
-            for keyword in self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame]:
+        if reponame in self.ServiceInterface.SystemSettings['keywords']['repositories']:
+            for keyword in self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame]:
                 if keyword not in mykeywords: continue
-                keyword_data = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame].get(keyword)
+                keyword_data = self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame].get(keyword)
                 if not keyword_data: continue
                 if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                    myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_repo_package_keywords_all']
+                    myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_repo_package_keywords_all']
                     self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
                     return idpackage,myr
                 kwd_key = "%s_ids" % (keyword,)
-                keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame].get(kwd_key)
+                keyword_data_ids = self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame].get(kwd_key)
                 if not isinstance(keyword_data_ids,set):
                     keyword_data_ids = set()
                     for atom in keyword_data:
                         matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                         if r != 0: continue
                         keyword_data_ids |= matches
-                    self.ServiceInterface.PackageSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
+                    self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
                 if idpackage in keyword_data_ids:
-                    myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_repo_package_keywords']
+                    myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_repo_package_keywords']
                     self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
                     return idpackage,myr
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
-        for keyword in self.ServiceInterface.PackageSettings['keywords']['packages']:
+        for keyword in self.ServiceInterface.SystemSettings['keywords']['packages']:
             # first of all check if keyword is in mykeywords
             if keyword not in mykeywords: continue
-            keyword_data = self.ServiceInterface.PackageSettings['keywords']['packages'].get(keyword)
+            keyword_data = self.ServiceInterface.SystemSettings['keywords']['packages'].get(keyword)
             if not keyword_data: continue
             kwd_key = "%s_ids" % (keyword,)
-            keyword_data_ids = self.ServiceInterface.PackageSettings['keywords']['packages'].get(reponame+kwd_key)
+            keyword_data_ids = self.ServiceInterface.SystemSettings['keywords']['packages'].get(reponame+kwd_key)
             if not isinstance(keyword_data_ids,set):
                 keyword_data_ids = set()
                 for atom in keyword_data:
@@ -34530,10 +34473,10 @@ class EntropyDatabaseInterface:
                     matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                     if r != 0: continue
                     keyword_data_ids |= matches
-                self.ServiceInterface.PackageSettings['keywords']['packages'][reponame+kwd_key] = keyword_data_ids
+                self.ServiceInterface.SystemSettings['keywords']['packages'][reponame+kwd_key] = keyword_data_ids
             if idpackage in keyword_data_ids:
                 # valid!
-                myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['user_package_keywords']
+                myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_package_keywords']
                 self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = idpackage,myr
                 return idpackage,myr
 
@@ -34550,7 +34493,7 @@ class EntropyDatabaseInterface:
 
         if self.ServiceInterface == None:
             return idpackage,0
-        elif not hasattr(self.ServiceInterface,'PackageSettings'):
+        elif not hasattr(self.ServiceInterface,'SystemSettings'):
             return idpackage,0
 
         reponame = self.dbname[5:]
@@ -34581,7 +34524,7 @@ class EntropyDatabaseInterface:
         if data: return data
 
         # holy crap, can't validate
-        myr = self.ServiceInterface.PackageSettings['pkg_masking_reference']['completely_masked']
+        myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['completely_masked']
         self.ServiceInterface.package_match_validator_cache[(idpackage,reponame,live)] = -1,myr
         return -1,myr
 

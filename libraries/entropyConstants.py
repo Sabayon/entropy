@@ -619,10 +619,6 @@ def const_defaultSettings(rootdir):
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]), # default allowed package keywords
         'gentoo-compat': True, # Gentoo compatibility (/var/db/pkg + Portage availability)
         'edbcounter': edbCOUNTER,
-        'filesystemdirs': ['/bin','/emul','/etc','/lib','/lib32','/lib64','/opt','/sbin','/usr','/var'], # directory of the filesystem
-        'filesystemdirsmask': [
-            '/var/cache','/var/db','/var/empty','/var/log','/var/mail','/var/tmp','/var/www', '/usr/portage', '/usr/src', '/etc/skel', '/etc/ssh', '/etc/ssl', '/var/run', '/var/spool/cron', '/var/lib/init.d', '/lib/modules', '/etc/env.d', '/etc/gconf', '/etc/runlevels', '/lib/splash/cache', '/usr/share/mime', '/etc/portage', '/var/spool', '/var/lib', '/usr/lib/locale','/lib64/splash/cache'
-        ],
         'libtest_blacklist': [],
         'libtest_files_blacklist': [],
         'officialserverrepositoryid': "sabayonlinux.org", # our official repository name

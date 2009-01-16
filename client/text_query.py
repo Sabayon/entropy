@@ -265,7 +265,7 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
                 print_info(blue(" %s: " % (_("Matched"),) )+bold("\t"+found_atom))
                 masking_reason = ''
                 if repoMasked:
-                    masking_reason = ", %s" % (Equo.PackageSettings['pkg_masking_reasons'].get(idmasking_reason),)
+                    masking_reason = ", %s" % (Equo.SystemSettings['pkg_masking_reasons'].get(idmasking_reason),)
                 print_info(blue(" %s: " % (_("Masked"),) )+bold("\t"+str(repoMasked))+masking_reason)
                 if (matchInRepo):
                     where = " %s %s" % (_("from repository"),result[1],)
@@ -474,7 +474,7 @@ def searchOrphans(EquoConnection = None):
     clientDbconn = Equo.clientDbconn
 
     # start to list all files on the system:
-    dirs = etpConst['filesystemdirs']
+    dirs = Equo.SystemSettings['system_dirs']
     filepath = Equo.entropyTools.getRandomTempFile()
     if os.path.isfile(filepath):
         os.remove(filepath)
@@ -491,7 +491,7 @@ def searchOrphans(EquoConnection = None):
                 if filename.endswith(".ph") and \
                     (filename.startswith("/usr/lib/perl") or filename.startswith("/usr/lib64/perl")):
                         continue
-                mask = [x for x in etpConst['filesystemdirsmask'] if filename.startswith(x)]
+                mask = [x for x in Equo.SystemSettings['system_dirs_mask'] if filename.startswith(x)]
                 if not mask:
                     if not etpUi['quiet']:
                         print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),))+bold(unicode(filename[:50],'raw_unicode_escape')+"..."), back = True)
@@ -505,8 +505,8 @@ def searchOrphans(EquoConnection = None):
     totalfiles = tdbconn.cursor.fetchone()[0]
 
     if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue("%s: " % (_("Analyzed directories"),) )+' '.join(etpConst['filesystemdirs']))
-        print_info(red(" @@ ")+blue("%s: " % (_("Masked directories"),) )+' '.join(etpConst['filesystemdirsmask']))
+        print_info(red(" @@ ")+blue("%s: " % (_("Analyzed directories"),) )+' '.join(Equo.SystemSettings['system_dirs']))
+        print_info(red(" @@ ")+blue("%s: " % (_("Masked directories"),) )+' '.join(Equo.SystemSettings['system_dirs_mask']))
         print_info(red(" @@ ")+blue("%s: " % (_("Number of files collected on the filesystem"),) )+bold(str(totalfiles)))
         print_info(red(" @@ ")+blue("%s..." % (_("Now looking into Installed Packages database"),) ))
 
@@ -1075,7 +1075,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
     idpackage_masked, idmasking_reason = dbconn.idpackageValidator(idpackage)
     if idpackage_masked == -1:
         pkgmasked = True
-        masking_reason = ", %s" % (Equo.PackageSettings['pkg_masking_reasons'].get(idmasking_reason),)
+        masking_reason = ", %s" % (Equo.SystemSettings['pkg_masking_reasons'].get(idmasking_reason),)
 
     if (not clientSearch):
 
