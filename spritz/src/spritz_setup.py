@@ -187,7 +187,41 @@ class SpritzConf:
     dummy_category = 1
 
     @staticmethod
+    def getconf_validators():
+
+        def validate_color_conf(s):
+            try:
+                import gtk
+                gtk.gdk.color_parse(s)
+                return True
+            except ValueError:
+                return False
+
+        config_data = {
+            "color_console_font": validate_color_conf,
+            "color_normal": validate_color_conf,
+            "color_install": validate_color_conf,
+            "color_update": validate_color_conf,
+            "color_remove": validate_color_conf,
+            "color_reinstall": validate_color_conf,
+            "color_title": validate_color_conf,
+            "color_title2": validate_color_conf,
+            "color_pkgdesc": validate_color_conf,
+            "color_pkgsubtitle": validate_color_conf,
+            "color_subdesc": validate_color_conf,
+            "color_error": validate_color_conf,
+            "color_good": validate_color_conf,
+            "color_background_good": validate_color_conf,
+            "color_background_error": validate_color_conf,
+            "color_good_on_color_background": validate_color_conf,
+            "color_error_on_color_background": validate_color_conf,
+            "color_package_category": validate_color_conf,
+        }
+        return config_data
+
+    @staticmethod
     def getconf():
+
         config_data = {
             "color_console_font": SpritzConf.color_console_font,
             "color_normal": SpritzConf.color_normal,
@@ -251,10 +285,17 @@ class SpritzConf:
     # update config reading it from user settings
     def update():
         saved_conf = SpritzConf.read()
+        validators = SpritzConf.getconf_validators()
         if not saved_conf: return
         if not isinstance(saved_conf,dict): return
         for key, val in saved_conf.items():
             if not hasattr(SpritzConf,key): continue
+            vf = validators.get(key)
+            if not callable(vf):
+                sys.stderr.write("WARNING: SpritzConf, no callable validator for %s" % (key,))
+                continue
+            valid = vf(val)
+            if not valid: continue
             setattr(SpritzConf,key,val)
 
 SpritzConf.default_colors_config = SpritzConf.getconf()
