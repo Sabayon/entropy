@@ -2262,7 +2262,7 @@ class EquoInterface(TextInterface):
         if idpackage == -1: masked = True
         return masked, idreason, self.SystemSettings['pkg_masking_reasons'].get(idreason)
 
-    def get_masked_packages_tree(self, match, atoms = False, flat = False, matchfilter = set()):
+    def get_masked_packages_tree(self, match, atoms = False, flat = False, matchfilter = None):
 
         if not isinstance(matchfilter,set):
             matchfilter = set()
@@ -2341,10 +2341,16 @@ class EquoInterface(TextInterface):
         return maskedtree
 
 
-    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = set(), flat = False, filter_unsat_cache = {}, treecache = set(), keyslotcache = set()):
+    def generate_dependency_tree(self, atomInfo, empty_deps = False, deep_deps = False, matchfilter = None, flat = False, filter_unsat_cache = None, treecache = None, keyslotcache = None):
 
         if not isinstance(matchfilter,set):
             matchfilter = set()
+        if not isinstance(filter_unsat_cache,dict):
+            filter_unsat_cache = {}
+        if not isinstance(treecache,set):
+            treecache = set()
+        if not isinstance(keyslotcache,set):
+            keyslotcache = set()
 
         mydbconn = self.openRepositoryDatabase(atomInfo[1])
         myatom = mydbconn.retrieveAtom(atomInfo[0])
@@ -8247,7 +8253,10 @@ class QAInterface:
         return broken
 
 
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, self_check = False, repo = etpConst['officialrepositoryid'], black_list = set(), black_list_adder = None):
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, self_check = False, repo = etpConst['officialrepositoryid'], black_list = None, black_list_adder = None):
+
+        if not isinstance(black_list,set):
+            black_list = set()
 
         taint = False
         scan_msg = blue(_("Now searching for missing RDEPENDs"))
