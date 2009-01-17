@@ -1403,9 +1403,15 @@ class SpritzApplication(Controller):
                 gtk.gdk.threads_enter()
 
                 self.my_inst_errors = None
+                self.my_inst_abort = False
                 def run_tha_bstrd():
-                    try: e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
-                    except: e,i = 1,None
+                    try:
+                        e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
+                    except exceptionTools.QueueError:
+                        self.my_inst_abort = True
+                        e,i = 1,None
+                    except:
+                        e,i = 1,None
                     self.my_inst_errors = (e,i,)
 
                 t = self.Equo.entropyTools.parallelTask(run_tha_bstrd)
@@ -1428,11 +1434,7 @@ class SpritzApplication(Controller):
                 self.ui.abortQueue.hide()
                 if self.do_debug:
                     print "processPackageQueue: buttons now hidden"
-                if e != 0:
-                    okDialog(   self.ui.main,
-                                _("Attention. An error occured when processing the queue."
-                                    "\nPlease have a look in the processing terminal.")
-                    )
+
                 # deactivate UI lock
                 if self.do_debug:
                     print "processPackageQueue: unlocking gui?"
@@ -1440,6 +1442,14 @@ class SpritzApplication(Controller):
                 self.onInstall = False
                 if self.do_debug:
                     print "processPackageQueue: gui unlocked"
+
+                if self.my_inst_abort:
+                    okDialog(self.ui.main, _("Attention. You chose to abort the processing."))
+                elif (e != 0):
+                    okDialog(self.ui.main,
+                        _("Attention. An error occured when processing the queue."
+                        "\nPlease have a look in the processing terminal.")
+                    )
 
             if self.do_debug:
                 print "processPackageQueue: endWorking?"
