@@ -13331,7 +13331,7 @@ class LogFile:
 
     def log(self, messagetype, level, message):
         if self.level >= level and not etpUi['nolog']:
-            self.handler("%s%s %s %s" % (self.getTimeDateHeader(),messagetype,self.header,message,))
+            self.handler("%s %s %s %s" % (self.getTimeDateHeader(),messagetype,self.header,message,))
 
     def write(self, s):
         self.handler(s)
@@ -13341,19 +13341,8 @@ class LogFile:
             self.write(s)
 
     def getTimeDateHeader(self):
-        return time.strftime('[%X %x %Z] ')
+        return time.strftime('[%H:%M:%S %d/%m/%Y %Z]')
 
-    def ladd(self, level, file, message):
-        if self.level >= level:
-            self.handler("++ %s \t%s" % (file, message))
-
-    def ldel(self, level, file, message):
-        if self.level >= level:
-            self.handler("-- %s \t%s" % (file, message))
-
-    def lch(self, level, file, message):
-        if self.level >= level:
-            self.handler("-+ %s \t%s" % (file, message))
 
 class SocketCommandsSkel:
 

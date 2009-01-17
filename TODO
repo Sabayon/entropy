@@ -6,10 +6,10 @@ TODO list
 
   Repository Manager:
     - fix queue length issue with extended commands on the repository manager server
-    - implement Package sets management
     - implement packages.db.system_mask management
 
 Proposed for Entropy >1.0 (require API changes):
+  - Entropy codebase refactoring
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
