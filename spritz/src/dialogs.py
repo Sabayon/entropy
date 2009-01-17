@@ -5020,8 +5020,8 @@ class MaskedPackagesDialog(MenuSkel):
     def enablePackage(self, widget, obj = None, do_refresh = True):
         if not obj:
             obj = self.get_obj()
-        if not obj:
-            return
+        if not obj: return
+        if obj.matched_atom == (0,0): return
         result = self.Entropy.unmask_match(obj.matched_atom, dry_run = True)
         if result:
             self.etpbase.unmaskingPackages.add(obj.matched_atom)
