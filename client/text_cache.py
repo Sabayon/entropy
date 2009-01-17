@@ -33,6 +33,7 @@ def cache(options):
         Equo.generate_cache()
     else:
         rc = -10
+    Equo.destroy()
 
     return rc
 

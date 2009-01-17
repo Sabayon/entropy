@@ -387,6 +387,7 @@ def reset_cache():
         from entropy import EquoInterface
         Equo = EquoInterface(noclientdb = 2)
         Equo.purge_cache()
+        Equo.destroy()
     except:
         pass
 
@@ -428,6 +429,7 @@ try:
     if options[0] in ("update","repoinfo","status","notice",):
         import text_repositories
         rc = text_repositories.repositories(options)
+        text_repositories.Equo.destroy()
 
     elif options[0] == "moo":
         do_moo()
@@ -435,11 +437,13 @@ try:
     elif options[0] in ["install","remove","world","deptest","unusedpackages","libtest","source"]:
         import text_ui
         rc = text_ui.package(options)
+        text_ui.Equo.destroy()
         load_conf_cache()
 
     elif options[0] == "security":
         import text_security
         rc = text_security.security(options[1:])
+        text_security.Equo.destroy()
 
     elif (options[0] == "query"):
         import text_query
@@ -455,6 +459,7 @@ try:
     elif (options[0] == "conf"):
         import text_configuration
         rc = text_configuration.configurator(options[1:])
+        text_configuration.Equo.destroy()
 
     elif (options[0] == "cache"):
         import text_cache
@@ -501,14 +506,17 @@ try:
     elif (options[0] == "database"):
         import text_rescue
         rc = text_rescue.database(options[1:])
+        text_rescue.Equo.destroy()
 
     elif (options[0] == "packages"):
         import text_rescue
         rc = text_rescue.updater(options[1:])
+        text_rescue.Equo.destroy()
 
     elif (options[0] == "ugc"):
         import text_ugc
         rc = text_ugc.ugc(options[1:])
+        text_ugc.Equo.destroy()
 
     elif (options[0] == "community"):
         etpConst['community']['mode'] = True
