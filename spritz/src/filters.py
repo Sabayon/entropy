@@ -86,7 +86,8 @@ class KeywordFilter(SpritzFilter):
                 found = False
                 for field in self.fields:
                     value = getattr(pkg,field)
-                    if value and crit in value:
+                    if not value: continue
+                    if value.find(crit) != -1:
                         found = True
                 if found:    # This search criteria was found
                     continue # Check the next one

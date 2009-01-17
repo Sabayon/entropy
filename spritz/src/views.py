@@ -1526,6 +1526,7 @@ class EntropyAdvisoriesView:
         self.view.connect("button-release-event", self.set_advisory_id)
         self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
         model.set_sort_column_id( 1, gtk.SORT_ASCENDING )
+
         return model
 
     def set_advisory_id(self, widget, event):
@@ -1569,6 +1570,12 @@ class EntropyAdvisoriesView:
             cell.set_property('background',SpritzConf.color_background_good)
             cell.set_property('foreground',SpritzConf.color_good_on_color_background)
 
+    def atom_search(self, model, column, key, iterator):
+        obj = model.get_value( iterator, 2 )
+        if isinstance(obj,basestring):
+            if obj.find(key) != -1:
+                return False
+        return True
 
     def populate( self, securityConn, adv_metadata, show ):
 
@@ -1622,6 +1629,11 @@ class EntropyAdvisoriesView:
                         "<small>%s</small>" % (cleanMarkupString(mydata['title']),)
                     ]
                 )
+
+        self.view.set_search_column( 2 )
+        self.view.set_search_equal_func(self.atom_search)
+        self.view.set_property('headers-visible',True)
+        self.view.set_property('enable-search',True)
 
 
 class CategoriesView:

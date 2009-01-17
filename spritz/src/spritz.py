@@ -178,9 +178,6 @@ class SpritzProgress:
         if frac == self.lastFrac:
             return
 
-        if self.parent.quitNow:
-            self.parent.exitNow()
-
         if frac > 1 or frac == 0.0:
             return
 
@@ -256,20 +253,15 @@ class SpritzApplication(Controller):
             self.ugcTask.kill()
         ''' Main destroy Handler '''
 
-        threads = entropyTools.threading.enumerate()
-        for thread in threads:
-            if hasattr(thread,'nuke'):
-                thread.nuke()
-
         #gtkEventThread.doQuit()
-        if self.isWorking:
-            self.quitNow = True
-
         self.exitNow()
+        raise SystemExit(0)
 
     def exitNow(self):
-        try: gtk.main_quit()
-        except RuntimeError: pass
+        try:
+            gtk.main_quit()
+        except RuntimeError:
+            pass
 
     def gtkLoop(self):
         while gtk.events_pending():
@@ -409,7 +401,6 @@ class SpritzApplication(Controller):
         self.abortQueueNow = False
         self.doProgress = False
         self.categoryOn = False
-        self.quitNow = False
         self.isWorking = False
         self.lastPkgPB = "updates"
         self.Equo.connect_to_gui(self)
@@ -723,9 +714,7 @@ class SpritzApplication(Controller):
         status, err_msg = self.Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
         self.Equo.reopenClientDbconn()
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
-        self.pkgView.clear()
+        self.resetSpritzCacheStatus()
         self.addPackages()
         if not status:
             self.hide_wait_window()
@@ -2241,6 +2230,12 @@ class SpritzApplication(Controller):
 
             self.queueView.refresh()
 
+    def on_queueClean_clicked(self, widget):
+        self.etpbase.clearPackages()
+        self.etpbase.clearCache()
+        self.queue.clear()
+        self.queueView.refresh()
+        self.addPackages()
 
     def on_adv_doubleclick( self, widget, iterator, path ):
         """ Handle selection of row in package view (Show Descriptions) """
