@@ -26,32 +26,34 @@ try:
 except ImportError:
     import pickle
 
+d_ext = etpConst['cachedumpext']
+d_dir = etpConst['dumpstoragedir']
+e_gid = etpConst['entropygid']
+if e_gid == None: e_gid = 0
+
 '''
    @description: dump object to file
    @input: name of the object, object
    @output: status code
 '''
+
 def dumpobj(name, object, completePath = False, ignoreExceptions = True):
     while 1: # trap ctrl+C
         try:
             if completePath:
                 dmpfile = name
             else:
-                dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+                dump_path = os.path.join(d_dir,name)
                 dump_dir = os.path.dirname(dump_path)
                 #dump_name = os.path.basename(dump_path)
                 if not os.path.isdir(dump_dir):
                     os.makedirs(dump_dir,0775)
-                    const_setup_perms(dump_dir,etpConst['entropygid'])
-                dmpfile = dump_path+etpConst['cachedumpext']
-            if os.path.isfile(dmpfile):
-                os.remove(dmpfile)
+                    const_setup_perms(dump_dir,e_gid)
+                dmpfile = dump_path+d_ext
             with open(dmpfile,"wb") as f:
                 pickle.dump(object,f)
-                os.chmod(dmpfile,0664)
-                if etpConst['entropygid'] != None:
-                    os.chown(dmpfile,-1,etpConst['entropygid'])
                 f.flush()
+            const_setup_file(dmpfile, e_gid, 0664)
         except RuntimeError:
             try: os.remove(dmpfile)
             except OSError: pass
@@ -108,10 +110,10 @@ def loadobj(name, completePath = False):
         if completePath:
             dmpfile = name
         else:
-            dump_path = os.path.join(etpConst['dumpstoragedir'],name)
+            dump_path = os.path.join(d_dir,name)
             #dump_dir = os.path.dirname(dump_path)
             #dump_name = os.path.basename(dump_path)
-            dmpfile = dump_path+etpConst['cachedumpext']
+            dmpfile = dump_path+d_ext
         if os.path.isfile(dmpfile) and os.access(dmpfile,os.R_OK):
             try:
                 with open(dmpfile,"rb") as f:
@@ -127,14 +129,14 @@ def loadobj(name, completePath = False):
 
 def getobjmtime(name):
     mtime = 0
-    dump_path = os.path.join(etpConst['dumpstoragedir'],name+etpConst['cachedumpext'])
+    dump_path = os.path.join(d_dir,name+d_ext)
     if os.path.isfile(dump_path) and os.access(dump_path,os.R_OK):
         mtime = os.path.getmtime(dump_path)
     return int(mtime)
 
 def removeobj(name):
-    if os.path.isfile(etpConst['dumpstoragedir']+"/"+name+etpConst['cachedumpext']):
+    if os.path.isfile(d_dir+"/"+name+d_ext):
         try:
-            os.remove(etpConst['dumpstoragedir']+"/"+name+etpConst['cachedumpext'])
+            os.remove(d_dir+"/"+name+d_ext)
         except OSError:
             pass
