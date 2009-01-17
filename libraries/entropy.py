@@ -341,11 +341,11 @@ class EntropyCacher:
 
     def sync(self, wait = False):
         if not self.alive: return
-        wd = 1000
+        wd = 10
         filled = self.CacheBuffer.is_filled()
         while filled and ((wd > 0) or wait):
             if not wait: wd -= 1
-            time.sleep(0.1)
+            time.sleep(0.5)
 
     def push(self, key, data, async = True):
         if not self.alive: return
@@ -378,10 +378,10 @@ class EntropyCacher:
     def stop(self):
         if hasattr(self,"CacheBuffer"):
             if self.CacheBuffer and self.alive:
-                wd = 500
+                wd = 20
                 while self.CacheBuffer.is_filled() and wd:
                     wd -= 1
-                    time.sleep(0.01)
+                    time.sleep(0.5)
                 self.CacheBuffer.clear()
         self.alive = False
         if hasattr(self,"CacheWriter"):
@@ -11164,10 +11164,10 @@ class SecurityInterface:
 
     def __unpack_advisories(self):
         rc = self.Entropy.entropyTools.uncompressTarBz2(
-                                                            self.download_package,
-                                                            self.unpacked_package,
-                                                            catchEmpty = True
-                                                        )
+            self.download_package,
+            self.unpacked_package,
+            catchEmpty = True
+        )
         const_setup_perms(self.unpacked_package,etpConst['entropygid'])
         return rc
 
@@ -11519,7 +11519,7 @@ class SecurityInterface:
             return True
         return False
 
-    def fetch_advisories(self):
+    def fetch_advisories(self, do_cache = True):
 
         mytxt = "%s: %s" % (bold(_("Security Advisories")),blue(_("testing service connection")),)
         self.Entropy.updateProgress(
@@ -11569,6 +11569,8 @@ class SecurityInterface:
         else:
             advtext = "%s: %s" % (bold(_("Security Advisories")),darkgreen(_("already up to date")),)
 
+        if do_cache and self.Entropy.xcache:
+            self.get_advisories_metadata()
         self.Entropy.updateProgress(
             advtext,
             importance = 2,
