@@ -6073,3 +6073,36 @@ class LicenseDialog:
                 dbconn = self.Entropy.openRepositoryDatabase(match[1])
                 atom = dbconn.retrieveAtom(match[0])
                 self.model.append( parent, [atom,None] )
+
+class ExceptionDialog:
+
+    def __init__(self):
+        pass
+
+    def show(self):
+
+        import entropyTools
+        from entropy import ErrorReportInterface
+
+        errmsg = entropyTools.getTraceback()
+        conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
+        rc, (name,mail,description) = errorMessage(
+            None,
+            _( "Exception caught" ),
+            _( "Spritz crashed! An unexpected error occured." ),
+            errmsg,
+            showreport = conntest
+        )
+        if rc == -1:
+            error = ErrorReportInterface()
+            error.prepare(errmsg, name, mail, description = description)
+            result = error.submit()
+            if result:
+                okDialog(None,_("Your report has been submitted successfully! Thanks a lot."))
+            else:
+                okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
+        #gtkEventThread.doQuit()
+        raise SystemExit(1)
+
+
+

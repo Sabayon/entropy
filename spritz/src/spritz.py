@@ -35,7 +35,6 @@ from entropyConstants import *
 import exceptionTools, entropyTools
 from packages import EntropyPackages
 from entropyapi import EquoConnection, QueueExecutor
-from entropy import ErrorReportInterface
 from entropy_i18n import _
 
 # Spritz Imports
@@ -2678,9 +2677,7 @@ class SpritzApplication(Controller):
 
 if __name__ == "__main__":
 
-    #gtkEventThread = ProcessGtkEventsThread()
     try:
-        #gtkEventThread.start()
         try:
             gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
         except gobject.GError:
@@ -2690,43 +2687,17 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
+        EquoConnection.destroy()
     except SystemExit:
         print "Quit by User"
-        #gtkEventThread.doQuit()
+        EquoConnection.destroy()
         raise SystemExit(0)
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        #gtkEventThread.doQuit()
+        EquoConnection.destroy()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
+        my = ExceptionDialog()
+        my.show()
 
-        etype = sys.exc_info()[0]
-        evalue = sys.exc_info()[1]
-        etb = traceback.extract_tb(sys.exc_info()[2])
-        errmsg = 'Error Type: %s \n' % str(etype)
-        errmsg += 'Error Value: %s \n' % str(evalue)
-        for tub in etb:
-            f,l,m,c = tub # file,lineno, function, codeline
-            errmsg += '  File : %s , line %s, in %s\n' % (f,str(l),m)
-            errmsg += '    %s \n' % c
-
-        conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
-        rc, (name,mail,description) = errorMessage(
-            None,
-            _( "Exception caught" ),
-            _( "Spritz crashed! An unexpected error occured." ),
-            errmsg,
-            showreport = conntest
-        )
-        if rc == -1:
-            error = ErrorReportInterface()
-            error.prepare(errmsg, name, mail, description = description)
-            result = error.submit()
-            if result:
-                okDialog(None,_("Your report has been submitted successfully! Thanks a lot."))
-            else:
-                okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
-        #gtkEventThread.doQuit()
-        raise SystemExit(1)
-
-    #gtkEventThread.doQuit()
+    raise SystemExit(0)
