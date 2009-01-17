@@ -1814,6 +1814,12 @@ class SpritzApplication(Controller):
         self.etpbase.clearCache()
         self.queue.clear()
         self.queueView.refresh()
+        # re-scan system settings, useful
+        # if there are packages that have been
+        # live masked, and anyway, better wasting
+        # 2-3 more cycles than having unattended
+        # behaviours
+        self.Equo.SystemSettings.scan()
         self.Equo.closeAllRepositoryDatabases()
 
     def __validateRepoSubmit(self, repodata, edit = False):
@@ -2235,10 +2241,7 @@ class SpritzApplication(Controller):
             self.queueView.refresh()
 
     def on_queueClean_clicked(self, widget):
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
-        self.queue.clear()
-        self.queueView.refresh()
+        self.resetSpritzCacheStatus()
         self.addPackages()
 
     def on_adv_doubleclick( self, widget, iterator, path ):

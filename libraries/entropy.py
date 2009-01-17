@@ -10559,12 +10559,10 @@ class SystemSettings:
             'repos_license_whitelist': {},
         }
 
+        import threading
+        self.L = threading.Lock()
         self.__settings = None
         self.__persistent_settings = {
-            'live_packagemasking': {
-                'unmask_matches': set(),
-                'mask_matches': set(),
-            },
             'pkg_masking_reasons': {
                 0: _('reason not available'),
                 1: _('user package.mask'),
@@ -10597,19 +10595,22 @@ class SystemSettings:
             },
         }
 
-
-    def clear(self):
-        self.__settings = None
-
-    def keys(self):
-        return self.__settings.keys()
-
     def scan(self):
 
         self.__settings = self.parse()
         # merge universal keywords
         for x in self.__settings['keywords']['universal']:
             etpConst['keywords'].add(x)
+
+        # live package masking / unmasking
+        self.__settings.update(
+            {
+                'live_packagemasking': {
+                    'unmask_matches': set(),
+                    'mask_matches': set(),
+                }
+            }
+        )
 
         # match installed packages of system_mask
         self.__settings['repos_system_mask_installed'] = []
@@ -10639,39 +10640,53 @@ class SystemSettings:
         self.__settings.update(self.__persistent_settings)
 
     def __setitem__(self, mykey, myvalue):
-        if self.__settings == None: self.scan()
-        if mykey in self.__persistent_settings: # backup here too
-            self.__persistent_settings[mykey] = myvalue
-            self.__settings.update(self.__persistent_settings)
-        self.__settings[mykey] = myvalue
+        with self.L:
+            if self.__settings == None: self.scan()
+            if mykey in self.__persistent_settings: # backup here too
+                self.__persistent_settings[mykey] = myvalue
+                self.__settings.update(self.__persistent_settings)
+            self.__settings[mykey] = myvalue
 
     def __getitem__(self, mykey):
-        if self.__settings == None: self.scan()
-        if mykey in self.__persistent_settings: # backup here too
-            return self.__persistent_settings[mykey]
-        return self.__settings[mykey]
+        with self.L:
+            if self.__settings == None: self.scan()
+            if mykey in self.__persistent_settings: # backup here too
+                return self.__persistent_settings[mykey]
+            return self.__settings[mykey]
 
     def __contains__(self, mykey):
-        if self.__settings == None: self.scan()
-        here = mykey in self.__persistent_settings
-        if here: return here
-        return mykey in self.__settings
+        with self.L:
+            if self.__settings == None: self.scan()
+            here = mykey in self.__persistent_settings
+            if here: return here
+            return mykey in self.__settings
 
     def __cmp__(self, other):
-        if self.__settings == None: self.scan()
-        return cmp(self.__settings,other)
+        with self.L:
+            if self.__settings == None: self.scan()
+            return cmp(self.__settings,other)
 
     def get(self, mykey):
-        if self.__settings == None: self.scan()
-        if mykey in self.__persistent_settings:
-            return self.__persistent_settings.get(mykey)
-        return self.__settings.get(mykey)
+        with self.L:
+            if self.__settings == None: self.scan()
+            if mykey in self.__persistent_settings:
+                return self.__persistent_settings.get(mykey)
+            return self.__settings.get(mykey)
 
     def has_key(self, mykey):
-        if self.__settings == None: self.scan()
-        here = mykey in self.__persistent_settings
-        if here: return True
-        return mykey in self.__settings
+        with self.L:
+            if self.__settings == None: self.scan()
+            here = mykey in self.__persistent_settings
+            if here: return True
+            return mykey in self.__settings
+
+    def clear(self):
+        with self.L:
+            self.__settings = None
+
+    def keys(self):
+        with self.L:
+            return self.__settings.keys()
 
     def parse(self):
 
