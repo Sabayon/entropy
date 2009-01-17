@@ -5314,6 +5314,17 @@ class ConfirmationDialog:
         update = [x for x in pkgs if x.action == "u"]
         remove = [x for x in pkgs if x.action == "r"]
         reinstall = [x for x in pkgs if x.action == "rr"]
+        if remove:
+            label = "<b>%s</b>" % _("To be removed")
+            level1 = model.append( None, [label] )
+            for pkg in remove:
+                desc = pkg.description[:desc_len].rstrip()+"..."
+                desc = cleanMarkupString(desc)
+                if not desc.strip():
+                    desc = _("No description")
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_remove,str(pkg),)
+                model.append( level1, [mypkg+mydesc] )
         if reinstall:
             label = "<b>%s</b>" % _("To be reinstalled")
             level1 = model.append( None, [label] )
@@ -5346,17 +5357,6 @@ class ConfirmationDialog:
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
                 mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_update,str(pkg),)
-                model.append( level1, [mypkg+mydesc] )
-        if remove:
-            label = "<b>%s</b>" % _("To be removed")
-            level1 = model.append( None, [label] )
-            for pkg in remove:
-                desc = pkg.description[:desc_len].rstrip()+"..."
-                desc = cleanMarkupString(desc)
-                if not desc.strip():
-                    desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_remove,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
 
     def destroy( self ):

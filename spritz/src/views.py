@@ -1331,51 +1331,30 @@ class EntropyQueueView:
         elif not obj.queued:
             cell.set_property(stype,None)
 
-    def deleteSelected( self ):
-        rmvlist = []
-        model, paths = self.view.get_selection().get_selected_rows()
-        for p in paths:
-            row = model[p]
-            if row.parent != None:
-                rmvlist.append( row[0] )
-        for pkg in self.getPkgsFromList( rmvlist ):
-            pkg.queued = None
-            pkg.set_select( not pkg.selected )
-        f = lambda x: str( x ) not in rmvlist
-        for action in ['u', 'i', 'r','rr']:
-            mylist = self.queue.get(action)
-            if mylist:
-                self.queue.packages[action] = filter( f, mylist )
-        self.refresh()
-
-    def getPkgsFromList( self, rlist ):
-        rclist = []
-        f = lambda x: str( x ) in rlist
-        for action in ['u', 'i', 'r','rr']:
-            mylist = self.queue.packages[action]
-            if mylist:
-                rclist += filter( f, mylist )
-        return rclist
-
     def refresh ( self ):
         """ Populate view with data from queue """
         self.model.clear()
-        label = "<b>%s</b>" % (_( "Packages To Reinstall" ),)
-        mylist = self.queue.packages['rr']
-        if len( mylist ) > 0:
-            self.populate_list( label, mylist )
-        label = "<b>%s</b>" % (_( "Packages To Update" ),)
-        mylist = self.queue.packages['u']
-        if len( mylist ) > 0:
-            self.populate_list( label, mylist )
-        label = "<b>%s</b>" % (_( "Packages To Install" ),)
-        mylist = self.queue.packages['i']
-        if len( mylist ) > 0:
-            self.populate_list( label, mylist )
+
         label = "<b>%s</b>" % (_( "Packages To Remove" ),)
         mylist = self.queue.packages['r']
-        if len( mylist ) > 0:
+        if mylist:
             self.populate_list( label, mylist )
+
+        label = "<b>%s</b>" % (_( "Packages To Install" ),)
+        mylist = self.queue.packages['i']
+        if mylist:
+            self.populate_list( label, mylist )
+
+        label = "<b>%s</b>" % (_( "Packages To Update" ),)
+        mylist = self.queue.packages['u']
+        if mylist:
+            self.populate_list( label, mylist )
+
+        label = "<b>%s</b>" % (_( "Packages To Reinstall" ),)
+        mylist = self.queue.packages['rr']
+        if mylist:
+            self.populate_list( label, mylist )
+
         self.view.expand_all()
 
     def atom_search(self, model, column, key, iterator):

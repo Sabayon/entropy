@@ -2166,11 +2166,6 @@ class SpritzApplication(Controller):
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
 
-
-    def on_queueDel_clicked( self, widget ):
-        """ Delete from Queue Button Handler """
-        self.queueView.deleteSelected()
-
     def on_queueProcess_clicked( self, widget ):
         """ Process Queue Button Handler """
         if self.queue.total() == 0: # Check there are any packages in the queue
