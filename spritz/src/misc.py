@@ -148,16 +148,30 @@ class SpritzQueue:
 
     def elaborateUndoremove(self, matches_to_be_removed, proposed_matches):
 
-        dep_tree, st = self.Entropy.get_required_packages(proposed_matches)
-        if st != 0: return proposed_matches, False # wtf?
-        if 0 in dep_tree:
-            dep_tree.pop(0)
-        new_deptree = set()
-        [new_deptree.update(dep_tree[x]) for x in dep_tree]
+        def flatten(d):
+            mynew = set()
+            [mynew.update(d[x]) for x in d]
+            return mynew
 
-        crying_items = [x for x in proposed_matches if x in new_deptree]
+        dep_tree, st = self.Entropy.get_required_packages(proposed_matches[:])
+        if st != 0: return proposed_matches, False # wtf?
+        if 0 in dep_tree: dep_tree.pop(0)
+        new_deptree = flatten(dep_tree)
+
+        crying_items = [x for x in matches_to_be_removed if x in new_deptree]
         if not crying_items:
             return proposed_matches, False
+
+        # we need to get a list of packages that must be "undo-removed"
+        crying_items = []
+        for match in proposed_matches:
+            match_tree, rc = self.Entropy.generate_dependency_tree(match, flat = True)
+            if rc != 0: return proposed_matches, False # wtf?
+            mm = [x for x in matches_to_be_removed if x in match_tree]
+            if mm: crying_items.append(match)
+
+        # just to make sure...
+        if not crying_items: return proposed_matches, False
 
         atoms = []
         for idpackage, repoid in crying_items:
@@ -187,9 +201,7 @@ class SpritzQueue:
 
         if not ok: return proposed_matches, True
 
-        proposed_matches = [x for x in proposed_matches if x not in crying_items]
-
-        return proposed_matches, False
+        return [x for x in proposed_matches if x not in crying_items], False
 
     def remove(self, pkgs, accept = False, accept_reinsert = False, always_ask = False):
 
