@@ -1950,13 +1950,13 @@ class EquoInterface(TextInterface):
 
         return mylist
 
-    def packageSetList(self, server_repos = [], serverInstance = None):
-        return self.packageSetMatch('', server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
+    def packageSetList(self, server_repos = [], serverInstance = None, matchRepo = None):
+        return self.packageSetMatch('', matchRepo = matchRepo, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
 
-    def packageSetSearch(self, package_set, server_repos = [], serverInstance = None):
+    def packageSetSearch(self, package_set, server_repos = [], serverInstance = None, matchRepo = None):
         # search support
         if package_set == '*': package_set = ''
-        return self.packageSetMatch(package_set, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
+        return self.packageSetMatch(package_set, matchRepo = matchRepo, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
 
     def packageSetMatch(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
 
@@ -28777,6 +28777,33 @@ class ServerMirrorsInterface:
 
             return errors,fine_uris,broken_uris
 
+    def _show_package_sets_messages(self, repo):
+        self.Entropy.updateProgress(
+            "[repo:%s] %s:" % (
+                brown(repo),
+                blue(_("configured package sets")),
+            ),
+            importance = 0,
+            type = "info",
+            header = darkgreen(" * ")
+        )
+        sets_data = self.Entropy.packageSetList(matchRepo = repo)
+        if not sets_data:
+            self.Entropy.updateProgress(
+                "%s" % (_("None configured"),),
+                importance = 0,
+                type = "info",
+                header = brown("    # ")
+            )
+            return
+        for s_repo, s_name, s_sets in sets_data:
+            self.Entropy.updateProgress(
+                blue("%s" % (s_name,)),
+                importance = 0,
+                type = "info",
+                header = brown("    # ")
+            )
+
     def _show_eapi3_upload_messages(self, crippled_uri, database_path, repo):
         self.Entropy.updateProgress(
             "[repo:%s|%s|%s:%s] %s" % (
@@ -29055,6 +29082,9 @@ class ServerMirrorsInterface:
                 type = "info",
                 header = darkgreen(" * ")
             )
+
+            # Package Sets info
+            self._show_package_sets_messages(repo)
 
             self.sync_database_treeupdates(repo)
             self.Entropy.update_database_package_sets(repo)
