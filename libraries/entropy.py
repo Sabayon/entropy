@@ -15114,8 +15114,7 @@ class SocketHostInterface:
         if not self.sessions:
             return
 
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             for session_id in self.sessions.keys():
                 sess_time = self.sessions[session_id]['t']
                 is_running = self.sessions[session_id]['running']
@@ -15129,9 +15128,7 @@ class SocketHostInterface:
                 check_time = sess_time + ttl
                 if cur_time > check_time:
                     self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id,ttl,) )
-                    self.destroy_session(session_id, lock = False)
-        finally:
-            self.SessionsLock.release()
+                    self._destroy_session(session_id)
 
     def setup_hostname(self):
         if self.hostname:
@@ -15147,8 +15144,7 @@ class SocketHostInterface:
         return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
     def get_new_session(self, ip_address = None):
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             if len(self.sessions) > self.threads:
                 # fuck!
                 return "0"
@@ -15171,50 +15167,36 @@ class SocketHostInterface:
             self.sessions[rng]['t'] = time.time()
             self.sessions[rng]['ip_address'] = ip_address
             return rng
-        finally:
-            self.SessionsLock.release()
 
     def update_session_time(self, session):
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             if self.sessions.has_key(session):
                 self.sessions[session]['t'] = time.time()
                 self.updateProgress('session time updated for %s' % (session,) )
-        finally:
-            self.SessionsLock.release()
 
     def set_session_running(self, session):
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             if self.sessions.has_key(session):
                 self.sessions[session]['running'] = True
-        finally:
-            self.SessionsLock.release()
 
     def unset_session_running(self, session):
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             if self.sessions.has_key(session):
                 self.sessions[session]['running'] = False
-        finally:
-            self.SessionsLock.release()
 
-    def destroy_session(self, session, lock = True):
-        if lock:
-            self.SessionsLock.acquire()
-        try:
-            if self.sessions.has_key(session):
-                stream_path = self.sessions[session]['stream_path']
-                del self.sessions[session]
-                if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
-                    try:
-                        os.remove(stream_path)
-                    except OSError:
-                        pass
-                return True
-            return False
-        finally:
-            if lock: self.SessionsLock.release()
+    def destroy_session(self, session):
+        with self.SessionsLock:
+            self._destroy_session(session)
+
+    def _destroy_session(self, session):
+        if self.sessions.has_key(session):
+            stream_path = self.sessions[session]['stream_path']
+            del self.sessions[session]
+            if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
+                try: os.remove(stream_path)
+                except OSError: pass
+            return True
+        return False
 
     def go(self):
         self.socket.setdefaulttimeout(self.timeout)
@@ -15240,8 +15222,7 @@ class SocketHostInterface:
         self.Gc.kill()
 
     def store_rc(self, rc, session):
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             if session in self.sessions:
                 if type(rc) in (list,tuple,):
                     rc_item = rc[:]
@@ -15250,16 +15231,11 @@ class SocketHostInterface:
                 else:
                     rc_item = rc
                 self.sessions[session]['rc'] = rc_item
-        finally:
-            self.SessionsLock.release()
 
     def get_rc(self, session):
-        self.SessionsLock.acquire()
-        try:
+        with self.SessionsLock:
             if session in self.sessions:
                 return self.sessions[session].get('rc')
-        finally:
-            self.SessionsLock.release()
 
     def transmit(self, channel, data):
         if self.SSL:
@@ -22849,14 +22825,11 @@ class SystemManagerExecutorServerRepositoryInterface:
         }
 
     def _set_processing_pid(self, queue_id, process_pid):
-        self.SystemManagerExecutor.SystemInterface.queue_lock_acquire()
-        try:
+        with self.SystemManagerExecutor.SystemInterface.QueueLock:
             live_item, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id)
             if isinstance(live_item,dict):
                 live_item['processing_pid'] = process_pid
                 self.SystemManagerExecutor.SystemInterface.store_queue()
-        finally:
-            self.SystemManagerExecutor.SystemInterface.queue_lock_release()
 
     def sync_portage(self, queue_id):
 
@@ -24994,8 +24967,8 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         def docmd_get_queue(self, myargs):
 
-            self.HostInterface.queue_lock_acquire()
-            try:
+            with self.HostInterface.QueueLock:
+
                 myqueue = copy.deepcopy(self.HostInterface.ManagerQueue)
 
                 extended = False
@@ -25011,8 +24984,6 @@ class SystemManagerServerInterface(SocketHostInterface):
                             item['extended_result'] = None
 
                 return True, myqueue
-            finally:
-                self.HostInterface.queue_lock_release()
 
         def docmd_get_queue_item_by_id(self, myargs):
 
@@ -25093,7 +25064,7 @@ class SystemManagerServerInterface(SocketHostInterface):
 
             ext_result = None
             if item.has_key('extended_result'):
-                ext_result = item['extended_result']
+                ext_result = self.HostInterface.load_queue_ext_rc(queue_id)
 
             return True,(item['result'],ext_result,)
 
@@ -25271,13 +25242,14 @@ class SystemManagerServerInterface(SocketHostInterface):
 
     queue_file = 'system_manager_queue'
     pinboard_file = "system_manager_pinboard"
+    queue_ext_rc_dir = "system_manager_rc"
     STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'],'system_manager_stdout')
     def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, fork_requests = False, entropy_interface_kwargs = {}, **kwargs):
 
         #nocolor()
         self.queue_loaded = False
-        import entropyTools, dumpTools
-        self.entropyTools, self.dumpTools = entropyTools, dumpTools
+        import entropyTools, dumpTools, threading
+        self.entropyTools, self.dumpTools, self.threading = entropyTools, dumpTools, threading
         from datetime import datetime
         self.datetime = datetime
 
@@ -25299,8 +25271,8 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         self.QueueProcessor = None
         self.QueueProcessorParallel = None
-        self.QueueLock = thread.allocate_lock()
-        self.PinboardLock = thread.allocate_lock()
+        self.QueueLock = self.threading.Lock()
+        self.PinboardLock = self.threading.Lock()
         self.do_ssl = do_ssl
         self.ServiceInterface = EntropyInterface
 
@@ -25365,12 +25337,6 @@ class SystemManagerServerInterface(SocketHostInterface):
             if etpConst['entropygid'] != None:
                 const_setup_perms(self.STDOUT_STORAGE_DIR,etpConst['entropygid'])
 
-    def pinboard_lock_acquire(self):
-        self.PinboardLock.acquire()
-
-    def pinboard_lock_release(self):
-        self.PinboardLock.release()
-
     def load_pinboard(self):
         obj = self.get_stored_pinboard()
         if isinstance(obj,dict):
@@ -25385,8 +25351,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.dumpTools.dumpobj(self.pinboard_file, self.PinboardData)
 
     def add_to_pinboard(self, note, extended_text):
-        self.pinboard_lock_acquire()
-        try:
+        with self.PinboardLock:
             mydata = {
                 'note': note,
                 'extended_text': extended_text,
@@ -25396,30 +25361,22 @@ class SystemManagerServerInterface(SocketHostInterface):
             pinboard_id = self.get_pinboard_id()
             self.PinboardData[pinboard_id] = mydata
             self.store_pinboard()
-        finally:
-            self.pinboard_lock_release()
 
     def remove_from_pinboard(self, pinboard_id):
-        self.pinboard_lock_acquire()
-        try:
+        with self.PinboardLock:
             if self.PinboardData.has_key(pinboard_id):
                 self.PinboardData.pop(pinboard_id)
                 self.store_pinboard()
                 return True
             return False
-        finally:
-            self.pinboard_lock_release()
 
     def set_pinboard_item_status(self, pinboard_id, status):
-        self.pinboard_lock_acquire()
-        try:
+        with self.PinboardLock:
             if self.PinboardData.has_key(pinboard_id):
                 self.PinboardData[pinboard_id]['done'] = status
                 self.store_pinboard()
                 return True
             return False
-        finally:
-            self.pinboard_lock_release()
 
     def get_pinboard_id(self):
         numbers = self.PinboardData.keys()
@@ -25430,23 +25387,14 @@ class SystemManagerServerInterface(SocketHostInterface):
         return number
 
     def get_pinboard_data(self):
-        self.pinboard_lock_acquire()
-        try:
+        with self.PinboardLock:
             return self.PinboardData.copy()
-        finally:
-            self.pinboard_lock_release()
 
     def load_queue_processors(self):
         self.QueueProcessor = self.entropyTools.parallelTask(self.queue_processor, False)
         self.QueueProcessor.start()
         self.QueueProcessorParallel = self.entropyTools.parallelTask(self.queue_processor, True)
         self.QueueProcessorParallel.start()
-
-    def queue_lock_acquire(self):
-        self.QueueLock.acquire()
-
-    def queue_lock_release(self):
-        self.QueueLock.release()
 
     def get_stored_queue(self):
         return self.dumpTools.loadobj(self.queue_file)
@@ -25464,12 +25412,20 @@ class SystemManagerServerInterface(SocketHostInterface):
     def store_queue(self):
         self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
 
+    def load_queue_ext_rc(self, queue_id):
+        return self.dumpTools.loadobj(os.path.join(self.queue_ext_rc_dir,queue_id))
+
+    def store_queue_ext_rc(self, queue_id, rc):
+        return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir,queue_id), rc)
+
+    def remove_queue_ext_rc(self, queue_id):
+        return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir,queue_id))
+
     def get_ts(self):
         return self.datetime.fromtimestamp(time.time())
 
     def swap_items_in_queue(self, queue_id1, queue_id2):
-        self.queue_lock_acquire()
-        try:
+        with self.QueueLock:
             item1, key1 = self.get_item_by_queue_id(queue_id1)
             item2, key2 = self.get_item_by_queue_id(queue_id2)
             if key1 != key2:
@@ -25485,8 +25441,6 @@ class SystemManagerServerInterface(SocketHostInterface):
             self.ManagerQueue[key1+"_order"][queue_id1_idx] = queue_id2
             self.ManagerQueue[key2+"_order"][queue_id2_idx] = queue_id1
             self.store_queue()
-        finally:
-            self.queue_lock_release()
         return True
 
 
@@ -25495,8 +25449,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         if function not in self.SystemExecutor.available_commands:
             return -1
 
-        self.queue_lock_acquire()
-        try:
+        with self.QueueLock:
             queue_id = self.generate_unique_queue_id()
             if interactive:
                 self.ManagerQueueStdInOut[queue_id] = os.pipe()
@@ -25522,14 +25475,11 @@ class SystemManagerServerInterface(SocketHostInterface):
             self.ManagerQueue['queue'][queue_id] = myqueue_dict
             self.ManagerQueue['queue_order'].append(queue_id)
             self.store_queue()
-        finally:
-            self.queue_lock_release()
         return queue_id
 
     def remove_from_queue(self, queue_ids):
-        self.queue_lock_acquire()
-        removed = False
-        try:
+        with self.QueueLock:
+            removed = False
             for key in self.ManagerQueue:
                 if key not in self.dict_queue_keys:
                     continue
@@ -25544,34 +25494,23 @@ class SystemManagerServerInterface(SocketHostInterface):
                         if queue_id in self.ManagerQueue[key+"_order"]:
                             self.ManagerQueue[key+"_order"].remove(queue_id)
                     removed = True
-            if removed:
-                self.store_queue()
-        finally:
-            self.queue_lock_release()
-        return removed
+                    self.remove_queue_ext_rc(queue_id)
+            if removed: self.store_queue()
+            return removed
 
     def kill_processing_queue_id(self, queue_id):
-        self.queue_lock_acquire()
-        try:
+        with self.QueueLock:
             item, key = self.get_item_by_queue_id(queue_id)
             if key in self.processing_queue_keys:
                 item['kill'] = True
-        finally:
-            self.queue_lock_release()
 
     def pause_queue(self):
-        self.queue_lock_acquire()
-        try:
+        with self.QueueLock:
             self.ManagerQueue['pause'] = True
-        finally:
-            self.queue_lock_release()
 
     def play_queue(self):
-        self.queue_lock_acquire()
-        try:
+        with self.QueueLock:
             self.ManagerQueue['pause'] = False
-        finally:
-            self.queue_lock_release()
 
     def flush_item(self, item, queue_id):
         if not isinstance(item,dict):
@@ -25617,24 +25556,14 @@ class SystemManagerServerInterface(SocketHostInterface):
         return None, None
 
     def _pop_item_from_queue_by_parallel(self, parallel):
-        self.queue_lock_acquire()
-        try:
+        with self.QueueLock:
             for idx in range(len(self.ManagerQueue['queue_order'])):
                 queue_id = self.ManagerQueue['queue_order'][idx]
                 if parallel == self.ManagerQueue['queue'][queue_id]['do_parallel']:
                     return self.ManagerQueue['queue'].pop(queue_id), self.ManagerQueue['queue_order'].pop(idx)
-        finally:
-            self.queue_lock_release()
-        return None, None
+            return None, None
 
     def queue_processor(self, parallel_mode, fork_data = None):
-
-        def do_store_and_free():
-            self.store_queue()
-            self.queue_lock_release()
-
-        def wait_and_takeover():
-            self.queue_lock_acquire()
 
         def copy_obj(obj):
             if isinstance(obj,(dict,set,)):
@@ -25647,7 +25576,10 @@ class SystemManagerServerInterface(SocketHostInterface):
 
             try:
 
-                if not fork_data:
+                if fork_data:
+                    command_data, queue_id = fork_data
+                else:
+
                     if self.ManagerQueue['pause']:
                         time.sleep(0.1)
                         continue
@@ -25661,15 +25593,13 @@ class SystemManagerServerInterface(SocketHostInterface):
                         time.sleep(0.5)
                         continue
 
-                    wait_and_takeover()
-                    command_data['processing_ts'] = "%s" % (self.get_ts(),)
-                    self.ManagerQueue['processing'][queue_id] = command_data
-                    self.ManagerQueue['processing_order'].append(queue_id)
-                    do_store_and_free()
+                    with self.QueueLock:
+                        command_data['processing_ts'] = "%s" % (self.get_ts(),)
+                        self.ManagerQueue['processing'][queue_id] = command_data
+                        self.ManagerQueue['processing_order'].append(queue_id)
+                        self.store_queue()
 
-                else:
-                    command_data, queue_id = fork_data
-
+                self.remove_queue_ext_rc(queue_id)
                 try:
                     if parallel_mode:
                         t = self.entropyTools.parallelTask(self.queue_processor, False, fork_data = (command_data, queue_id,))
@@ -25678,77 +25608,76 @@ class SystemManagerServerInterface(SocketHostInterface):
                     else:
                         done, result = self.SystemExecutor.execute_task(command_data)
                 except Exception, e:
-                    self.queue_lock_release()
+                    if self.QueueLock.locked():
+                        self.QueueLock.release()
                     self.entropyTools.printTraceback()
                     done = False
                     result = (False, unicode(e),)
 
-                wait_and_takeover()
-                if command_data.has_key('extended_result') and done:
+                with self.QueueLock:
+
+                    if command_data.has_key('extended_result') and done:
+                        try:
+                            command_data['result'], extended_result = copy_obj(result)
+                            self.store_queue_ext_rc(queue_id, extended_result)
+                        except TypeError:
+                            done = False
+                            command_data['result'] = 'wrong tuple split from queue processor (1)'
+                            self.store_queue_ext_rc(queue_id, None)
+                    else:
+                        command_data['result'] = copy_obj(result)
+
+                    if not done:
+                        try:
+                            self.ManagerQueue['processing'].pop(queue_id)
+                        except KeyError:
+                            pass
+                        if queue_id in self.ManagerQueue['processing_order']:
+                            self.ManagerQueue['processing_order'].remove(queue_id)
+                        command_data['errored_ts'] = "%s" % (self.get_ts(),)
+                        self.ManagerQueue['errored'][queue_id] = command_data
+                        self.ManagerQueue['errored_order'].append(queue_id)
+                        self.store_queue()
+                        if fork_data: break
+                        continue
+
                     try:
-                        command_data['result'], command_data['extended_result'] = copy_obj(result)
+                        done, cmd_result = result
                     except TypeError:
                         done = False
-                        command_data['result'] = 'wrong tuple split from queue processor (1)'
-                        command_data['extended_result'] = None
-                else:
-                    command_data['result'] = copy_obj(result)
+                        command_data['result'] = 'wrong tuple split from queue processor (2)'
+                    if not done:
+                        try:
+                            self.ManagerQueue['processing'].pop(queue_id)
+                        except KeyError:
+                            pass
+                        if queue_id in self.ManagerQueue['processing_order']:
+                            self.ManagerQueue['processing_order'].remove(queue_id)
+                        command_data['errored_ts'] = "%s" % (self.get_ts(),)
+                        self.ManagerQueue['errored'][queue_id] = command_data
+                        self.ManagerQueue['errored_order'].append(queue_id)
+                        self.store_queue()
+                        if fork_data: break
+                        continue
 
-                if not done:
                     try:
                         self.ManagerQueue['processing'].pop(queue_id)
                     except KeyError:
                         pass
                     if queue_id in self.ManagerQueue['processing_order']:
                         self.ManagerQueue['processing_order'].remove(queue_id)
-                    command_data['errored_ts'] = "%s" % (self.get_ts(),)
-                    self.ManagerQueue['errored'][queue_id] = command_data
-                    self.ManagerQueue['errored_order'].append(queue_id)
-                    do_store_and_free()
-                    if fork_data:
-                        break
-                    continue
+                    command_data['processed_ts'] = "%s" % (self.get_ts(),)
+                    self.ManagerQueue['processed'][queue_id] = command_data
+                    self.ManagerQueue['processed_order'].append(queue_id)
+                    self.store_queue()
 
-                try:
-                    done, cmd_result = result
-                except TypeError:
-                    done = False
-                    command_data['result'] = 'wrong tuple split from queue processor (2)'
-                if not done:
-                    try:
-                        self.ManagerQueue['processing'].pop(queue_id)
-                    except KeyError:
-                        pass
-                    if queue_id in self.ManagerQueue['processing_order']:
-                        self.ManagerQueue['processing_order'].remove(queue_id)
-                    command_data['errored_ts'] = "%s" % (self.get_ts(),)
-                    self.ManagerQueue['errored'][queue_id] = command_data
-                    self.ManagerQueue['errored_order'].append(queue_id)
-                    do_store_and_free()
-                    if fork_data:
-                        break
-                    continue
-
-                try:
-                    self.ManagerQueue['processing'].pop(queue_id)
-                except KeyError:
-                    pass
-                if queue_id in self.ManagerQueue['processing_order']:
-                    self.ManagerQueue['processing_order'].remove(queue_id)
-                command_data['processed_ts'] = "%s" % (self.get_ts(),)
-                self.ManagerQueue['processed'][queue_id] = command_data
-                self.ManagerQueue['processed_order'].append(queue_id)
-                do_store_and_free()
-
-                if fork_data:
-                    break
+                if fork_data: break
 
             except:
-                try:
-                    self.queue_lock_release()
-                except thread.error:
-                    pass
+                if self.QueueLock.locked():
+                    self.QueueLock.release()
                 raise
+
 
 
     def killall(self):

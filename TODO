@@ -5,7 +5,6 @@ TODO list
   - documentation + man page
 
   Repository Manager:
-    - fix queue length issue with extended commands on the repository manager server
     - implement packages.db.system_mask management
 
 Proposed for Entropy >1.0 (require API changes):

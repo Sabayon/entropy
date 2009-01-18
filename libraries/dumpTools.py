@@ -135,8 +135,8 @@ def getobjmtime(name):
     return int(mtime)
 
 def removeobj(name):
-    if os.path.isfile(d_dir+"/"+name+d_ext):
-        try:
-            os.remove(d_dir+"/"+name+d_ext)
-        except OSError:
-            pass
+    filepath = d_dir+"/"+name+d_ext
+    if os.path.isfile(filepath) and os.access(filepath,os.W_OK):
+        os.remove(filepath)
+        return True
+    return False
