@@ -25413,10 +25413,10 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
 
     def load_queue_ext_rc(self, queue_id):
-        return self.dumpTools.loadobj(os.path.join(self.queue_ext_rc_dir,queue_id))
+        return self.dumpTools.loadobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)))
 
     def store_queue_ext_rc(self, queue_id, rc):
-        return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir,queue_id), rc)
+        return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)), rc)
 
     def remove_queue_ext_rc(self, queue_id):
         return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)))
