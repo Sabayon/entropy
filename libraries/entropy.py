@@ -25419,7 +25419,7 @@ class SystemManagerServerInterface(SocketHostInterface):
         return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir,queue_id), rc)
 
     def remove_queue_ext_rc(self, queue_id):
-        return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir,queue_id))
+        return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)))
 
     def get_ts(self):
         return self.datetime.fromtimestamp(time.time())
