@@ -23118,6 +23118,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         switched = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
 
         rc = 1
@@ -23180,6 +23181,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return data
 
@@ -23288,6 +23290,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return data
 
@@ -23321,6 +23324,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return data
 
@@ -23353,6 +23357,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         status, result = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
 
         mystatus = False
@@ -23393,6 +23398,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return mydata
 
@@ -23430,6 +23436,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return True, 0
 
@@ -23516,6 +23523,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return data
 
@@ -23633,6 +23641,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return data
 
@@ -23681,6 +23690,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return mydata
 
@@ -23716,6 +23726,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return mydata
 
@@ -23749,6 +23760,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, pid)
 
         mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        stdout_err.flush()
         stdout_err.close()
         return mydata
 
