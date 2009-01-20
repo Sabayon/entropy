@@ -17,12 +17,11 @@
 # Authors:
 #    Tim Lauridsen <tla@rasmil.dk>
 
+import sys, os, threading
 import gtk.glade,gtk.gdk
 import pango
 import etpgui
 import gobject
-import types
-import sys, os
 from spritz_setup import const, SpritzConf
 import vte
 
@@ -341,5 +340,43 @@ class Controller:
             result.extend(list(currClass.__bases__))
             i = i + 1
         return result
+
+class _IdleObject(gobject.GObject):
+    """
+    Override gobject.GObject to always emit signals in the main thread
+    by emmitting on an idle handler
+    """
+    def __init__(self):
+        gobject.GObject.__init__(self)
+
+    def emit(self, *args):
+        gobject.idle_add(gobject.GObject.emit,self,*args)
+
+class _FooThread(threading.Thread, _IdleObject):
+    """
+    Cancellable thread which uses gobject signals to return information
+    to the GUI.
+    """
+    __gsignals__ =  { 
+        "completed": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
+    }
+
+    def __init__(self, function, *args, **kwargs):
+        threading.Thread.__init__(self)
+        _IdleObject.__init__(self)
+        self.func = function
+        self.args = args
+        self.kwargs = kwargs
+
+    def cancel(self):
+        """
+        Threads in python are not cancellable, so we implement our own
+        cancellation logic
+        """
+        self.cancelled = True
+
+    def run(self):
+        rc = self.func(*self.args,**self.kwargs)
+        self.emit("completed")
 
 

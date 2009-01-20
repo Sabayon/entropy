@@ -5,10 +5,11 @@ TODO list
   - documentation + man page
 
   Repository Manager:
-    - implement packages.db.system_mask management
+    - multiple instances support
 
 Proposed for Entropy >1.0 (require API changes):
   - Entropy codebase refactoring
+  - socket intf: do not send login on each connection but use a complete session based system
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?

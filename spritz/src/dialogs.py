@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from __future__ import with_statement
 import time, gtk, gobject, pango, thread, pty, sys
 from etpgui.widgets import UI
 from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
@@ -367,6 +368,8 @@ class RepositoryManagerMenu(MenuSkel):
 
     import threading
     def __init__(self, Entropy, window):
+        self.do_debug = False
+        if etpUi['debug']: self.do_debug = True
         self.BufferLock = self.threading.Lock()
         import entropyTools
         self.entropyTools = entropyTools
@@ -375,11 +378,11 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui = UI( const.GLADE_FILE, 'repositoryManager', 'entropy' )
         self.sm_ui.signal_autoconnect(self._getAllMethods())
         self.sm_ui.repositoryManager.set_transient_for(self.window)
-        #self.sm_ui.repositoryManager.add_events(gtk.gdk.BUTTON_PRESS_MASK)
 
+        self.DataStore = None
+        self.DataView = None
         self.QueueLock = self.threading.Lock()
         self.OutputLock = self.threading.Lock()
-        self.EventLock = self.threading.RLock()
         self.paused_queue_id = None
         self.is_processing = None
         self.is_writing_output = False
@@ -387,6 +390,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.output_pause = False
         self.queue_pause = False
         self.ssl_mode = True
+        self.repos_loaded = False
         self.PinboardData = {}
         self.Queue = {}
 
@@ -394,7 +398,11 @@ class RepositoryManagerMenu(MenuSkel):
         self.setup_pinboard_view()
         self.setup_console()
 
-        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_queue_view, 3)
+        self.TaskQueueAlive = True
+        self.TaskQueue = []
+        self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
+
+        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_queue_view, 5)
         self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_output_view, 0.5)
         self.PinboardUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_pinboard_view, 60)
         self.notebook_pages = {
@@ -404,13 +412,12 @@ class RepositoryManagerMenu(MenuSkel):
             'output': 3
         }
         self.dict_queue_keys = ['queue','processing','processed','errored']
-        self.DataStore = gtk.TreeStore( gobject.TYPE_PYOBJECT )
-        self.DataView = self.sm_ui.repoManagerDataView
-        self.DataView.set_model(self.DataStore)
+        self.DataScroll = self.sm_ui.dataViewScrollWin
         self.DataViewBox = self.sm_ui.repoManagerDataViewBox
         self.DataViewButtons = {}
         self.setup_data_view_buttons()
-        self.data_tree_selection_mode = self.DataView.get_selection().get_mode()
+        self.data_tree_selection_mode = None
+        self.DataViewVbox = self.sm_ui.dataViewVbox
 
         from entropy import SystemManagerClientInterface, \
             SystemManagerRepositoryClientCommands, \
@@ -425,7 +432,6 @@ class RepositoryManagerMenu(MenuSkel):
         self.fill_commands_view(self.Service.get_available_client_commands())
         self.ServiceStatus = True
         self.connection_done = False
-
         self.setup_available_repositories()
 
     def __del__(self):
@@ -433,15 +439,25 @@ class RepositoryManagerMenu(MenuSkel):
             if self.connection_done:
                 self.Service.kill_all_connections()
 
-    def on_repoManagerEvent_event(self, widget, event):
-        self.EventLock.acquire()
-        return False
-
-    def on_repoManagerEvent_event_after(self, widget, event):
-        self.EventLock.release()
+    def uiLock(self, action):
+        self.sm_ui.repositoryManager.set_sensitive(not action)
 
     def set_notebook_page(self, page):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
+
+    def task_queue_executor(self):
+        try:
+            data = self.TaskQueue.pop(0)
+        except IndexError:
+            return self.TaskQueueAlive
+        self.debug_print("task_queue_executor","executing: %s" % (data,))
+        func, args, kwargs = data
+        gtk.gdk.threads_enter()
+        try:
+            func(*args,**kwargs)
+        finally:
+            gtk.gdk.threads_leave()
+        return self.TaskQueueAlive
 
     def setup_console(self):
 
@@ -468,10 +484,30 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerTermScrollBox.pack_start(termScroll, False)
         self.sm_ui.repoManagerTermHBox.show_all()
 
+    def debug_print(self, f, msg):
+        if self.do_debug: print "repoman debug:",f,msg
+
     def clear_console(self):
         self.std_output.text_written = []
         self.std_input.text_read = ''
         self.console.reset()
+
+    def clear_data_store_and_view(self):
+        self.debug_print("clear_data_store_and_view","enter")
+        self.reset_data_view()
+        self.hide_all_data_view_buttons()
+        self.DataViewVbox.queue_draw()
+        while gtk.events_pending():
+            gtk.main_iteration()
+
+    def reset_data_view(self):
+        if self.DataView != None:
+            self.debug_print("reset_data_view","removing old DataView")
+            self.DataScroll.remove(self.DataView)
+            self.DataScroll.queue_draw()
+            self.DataView.destroy()
+            self.DataView = None
+            self.debug_print("reset_data_view","removal of old DataView done")
 
     def on_repoManagerConsoleEvent_enter_notify_event(self, widget, event):
         self.console.grab_focus()
@@ -591,36 +627,42 @@ class RepositoryManagerMenu(MenuSkel):
             'glsa': {
                 'package_info_button': glsa_package_info_button,
                 'adv_info_button': glsa_adv_info_button,
-                'order': ['package_info_button','adv_info_button']
+                'order': ['package_info_button','adv_info_button'],
+                'handler_ids': [],
             },
             'mirror_updates': {
                 'execute_button': mirror_updates_execute_button,
-                'order': ['execute_button']
+                'order': ['execute_button'],
+                'handler_ids': [],
             },
             'database_updates': {
                 'package_info_button': database_updates_package_info_button,
                 'change_repo_button': database_updates_change_repo_button,
                 'execute_button': database_updates_execute_button,
-                'order': ['package_info_button','change_repo_button','execute_button']
+                'order': ['package_info_button','change_repo_button','execute_button'],
+                'handler_ids': [],
             },
             'available_packages': {
                 'package_info_button': available_packages_package_info_button,
                 'remove_package_button': available_packages_remove_package_button,
                 'move_package_button': available_packages_move_package_button,
-                'order': ['package_info_button','remove_package_button','move_package_button']
+                'order': ['package_info_button','remove_package_button','move_package_button'],
+                'handler_ids': [],
             },
             'categories_updates': {
                 'compile_button': categories_updates_compile_button,
                 'add_use_button': categories_updates_add_use_button,
                 'remove_use_button': categories_updates_remove_use_button,
-                'order': ['compile_button','add_use_button','remove_use_button']
+                'order': ['compile_button','add_use_button','remove_use_button'],
+                'handler_ids': [],
             },
             'notice_board': {
                 'add_button': notice_board_add_button,
                 'remove_button': notice_board_remove_button,
                 'refresh_button': notice_board_refresh_button,
                 'view_button': notice_board_view_button,
-                'order': ['view_button','add_button','remove_button','refresh_button']
+                'order': ['view_button','add_button','remove_button','refresh_button'],
+                'handler_ids': [],
             }
         }
 
@@ -632,11 +674,19 @@ class RepositoryManagerMenu(MenuSkel):
         if cat in self.DataViewButtons:
             for w_id in self.DataViewButtons[cat]['order']:
                 self.DataViewButtons[cat][w_id].show()
+                # disconnect all signal handlers
+                for h_id in self.DataViewButtons[cat]['handler_ids']:
+                    w = self.DataViewButtons[cat][w_id]
+                    if w.handler_is_connected(h_id): w.disconnect(h_id)
+            del self.DataViewButtons[cat]['handler_ids'][:]
 
     def hide_all_data_view_buttons(self):
+        self.debug_print("hide_all_data_view_buttons","enter")
         for cat in self.DataViewButtons:
             for w_id in self.DataViewButtons[cat]['order']:
+                self.debug_print("hide_all_data_view_buttons","hiding button %s,%s" % (cat,w_id,))
                 self.DataViewButtons[cat][w_id].hide()
+        self.debug_print("hide_all_data_view_buttons","quit")
 
     def setup_available_repositories(self):
         self.EntropyRepositories = {
@@ -705,6 +755,25 @@ class RepositoryManagerMenu(MenuSkel):
         self.create_text_column( self.QueueView, _( "Parameters" ), 'queue:command_text', size = 200, expand = True)
         # date col
         self.create_text_column( self.QueueView, _( "Date" ), 'queue:ts', size = 120, sort_col_id = 1)
+
+    def setup_data_view(self):
+
+        store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
+        self.debug_print("setup_data_view","enter")
+        self.reset_data_view()
+        self.debug_print("setup_data_view","creating new DataView")
+        dv = gtk.TreeView()
+        dv.set_model(store)
+        self.data_tree_selection_mode = dv.get_selection().get_mode()
+        self.DataStore = store
+        self.DataView = dv
+        self.debug_print("setup_data_view","quit")
+
+    def show_data_view(self):
+        self.DataScroll.add(self.DataView)
+        self.debug_print("show_data_view","adding to DataScroll")
+        self.DataView.show()
+        self.debug_print("show_data_view","showing DataView")
 
     def setup_pinboard_view(self):
 
@@ -793,6 +862,8 @@ class RepositoryManagerMenu(MenuSkel):
         )
         txt += installed_string
         txt += available_string
+        if len(use_string) > 160:
+            use_string = use_string[:160]
         txt += "<b>%s</b>: %s\n<b>%s</b>: %s</small>" % (
             _("Description"),
             cleanMarkupString(description),
@@ -905,28 +976,11 @@ class RepositoryManagerMenu(MenuSkel):
         self.QueueUpdater.start()
         self.OutputUpdater.start()
         self.PinboardUpdater.start()
+
+        # ui will be unlocked by the thread below
+        self.uiLock(True)
         self.EntropyRepositoryComboLoader.start()
-
         return True
-
-    def wait_channel_call(self):
-        self.BufferLock.acquire()
-        '''
-        # what a mess are gtk statusbars? crashy as hell
-        gtk.gdk.threads_enter()
-        self.sm_ui.repoManagerStatusbar.push(0, _("Please wait"))
-        self.sm_ui.repoManagerStatusbar.queue_draw()
-        gtk.gdk.threads_leave()
-        '''
-
-    def release_channel_call(self):
-        '''
-        gtk.gdk.threads_enter()
-        self.sm_ui.repoManagerStatusbar.push(0, _("Ready"))
-        self.sm_ui.repoManagerStatusbar.queue_draw()
-        gtk.gdk.threads_leave()
-        '''
-        self.BufferLock.release()
 
     def get_item_by_queue_id(self, queue_id):
         self.QueueLock.acquire()
@@ -947,73 +1001,77 @@ class RepositoryManagerMenu(MenuSkel):
         okDialog(self.sm_ui.repositoryManager, unicode(e), title = _("Communication error"))
         gtk.gdk.threads_leave()
 
-    def load_available_repositories(self):
-
-        time.sleep(1)
-
-        self.wait_channel_call()
-        try:
-            status, repo_info = self.Service.Methods.get_available_repositories()
-            if not status:
+    def get_available_repositories(self):
+        with self.BufferLock:
+            try:
+                status, repo_info = self.Service.Methods.get_available_repositories()
+                if not status: return None
+            except Exception, e:
+                self.service_status_message(e)
                 return
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        return repo_info
+
+    def load_available_repositories(self, repo_info = None):
+
+        if repo_info == None:
+            repo_info = self.get_available_repositories()
+            if not repo_info: return
 
         if isinstance(repo_info,dict):
-            self.EntropyRepositories = repo_info.copy()
-            self.EntropyRepositoryStore.clear()
-            for repoid in self.EntropyRepositories['available'].keys():
-                item = self.EntropyRepositoryStore.append( (repoid,) )
-                if repoid == self.EntropyRepositories['current']:
-                    self.EntropyRepositoryCombo.set_active_iter(item)
-            mytxt = "<small><b>%s</b>: %s [<b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s]</small>" % (
-                _("Current"),
-                self.EntropyRepositories['current'],
-                _("c.mode"),
-                self.EntropyRepositories['community_mode'],
-                _("branch"),
-                self.EntropyRepositories['branch'],
-                _("supported branches"),
-                ','.join(self.EntropyRepositories['branches']),
-                _("repositories"),
-                len(self.EntropyRepositories['available']),
-            )
-            gtk.gdk.threads_enter()
-            try:
-                self.sm_ui.repoManagerCurrentRepoLabel.set_markup(mytxt)
-            except AttributeError: # user might have closed the win
-                pass
-            gtk.gdk.threads_leave()
+
+            def task(repo_info):
+
+                self.EntropyRepositories = repo_info.copy()
+                self.EntropyRepositoryStore.clear()
+                for repoid in self.EntropyRepositories['available'].keys():
+                    item = self.EntropyRepositoryStore.append( (repoid,) )
+                    if repoid == self.EntropyRepositories['current']:
+                        self.EntropyRepositoryCombo.set_active_iter(item)
+                mytxt = "<small><b>%s</b>: %s [<b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s]</small>" % (
+                    _("Current"),
+                    self.EntropyRepositories['current'],
+                    _("c.mode"),
+                    self.EntropyRepositories['community_mode'],
+                    _("branch"),
+                    self.EntropyRepositories['branch'],
+                    _("supported branches"),
+                    ','.join(self.EntropyRepositories['branches']),
+                    _("repositories"),
+                    len(self.EntropyRepositories['available']),
+                )
+                try:
+                    self.sm_ui.repoManagerCurrentRepoLabel.set_markup(mytxt)
+                except AttributeError: # user might have closed the win
+                    pass
+                if not self.repos_loaded:
+                    self.repos_loaded = True
+                    self.uiLock(False)
+
+            self.TaskQueue.append((task, [repo_info], {},))
 
     def update_queue_view(self):
 
-        time.sleep(1)
+        def task():
 
-        self.wait_channel_call()
-        try:
-            status, queue = self.Service.Methods.get_queue()
-            if not status:
-                return
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue = self.Service.Methods.get_queue()
+                    if not status:
+                        return
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        self.QueueLock.acquire()
-        try:
-            if queue == self.Queue: return
-            self.fill_queue_view(queue)
-            self.Queue = queue.copy()
-        finally:
-            self.QueueLock.release()
+            with self.QueueLock:
+                if queue == self.Queue: return
+                self.Queue = queue.copy()
+                self.TaskQueue.append((self.fill_queue_view, [queue], {},))
+
+        t = self.entropyTools.parallelTask(task)
+        t.start()
 
 
     def fill_queue_view(self, queue):
-        gtk.gdk.threads_enter()
         self.QueueStore.clear()
         keys = queue.keys()
 
@@ -1048,6 +1106,7 @@ class RepositoryManagerMenu(MenuSkel):
                 item = item.copy()
                 item['from'] = "queue"
                 self.QueueStore.append((item,item['queue_ts'],))
+
         if "errored_order" in keys:
             mylist = queue['errored_order'][:]
             mylist.reverse()
@@ -1058,27 +1117,23 @@ class RepositoryManagerMenu(MenuSkel):
                 item['from'] = "errored"
                 self.QueueStore.append((item,item['queue_ts'],))
 
-        gtk.gdk.threads_leave()
-
     def update_pinboard_view(self, force = False):
 
-        time.sleep(1)
-
-        self.wait_channel_call()
-        try:
-            status, pindata = self.Service.Methods.get_pinboard_data()
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            try:
+                status, pindata = self.Service.Methods.get_pinboard_data()
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
         if (pindata == self.PinboardData) and (not force):
             return
 
         if isinstance(pindata,dict):
-            self.fill_pinboard_view(pindata)
-            self.PinboardData = pindata.copy()
+            def task(pindata):
+                self.fill_pinboard_view(pindata)
+                self.PinboardData = pindata.copy()
+            self.TaskQueue.append((task,[pindata],{},))
 
     def fill_pinboard_view(self, pinboard_data):
         if isinstance(pinboard_data,dict):
@@ -1101,9 +1156,7 @@ class RepositoryManagerMenu(MenuSkel):
                 s += x
             return s
 
-        self.OutputLock.acquire()
-
-        try:
+        with self.OutputLock:
 
             if self.output_pause and not force: return
 
@@ -1114,74 +1167,76 @@ class RepositoryManagerMenu(MenuSkel):
                 if not obj.has_key('queue_id'): return
                 queue_id = obj['queue_id']
 
-            self.wait_channel_call()
-            try:
-                status, stdout = self.Service.Methods.get_queue_id_stdout(queue_id, n_bytes)
-            except Exception, e:
-                self.service_status_message(e)
-                return
-            finally:
-                self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, stdout = self.Service.Methods.get_queue_id_stdout(queue_id, n_bytes)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
             if not status: return
             stdout = stdout[-1*n_bytes:]
             if (stdout == self.Output) and (not force): return
             self.Output = stdout
 
-            gtk.gdk.threads_enter()
             self.clear_console()
-            self.std_output.write(stdout)
-            self.std_output.flush()
-            gtk.gdk.threads_leave()
 
-        finally:
+            mytxt = []
+            slice_count = self.console.get_column_count()
+            while stdout:
+                my = stdout[:slice_count]
+                stdout = stdout[slice_count:]
+                mytxt.append(my)
 
-            self.OutputLock.release()
+            for txt in mytxt: self.std_output.write(txt)
 
     def load_queue_info_menu(self, obj):
         my = SmQueueMenu(self.window)
         my.load(obj)
 
     def clear_data_view(self):
-        gtk.gdk.threads_enter()
-        self.DataStore.clear()
-
+        self.debug_print("clear_data_view","enter")
+        self.setup_data_view()
         ts_mode = self.DataView.get_selection().get_mode()
         if ts_mode != self.data_tree_selection_mode:
             self.DataView.get_selection().set_mode(self.data_tree_selection_mode)
+        self.debug_print("clear_data_view","ts_mode set")
         self.DataView.set_rubber_banding(False)
-
-        for col in self.DataView.get_columns():
-            self.DataView.remove_column(col)
-
-        gtk.gdk.threads_leave()
+        self.debug_print("clear_data_view","rubber banding set")
+        self.debug_print("clear_data_view","exit")
 
     def collect_data_view_iters(self):
+        self.debug_print("collect_data_view_iters","enter")
         model, paths = self.DataView.get_selection().get_selected_rows()
         if not model:
+            self.debug_print("collect_data_view_iters","quit (nothing)")
             return [], model
         data = []
         for path in paths:
             myiter = model.get_iter(path)
             data.append(myiter)
+        self.debug_print("collect_data_view_iters","quit")
         return data, model
 
     def wait_queue_id_to_complete(self, queue_id):
+
+        self.debug_print("wait_queue_id_to_complete","waiting for queue id %s" % (queue_id,))
+
         key = None
         while key not in ("processed","errored",):
             item, key = self.get_item_by_queue_id(queue_id)
-            time.sleep(0.1)
+            time.sleep(0.5)
 
-        self.wait_channel_call()
-        try:
-            status, (result,extended_result,) = self.Service.Methods.get_queue_id_result(queue_id)
-            if not status:
+        with self.BufferLock:
+            try:
+                status, (result,extended_result,) = self.Service.Methods.get_queue_id_result(queue_id)
+                if not status:
+                    return
+            except Exception, e:
+                self.service_status_message(e)
                 return
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+
+        self.debug_print("wait_queue_id_to_complete","done waiting for queue id %s" % (queue_id,))
 
         item = item.copy()
 
@@ -1192,23 +1247,21 @@ class RepositoryManagerMenu(MenuSkel):
             return
         return item
 
-    def glsa_data_view(self, queue_id):
+    def glsa_data_view(self, data):
 
-        item = self.wait_queue_id_to_complete(queue_id)
-        if item == None: return
-        try:
-            status, data = item['result']
-        except TypeError:
-            status = False
-        if not status: return
+        self.debug_print("glsa_data_view","enter")
 
         self.clear_data_view()
-        gtk.gdk.threads_enter()
-        self.hide_all_data_view_buttons()
+        self.debug_print("glsa_data_view","setting GFX")
+
+        self.debug_print("glsa_data_view","all buttons hidden")
         self.show_data_view_buttons_cat('glsa')
+        self.debug_print("glsa_data_view","all glsa buttons shown")
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        gtk.gdk.threads_leave()
+        self.debug_print("glsa_data_view","done setting DataView rb")
+
+        self.debug_print("glsa_data_view","done setting GFX")
 
         def is_affected(obj):
             if obj['status'] == "[A]":
@@ -1248,7 +1301,7 @@ class RepositoryManagerMenu(MenuSkel):
                         if atom_info.has_key('unaff_atoms'):
                             atoms |= set(atom_info['unaff_atoms'])
             if atoms:
-                self.on_repoManagerPkgInfo_clicked(None, atoms = atoms)
+                self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = True)
 
         def adv_info_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -1259,14 +1312,13 @@ class RepositoryManagerMenu(MenuSkel):
                 item = obj['number'], is_affected(obj), obj
                 my.load(item)
 
-
+        self.debug_print("glsa_data_view","done setting functions")
         # Package information
-        self.DataViewButtons['glsa']['package_info_button'].connect('clicked',package_info_clicked)
-
+        h1 = self.DataViewButtons['glsa']['package_info_button'].connect('clicked',package_info_clicked)
         # GLSA information button
-        self.DataViewButtons['glsa']['adv_info_button'].connect('clicked',adv_info_button_clicked)
-
-        gtk.gdk.threads_enter()
+        h2 = self.DataViewButtons['glsa']['adv_info_button'].connect('clicked',adv_info_button_clicked)
+        self.DataViewButtons['glsa']['handler_ids'].extend([h1,h2])
+        self.debug_print("glsa_data_view","done connecting buttons")
 
         # selection pixmap
         cell = gtk.CellRendererPixbuf()
@@ -1275,13 +1327,17 @@ class RepositoryManagerMenu(MenuSkel):
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( 80 )
         column.set_sort_column_id( -1 )
+        self.debug_print("glsa_data_view","appending status img to DataView")
         self.DataView.append_column( column )
 
+        self.debug_print("glsa_data_view","creating glsa column")
         # glsa id
         self.create_text_column( self.DataView, _( "GLSA Id." ), 'glsa_id', size = 80, cell_data_func = my_data_text)
-
+        self.debug_print("glsa_data_view","creating title column")
         # glsa title
         self.create_text_column( self.DataView, _( "Title" ), 'title', size = 300, cell_data_func = my_data_text, expand = True)
+
+        self.debug_print("glsa_data_view","done setting DataView columns")
 
         colors = ["#CDEEFF","#AFCBDA"]
         counter = 0
@@ -1290,34 +1346,32 @@ class RepositoryManagerMenu(MenuSkel):
             obj = data[myid].copy()
             obj['color'] = colors[counter%len(colors)]
             self.DataStore.append( None, (obj,) )
+
+        self.debug_print("glsa_data_view","done adding to DataStore")
         self.set_notebook_page(self.notebook_pages['data'])
-        gtk.gdk.threads_leave()
+        self.debug_print("glsa_data_view","done switching page")
+        self.show_data_view()
+        self.debug_print("glsa_data_view","done unmasking widgets")
+        self.debug_print("glsa_data_view","exit")
 
     def retrieve_entropy_idpackage_data_and_show(self, idpackage, repoid):
 
-        time.sleep(1)
-
-        self.wait_channel_call()
-        try:
-            status, package_data = self.Service.Methods.get_entropy_idpackage_information(idpackage, repoid)
-            if not status:
+        with self.BufferLock:
+            try:
+                self.debug_print("retrieve_entropy_idpackage_data_and_show","called for: %s, %s" % (idpackage,repoid,))
+                status, package_data = self.Service.Methods.get_entropy_idpackage_information(idpackage, repoid)
+                self.debug_print("retrieve_entropy_idpackage_data_and_show","done for: %s, %s" % (idpackage,repoid,))
+                if not status: return
+            except Exception, e:
+                self.service_status_message(e)
                 return
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
 
         if not package_data: return
         pkg = packages.EntropyPackage((idpackage,repoid,), True, remote = package_data)
-        gtk.gdk.threads_enter()
         mymenu = PkgInfoMenu(self.Entropy, pkg, self.window)
         mymenu.load(remote = True)
-        gtk.gdk.threads_leave()
 
     def remove_entropy_packages(self, matched_atoms, reload_func = None):
-
-        time.sleep(1)
 
         rc = self.Entropy.askQuestion(_("Are you sure you want to remove the selected packages ? (For EVA!)"))
         if rc != "Yes": return
@@ -1325,20 +1379,18 @@ class RepositoryManagerMenu(MenuSkel):
         rc = self.Entropy.askQuestion(_("This is your last chance, are you really really really sure?"))
         if rc != "Yes": return
 
-        self.wait_channel_call()
-        try:
-            status, msg = self.Service.Methods.remove_entropy_packages(matched_atoms)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            try:
+                status, msg = self.Service.Methods.remove_entropy_packages(matched_atoms)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
         if not status:
             self.service_status_message(msg)
             return
 
-        if status and reload_func:
+        if status and callable(reload_func):
             reload_func()
 
     def handle_uses_for_atoms(self, atoms, use):
@@ -1369,457 +1421,461 @@ class RepositoryManagerMenu(MenuSkel):
         return data
 
     def run_get_notice_board(self, repoid):
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.get_notice_board(repoid)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
 
-        if status:
-            self.update_notice_board_data_view(queue_id, repoid)
+        def task(repoid):
+
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.get_notice_board(repoid)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+
+            if status:
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                status, repo_data = item['result']
+                if not status: return
+                self.update_notice_board_data_view(repo_data, repoid)
+
+        t = self.entropyTools.parallelTask(task, repoid)
+        t.start()
 
 
     def run_write_to_running_command_pipe(self, queue_id, write_to_stdout, txt):
-        self.wait_channel_call()
-        try:
-            status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, write_to_stdout, txt)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
-        return status
+
+        def task(queue_id, write_to_stdout, txt):
+            with self.BufferLock:
+                try:
+                    status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, write_to_stdout, txt)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+
+        t = self.entropyTools.parallelTask(task, queue_id, write_to_stdout, txt)
+        t.start()
 
     def run_remove_from_pinboard(self, remove_ids):
 
-        time.sleep(1)
+        def task(remove_ids):
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+            if status:
+                # it's fine to skip self.TaskQueue
+                self.on_repoManagerPinboardRefreshButton_clicked(None)
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
-        if status:
-            self.on_repoManagerPinboardRefreshButton_clicked(None)
+        t = self.entropyTools.parallelTask(task, remove_ids)
+        t.start()
 
     def run_add_to_pinboard(self, note, extended_text):
 
-        time.sleep(1)
+        def task(note, extended_text):
 
-        self.wait_channel_call()
-        try:
-            status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if status:
-            self.on_repoManagerPinboardRefreshButton_clicked(None)
-        else:
-            self.service_status_message(err_msg)
+            if status:
+                # it's fine to skip self.TaskQueue
+                self.on_repoManagerPinboardRefreshButton_clicked(None)
+            else:
+                self.service_status_message(err_msg)
+
+        t = self.entropyTools.parallelTask(task, note, extended_text)
+        t.start()
 
     def run_run_custom_shell_command(self, command):
 
-        time.sleep(1)
+        def task(command):
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_custom_shell_command(command)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_custom_shell_command(command)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if status:
-            self.is_writing_output = True
-            self.is_processing = {'queue_id': queue_id}
-            gtk.gdk.threads_enter()
-            self.set_notebook_page(self.notebook_pages['output'])
-            gtk.gdk.threads_leave()
+            if status:
+                self.is_writing_output = True
+                self.is_processing = {'queue_id': queue_id}
+                self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task, command)
+        t.start()
 
     def run_get_spm_categories_installed(self, categories, world):
 
-        time.sleep(1)
+        def task(categories, world):
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.get_spm_categories_installed(categories)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+            if status:
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                status, data = item['result']
+                if not status: return
+                def reload_function(): self.on_repoManagerInstalledPackages_clicked(None, categories = categories, world = world)
+                self.TaskQueue.append((self.categories_updates_data_view, [data, categories], {'expand': True, 'reload_function': reload_function,},))
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.get_spm_categories_installed(categories)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
-
-        if status:
-            def reload_function():
-                self.on_repoManagerInstalledPackages_clicked(None, categories = categories, world = world)
-            t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, categories, expand = True, reload_function = reload_function)
-            t.start()
+        t = self.entropyTools.parallelTask(task, categories, world)
+        t.start()
 
     def run_sync_spm(self):
 
-        time.sleep(1)
+        def task():
+            with self.BufferLock:
+                try:
+                    status, data = self.Service.Methods.sync_spm()
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+            if status:
+                self.set_notebook_page(self.notebook_pages['output'])
 
-        self.wait_channel_call()
-        try:
-            status, data = self.Service.Methods.sync_spm()
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
-
-        if status:
-            gtk.gdk.threads_enter()
-            self.set_notebook_page(self.notebook_pages['output'])
-            gtk.gdk.threads_leave()
+        t = self.entropyTools.parallelTask(task)
+        t.start()
 
     def run_spm_remove_atoms(self, data):
 
-        time.sleep(1)
+        def task(data):
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.spm_remove_atoms(
-                data['atoms'],
-                data['pretend'],
-                data['verbose'],
-                data['nocolor'],
-            )
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.spm_remove_atoms(
+                        data['atoms'],
+                        data['pretend'],
+                        data['verbose'],
+                        data['nocolor'],
+                    )
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if status:
-            self.is_writing_output = True
-            self.is_processing = {'queue_id': queue_id}
-            gtk.gdk.threads_enter()
-            self.set_notebook_page(self.notebook_pages['output'])
-            gtk.gdk.threads_leave()
+            if status:
+                self.is_writing_output = True
+                self.is_processing = {'queue_id': queue_id}
+                self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task, data)
+        t.start()
 
     def run_compile_atoms(self, data):
 
-        time.sleep(1)
+        def task(data):
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.compile_atoms(
-                data['atoms'],
-                data['pretend'],
-                data['oneshot'],
-                data['verbose'],
-                data['nocolor'],
-                data['fetchonly'],
-                data['buildonly'],
-                data['nodeps'],
-                data['custom_use'],
-                data['ldflags'],
-                data['cflags'],
-            )
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.compile_atoms(
+                        data['atoms'],
+                        data['pretend'],
+                        data['oneshot'],
+                        data['verbose'],
+                        data['nocolor'],
+                        data['fetchonly'],
+                        data['buildonly'],
+                        data['nodeps'],
+                        data['custom_use'],
+                        data['ldflags'],
+                        data['cflags'],
+                    )
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if status:
-            self.is_writing_output = True
-            self.is_processing = {'queue_id': queue_id}
-            gtk.gdk.threads_enter()
-            self.set_notebook_page(self.notebook_pages['output'])
-            gtk.gdk.threads_leave()
+            if status:
+                self.is_writing_output = True
+                self.is_processing = {'queue_id': queue_id}
+                self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task, data)
+        t.start()
 
     def run_spm_info(self):
 
-        time.sleep(1)
+        def task():
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_spm_info()
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_spm_info()
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if status:
-            self.is_writing_output = True
-            self.is_processing = {'queue_id': queue_id}
-            gtk.gdk.threads_enter()
-            self.set_notebook_page(self.notebook_pages['output'])
-            gtk.gdk.threads_leave()
+            if status:
+                self.is_writing_output = True
+                self.is_processing = {'queue_id': queue_id}
+                self.set_notebook_page(self.notebook_pages['output'])
 
+        t = self.entropyTools.parallelTask(task)
+        t.start()
+
+    # fine without parallelTask
     def run_enable_uses_for_atoms(self, atoms, use, load_view):
 
-        time.sleep(1)
-
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.enable_uses_for_atoms(atoms, use)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.enable_uses_for_atoms(atoms, use)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
         if load_view and status:
             self.on_repoManagerPkgInfo_clicked(None, atoms = atoms)
+
         return status
 
+    # fine without parallelTask
     def run_disable_uses_for_atoms(self, atoms, use, load_view):
 
-        time.sleep(1)
-
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.disable_uses_for_atoms(atoms, use)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.disable_uses_for_atoms(atoms, use)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
         if load_view and status:
+            self.clear_data_store_and_view()
             self.on_repoManagerPkgInfo_clicked(None, atoms = atoms)
         return status
 
-    def run_get_spm_atoms_info(self, categories, atoms):
+    def run_get_spm_atoms_info(self, categories, atoms, clear):
 
-        time.sleep(1)
+        def task(categories, atoms):
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.get_spm_atoms_info(atoms)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.get_spm_atoms_info(atoms)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
-        if status:
-            def reload_function():
-                self.on_repoManagerPkgInfo_clicked(None, atoms = atoms)
-            t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, categories, expand = True, reload_function = reload_function)
-            t.start()
+            if status:
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                status, data = item['result']
+                if not status: return
+                def reload_function(): self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = clear)
+                self.TaskQueue.append((self.categories_updates_data_view, [data,categories], {'expand': True, 'reload_function': reload_function,},))
+
+        t = self.entropyTools.parallelTask(task, categories, atoms)
+        t.start()
 
     def run_kill_processing_queue_id(self, queue_id):
 
-        time.sleep(1)
+        def task(queue_id):
+            with self.BufferLock:
+                try:
+                    self.Service.Methods.kill_processing_queue_id(queue_id)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        self.wait_channel_call()
-        try:
-            self.Service.Methods.kill_processing_queue_id(queue_id)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        t = self.entropyTools.parallelTask(task, queue_id)
+        t.start()
 
     def run_remove_queue_ids(self, queue_ids):
 
-        time.sleep(1)
+        def task(queue_ids):
+            with self.BufferLock:
+                try:
+                    self.Service.Methods.remove_queue_ids(queue_ids)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        self.wait_channel_call()
-        try:
-            self.Service.Methods.remove_queue_ids(queue_ids)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        t = self.entropyTools.parallelTask(task, queue_ids)
+        t.start()
+
 
     def run_spm_categories_updates(self, categories, expand):
 
-        time.sleep(1)
+        def task(categories, expand):
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.get_spm_categories_updates(categories)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+            if status:
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                status, data = item['result']
+                if not status: return
+                self.TaskQueue.append((self.categories_updates_data_view, [data, categories, expand], {},))
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.get_spm_categories_updates(categories)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
-
-        if status:
-            t = self.entropyTools.parallelTask(self.categories_updates_data_view, queue_id, categories, expand)
-            t.start()
+        t = self.entropyTools.parallelTask(task, categories, expand)
+        t.start()
 
     def run_entropy_deptest(self):
 
-        time.sleep(1)
+        def task():
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_entropy_dependency_test()
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_entropy_dependency_test()
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        # enable output
-        self.is_writing_output = True
-        self.is_processing = {'queue_id': queue_id }
-        gtk.gdk.threads_enter()
-        self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
+            # enable output
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id }
+            self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task)
+        t.start()
 
     def run_entropy_treeupdates(self, repoid):
 
-        time.sleep(1)
+        def task():
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_entropy_treeupdates(repoid)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_entropy_treeupdates(repoid)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        # enable output
-        self.is_writing_output = True
-        self.is_processing = {'queue_id': queue_id }
-        gtk.gdk.threads_enter()
-        self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
+            # enable output
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id }
+            self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task)
+        t.start()
 
     def run_entropy_checksum_test(self, repoid, mode):
 
-        time.sleep(1)
+        def task(repoid, mode):
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_entropy_checksum_test(repoid, mode)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_entropy_checksum_test(repoid, mode)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        # enable output
-        self.is_writing_output = True
-        self.is_processing = {'queue_id': queue_id }
-        gtk.gdk.threads_enter()
-        self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
+            # enable output
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id }
+            self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task, repoid, mode)
+        t.start()
 
 
     def run_entropy_mirror_updates(self, repos):
 
-        time.sleep(1)
+        def task(repos):
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.scan_entropy_mirror_updates(repos)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.scan_entropy_mirror_updates(repos)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        self.entropy_mirror_updates_data_view(queue_id)
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, repo_data = item['result']
+            if not status: return
+
+            self.TaskQueue.append((self.entropy_mirror_updates_data_view, [repo_data],{},))
+
+        t = self.entropyTools.parallelTask(task, repos)
+        t.start()
 
 
     def execute_entropy_mirror_updates(self, repo_data):
 
-        time.sleep(1)
+        def task():
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_entropy_mirror_updates(repo_data)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_entropy_mirror_updates(repo_data)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        # enable output
-        self.is_writing_output = True
-        self.is_processing = {'queue_id': queue_id }
-        gtk.gdk.threads_enter()
-        self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
+            # enable output
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id }
+            self.set_notebook_page(self.notebook_pages['output'])
+
+        t = self.entropyTools.parallelTask(task)
+        t.start()
 
 
     def run_entropy_libtest(self):
 
-        time.sleep(1)
+        def task():
+            with self.BufferLock:
+                status = False
+                data = {}
+                try:
+                    status, queue_id = self.Service.Methods.run_entropy_library_test()
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        self.wait_channel_call()
-        status = False
-        data = {}
-        try:
-            status, queue_id = self.Service.Methods.run_entropy_library_test()
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            # enable output
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id }
+            self.set_notebook_page(self.notebook_pages['output'])
 
-        # enable output
-        self.is_writing_output = True
-        self.is_processing = {'queue_id': queue_id }
-        gtk.gdk.threads_enter()
-        self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
+        t = self.entropyTools.parallelTask(task)
+        t.start()
+
 
     def run_package_search(self, search_type, search_string, repoid):
 
-        time.sleep(1)
-
-        self.wait_channel_call()
-        try:
-            status, data = self.Service.Methods.search_entropy_packages(search_type, search_string, repoid)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            try:
+                status, data = self.Service.Methods.search_entropy_packages(search_type, search_string, repoid)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
         if not status:
             self.service_status_message(data)
             return
 
-        def reload_func():
-            self.run_package_search(search_type, search_string, repoid)
-
-        self.entropy_available_packages_data_view(data, repoid, reload_func = reload_func)
+        def reload_func(): self.run_package_search(search_type, search_string, repoid)
+        self.TaskQueue.append((self.entropy_available_packages_data_view, [data, repoid], {'reload_func': reload_func,},))
 
     def move_entropy_packages(self, matches, reload_function):
 
@@ -1860,145 +1916,144 @@ class RepositoryManagerMenu(MenuSkel):
 
         data['to_repo'] = data['to_repo'][1]
 
-        self.wait_channel_call()
-        status = False
-        try:
-            status, queue_id = self.Service.Methods.move_entropy_packages_to_repository(idpackages, from_repo, data['to_repo'], do_copy = data['do_copy'])
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            status = False
+            try:
+                status, queue_id = self.Service.Methods.move_entropy_packages_to_repository(idpackages, from_repo, data['to_repo'], do_copy = data['do_copy'])
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
         if not status:
             self.service_status_message(queue_id)
             return
 
-        if status:
-            t = self.entropyTools.parallelTask(self.reload_after_package_move, queue_id, reload_function)
-            t.start()
+        self.reload_after_package_move(queue_id, reload_function)
+
 
     def reload_after_package_move(self, queue_id, reload_func):
 
-        item = self.wait_queue_id_to_complete(queue_id)
-        if item == None: return
-        status, data = item['result']
-        if not status: return
+        def task(queue_id, reload_func):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, data = item['result']
+            if not status: return
+            self.TaskQueue.append((reload_func,[],{},))
 
-        reload_func()
+        t = self.entropyTools.parallelTask(task, queue_id, reload_func)
+        t.start()
 
     def run_entropy_database_updates_scan(self):
 
-        time.sleep(1)
+        def task():
 
-        self.wait_channel_call()
-        status = False
-        data = {}
-        try:
-            status, queue_id = self.Service.Methods.scan_entropy_packages_database_changes()
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+            with self.BufferLock:
+                status = False
+                data = {}
+                try:
+                    status, queue_id = self.Service.Methods.scan_entropy_packages_database_changes()
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            if not status:
+                self.service_status_message(queue_id)
+                return
 
-        self.entropy_database_updates_data_view(queue_id)
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, data = item['result']
+            if not status: return
+
+            self.TaskQueue.append((self.entropy_database_updates_data_view, [data], {},))
+
+        t = self.entropyTools.parallelTask(task)
+        t.start()
 
     def run_entropy_database_updates(self, to_add, to_remove, to_inject, reload_func = None):
 
-        time.sleep(1)
-
         if reload_func == None:
             def reload_func():
                 pass
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.run_entropy_database_updates(to_add, to_remove, to_inject)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        def task(to_add, to_remove, to_inject, reload_func):
 
-        if not status:
-            self.service_status_message(queue_id)
-            return
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.run_entropy_database_updates(to_add, to_remove, to_inject)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-        # enable output
-        self.is_writing_output = True
-        self.is_processing = {'queue_id': queue_id }
-        gtk.gdk.threads_enter()
-        self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
-        self.reload_after_package_move(queue_id, reload_func)
+            if not status:
+                self.service_status_message(queue_id)
+                return
+
+            # enable output
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id }
+            self.set_notebook_page(self.notebook_pages['output'])
+            self.reload_after_package_move(queue_id, reload_func)
+
+        t = self.entropyTools.parallelTask(task, to_add, to_remove, to_inject, reload_func)
+        t.start()
 
     def run_add_notice_board_entry(self, repoid, title, notice_text, link, reload_func = None):
 
-        time.sleep(1)
-
         if reload_func == None:
             def reload_func():
                 pass
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.add_notice_board_entry(repoid, title, notice_text, link)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        def task(repoid, title, notice_text, link, reload_func):
 
-        if status:
-            item = self.wait_queue_id_to_complete(queue_id)
-            if item == None: return
-            status, result = item['result']
-            if not status: return
-            reload_func()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.add_notice_board_entry(repoid, title, notice_text, link)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+
+            if status:
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                status, result = item['result']
+                if not status: return
+                self.TaskQueue.append((reload_func,[],{},))
+
+        t = self.entropyTools.parallelTask(task, repoid, title, notice_text, link, reload_func)
+        t.start()
 
     def run_remove_notice_board_entries(self, repoid, ids, reload_func = None):
 
-        time.sleep(1)
-
         if reload_func == None:
             def reload_func():
                 pass
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.remove_notice_board_entries(repoid, list(ids))
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        def task(repoid, ids, reload_func):
 
-        if status:
-            item = self.wait_queue_id_to_complete(queue_id)
-            if item == None: return
-            status, result = item['result']
-            if not status: return
-            reload_func()
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.remove_notice_board_entries(repoid, list(ids))
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
-    def update_notice_board_data_view(self, queue_id, repoid):
+            if status:
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                status, result = item['result']
+                if not status: return
+                self.TaskQueue.append((reload_func,[],{},))
 
-        item = self.wait_queue_id_to_complete(queue_id)
-        if item == None: return
-        status, repo_data = item['result']
-        if not status: return
+        t = self.entropyTools.parallelTask(task, repoid, ids, reload_func)
+        t.start()
+
+    def update_notice_board_data_view(self, repo_data, repoid):
 
         self.clear_data_view()
-        gtk.gdk.threads_enter()
-        self.hide_all_data_view_buttons()
         self.show_data_view_buttons_cat('notice_board')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        gtk.gdk.threads_leave()
 
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 )
@@ -2029,8 +2084,7 @@ class RepositoryManagerMenu(MenuSkel):
             if data == None: return
             def reload_func():
                 self.on_repoManagerNoticeBoardButton_clicked(None, repoid = repoid)
-            t = self.entropyTools.parallelTask(self.run_add_notice_board_entry, repoid, data['title'], data['notice_text'], data['link'], reload_func)
-            t.start()
+            self.run_add_notice_board_entry(repoid, data['title'], data['notice_text'], data['link'], reload_func)
 
         def remove_button_clicked(widget):
 
@@ -2043,8 +2097,7 @@ class RepositoryManagerMenu(MenuSkel):
             if ids:
                 def reload_func():
                     self.on_repoManagerNoticeBoardButton_clicked(None, repoid = repoid)
-                t = self.entropyTools.parallelTask(self.run_remove_notice_board_entries, repoid, ids, reload_func)
-                t.start()
+                self.run_remove_notice_board_entries(repoid, ids, reload_func)
 
         def refresh_button_clicked(widget):
             self.on_repoManagerNoticeBoardButton_clicked(None, repoid = repoid)
@@ -2059,17 +2112,17 @@ class RepositoryManagerMenu(MenuSkel):
                 my = RmNoticeBoardMenu(self.window)
                 my.load(obj)
 
-        gtk.gdk.threads_enter()
-        self.DataViewButtons['notice_board']['add_button'].connect('clicked',add_button_clicked)
-        self.DataViewButtons['notice_board']['remove_button'].connect('clicked',remove_button_clicked)
-        self.DataViewButtons['notice_board']['refresh_button'].connect('clicked',refresh_button_clicked)
-        self.DataViewButtons['notice_board']['view_button'].connect('clicked',view_button_clicked)
+        h1 = self.DataViewButtons['notice_board']['add_button'].connect('clicked',add_button_clicked)
+        h2 = self.DataViewButtons['notice_board']['remove_button'].connect('clicked',remove_button_clicked)
+        h3 = self.DataViewButtons['notice_board']['refresh_button'].connect('clicked',refresh_button_clicked)
+        h4 = self.DataViewButtons['notice_board']['view_button'].connect('clicked',view_button_clicked)
+        self.DataViewButtons['notice_board']['handler_ids'].extend([h1,h2,h3,h4])
+
         self.create_text_column( self.DataView, _( "Notice board" ), 'nb', size = 300, cell_data_func = my_data_text, expand = True, set_height = 36)
-        gtk.gdk.threads_leave()
         self.fill_notice_board_view(repo_data)
-        gtk.gdk.threads_enter()
+
         self.set_notebook_page(self.notebook_pages['data'])
-        gtk.gdk.threads_leave()
+        self.show_data_view()
 
     def fill_notice_board_view(self, repo_data):
         colors = ["#CDEEFF","#AFCBDA"]
@@ -2084,21 +2137,12 @@ class RepositoryManagerMenu(MenuSkel):
             self.DataStore.append( None, (item,) )
 
 
-    def entropy_mirror_updates_data_view(self, queue_id):
-
-        item = self.wait_queue_id_to_complete(queue_id)
-        if item == None: return
-        status, repo_data = item['result']
-        if not status: return
-
+    def entropy_mirror_updates_data_view(self, repo_data):
 
         self.clear_data_view()
-        gtk.gdk.threads_enter()
-        self.hide_all_data_view_buttons()
         self.show_data_view_buttons_cat('mirror_updates')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        gtk.gdk.threads_leave()
 
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 ) # cleanMarkupString
@@ -2202,32 +2246,24 @@ class RepositoryManagerMenu(MenuSkel):
                 run_data[repoid]['commit_msg'] = data['commit_msg']
 
             if run_data:
+                self.clear_data_store_and_view()
                 t = self.entropyTools.parallelTask(self.execute_entropy_mirror_updates, run_data)
                 t.start()
 
-        gtk.gdk.threads_enter()
-        self.DataViewButtons['mirror_updates']['execute_button'].connect('clicked',execute_button_clicked)
+        h1 = self.DataViewButtons['mirror_updates']['execute_button'].connect('clicked',execute_button_clicked)
+        self.DataViewButtons['mirror_updates']['handler_ids'].extend([h1])
+
         self.create_text_column( self.DataView, _( "Mirror updates information" ), 'info', size = 300, cell_data_func = my_data_text, expand = True)
-        gtk.gdk.threads_leave()
         self.fill_mirror_updates_view(repo_data)
-        gtk.gdk.threads_enter()
         self.set_notebook_page(self.notebook_pages['data'])
-        gtk.gdk.threads_leave()
+        self.show_data_view()
 
-    def entropy_database_updates_data_view(self, queue_id):
-
-        item = self.wait_queue_id_to_complete(queue_id)
-        if item == None: return
-        status, data = item['result']
-        if not status: return
+    def entropy_database_updates_data_view(self, data):
 
         self.clear_data_view()
-        gtk.gdk.threads_enter()
-        self.hide_all_data_view_buttons()
         self.show_data_view_buttons_cat('database_updates')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        gtk.gdk.threads_leave()
 
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 )
@@ -2262,8 +2298,7 @@ class RepositoryManagerMenu(MenuSkel):
                 obj = model.get_value(myiter, 0)
                 if obj.has_key('is_master'): continue
                 if obj['from'] != "add":
-                    t = self.entropyTools.parallelTask(self.retrieve_entropy_idpackage_data_and_show, obj['idpackage'], obj['repoid'])
-                    t.start()
+                    self.retrieve_entropy_idpackage_data_and_show(obj['idpackage'], obj['repoid'])
 
         def change_repo_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2339,14 +2374,14 @@ class RepositoryManagerMenu(MenuSkel):
             if to_add or to_remove or to_inject:
                 def reload_func():
                     self.on_repoManagerEntropyDbUpdatesButton_clicked(None)
-                t = self.entropyTools.parallelTask(self.run_entropy_database_updates, to_add, to_remove, to_inject, reload_func)
-                t.start()
+                self.clear_data_store_and_view()
+                self.run_entropy_database_updates(to_add, to_remove, to_inject, reload_func)
 
-        gtk.gdk.threads_enter()
 
-        self.DataViewButtons['database_updates']['change_repo_button'].connect('clicked',change_repo_clicked)
-        self.DataViewButtons['database_updates']['package_info_button'].connect('clicked',package_info_clicked)
-        self.DataViewButtons['database_updates']['execute_button'].connect('clicked',execute_button_clicked)
+        h1 = self.DataViewButtons['database_updates']['change_repo_button'].connect('clicked',change_repo_clicked)
+        h2 = self.DataViewButtons['database_updates']['package_info_button'].connect('clicked',package_info_clicked)
+        h3 = self.DataViewButtons['database_updates']['execute_button'].connect('clicked',execute_button_clicked)
+        self.DataViewButtons['database_updates']['handler_ids'].extend([h1,h2,h3])
 
         cell_height = 80
 
@@ -2354,16 +2389,12 @@ class RepositoryManagerMenu(MenuSkel):
         self.create_text_column( self.DataView, _( "Package" ), 'package', size = 300, set_height = cell_height, cell_data_func = my_data_text, expand = True)
         # repository
         self.create_text_column( self.DataView, _( "Repository" ), 'repoid', size = 130, set_height = cell_height, cell_data_func = my_data_text)
-        gtk.gdk.threads_leave()
         self.fill_db_updates_view(data)
-        gtk.gdk.threads_enter()
         self.set_notebook_page(self.notebook_pages['data'])
-        gtk.gdk.threads_leave()
+        self.show_data_view()
 
 
     def fill_db_updates_view(self, data):
-
-        gtk.gdk.threads_enter()
 
         master_add = {
             'is_master': True,
@@ -2492,15 +2523,13 @@ class RepositoryManagerMenu(MenuSkel):
                 self.DataStore.append( myparent, (item,) )
 
         self.DataView.expand_all()
-        gtk.gdk.threads_leave()
 
 
     def fill_mirror_updates_view(self, data):
 
-        gtk.gdk.threads_enter()
-
         color_odd = '#FFF7C2'
         color_even = '#E6FFCA'
+
 
         repos = data.keys()
         for repoid in repos:
@@ -2570,7 +2599,6 @@ class RepositoryManagerMenu(MenuSkel):
                             self.DataStore.append( pkg_parent, (pkg_item,))
 
         self.DataView.expand_all()
-        gtk.gdk.threads_leave()
 
 
     def entropy_available_packages_data_view(self, packages_data, repoid, reload_func = None):
@@ -2583,12 +2611,9 @@ class RepositoryManagerMenu(MenuSkel):
                 self.on_repoManagerAvailablePackagesButton_clicked(None, repoid = repoid)
 
         self.clear_data_view()
-        gtk.gdk.threads_enter()
-        self.hide_all_data_view_buttons()
         self.show_data_view_buttons_cat('available_packages')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        gtk.gdk.threads_leave()
 
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 )
@@ -2612,8 +2637,7 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if obj.has_key('is_cat'): continue
-                t = self.entropyTools.parallelTask(self.retrieve_entropy_idpackage_data_and_show, obj['idpackage'], obj['repoid'])
-                t.start()
+                self.retrieve_entropy_idpackage_data_and_show(obj['idpackage'], obj['repoid'])
 
         def remove_package_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2624,8 +2648,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if obj.has_key('is_cat'): continue
                 items.append((obj['idpackage'],obj['repoid'],))
             if items:
-                t = self.entropyTools.parallelTask(self.remove_entropy_packages, items, reload_func = reload_func)
-                t.start()
+                self.remove_entropy_packages(items, reload_func = reload_func)
 
         def move_package_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2638,11 +2661,11 @@ class RepositoryManagerMenu(MenuSkel):
             if items:
                 self.move_entropy_packages(items, reload_func)
 
-        gtk.gdk.threads_enter()
 
-        self.DataViewButtons['available_packages']['package_info_button'].connect('clicked',package_info_clicked)
-        self.DataViewButtons['available_packages']['remove_package_button'].connect('clicked',remove_package_button_clicked)
-        self.DataViewButtons['available_packages']['move_package_button'].connect('clicked',move_package_button_clicked)
+        h1 = self.DataViewButtons['available_packages']['package_info_button'].connect('clicked',package_info_clicked)
+        h2 = self.DataViewButtons['available_packages']['remove_package_button'].connect('clicked',remove_package_button_clicked)
+        h3 = self.DataViewButtons['available_packages']['move_package_button'].connect('clicked',move_package_button_clicked)
+        self.DataViewButtons['available_packages']['handler_ids'].extend([h1,h2,h3])
 
         # glsa id
         self.create_text_column( self.DataView, _( "Package" ), 'package', size = 300, set_height = 60, cell_data_func = my_data_text, expand = True)
@@ -2679,27 +2702,19 @@ class RepositoryManagerMenu(MenuSkel):
                 self.DataStore.append( parent, (item,) )
 
         self.set_notebook_page(self.notebook_pages['data'])
-        gtk.gdk.threads_leave()
+        self.show_data_view()
 
 
-    def categories_updates_data_view(self, queue_id, categories, expand = False, reload_function = None):
+    def categories_updates_data_view(self, data, categories, expand = False, reload_function = None):
 
         if reload_function == None:
             def reload_function():
                 self.on_repoManagerCategoryUpdButton_clicked(None, categories = categories, expand = True)
 
-        item = self.wait_queue_id_to_complete(queue_id)
-        if item == None: return
-        status, data = item['result']
-        if not status: return
-
         self.clear_data_view()
-        gtk.gdk.threads_enter()
-        self.hide_all_data_view_buttons()
         self.show_data_view_buttons_cat('categories_updates')
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        gtk.gdk.threads_leave()
 
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 )
@@ -2738,7 +2753,7 @@ class RepositoryManagerMenu(MenuSkel):
             if atoms:
                 status = self.on_addUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
                 if status:
-                    reload_function()
+                    self.TaskQueue.append((reload_function,[],{},))
 
         def remove_use_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2751,16 +2766,15 @@ class RepositoryManagerMenu(MenuSkel):
             if atoms:
                 status = self.on_removeUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
                 if status:
-                    reload_function()
+                    self.TaskQueue.append((reload_function,[],{},))
 
-        gtk.gdk.threads_enter()
-
-        self.DataViewButtons['categories_updates']['compile_button'].connect('clicked',compile_button_clicked)
-        self.DataViewButtons['categories_updates']['add_use_button'].connect('clicked',add_use_button_clicked)
-        self.DataViewButtons['categories_updates']['remove_use_button'].connect('clicked',remove_use_button_clicked)
+        h1 = self.DataViewButtons['categories_updates']['compile_button'].connect('clicked',compile_button_clicked)
+        h2 = self.DataViewButtons['categories_updates']['add_use_button'].connect('clicked',add_use_button_clicked)
+        h3 = self.DataViewButtons['categories_updates']['remove_use_button'].connect('clicked',remove_use_button_clicked)
+        self.DataViewButtons['categories_updates']['handler_ids'].extend([h1,h2,h3])
 
         # atom
-        self.create_text_column( self.DataView, _( "Atom" ), 'atom', size = 220, cell_data_func = my_data_text, set_height = 110, expand = True)
+        self.create_text_column( self.DataView, _( "Atom" ), 'atom', size = 220, cell_data_func = my_data_text, set_height = 150, expand = True)
 
         colors = ["#D2FFB9","#B0D69B"]
 
@@ -2777,8 +2791,9 @@ class RepositoryManagerMenu(MenuSkel):
                 self.DataStore.append( parent, (obj,) )
         if expand:
             self.DataView.expand_all()
+
         self.set_notebook_page(self.notebook_pages['data'])
-        gtk.gdk.threads_leave()
+        self.show_data_view()
 
     def on_repoManagerQueueDown_clicked(self, widget):
 
@@ -2792,18 +2807,19 @@ class RepositoryManagerMenu(MenuSkel):
             if item1 and item2:
                 item1 = item1.copy()
                 item2 = item2.copy()
-                self.wait_channel_call()
-                try:
-                    status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
-                    if status:
-                        self.QueueStore.swap(iterator,next_iterator)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-                finally:
-                    self.release_channel_call()
-
-                t = self.entropyTools.parallelTask(self.update_queue_view)
+                def task():
+                    with self.BufferLock:
+                        try:
+                            status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
+                            self.debug_print("on_repoManagerQueueDown_clicked","%s, %s" % (status,msg,))
+                            self.debug_print("on_repoManagerQueueDown_clicked","%s, %s" % (item1,item2,))
+                            if status:
+                                self.QueueStore.swap(iterator,next_iterator)
+                        except Exception, e:
+                            self.service_status_message(e)
+                            return
+                    self.update_queue_view()
+                t = self.entropyTools.parallelTask(task)
                 t.start()
 
     def on_repoManagerQueueUp_clicked(self, widget):
@@ -2820,18 +2836,19 @@ class RepositoryManagerMenu(MenuSkel):
             if item1 and item2:
                 item1 = item1.copy()
                 item2 = item2.copy()
-                self.wait_channel_call()
-                try:
-                    status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
-                    if status:
-                        self.QueueStore.swap(iterator,next_iterator)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-                finally:
-                    self.release_channel_call()
-
-                t = self.entropyTools.parallelTask(self.update_queue_view)
+                def task():
+                    with self.BufferLock:
+                        try:
+                            status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
+                            self.debug_print("on_repoManagerQueueUp_clicked","%s, %s" % (status,msg,))
+                            self.debug_print("on_repoManagerQueueUp_clicked","%s, %s" % (item1,item2,))
+                            if status:
+                                self.QueueStore.swap(iterator,next_iterator)
+                        except Exception, e:
+                            self.service_status_message(e)
+                            return
+                    self.update_queue_view()
+                t = self.entropyTools.parallelTask(task)
                 t.start()
 
     def on_repoManagerCategoryUpdButton_clicked(self, widget, categories = [], expand = False):
@@ -2858,14 +2875,13 @@ class RepositoryManagerMenu(MenuSkel):
                 data['categories'] = data['categories'].split()
 
         if data['categories']:
-            t = self.entropyTools.parallelTask(self.run_spm_categories_updates, data['categories'], expand)
-            t.start()
+            self.clear_data_store_and_view()
+            self.run_spm_categories_updates(data['categories'], expand)
 
     def on_repoManagerCustomRunButton_clicked(self, widget):
         command = self.sm_ui.repoManagerCustomCmdEntry.get_text().strip()
         if not command: return
-        t = self.entropyTools.parallelTask(self.run_run_custom_shell_command, command)
-        t.start()
+        self.run_run_custom_shell_command(command)
 
     def on_repoManagerInstalledPackages_clicked(self, widget, categories = [], world = False):
 
@@ -2891,8 +2907,8 @@ class RepositoryManagerMenu(MenuSkel):
             if not categories:
                 data['categories'] = data['categories'].split()
 
-        t = self.entropyTools.parallelTask(self.run_get_spm_categories_installed, data['categories'], world)
-        t.start()
+        self.clear_data_store_and_view()
+        self.run_get_spm_categories_installed(data['categories'], world)
 
 
     def on_repoManagerRunButton_clicked(self, widget):
@@ -2923,32 +2939,28 @@ class RepositoryManagerMenu(MenuSkel):
                 pass
 
         if len(evalued_params) < len(mandatory_cmds):
-            gtk.gdk.threads_enter()
             okDialog(self.window, _("Not enough parameters"), title = _("Custom command Error"))
-            gtk.gdk.threads_leave()
             return
-        self.wait_channel_call()
-        try:
-            cmd_data['call'](*evalued_params)
-        except Exception, e:
-            gtk.gdk.threads_enter()
-            okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
-            gtk.gdk.threads_leave()
-        finally:
-            self.release_channel_call()
+
+        def task(evalued_params):
+            with self.BufferLock:
+                try:
+                    cmd_data['call'](*evalued_params)
+                except Exception, e:
+                    okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
+
+        t = self.entropyTools.parallelTask(task, evalued_params)
+        t.start()
 
     def on_repoManagerPauseQueueButton_toggled(self, widget):
-
-        self.wait_channel_call()
-        try:
-            do_pause = not self.queue_pause
-            self.Service.Methods.pause_queue(do_pause)
-            self.queue_pause = do_pause
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        with self.BufferLock:
+            try:
+                do_pause = not self.queue_pause
+                self.Service.Methods.pause_queue(do_pause)
+                self.queue_pause = do_pause
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
     def on_repoManagerQueueView_row_activated(self, treeview, path, column):
         ( model, iterator ) = treeview.get_selection().get_selected()
@@ -2966,40 +2978,36 @@ class RepositoryManagerMenu(MenuSkel):
                     pass
         else:
             # back from pause, schedule refresh
-            self.update_output_view(force = True, queue_id = self.paused_queue_id)
+            self.TaskQueue.append((self.update_output_view, [], {'force': True, 'queue_id': self.paused_queue_id,},))
             self.paused_queue_id = None
         self.output_pause = not self.output_pause
 
     def on_repoManagerQueueRefreshButton_clicked(self, widget):
         self.Queue = {}
-        t = self.entropyTools.parallelTask(self.update_queue_view)
-        t.start()
+        self.update_queue_view()
 
     def on_repoManagerOutputCleanButton_clicked(self, widget):
         self.Output = None
         self.clear_console()
 
     def on_repoManagerCleanQueue_clicked(self, widget):
-
         clear_ids = set()
         for item in self.QueueStore:
             obj = item[0]
             if obj['from'] not in ("processed","errored"):
                 continue
             clear_ids.add(obj['queue_id'])
-        if clear_ids:
-            t = self.entropyTools.parallelTask(self.run_remove_queue_ids, clear_ids)
-            t.start()
+        if clear_ids: self.run_remove_queue_ids(clear_ids)
 
     def on_repoManagerClose_clicked(self, *args, **kwargs):
         self.QueueUpdater.kill()
         self.OutputUpdater.kill()
         self.PinboardUpdater.kill()
+        self.TaskQueueAlive = False
         self.destroy()
 
     def on_portageSync_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_sync_spm)
-        t.start()
+        self.run_sync_spm()
 
     def on_removeAtom_clicked(self, widget, atoms = [], pretend = True, verbose = True, nocolor = True):
 
@@ -3034,8 +3042,7 @@ class RepositoryManagerMenu(MenuSkel):
             data['atoms'] = data['atoms'].split()
 
         if data['atoms']:
-            t = self.entropyTools.parallelTask(self.run_spm_remove_atoms, data)
-            t.start()
+            self.run_spm_remove_atoms(data)
 
 
     def on_compileAtom_clicked(self, widget, atoms = [], pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, nodeps = False, custom_use = '', ldflags = '', cflags = ''):
@@ -3085,22 +3092,20 @@ class RepositoryManagerMenu(MenuSkel):
             data['atoms'] = data['atoms'].split()
 
         if data['atoms']:
-            t = self.entropyTools.parallelTask(self.run_compile_atoms, data)
-            t.start()
+            self.run_compile_atoms(data)
 
     def on_repoManagerSpmInfo_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_spm_info)
-        t.start()
+        self.run_spm_info()
 
     def on_addUseAtom_clicked(self, widget, atoms = [], use = [], load_view = True, parallel = True):
         data = self.handle_uses_for_atoms(atoms, use)
         if data == None: return False
         self.set_notebook_page(self.notebook_pages['data'])
         if data['atoms'] and data['use']:
-            t = self.entropyTools.parallelTask(self.run_enable_uses_for_atoms, data['atoms'], data['use'], load_view)
-            t.start()
-        else:
-            return self.run_enable_uses_for_atoms(data['atoms'], data['use'], load_view)
+            if parallel:
+                self.TaskQueue.append((self.run_enable_uses_for_atoms, [data['atoms'], data['use'], load_view], {},))
+            else:
+                return self.run_enable_uses_for_atoms(data['atoms'], data['use'], load_view)
 
     def on_removeUseAtom_clicked(self, widget, atoms = [], use = [], load_view = True, parallel = True):
         data = self.handle_uses_for_atoms(atoms, use)
@@ -3108,12 +3113,11 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['data'])
         if data['atoms'] and data['use']:
             if parallel:
-                t = self.entropyTools.parallelTask(self.run_disable_uses_for_atoms, data['atoms'], data['use'], load_view)
-                t.start()
+                self.TaskQueue.append((self.run_disable_uses_for_atoms, [data['atoms'], data['use'], load_view], {},))
             else:
                 return self.run_disable_uses_for_atoms(data['atoms'], data['use'], load_view)
 
-    def on_repoManagerPkgInfo_clicked(self, widget, atoms = []):
+    def on_repoManagerPkgInfo_clicked(self, widget, atoms = [], clear = True):
 
         def fake_callback(s):
             return s
@@ -3138,24 +3142,22 @@ class RepositoryManagerMenu(MenuSkel):
             categories = []
             for atom in data['atoms']:
                 categories.append(self.entropyTools.dep_getkey(atom).split("/")[0])
-            t = self.entropyTools.parallelTask(self.run_get_spm_atoms_info, categories, data['atoms'])
-            t.start()
+            if clear: self.clear_data_store_and_view()
+            self.run_get_spm_atoms_info(categories, data['atoms'], clear)
 
     def on_repoManagerRemoveButton_clicked(self, widget):
         model, myiter = self.QueueView.get_selection().get_selected()
         if myiter:
             obj = model.get_value( myiter, 0 )
             if obj and (obj['from'] != "processing"):
-                t = self.entropyTools.parallelTask(self.run_remove_queue_ids, [obj['queue_id']])
-                t.start()
+                self.run_remove_queue_ids([obj['queue_id']])
 
     def on_repoManagerStopButton_clicked(self, widget):
         model, myiter = self.QueueView.get_selection().get_selected()
         if myiter:
             obj = model.get_value( myiter, 0 )
             if obj and (obj['from'] == "processing"):
-                t = self.entropyTools.parallelTask(self.run_kill_processing_queue_id, obj['queue_id'])
-                t.start()
+                self.run_kill_processing_queue_id(obj['queue_id'])
 
     def on_repoManagerQueueGetOutputButton_clicked(self, widget, queue_id = None, myfrom = None):
 
@@ -3194,12 +3196,8 @@ class RepositoryManagerMenu(MenuSkel):
                 self.is_writing_output = True
                 self.is_processing = {'queue_id': queue_id}
 
-        gtk.gdk.threads_enter()
         self.set_notebook_page(self.notebook_pages['output'])
-        gtk.gdk.threads_leave()
-
-        t = self.entropyTools.parallelTask(self.update_output_view, **mykwargs)
-        t.start()
+        self.TaskQueue.append((self.update_output_view, [], mykwargs,))
 
 
     def on_repoManagerPinboardRefreshButton_clicked(self, widget):
@@ -3222,10 +3220,9 @@ class RepositoryManagerMenu(MenuSkel):
         )
         if data == None: return
 
-        t = self.entropyTools.parallelTask(self.run_add_to_pinboard, data['note'], data['extended_text'])
-        t.start()
+        self.run_add_to_pinboard(data['note'], data['extended_text'])
 
-    def _collect_pinboard_view_iters(self):
+    def collect_pinboard_view_iters(self):
         model, paths = self.PinboardView.get_selection().get_selected_rows()
         if not model:
             return [], model
@@ -3237,7 +3234,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerPinboardRemoveButton_clicked(self, widget):
 
-        myiters, model = self._collect_pinboard_view_iters()
+        myiters, model = self.collect_pinboard_view_iters()
         if model == None: return
         remove_ids = []
         for myiter in myiters:
@@ -3246,8 +3243,7 @@ class RepositoryManagerMenu(MenuSkel):
                 remove_ids.append(obj['pinboard_id'])
 
         if remove_ids:
-            t = self.entropyTools.parallelTask(self.run_remove_from_pinboard, remove_ids)
-            t.start()
+            self.run_remove_from_pinboard(remove_ids)
 
     def on_repoManagerPinboardDoneButton_clicked(self, widget):
         self._set_pinboard_items_status(widget, True)
@@ -3257,7 +3253,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def _set_pinboard_items_status(self, widget, status):
 
-        myiters, model = self._collect_pinboard_view_iters()
+        myiters, model = self.collect_pinboard_view_iters()
         if model == None: return
         done_ids = []
         for myiter in myiters:
@@ -3267,16 +3263,15 @@ class RepositoryManagerMenu(MenuSkel):
 
         def set_pinboard_status(done_ids, status):
             if done_ids:
-                self.wait_channel_call()
-                try:
-                    status, queue_id = self.Service.Methods.set_pinboard_items_done(done_ids, status)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-                finally:
-                    self.release_channel_call()
+                with self.BufferLock:
+                    try:
+                        status, queue_id = self.Service.Methods.set_pinboard_items_done(done_ids, status)
+                    except Exception, e:
+                        self.service_status_message(e)
+                        return
                 if status:
                     self.on_repoManagerPinboardRefreshButton_clicked(widget)
+
         t = self.entropyTools.parallelTask(set_pinboard_status, done_ids, status)
         t.start()
 
@@ -3289,6 +3284,7 @@ class RepositoryManagerMenu(MenuSkel):
             my.load(obj.copy())
 
     def on_repoManagerSecurityUpdatesButton_clicked(self, widget):
+
         def fake_callback(s):
             return s
 
@@ -3301,44 +3297,58 @@ class RepositoryManagerMenu(MenuSkel):
             cancel_button = True
         )
         if data == None: return
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.get_spm_glsa_data(data['list_type'][1])
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        self.clear_data_store_and_view()
 
-        if status:
-            t = self.entropyTools.parallelTask(self.glsa_data_view, queue_id)
-            t.start()
-        else:
-            self.service_status_message(queue_id)
+        def task(data):
+
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.get_spm_glsa_data(data['list_type'][1])
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+
+            if status:
+
+                item = self.wait_queue_id_to_complete(queue_id)
+                if item == None: return
+                try:
+                    status, data = item['result']
+                except TypeError:
+                    status = False
+                if not status: return
+                self.TaskQueue.append((self.glsa_data_view,[data],{},))
+            else:
+                self.service_status_message(queue_id)
+
+        t = self.entropyTools.parallelTask(task, data)
+        t.start()
 
     def on_repoManagerSwitchRepoButton_clicked(self, widget):
+
         # get current combo iter
         model = self.EntropyRepositoryStore
         myiter = self.EntropyRepositoryCombo.get_active_iter()
         repoid = model.get_value(myiter, 0)
-        if not repoid:
-            return
+        if not repoid: return
 
-        self.wait_channel_call()
-        try:
-            status, queue_id = self.Service.Methods.set_default_repository(repoid)
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        def task(repoid):
 
-        if status:
-            t = self.entropyTools.parallelTask(self.load_available_repositories)
-            t.start()
-        else:
-            self.service_status_message(queue_id)
+            with self.BufferLock:
+                try:
+                    status, queue_id = self.Service.Methods.set_default_repository(repoid)
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
 
+            if status:
+                repo_info = self.get_available_repositories()
+                if repo_info: self.TaskQueue.append((self.load_available_repositories,[],{'repo_info': repo_info,},))
+            else:
+                self.service_status_message(queue_id)
+
+        t = self.entropyTools.parallelTask(task, repoid)
+        t.start()
 
     def on_repoManagerAvailablePackagesButton_clicked(self, widget, repoid = None):
 
@@ -3363,22 +3373,26 @@ class RepositoryManagerMenu(MenuSkel):
             mydata['repoid'] = mydata['repoid'][1]
             data.update(mydata)
 
-        self.wait_channel_call()
-        try:
-            status, repo_data = self.Service.Methods.get_available_entropy_packages(data['repoid'])
-        except Exception, e:
-            self.service_status_message(e)
-            return
-        finally:
-            self.release_channel_call()
+        self.clear_data_store_and_view()
 
-        if status:
-            def reload_func():
-                self.on_repoManagerAvailablePackagesButton_clicked(widget, repoid = data['repoid'])
-            t = self.entropyTools.parallelTask(self.entropy_available_packages_data_view, repo_data, data['repoid'], reload_func = reload_func)
-            t.start()
-        else:
-            self.service_status_message(repo_data)
+        def task(data):
+
+            with self.BufferLock:
+                try:
+                    status, repo_data = self.Service.Methods.get_available_entropy_packages(data['repoid'])
+                except Exception, e:
+                    self.service_status_message(e)
+                    return
+
+            if status:
+                def reload_func():
+                    self.on_repoManagerAvailablePackagesButton_clicked(widget, repoid = data['repoid'])
+                self.TaskQueue.append((self.entropy_available_packages_data_view,[repo_data,data['repoid']],{'reload_func': reload_func},))
+            else:
+                self.service_status_message(repo_data)
+
+        t = self.entropyTools.parallelTask(task, data)
+        t.start()
 
 
     def on_repoManagerPackageSearchButton_clicked(self, widget):
@@ -3414,20 +3428,18 @@ class RepositoryManagerMenu(MenuSkel):
         if data == None: return
         data['search_type'] = search_reference.get(data['search_type'][0])
         data['repoid'] = data['repoid'][1]
-        t = self.entropyTools.parallelTask(self.run_package_search, data['search_type'], data['search_string'], data['repoid'])
-        t.start()
+        self.clear_data_store_and_view()
+        self.run_package_search(data['search_type'], data['search_string'], data['repoid'])
 
     def on_repoManagerEntropyDbUpdatesButton_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_entropy_database_updates_scan)
-        t.start()
+        self.clear_data_store_and_view()
+        self.run_entropy_database_updates_scan()
 
     def on_repoManagerDepTestButton_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_entropy_deptest)
-        t.start()
+        self.run_entropy_deptest()
 
     def on_repoManagerLibTestButton_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.run_entropy_libtest)
-        t.start()
+        self.run_entropy_libtest()
 
     def on_repoManagerSpmTreeupdatesButton_clicked(self, widget):
 
@@ -3449,8 +3461,7 @@ class RepositoryManagerMenu(MenuSkel):
         if data == None: return
         data['repoid'] = data['repoid'][1]
 
-        t = self.entropyTools.parallelTask(self.run_entropy_treeupdates, data['repoid'])
-        t.start()
+        self.run_entropy_treeupdates(data['repoid'])
 
     def on_repoManagerMirrorUpdatesButton_clicked(self, widget):
 
@@ -3476,8 +3487,8 @@ class RepositoryManagerMenu(MenuSkel):
                 repos.append(key)
         if not repos: return
 
-        t = self.entropyTools.parallelTask(self.run_entropy_mirror_updates, repos)
-        t.start()
+        self.clear_data_store_and_view()
+        self.run_entropy_mirror_updates(repos)
 
     def on_repoManagerChecksumTestButton_clicked(self, widget):
 
@@ -3502,9 +3513,7 @@ class RepositoryManagerMenu(MenuSkel):
         else:
             mode = "remote"
         data['repoid'] = data['repoid'][1]
-
-        t = self.entropyTools.parallelTask(self.run_entropy_checksum_test, data['repoid'], mode)
-        t.start()
+        self.run_entropy_checksum_test(data['repoid'], mode)
 
     def on_repoManagerStdinExecButton_clicked(self, widget):
         self.sm_ui.repoManagerStdinEntry.activate()
@@ -3517,8 +3526,7 @@ class RepositoryManagerMenu(MenuSkel):
             txt = self.sm_ui.repoManagerStdinEntry.get_text()
         if not txt: return
         self.sm_ui.repoManagerStdinEntry.set_text('')
-        t = self.entropyTools.parallelTask(self.run_write_to_running_command_pipe, queue_id, write_to_stdout, txt)
-        t.start()
+        self.run_write_to_running_command_pipe(queue_id, write_to_stdout, txt)
 
     def on_repoManagerNoticeBoardButton_clicked(self, widget, repoid = None):
 
@@ -3543,8 +3551,7 @@ class RepositoryManagerMenu(MenuSkel):
             repoid = data['repoid'][1]
 
         if repoid in avail_repos:
-            t = self.entropyTools.parallelTask(self.run_get_notice_board, repoid)
-            t.start()
+            self.run_get_notice_board(repoid)
 
     def destroy(self):
         self.sm_ui.repositoryManager.destroy()
@@ -4563,7 +4570,7 @@ class SecurityAdvisoryMenu(MenuSkel):
         myurl = ''
         if data.has_key('url'):
             myurl = data['url']
-        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='%s'>%s</span></small>" % (SpritzConf.color_title2,data['title'],myurl,)) 
+        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='%s'>%s</span></small>" % (data['title'],SpritzConf.color_title2,myurl,)) 
 
         # description
         desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()

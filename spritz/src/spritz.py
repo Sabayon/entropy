@@ -23,7 +23,6 @@
 import sys, os, pty, random
 import logging
 import traceback
-import commands
 import time
 
 # Entropy Imports
@@ -2496,7 +2495,7 @@ class SpritzApplication(Controller):
         avail_pkgsets = [x for x in map(mymf,self.Equo.packageSetList()) if x != 0]
 
         def fake_callback(s):
-            return True
+            return s
         input_params = [
             ('pkgset',('combo',(_('Removable Package Set'),avail_pkgsets),),fake_callback,False)
         ]

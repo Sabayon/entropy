@@ -586,7 +586,6 @@ class EntropyPackageView:
         busyCursor(self.main_window)
 
         new_objs = []
-        real_objs = self.selected_objs
 
         for obj in self.selected_objs:
             if obj.installed_match:
