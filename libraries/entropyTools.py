@@ -134,7 +134,7 @@ class parallelTask(threading.Thread):
 
     def parallel_wait(self):
         while len(threading.enumerate()) > etpSys['maxthreads']:
-            time.sleep(0.001)
+            time.sleep(0.01)
 
     def run(self):
         self.result = self.function(*self.args,**self.kwargs)

@@ -22692,8 +22692,6 @@ class SystemManagerExecutorInterface:
         elif len(args)+1 < data['args']:
             return False, 'not enough args'
 
-
-
         args.insert(0,queue_id)
         self.task_result = None
         t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
@@ -22845,7 +22843,6 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -22897,7 +22894,6 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -22929,7 +22925,6 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -23055,7 +23050,6 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
-            stdout_err.write('\n\n Stdin: %s' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -23082,7 +23076,6 @@ class SystemManagerExecutorServerRepositoryInterface:
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:
-            stdout_err.write('Stdin: %s\n' % (self._get_stdin(queue_id),))
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
@@ -23313,7 +23306,7 @@ class SystemManagerExecutorServerRepositoryInterface:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
-                return deps_not_matched
+                return True,deps_not_matched
             except Exception, e:
                 self.entropyTools.printTraceback()
                 return False,unicode(e)
@@ -28081,12 +28074,43 @@ class ServerMirrorsInterface:
             rc2 = ftp.isFileAvailable(revfilename)
             if rc1 and rc2:
                 revision_localtmppath = os.path.join(etpConst['packagestmpdir'],revfilename)
-                ftp.downloadFile(revfilename,etpConst['packagestmpdir'],True)
-                f = open(revision_localtmppath,"r")
+                dlcount = 5
+                while dlcount:
+                    dled = ftp.downloadFile(revfilename,etpConst['packagestmpdir'],True)
+                    if dled: break
+                    dlcount -= 1
+
+                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 try:
+                    f = open(revision_localtmppath,"r")
                     revision = int(f.readline().strip())
+                except IOError:
+                    if dlcount == 0:
+                        self.Entropy.updateProgress(
+                            "[repo:%s|%s] %s: %s" % (
+                                    brown(repo),
+                                    darkgreen(crippled_uri),
+                                    blue(_("unable to download remote mirror repository revision file, defaulting to 0")),
+                                    bold(revision),
+                            ),
+                            importance = 1,
+                            type = "error",
+                            header = darkred(" !!! ")
+                        )
+                    else:
+                        self.Entropy.updateProgress(
+                            "[repo:%s|%s] %s: %s" % (
+                                    brown(repo),
+                                    darkgreen(crippled_uri),
+                                    blue(_("mirror doesn't have a valid database revision file")),
+                                    bold(revision),
+                            ),
+                            importance = 1,
+                            type = "error",
+                            header = darkred(" !!! ")
+                        )
+                    revision = 0
                 except ValueError:
-                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                     self.Entropy.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
                                 brown(repo),
