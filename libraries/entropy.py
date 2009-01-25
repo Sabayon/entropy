@@ -22694,23 +22694,24 @@ class SystemManagerExecutorInterface:
         elif len(args)+1 < data['args']:
             return False, 'not enough args'
 
-        args.insert(0,queue_id)
-        self.task_result = None
-        t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
-        t.start()
-        killed = False
-        while 1:
-            if not t.isAlive():
-                break
-            time.sleep(1)
-            live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
-            if isinstance(live_item,dict) and (key == "processing") and (not killed):
-                if live_item['kill'] and (live_item['processing_pid'] != None):
-                    os.kill(live_item['processing_pid'],signal.SIGKILL)
-                    killed = True
-        if killed:
-            return False, 'killed by user'
-        return True, t.result
+        with self.SystemInterface.ServiceLock:
+            args.insert(0,queue_id)
+            self.task_result = None
+            t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
+            t.start()
+            killed = False
+            while 1:
+                if not t.isAlive():
+                    break
+                time.sleep(1)
+                live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
+                if isinstance(live_item,dict) and (key == "processing") and (not killed):
+                    if live_item['kill'] and (live_item['processing_pid'] != None):
+                        os.kill(live_item['processing_pid'],signal.SIGKILL)
+                        killed = True
+            if killed:
+                return False, 'killed by user'
+            return True, t.result
 
 
 class SystemManagerExecutorServerRepositoryInterface:
@@ -25280,8 +25281,8 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.QueueProcessorParallel = None
         self.QueueLock = self.threading.Lock()
         self.PinboardLock = self.threading.Lock()
+        self.ServiceLock = self.threading.Lock()
         self.do_ssl = do_ssl
-        self.ServiceInterface = EntropyInterface
 
         self.PinboardData = {}
         self.load_pinboard()
@@ -25311,7 +25312,7 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         SocketHostInterface.__init__(
             self,
-            self.FakeServiceInterface, #self.ServiceInterface,
+            self.FakeServiceInterface,
             sock_output = self.Text,
             ssl = do_ssl,
             **kwargs
