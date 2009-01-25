@@ -7654,6 +7654,8 @@ class RepoInterface:
                 os.remove(system_make_profile)
             os.symlink(repo_profile_link_data,system_make_profile)
             if not self.entropyTools.is_valid_path(system_make_profile):
+                if os.path.lexists(system_make_profile):
+                    os.remove(system_make_profile)
                 # revert change, link does not exist yet
                 self.Entropy.updateProgress(
                     "%s: %s %s. %s." % (

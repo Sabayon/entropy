@@ -5,7 +5,7 @@ TODO list
   - documentation + man page
 
   Repository Manager:
-    - multiple instances support
+    - multiple instances support (on server: Fatal Python error: PyEval_RestoreThread: NULL tstate)
 
 Proposed for Entropy >1.0 (require API changes):
   - Entropy codebase refactoring

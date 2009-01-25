@@ -481,7 +481,11 @@ def searchOrphans(EquoConnection = None):
     tdbconn = Equo.openGenericDatabase(filepath)
     tdbconn.initializeDatabase()
     for xdir in dirs:
-        for currentdir,subdirs,files in os.walk(xdir):
+        try:
+            wd = os.walk(xdir)
+        except RuntimeError: # maximum recursion?
+            continue
+        for currentdir,subdirs,files in wd:
             foundFiles = {}
             for filename in files:
                 # filter python compiled objects?
