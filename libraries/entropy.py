@@ -13727,10 +13727,13 @@ class SocketHostInterface:
             current = self.HostInterface.connections
             maximum = self.HostInterface.max_connections
             if current >= maximum:
-                self.HostInterface.transmit(
-                    request,
-                    self.HostInterface.answers['mcr']
-                )
+                try:
+                    self.HostInterface.transmit(
+                        request,
+                        self.HostInterface.answers['mcr']
+                    )
+                except:
+                    pass
                 return False
             else:
                 return True
