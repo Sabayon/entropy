@@ -14018,9 +14018,11 @@ class SocketHostInterface:
             # validate command
             args = string.strip().split()
             session = args[0]
-            if (session in self.HostInterface.initialization_commands) or len(args) < 2:
-                cmd = args[0]
-                session = None
+            if (session in self.HostInterface.initialization_commands) or \
+                (session in self.HostInterface.no_session_commands) or \
+                len(args) < 2:
+                    cmd = args[0]
+                    session = None
             else:
                 cmd = args[1]
                 args = args[1:] # remove session
@@ -14434,7 +14436,7 @@ class SocketHostInterface:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_alive,
-                                'args': ["self.transmit","myargs"],
+                                'args': ["self.transmit","self.client_address","myargs"],
                                 'as_user': False,
                                 'desc': "check if a session is still alive",
                                 'syntax': "alive <SESSION_ID>",
@@ -14693,13 +14695,15 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_alive(self, transmitter, myargs):
+        def docmd_alive(self, transmitter, client_address, myargs):
             cmd = self.HostInterface.answers['no']
             alive = False
             if myargs:
-                if myargs[0] in self.HostInterface.sessions:
-                    cmd = self.HostInterface.answers['ok']
-                    alive = True
+                session_data = self.HostInterface.sessions.get(myargs[0])
+                if session_data != None:
+                    if client_address[0] == session_data.get('ip_address'):
+                        cmd = self.HostInterface.answers['ok']
+                        alive = True
             transmitter(cmd)
             return alive
 
