@@ -983,16 +983,13 @@ class RepositoryManagerMenu(MenuSkel):
         return True
 
     def get_item_by_queue_id(self, queue_id):
-        self.QueueLock.acquire()
-        try:
+        with self.QueueLock:
             for key in self.Queue:
                 if key not in self.dict_queue_keys:
                     continue
                 item = self.Queue[key].get(queue_id)
                 if item != None:
                     return item, key
-        finally:
-            self.QueueLock.release()
         return None, None
 
     def service_status_message(self, e):
@@ -1052,24 +1049,25 @@ class RepositoryManagerMenu(MenuSkel):
     def update_queue_view(self):
 
         def task():
-
-            with self.BufferLock:
-                try:
-                    status, queue = self.Service.Methods.get_queue()
-                    if not status:
-                        return
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            with self.QueueLock:
-                if queue == self.Queue: return
-                self.Queue = queue.copy()
-                self.TaskQueue.append((self.fill_queue_view, [queue], {},))
+            self.do_update_queue_view()
 
         t = self.entropyTools.parallelTask(task)
         t.start()
 
+    def do_update_queue_view(self):
+        with self.BufferLock:
+            try:
+                status, queue = self.Service.Methods.get_queue()
+                if not status:
+                    return
+            except Exception, e:
+                self.service_status_message(e)
+                return
+
+        with self.QueueLock:
+            if queue == self.Queue: return
+            self.Queue = queue.copy()
+            self.TaskQueue.append((self.fill_queue_view, [queue], {},))
 
     def fill_queue_view(self, queue):
         self.QueueStore.clear()
@@ -2984,7 +2982,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerQueueRefreshButton_clicked(self, widget):
         self.Queue = {}
-        self.update_queue_view()
+        self.do_update_queue_view()
 
     def on_repoManagerOutputCleanButton_clicked(self, widget):
         self.Output = None

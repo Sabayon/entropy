@@ -1117,7 +1117,9 @@ class EntropyPackageView:
                 mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
                 mydummy.color = SpritzConf.color_package_category
                 if pkgsets:
-                    set_from, set_name, set_deps = self.Equo.packageSetMatch(category)[0]
+                    set_data = self.Equo.packageSetMatch(category)[0]
+                    if not set_data: continue
+                    set_from, set_name, set_deps = set_data
                     mydummy.set_category = category
                     mydummy.set_from = set_from
                     mydummy.set_matches, mydummy.set_installed_matches, mydummy.set_install_incomplete, mydummy.set_remove_incomplete = self.etpbase._pkg_get_pkgset_matches_installed_matches(set_deps)

@@ -22695,24 +22695,23 @@ class SystemManagerExecutorInterface:
         elif len(args)+1 < data['args']:
             return False, 'not enough args'
 
-        with self.SystemInterface.ServiceLock:
-            args.insert(0,queue_id)
-            self.task_result = None
-            t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
-            t.start()
-            killed = False
-            while 1:
-                if not t.isAlive():
-                    break
-                time.sleep(1)
-                live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
-                if isinstance(live_item,dict) and (key == "processing") and (not killed):
-                    if live_item['kill'] and (live_item['processing_pid'] != None):
-                        os.kill(live_item['processing_pid'],signal.SIGKILL)
-                        killed = True
-            if killed:
-                return False, 'killed by user'
-            return True, t.result
+        args.insert(0,queue_id)
+        self.task_result = None
+        t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
+        t.start()
+        killed = False
+        while 1:
+            if not t.isAlive():
+                break
+            time.sleep(1)
+            live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
+            if isinstance(live_item,dict) and (key == "processing") and (not killed):
+                if live_item['kill'] and (live_item['processing_pid'] != None):
+                    os.kill(live_item['processing_pid'],signal.SIGKILL)
+                    killed = True
+        if killed:
+            return False, 'killed by user'
+        return True, t.result
 
 
 class SystemManagerExecutorServerRepositoryInterface:
@@ -25282,7 +25281,6 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.QueueProcessorParallel = None
         self.QueueLock = self.threading.Lock()
         self.PinboardLock = self.threading.Lock()
-        self.ServiceLock = self.threading.Lock()
         self.do_ssl = do_ssl
 
         self.PinboardData = {}
@@ -25564,7 +25562,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                 return item, key
         return None, None
 
-    def _pop_item_from_queue_by_parallel(self, parallel):
+    def _pop_item_from_queue(self, parallel):
         with self.QueueLock:
             for idx in range(len(self.ManagerQueue['queue_order'])):
                 queue_id = self.ManagerQueue['queue_order'][idx]
@@ -25575,7 +25573,7 @@ class SystemManagerServerInterface(SocketHostInterface):
     def queue_processor(self, parallel_mode, fork_data = None):
 
         def copy_obj(obj):
-            if isinstance(obj,(dict,set,)):
+            if isinstance(obj,(dict,set,frozenset,)):
                 return obj.copy()
             elif isinstance(obj,(list,tuple,)):
                 return obj[:]
@@ -25590,19 +25588,20 @@ class SystemManagerServerInterface(SocketHostInterface):
                 else:
 
                     if self.ManagerQueue['pause']:
-                        time.sleep(0.1)
+                        time.sleep(0.05)
                         continue
 
                     if not self.ManagerQueue['queue_order']:
+                        time.sleep(0.05)
+                        continue
+
+                    command_data, queue_id = self._pop_item_from_queue(parallel_mode)
+                    if not command_data:
                         time.sleep(0.1)
                         continue
 
-                    command_data, queue_id = self._pop_item_from_queue_by_parallel(parallel_mode)
-                    if not command_data:
-                        time.sleep(0.5)
-                        continue
-
                     with self.QueueLock:
+                        command_data = copy_obj(command_data)
                         command_data['processing_ts'] = "%s" % (self.get_ts(),)
                         self.ManagerQueue['processing'][queue_id] = command_data
                         self.ManagerQueue['processing_order'].append(queue_id)
