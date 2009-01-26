@@ -4890,6 +4890,7 @@ class PackageInterface:
         )
 
         # copy files over - install
+        # use fork? (in this case all the changed structures need to be pushed back)
         rc = self.__move_image_to_system()
         if rc != 0:
             return rc
