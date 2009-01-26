@@ -13437,56 +13437,52 @@ class SocketHostInterface:
 
         def docmd_login(self, arguments):
 
-            with self.HostInterface.AuthenticatorLock:
+            # filter n00bs
+            if not arguments or (len(arguments) != 3):
+                return False,None,None,'wrong arguments'
 
-                # filter n00bs
-                if not arguments or (len(arguments) != 3):
-                    return False,None,None,'wrong arguments'
+            user = arguments[0]
+            auth_type = arguments[1]
+            auth_string = arguments[2]
 
-                user = arguments[0]
-                auth_type = arguments[1]
-                auth_string = arguments[2]
+            # check auth type validity
+            if auth_type not in self.valid_auth_types:
+                return False,user,None,'invalid auth type'
 
-                # check auth type validity
-                if auth_type not in self.valid_auth_types:
-                    return False,user,None,'invalid auth type'
+            udata = self.__get_user_data(user)
+            if udata == None:
+                return False,user,None,'invalid user'
 
-                udata = self.__get_user_data(user)
-                if udata == None:
-                    return False,user,None,'invalid user'
+            uid = udata[2]
+            # check if user is in the Entropy group
+            if not self.entropyTools.is_user_in_entropy_group(uid):
+                return False,user,uid,'user not in %s group' % (etpConst['sysgroup'],)
 
-                uid = udata[2]
-                # check if user is in the Entropy group
-                if not self.entropyTools.is_user_in_entropy_group(uid):
-                    return False,user,uid,'user not in %s group' % (etpConst['sysgroup'],)
+            # now validate password
+            valid = self.__validate_auth(user,auth_type,auth_string)
+            if not valid:
+                return False,user,uid,'auth failed'
 
-                # now validate password
-                valid = self.__validate_auth(user,auth_type,auth_string)
-                if not valid:
-                    return False,user,uid,'auth failed'
-
-                if not uid:
-                    self.HostInterface.sessions[self.session]['admin'] = True
-                else:
-                    self.HostInterface.sessions[self.session]['user'] = True
-                return True,user,uid,"ok"
+            if not uid:
+                self.HostInterface.sessions[self.session]['admin'] = True
+            else:
+                self.HostInterface.sessions[self.session]['user'] = True
+            return True,user,uid,"ok"
 
         # it we get here is because user is logged in
         def docmd_userdata(self):
 
-            with self.HostInterface.AuthenticatorLock:
-
-                auth_uid = self.HostInterface.sessions[self.session]['auth_uid']
-                mydata = {}
-                udata = self.__get_uid_data(auth_uid)
-                if udata:
-                    mydata['username'] = udata[0]
-                    mydata['uid'] = udata[2]
-                    mydata['gid'] = udata[3]
-                    mydata['references'] = udata[4]
-                    mydata['home'] = udata[5]
-                    mydata['shell'] = udata[6]
-                return True,mydata,'ok'
+            auth_uid = self.HostInterface.sessions[self.session]['auth_uid']
+            mydata = {}
+            udata = self.__get_uid_data(auth_uid)
+            if udata:
+                mydata['username'] = udata[0]
+                mydata['uid'] = udata[2]
+                mydata['gid'] = udata[3]
+                mydata['references'] = udata[4]
+                mydata['home'] = udata[5]
+                mydata['shell'] = udata[6]
+            return True,mydata,'ok'
 
         def __get_uid_data(self, user_id):
             import pwd
@@ -13544,25 +13540,22 @@ class SocketHostInterface:
 
         def docmd_logout(self, myargs):
 
-            with self.HostInterface.AuthenticatorLock:
+            # filter n00bs
+            if (len(myargs) < 1) or (len(myargs) > 1):
+                return False,None,'wrong arguments'
 
-                # filter n00bs
-                if (len(myargs) < 1) or (len(myargs) > 1):
-                    return False,None,'wrong arguments'
+            user = myargs[0]
+            # filter n00bs
+            if not user or not isinstance(user,basestring):
+                return False,None,"wrong user"
 
-                user = myargs[0]
-                # filter n00bs
-                if not user or not isinstance(user,basestring):
-                    return False,None,"wrong user"
-
-                return True,user,"ok"
+            return True,user,"ok"
 
         def set_exc_permissions(self, uid, gid):
-            with self.HostInterface.AuthenticatorLock:
-                if gid != None:
-                    os.setgid(gid)
-                if uid != None:
-                    os.setuid(uid)
+            if gid != None:
+                os.setgid(gid)
+            if uid != None:
+                os.setuid(uid)
 
         def hide_login_data(self, args):
             myargs = args[:]
