@@ -1418,128 +1418,105 @@ class RepositoryManagerMenu(MenuSkel):
 
     def run_get_notice_board(self, repoid):
 
-        def task(repoid):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.get_notice_board(repoid)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.get_notice_board(repoid)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
+        def task(queue_id, repoid):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, repo_data = item['result']
+            if not status: return
+            self.update_notice_board_data_view(repo_data, repoid)
 
-            if status:
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                status, repo_data = item['result']
-                if not status: return
-                self.update_notice_board_data_view(repo_data, repoid)
-
-        t = self.entropyTools.parallelTask(task, repoid)
-        t.start()
-
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id, repoid)
+            t.start()
 
     def run_write_to_running_command_pipe(self, queue_id, write_to_stdout, txt):
 
-        def task(queue_id, write_to_stdout, txt):
-            with self.BufferLock:
-                try:
-                    status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, write_to_stdout, txt)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-        t = self.entropyTools.parallelTask(task, queue_id, write_to_stdout, txt)
-        t.start()
+        with self.BufferLock:
+            try:
+                status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, write_to_stdout, txt)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
     def run_remove_from_pinboard(self, remove_ids):
 
-        def task(remove_ids):
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-            if status:
-                # it's fine to skip self.TaskQueue
-                self.on_repoManagerPinboardRefreshButton_clicked(None)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-        t = self.entropyTools.parallelTask(task, remove_ids)
-        t.start()
+        if status:
+            self.on_repoManagerPinboardRefreshButton_clicked(None)
 
     def run_add_to_pinboard(self, note, extended_text):
 
-        def task(note, extended_text):
+        with self.BufferLock:
+            try:
+                status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if status:
-                # it's fine to skip self.TaskQueue
-                self.on_repoManagerPinboardRefreshButton_clicked(None)
-            else:
-                self.service_status_message(err_msg)
-
-        t = self.entropyTools.parallelTask(task, note, extended_text)
-        t.start()
+        if status:
+            self.on_repoManagerPinboardRefreshButton_clicked(None)
+        else:
+            self.service_status_message(err_msg)
 
     def run_run_custom_shell_command(self, command):
 
-        def task(command):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_custom_shell_command(command)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_custom_shell_command(command)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if status:
-                self.is_writing_output = True
-                self.is_processing = {'queue_id': queue_id}
-                self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task, command)
-        t.start()
+        if status:
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id}
+            self.set_notebook_page(self.notebook_pages['output'])
 
     def run_get_spm_categories_installed(self, categories, world):
 
-        def task(categories, world):
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.get_spm_categories_installed(categories)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-            if status:
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                status, data = item['result']
-                if not status: return
-                def reload_function(): self.on_repoManagerInstalledPackages_clicked(None, categories = categories, world = world)
-                self.TaskQueue.append((self.categories_updates_data_view, [data, categories], {'expand': True, 'reload_function': reload_function,},))
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.get_spm_categories_installed(categories)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-        t = self.entropyTools.parallelTask(task, categories, world)
-        t.start()
+        def task(queue_id, categories, world):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, data = item['result']
+            if not status: return
+            def reload_function(): self.on_repoManagerInstalledPackages_clicked(None, categories = categories, world = world)
+            self.TaskQueue.append((self.categories_updates_data_view, [data, categories], {'expand': True, 'reload_function': reload_function,},))
+
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id, categories, world)
+            t.start()
 
     def run_sync_spm(self):
 
-        def task():
-            with self.BufferLock:
-                try:
-                    status, data = self.Service.Methods.sync_spm()
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-            if status:
-                self.set_notebook_page(self.notebook_pages['output'])
+        with self.BufferLock:
+            try:
+                status, data = self.Service.Methods.sync_spm()
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-        t = self.entropyTools.parallelTask(task)
-        t.start()
+        if status:
+            self.set_notebook_page(self.notebook_pages['output'])
 
     def run_spm_remove_atoms(self, data):
 
@@ -1567,53 +1544,43 @@ class RepositoryManagerMenu(MenuSkel):
 
     def run_compile_atoms(self, data):
 
-        def task(data):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.compile_atoms(
+                    data['atoms'],
+                    data['pretend'],
+                    data['oneshot'],
+                    data['verbose'],
+                    data['nocolor'],
+                    data['fetchonly'],
+                    data['buildonly'],
+                    data['nodeps'],
+                    data['custom_use'],
+                    data['ldflags'],
+                    data['cflags'],
+                )
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.compile_atoms(
-                        data['atoms'],
-                        data['pretend'],
-                        data['oneshot'],
-                        data['verbose'],
-                        data['nocolor'],
-                        data['fetchonly'],
-                        data['buildonly'],
-                        data['nodeps'],
-                        data['custom_use'],
-                        data['ldflags'],
-                        data['cflags'],
-                    )
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if status:
-                self.is_writing_output = True
-                self.is_processing = {'queue_id': queue_id}
-                self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task, data)
-        t.start()
+        if status:
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id}
+            self.set_notebook_page(self.notebook_pages['output'])
 
     def run_spm_info(self):
 
-        def task():
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_spm_info()
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_spm_info()
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if status:
-                self.is_writing_output = True
-                self.is_processing = {'queue_id': queue_id}
-                self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task)
-        t.start()
+        if status:
+            self.is_writing_output = True
+            self.is_processing = {'queue_id': queue_id}
+            self.set_notebook_page(self.notebook_pages['output'])
 
     # fine without parallelTask
     def run_enable_uses_for_atoms(self, atoms, use, load_view):
@@ -1655,7 +1622,6 @@ class RepositoryManagerMenu(MenuSkel):
                 return
 
         def task(categories, atoms):
-
             item = self.wait_queue_id_to_complete(queue_id)
             if item == None: return
             status, data = item['result']
@@ -1669,194 +1635,146 @@ class RepositoryManagerMenu(MenuSkel):
 
     def run_kill_processing_queue_id(self, queue_id):
 
-        def task(queue_id):
-            with self.BufferLock:
-                try:
-                    self.Service.Methods.kill_processing_queue_id(queue_id)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-        t = self.entropyTools.parallelTask(task, queue_id)
-        t.start()
+        with self.BufferLock:
+            try:
+                self.Service.Methods.kill_processing_queue_id(queue_id)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
     def run_remove_queue_ids(self, queue_ids):
 
-        def task(queue_ids):
-            with self.BufferLock:
-                try:
-                    self.Service.Methods.remove_queue_ids(queue_ids)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-        t = self.entropyTools.parallelTask(task, queue_ids)
-        t.start()
-
+        with self.BufferLock:
+            try:
+                self.Service.Methods.remove_queue_ids(queue_ids)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
     def run_spm_categories_updates(self, categories, expand):
 
-        def task(categories, expand):
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.get_spm_categories_updates(categories)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-            if status:
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                status, data = item['result']
-                if not status: return
-                self.TaskQueue.append((self.categories_updates_data_view, [data, categories, expand], {},))
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.get_spm_categories_updates(categories)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-        t = self.entropyTools.parallelTask(task, categories, expand)
-        t.start()
+        def task(queue_id, categories, expand):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, data = item['result']
+            if not status: return
+            self.TaskQueue.append((self.categories_updates_data_view, [data, categories, expand], {},))
+
+        if status:
+            t = self.entropyTools.parallelTask(queue_id, task, categories, expand)
+            t.start()
 
     def run_entropy_deptest(self):
 
-        def task():
-
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_entropy_dependency_test()
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_entropy_dependency_test()
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
-            # enable output
+        if status:
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task)
-        t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def run_entropy_treeupdates(self, repoid):
 
-        def task():
-
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_entropy_treeupdates(repoid)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_entropy_treeupdates(repoid)
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
-            # enable output
+        if status:
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task)
-        t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def run_entropy_checksum_test(self, repoid, mode):
 
-        def task(repoid, mode):
-
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_entropy_checksum_test(repoid, mode)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_entropy_checksum_test(repoid, mode)
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
-            # enable output
+        if status:
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task, repoid, mode)
-        t.start()
-
+        else:
+            self.service_status_message(queue_id)
 
     def run_entropy_mirror_updates(self, repos):
 
-        def task(repos):
-
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.scan_entropy_mirror_updates(repos)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.scan_entropy_mirror_updates(repos)
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
+        def task(queue_id, repos):
             item = self.wait_queue_id_to_complete(queue_id)
             if item == None: return
             status, repo_data = item['result']
             if not status: return
-
             self.TaskQueue.append((self.entropy_mirror_updates_data_view, [repo_data],{},))
 
-        t = self.entropyTools.parallelTask(task, repos)
-        t.start()
-
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id, repos)
+            t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def execute_entropy_mirror_updates(self, repo_data):
 
-        def task():
-
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_entropy_mirror_updates(repo_data)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_entropy_mirror_updates(repo_data)
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
-            # enable output
+        if status:
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task)
-        t.start()
-
+        else:
+            self.service_status_message(queue_id)
 
     def run_entropy_libtest(self):
 
-        def task():
-            with self.BufferLock:
-                status = False
-                data = {}
-                try:
-                    status, queue_id = self.Service.Methods.run_entropy_library_test()
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            status = False
+            data = {}
+            try:
+                status, queue_id = self.Service.Methods.run_entropy_library_test()
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
+        if status:
             # enable output
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-
-        t = self.entropyTools.parallelTask(task)
-        t.start()
-
+        else:
+            self.service_status_message(queue_id)
 
     def run_package_search(self, search_type, search_string, repoid):
 
@@ -1867,12 +1785,11 @@ class RepositoryManagerMenu(MenuSkel):
                 self.service_status_message(e)
                 return
 
-        if not status:
+        if status:
+            def reload_func(): self.run_package_search(search_type, search_string, repoid)
+            self.TaskQueue.append((self.entropy_available_packages_data_view, [data, repoid], {'reload_func': reload_func,},))
+        else:
             self.service_status_message(data)
-            return
-
-        def reload_func(): self.run_package_search(search_type, search_string, repoid)
-        self.TaskQueue.append((self.entropy_available_packages_data_view, [data, repoid], {'reload_func': reload_func,},))
 
     def move_entropy_packages(self, matches, reload_function):
 
@@ -1942,30 +1859,27 @@ class RepositoryManagerMenu(MenuSkel):
 
     def run_entropy_database_updates_scan(self):
 
-        def task():
-
-            with self.BufferLock:
-                status = False
-                data = {}
-                try:
-                    status, queue_id = self.Service.Methods.scan_entropy_packages_database_changes()
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            status = False
+            data = {}
+            try:
+                status, queue_id = self.Service.Methods.scan_entropy_packages_database_changes()
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
+        def task(queue_id):
             item = self.wait_queue_id_to_complete(queue_id)
             if item == None: return
             status, data = item['result']
             if not status: return
-
             self.TaskQueue.append((self.entropy_database_updates_data_view, [data], {},))
 
-        t = self.entropyTools.parallelTask(task)
-        t.start()
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id)
+            t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def run_entropy_database_updates(self, to_add, to_remove, to_inject, reload_func = None):
 
@@ -1973,27 +1887,24 @@ class RepositoryManagerMenu(MenuSkel):
             def reload_func():
                 pass
 
-        def task(to_add, to_remove, to_inject, reload_func):
-
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.run_entropy_database_updates(to_add, to_remove, to_inject)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
-
-            if not status:
-                self.service_status_message(queue_id)
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.run_entropy_database_updates(to_add, to_remove, to_inject)
+            except Exception, e:
+                self.service_status_message(e)
                 return
 
-            # enable output
+        def task(queue_id, reload_func):
+            self.reload_after_package_move(queue_id, reload_func)
+
+        if status:
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-            self.reload_after_package_move(queue_id, reload_func)
-
-        t = self.entropyTools.parallelTask(task, to_add, to_remove, to_inject, reload_func)
-        t.start()
+            t = self.entropyTools.parallelTask(task, queue_id, reload_func)
+            t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def run_add_notice_board_entry(self, repoid, title, notice_text, link, reload_func = None):
 
@@ -2001,24 +1912,23 @@ class RepositoryManagerMenu(MenuSkel):
             def reload_func():
                 pass
 
-        def task(repoid, title, notice_text, link, reload_func):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.add_notice_board_entry(repoid, title, notice_text, link)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.add_notice_board_entry(repoid, title, notice_text, link)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
+        def task(queue_id, repoid, title, notice_text, link, reload_func):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, result = item['result']
+            if not status: return
+            self.TaskQueue.append((reload_func,[],{},))
 
-            if status:
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                status, result = item['result']
-                if not status: return
-                self.TaskQueue.append((reload_func,[],{},))
-
-        t = self.entropyTools.parallelTask(task, repoid, title, notice_text, link, reload_func)
-        t.start()
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id, repoid, title, notice_text, link, reload_func)
+            t.start()
 
     def run_remove_notice_board_entries(self, repoid, ids, reload_func = None):
 
@@ -2026,24 +1936,23 @@ class RepositoryManagerMenu(MenuSkel):
             def reload_func():
                 pass
 
-        def task(repoid, ids, reload_func):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.remove_notice_board_entries(repoid, list(ids))
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.remove_notice_board_entries(repoid, list(ids))
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
+        def task(queue_id, repoid, ids, reload_func):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, result = item['result']
+            if not status: return
+            self.TaskQueue.append((reload_func,[],{},))
 
-            if status:
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                status, result = item['result']
-                if not status: return
-                self.TaskQueue.append((reload_func,[],{},))
-
-        t = self.entropyTools.parallelTask(task, repoid, ids, reload_func)
-        t.start()
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id, repoid, ids, reload_func)
+            t.start()
 
     def update_notice_board_data_view(self, repo_data, repoid):
 
@@ -2939,15 +2848,11 @@ class RepositoryManagerMenu(MenuSkel):
             okDialog(self.window, _("Not enough parameters"), title = _("Custom command Error"))
             return
 
-        def task(evalued_params):
-            with self.BufferLock:
-                try:
-                    cmd_data['call'](*evalued_params)
-                except Exception, e:
-                    okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
-
-        t = self.entropyTools.parallelTask(task, evalued_params)
-        t.start()
+        with self.BufferLock:
+            try:
+                cmd_data['call'](*evalued_params)
+            except Exception, e:
+                okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
 
     def on_repoManagerPauseQueueButton_toggled(self, widget):
         with self.BufferLock:
@@ -3198,8 +3103,7 @@ class RepositoryManagerMenu(MenuSkel):
 
 
     def on_repoManagerPinboardRefreshButton_clicked(self, widget):
-        t = self.entropyTools.parallelTask(self.update_pinboard_view, force = True)
-        t.start()
+        self.update_pinboard_view(force = True)
 
     def on_repoManagerPinboardAddButton_clicked(self, widget):
 
@@ -3269,8 +3173,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if status:
                     self.on_repoManagerPinboardRefreshButton_clicked(widget)
 
-        t = self.entropyTools.parallelTask(set_pinboard_status, done_ids, status)
-        t.start()
+        set_pinboard_status(done_ids, status)
 
     def on_repoManagerPinboardView_row_activated(self, treeview, path, column):
         model = treeview.get_model()
@@ -3296,30 +3199,28 @@ class RepositoryManagerMenu(MenuSkel):
         if data == None: return
         self.clear_data_store_and_view()
 
-        def task(data):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.get_spm_glsa_data(data['list_type'][1])
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.get_spm_glsa_data(data['list_type'][1])
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
+        def task(queue_id, data):
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            try:
+                status, data = item['result']
+            except TypeError:
+                status = False
+            if not status: return
+            self.TaskQueue.append((self.glsa_data_view,[data],{},))
 
-            if status:
-
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                try:
-                    status, data = item['result']
-                except TypeError:
-                    status = False
-                if not status: return
-                self.TaskQueue.append((self.glsa_data_view,[data],{},))
-            else:
-                self.service_status_message(queue_id)
-
-        t = self.entropyTools.parallelTask(task, data)
-        t.start()
+        if status:
+            t = self.entropyTools.parallelTask(task, queue_id, data)
+            t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def on_repoManagerSwitchRepoButton_clicked(self, widget):
 
@@ -3329,23 +3230,22 @@ class RepositoryManagerMenu(MenuSkel):
         repoid = model.get_value(myiter, 0)
         if not repoid: return
 
-        def task(repoid):
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.set_default_repository(repoid)
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.set_default_repository(repoid)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
+        def task():
+            repo_info = self.get_available_repositories()
+            if repo_info: self.TaskQueue.append((self.load_available_repositories,[],{'repo_info': repo_info,},))
 
-            if status:
-                repo_info = self.get_available_repositories()
-                if repo_info: self.TaskQueue.append((self.load_available_repositories,[],{'repo_info': repo_info,},))
-            else:
-                self.service_status_message(queue_id)
-
-        t = self.entropyTools.parallelTask(task, repoid)
-        t.start()
+        if status:
+            t = self.entropyTools.parallelTask(task)
+            t.start()
+        else:
+            self.service_status_message(queue_id)
 
     def on_repoManagerAvailablePackagesButton_clicked(self, widget, repoid = None):
 
@@ -3372,25 +3272,23 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.clear_data_store_and_view()
 
-        def task(data):
+        with self.BufferLock:
+            try:
+                status, repo_data = self.Service.Methods.get_available_entropy_packages(data['repoid'])
+            except Exception, e:
+                self.service_status_message(e)
+                return
 
-            with self.BufferLock:
-                try:
-                    status, repo_data = self.Service.Methods.get_available_entropy_packages(data['repoid'])
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
+        def task(repo_data, data):
+            def reload_func():
+                self.on_repoManagerAvailablePackagesButton_clicked(widget, repoid = data['repoid'])
+            self.TaskQueue.append((self.entropy_available_packages_data_view,[repo_data,data['repoid']],{'reload_func': reload_func},))
 
-            if status:
-                def reload_func():
-                    self.on_repoManagerAvailablePackagesButton_clicked(widget, repoid = data['repoid'])
-                self.TaskQueue.append((self.entropy_available_packages_data_view,[repo_data,data['repoid']],{'reload_func': reload_func},))
-            else:
-                self.service_status_message(repo_data)
-
-        t = self.entropyTools.parallelTask(task, data)
-        t.start()
-
+        if status:
+            t = self.entropyTools.parallelTask(task, repo_data, data)
+            t.start()
+        else:
+            self.service_status_message(repo_data)
 
     def on_repoManagerPackageSearchButton_clicked(self, widget):
 

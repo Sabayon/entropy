@@ -22,7 +22,6 @@
 # Base Python Imports
 import sys, os, pty, random
 import logging
-import traceback
 import commands
 import time
 
@@ -59,11 +58,9 @@ class MyRepositoryManager(RepositoryManagerMenu):
         self.destroy()
         raise SystemExit(1)
 
-class ManagerApplication(Controller):
+class ManagerApplication:
+
     def __init__(self):
-        #ui = UI( const.GLADE_FILE , 'main', 'entropy' )
-        #ui.main.hide()
-        #Controller.__init__(self, ui, None, None)
         self.ui = None
         self.progressLogWrite = sys.stdout
         self.output = sys.stdout
