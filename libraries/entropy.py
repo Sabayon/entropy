@@ -14434,10 +14434,10 @@ class SocketHostInterface:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_alive,
-                                'args': ["self.transmit","session"],
+                                'args': ["self.transmit","myargs"],
                                 'as_user': False,
                                 'desc': "check if a session is still alive",
-                                'syntax': "<SESSION_ID> alive",
+                                'syntax': "alive <SESSION_ID>",
                                 'from': unicode(self),
                             },
                 'login':    {
@@ -14693,11 +14693,15 @@ class SocketHostInterface:
                 transmitter(self.HostInterface.answers['no'])
                 return False,reason
 
-        def docmd_alive(self, transmitter, session):
+        def docmd_alive(self, transmitter, myargs):
             cmd = self.HostInterface.answers['no']
-            if session in self.HostInterface.sessions:
-                cmd = self.HostInterface.answers['ok']
+            alive = False
+            if myargs:
+                if myargs[0] in self.HostInterface.sessions:
+                    cmd = self.HostInterface.answers['ok']
+                    alive = True
             transmitter(cmd)
+            return alive
 
         def docmd_hello(self, transmitter):
             uname = os.uname()
@@ -15158,14 +15162,20 @@ class SocketHostInterface:
         mysock = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
         return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
+    def get_md5_hash(self):
+        import hashlib
+        m = hashlib.md5()
+        m.update(os.urandom(2))
+        return m.hexdigest()
+
     def get_new_session(self, ip_address = None):
         with self.SessionsLock:
             if len(self.sessions) > self.threads:
                 # fuck!
                 return "0"
-            rng = str(abs(hash(os.urandom(20))))
+            rng = self.get_md5_hash()
             while rng in self.sessions:
-                rng = str(abs(hash(os.urandom(20))))
+                rng = self.get_md5_hash()
             self.sessions[rng] = {}
             self.sessions[rng]['running'] = False
             self.sessions[rng]['auth_uid'] = None
@@ -22395,6 +22405,16 @@ class SystemSocketClientInterface:
         data = self.receive()
         return data
 
+    def is_session_alive(self, session):
+        self.check_socket_connection()
+        self.socket.setdefaulttimeout(self.socket_timeout)
+        self.transmit('alive %s' % (session,))
+        data = self.receive()
+        if data == self.answers['ok']:
+            #print "SESSION ALIVE"
+            return True
+        return False
+
     def receive(self):
 
         self.check_socket_connection()
@@ -26690,7 +26710,7 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 class SystemManagerClientInterface:
 
     ssl_connection = True
-    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False):
+    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False, do_cache_session = True):
 
         # FIXME: if you enable cache connection, you should also consider to clear the socket buffer
         if not isinstance(EntropyInstance, (EquoInterface, ServerInterface)) and \
@@ -26718,6 +26738,8 @@ class SystemManagerClientInterface:
         self.socket, self.struct, self.entropyTools = socket, struct, entropyTools
         from datetime import datetime
         self.datetime = datetime
+        import threading
+        self.threading = threading
         self.Entropy = EntropyInstance
         self.hostname = None
         self.hostport = None
@@ -26728,10 +26750,13 @@ class SystemManagerClientInterface:
         self.show_progress = show_progress
         self.ClientCommandsInterface = ClientCommandsInterface
         self.Methods = self.MethodsInterface(self)
+        self.session_cache = {}
+        self.SessionCacheLock = self.threading.Lock()
         self.connection_cache = {}
-        self.CacheLock = thread.allocate_lock()
+        self.CacheLock = self.threading.Lock()
         self.shutdown = False
         self.connection_killer = None
+        self.do_cache_session = do_cache_session
         if self.do_cache_connection:
             self.connection_killer = self.entropyTools.TimeScheduled(self.connection_killer_handler, 2)
             self.connection_killer.start()
@@ -26754,6 +26779,21 @@ class SystemManagerClientInterface:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: port: %s. %s" % (_('not an int'),_('Please use setup_connection() properly'),))
         if not isinstance(self.ssl_connection,bool):
             raise exceptionTools.IncorrectParameter("IncorrectParameter: ssl_connection: %s. %s" % (_('not a bool'),_('Please use setup_connection() properly'),))
+
+    def get_session_cache(self, cmd_tuple):
+        if self.do_cache_session:
+            with self.SessionCacheLock:
+                return self.session_cache.get(cmd_tuple)
+
+    def set_session_cache(self, cmd_tuple, session_id):
+        if self.do_cache_session:
+            with self.SessionCacheLock:
+                self.session_cache[cmd_tuple] = session_id
+
+    def remove_session_cache(self, cmd_tuple):
+        if self.do_cache_session:
+            with self.SessionCacheLock:
+                del self.session_cache[cmd_tuple]
 
     def get_connection_cache_key(self):
         return hash((self.hostname, self.hostport, self.username, self.password, self.ssl_connection,))
@@ -26856,8 +26896,8 @@ class SystemManagerClientInterface:
     # eval(func) must have session as first param
     def do_cmd(self, login_required, func, args, kwargs):
 
-        self.CacheLock.acquire()
-        try:
+        with self.CacheLock:
+
             srv = self.get_connection_cache()
             if srv == None:
                 srv = self.get_service_connection(timeout = 10)
@@ -26867,30 +26907,44 @@ class SystemManagerClientInterface:
 
             if srv == None:
                 return False, 'no connection'
-            session = srv.open_session()
+
+            cmd_tuple = (login_required, func,)
+            new_session = False
+            session = self.get_session_cache(cmd_tuple)
             if session == None:
-                return False, 'no session'
+                new_session = True
+                session = srv.open_session()
+                if session == None:
+                    return False, 'no session'
+            else:
+                if not srv.is_session_alive(session):
+                    #print "session is NOT ALIVE",session
+                    new_session = True
+                    session = srv.open_session()
+                    if session == None:
+                        return False, 'no session'
+            self.set_session_cache(cmd_tuple, session)
 
             self.update_connection_ts()
             args.insert(0,session)
 
-            if login_required:
+            if login_required and new_session:
                 logged, error = self.login(srv, session)
                 if not logged:
                     srv.close_session(session)
+                    self.remove_session_cache(cmd_tuple)
                     if not self.do_cache_connection:
                         srv.disconnect()
                     return False, error
 
             rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
-            if login_required:
-                self.logout(srv, session)
-            srv.close_session(session)
+            if not self.do_cache_session:
+                if login_required:
+                    self.logout(srv, session)
+                srv.close_session(session)
             if not self.do_cache_connection:
                 srv.disconnect()
             return rslt
-        finally:
-            self.CacheLock.release()
 
     def get_available_client_commands(self):
         return self.Methods.available_commands.copy()
