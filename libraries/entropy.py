@@ -13903,50 +13903,60 @@ class SocketHostInterface:
                 self.buffered_data = ''
                 return False
 
+        def fork_lock_acquire(self):
+            if hasattr(self.server.processor.HostInterface,'ForkLock'):
+                x = getattr(self.server.processor.HostInterface,'ForkLock')
+                if hasattr(x,'acquire') and hasattr(x,'release') and hasattr(x,'locked'):
+                    x.acquire()
+
+        def fork_lock_release(self):
+            if hasattr(self.server.processor.HostInterface,'ForkLock'):
+                x = getattr(self.server.processor.HostInterface,'ForkLock')
+                if hasattr(x,'acquire') and hasattr(x,'release') and hasattr(x,'locked'):
+                    if x.locked(): x.release()
+
         def handle(self):
             # not using spawnFunction because it causes some mess
             # forking this way avoids having memory leaks
             if self.server.processor.HostInterface.fork_requests:
-                l = None
-                if hasattr(self.server.processor.HostInterface,'ForkLock'):
-                    x = getattr(self.server.processor.HostInterface,'ForkLock')
-                    if hasattr(x,'acquire') and hasattr(x,'release'):
-                        l = x; l.acquire()
-                my_timeout = self.server.processor.HostInterface.fork_request_timeout_seconds
-                pid = os.fork()
-                seconds = 0
-                if pid > 0: # parent here
-                    # pid killer after timeout
-                    passed_away = False
-                    while 1:
-                        time.sleep(1)
-                        seconds += 1
-                        try:
-                            dead = os.waitpid(pid, os.WNOHANG)[0]
-                        except OSError, e:
-                            if e.errno != 10: raise
-                            dead = True
-                        if passed_away:
-                            break
-                        if dead: break
-                        if seconds > my_timeout:
-                            self.server.processor.HostInterface.updateProgress(
-                                'interrupted: forked request timeout: %s,%s from client: %s' % (
-                                    seconds,
-                                    dead,
-                                    self.client_address,
+                self.fork_lock_acquire()
+                try:
+                    my_timeout = self.server.processor.HostInterface.fork_request_timeout_seconds
+                    pid = os.fork()
+                    seconds = 0
+                    if pid > 0: # parent here
+                        # pid killer after timeout
+                        passed_away = False
+                        while 1:
+                            time.sleep(1)
+                            seconds += 1
+                            try:
+                                dead = os.waitpid(pid, os.WNOHANG)[0]
+                            except OSError, e:
+                                if e.errno != 10: raise
+                                dead = True
+                            if passed_away:
+                                break
+                            if dead: break
+                            if seconds > my_timeout:
+                                self.server.processor.HostInterface.updateProgress(
+                                    'interrupted: forked request timeout: %s,%s from client: %s' % (
+                                        seconds,
+                                        dead,
+                                        self.client_address,
+                                    )
                                 )
-                            )
-                            if not dead:
-                                import signal
-                                os.kill(pid,signal.SIGKILL)
-                                passed_away = True # in this way, the process table should be clean
-                                continue
-                            break
-                    if l != None: l.release()
-                else:
-                    self.do_handle()
-                    os._exit(0)
+                                if not dead:
+                                    import signal
+                                    os.kill(pid,signal.SIGKILL)
+                                    passed_away = True # in this way, the process table should be clean
+                                    continue
+                                break
+                    else:
+                        self.do_handle()
+                        os._exit(0)
+                finally:
+                    self.fork_lock_release()
             else:
                 self.do_handle()
             #self.entropyTools.spawnFunction(self.do_handle)
@@ -22675,7 +22685,6 @@ class SystemManagerExecutorInterface:
 
     def __init__(self, SystemInterface, Entropy):
         import entropyTools
-        import threading
         self.entropyTools = entropyTools
         self.Entropy = Entropy
         self.SystemInterface = SystemInterface
