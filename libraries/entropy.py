@@ -25557,12 +25557,14 @@ class SystemManagerServerInterface(SocketHostInterface):
                 return item, key
         return None, None
 
-    def _pop_item_from_queue(self, parallel):
+    def _pop_item_from_queue(self):
         with self.QueueLock:
-            for idx in range(len(self.ManagerQueue['queue_order'])):
-                queue_id = self.ManagerQueue['queue_order'][idx]
-                if parallel == self.ManagerQueue['queue'][queue_id]['do_parallel']:
-                    return self.ManagerQueue['queue'].pop(queue_id), self.ManagerQueue['queue_order'].pop(idx)
+            try:
+                if self.ManagerQueue['queue_order']:
+                    queue_id = self.ManagerQueue['queue_order'].pop(0)
+                    return self.ManagerQueue['queue'].pop(queue_id), queue_id
+            except (IndexError,KeyError,):
+                self.entropyTools.printTraceback()
             return None, None
 
     def _queue_copy_obj(self, obj):
@@ -25590,7 +25592,7 @@ class SystemManagerServerInterface(SocketHostInterface):
                         time.sleep(0.05)
                         continue
 
-                    command_data, queue_id = self._pop_item_from_queue(parallel_mode)
+                    command_data, queue_id = self._pop_item_from_queue()
                     if not command_data:
                         time.sleep(0.1)
                         continue
