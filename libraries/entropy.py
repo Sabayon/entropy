@@ -22415,7 +22415,6 @@ class SystemSocketClientInterface:
         self.transmit('alive %s' % (session,))
         data = self.receive()
         if data == self.answers['ok']:
-            #print "SESSION ALIVE"
             return True
         return False
 
@@ -26714,7 +26713,7 @@ class SystemManagerRepositoryMethodsInterface(SystemManagerMethodsInterface):
 class SystemManagerClientInterface:
 
     ssl_connection = True
-    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False, do_cache_session = True):
+    def __init__(self, EntropyInstance, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False, do_cache_session = False):
 
         # FIXME: if you enable cache connection, you should also consider to clear the socket buffer
         if not isinstance(EntropyInstance, (EquoInterface, ServerInterface)) and \
@@ -26760,6 +26759,12 @@ class SystemManagerClientInterface:
         self.CacheLock = self.threading.Lock()
         self.shutdown = False
         self.connection_killer = None
+
+        # XXX actually session cache doesn't work when the connection is closed and re-opened
+        # when the server is spawning requests under a child process (fork_requests = True)
+        # this should be fixed by pushing the cache to disk but triggers a possible security issue
+        # since sessions and their password are stored in memory and kept alive there until those
+        # expires
         self.do_cache_session = do_cache_session
         if self.do_cache_connection:
             self.connection_killer = self.entropyTools.TimeScheduled(self.connection_killer_handler, 2)
@@ -26922,7 +26927,6 @@ class SystemManagerClientInterface:
                     return False, 'no session'
             else:
                 if not srv.is_session_alive(session):
-                    #print "session is NOT ALIVE",session
                     new_session = True
                     session = srv.open_session()
                     if session == None:
