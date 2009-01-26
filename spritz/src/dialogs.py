@@ -994,9 +994,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def service_status_message(self, e):
         self.entropyTools.printTraceback()
-        gtk.gdk.threads_enter()
-        okDialog(self.sm_ui.repositoryManager, unicode(e), title = _("Communication error"))
-        gtk.gdk.threads_leave()
+        self.TaskQueue.append((okDialog, [self.sm_ui.repositoryManager, unicode(e)], {'title': _("Communication error")},))
 
     def get_available_repositories(self):
         with self.BufferLock:
@@ -1649,24 +1647,25 @@ class RepositoryManagerMenu(MenuSkel):
 
     def run_get_spm_atoms_info(self, categories, atoms, clear):
 
+        with self.BufferLock:
+            try:
+                status, queue_id = self.Service.Methods.get_spm_atoms_info(atoms)
+            except Exception, e:
+                self.service_status_message(e)
+                return
+
         def task(categories, atoms):
-            with self.BufferLock:
-                try:
-                    status, queue_id = self.Service.Methods.get_spm_atoms_info(atoms)
-                except Exception, e:
-                    self.service_status_message(e)
-                    return
 
-            if status:
-                item = self.wait_queue_id_to_complete(queue_id)
-                if item == None: return
-                status, data = item['result']
-                if not status: return
-                def reload_function(): self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = clear)
-                self.TaskQueue.append((self.categories_updates_data_view, [data,categories], {'expand': True, 'reload_function': reload_function,},))
+            item = self.wait_queue_id_to_complete(queue_id)
+            if item == None: return
+            status, data = item['result']
+            if not status: return
+            def reload_function(): self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = clear)
+            self.TaskQueue.append((self.categories_updates_data_view, [data,categories], {'expand': True, 'reload_function': reload_function,},))
 
-        t = self.entropyTools.parallelTask(task, categories, atoms)
-        t.start()
+        if status:
+            t = self.entropyTools.parallelTask(task, categories, atoms)
+            t.start()
 
     def run_kill_processing_queue_id(self, queue_id):
 

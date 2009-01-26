@@ -4,9 +4,6 @@ TODO list
   - decide what to do about smart apps and if it's better waiting for app-directory packages support
   - documentation + man page
 
-  Repository Manager:
-    - multiple instances support (on server: Fatal Python error: PyEval_RestoreThread: NULL tstate)
-
 Proposed for Entropy >1.0 (require API changes):
   - Entropy codebase refactoring
   - socket intf: do not send login on each connection but use a complete session based system
