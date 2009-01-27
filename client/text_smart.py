@@ -213,7 +213,7 @@ def DeflateHandler(mytbz2s, savedir):
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflating"),))+tbz2, back = True)
         mytbz2 = text_ui.Equo.entropyTools.removeEdb(tbz2,savedir)
         tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
-        tbz2name = text_ui.Equo.entropyTools.remove_tag(tbz2name)+".tbz2"
+        tbz2name = text_ui.Equo.entropyTools.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(mytbz2)+"/"+tbz2name
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflated package"),))+newtbz2)
 
@@ -346,17 +346,17 @@ def smartpackagegenerator(matchedPackages):
     for x in matchedAtoms:
         atoms.append(matchedAtoms[x]['atom'].split("/")[1])
     atoms = '+'.join(atoms)
-    rc = text_ui.Equo.entropyTools.compressTarBz2(etpConst['smartpackagesdir']+"/"+atoms+".tbz2",unpackdir+"/content")
+    rc = text_ui.Equo.entropyTools.compressTarBz2(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],unpackdir+"/content")
     if rc != 0:
         print_error(darkred(" * ")+red("%s." % (_("Compression failed due to unknown reasons"),)))
         return rc
     # adding entropy database
-    if not os.path.isfile(etpConst['smartpackagesdir']+"/"+atoms+".tbz2"):
+    if not os.path.isfile(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext']):
         print_error(darkred(" * ")+red("%s." % (_("Compressed file does not exist"),)))
         return 1
 
-    text_ui.Equo.entropyTools.aggregateEdb(etpConst['smartpackagesdir']+"/"+atoms+".tbz2",dbfile)
-    print_info("\t"+etpConst['smartpackagesdir']+"/"+atoms+".tbz2")
+    text_ui.Equo.entropyTools.aggregateEdb(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],dbfile)
+    print_info("\t"+etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'])
     shutil.rmtree(unpackdir,True)
     return 0
 
@@ -408,6 +408,7 @@ def smartappsHandler(mypackages, emptydeps = False):
 # tool that generates .tar.bz2 packages with all the binary dependencies included
 def smartgenerator(atomInfo, emptydeps = False):
 
+    import entropyTools
     dbconn = text_ui.Equo.openRepositoryDatabase(atomInfo[1])
     idpackage = atomInfo[0]
     atom = dbconn.retrieveAtom(idpackage)
@@ -417,7 +418,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     pkgcontent = dbconn.retrieveContent(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
     pkgfilename = os.path.basename(pkgfilepath)
-    pkgname = pkgfilename.split(".tbz2")[0]
+    pkgname = pkgfilename.split(etpConst['packagesext'])[0].replace(":","_").replace("~","_")
 
     pkgdependencies, removal, result = text_ui.Equo.retrieveInstallQueue([atomInfo], empty_deps = emptydeps, deep_deps = False)
     #FIXME: fix dependencies stuff
@@ -447,26 +448,22 @@ def smartgenerator(atomInfo, emptydeps = False):
         return rc[0]
 
     # create the working directory
-    pkgtmpdir = etpConst['entropyunpackdir']+"/"+pkgname
-    #print "DEBUG: "+pkgtmpdir
-    if os.path.isdir(pkgtmpdir):
-        shutil.rmtree(pkgtmpdir)
-    os.makedirs(pkgtmpdir)
-    mainBinaryPath = etpConst['packagesbindir']+"/"+pkgbranch+"/"+pkgfilename
+    pkgtmpdir = os.path.join(etpConst['entropyunpackdir'],pkgname)
+    pkgdatadir = os.path.join(pkgtmpdir,pkgname)
+    if os.path.isdir(pkgdatadir):
+        shutil.rmtree(pkgdatadir)
+    os.makedirs(pkgdatadir)
+    mainBinaryPath = os.path.join(etpConst['packagesbindir'],pkgbranch,pkgfilename)
     print_info(darkgreen(" * ")+red("%s " % (_("Unpacking the main package"),))+bold(str(pkgfilename)))
-    text_ui.Equo.entropyTools.uncompressTarBz2(mainBinaryPath,pkgtmpdir) # first unpack
+    entropyTools.uncompressTarBz2(mainBinaryPath,pkgdatadir) # first unpack
 
     binaryExecs = []
     for item in pkgcontent:
-        # remove /
-        filepath = pkgtmpdir+item
+        filepath = pkgdatadir+item
         import commands
         if os.access(filepath,os.X_OK):
-            # test if it's an exec
-            out = commands.getoutput("file "+filepath).split("\n")[0]
-            if out.find("LSB executable") != -1:
+            if commands.getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
                 binaryExecs.append(item)
-        # check if file is executable
 
     # now uncompress all the rest
     for dep in pkgs:
@@ -475,106 +472,77 @@ def smartgenerator(atomInfo, emptydeps = False):
         depbranch = mydbconn.retrieveBranch(dep[0])
         depatom = mydbconn.retrieveAtom(dep[0])
         print_info(darkgreen(" * ")+red("%s " % (_("Unpacking dependency package"),))+bold(depatom))
-        deppath = etpConst['packagesbindir']+"/"+depbranch+"/"+download
-        text_ui.Equo.entropyTools.uncompressTarBz2(deppath,pkgtmpdir) # first unpack
-
-
-    # remove unwanted files (header files)
-    os.system('for file in `find '+pkgtmpdir+' -name "*.h"`; do rm $file; done')
+        deppath = os.path.join(etpConst['packagesbindir'],depbranch,download)
+        entropyTools.uncompressTarBz2(deppath,pkgdatadir) # first unpack
 
     # now create the bash script for each binaryExecs
-    os.makedirs(pkgtmpdir+"/wrp")
-    bashScript = []
-    bashScript.append(
-                        '#!/bin/sh\n'
-                        'cd $1\n'
-
-                        'MYPYP=$(find $PWD/lib/python2.4/site-packages/ -type d -printf %p: 2> /dev/null)\n'
-                        'MYPYP2=$(find $PWD/lib/python2.5/site-packages/ -type d -printf %p: 2> /dev/null)\n'
-                        'export PYTHONPATH=$MYPYP:MYPYP2:$PYTHONPATH\n'
-
-                        'export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH\n'
-
-                        'export LD_LIBRARY_PATH='
-                        '$PWD/lib:'
-                        '$PWD/lib64:'
-                        '$PWD/usr/lib:'
-                        '$PWD/usr/lib64:'
-                        '$PWD/usr/lib/nss:'
-                        '$PWD/usr/lib/nspr:'
-                        '$PWD/usr/lib64/nss:'
-                        '$PWD/usr/lib64/nspr:'
-                        '$PWD/usr/qt/3/lib:'
-                        '$PWD/usr/qt/3/lib64:'
-                        '$PWD/usr/kde/3.5/lib:'
-                        '$PWD/usr/kde/3.5/lib64:'
-                        '$LD_LIBRARY_PATH\n'
-
-                        'export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS\n'
-
-                        'export PERL5LIB=$PWD/usr/lib/perl5:$PWD/share/perl5:$PWD/usr/lib/perl5/5.8.1'
-                        ':$PWD/usr/lib/perl5/5.8.2:'
-                        ':$PWD/usr/lib/perl5/5.8.3:'
-                        ':$PWD/usr/lib/perl5/5.8.4:'
-                        ':$PWD/usr/lib/perl5/5.8.5:'
-                        ':$PWD/usr/lib/perl5/5.8.6:'
-                        ':$PWD/usr/lib/perl5/5.8.7:'
-                        ':$PWD/usr/lib/perl5/5.8.8:'
-                        ':$PWD/usr/lib/perl5/5.8.9:'
-                        ':$PWD/usr/lib/perl5/5.8.10\n'
-
-                        'export MANPATH=$PWD/share/man:$MANPATH\n'
-                        'export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH\n'
-                        'export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH\n'
-
-                        '# Setup pango\n'
-                        'MYPANGODIR=$(find $PWD/usr/lib/pango -name modules)\n'
-                        'if [ -n "$MYPANGODIR" ]; then\n'
-                        '    export PANGO_RC_FILE=$PWD/etc/pango/pangorc\n'
-                        '    echo "[Pango]" > $PANGO_RC_FILE\n'
-                        '    echo "ModulesPath=${MYPANGODIR}" >> $PANGO_RC_FILE\n'
-                        '    echo "ModuleFiles=${PWD}/etc/pango/pango.modules" >> $PANGO_RC_FILE\n'
-                        '    pango-querymodules > ${PWD}/etc/pango/pango.modules\n'
-                        'fi\n'
-                        '$2\n'
-    )
-    f = open(pkgtmpdir+"/wrp/wrapper","w")
-    f.writelines(bashScript)
+    os.makedirs(pkgdatadir+"/wrp")
+    sh_script = """
+#!/bin/sh
+cd $1
+MYPYP=$(find $PWD/lib/python2.4/site-packages/ -type d -printf %p: 2> /dev/null)
+MYPYP2=$(find $PWD/lib/python2.5/site-packages/ -type d -printf %p: 2> /dev/null)
+MYPYP3=$(find $PWD/lib/python2.6/site-packages/ -type d -printf %p: 2> /dev/null)
+export PYTHONPATH=$MYPYP:$MYPYP2:$MYPYP3:$PYTHONPATH
+export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH
+export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/lib/nss:$PWD/usr/lib/nspr:$PWD/usr/lib64/nss:$PWD/usr/lib64/nspr:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH
+export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS
+export PERL5LIB=$PWD/usr/lib/perl5:$PWD/share/perl5:$PWD/usr/lib/perl5/5.8.1:$PWD/usr/lib/perl5/5.8.2:$PWD/usr/lib/perl5/5.8.3:$PWD/usr/lib/perl5/5.8.4:$PWD/usr/lib/perl5/5.8.5:$PWD/usr/lib/perl5/5.8.6:$PWD/usr/lib/perl5/5.8.7:$PWD/usr/lib/perl5/5.8.8:$PWD/usr/lib/perl5/5.8.9:$PWD/usr/lib/perl5/5.8.10
+export MANPATH=$PWD/share/man:$MANPATH
+export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH
+export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH
+# Setup pango
+PANGODIR=$PWD/usr/lib/pango
+if [ -d "$PANGODIR" ]; then
+    MYPANGODIR=$(find $PWD/usr/lib/pango -name modules)
+    if [ -n "$MYPANGODIR" ]; then
+        export PANGO_RC_FILE=$PWD/etc/pango/pangorc
+        echo "[Pango]" > $PANGO_RC_FILE
+        echo "ModulesPath=${MYPANGODIR}" >> $PANGO_RC_FILE
+        echo "ModuleFiles=${PWD}/etc/pango/pango.modules" >> $PANGO_RC_FILE
+        pango-querymodules > ${PWD}/etc/pango/pango.modules
+    fi
+fi
+$2
+"""
+    wrapper_path = pkgdatadir+"/wrp/wrapper"
+    f = open(wrapper_path,"w")
+    f.write(sh_script)
     f.flush()
     f.close()
     # chmod
-    os.chmod(pkgtmpdir+"/wrp/wrapper",0755)
+    os.chmod(wrapper_path,0755)
 
-    # now list files in /sh and create .desktop files
+    cc_content = """
+#include <cstdlib>
+#include <cstdio>
+#include <stdio.h>
+int main() {
+    int rc = system("pid=$(pidof --item--.exe);"
+                    "listpid=$(ps x | grep $pid);"
+                "filename=$(echo $listpid | cut -d' ' -f 5);"
+                "currdir=$(dirname $filename);"
+                "/bin/sh $currdir/wrp/wrapper $currdir --item--" );
+    return rc;
+}
+"""
+
     for item in binaryExecs:
-        item = item.split("/")[len(item.split("/"))-1]
-        runFile = []
-        runFile.append(
-                        '#include <cstdlib>\n'
-                        '#include <cstdio>\n'
-                        '#include <stdio.h>\n'
-                        'int main() {\n'
-                        '  int rc = system(\n'
-                        '                "pid=$(pidof '+item+'.exe);"\n'
-                        '                "listpid=$(ps x | grep $pid);"\n'
-                        '                "filename=$(echo $listpid | cut -d\' \' -f 5);"'
-                        '                "currdir=$(dirname $filename);"\n'
-                        '                "/bin/sh $currdir/wrp/wrapper $currdir '+item+'" );\n'
-                        '  return rc;\n'
-                        '}\n'
-        )
-        f = open(pkgtmpdir+"/"+item+".cc","w")
-        f.writelines(runFile)
+        item = item.split("/")[-1]
+        item_content = cc_content.replace("--item--",item)
+        item_cc = "%s/%s.cc" % (pkgdatadir,item,)
+        f = open(item_cc,"w")
+        f.write(item_content)
         f.flush()
         f.close()
         # now compile
-        text_ui.Equo.entropyTools.spawnCommand("cd "+pkgtmpdir+"/ ; g++ -Wall "+item+".cc -o "+item+".exe")
-        os.remove(pkgtmpdir+"/"+item+".cc")
+        os.system("cd %s/; g++ -Wall %s.cc -o %s.exe" % (pkgdatadir,item,item,))
+        os.remove(item_cc)
 
-    smartpath = etpConst['smartappsdir']+"/"+pkgname+"-"+etpConst['currentarch']+".tbz2"
+    smartpath = "%s/%s-%s%s" % (etpConst['smartappsdir'],pkgname,etpConst['currentarch'],etpConst['packagesext'],)
     print_info(darkgreen(" * ")+red("%s: " % (_("Compressing smart application"),))+bold(atom))
-    print_info("\t"+smartpath)
-    text_ui.Equo.entropyTools.compressTarBz2(smartpath,pkgtmpdir+"/")
+    print_info("\t%s" % (smartpath,))
+    text_ui.Equo.entropyTools.compressTarBz2(smartpath,pkgtmpdir)
     shutil.rmtree(pkgtmpdir,True)
 
     return 0
