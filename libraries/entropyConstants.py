@@ -116,6 +116,7 @@ DROP TABLE IF EXISTS trashedcounters;
 DROP TABLE IF EXISTS entropy_misc_counters;
 DROP TABLE IF EXISTS categoriesdescription;
 DROP TABLE IF EXISTS packagesets;
+DROP TABLE IF EXISTS packagechangelogs;
 """
 
 etpSQLInit = """
@@ -342,6 +343,13 @@ CREATE TABLE categoriesdescription (
 CREATE TABLE packagesets (
     setname VARCHAR,
     dependency VARCHAR
+);
+
+CREATE TABLE packagechangelogs (
+    category VARCHAR,
+    name VARCHAR,
+    changelog BLOB,
+    PRIMARY KEY (category, name)
 );
 
 """

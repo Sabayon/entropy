@@ -3956,7 +3956,7 @@ class EquoInterface(TextInterface):
                 i = list(i)
                 datatype = i[1]
                 _outcontent.add((i[0],i[1]))
-            outcontent = sorted(list(_outcontent))
+            outcontent = sorted(_outcontent)
             for i in outcontent:
                 pkg_content[i[0]] = i[1]
 
@@ -3982,10 +3982,8 @@ class EquoInterface(TextInterface):
 
             # now remove
             shutil.rmtree(mytempdir,True)
-            try:
-                os.rmdir(mytempdir)
-            except:
-                pass
+            try: os.rmdir(mytempdir)
+            except (OSError,): pass
 
         return pkg_content
 
@@ -4108,25 +4106,13 @@ class EquoInterface(TextInterface):
         package = package.split(etpConst['packagesext'])[0]
         package = self.entropyTools.remove_entropy_revision(package)
         package = self.entropyTools.remove_tag(package)
-        # remove category
+        # remove entropy category
         if package.find(":") != -1:
             package = ':'.join(package.split(":")[1:])
 
-        package = package.split("-")
-        pkgname = ""
-        pkglen = len(package)
-        if package[pkglen-1].startswith("r"):
-            pkgver = package[pkglen-2]+"-"+package[pkglen-1]
-            pkglen -= 2
-        else:
-            pkgver = package[-1]
-            pkglen -= 1
-        for i in range(pkglen):
-            if i == pkglen-1:
-                pkgname += package[i]
-            else:
-                pkgname += package[i]+"-"
-        pkgname = pkgname.split("/")[-1]
+        # pkgcat is always == "null" here
+        pkgcat, pkgname, pkgver, pkgrev = self.entropyTools.catpkgsplit(os.path.basename(package))
+        if pkgrev != "r0": pkgver += "-%s" % (pkgrev,)
 
         # Fill Package name and version
         data['name'] = pkgname
@@ -4222,6 +4208,13 @@ class EquoInterface(TextInterface):
             f.close()
 
         Spm = self.Spm()
+
+        # Get Spm ChangeLog
+        pkgatom = "%s/%s-%s" % (data['category'],data['name'],data['version'],)
+        try:
+            data['changelog'] = Spm.get_package_changelog(pkgatom)
+        except:
+            data['changelog'] = None
 
         portage_metadata = Spm.calculate_dependencies(
             data['iuse'], data['use'], data['license'], data['depend'],
@@ -12125,6 +12118,21 @@ class PortageInterface:
     def get_package_description(self, atom):
         if atom.startswith("="): atom = atom[1:]
         return self.portage.portdb.aux_get(atom,['DESCRIPTION'])[0]
+
+    def get_package_ebuild_path(self, atom):
+        if atom.startswith("="): atom = atom[1:]
+        return self.portage.portdb.findname(atom)
+
+    def get_package_changelog(self, atom):
+        if atom.startswith("="): atom = atom[1:]
+        ebuild_path = self.get_package_ebuild_path(atom)
+        if isinstance(ebuild_path,basestring):
+            cp = os.path.join(os.path.dirname(ebuild_path),"ChangeLog")
+            if os.path.isfile(cp) and os.access(cp,os.R_OK):
+                f = open(cp,"r")
+                txt = f.read()
+                f.close()
+                return txt
 
     def get_installed_package_description(self, atom):
         mypath = etpConst['systemroot']+"/"
@@ -30825,7 +30833,7 @@ class EntropyDatabaseInterface:
         self.commitChanges()
 
     def checkReadOnly(self):
-        if (self.readOnly):
+        if self.readOnly:
             raise exceptionTools.OperationNotPermitted("OperationNotPermitted: %s." % (
                     _("can't do that on a readonly database"),
                 )
@@ -31562,6 +31570,10 @@ class EntropyDatabaseInterface:
         self.insertKeywords(idpackage, etpData['keywords'])
         self.insertLicenses(etpData['licensedata'])
         self.insertMirrors(etpData['mirrorlinks'])
+        # package ChangeLog
+        if etpData.get('changelog'):
+            try: self.insertChangelog(etpData['category'], etpData['name'], etpData['changelog'])
+            except (UnicodeEncodeError, UnicodeDecodeError,): pass
 
         # not depending on other tables == no select done
         self.insertContent(idpackage, etpData['content'], already_formatted = formatted_content)
@@ -31798,14 +31810,12 @@ class EntropyDatabaseInterface:
             return self.cursor.lastrowid
 
     def setSystemPackage(self, idpackage, do_commit = True):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('INSERT into systempackages VALUES (?)', (idpackage,))
             if do_commit:
                 self.commitChanges()
 
     def setInjected(self, idpackage, do_commit = True):
-        self.checkReadOnly()
         with self.WriteLock:
             if not self.isInjected(idpackage):
                 self.cursor.execute('INSERT into injected VALUES (?)', (idpackage,))
@@ -31814,25 +31824,21 @@ class EntropyDatabaseInterface:
 
     # date expressed the unix way
     def setDateCreation(self, idpackage, date):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)', (str(date),idpackage,))
             self.commitChanges()
 
     def setDigest(self, idpackage, digest):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest,idpackage,))
             self.commitChanges()
 
     def setDownloadURL(self, idpackage, url):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url,idpackage,))
             self.commitChanges()
 
     def setCategory(self, idpackage, category):
-        self.checkReadOnly()
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(category)
         if (catid == -1):
@@ -31843,7 +31849,6 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def setCategoryDescription(self, category, description_data):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM categoriesdescription WHERE category = (?)', (category,))
             for locale in description_data:
@@ -31854,25 +31859,21 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def setName(self, idpackage, name):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name,idpackage,))
             self.commitChanges()
 
     def setDependency(self, iddependency, dependency):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE dependenciesreference SET dependency = (?) WHERE iddependency = (?)', (dependency,iddependency,))
             self.commitChanges()
 
     def setAtom(self, idpackage, atom):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom,idpackage,))
             self.commitChanges()
 
     def setSlot(self, idpackage, slot):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot,idpackage,))
             self.commitChanges()
@@ -31884,7 +31885,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
 
     def removeDependencies(self, idpackage):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
@@ -31913,7 +31913,6 @@ class EntropyDatabaseInterface:
             self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
 
     def removeContent(self, idpackage):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute("DELETE FROM content WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
@@ -31930,6 +31929,17 @@ class EntropyDatabaseInterface:
                 if do_encode: xfile = xfile.encode('raw_unicode_escape')
                 return (idpackage,xfile,contenttype,)
             self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap,content))
+
+    def insertChangelog(self, category, name, changelog_txt):
+        with self.WriteLock:
+            mytxt = changelog_txt
+            if isinstance(mytxt,unicode): mytxt = mytxt.encode('raw_unicode_escape')
+            self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
+            self.cursor.execute('INSERT INTO packagechangelogs VALUES (?,?,?)', (category, name, buffer(mytxt),))
+
+    def removeChangelog(self, category, name):
+        with self.WriteLock:
+            self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
 
     def insertLicenses(self, licenses_data):
 
@@ -32107,7 +32117,6 @@ class EntropyDatabaseInterface:
         return counter
 
     def insertCounter(self, idpackage, counter, branch = None):
-        self.checkReadOnly()
         if not branch: branch = self.db_branch
         if not branch: branch = etpConst['branch']
         with self.WriteLock:
@@ -32116,7 +32125,6 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def setTrashedCounter(self, counter):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM trashedcounters WHERE counter = (?)', (counter,))
             self.cursor.execute('INSERT INTO trashedcounters VALUES (?)', (counter,))
@@ -32124,7 +32132,6 @@ class EntropyDatabaseInterface:
 
 
     def setCounter(self, idpackage, counter, branch = None):
-        self.checkReadOnly()
 
         branchstring = ''
         insertdata = [counter,idpackage]
@@ -32141,7 +32148,6 @@ class EntropyDatabaseInterface:
                     raise
 
     def contentDiff(self, idpackage, dbconn, dbconn_idpackage):
-        self.checkReadOnly()
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
         randomtable = "cdiff%s" % (self.entropyTools.getRandomNumber(),)
@@ -32170,36 +32176,35 @@ class EntropyDatabaseInterface:
         self.cleanupEclasses()
         self.cleanupNeeded()
         self.cleanupDependencies()
+        self.cleanupChangelogs()
 
     def cleanupUseflags(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM useflagsreference WHERE idflag NOT IN (SELECT idflag FROM useflags)')
             self.commitChanges()
 
     def cleanupSources(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM sourcesreference WHERE idsource NOT IN (SELECT idsource FROM sources)')
             self.commitChanges()
 
     def cleanupEclasses(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM eclassesreference WHERE idclass NOT IN (SELECT idclass FROM eclasses)')
             self.commitChanges()
 
     def cleanupNeeded(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM neededreference WHERE idneeded NOT IN (SELECT idneeded FROM needed)')
             self.commitChanges()
 
     def cleanupDependencies(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)')
             self.commitChanges()
+
+    def cleanupChangelogs(self):
+        self.cursor.execute('DELETE FROM packagechangelogs WHERE category || "/" || name NOT IN (SELECT categories.category || "/" || baseinfo.name FROM baseinfo,categories WHERE baseinfo.idcategory = categories.idcategory)')
 
     def getNewNegativeCounter(self):
         counter = -2
@@ -32309,7 +32314,7 @@ class EntropyDatabaseInterface:
         """, (idpackage,))
         return self.cursor.fetchone()
 
-    def getBaseData(self,idpackage):
+    def getBaseData(self, idpackage):
 
         sql = """
                 SELECT 
@@ -32387,6 +32392,7 @@ class EntropyDatabaseInterface:
         data['messages'] = self.retrieveMessages(idpackage)
         data['trigger'] = self.retrieveTrigger(idpackage, get_unicode = trigger_unicode)
         data['disksize'] = self.retrieveOnDiskSize(idpackage)
+        data['changelog'] = self.retrieveChangelog(idpackage)
 
         data['injected'] = self.isInjected(idpackage)
         data['systempackage'] = False
@@ -32509,7 +32515,6 @@ class EntropyDatabaseInterface:
 
     # mainly used to restore a previous table, used by reagent in --initialize
     def bumpTreeUpdatesActions(self, updates):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdatesactions')
             for update in updates:
@@ -32517,13 +32522,11 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def removeTreeUpdatesActions(self, repository):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdatesactions WHERE repository = (?)', (repository,))
             self.commitChanges()
 
     def insertTreeUpdatesActions(self, updates, repository):
-        self.checkReadOnly()
         with self.WriteLock:
             for update in updates:
                 update = list(update)
@@ -32532,14 +32535,12 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
             self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
             self.commitChanges()
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
-        self.checkReadOnly()
 
         mytime = str(self.entropyTools.getCurrentUnixTime())
         with self.WriteLock:
@@ -32556,11 +32557,9 @@ class EntropyDatabaseInterface:
         return False
 
     def clearPackageSets(self):
-        self.checkReadOnly()
         self.cursor.execute('DELETE FROM packagesets')
 
     def insertPackageSets(self, sets_data):
-        self.checkReadOnly()
 
         mysets = []
         for setname in sorted(sets_data.keys()):
@@ -32808,8 +32807,6 @@ class EntropyDatabaseInterface:
 
         return source_data
 
-
-
     def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False, order_by = ''):
 
         # like portage does
@@ -32851,6 +32848,22 @@ class EntropyDatabaseInterface:
                 fl = self.fetchall2set(self.cursor.fetchall())
 
         return fl
+
+    def retrieveChangelog(self, idpackage):
+        if not self.doesTableExist('packagechangelogs'):
+            return None
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.cursor.execute('SELECT packagechangelogs.changelog FROM packagechangelogs,baseinfo,categories WHERE baseinfo.idpackage = (?) AND baseinfo.idcategory = categories.idcategory AND packagechangelogs.name = baseinfo.name AND packagechangelogs.category = categories.category', (idpackage,))
+        changelog = self.cursor.fetchone()
+        if changelog: return unicode(changelog[0],'raw_unicode_escape')
+
+    def retrieveChangelogByKey(self, category, name):
+        if not self.doesTableExist('packagechangelogs'):
+            return None
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.cursor.execute('SELECT changelog FROM packagechangelogs WHERE category = (?) AND name = (?)', (category,name,))
+        changelog = self.cursor.fetchone()
+        if changelog: return unicode(changelog[0],'raw_unicode_escape')
 
     def retrieveSlot(self, idpackage):
         self.cursor.execute('SELECT slot FROM baseinfo WHERE idpackage = (?)', (idpackage,))
@@ -33405,30 +33418,6 @@ class EntropyDatabaseInterface:
             results = self.cursor.fetchall()
         return results
 
-    def searchPackagesKeyVersion(self, key, version, branch = None, sensitive = False):
-
-        searchkeywords = []
-        if sensitive:
-            searchkeywords.append(key)
-        else:
-            searchkeywords.append(key.lower())
-
-        searchkeywords.append(version)
-
-        branchstring = ''
-        if branch:
-            searchkeywords.append(branch)
-            branchstring = ' and branch = (?)'
-
-        if (sensitive):
-            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category || "/" || baseinfo.name = (?) and version = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
-        else:
-            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE LOWER(categories.category) || "/" || LOWER(baseinfo.name) = (?) and version = (?) and baseinfo.idcategory = categories.idcategory '+branchstring, searchkeywords)
-
-        results = self.cursor.fetchall()
-
-        return results
-
     def isPackageScopeAvailable(self, atom, slot, revision):
         searchdata = (atom,slot,revision,)
         self.cursor.execute('SELECT idpackage FROM baseinfo where atom = (?) and slot = (?) and revision = (?)',searchdata)
@@ -33580,7 +33569,6 @@ class EntropyDatabaseInterface:
         return sorted(list(dirs))
 
     def switchBranch(self, idpackage, tobranch):
-        self.checkReadOnly()
 
         key, slot = self.retrieveKeySlot(idpackage)
 
@@ -33621,6 +33609,9 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist('packagesets'):
             self.createPackagesetsTable()
 
+        if not self.doesTableExist('packagechangelogs'):
+            self.createPackagechangelogsTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -33647,7 +33638,6 @@ class EntropyDatabaseInterface:
         return added_ids, removed_ids
 
     def uniformBranch(self, branch):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE baseinfo SET branch = (?)', (branch,))
             self.commitChanges()
@@ -33887,13 +33877,11 @@ class EntropyDatabaseInterface:
 #
 
     def addPackageToInstalledTable(self, idpackage, repositoryName):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('INSERT into installedtable VALUES (?,?)', (idpackage, repositoryName,))
             self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
-        self.checkReadOnly()
         result = 'Not available'
         with self.WriteLock:
             try:
@@ -33916,7 +33904,6 @@ class EntropyDatabaseInterface:
                 return 1 # need reinit
 
     def removeDependencyFromDependsTable(self, iddependency):
-        self.checkReadOnly()
         with self.WriteLock:
             try:
                 self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
@@ -33927,7 +33914,6 @@ class EntropyDatabaseInterface:
 
     # temporary/compat functions
     def createDependsTable(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.executescript("""
                 DROP TABLE IF EXISTS dependstable;
@@ -33958,7 +33944,6 @@ class EntropyDatabaseInterface:
         return True
 
     def createXpakTable(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
             self.commitChanges()
@@ -34190,7 +34175,6 @@ class EntropyDatabaseInterface:
                 self.commitChanges()
 
     def regenerateCountersTable(self, vdb_path, output = False):
-        self.checkReadOnly()
         self.createCountersTable()
         # assign a counter to an idpackage
         myids = self.listAllIdpackages()
@@ -34243,7 +34227,6 @@ class EntropyDatabaseInterface:
         self.commitChanges()
 
     def clearTreeupdatesEntries(self, repository):
-        self.checkReadOnly()
         if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
         # treeupdates
@@ -34252,7 +34235,6 @@ class EntropyDatabaseInterface:
             self.commitChanges()
 
     def resetTreeupdatesDigests(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
@@ -34274,6 +34256,10 @@ class EntropyDatabaseInterface:
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
+
+    def createPackagechangelogsTable(self):
+        with self.WriteLock:
+            self.cursor.execute('CREATE TABLE packagechangelogs ( category VARCHAR, name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));')
 
     def createPackagesetsTable(self):
         with self.WriteLock:
@@ -34363,7 +34349,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
 
     def createTriggerColumn(self):
-        self.checkReadOnly()
         with self.WriteLock:
             self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
             self.cursor.execute('UPDATE baseinfo SET trigger = 0')
