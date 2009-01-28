@@ -65,6 +65,7 @@ class EntropyPackageView:
         self.Equo = EquoConnection
         self.Spritz = spritz_app
         self.pkgcolumn_text = _("Selection")
+        self.pkgcolumn_text_rating = _("Rating")
         self.stars_col_size = 100
         self.selection_width = 34
         self.show_reinstall = True
@@ -72,6 +73,7 @@ class EntropyPackageView:
         self.show_mask = True
         self.loaded_widget = None
         self.selected_objs = []
+        self.last_row = None
         self.loaded_reinstallables = []
         self.loaded_event = None
         self.do_refresh_view = False
@@ -329,9 +331,22 @@ class EntropyPackageView:
         except TypeError:
             return True
 
-        if column.get_title() == self.pkgcolumn_text:
+        col_title = column.get_title()
+        if (col_title == self.pkgcolumn_text_rating) and len(objs) < 2:
+            self.load_menu(widget,event, objs = objs)
+            self.last_row = row
+            return False
+
+        if (col_title == self.pkgcolumn_text) and objs:
+            if (len(objs) == 1) and (row != self.last_row):
+                self.last_row = row
+                return False
             self.load_menu(widget,event,objs = objs)
+            self.last_row = row
             return True
+
+    def get_hover_obj(self, view):
+        return None
 
     def load_menu(self, widget, event, objs = None):
 
@@ -391,7 +406,6 @@ class EntropyPackageView:
                 obj.voted = vote
                 # submit vote
                 self.spawn_vote_submit(obj)
-            return False
 
         return False
 
@@ -981,7 +995,7 @@ class EntropyPackageView:
         # vote event box
         cell2 = CellRendererStars()
         cell2.set_property('height', myheight)
-        column2 = gtk.TreeViewColumn( _("Rating"), cell2 )
+        column2 = gtk.TreeViewColumn( self.pkgcolumn_text_rating, cell2 )
         column2.set_resizable( True )
         column2.set_cell_data_func( cell2, self.get_stars_rating )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
