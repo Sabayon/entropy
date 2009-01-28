@@ -345,9 +345,6 @@ class EntropyPackageView:
             self.last_row = row
             return True
 
-    def get_hover_obj(self, view):
-        return None
-
     def load_menu(self, widget, event, objs = None):
 
         self.loaded_widget = widget
