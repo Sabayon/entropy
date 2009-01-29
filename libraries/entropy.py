@@ -28132,7 +28132,7 @@ class ServerMirrorsInterface:
             ftp = self.FtpInterface(uri, self.Entropy)
             try:
                 my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
-                ftp.setCWD(my_path)
+                ftp.setCWD(my_path, dodir = True)
             except ftp.ftplib.error_perm:
                 crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
                 self.Entropy.updateProgress(
