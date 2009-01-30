@@ -63,6 +63,13 @@ def is_user_in_entropy_group(uid = None):
 
     return True
 
+def kill_threads():
+    threads = threading.enumerate()
+    for t in threads:
+        if not hasattr(t,'kill'):
+            continue
+        t.kill()
+
 class TimeScheduled(threading.Thread):
 
     def __init__(self, function, delay, dictData = {}):

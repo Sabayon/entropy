@@ -2699,6 +2699,8 @@ if __name__ == "__main__":
         EquoConnection.destroy()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
+        entropyTools.kill_threads()
+        EquoConnection.destroy()
         my = ExceptionDialog()
         my.show()
 

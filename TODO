@@ -7,8 +7,8 @@ Proposed for Entropy ~1.0 (before and after) (requires API changes, perhaps):
       - Implement Smart applications in Spritz too
     - Implement entropy:// URI handler
   - Entropy codebase refactoring
+  - External trigger: rewrite support and use bash
+  - use expiration as a base to have and handle multiple packages in repo?
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
-  - External trigger: rewrite support and use bash
-  - use expiration as a base to have and handle multiple packages in repo?

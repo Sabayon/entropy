@@ -679,6 +679,8 @@ except KeyboardInterrupt:
 #except Timeout:
 #    pass
 except:
+
+    entropyTools.kill_threads()
     reset_cache()
 
     Text = TextInterface()
