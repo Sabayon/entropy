@@ -7471,8 +7471,6 @@ class RepoInterface:
         self.Entropy.validate_repositories()
         self.Entropy.closeAllRepositoryDatabases()
 
-        import pdb; pdb.set_trace()
-
         # clean caches, fetch security
         if self.dbupdated:
             self.Entropy.generate_cache(
