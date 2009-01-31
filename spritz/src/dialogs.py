@@ -446,18 +446,20 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
 
     def task_queue_executor(self):
-        try:
-            data = self.TaskQueue.pop(0)
-        except IndexError:
-            return self.TaskQueueAlive
-        self.debug_print("task_queue_executor","executing: %s" % (data,))
-        func, args, kwargs = data
-        gtk.gdk.threads_enter()
-        try:
-            func(*args,**kwargs)
-        finally:
-            gtk.gdk.threads_leave()
-        return self.TaskQueueAlive
+        while 1:
+            try:
+                data = self.TaskQueue.pop(0)
+            except IndexError:
+                return self.TaskQueueAlive
+            self.debug_print("task_queue_executor","executing: %s" % (data,))
+            func, args, kwargs = data
+            gtk.gdk.threads_enter()
+            try:
+                func(*args,**kwargs)
+            finally:
+                gtk.gdk.threads_leave()
+            if not self.TaskQueueAlive:
+                return False
 
     def setup_console(self):
 

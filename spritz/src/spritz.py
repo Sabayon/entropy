@@ -305,13 +305,15 @@ class SpritzApplication(Controller):
            gtk.main_iteration()
 
     def task_queue_executor(self):
-        try:
-            data = self.TaskQueue.pop(0)
-        except IndexError:
-            return self.TaskQueueAlive
-        func, args, kwargs = data
-        func(*args,**kwargs)
-        return self.TaskQueueAlive
+        while 1:
+            try:
+                data = self.TaskQueue.pop(0)
+            except IndexError:
+                return self.TaskQueueAlive
+            func, args, kwargs = data
+            func(*args,**kwargs)
+            if not self.TaskQueueAlive:
+                return False
 
     def load_url(self, url):
         import subprocess
@@ -1434,11 +1436,12 @@ class SpritzApplication(Controller):
             normalCursor(self.ui.main)
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-
+            self.setPage('output')
             queue = pkgs['i']+pkgs['u']+pkgs['rr']
             install_queue = [x.matched_atom for x in queue]
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
+
             if install_queue or removal_queue:
 
                 self.onInstall = True
@@ -1489,7 +1492,7 @@ class SpritzApplication(Controller):
                 if self.do_debug:
                     print "processPackageQueue: gui unlocked"
 
-                if self.my_inst_abort:
+                if my_inst_abort:
                     okDialog(self.ui.main, _("Attention. You chose to abort the processing."))
                 elif (e != 0):
                     okDialog(self.ui.main,
@@ -2146,6 +2149,7 @@ class SpritzApplication(Controller):
             rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
         except:
             if self.do_debug:
+                self.Equo.entropyTools.printTraceback()
                 import pdb; pdb.set_trace()
             else:
                 raise
@@ -2242,6 +2246,7 @@ class SpritzApplication(Controller):
             rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
         except:
             if self.do_debug:
+                self.Equo.entropyTools.printTraceback()
                 import pdb; pdb.set_trace()
             else: raise
         self.resetQueueProgressBars()
