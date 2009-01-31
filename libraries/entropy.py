@@ -2976,9 +2976,9 @@ class EquoInterface(TextInterface):
                     return None
 
     def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
-        c_hash = "%s%s%s%s%s%s" % ( 
-            hash(db_digest),empty_deps,hash(tuple(self.validRepositories)),
-            hash(tuple(etpRepositoriesOrder)), branch, ignore_spm_downgrades,
+        c_hash = "%s|%s|%s|%s|%s|%s" % ( 
+            db_digest,empty_deps,self.validRepositories,
+            etpRepositoriesOrder, branch, ignore_spm_downgrades,
         )
         return str(hash(c_hash))
 
@@ -3101,7 +3101,7 @@ class EquoInterface(TextInterface):
                 'r': (update, remove, fine,),
                 'empty_deps': empty_deps,
             }
-            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,), data.copy())
+            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,), data, async = False)
 
         return update, remove, fine
 
@@ -7470,6 +7470,8 @@ class RepoInterface:
         self.Entropy.closeAllRepositoryDatabases()
         self.Entropy.validate_repositories()
         self.Entropy.closeAllRepositoryDatabases()
+
+        import pdb; pdb.set_trace()
 
         # clean caches, fetch security
         if self.dbupdated:
