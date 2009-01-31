@@ -2548,7 +2548,10 @@ class EquoInterface(TextInterface):
         match_cache = {}
 
         for idpackage in mydepends:
-            key, slot = cdb_rks(idpackage)
+            try:
+                key, slot = cdb_rks(idpackage)
+            except TypeError:
+                continue
             if (key,slot) in keyslots_cache: continue
             keyslots_cache.add((key,slot))
             if (key,slot) in keyslots: continue
