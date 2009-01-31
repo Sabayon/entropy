@@ -1492,7 +1492,7 @@ class SpritzApplication(Controller):
                 if self.do_debug:
                     print "processPackageQueue: gui unlocked"
 
-                if my_inst_abort:
+                if self.my_inst_abort:
                     okDialog(self.ui.main, _("Attention. You chose to abort the processing."))
                 elif (e != 0):
                     okDialog(self.ui.main,
