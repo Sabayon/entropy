@@ -148,68 +148,103 @@ class SpritzProgress:
         self.ui.progressBar.set_fraction( 0 )
         self.ui.progressBar.set_text( " " )
         self.lastFrac = -1
+        self.do_upd_async = False
+        if hasattr(self.parent,'TaskQueue'):
+            if isinstance(self.parent.TaskQueue,list):
+                self.do_upd_async = True
 
     def show( self ):
-        self.ui.progressBox.show()
-        self.set_page_func( 'output' )
-        self.lastFrac = -1
+        def run():
+            self.ui.progressBox.show()
+            self.set_page_func( 'output' )
+            self.lastFrac = -1
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[],{},))
+        return run()
 
     def reset_progress( self ):
-        self.lastFrac = -1
-        self.ui.progressBar.set_fraction( 0 )
-        self.ui.progressBar.set_text(" ")
+        def run():
+            self.lastFrac = -1
+            self.ui.progressBar.set_fraction( 0 )
+            self.ui.progressBar.set_text(" ")
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[],{},))
+        return run()
 
     def hide( self, clean=False ):
-        self.ui.progressBox.hide()
-        if clean:
-            self.ui.progressMainLabel.set_text( "" )
-            self.ui.progressSubLabel.set_text( "" )
-            self.ui.progressExtraLabel.set_text( "" )
-            self.ui.progressBar.set_fraction( 0 )
-            self.ui.progressBar.set_text( " " )
+        def run():
+            self.ui.progressBox.hide()
+            if clean:
+                self.ui.progressMainLabel.set_text( "" )
+                self.ui.progressSubLabel.set_text( "" )
+                self.ui.progressExtraLabel.set_text( "" )
+                self.ui.progressBar.set_fraction( 0 )
+                self.ui.progressBar.set_text( " " )
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[],{},))
+        return run()
 
     def setTotal( self, now, total ):
-        self.total.setProgress( now, total )
+        def run(now, total):
+            self.total.setProgress( now, total )
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[now, total],{},))
+        return run(now, total)
 
     def set_progress( self, frac, text=None ):
+        def run(frac, text):
+            if frac == self.lastFrac: return
+            if frac > 1 or frac == 0.0: return
+            if frac >= 0 and frac <= 1:
+                self.ui.progressBar.set_fraction( frac )
+            else:
+                self.ui.progressBar.set_fraction( 0 )
+            if text != None:
+                self.ui.progressBar.set_text( text )
+            self.lastFrac = frac
+            self.gtkLoop()
 
-        if frac == self.lastFrac:
-            return
-
-        if frac > 1 or frac == 0.0:
-            return
-
-        if frac >= 0 and frac <= 1:
-            self.ui.progressBar.set_fraction( frac )
-        else:
-            self.ui.progressBar.set_fraction( 0 )
-        if text != None:
-            self.ui.progressBar.set_text( text )
-
-        self.lastFrac = frac
-        self.gtkLoop()
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[frac, text],{},))
+        return run(frac, text)
 
     def set_text(self, text):
-        self.ui.progressBar.set_text( text )
+        def run(text):
+            self.ui.progressBar.set_text( text )
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[text],{},))
+        return run(text)
 
     def set_mainLabel( self, text ):
-        self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
-        self.ui.progressSubLabel.set_text( "" )
-        self.ui.progressExtraLabel.set_text( "" )
+        def run(text):
+            self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
+            self.ui.progressSubLabel.set_text( "" )
+            self.ui.progressExtraLabel.set_text( "" )
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[text],{},))
+        return run(text)
 
     def set_subLabel( self, text ):
-        mytxt = unicode(text)
-        if len(mytxt) > 80:
-            mytxt = mytxt[:80].strip()+"..."
-        self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
-        self.ui.progressExtraLabel.set_text( "" )
+        def run(text):
+            mytxt = unicode(text)
+            if len(mytxt) > 80:
+                mytxt = mytxt[:80].strip()+"..."
+            self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
+            self.ui.progressExtraLabel.set_text( "" )
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[text],{},))
+        return run(text)
 
     def set_extraLabel( self, text ):
-        mytxt = unicode(text)
-        if len(mytxt) > 80:
-            mytxt = mytxt[:80].strip()+"..."
-        self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
-        self.lastFrac = -1
+        def run(text):
+            mytxt = unicode(text)
+            if len(mytxt) > 80:
+                mytxt = mytxt[:80].strip()+"..."
+            self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
+            self.lastFrac = -1
+        if self.do_upd_async:
+            return self.parent.TaskQueue.append((run,[text],{},))
+        return run(text)
 
     def gtkLoop(self):
         while gtk.events_pending():
@@ -219,8 +254,12 @@ class SpritzApplication(Controller):
 
     def __init__(self):
 
-        self.do_debug = False
         self.Equo = EquoConnection
+        self.TaskQueueAlive = True
+        self.TaskQueue = []
+        self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
+
+        self.do_debug = False
         locked = self.Equo._resources_run_check_lock()
         if locked:
             okDialog( None, _("Entropy resources are locked and not accessible. Another Entropy application is running. Sorry, can't load Spritz.") )
@@ -246,24 +285,33 @@ class SpritzApplication(Controller):
         self.setupGUI()
         self.packagesInstall()
 
-    def quit(self, widget=None, event=None ):
+    def quit(self, widget = None, event = None, sysexit = True ):
+        self.TaskQueueAlive = False
         if self.ugcTask != None:
             self.ugcTask.kill()
         ''' Main destroy Handler '''
+        self.Equo.destroy()
 
-        #gtkEventThread.doQuit()
-        self.exitNow()
-        raise SystemExit(0)
+        if sysexit:
+            self.exitNow()
+            raise SystemExit(0)
 
     def exitNow(self):
-        try:
-            gtk.main_quit()
-        except RuntimeError:
-            pass
+        try: gtk.main_quit()
+        except RuntimeError: pass
 
     def gtkLoop(self):
         while gtk.events_pending():
            gtk.main_iteration()
+
+    def task_queue_executor(self):
+        try:
+            data = self.TaskQueue.pop(0)
+        except IndexError:
+            return self.TaskQueueAlive
+        func, args, kwargs = data
+        func(*args,**kwargs)
+        return self.TaskQueueAlive
 
     def load_url(self, url):
         import subprocess
@@ -1454,7 +1502,7 @@ class SpritzApplication(Controller):
             self.endWorking()
             self.progress.reset_progress()
             if self.do_debug:
-                print "processPackageQueue: endWorked"
+                print "processPackageQueue: endWorking"
 
             if (not fetch_only) and (not download_sources):
 
@@ -2689,18 +2737,16 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
-        EquoConnection.destroy()
+        mainApp.quit()
     except SystemExit:
-        print "Quit by User"
-        EquoConnection.destroy()
-        raise SystemExit(0)
+        print "Quit by User (SystemExit)"
+        mainApp.quit()
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        EquoConnection.destroy()
-        raise SystemExit(0)
+        mainApp.quit()
     except: # catch other exception and write it to the logger.
         entropyTools.kill_threads()
-        EquoConnection.destroy()
+        mainApp.quit(sysexit = False)
         my = ExceptionDialog()
         my.show()
 

@@ -44,7 +44,6 @@ from etpgui import *
 from spritz_setup import SpritzConf, const, fakeoutfile, fakeinfile, cleanMarkupString
 from misc import SpritzQueue
 from dialogs import *
-from spritz import SpritzProgress
 
 class MyRepositoryManager(RepositoryManagerMenu):
 
@@ -65,7 +64,6 @@ class ManagerApplication:
         self.progressLogWrite = sys.stdout
         self.output = sys.stdout
         self.Equo = EquoConnection
-        #self.progress = SpritzProgress(self.ui, self.dummy_func, self)
         self.progress = None
         self.Equo.connect_to_gui(self)
         mymenu = MyRepositoryManager(self.Equo, None)
