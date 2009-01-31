@@ -4599,6 +4599,8 @@ class PackageInterface:
             protected = False
             if (not self.infoDict['removeconfig']) and (not self.infoDict['diffremoval']):
                 protected_item_test = sys_root+item
+                if isinstance(protected_item_test,unicode):
+                    protected_item_test = protected_item_test.encode('utf-8')
                 protected, x, do_continue = self._handle_config_protect(protect, mask, None, protected_item_test, do_allocation_check = False)
                 if do_continue: protected = True
 
