@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import gtk
 import sys
 from spritz_setup import const
 from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
@@ -44,10 +45,14 @@ class QueueExecutor:
         ### Before even starting the fetch, make sure that the user accepts their licenses
         licenses = self.Entropy.get_licenses_to_accept(queue)
         if licenses:
-            dialog = LicenseDialog(self.Spritz.ui.main, licenses, self.Entropy)
-            accept = dialog.run()
-            dialog.destroy()
-            return accept,licenses
+            gtk.gdk.threads_enter()
+            try:
+                dialog = LicenseDialog(self.Spritz, self.Entropy, licenses)
+                accept = dialog.run()
+                dialog.destroy()
+                return accept,licenses
+            finally:
+                gtk.gdk.threads_leave()
         else:
             return 0,licenses
 

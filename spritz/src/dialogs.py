@@ -5849,13 +5849,15 @@ class MessageDialog:
         dialog.destroy()
 
 class LicenseDialog:
-    def __init__( self, parent, licenses, entropy ):
+    def __init__( self, spritz_app, entropy, licenses ):
 
+        self.parent = spritz_app.ui.main
+        self.Spritz = spritz_app
         self.Entropy = entropy
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="entropy" )
         self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="entropy" )
         self.dialog = self.xml.get_widget( "licenseWindow" )
-        self.dialog.set_transient_for( parent )
+        self.dialog.set_transient_for( self.parent )
         self.read_dialog = self.xml_licread.get_widget( "licenseReadWindow" )
         self.read_dialog.connect( 'delete-event', self.close_read_text_window )
         #self.read_dialog.set_transient_for( self.dialog )
