@@ -2213,9 +2213,9 @@ class SpritzApplication(Controller):
         self.setPage('output')
         self.startWorking()
         status = self.updateRepositories(repos)
-        # clear cache here too
         self.endWorking()
-        self.etpbase.clearCache()
+        self.progress.reset_progress()
+        self.resetSpritzCacheStatus()
         self.setupRepoView()
         self.setupSpritz()
         self.setupAdvisories()
