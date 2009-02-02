@@ -595,13 +595,12 @@ class EntropyPackageView:
     def do_remove(self, action, do_purge):
 
         busyCursor(self.main_window)
-
         new_objs = []
 
         for obj in self.selected_objs:
             if obj.installed_match:
                 obj, new = self.etpbase.getPackageItem(obj.installed_match,True)
-            new_objs.append(obj)
+                new_objs.append(obj)
 
         q_cache = {}
         for obj in self.selected_objs+new_objs:
@@ -611,9 +610,9 @@ class EntropyPackageView:
                 obj.do_purge = do_purge
 
         if action:
-            status = self.add_to_queue(new_objs, action)
+            status = self.add_to_queue(self.selected_objs+new_objs, action)
         else:
-            status = self.remove_queued(new_objs)
+            status = self.remove_queued(self.selected_objs+new_objs)
         if status != 0:
             for obj in self.selected_objs+new_objs:
                 queued, do_purge = q_cache[obj.matched_atom]
@@ -622,6 +621,7 @@ class EntropyPackageView:
 
         self.queueView.refresh()
         normalCursor(self.main_window)
+        self.view.queue_draw()
 
     def on_remove_activate(self, widget, do_purge = False):
         return self.do_remove("r", do_purge)
