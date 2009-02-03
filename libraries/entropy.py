@@ -13996,8 +13996,9 @@ class SocketHostInterface:
                         )
                     )
                     # print exception
-                    self.entropyTools.printTraceback()
-                    self.entropyTools.printTraceback(f = self.server.processor.HostInterface.socketLog)
+                    tb = self.entropyTools.getTraceback()
+                    print tb
+                    self.server.processor.HostInterface.socketLog.write(tb)
                     break
 
             self.request.close()
@@ -14150,8 +14151,9 @@ class SocketHostInterface:
                             e,
                         )
                     )
-                    self.entropyTools.printTraceback()
-                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    tb = self.entropyTools.getTraceback()
+                    print tb
+                    self.server.processor.HostInterface.socketLog.write(tb)
                     return "close"
                 except Exception, e:
                     self.HostInterface.updateProgress(
@@ -14160,8 +14162,9 @@ class SocketHostInterface:
                             e,
                         )
                     )
-                    self.entropyTools.printTraceback()
-                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    tb = self.entropyTools.getTraceback()
+                    print tb
+                    self.server.processor.HostInterface.socketLog.write(tb)
                     return "close"
 
             p_args = args
@@ -14227,8 +14230,9 @@ class SocketHostInterface:
                     return "close"
                 except Exception, e:
                     # write to self.HostInterface.socketLog
-                    self.entropyTools.printTraceback()
-                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    tb = self.entropyTools.getTraceback()
+                    print tb
+                    self.HostInterface.socketLog.write(tb)
                     # store error
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: %s, type: %s' % (
@@ -21345,8 +21349,9 @@ class RepositorySocketServerInterface(SocketHostInterface):
                         trigger_unicode = True
                     )
                 except:
-                    self.entropyTools.printTraceback()
-                    self.entropyTools.printTraceback(f = self.HostInterface.socketLog)
+                    tb = self.entropyTools.getTraceback()
+                    print tb
+                    self.HostInterface.socketLog.write(tb)
                     dbconn.closeDB()
                     return None
                 result[idpackage] = mydata.copy()
