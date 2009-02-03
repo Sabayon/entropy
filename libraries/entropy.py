@@ -329,10 +329,10 @@ class EntropyCacher:
     def __init__(self):
         self.alive = False
         self.CacheBuffer = self.entropyTools.lifobuffer()
-        self.CacheWriter = self.entropyTools.TimeScheduled(self.Cacher,1)
         self.CacheLock = self.threading.Lock()
 
     def start(self):
+        self.CacheWriter = self.entropyTools.TimeScheduled(self.Cacher,1)
         self.CacheWriter.delay_before = True
         self.CacheWriter.start()
         while not self.CacheWriter.isAlive():
@@ -376,6 +376,7 @@ class EntropyCacher:
         self.stop()
 
     def stop(self):
+        if not self.alive: return
         if hasattr(self,"CacheBuffer"):
             if self.CacheBuffer and self.alive:
                 wd = 20
@@ -1138,12 +1139,14 @@ class EquoInterface(TextInterface):
                 )
 
     def generate_cache(self, depcache = True, configcache = True, client_purge = True, install_queue = True):
+        self.Cacher.stop()
         # clean first of all
         self.purge_cache(client_purge = client_purge)
         if depcache:
             self.do_depcache(do_install_queue = install_queue)
         if configcache:
             self.do_configcache()
+        self.Cacher.start()
 
     def do_configcache(self):
         self.updateProgress(

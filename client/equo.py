@@ -631,6 +631,8 @@ try:
         rc = 10
     else:
         writeerrorstatus(0)
+
+    entropyTools.kill_threads()
     raise SystemExit(rc)
 
 except exceptionTools.SystemDatabaseError:
