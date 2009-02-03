@@ -1499,14 +1499,17 @@ def const_setup_file(myfile, gid, chmod):
     cur_gid = os.stat(myfile)[stat.ST_GID]
     if cur_gid != gid:
         os.chown(myfile,-1,gid)
-    cur_mod = const_get_chmod(myfile)
-    if cur_mod != oct(chmod):
-        os.chmod(myfile,chmod)
+        const_set_chmod(myfile,chmod)
 
 # you need to convert to int
 def const_get_chmod(item):
     st = os.stat(item)[stat.ST_MODE]
     return oct(st & 0777)
+
+def const_set_chmod(myfile, chmod):
+    cur_mod = const_get_chmod(myfile)
+    if cur_mod != oct(chmod):
+        os.chmod(myfile,chmod)
 
 def const_get_entropy_gid():
     group_file = os.path.join(etpConst['systemroot'],'/etc/group')

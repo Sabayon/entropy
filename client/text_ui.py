@@ -171,8 +171,9 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 except Exception, e:
                     print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
                     status = False
-                rc = repoConn.sync()
-                if rc: status = False
+                if status:
+                    rc = repoConn.sync()
+                    if rc: status = False
                 if not status:
                     Equo.move_to_branch(old_branch, pretend = etpUi['pretend'])
                     return 1,-2

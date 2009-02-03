@@ -7006,10 +7006,11 @@ class RepoInterface:
 
         session = eapi3_interface.open_session()
 
+        # AttributeError because mydbconn can be == None
         try:
             mydbconn = self.get_eapi3_local_database(repo)
             myidpackages = mydbconn.listAllIdpackages()
-        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,AttributeError,):
             prepare_exit(eapi3_interface, session)
             return False
 
@@ -19197,7 +19198,13 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if os.path.dirname(file_path) != dest_dir:
             shutil.move(file_path,dest_path)
         if etpConst['entropygid'] != None:
-            const_setup_file(dest_path, etpConst['entropygid'], 0664)
+            try:
+                const_setup_file(dest_path, etpConst['entropygid'], 0664)
+            except OSError:
+                pass
+            # at least set chmod
+            try: const_set_chmod(dest_path,0664)
+            except OSError: pass
 
         title = title[:self.entropy_docs_title_len]
         description = description[:self.entropy_docs_description_len]
