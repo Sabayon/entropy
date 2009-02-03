@@ -342,8 +342,7 @@ class EntropyCacher:
     def sync(self, wait = False):
         if not self.alive: return
         wd = 10
-        filled = self.CacheBuffer.is_filled()
-        while filled and ((wd > 0) or wait):
+        while self.CacheBuffer.is_filled() and ((wd > 0) or wait):
             if not wait: wd -= 1
             time.sleep(0.5)
 
