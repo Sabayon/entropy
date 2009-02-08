@@ -89,7 +89,6 @@ class urlFetcher:
             self.localfile = open(self.path_to_save,"wb")
 
     def setup_proxy(self):
-
         # setup proxy, doing here because config is dynamic
         mydict = {}
         if etpConst['proxy']['ftp']:
