@@ -1,4 +1,4 @@
-#!/usr/bin/python -O
+#!/usr/bin/python2 -O
 '''
     # DESCRIPTION:
     # Entropy Package Manager client

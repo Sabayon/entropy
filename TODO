@@ -1,6 +1,11 @@
 TODO list
 
-Proposed for Entropy ~1.0 (before and after) (requires API changes, perhaps):
+    - emerge --config support?
+    - etp-applet notifier position
+
+Proposed for Entropy 0.6+ (before and after) (requires API changes, perhaps):
+
+  - repositories.conf => repositories.conf.example pkg_postinst
   - Documentation + man page (NLnet Milestone 7)
   - System Package Set representing what's inside a stock distribution
     - Connect Smart applications to it to filter out common deps and eventually make it usable

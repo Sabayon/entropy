@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2 -O
 '''
     # DESCRIPTION:
     # Entropy mirrors syncing manager

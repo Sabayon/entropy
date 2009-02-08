@@ -4748,13 +4748,11 @@ class PackageInterface:
     @description: function that runs at the end of the package installation process, just removes data left by other steps
     @output: 0 = all fine, >0 = error!
     '''
-    def __cleanup_package(self, unpack_dir):
+    def _cleanup_package(self, unpack_dir):
         # remove unpack dir
         shutil.rmtree(unpack_dir,True)
-        try:
-            os.rmdir(unpack_dir)
-        except OSError:
-            pass
+        try: os.rmdir(unpack_dir)
+        except OSError: pass
         return 0
 
     def __remove_package_from_database(self):
@@ -5220,8 +5218,7 @@ class PackageInterface:
                         type = "warning",
                         header = red(" !!! ")
                     )
-                    self.Entropy.entropyTools.ebeep(10)
-                    time.sleep(20)
+                    self.Entropy.entropyTools.ebeep(20)
                     os.remove(rootdir)
 
                 # if our directory is a symlink instead, then copy the symlink
@@ -5686,9 +5683,7 @@ class PackageInterface:
             type = "info",
             header = red("   ## ")
         )
-        task = self.Entropy.entropyTools.parallelTask(self.__cleanup_package, self.infoDict['unpackdir'])
-        task.parallel_wait()
-        task.start()
+        self._cleanup_package(self.infoDict['unpackdir'])
         # we don't care if cleanupPackage fails since it's not critical
         return 0
 
@@ -5743,16 +5738,17 @@ class PackageInterface:
 
             Trigger = self.Entropy.Triggers('preinstall',pkgdata, self.action)
             Trigger.prepare()
-            if (self.infoDict.get("diffremoval") != None): # diffremoval is true only when the remove action is triggered by installPackages()
-                if self.infoDict['diffremoval']:
-                    remdata = self.infoDict['triggers'].get('remove')
-                    if remdata:
-                        rTrigger = self.Entropy.Triggers('preremove',remdata, self.action)
-                        rTrigger.prepare()
-                        Trigger.triggers = [x for x in Trigger.triggers if x not in rTrigger.triggers]
-                        rTrigger.kill()
-                        del rTrigger
-                    del remdata
+            if self.infoDict.get("diffremoval"):
+                # diffremoval is true only when the
+                # removal is triggered by a package install
+                remdata = self.infoDict['triggers'].get('remove')
+                if remdata:
+                    rTrigger = self.Entropy.Triggers('preremove',remdata, self.action)
+                    rTrigger.prepare()
+                    Trigger.triggers = [x for x in Trigger.triggers if x not in rTrigger.triggers]
+                    rTrigger.kill()
+                    del rTrigger
+                del remdata
             Trigger.run()
             Trigger.kill()
             del Trigger
@@ -6145,10 +6141,12 @@ class PackageInterface:
         if self.infoDict['conflicts']:
             self.infoDict['steps'].append("remove_conflicts")
         # install
+        self.infoDict['steps'].append("unpack")
+        # preinstall placed before preremove in order
+        # to respect Spm order
+        self.infoDict['steps'].append("preinstall")
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("preremove")
-        self.infoDict['steps'].append("unpack")
-        self.infoDict['steps'].append("preinstall")
         self.infoDict['steps'].append("install")
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("postremove")
