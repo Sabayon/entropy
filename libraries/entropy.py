@@ -6530,10 +6530,10 @@ class RepoInterface:
             raise exceptionTools.MissingParameter("MissingParameter: %s" % (mytxt,))
 
         # Test network connectivity
-        conntest = self.entropyTools.get_remote_data(etpConst['conntestlink'])
-        if not conntest:
-            mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
+        #conntest = self.entropyTools.get_remote_data(etpConst['conntestlink'])
+        #if not conntest:
+        #    mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
+        #    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         if not self.reponames:
             self.reponames.extend(etpRepositories.keys()[:])
@@ -11590,10 +11590,10 @@ class SecurityInterface:
         )
 
         # Test network connectivity
-        conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
-        if not conntest:
-            mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
-            raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
+        #conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
+        #if not conntest:
+        #    mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
+        #    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         mytxt = "%s: %s %s" % (bold(_("Security Advisories")),blue(_("getting latest GLSAs")),red("..."),)
         self.Entropy.updateProgress(

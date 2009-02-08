@@ -632,7 +632,7 @@ def const_defaultSettings(rootdir):
         'libtest_files_blacklist': [],
         'officialserverrepositoryid': "sabayonlinux.org", # our official repository name
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
-        'conntestlink': "http://www.google.com",
+        #'conntestlink': "http://www.google.com",
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'pidfile': ETP_DIR+"/entropy.pid",
         'applicationlock': False,
@@ -939,9 +939,9 @@ def const_readRepositoriesSettings():
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
 
-            elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
-                conntestlink = line.split("|")[1]
-                etpConst['conntestlink'] = conntestlink
+            #elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+            #    conntestlink = line.split("|")[1]
+            #    etpConst['conntestlink'] = conntestlink
 
             elif (line.find("downloadspeedlimit|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 try:

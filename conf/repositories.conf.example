@@ -56,14 +56,6 @@ branch|3.5
 officialrepositoryid|sabayonlinux.org
 
 #
-#  syntax for conntestlink:
-#
-#    conntestlink: URL which Equo/Entropy can use to test Internet connection availability
-#    conntestlink|<connection test url>
-#
-conntestlink|http://svn.sabayonlinux.org
-
-#
 #  syntax for downloadspeedlimit:
 #
 #    downloadspeedlimit: If you need a way to limit download speed, this is the option you were looking for
