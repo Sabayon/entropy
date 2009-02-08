@@ -46,7 +46,7 @@ except ImportError: # fallback to embedded pysqlite
 
 class urlFetcher:
 
-    def __init__(self, url, path_to_save, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
+    def __init__(self, url, path_to_save, checksum = True, show_speed = True, resume = True, abort_check_func = None, disallow_redirect = False):
 
         import entropyTools, socket
         self.entropyTools, self.socket = entropyTools, socket
@@ -55,7 +55,7 @@ class urlFetcher:
         self.url = self.encode_url(self.url)
         self.path_to_save = path_to_save
         self.checksum = checksum
-        self.showSpeed = showSpeed
+        self.show_speed = show_speed
         self.init_vars()
         self.progress = None
         self.abort_check_func = abort_check_func
@@ -227,13 +227,13 @@ class urlFetcher:
                 self.status = "-3"
                 return self.status
             self.commit(rsx)
-            if self.showSpeed:
+            if self.show_speed:
                 self.updateProgress()
                 self.oldaverage = self.average
             if self.speedlimit:
                 while self.datatransfer > self.speedlimit*1024:
                     time.sleep(0.1)
-                    if self.showSpeed:
+                    if self.show_speed:
                         self.updateProgress()
                         self.oldaverage = self.average
 
@@ -305,7 +305,7 @@ class urlFetcher:
             while diffbarsize > 0:
                 bartext += " "
                 diffbarsize -= 1
-            if self.showSpeed:
+            if self.show_speed:
                 bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(self.datatransfer),)
                 bartext += "/%s : %s: %s" % (sec_txt,eta_txt,self.time_remaining,)
             else:
@@ -11181,10 +11181,10 @@ class SecurityInterface:
         return self.__generic_download(self.security_url, self.download_package)
 
     def __download_glsa_package_checksum(self):
-        return self.__generic_download(self.security_url_checksum, self.download_package_checksum, showSpeed = False)
+        return self.__generic_download(self.security_url_checksum, self.download_package_checksum, show_speed = False)
 
-    def __generic_download(self, url, save_to, showSpeed = True):
-        fetchConn = self.Entropy.urlFetcher(url, save_to, resume = False, showSpeed = showSpeed)
+    def __generic_download(self, url, save_to, show_speed = True):
+        fetchConn = self.Entropy.urlFetcher(url, save_to, resume = False, show_speed = show_speed)
         fetchConn.progress = self.Entropy.progress
         rc = fetchConn.download()
         del fetchConn
