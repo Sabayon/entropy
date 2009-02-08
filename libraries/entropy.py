@@ -10652,15 +10652,11 @@ class SystemSettings:
     def __getitem__(self, mykey):
         with self.L:
             if self.__settings == None: self.scan()
-            if mykey in self.__persistent_settings: # backup here too
-                return self.__persistent_settings[mykey]
             return self.__settings[mykey]
 
     def __contains__(self, mykey):
         with self.L:
             if self.__settings == None: self.scan()
-            here = mykey in self.__persistent_settings
-            if here: return here
             return mykey in self.__settings
 
     def __cmp__(self, other):
@@ -10668,18 +10664,14 @@ class SystemSettings:
             if self.__settings == None: self.scan()
             return cmp(self.__settings,other)
 
-    def get(self, mykey):
+    def get(self, mykey, default = None):
         with self.L:
             if self.__settings == None: self.scan()
-            if mykey in self.__persistent_settings:
-                return self.__persistent_settings.get(mykey)
-            return self.__settings.get(mykey)
+            return self.__settings.get(mykey, default = default)
 
     def has_key(self, mykey):
         with self.L:
             if self.__settings == None: self.scan()
-            here = mykey in self.__persistent_settings
-            if here: return True
             return mykey in self.__settings
 
     def clear(self):
@@ -10688,7 +10680,48 @@ class SystemSettings:
 
     def keys(self):
         with self.L:
+            if self.__settings == None: self.scan()
             return self.__settings.keys()
+
+    def items(self):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.items()
+
+    def iteritems(self):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.iteritems()
+
+    def iterkeys(self):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.iterkeys()
+
+    def popitem(self):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.popitem()
+
+    def setdefault(self, key, default = None):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.setdefault(key, default)
+
+    def values(self):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.values()
+
+    def copy(self):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.copy()
+
+    def fromkeys(self, seq, value = None):
+        with self.L:
+            if self.__settings == None: self.scan()
+            return self.__settings.fromkeys(seq, value)
 
     def parse(self):
 
