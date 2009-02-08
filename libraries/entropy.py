@@ -46,27 +46,28 @@ except ImportError: # fallback to embedded pysqlite
 
 class urlFetcher:
 
-    def __init__(self, url, pathToSave, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
+    def __init__(self, url, path_to_save, checksum = True, showSpeed = True, resume = True, abort_check_func = None, disallow_redirect = False):
 
         import entropyTools, socket
         self.entropyTools, self.socket = entropyTools, socket
         self.url = url
         self.resume = resume
-        self.url = self.encodeUrl(self.url)
-        self.pathToSave = pathToSave
+        self.url = self.encode_url(self.url)
+        self.path_to_save = path_to_save
         self.checksum = checksum
         self.showSpeed = showSpeed
-        self.initVars()
+        self.init_vars()
         self.progress = None
         self.abort_check_func = abort_check_func
         self.disallow_redirect = disallow_redirect
+        uname = os.uname()
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
-                                        etpConst['entropyversion'],
-                                        "Entropy",
-                                        os.path.basename(self.url),
-                                        os.uname()[0],
-                                        os.uname()[4],
-                                        os.uname()[2],
+            etpConst['entropyversion'],
+            "Entropy",
+            os.path.basename(self.url),
+            uname[0],
+            uname[4],
+            uname[2],
         )
         self.extra_header_data = {}
         self.setup_resume_support()
@@ -74,18 +75,18 @@ class urlFetcher:
 
     def setup_resume_support(self):
         # resume support
-        if os.path.isfile(self.pathToSave) and os.access(self.pathToSave,os.R_OK) and self.resume:
-            self.localfile = open(self.pathToSave,"awb")
+        if os.path.isfile(self.path_to_save) and os.access(self.path_to_save,os.R_OK) and self.resume:
+            self.localfile = open(self.path_to_save,"awb")
             self.localfile.seek(0,2)
             self.startingposition = int(self.localfile.tell())
             self.resumed = True
         else:
-            if os.path.lexists(self.pathToSave) and not self.entropyTools.is_valid_path(self.pathToSave):
+            if os.path.lexists(self.path_to_save) and not self.entropyTools.is_valid_path(self.path_to_save):
                 try:
-                    os.remove(self.pathToSave)
+                    os.remove(self.path_to_save)
                 except OSError: # I won't stop you here
                     pass
-            self.localfile = open(self.pathToSave,"wb")
+            self.localfile = open(self.path_to_save,"wb")
 
     def setup_proxy(self):
 
@@ -103,12 +104,12 @@ class urlFetcher:
             # unset
             urllib2._opener = None
 
-    def encodeUrl(self, url):
+    def encode_url(self, url):
         import urllib
         url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
         return url
 
-    def initVars(self):
+    def init_vars(self):
         self.resumed = False
         self.bufferSize = 8192
         self.status = None
@@ -127,17 +128,14 @@ class urlFetcher:
         self.transferpollingtime = float(1)/4
 
     def download(self):
-        self.initVars()
+        self.init_vars()
         self.speedUpdater = self.entropyTools.TimeScheduled(
-                    self.updateSpeedInfo,
-                    self.transferpollingtime
+            self.update_speed,
+            self.transferpollingtime
         )
-        self.speedUpdater.setName("download::"+self.url+str(abs(hash(os.urandom(20))))) # set unique ID to thread, hopefully
         self.speedUpdater.start()
-
         # set timeout
         self.socket.setdefaulttimeout(20)
-
 
         if self.url.startswith("http://"):
             headers = { 'User-Agent' : self.user_agent }
@@ -168,7 +166,6 @@ class urlFetcher:
                 return self.status
             break
 
-
         try:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
             self.remotefile.close()
@@ -197,7 +194,7 @@ class urlFetcher:
             elif (self.startingposition == self.remotesize):
                 return self.prepare_return()
             else:
-                self.localfile = open(self.pathToSave,"wb")
+                self.localfile = open(self.path_to_save,"wb")
             self.remotefile = urllib2.urlopen(request)
         except KeyboardInterrupt:
             self.close()
@@ -215,10 +212,10 @@ class urlFetcher:
             self.status = "-3"
             return self.status
 
-        rsx = "x"
-        while rsx != '':
+        while 1:
             try:
                 rsx = self.remotefile.read(self.bufferSize)
+                if rsx == '': break
                 if self.abort_check_func != None:
                     self.abort_check_func()
             except KeyboardInterrupt:
@@ -229,7 +226,7 @@ class urlFetcher:
                 self.close()
                 self.status = "-3"
                 return self.status
-            self.commitData(rsx)
+            self.commit(rsx)
             if self.showSpeed:
                 self.updateProgress()
                 self.oldaverage = self.average
@@ -242,25 +239,47 @@ class urlFetcher:
 
         # kill thread
         self.close()
-
         return self.prepare_return()
 
 
     def prepare_return(self):
         if self.checksum:
-            self.status = self.entropyTools.md5sum(self.pathToSave)
+            self.status = self.entropyTools.md5sum(self.path_to_save)
             return self.status
         else:
             self.status = "-2"
             return self.status
 
-    def commitData(self, mybuffer):
+    def commit(self, mybuffer):
         # writing file buffer
         self.localfile.write(mybuffer)
         # update progress info
         self.downloadedsize = self.localfile.tell()
         kbytecount = float(self.downloadedsize)/1024
         self.average = int((kbytecount/self.remotesize)*100)
+
+    def close(self):
+        try:
+            self.localfile.flush()
+            self.localfile.close()
+        except:
+            pass
+        try:
+            self.remotefile.close()
+        except:
+            pass
+        self.speedUpdater.kill()
+        self.socket.setdefaulttimeout(2)
+
+    def update_speed(self):
+        self.elapsed += self.transferpollingtime
+        # we have the diff size
+        self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
+        try:
+            self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
+            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
+        except:
+            self.time_remaining = "(%s)" % (_("infinite"),)
 
     def updateProgress(self):
 
@@ -296,30 +315,6 @@ class urlFetcher:
                 average = " "+average
             currentText += " <->  "+average+"% "+bartext
             print_info(currentText,back = True)
-
-
-    def close(self):
-        try:
-            self.localfile.flush()
-            self.localfile.close()
-        except:
-            pass
-        try:
-            self.remotefile.close()
-        except:
-            pass
-        self.speedUpdater.kill()
-        self.socket.setdefaulttimeout(2)
-
-    def updateSpeedInfo(self):
-        self.elapsed += self.transferpollingtime
-        # we have the diff size
-        self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
-        try:
-            self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
-            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
-        except:
-            self.time_remaining = "(%s)" % (_("infinite"),)
 
 class EntropyCacher:
 
