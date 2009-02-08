@@ -28496,7 +28496,7 @@ class ServerMirrorsInterface:
 
         database_package_system_mask_file = self.Entropy.get_local_database_system_mask_file(repo)
         if os.path.isfile(database_package_system_mask_file) or download:
-            data['database_package_system_mask_file'] = database_package_mask_file
+            data['database_package_system_mask_file'] = database_package_system_mask_file
             if not download:
                 critical.append(data['database_package_system_mask_file'])
 
