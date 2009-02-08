@@ -10667,7 +10667,7 @@ class SystemSettings:
     def get(self, mykey, default = None):
         with self.L:
             if self.__settings == None: self.scan()
-            return self.__settings.get(mykey, default = default)
+            return self.__settings.get(mykey, default)
 
     def has_key(self, mykey):
         with self.L:
