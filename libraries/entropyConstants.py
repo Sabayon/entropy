@@ -475,6 +475,8 @@ def initConfig_entropyConstants(rootdir):
     etpConst['backed_up'] = backed_up_settings.copy()
     const_setupWithEnvironment()
 
+    sys.excepthook = const_HandleException
+
 def initConfig_clientConstants():
     const_readEquoSettings()
 
@@ -632,7 +634,7 @@ def const_defaultSettings(rootdir):
         'libtest_files_blacklist': [],
         'officialserverrepositoryid': "sabayonlinux.org", # our official repository name
         'officialrepositoryid': "sabayonlinux.org", # our official repository name
-        #'conntestlink': "http://www.google.com",
+        'conntestlink': "http://www.sabayonlinux.org",
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|", # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'pidfile': ETP_DIR+"/entropy.pid",
         'applicationlock': False,
@@ -673,6 +675,7 @@ def const_defaultSettings(rootdir):
             'exec': rootdir+"/usr/bin/emerge", # source package manager executable
             'env_update_cmd': rootdir+"/usr/sbin/env-update",
             'source_profile': ["source",rootdir+"/etc/profile"],
+            'source_build_ext': ".ebuild",
             'ask_cmd': "--ask",
             'info_cmd': "--info",
             'remove_cmd': "-C",
@@ -938,10 +941,6 @@ def const_readRepositoriesSettings():
             elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
-
-            #elif (line.find("conntestlink|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
-            #    conntestlink = line.split("|")[1]
-            #    etpConst['conntestlink'] = conntestlink
 
             elif (line.find("downloadspeedlimit|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
                 try:
@@ -1564,6 +1563,14 @@ def const_islive():
     if "cdroot" in cmdline:
         return True
     return False
+
+def const_HandleException(etype, value, tb):
+    try:
+        import entropyTools
+        entropyTools.kill_threads()
+    except ImportError:
+        pass
+    return sys.__excepthook__(etype, value, tb)
 
 # load config
 initConfig_entropyConstants(etpSys['rootdir'])

@@ -128,6 +128,14 @@ def package(options):
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
+
+    elif (options[0] == "config"):
+        if myopts:
+            status, rc = configurePackages(myopts)
+        else:
+            print_error(red(" %s." % (_("Nothing to do"),) ))
+            rc = 127
+
     else:
         rc = -10
 
@@ -1039,6 +1047,85 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     dirscleanup()
     return 0,0
 
+def configurePackages(packages = []):
+
+    # check if I am root
+    if (not Equo.entropyTools.isRoot()):
+        mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
+        print_warning(mytxt)
+        etpUi['pretend'] = True
+
+    foundAtoms = []
+    packages = Equo.packagesExpand(packages)
+
+    for package in packages:
+        idpackage, result = Equo.clientDbconn.atomMatch(package)
+        if idpackage == -1:
+            mytxt = "## %s: %s %s." % (
+                red(_("ATTENTION")),
+                bold(unicode(package,'raw_unicode_escape')),
+                red(_("is not installed")),
+            )
+            print_warning(mytxt)
+            if len(package) < 4:
+                continue
+            items = Equo.get_meant_packages(package, from_installed = True)
+            if items:
+                items_cache = set()
+                mytxt = "%s %s %s %s %s" % (
+                    bold("   ?"),
+                    red(_("When you wrote")),
+                    bold(package),
+                    darkgreen(_("You Meant(tm)")),
+                    red(_("one of these below?")),
+                )
+                print_info(mytxt)
+                for match in items:
+                    key, slot = Equo.clientDbconn.retrieveKeySlot(match[0])
+                    if (key,slot) not in items_cache:
+                        print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
+                    items_cache.add((key, slot))
+                del items_cache
+            continue
+        foundAtoms.append(idpackage)
+
+    if not foundAtoms:
+        print_error(red("%s." % (_("No packages found"),) ))
+        return 125,-1
+
+    atomscounter = 0
+    totalatoms = len(foundAtoms)
+    for idpackage in foundAtoms:
+        atomscounter += 1
+
+        # get needed info
+        pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
+        if not pkgatom: continue
+
+        installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+        mytxt = " | %s: " % (_("Installed from"),)
+        print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+mytxt+red(installedfrom))
+
+    if etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']:
+        print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
+
+    if etpUi['ask']:
+        rc = Equo.askQuestion(question = "     %s" % (_("Would you like to configure them now ?"),))
+        if rc == "No":
+            return 0,0
+
+    totalqueue = str(len(foundAtoms))
+    currentqueue = 0
+    for idpackage in foundAtoms:
+        currentqueue += 1
+        xterm_header = "Equo (configure) :: "+str(currentqueue)+" of "+totalqueue+" ::"
+        Package = Equo.Package()
+        Package.prepare((idpackage,),"config")
+        rc = Package.run(xterm_header = xterm_header)
+        if rc not in (0,3,): return -1,rc
+        Package.kill()
+
+    return 0,0
 
 def removePackages(packages = [], atomsdata = [], deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False, human = False):
 

@@ -123,9 +123,16 @@ myopts = [
     (2,'--pretend',1,_('just show what would be done')),
     None,
     (1,'remove',2,_('remove one or more packages')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
+    (2,'--nodeps',1,_('do not pull in any dependency')),
     (2,'--deep',2,_('also pull unused dependencies where depends list is empty')),
     (2,'--configfiles',1,_('makes configuration files to be removed')),
     (2,'--resume',1,_('resume previously interrupted operations')),
+    None,
+    (1,'config',2,_('configure one or more installed packages')),
+    (2,'--ask',2,_('ask before making any changes')),
+    (2,'--pretend',1,_('just show what would be done')),
     None,
     (1,'deptest',2,_('look for unsatisfied dependencies')),
     (2,'--quiet',2,_('show less details (useful for scripting)')),
@@ -434,7 +441,7 @@ try:
     elif options[0] == "moo":
         do_moo()
 
-    elif options[0] in ["install","remove","world","deptest","unusedpackages","libtest","source"]:
+    elif options[0] in ["install","remove","config","world","deptest","unusedpackages","libtest","source"]:
         import text_ui
         rc = text_ui.package(options)
         text_ui.Equo.destroy()
@@ -719,18 +726,12 @@ except:
         raise SystemExit(1)
 
     print
-    print_error(blue(_("Ok, back here. Let me see if you are connected to the Internet. Yes, I am blue now, so?")))
 
-    conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
-    if (conntest != False):
-        print_error(darkgreen(_("Of course you are on the Internet...")))
-        rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
-        if rc == "No":
-            print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
-            raise SystemExit(2)
-    else:
-        print_error(darkgreen(_("Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
-        raise SystemExit(3)
+    print_error(darkgreen(_("Of course you are on the Internet...")))
+    rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
+    if rc == "No":
+        print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
+        raise SystemExit(2)
 
     print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
     name = readtext(_("Your Full name:"))

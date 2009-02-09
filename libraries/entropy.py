@@ -182,7 +182,7 @@ class urlFetcher:
                     request = urllib2.Request(
                         self.url,
                         headers = {
-                            "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize) 
+                            "Range" : "bytes=" + str(self.startingposition) + "-" + str(self.remotesize)
                         }
                     )
                 except KeyboardInterrupt:
@@ -4310,6 +4310,7 @@ class EquoInterface(TextInterface):
 '''
 class PackageInterface:
 
+    import entropyTools
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,EquoInterface):
@@ -4319,7 +4320,7 @@ class PackageInterface:
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
-        self.valid_actions = ("source","fetch","remove","remove_conflict","install")
+        self.valid_actions = ("source","fetch","remove","remove_conflict","install","config")
         self.action = None
         self.fetch_abort_function = None
         self.xterm_title = ''
@@ -4415,8 +4416,6 @@ class PackageInterface:
     '''
     def __unpack_package(self):
 
-        self.error_on_not_prepared()
-
         if not self.infoDict['merge_from']:
             self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
         else:
@@ -4442,8 +4441,8 @@ class PackageInterface:
             while 1:
                 unpack_tries -= 1
                 try:
-                    rc = self.Entropy.entropyTools.spawnFunction(
-                        self.Entropy.entropyTools.uncompressTarBz2,
+                    rc = self.entropyTools.spawnFunction(
+                        self.entropyTools.uncompressTarBz2,
                         self.infoDict['pkgpath'],
                         self.infoDict['imagedir'],
                         catchEmpty = True
@@ -4454,7 +4453,7 @@ class PackageInterface:
                 except (UnicodeEncodeError,UnicodeDecodeError,):
                     # this will make devs to actually catch the right exception and prepare a fix
                     self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Raising Unicode Error for "+self.infoDict['pkgpath'])
-                    rc = self.Entropy.entropyTools.uncompressTarBz2(
+                    rc = self.entropyTools.uncompressTarBz2(
                         self.infoDict['pkgpath'],self.infoDict['imagedir'],
                         catchEmpty = True
                     )
@@ -4499,7 +4498,7 @@ class PackageInterface:
                         f.write(xpakdata)
                         f.flush()
                         f.close()
-                        self.infoDict['xpakstatus'] = self.Entropy.entropyTools.unpackXpak(
+                        self.infoDict['xpakstatus'] = self.entropyTools.unpackXpak(
                             xpakPath,
                             self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
                         )
@@ -4507,7 +4506,7 @@ class PackageInterface:
                         self.infoDict['xpakstatus'] = None
                     del xpakdata
                 else:
-                    self.infoDict['xpakstatus'] = self.Entropy.entropyTools.extractXpak(
+                    self.infoDict['xpakstatus'] = self.entropyTools.extractXpak(
                         self.infoDict['pkgpath'],
                         self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
                     )
@@ -4531,6 +4530,63 @@ class PackageInterface:
 
         return 0
 
+    def __configure_package(self):
+
+        try: Spm = self.Entropy.Spm()
+        except: return 1
+
+        spm_atom = self.infoDict['key']+"-"+self.infoDict['version']
+        myebuild = Spm.get_vdb_path()+spm_atom+"/"+self.infoDict['key'].split("/")[1]+"-"+self.infoDict['version']+etpConst['spm']['source_build_ext']
+        if not os.path.isfile(myebuild):
+            return 2
+
+        self.Entropy.updateProgress(
+            brown(" Ebuild: pkg_config()"),
+            importance = 0,
+            header = red("   ##")
+        )
+
+        try:
+            rc = Spm.spm_doebuild(
+                myebuild,
+                mydo = "config",
+                tree = "bintree",
+                cpv = spm_atom
+            )
+            if rc == 1:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[PRE] ATTENTION Cannot properly run Spm pkg_config() for " + \
+                    str(spm_atom)+". Something bad happened."
+                )
+                return 3
+        except Exception, e:
+            self.entropyTools.printTraceback()
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "[PRE] ATTENTION Cannot run Spm pkg_config() for "+spm_atom+"!! "+str(type(Exception))+": "+str(e)
+            )
+            mytxt = "%s: %s %s. %s. %s: %s, %s" % (
+                bold(_("QA")),
+                brown(_("Cannot run Spm pkg_config() for")),
+                bold(str(spm_atom)),
+                brown(_("Please report it")),
+                bold(_("Error")),
+                type(Exception),
+                e,
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            return 1
+
+        return 0
+
+
     def __remove_package(self):
 
         # clear on-disk cache
@@ -4551,7 +4607,7 @@ class PackageInterface:
 
         # Handle gentoo database
         if (etpConst['gentoo-compat']):
-            gentooAtom = self.Entropy.entropyTools.remove_tag(self.infoDict['removeatom'])
+            gentooAtom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
             self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
             self.__remove_package_from_gentoo_database(gentooAtom)
             del gentooAtom
@@ -4701,7 +4757,7 @@ class PackageInterface:
 
         portDbDir = Spm.get_vdb_path()
         removePath = portDbDir+atom
-        key = self.Entropy.entropyTools.dep_getkey(atom)
+        key = self.entropyTools.dep_getkey(atom)
         others_installed = Spm.search_keys(key)
         slot = self.infoDict['slot']
         tag = self.infoDict['versiontag']
@@ -4834,7 +4890,7 @@ class PackageInterface:
                         # remove and old install
                         if self.infoDict['removeidpackage'] != -1:
                             taint = False
-                            key = self.Entropy.entropyTools.dep_getkey(self.infoDict['removeatom'])
+                            key = self.entropyTools.dep_getkey(self.infoDict['removeatom'])
                             slot = self.infoDict['slot']
                             matches = self.Entropy.atomMatch(key, matchSlot = slot, multiRepo = True, multiMatch = True)
                             if matches[1] == 0:
@@ -4959,7 +5015,7 @@ class PackageInterface:
             dbdirs = os.listdir(portDbDir)
             if self.infoDict['category'] in dbdirs:
                 catdirs = os.listdir(portDbDir+"/"+self.infoDict['category'])
-                dirsfound = set([self.infoDict['category']+"/"+x for x in catdirs if key == self.Entropy.entropyTools.dep_getkey(self.infoDict['category']+"/"+x)])
+                dirsfound = set([self.infoDict['category']+"/"+x for x in catdirs if key == self.entropyTools.dep_getkey(self.infoDict['category']+"/"+x)])
                 atomsfound.update(dirsfound)
 
             ### REMOVE
@@ -5072,7 +5128,7 @@ class PackageInterface:
             try:
                 if keyslot not in world_atoms and \
                     os.access(os.path.dirname(world_file),os.W_OK) and \
-                    self.Entropy.entropyTools.istextfile(world_file):
+                    self.entropyTools.istextfile(world_file):
                         world_atoms.discard(key)
                         world_atoms.add(keyslot)
                         world_atoms = sorted(list(world_atoms))
@@ -5084,7 +5140,7 @@ class PackageInterface:
                         f.close()
                         shutil.move(world_file_tmp,world_file)
             except (UnicodeDecodeError,UnicodeEncodeError), e:
-                self.Entropy.entropyTools.printTraceback(f = self.Entropy.clientLog)
+                self.entropyTools.printTraceback(f = self.Entropy.clientLog)
                 mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
                 self.Entropy.updateProgress(
                     red("QA: ")+mytxt+": "+unicode(e),
@@ -5113,7 +5169,7 @@ class PackageInterface:
         idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
-        ctime = self.Entropy.entropyTools.getCurrentUnixTime()
+        ctime = self.entropyTools.getCurrentUnixTime()
         self.Entropy.clientDbconn.setDateCreation(idpackage, str(ctime))
 
         # add idpk to the installedtable
@@ -5212,7 +5268,7 @@ class PackageInterface:
                         type = "warning",
                         header = red(" !!! ")
                     )
-                    self.Entropy.entropyTools.ebeep(20)
+                    self.entropyTools.ebeep(20)
                     os.remove(rootdir)
 
                 # if our directory is a symlink instead, then copy the symlink
@@ -5278,7 +5334,7 @@ class PackageInterface:
                             type = "warning",
                             header = red(" !!! ")
                         )
-                        self.Entropy.entropyTools.ebeep(10)
+                        self.entropyTools.ebeep(10)
                         time.sleep(20)
                         try:
                             shutil.rmtree(tofile, True)
@@ -5367,7 +5423,7 @@ class PackageInterface:
 
             # check if it's a text file
             if (protected) and os.path.isfile(tofile):
-                protected = self.Entropy.entropyTools.istextfile(tofile)
+                protected = self.entropyTools.istextfile(tofile)
             else:
                 protected = False # it's not a file
 
@@ -5376,7 +5432,7 @@ class PackageInterface:
                 if tofile not in etpConst['configprotectskip']:
                     prot_status = True
                     if do_allocation_check:
-                        tofile, prot_status = self.Entropy.entropyTools.allocateMaskedFile(tofile, fromfile)
+                        tofile, prot_status = self.entropyTools.allocateMaskedFile(tofile, fromfile)
                     if not prot_status:
                         protected = False
                     else:
@@ -5411,7 +5467,7 @@ class PackageInterface:
                     do_continue = True
 
         except Exception, e:
-            self.Entropy.entropyTools.printTraceback()
+            self.entropyTools.printTraceback()
             protected = False # safely revert to false
             tofile = tofile_before_protect
             mytxt = darkred("%s: %s") % (_("Cannot check CONFIG PROTECTION. Error"),e,)
@@ -5479,8 +5535,8 @@ class PackageInterface:
             )
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
-                mytxt += red(self.Entropy.entropyTools.spliturl(url)[1])
-                mytxt += " %s %s/%s" % (_("at"),self.Entropy.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
+                mytxt += red(self.entropyTools.spliturl(url)[1])
+                mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 1,
@@ -5498,7 +5554,7 @@ class PackageInterface:
             else:
                 error_message = blue("%s: %s") % (
                     _("Error downloading from"),
-                    red(self.Entropy.entropyTools.spliturl(url)[1]),
+                    red(self.entropyTools.spliturl(url)[1]),
                 )
                 # something bad happened
                 if rc == -1:
@@ -5787,7 +5843,7 @@ class PackageInterface:
         return 0
 
     def removeconflict_step(self):
-
+        self.error_on_not_prepared()
         for idpackage in self.infoDict['conflicts']:
             if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
                 continue
@@ -5799,6 +5855,44 @@ class PackageInterface:
                 return rc
 
         return 0
+
+    def config_step(self):
+        self.error_on_not_prepared()
+        mytxt = "%s: %s" % (blue(_("Configuring package")),red(self.infoDict['atom']),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
+        rc = self.__configure_package()
+        if rc == 1:
+            mytxt = "%s. %s. %s: %s" % (
+                red(_("An error occured while trying to configure the package")),
+                red(_("Make sure that your system is healthy")),
+                blue(_("Error")),
+                rc,
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
+        elif rc == 2:
+            mytxt = "%s. %s. %s: %s" % (
+                red(_("An error occured while trying to configure the package")),
+                red(_("It seems that the Source Package Manager entry is missing")),
+                blue(_("Error")),
+                rc,
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
+        return rc
 
     def run_stepper(self, xterm_header):
         if xterm_header == None:
@@ -5817,20 +5911,17 @@ class PackageInterface:
             return rc
 
         def do_fetch():
-            mytxt = _("Fetching")
-            self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
+            self.xterm_title += ' %s: %s' % (_("Fetching"),os.path.basename(self.infoDict['download']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.fetch_step()
 
         def do_sources_fetch():
-            mytxt = _("Fetching sources")
-            self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
+            self.xterm_title += ' %s: %s' % (_("Fetching sources"),os.path.basename(self.infoDict['atom']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.sources_fetch_step()
 
         def do_checksum():
-            mytxt = _("Verifying")
-            self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
+            self.xterm_title += ' %s: %s' % (_("Verifying"),os.path.basename(self.infoDict['download']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.checksum_step()
 
@@ -5848,14 +5939,12 @@ class PackageInterface:
             return self.removeconflict_step()
 
         def do_install():
-            mytxt = _("Installing")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (_("Installing"),self.infoDict['atom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.install_step()
 
         def do_remove():
-            mytxt = _("Removing")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
+            self.xterm_title += ' %s: %s' % (_("Removing"),self.infoDict['removeatom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.remove_step()
 
@@ -5866,34 +5955,34 @@ class PackageInterface:
             return self.logmessages_step()
 
         def do_cleanup():
-            mytxt = _("Cleaning")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (_("Cleaning"),self.infoDict['atom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.cleanup_step()
 
         def do_postinstall():
-            mytxt = _("Postinstall")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (_("Postinstall"),self.infoDict['atom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.postinstall_step()
 
         def do_preinstall():
-            mytxt = _("Preinstall")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (_("Preinstall"),self.infoDict['atom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.preinstall_step()
 
         def do_preremove():
-            mytxt = _("Preremove")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
+            self.xterm_title += ' %s: %s' % (_("Preremove"),self.infoDict['removeatom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.preremove_step()
 
         def do_postremove():
-            mytxt = _("Postremove")
-            self.xterm_title += ' %s: %s' % (mytxt,self.infoDict['removeatom'],)
+            self.xterm_title += ' %s: %s' % (_("Postremove"),self.infoDict['removeatom'],)
             self.Entropy.setTitle(self.xterm_title)
             return self.postremove_step()
+
+        def do_config():
+            self.xterm_title += ' %s: %s' % (_("Configuring"),self.infoDict['atom'],)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.config_step()
 
         steps_data = {
             "fetch": do_fetch,
@@ -5910,6 +5999,7 @@ class PackageInterface:
             "preinstall": do_preinstall,
             "postremove": do_postremove,
             "preremove": do_preremove,
+            "config": do_config,
         }
 
         rc = 0
@@ -5990,10 +6080,11 @@ class PackageInterface:
             self.__generate_install_metadata()
         elif self.action == "source":
             self.__generate_fetch_metadata(sources = True)
+        elif self.action == "config":
+            self.__generate_config_metadata()
         self.prepared = True
 
     def __generate_remove_metadata(self):
-
         self.infoDict.clear()
         idpackage = self.matched_atom[0]
 
@@ -6018,6 +6109,19 @@ class PackageInterface:
         self.infoDict['steps'].append("preremove")
         self.infoDict['steps'].append("remove")
         self.infoDict['steps'].append("postremove")
+
+        return 0
+
+    def __generate_config_metadata(self):
+        self.infoDict.clear()
+        idpackage = self.matched_atom[0]
+
+        self.infoDict['atom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
+        key, slot = self.Entropy.clientDbconn.retrieveKeySlot(idpackage)
+        self.infoDict['key'], self.infoDict['slot'] = key, slot
+        self.infoDict['version'] = self.Entropy.clientDbconn.retrieveVersion(idpackage)
+        self.infoDict['steps'] = []
+        self.infoDict['steps'].append("config")
 
         return 0
 
@@ -6065,7 +6169,7 @@ class PackageInterface:
         self.infoDict['removeconfig'] = removeConfig
 
         self.infoDict['removeidpackage'] = self.Entropy.retrieveInstalledIdPackage(
-                                                self.Entropy.entropyTools.dep_getkey(self.infoDict['atom']),
+                                                self.entropyTools.dep_getkey(self.infoDict['atom']),
                                                 self.infoDict['slot']
                                             )
 
@@ -6110,7 +6214,7 @@ class PackageInterface:
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
             installedVer, installedTag, installedRev = self.Entropy.clientDbconn.getVersioningData(self.infoDict['removeidpackage'])
-            pkgcmp = self.Entropy.entropyTools.entropyCompareVersions(
+            pkgcmp = self.entropyTools.entropyCompareVersions(
                 (self.infoDict['version'], self.infoDict['versiontag'], self.infoDict['revision'],),
                 (installedVer, installedTag, installedRev,)
             )
@@ -6522,12 +6626,6 @@ class RepoInterface:
         if not etpRepositories:
             mytxt = _("No repositories specified in %s") % (etpConst['repositoriesconf'],)
             raise exceptionTools.MissingParameter("MissingParameter: %s" % (mytxt,))
-
-        # Test network connectivity
-        #conntest = self.entropyTools.get_remote_data(etpConst['conntestlink'])
-        #if not conntest:
-        #    mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
-        #    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         if not self.reponames:
             self.reponames.extend(etpRepositories.keys()[:])
@@ -9817,7 +9915,7 @@ class TriggerInterface:
         oldstdout = sys.stdout
         sys.stderr = stdfile
 
-        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
+        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(etpConst['spm']['source_build_ext'])]
         if myebuild:
             myebuild = myebuild[0]
             portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
@@ -9896,7 +9994,7 @@ class TriggerInterface:
         oldstdout = sys.stdout
         sys.stderr = stdfile
 
-        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(".ebuild")]
+        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(etpConst['spm']['source_build_ext'])]
         if myebuild:
             myebuild = myebuild[0]
             portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
@@ -9971,7 +10069,7 @@ class TriggerInterface:
 
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
         try:
-            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+etpConst['spm']['source_build_ext']
         except:
             myebuild = ''
 
@@ -10060,7 +10158,7 @@ class TriggerInterface:
 
         portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
         try:
-            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+".ebuild"
+            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+etpConst['spm']['source_build_ext']
         except:
             myebuild = ''
 
@@ -11582,12 +11680,6 @@ class SecurityInterface:
             header = red(" @@ "),
             footer = red(" ...")
         )
-
-        # Test network connectivity
-        #conntest = self.Entropy.entropyTools.get_remote_data(etpConst['conntestlink'])
-        #if not conntest:
-        #    mytxt = _("Cannot connect to %s") % (etpConst['conntestlink'],)
-        #    raise exceptionTools.OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
 
         mytxt = "%s: %s %s" % (bold(_("Security Advisories")),blue(_("getting latest GLSAs")),red("..."),)
         self.Entropy.updateProgress(
