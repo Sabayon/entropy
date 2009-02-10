@@ -5184,7 +5184,7 @@ class PackageInterface:
 
         dbconn = self.Entropy.openRepositoryDatabase(self.infoDict['repository'])
         package_content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True, formatted = True)
-        contents = sorted([x for x in package_content])
+        contents = sorted(package_content)
 
         # collect files
         for path in contents:

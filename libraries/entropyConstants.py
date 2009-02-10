@@ -1564,10 +1564,17 @@ def const_islive():
         return True
     return False
 
+def const_kill_threads():
+    import threading
+    threads = threading.enumerate()
+    for t in threads:
+        if not hasattr(t,'kill'):
+            continue
+        t.kill()
+
 def const_HandleException(etype, value, tb):
     try:
-        import entropyTools
-        entropyTools.kill_threads()
+        const_kill_threads()
     except ImportError:
         pass
     return sys.__excepthook__(etype, value, tb)

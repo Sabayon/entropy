@@ -22,6 +22,8 @@
 '''
 
 from __future__ import with_statement
+import stat
+import errno
 from outputTools import *
 from entropyConstants import *
 import exceptionTools
@@ -29,6 +31,7 @@ import re
 import threading
 import time
 import commands
+import shutil
 
 def isRoot():
     if (etpConst['uid'] == 0):
@@ -64,11 +67,7 @@ def is_user_in_entropy_group(uid = None):
     return True
 
 def kill_threads():
-    threads = threading.enumerate()
-    for t in threads:
-        if not hasattr(t,'kill'):
-            continue
-        t.kill()
+    const_kill_threads()
 
 class TimeScheduled(threading.Thread):
 
@@ -311,13 +310,12 @@ def is_valid_ascii(string):
 
 def is_valid_unicode(string):
     try:
-        mystring = unicode(string)
+        unicode(string)
     except:
         return False
     return True
 
 def is_valid_email(email):
-    import re
     monster = "(?:[a-z0-9!#$%&'*+/=?^_{|}~-]+(?:.[a-z0-9!#$%" + \
         "&'*+/=?^_{|}~-]+)*|\"(?:" + \
         "[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]" + \
@@ -358,6 +356,117 @@ def check_required_space(mountpoint, bytes_required):
     if bytes_required > freespace:
         # it's NOT fine
         return False
+    return True
+
+# Copyright 1998-2004 Gentoo Foundation
+# Copyright 2009 Fabio Erculiani (reducing code complexity)
+# Distributed under the terms of the GNU General Public License v2
+# $Id: __init__.py 12159 2008-12-05 00:08:58Z zmedico $
+# atomic file move function
+def movefile(src, dest, src_basedir = None):
+
+    sstat = os.lstat(src)
+    destexists = 1
+    try:
+        dstat = os.lstat(dest)
+    except (OSError, IOError,):
+        dstat = os.lstat(os.path.dirname(dest))
+        destexists = 0
+
+    if destexists:
+        if stat.S_ISLNK(dstat[stat.ST_MODE]):
+            try:
+                os.unlink(dest)
+                destexists = 0
+            except (OSError, IOError,):
+                pass
+
+    if stat.S_ISLNK(sstat[stat.ST_MODE]):
+        try:
+            target = os.readlink(src)
+            if src_basedir != None:
+                if target.find(src_basedir) == 0:
+                    target = target[len(src_basedir):]
+            if destexists and not stat.S_ISDIR(dstat[stat.ST_MODE]):
+                os.unlink(dest)
+            os.symlink(target,dest)
+            os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+            return True
+        except SystemExit:
+            raise
+        except Exception, e:
+            print "!!! failed to properly create symlink:"
+            print "!!!",dest,"->",target
+            print "!!!",e
+            return False
+
+    renamefailed = True
+    if sstat.st_dev == dstat.st_dev:
+        try:
+            os.rename(src,dest)
+            renamefailed = False
+        except Exception, e:
+            if e[0] != errno.EXDEV:
+                # Some random error.
+                print "!!! Failed to move",src,"to",dest
+                print "!!!",e
+                return False
+            # Invalid cross-device-link 'bind' mounted or actually Cross-Device
+
+    if renamefailed:
+        didcopy = True
+        if stat.S_ISREG(sstat[stat.ST_MODE]):
+            try: # For safety copy then move it over.
+                while 1:
+                    tmp_dest = "%s#entropy_new_%s" % (dest,getRandomNumber(),)
+                    if not os.path.lexists(tmp_dest): break
+                shutil.copyfile(src,tmp_dest)
+                os.rename(tmp_dest,dest)
+                didcopy = True
+            except SystemExit, e:
+                raise
+            except Exception, e:
+                print '!!! copy',src,'->',dest,'failed.'
+                print "!!!",e
+                return False
+        else:
+            #we don't yet handle special, so we need to fall back to /bin/mv
+            a = commands.getstatusoutput("mv -f '%s' '%s'" % (src,dest,))
+            if a[0]!=0:
+                print "!!! Failed to move special file:"
+                print "!!! '"+src+"' to '"+dest+"'"
+                print "!!!",a
+                return False
+        try:
+            if didcopy:
+                if stat.S_ISLNK(sstat[stat.ST_MODE]):
+                    os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+                else:
+                    os.chown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+                os.chmod(dest, stat.S_IMODE(sstat[stat.ST_MODE])) # Sticky is reset on chown
+                os.unlink(src)
+        except SystemExit, e:
+            raise
+        except Exception, e:
+            print "!!! Failed to chown/chmod/unlink in movefile()"
+            print "!!!",dest
+            print "!!!",e
+            return False
+
+    try:
+        os.utime(dest, (sstat.st_atime, sstat.st_mtime))
+    except OSError:
+        # The utime can fail here with EPERM even though the move succeeded.
+        # Instead of failing, use stat to return the mtime if possible.
+        try:
+            long(os.stat(dest).st_mtime)
+            return True
+        except OSError, e:
+            print "!!! Failed to stat in movefile()\n"
+            print "!!! %s\n" % dest
+            print "!!! %s\n" % str(e)
+            return False
+
     return True
 
 def ebeep(count = 5):
@@ -565,7 +674,6 @@ def unpackBzip2(bzip2filepath):
     return filepath
 
 def backupClientDatabase():
-    import shutil
     if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
         rnd = getRandomNumber()
         source = etpConst['etpdatabaseclientfilepath']
@@ -594,7 +702,6 @@ def readXpak(tbz2file):
 def unpackXpak(xpakfile, tmpdir = None):
     try:
         import etpXpak
-        import shutil
         if tmpdir is None:
             tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(xpakfile)[:-5]+"/"
         if os.path.isdir(tmpdir):
@@ -1692,12 +1799,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     if not os.path.isfile(filepath):
         raise exceptionTools.FileNotFound('FileNotFound: archive does not exist')
 
-    _tarfile = True
-    try:
-        import tarfile
-    except ImportError:
-        _tarfile = False
-
+    import tarfile
     try:
         tar = tarfile.open(filepath,"r")
     except tarfile.ReadError:
@@ -2099,7 +2201,6 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
     _saveRepositoriesContent(content)
 
 def _saveRepositoriesContent(content):
-    import shutil
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):
             os.remove(etpConst['repositoriesconf']+".old")
@@ -2116,7 +2217,6 @@ def writeParameterToFile(config_file, name, data):
     if not os.access(os.path.dirname(config_file),os.W_OK):
         return False
 
-    import shutil
     content = []
     if os.path.isfile(config_file):
         f = open(config_file,"r")
