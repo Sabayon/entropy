@@ -5242,6 +5242,7 @@ class PackageInterface:
         # setup imageDir properly
         imageDir = self.infoDict['imagedir']
         encoded_imageDir = imageDir.encode('utf-8')
+        movefile = self.entropyTools.movefile
 
         # merge data into system
         for currentdir,subdirs,files in os.walk(encoded_imageDir):
@@ -5350,7 +5351,7 @@ class PackageInterface:
                     # XXX
                     # XXX moving file using the raw format like portage does
                     # XXX
-                    done = self.entropyTools.movefile(fromfile, tofile, src_basedir = encoded_imageDir)
+                    done = movefile(fromfile, tofile, src_basedir = encoded_imageDir)
                     if not done:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
