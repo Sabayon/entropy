@@ -5241,9 +5241,10 @@ class PackageInterface:
 
         # setup imageDir properly
         imageDir = self.infoDict['imagedir']
+        encoded_imageDir = imageDir.encode('utf-8')
 
         # merge data into system
-        for currentdir,subdirs,files in os.walk(imageDir.encode('utf-8')):
+        for currentdir,subdirs,files in os.walk(encoded_imageDir):
             # create subdirs
             for subdir in subdirs:
 
@@ -5346,33 +5347,29 @@ class PackageInterface:
                         except OSError:
                             pass
 
-                    # this also handles symlinks
                     # XXX
                     # XXX moving file using the raw format like portage does
                     # XXX
-                    try:
-                        shutil.move(fromfile,tofile)
-                    except shutil.Error, e:
+                    done = self.entropyTools.movefile(fromfile, tofile, src_basedir = encoded_imageDir)
+                    if not done:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
                             ETP_LOGLEVEL_NORMAL,
-                            "WARNING!!! Error during file move to system: %s" % (e,)
+                            "WARNING!!! Error during file move to system: %s => %s" % (fromfile,tofile,)
                         )
-                        mytxt = "%s: %s, %s" % (_("File move error"),e,_("please report"),)
+                        mytxt = "%s: %s => %s, %s" % (_("File move error"),fromfile,tofile,_("please report"),)
                         self.Entropy.updateProgress(
                             red("QA: ")+darkred(mytxt),
                             importance = 1,
                             type = "warning",
                             header = red(" !!! ")
                         )
+                        return 4
 
                 except IOError, e:
-                    if e.errno == 2:
-                        # better to pass away, sometimes gentoo packages are fucked up and contain broken things
-                        pass
-                    else:
-                        rc = subprocess.call(["mv",fromfile,tofile])
-                        if rc != 0: return 4
+                    # try to move forward, sometimes packages might be
+                    # fucked up and contain broken things
+                    if e.errno != 2: raise
 
                 items_installed.add(os.path.join(os.path.realpath(os.path.dirname(tofile)),os.path.basename(tofile)))
                 if protected:
@@ -5384,7 +5381,10 @@ class PackageInterface:
         # EntropyDatabaseInterface.contentDiff for obvious reasons (think about stuff in /usr/lib and /usr/lib64,
         # where the latter is just a symlink to the former)
         if self.infoDict.get('removecontent'):
-            my_remove_content = set([x for x in self.infoDict['removecontent'] if os.path.join(os.path.realpath(os.path.dirname("%s%s" % (sys_root,x,))),os.path.basename(x)) in items_installed])
+            my_remove_content = set([x for x in self.infoDict['removecontent'] \
+                if os.path.join(os.path.realpath(
+                    os.path.dirname("%s%s" % (sys_root,x,))),os.path.basename(x)
+                ) in items_installed])
             self.infoDict['removecontent'] -= my_remove_content
 
         return 0
