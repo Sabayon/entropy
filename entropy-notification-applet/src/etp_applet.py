@@ -29,7 +29,6 @@ from etp_applet_dialogs import \
      rhnAppletErrorDialog, \
      rhnAppletExceptionDialog
 import etp_applet_config
-from etpgui import busyCursor,normalCursor
 
 # Entropy imports
 from entropyConstants import *
@@ -39,15 +38,14 @@ from entropy_i18n import _
 
 class Entropy(EquoInterface):
 
-    def __init__(self):
+    def __init__(self, appletInterface):
         EquoInterface.__init__(self, noclientdb = True)
+        self.connect_progress_objects(appletInterface)
         self.nocolor()
 
     def connect_progress_objects(self, appletInterface):
-        self.appletInterface = appletInterface
-        self.appletX, self.appletY = self.appletInterface.appletX, self.appletInterface.appletY
-        self.progress_tooltip = self.appletInterface.update_tooltip
-        self.progress_widget = self.appletInterface.tooltip
+        self.i = appletInterface
+        self.progress_tooltip = self.i.update_tooltip
         self.updateProgress = self.appletUpdateProgress
         self.progress_tooltip_message_title = _("Updates Notification")
         self.appletCreateNotification()
@@ -55,18 +53,9 @@ class Entropy(EquoInterface):
         self.progress = self.appletPrintText # for the GuiUrlFetcher
         self.applet_last_message = ''
 
-
-    def appletSetCoordinates(self):
-        self.progress_tooltip_notification.set_hint("x", self.appletX)
-        self.progress_tooltip_notification.set_hint("y", self.appletY)
-
     def appletCreateNotification(self):
-        gtk.gdk.threads_enter()
-        pynotify.init("XY")
         self.progress_tooltip_notification = pynotify.Notification(self.progress_tooltip_message_title,"Hello world")
         self.progress_tooltip_notification.set_timeout(3000)
-        self.appletSetCoordinates()
-        gtk.gdk.threads_leave()
 
     def appletUpdateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 
@@ -86,11 +75,13 @@ class Entropy(EquoInterface):
             self.appletPrintText(message)
 
     def appletPrintText(self, message):
-        gtk.gdk.threads_enter()
-        self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
-        self.progress_tooltip_notification.show()
         self.applet_last_message = message
-        gtk.gdk.threads_leave()
+        def _appletPrintText():
+            pynotify.init("XY")
+            self.progress_tooltip_notification.update(self.progress_tooltip_message_title,message)
+            self.progress_tooltip_notification.attach_to_status_icon(self.i.status_icon)
+            self.progress_tooltip_notification.show()
+        self.i.TaskQueue.append((_appletPrintText,[],{},))
 
 class GuiUrlFetcher(urlFetcher):
 
@@ -104,50 +95,52 @@ class GuiUrlFetcher(urlFetcher):
                                         str(round(self.remotesize,1)),
                                         str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
                                     )
-        gtk.gdk.threads_enter()
         self.progress(message)
-        gtk.gdk.threads_leave()
 
-class rhnApplet:
+class EntropyApplet:
 
     def set_state(self, new_state, use_busy_icon = 0):
 
         if not new_state in etp_applet_config.APPLET_STATES:
             raise exceptionTools.IncorrectParameter("Error: invalid state %s" % new_state)
 
-        #if self.refresh_timeout_tag and new_state not in [ "OKAY", "CRITICAL" ]:
-        #    raise exceptionTools.IncorrectParameter("Error: can't switch to state %s while refresh timer is on" % new_state)
-
-        if new_state == "OKAY":
-            self.animate_to("okay")
-        elif new_state == "BUSY":
-            if use_busy_icon:
-                self.set_displayed_image("busy")
-        elif new_state == "CRITICAL":
-            if self.never_viewed_notices:
-                self.animate_to("critical", "critical-blank")
-            else:
-                self.set_displayed_image("critical")
-        elif new_state == "NOCONSENT":
-            if self.never_viewed_consent:
-                self.animate_to("noconsent", "noconsent-blank")
-            else:
-                self.set_displayed_image("noconsent")
-        elif new_state == "DISCONNECTED":
-            self.animate_to("disconnect")
-        elif new_state == "ERROR":
-            self.animate_to("error")
-
-        self.current_state = new_state
+        def _set_state(new_state, use_busy_icon):
+            self.status_icon.set_blinking(False)
+            if new_state == "OKAY":
+                self.change_icon("okay")
+            elif new_state == "BUSY":
+                if use_busy_icon:
+                    self.set_displayed_image("busy")
+            elif new_state == "CRITICAL":
+                self.status_icon.set_blinking(True)
+                if self.never_viewed_notices:
+                    self.change_icon("critical", "critical-blank")
+                else:
+                    self.set_displayed_image("critical")
+            elif new_state == "NOCONSENT":
+                if self.never_viewed_consent:
+                    self.change_icon("noconsent", "noconsent-blank")
+                else:
+                    self.set_displayed_image("noconsent")
+            elif new_state == "DISCONNECTED":
+                self.change_icon("disconnect")
+            elif new_state == "ERROR":
+                self.change_icon("error")
+            self.current_state = new_state
+        if self.debug: print "queued:",_set_state
+        self.TaskQueue.append((_set_state,[new_state,use_busy_icon],{},))
 
 
     def __init__(self):
+
+        self.TaskQueueAlive = True
+        self.TaskQueue = []
+        self.TaskQueueId = gobject.timeout_add(200, self.task_queue_executor)
 
         self.debug = False
         if "--debug" in sys.argv:
             self.debug = True
 
-        self.appletX, self.appletY = 0,0
         self.animator = None
         self.client = None
         self.notice_window = None
@@ -162,14 +155,10 @@ class rhnApplet:
         self.available_packages = []
         self.last_alert = None
         self.Entropy = None
-        self.destroyed = 0
         self.isWorking = False
         self.refresh_lock = threading.Lock()
         self.tooltip_text = ""
         gnome.program_init("spritz-updater", etpConst['entropyversion'])
-        self.tooltip = gtk.Tooltips()
-        self.applet_window = egg.trayicon.TrayIcon("spritz-updater")
-        self.applet_window.connect("destroy", self.exit_applet)
 
         self.session = gnome.ui.master_client()
         if self.session:
@@ -183,7 +172,6 @@ class rhnApplet:
         self.skip_check_locked = False
         self.current_image = None
         self.refresh_timeout_tag = None
-        self.animate_timeout_tag = None
         self.current_state = None
         self.old_critical_text = None
         self.network_timeout_tag = None
@@ -238,16 +226,9 @@ class rhnApplet:
 
         self.menu.show_all()
 
-        self.event_box = gtk.EventBox()
-        self.image_widget = gtk.Image()
-        self.event_box.add(self.image_widget)
-
-        self.event_box.connect("button_press_event", self.applet_face_click)
-        self.image_widget.connect('destroy', self.on_destroy)
-
-        self.applet_window.add(self.event_box)
-        self.applet_window.realize()
-        self.applet_window.show_all()
+        self.status_icon = gtk.status_icon_new_from_pixbuf(self.icons.best_match("okay",22))
+        self.status_icon.connect("popup-menu", self.applet_face_click)
+        self.status_icon.connect("activate", self.applet_face_click2)
 
         hide_menu = False
         message = ''
@@ -284,34 +265,22 @@ class rhnApplet:
                 w.set_sensitive(False)
                 w.hide()
 
-        self.appletX, self.appletY = self.get_tray_coordinates()
-        self.appletX += 10
-        self.appletY += 10
         if load_intf:
             # Entropy initialization
-            self.Entropy = Entropy()
-            self.Entropy.connect_progress_objects(self)
+            self.Entropy = Entropy(self)
             self.enable_refresh_timer()
 
-
-    def get_tray_coordinates(self):
-        """
-        get the trayicon coordinates to send to
-        notification-daemon
-        trayicon=egg.trayicon.TrayIcon
-        return : [x,y]
-        """
-        trayicon = self.applet_window
-        coordinates = trayicon.window.get_origin()
-        size = trayicon.window.get_size()
-        screen = trayicon.window.get_screen()
-        screen_height = screen.get_height()
-        if coordinates[1] <= screen_height/2:
-            y=coordinates[1]+size[1]/2
-        else:
-            y=coordinates[1]-size[1]/2
-        msg_xy = (coordinates[0],y)
-        return tuple(msg_xy)
+    def task_queue_executor(self):
+        while 1:
+            try:
+                data = self.TaskQueue.pop(0)
+            except IndexError:
+                return self.TaskQueueAlive
+            func, args, kwargs = data
+            if self.debug: print "queue_exec",func, args, kwargs
+            func(*args,**kwargs)
+            if not self.TaskQueueAlive:
+                return False
 
     def set_menu_image(self, widget, name):
         img = gtk.Image()
@@ -347,89 +316,24 @@ class rhnApplet:
 
     def start_working(self):
         self.isWorking = True
-        busyCursor(self.applet_window)
 
     def end_working(self):
         self.isWorking = False
-        normalCursor(self.applet_window)
 
-    def animate_stop(self):
-        self.disable_animation_timer()
-
-        # not animating?  then our current image is correct
-        if self.animator:
-            self.set_displayed_image(self.animator.final_frame)
-            self.animator = None
-
-        self.redraw()
-
-    def disable_animation_timer(self):
-        if self.animate_timeout_tag:
-            self.animate_timeout_tag.kill()
-            self.animate_timeout_tag = None
-
-    def animate_handler(self, *data):
-
-        next_frame = self.animator.next_frame()
-        if not next_frame:
-            self.disable_animation_timer()
-            return False
-
-        self.current_image = next_frame
-        self.redraw()
-
-        return True
-
-    def animate_to(self, image, cycle_image = None):
-
-        if self.current_image == image:
-            return
-
-        if self.current_image:
-            from_image = self.current_image.copy()
-        else:
-            from_image = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, 1, 8, self.applet_size, self.applet_size)
-            from_image.fill(0)
-
+    def change_icon(self, image, cycle_image = None):
         to_image = self.icons.best_match(image, self.applet_size)
-
-        frames = etp_applet_animation.alpha_tween(from_image, to_image, 16)
-
-        self.animator = etp_applet_animation.rhnAppletAnimation()
-
-        # if we're already in the to_image state, let's just start cycling
-        if self.current_image != to_image or cycle_image:
-            self.animator.append_frames(frames)
-
-        if cycle_image:
-            cycle_frames = []
-
-            to_image = self.icons.best_match(image, self.applet_size)
-            from_image = self.icons.best_match(cycle_image, self.applet_size)
-            cycle_frames = etp_applet_animation.alpha_tween(to_image, from_image, 16)
-
-            self.animator.append_cycle(cycle_frames)
-
-        if not self.animate_timeout_tag:
-            mytiming = float(math.floor(1000 * etp_applet_config.settings['ANIMATION_TOTAL_TIME']/len(frames)))
-            self.animate_timeout_tag = entropyTools.TimeScheduled(self.animate_handler, mytiming/1000)
-            self.animate_timeout_tag.start()
+        self.status_icon.set_from_pixbuf(to_image)
 
     def set_displayed_image(self, image):
         if isinstance(image,basestring): new_image = self.icons.best_match(image, self.applet_size)
         else: new_image = image
-        self.disable_animation_timer()
         self.current_image = new_image
         self.redraw()
 
     def redraw(self):
         if not self.current_image: return
-        self.image_widget.set_from_pixbuf(self.current_image)
-
-    def on_destroy(self, *data):
-        self.destroyed = 1
-        self.disable_refresh_timer()
-        self.disable_animation_timer()
+        self.status_icon.set_from_pixbuf(self.current_image)
+        self.status_icon.set_visible(True)
 
     def load_packages_url(self, *data):
         try:
@@ -455,7 +359,7 @@ class rhnApplet:
         if browser:
             subprocess.call([browser,url])
 
-    def disable_applet(self):
+    def disable_applet(self, *args):
         self.update_tooltip(_("Updates Notification Applet Disabled"))
         self.disable_refresh_timer()
         self.set_state("DISCONNECTED")
@@ -493,10 +397,8 @@ class rhnApplet:
             n.set_urgency(pynotify.URGENCY_CRITICAL)
         elif urgency == 'low':
             n.set_urgency(pynotify.URGENCY_LOW)
-
-        n.set_hint("x", self.Entropy.appletX)
-        n.set_hint("y", self.Entropy.appletY)
         self.last_alert = (title,text)
+        n.attach_to_status_icon(self.status_icon)
         n.show()
 
     def compare_repositories_status(self):
@@ -524,10 +426,8 @@ class rhnApplet:
         return repos, 0
 
     def refresh_handler(self, force = 0, after = 0):
-        gtk.gdk.threads_enter()
         if after: time.sleep(after)
         self.refresh(force)
-        gtk.gdk.threads_leave()
 
     def refresh(self, force = 0):
 
@@ -541,7 +441,13 @@ class rhnApplet:
 
         self.refresh_lock.acquire()
         try:
-            return self.run_refresh(force)
+            t = entropyTools.parallelTask(self.run_refresh, force)
+            t.start()
+            while t.isAlive():
+                self.status_icon.set_visible(True)
+                self.task_queue_executor()
+                time.sleep(0.3)
+            return t.result
         finally:
             self.refresh_lock.release()
 
@@ -550,12 +456,13 @@ class rhnApplet:
 
         locked = self.Entropy.application_lock_check(silent = True)
 
+        if self.debug: print "run_refresh: I am here"
+
         self.start_working()
         old_tip = self.tooltip_text
         old_state = self.current_state
 
         self.disable_network_timer()
-
         self.set_state("BUSY", use_busy_icon = force)
         self.update_tooltip(_("Checking for updates..."))
 
@@ -661,12 +568,6 @@ class rhnApplet:
         if rc == 0:
             self.update_tooltip(old_tip)
 
-        # it is possible that the applet was destroyed during the time it
-        # took to update the model.  If the applet is gone, bail now.
-        if self.destroyed:
-            self.end_working()
-            return False
-
         if update:
             self.available_packages = update[:]
             self.set_state("CRITICAL")
@@ -720,7 +621,10 @@ class rhnApplet:
 
     def update_tooltip(self, tip):
         self.tooltip_text = tip
-        self.tooltip.set_tip(self.applet_window, tip)
+        def _update_tooltip(tip):
+            self.status_icon.set_tooltip(tip)
+        if self.debug: print "queued:",_update_tooltip
+        self.TaskQueue.append((_update_tooltip,[tip],{},))
 
     def update_from_server(self, widget=None):
         self.enable_applet()
@@ -734,12 +638,11 @@ class rhnApplet:
 
     def exit_applet(self, *args):
 
-        for my in entropyTools.threading.enumerate():
-            if hasattr(my,'kill'):
-                my.kill()
+        entropyTools.kill_threads()
+        self.TaskQueueAlive = False
 
         gtk.main_quit()
-        raise SystemExit
+        raise SystemExit(0)
 
     def save_yourself(self, *args):
         if self.session:
@@ -768,13 +671,13 @@ class rhnApplet:
         self.update_tooltip(_("Waiting before checkin..."))
         self.enable_refresh_timer()
 
-    def applet_face_click(self, window, event, *data):
-        if event.button == 3:
-            self.menu.popup(None, None, None, 0, event.time)
+    def applet_face_click(self, icon, button, activate_time):
+
+        if button == 3:
+            self.menu.popup(None, None, None, 0, activate_time)
             return
 
-        if self.current_state in [ "CRITICAL", "NOCONSENT" ]:
-            self.animate_stop()
+    def applet_face_click2(self, icon):
 
         if not self.current_state in [ "OKAY", "ERROR", "DISCONNECTED", "CRITICAL" ]:
             return

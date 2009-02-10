@@ -1,7 +1,5 @@
 TODO list
 
-    - etp-applet notifier position
-
 Proposed for Entropy 0.6+ (before and after) (requires API changes, perhaps):
 
   - repositories.conf => repositories.conf.example pkg_postinst

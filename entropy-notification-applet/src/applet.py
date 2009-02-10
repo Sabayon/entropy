@@ -22,11 +22,11 @@ import etp_applet
 
 def main():
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    applet = etp_applet.rhnApplet()
-    gobject.threads_init()
-    gtk.gdk.threads_enter()
+    applet = etp_applet.EntropyApplet()
+    #gobject.threads_init()
+    #gtk.gdk.threads_enter()
     gtk.main()
-    gtk.gdk.threads_leave()
+    #gtk.gdk.threads_leave()
 
 if __name__ == "__main__":
     main()
