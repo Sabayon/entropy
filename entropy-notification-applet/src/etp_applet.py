@@ -114,16 +114,18 @@ class EntropyApplet:
             elif new_state == "CRITICAL":
                 self.status_icon.set_blinking(True)
                 if self.never_viewed_notices:
-                    self.change_icon("critical", "critical-blank")
+                    self.change_icon("critical")
                 else:
                     self.set_displayed_image("critical")
             elif new_state == "NOCONSENT":
                 if self.never_viewed_consent:
-                    self.change_icon("noconsent", "noconsent-blank")
+                    self.change_icon("noconsent")
                 else:
                     self.set_displayed_image("noconsent")
             elif new_state == "DISCONNECTED":
                 self.change_icon("disconnect")
+            elif new_state == "DISABLE":
+                self.change_icon("disable")
             elif new_state == "ERROR":
                 self.change_icon("error")
             self.current_state = new_state
@@ -182,9 +184,8 @@ class EntropyApplet:
         self.icons.add_file("error", "applet-error.png")
         self.icons.add_file("busy", "applet-busy.png")
         self.icons.add_file("critical", "applet-critical.png")
-        self.icons.add_file("critical-blank", "applet-critical-blank.png")
+        self.icons.add_file("disable", "applet-disable.png")
         self.icons.add_file("noconsent", "applet-critical.png")
-        self.icons.add_file("noconsent-blank", "applet-critical-blank.png")
         self.icons.add_file("disconnect", "applet-disconnect.png")
         self.icons.add_file("spritz","spritz.png")
         self.icons.add_file("about","applet-about.png")
@@ -293,7 +294,7 @@ class EntropyApplet:
         elif name == "configure_applet":
             pix = self.icons.best_match("configuration",22)
         elif name == "disable_applet":
-            pix = self.icons.best_match("disconnect",22)
+            pix = self.icons.best_match("disable",22)
         elif name == "enable_applet":
             pix = self.icons.best_match("okay",22)
         else:
@@ -362,7 +363,7 @@ class EntropyApplet:
     def disable_applet(self, *args):
         self.update_tooltip(_("Updates Notification Applet Disabled"))
         self.disable_refresh_timer()
-        self.set_state("DISCONNECTED")
+        self.set_state("DISABLE")
         etp_applet_config.settings['APPLET_ENABLED'] = 0
         etp_applet_config.save_settings(etp_applet_config.settings)
         self.menu_items['disable_applet'].hide()

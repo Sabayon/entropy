@@ -8,7 +8,7 @@
 import os
 import dumpTools
 
-APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY", "CRITICAL", "BUSY", "ERROR", "DISCONNECTED" ]
+APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY", "CRITICAL", "BUSY", "ERROR", "DISCONNECTED", "DISABLE" ]
 APPLET_MENUS = [ "about", "update_now", "web_panel", "web_site", "configure_applet", "check_now" ]
 
 APPLET_SENSITIVE_MENU = {
@@ -20,6 +20,7 @@ APPLET_SENSITIVE_MENU = {
     "BUSY"        : [ ],
     "ERROR"       : [ "about", "update_now", "check_now" ],
     "DISCONNECTED": [ "about", "update_now", "check_now" ],
+    "DISABLE": [ "about", "update_now", "check_now" ],
 }
 
 RANDOM_REFRESH_DELTA = abs(hash(os.urandom(2)))%1800
