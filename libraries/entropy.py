@@ -8609,7 +8609,9 @@ class QAInterface:
         for r_dep in r_deplist:
             m_idpackage, m_rc = dbconn.atomMatch(r_dep)
             if m_rc != 0: continue
-            r_keyslots.add(dbconn.retrieveKeySlotAggregated(m_idpackage))
+            keyslot = dbconn.retrieveKeySlotAggregated(m_idpackage)
+            if keyslot in rdepends_plain:
+                r_keyslots.add(keyslot)
 
         rdepends_plain -= r_keyslots
         for r_keyslot in r_keyslots:
