@@ -8531,7 +8531,7 @@ class QAInterface:
         ldpaths = set(self.entropyTools.collectLinkerPaths())
         deps_content = set()
         dependencies = self._get_deep_dependency_list(dbconn, idpackage, atoms = True)
-        dependencies_cache = set()
+        scope_cache = set()
 
         def update_depscontent(mycontent, dbconn, ldpaths):
             return set( \
@@ -8552,14 +8552,16 @@ class QAInterface:
                 mycontent = dbconn.retrieveContent(match[0])
                 deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
                 key, slot = dbconn.retrieveKeySlot(match[0])
-                dependencies_cache.add((key,slot))
+                scope_cache.add((key,slot))
 
         key, slot = dbconn.retrieveKeySlot(idpackage)
         mycontent = dbconn.retrieveContent(idpackage)
         deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
-        dependencies_cache.add((key,slot))
+        scope_cache.add((key,slot))
 
         idpackages_cache = set()
+        idpackage_map = {}
+        idpackage_map_reverse = {}
         for needed, elfclass in neededs:
             data_solved = dbconn.resolveNeeded(needed,elfclass)
             data_size = len(data_solved)
@@ -8578,14 +8580,45 @@ class QAInterface:
                     break
             if not found:
                 for data in data_solved:
-                    key, slot = dbconn.retrieveKeySlot(data[0])
-                    if (key,slot) not in dependencies_cache:
-                        if not dbconn.isSystemPackage(data[0]):
+                    r_idpackage = data[0]
+                    key, slot = dbconn.retrieveKeySlot(r_idpackage)
+                    if (key,slot) not in scope_cache:
+                        if not dbconn.isSystemPackage(r_idpackage):
                             if not rdepends.has_key((needed,elfclass)):
                                 rdepends[(needed,elfclass)] = set()
-                            rdepends[(needed,elfclass)].add(key+":"+slot)
-                            rdepends_plain.add(key+":"+slot)
-                        idpackages_cache.add(data[0])
+                            if not idpackage_map.has_key((needed,elfclass)):
+                                idpackage_map[(needed,elfclass)] = set()
+                            keyslot = "%s:%s" % (key,slot,)
+                            if not idpackage_map_reverse.has_key(keyslot):
+                                idpackage_map_reverse[keyslot] = set()
+                            idpackage_map_reverse[keyslot].add((needed,elfclass))
+                            rdepends[(needed,elfclass)].add(keyslot)
+                            idpackage_map[(needed,elfclass)].add(r_idpackage)
+                            rdepends_plain.add(keyslot)
+                        idpackages_cache.add(r_idpackage)
+
+        # now reduce dependencies
+
+        r_deplist = set()
+        for key in idpackage_map:
+            r_idpackages = idpackage_map.get(key)
+            for r_idpackage in r_idpackages:
+                r_deplist |= dbconn.retrieveDependencies(r_idpackage)
+
+        r_keyslots = set()
+        for r_dep in r_deplist:
+            m_idpackage, m_rc = dbconn.atomMatch(r_dep)
+            if m_rc != 0: continue
+            r_keyslots.add(dbconn.retrieveKeySlotAggregated(m_idpackage))
+
+        rdepends_plain -= r_keyslots
+        for r_keyslot in r_keyslots:
+            keys = idpackage_map_reverse.get(keyslot,[])
+            for key in keys:
+                rdepends[key].remove(r_keyslot)
+                if not rdepends[key]:
+                    del rdepends[key]
+
         return rdepends, rdepends_plain
 
     def _get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
@@ -32808,6 +32841,11 @@ class EntropyDatabaseInterface:
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
         data = self.cursor.fetchone()
         return data
+
+    def retrieveKeySlotAggregated(self, idpackage):
+        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name || ":" || baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        data = self.cursor.fetchone()
+        if data: return data[0]
 
     def retrieveKeySlotTag(self, idpackage):
         self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.versiontag FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
