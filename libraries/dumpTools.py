@@ -46,9 +46,17 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
                 dump_path = os.path.join(d_dir,name)
                 dump_dir = os.path.dirname(dump_path)
                 #dump_name = os.path.basename(dump_path)
-                if not os.path.isdir(dump_dir):
-                    os.makedirs(dump_dir,0775)
-                    const_setup_perms(dump_dir,e_gid)
+                my_dump_dir = dump_dir
+                d_paths = []
+                while not os.path.isdir(my_dump_dir):
+                    d_paths.append(my_dump_dir)
+                    my_dump_dir = os.path.dirname(my_dump_dir)
+                if d_paths:
+                    d_paths = sorted(d_paths)
+                    for d_path in d_paths:
+                        os.mkdir(d_path,0775)
+                        const_setup_perms(d_path,e_gid)
+
                 dmpfile = dump_path+d_ext
             with open(dmpfile,"wb") as f:
                 pickle.dump(object,f)
