@@ -16694,7 +16694,8 @@ class ServerInterface(TextInterface):
                 # add to database
                 idpackage, destination_path = self.package_injector(
                     package_filepath,
-                    inject = inject
+                    inject = inject,
+                    repo = repo
                 )
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage,destination_path))
@@ -31492,7 +31493,7 @@ class EntropyDatabaseInterface:
                 type = "warning",
                 header = blue("  # ")
             )
-            mydest = self.ServiceInterface.get_local_store_directory(self.server_repo)
+            mydest = self.ServiceInterface.get_local_store_directory(repo = self.server_repo)
             try:
                 mypath = self.ServiceInterface.quickpkg(myatom,mydest)
             except:
