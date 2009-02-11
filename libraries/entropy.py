@@ -33344,7 +33344,7 @@ class EntropyDatabaseInterface:
 
     def areCompileFlagsAvailable(self,chost,cflags,cxxflags):
 
-        self.cursor.execute('SELECT idflags FROM flags WHERE chost = (?) AND cflags = (?) AND cxxflags = (?)', 
+        self.cursor.execute('SELECT idflags FROM flags WHERE chost = (?) AND cflags = (?) AND cxxflags = (?)',
             (chost,cflags,cxxflags,)
         )
         result = self.cursor.fetchone()
@@ -33613,11 +33613,11 @@ class EntropyDatabaseInterface:
         searchkeywords = []
         if branch:
             searchkeywords = [branch]
-            branchstring = ' where branch %s (?)' % (str(branch_operator),)
+            branchstring = ' where branch %s (?)' % (branch_operator,)
 
         order_txt = ''
         if order_by:
-            order_txt = ' order by '+str(order_by)
+            order_txt = ' order by %s' % (order_by,)
         if get_scope:
             self.cursor.execute('SELECT idpackage,atom,slot,revision FROM baseinfo'+order_txt+branchstring,searchkeywords)
         else:
@@ -33692,17 +33692,6 @@ class EntropyDatabaseInterface:
 
         self.live_cache['listAllBranches'] = results.copy()
         return results
-
-    def listIdPackagesInIdcategory(self,idcategory, order_by = 'atom'):
-        order_by_string = ''
-        if order_by in ("atom","name","version",):
-            order_by_string = ' ORDER BY %s' % (order_by,)
-        self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)'+order_by_string, (idcategory,))
-        return self.fetchall2set(self.cursor.fetchall())
-
-    def listIdpackageDependencies(self, idpackage):
-        self.cursor.execute('SELECT dependenciesreference.iddependency,dependenciesreference.dependency FROM dependenciesreference,dependencies WHERE dependencies.idpackage = (?) AND dependenciesreference.iddependency = dependencies.iddependency', (idpackage,))
-        return set(self.cursor.fetchall())
 
     def listBranchPackagesTbz2(self, branch, do_sort = True, full_path = False):
         order_string = ''
@@ -33985,15 +33974,6 @@ class EntropyDatabaseInterface:
                 break
         return found
 
-    # FIXME: this is only compatible with SQLITE
-    def getColumnsInTable(self, table):
-        self.cursor.execute('PRAGMA table_info( '+table+' )')
-        rslt = self.cursor.fetchall()
-        columns = []
-        for row in rslt:
-            columns.append(row[1])
-        return columns
-
     def database_checksum(self, do_order = False, strict = True, strings = False):
 
         idpackage_order = ''
@@ -34081,16 +34061,6 @@ class EntropyDatabaseInterface:
             except (self.dbapi2.OperationalError,):
                 return 1 # need reinit
 
-    def removeDependencyFromDependsTable(self, iddependency):
-        with self.WriteLock:
-            try:
-                self.cursor.execute('DELETE FROM dependstable WHERE iddependency = (?)',(iddependency,))
-                self.commitChanges()
-                return 0
-            except:
-                return 1 # need reinit
-
-    # temporary/compat functions
     def createDependsTable(self):
         with self.WriteLock:
             self.cursor.executescript("""
@@ -34144,10 +34114,6 @@ class EntropyDatabaseInterface:
     def createCountersTable(self):
         with self.WriteLock:
             self.cursor.execute("CREATE TABLE IF NOT EXISTS counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );")
-
-    def CreatePackedDataTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE packed_data ( idpack INTEGER PRIMARY KEY, data BLOB );')
 
     def dropAllIndexes(self):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
@@ -34417,10 +34383,6 @@ class EntropyDatabaseInterface:
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
 
-    #
-    # FIXME: remove these when 1.0 will be out
-    #
-
     def migrateCountersTable(self):
         with self.WriteLock:
             self._migrateCountersTable()
@@ -34451,65 +34413,6 @@ class EntropyDatabaseInterface:
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
 
-    def createTreeupdatesactionsTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE treeupdatesactions ( idupdate INTEGER PRIMARY KEY AUTOINCREMENT, repository VARCHAR, command VARCHAR, branch VARCHAR, date VARCHAR );')
-
-    def createSizesTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE sizes ( idpackage INTEGER, size INTEGER );')
-
-    def createEntropyMiscCountersTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE entropy_misc_counters ( idtype INTEGER PRIMARY KEY, counter INTEGER );')
-
-    def createDependenciesTypeColumn(self):
-        with self.WriteLock:
-            self.cursor.execute('ALTER TABLE dependencies ADD COLUMN type INTEGER;')
-            self.cursor.execute('UPDATE dependencies SET type = (?)', (0,))
-
-    def createCountersBranchColumn(self):
-        with self.WriteLock:
-            self.cursor.execute('ALTER TABLE counters ADD COLUMN branch VARCHAR;')
-            idpackages = self.listAllIdpackages()
-            for idpackage in idpackages:
-                branch = self.retrieveBranch(idpackage)
-                self.cursor.execute('UPDATE counters SET branch = (?) WHERE idpackage = (?)', (branch,idpackage,))
-
-    def createTreeupdatesactionsDateColumn(self):
-        with self.WriteLock:
-            try:
-                # if database disk image is malformed, won't raise exception here
-                self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN date VARCHAR;')
-                mytime = str(self.entropyTools.getCurrentUnixTime())
-                self.cursor.execute('UPDATE treeupdatesactions SET date = (?)', (mytime,))
-            except:
-                pass
-
-    def createTreeupdatesactionsBranchColumn(self):
-        with self.WriteLock:
-            try: # if database disk image is malformed, won't raise exception here
-                self.cursor.execute('ALTER TABLE treeupdatesactions ADD COLUMN branch VARCHAR;')
-                self.cursor.execute('UPDATE treeupdatesactions SET branch = (?)', (etpConst['branch'],))
-            except:
-                pass
-
-    def createNeededElfclassColumn(self):
-        with self.WriteLock:
-            try: # if database disk image is malformed, won't raise exception here
-                self.cursor.execute('ALTER TABLE needed ADD COLUMN elfclass INTEGER;')
-                self.cursor.execute('UPDATE needed SET elfclass = -1')
-            except:
-                pass
-
-    def createContentTypeColumn(self):
-        with self.WriteLock:
-            try: # if database disk image is malformed, won't raise exception here
-                self.cursor.execute('ALTER TABLE content ADD COLUMN type VARCHAR;')
-                self.cursor.execute('UPDATE content SET type = "0"')
-            except:
-                pass
-
     def createLicensedataTable(self):
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
@@ -34522,60 +34425,10 @@ class EntropyDatabaseInterface:
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE trashedcounters ( counter INTEGER );')
 
-    def createTriggerTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE triggers ( idpackage INTEGER PRIMARY KEY, data BLOB );')
-
-    def createTriggerColumn(self):
-        with self.WriteLock:
-            self.cursor.execute('ALTER TABLE baseinfo ADD COLUMN trigger INTEGER;')
-            self.cursor.execute('UPDATE baseinfo SET trigger = 0')
-
-    def createMessagesTable(self):
-        with self.WriteLock:
-            self.cursor.execute("CREATE TABLE messages ( idpackage INTEGER, message VARCHAR );")
-
-    def createEclassesTable(self):
-        with self.WriteLock:
-            self.cursor.execute('DROP TABLE IF EXISTS eclasses;')
-            self.cursor.execute('DROP TABLE IF EXISTS eclassesreference;')
-            self.cursor.execute('CREATE TABLE eclasses ( idpackage INTEGER, idclass INTEGER );')
-            self.cursor.execute('CREATE TABLE eclassesreference ( idclass INTEGER PRIMARY KEY AUTOINCREMENT, classname VARCHAR );')
-
-    def createNeededTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE needed ( idpackage INTEGER, idneeded INTEGER, elfclass INTEGER );')
-            self.cursor.execute('CREATE TABLE neededreference ( idneeded INTEGER PRIMARY KEY AUTOINCREMENT, library VARCHAR );')
-
-    def createSystemPackagesTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE systempackages ( idpackage INTEGER PRIMARY KEY );')
-
-    def createInjectedTable(self):
-        with self.WriteLock:
-            self.cursor.execute('CREATE TABLE injected ( idpackage INTEGER PRIMARY KEY );')
-
-    def createProtectTable(self):
-        with self.WriteLock:
-            self.cursor.execute('DROP TABLE IF EXISTS configprotect;')
-            self.cursor.execute('DROP TABLE IF EXISTS configprotectmask;')
-            self.cursor.execute('DROP TABLE IF EXISTS configprotectreference;')
-            self.cursor.execute('CREATE TABLE configprotect ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
-            self.cursor.execute('CREATE TABLE configprotectmask ( idpackage INTEGER PRIMARY KEY, idprotect INTEGER );')
-            self.cursor.execute('CREATE TABLE configprotectreference ( idprotect INTEGER PRIMARY KEY AUTOINCREMENT, protect VARCHAR );')
-
     def createInstalledTable(self):
         with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
             self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
-
-    def addDependRelationToDependsTable(self, iddependency, idpackage):
-        with self.WriteLock:
-            self.cursor.execute( 'INSERT into dependstable VALUES (?,?)', (iddependency, idpackage,))
-            if (self.entropyTools.is_user_in_entropy_group()) and \
-                (self.dbname.startswith(etpConst['serverdbid'])):
-                    # force commit even if readonly, this will allow to automagically fix dependstable server side
-                    self.connection.commit() # we don't care much about syncing the database since it's quite trivial
 
     def addDependsRelationToDependsTable(self, iterable):
         with self.WriteLock:
