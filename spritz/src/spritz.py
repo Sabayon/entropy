@@ -2007,7 +2007,7 @@ class SpritzApplication(Controller):
         initConfig_entropyConstants(etpConst['systemroot'])
         # re-read configprotect
         self.Equo.SystemSettings.clear()
-        self.Equo.reloadRepositoriesConfigProtect()
+        self.Equo.reload_repositories_config()
         self.setupPreferences()
 
     def on_preferencesRestoreButton_clicked(self, widget):

@@ -687,12 +687,12 @@ class EquoInterface(TextInterface):
     def set_priority(self, low = 0):
         return const_setNiceLevel(low)
 
-    def reloadRepositoriesConfigProtect(self, repositories = None):
+    def reload_repositories_config(self, repositories = None):
         if repositories == None:
             repositories = self.validRepositories
         for repoid in repositories:
             dbconn = self.openRepositoryDatabase(repoid)
-            self.loadRepositoryConfigProtect(repoid, dbconn)
+            self.setup_repository_config(repoid, dbconn)
 
     def switchChroot(self, chroot = ""):
         # clean caches
@@ -857,7 +857,7 @@ class EquoInterface(TextInterface):
     def openRepositoryDatabase(self, repoid):
         t_ident = 1 # thread.get_ident() disabled for now
         if not self.repoDbCache.has_key((repoid,etpConst['systemroot'],t_ident,)):
-            dbconn = self.loadRepositoryDatabase(repoid, xcache = self.xcache, indexing = self.indexing)
+            dbconn = self.load_repository_database(repoid, xcache = self.xcache, indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
             except:
@@ -880,7 +880,7 @@ class EquoInterface(TextInterface):
     @output: database class instance
     NOTE: DO NOT USE THIS DIRECTLY, BUT USE EquoInterface.openRepositoryDatabase
     '''
-    def loadRepositoryDatabase(self, repoid, xcache = True, indexing = True):
+    def load_repository_database(self, repoid, xcache = True, indexing = True):
 
         if isinstance(repoid,basestring):
             if repoid.endswith(etpConst['packagesext']):
@@ -922,7 +922,7 @@ class EquoInterface(TextInterface):
         # initialize CONFIG_PROTECT
         if (etpRepositories[repoid]['configprotect'] == None) or \
             (etpRepositories[repoid]['configprotectmask'] == None):
-                self.loadRepositoryConfigProtect(repoid, conn)
+                self.setup_repository_config(repoid, conn)
 
         if (repoid not in etpConst['client_treeupdatescalled']) and (self.entropyTools.is_user_in_entropy_group()) and (not repoid.endswith(etpConst['packagesext'])):
             updated = False
@@ -938,7 +938,7 @@ class EquoInterface(TextInterface):
                 self.calculate_world_updates(use_cache = False)
         return conn
 
-    def loadRepositoryConfigProtect(self, repoid, dbconn):
+    def setup_repository_config(self, repoid, dbconn):
 
         try:
             etpRepositories[repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
