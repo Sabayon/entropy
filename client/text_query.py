@@ -58,6 +58,9 @@ def query(options):
     elif myopts[0] == "belongs":
         rc = searchBelongs(myopts[1:])
 
+    elif myopts[0] == "changelog":
+        rc = searchChangeLog(myopts[1:])
+
     elif myopts[0] == "depends":
         rc = searchDepends(myopts[1:])
 
@@ -201,6 +204,47 @@ def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None)
         return dataInfo
     return 0
 
+
+def searchChangeLog(atoms, dbconn = None, EquoConnection = None):
+
+    if EquoConnection != None:
+        Equo = EquoConnection
+    else:
+        try:
+            if Equo == None:
+                Equo = EquoInterface()
+        except NameError:
+            Equo = EquoInterface()
+
+    if not etpUi['quiet']:
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("ChangeLog Search"),)))
+
+    tot_results = 0
+    for atom in atoms:
+        if dbconn != None:
+            idpackage, rc = dbconn.atomMatch(atom)
+            if rc != 0:
+                print_info(darkred("%s: %s" % (_("No match for"),bold(atom),)))
+                continue
+        else:
+            idpackage, r_id = Equo.atomMatch(atom)
+            if idpackage == -1:
+                print_info(darkred("%s: %s" % (_("No match for"),bold(atom),)))
+                continue
+            dbconn = Equo.openRepositoryDatabase(r_id)
+
+        db_atom = dbconn.retrieveAtom(idpackage)
+        if etpUi['quiet']: print_generic("%s :" % (db_atom,))
+        else: print_info(blue(" %s: " % (_("Atom"),) )+bold("\t"+db_atom))
+
+        changelog = dbconn.retrieveChangelog(idpackage)
+        if not changelog:
+            print_generic(_("No ChangeLog available"))
+        else:
+            print_generic(changelog)
+        print "="*80
+
+    return 0
 
 
 def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None):

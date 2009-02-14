@@ -153,21 +153,22 @@ myopts = [
     (2,'update',2,_('run the configuration files update function')),
     None,
     (1,'query',2,_('do misc queries on repository and local databases')),
-        (2,'installed',1,_('search a package into the local database')),
         (2,'belongs',2,_('search from what package a file belongs')),
+        (2,'changelog',1,_('show packages changelog')),
         (2,'depends',2,_('search what packages depend on the provided atoms')),
-        (2,'needed',2,_('show runtime libraries needed by the provided atoms')),
-        (2,'required',1,_('show atoms needing the provided libraries')),
+        (2,'description',1,_('search packages by description')),
         (2,'files',2,_('show files owned by the provided atoms')),
-        (2,'removal',2,_('show the removal tree for the specified atoms')),
-        (2,'tags',2,_('show packages owning the provided tags')),
-        (2,'sets',2,_('search available package sets')),
-        (2,'slot',2,_('show packages owning the provided slot')),
+        (2,'installed',1,_('search a package into the local database')),
         (2,'license',2,_('show packages owning the provided licenses')),
         (2,'list',2,_('list packages based on the chosen parameter below')),
-    (3,'installed',1,_('list installed packages')),
+            (3,'installed',1,_('list installed packages')),
+        (2,'needed',2,_('show runtime libraries needed by the provided atoms')),
         (2,'orphans',2,_('search files that do not belong to any package')),
-        (2,'description',1,_('search packages by description')),
+        (2,'removal',2,_('show the removal tree for the specified atoms')),
+        (2,'required',1,_('show atoms needing the provided libraries')),
+        (2,'sets',2,_('search available package sets')),
+        (2,'slot',2,_('show packages owning the provided slot')),
+        (2,'tags',2,_('show packages owning the provided tags')),
         (2,'--verbose',1,_('show more details')),
         (2,'--quiet',2,_('print results in a scriptable way')),
     None,
@@ -258,16 +259,17 @@ myopts = [
             (3,'default <repo_id>',2,_('set the default repository')),
 
         (2,'query',2,_('do some searches into community repository databases')),
-            (3,'search',3,_('search packages inside the default repository database')),
-            (3,'needed',3,_('show runtime libraries needed by the provided atoms')),
-            (3,'depends',3,_('show what packages depend on the provided atoms')),
-            (3,'tags',3,_('show packages owning the specified tags')),
-            (3,'sets',3,_('search available package sets')),
-            (3,'files',3,_('show files owned by the provided atoms')),
             (3,'belongs',3,_('show from what package the provided files belong')),
+            (3,'changelog',1,_('show packages changelog')),
+            (3,'depends',3,_('show what packages depend on the provided atoms')),
             (3,'description',2,_('search packages by description')),
             (3,'eclass',3,_('search packages using the provided eclasses')),
+            (3,'files',3,_('show files owned by the provided atoms')),
             (3,'list',3,_('list all the packages in the default repository')),
+            (3,'needed',3,_('show runtime libraries needed by the provided atoms')),
+            (3,'search',3,_('search packages inside the default repository database')),
+            (3,'sets',3,_('search available package sets')),
+            (3,'tags',3,_('show packages owning the specified tags')),
             (3,'--verbose',2,_('show more details')),
             (3,'--quiet',3,_('print results in a scriptable way')),
 
@@ -621,7 +623,6 @@ try:
                 else:
                     rc = server_reagent.Entropy.depends_table_initialize()
                     server_reagent.Entropy.close_server_databases()
-
 
     elif (options[0] == "cleanup"):
         entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])

@@ -3975,6 +3975,23 @@ class PkgInfoMenu(MenuSkel):
             self.switched_to_ugc_page = True
             self.on_loadUgcButton_clicked(widget, force = False)
 
+    def on_showChangeLogButton_clicked(self, widget):
+        if not self.changelog: return
+        mybuffer = gtk.TextBuffer()
+        mybuffer.set_text(self.changelog)
+        xml_clread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
+        read_dialog = xml_clread.get_widget( "textReadWindow" )
+        okReadButton = xml_clread.get_widget( "okReadButton" )
+        self.changelog_read_dialog = read_dialog
+        okReadButton.connect( 'clicked', self.destroy_changelog_read_dialog )
+        clView = xml_clread.get_widget( "readTextView" )
+        clView.set_buffer(mybuffer)
+        read_dialog.set_title(_("Package ChangeLog"))
+        read_dialog.show_all()
+
+    def destroy_changelog_read_dialog(self, widget):
+        self.changelog_read_dialog.destroy()
+
     def on_star5_enter_notify_event(self, widget, event):
         self.star_enter(widget, event, 5)
 
@@ -4252,7 +4269,8 @@ class PkgInfoMenu(MenuSkel):
                         self.pkginfo_ui.messagesLabel,
                         self.pkginfo_ui.triggerLabel,
                         self.pkginfo_ui.configProtectLabel,
-                        self.pkginfo_ui.ugcTitleLabel
+                        self.pkginfo_ui.ugcTitleLabel,
+                        self.pkginfo_ui.changeLogLabel
         ]
         for item in bold_items:
             t = item.get_text()
@@ -4306,6 +4324,12 @@ class PkgInfoMenu(MenuSkel):
         if idpackage_masked == -1:
             masked = 'True, %s' % (self.Entropy.SystemSettings['pkg_masking_reasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
+
+        # package changelog
+        self.changelog = pkg.changelog
+        if not isinstance(self.changelog,basestring):
+            self.pkginfo_ui.showChangeLogButtonAlign.hide()
+            self.pkginfo_ui.changeLogLabel.hide()
 
         # sources view
         self.sourcesModel.clear()
@@ -5855,13 +5879,13 @@ class LicenseDialog:
         self.Spritz = spritz_app
         self.Entropy = entropy
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="entropy" )
-        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'licenseReadWindow',domain="entropy" )
+        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
         self.dialog = self.xml.get_widget( "licenseWindow" )
         self.dialog.set_transient_for( self.parent )
-        self.read_dialog = self.xml_licread.get_widget( "licenseReadWindow" )
+        self.read_dialog = self.xml_licread.get_widget( "textReadWindow" )
         self.read_dialog.connect( 'delete-event', self.close_read_text_window )
         #self.read_dialog.set_transient_for( self.dialog )
-        self.licenseView = self.xml_licread.get_widget( "licenseTextView" )
+        self.licenseView = self.xml_licread.get_widget( "readTextView" )
         self.okReadButton = self.xml_licread.get_widget( "okReadButton" )
         self.okReadButton.connect( "clicked", self.close_read_text )
 

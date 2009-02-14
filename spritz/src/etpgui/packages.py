@@ -293,6 +293,10 @@ class EntropyPackage:
         if self.pkgset: return ""
         return self.dbconn.retrieveLicense(self.matched_id)
 
+    def getChangeLog(self):
+        if self.pkgset: return ""
+        return self.dbconn.retrieveChangelog(self.matched_id)
+
     def getDigest(self):
         if self.pkgset: return "0"
         return self.dbconn.retrieveDigest(self.matched_id)
@@ -520,3 +524,4 @@ class EntropyPackage:
     downloads = property(fget=getUGCPackageDownloads)
     user_unmasked = property(fget=isUserUnmasked)
     user_masked = property(fget=isUserMasked)
+    changelog = property(fget=getChangeLog)
