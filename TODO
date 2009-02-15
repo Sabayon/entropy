@@ -2,6 +2,11 @@ TODO list
 
 Proposed for Entropy 0.6+ (before and after) (requires API changes, perhaps):
 
+  - OpenGL setup with NVIDIA, again
+  - External trigger: rewrite support and use bash
+  - Spritz: please wait w/ progress bar?
+  - EquoInterface.atomMatch cache validation?
+
   - Documentation + man page (NLnet Milestone 7)
   - System Package Set representing what's inside a stock distribution
     - Connect Smart applications to it to filter out common deps and eventually make it usable
@@ -9,9 +14,9 @@ Proposed for Entropy 0.6+ (before and after) (requires API changes, perhaps):
     - Implement entropy:// URI handler
   - Entropy codebase refactoring
   - parallel http/ftp fetching
-  - OpenGL setup with NVIDIA, again
-  - External trigger: rewrite support and use bash
   - use expiration as a base to have and handle multiple packages in repo?
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
+  - SSL improvements
+

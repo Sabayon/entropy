@@ -1803,7 +1803,7 @@ class EquoInterface(TextInterface):
             use_cache = useCache
             while 1:
                 try:
-                    query_data,query_rc = dbconn.atomMatch(
+                    query_data, query_rc = dbconn.atomMatch(
                         atom,
                         caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
@@ -2410,7 +2410,17 @@ class EquoInterface(TextInterface):
                 myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
                 if myidpackage == -1: m_idpackage = -1
             else:
-                m_idpackage, m_repo = atom_match(dep_atom)
+                m_use_cache = True
+                while 1:
+                    m_idpackage, m_repo = atom_match(dep_atom, useCache = m_use_cache)
+                    if m_idpackage == -1: break
+                    matchdb = open_repo(m_repo)
+                    if matchdb.isIDPackageAvailable(m_idpackage):
+                        break
+                    if m_use_cache:
+                        m_use_cache = False
+                        continue
+                    break
             if m_idpackage == -1:
                 deps_not_found.add(dep_atom)
                 mydep = mybuffer.pop()
@@ -6724,91 +6734,76 @@ class RepoInterface:
                 mytxt = _("For %s, cmethod can't be None") % (item,)
                 raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
 
-        if item == "db":
-            url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[2]]
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[2]]
-        elif item == "dbdump":
-            url = etpRepositories[repo]['database'] +   "/" + etpConst[cmethod[3]]
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[3]]
-        elif item == "rev":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaserevisionfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaserevisionfile']
-        elif item == "ck":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasehashfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasehashfile']
-        elif item == "dbdumpck":
-            url = etpRepositories[repo]['database'] + "/" + etpConst[cmethod[4]]
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst[cmethod[4]]
-        elif item == "mask":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasemaskfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasemaskfile']
-        elif item == "system_mask":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasesytemmaskfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasesytemmaskfile']
-        elif item == "conflicting_tagged":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaseconflictingtaggedfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaseconflictingtaggedfile']
-        elif item == "make.conf":
-            myfile = os.path.basename(etpConst['spm']['global_make_conf'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
-            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
-        elif item == "package.mask":
-            myfile = os.path.basename(etpConst['spm']['global_package_mask'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
-            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
-        elif item == "package.unmask":
-            myfile = os.path.basename(etpConst['spm']['global_package_unmask'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
-            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
-        elif item == "package.keywords":
-            myfile = os.path.basename(etpConst['spm']['global_package_keywords'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
-            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
-        elif item == "package.use":
-            myfile = os.path.basename(etpConst['spm']['global_package_use'])
-            url = etpRepositories[repo]['database'] + "/" + myfile
-            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
-        elif item == "profile.link":
-            myfile = etpConst['spm']['global_make_profile_link_name']
-            url = etpRepositories[repo]['database'] + "/" + myfile
-            filepath = etpRepositories[repo]['dbpath'] + "/" + myfile
-        elif item == "lic_whitelist":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaselicwhitelistfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaselicwhitelistfile']
-        elif item == "lock":
-            url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabasedownloadlockfile']
-            filepath = "/dev/null"
-        elif item == "server.cert":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabasecacertfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabasecacertfile']
-        elif item == "ca.cert":
-            url = etpRepositories[repo]['database'] + "/" + etpConst['etpdatabaseservercertfile']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + etpConst['etpdatabaseservercertfile']
-        elif item == "notice_board":
-            url = etpRepositories[repo]['notice_board']
-            filepath = etpRepositories[repo]['dbpath'] + "/" + os.path.basename(etpRepositories[repo]['notice_board'])
+        repo_db = etpRepositories[repo]['database']
+        repo_dbpath = etpRepositories[repo]['dbpath']
+        ec_rev = etpConst['etpdatabaserevisionfile']
+        ec_hash = etpConst['etpdatabasehashfile']
+        ec_maskfile = etpConst['etpdatabasemaskfile']
+        ec_sysmaskfile = etpConst['etpdatabasesytemmaskfile']
+        ec_confl_taged = etpConst['etpdatabaseconflictingtaggedfile']
+        make_conf_file = os.path.basename(etpConst['spm']['global_make_conf'])
+        pkg_mask_file = os.path.basename(etpConst['spm']['global_package_mask'])
+        pkg_unmask_file = os.path.basename(etpConst['spm']['global_package_unmask'])
+        pkg_keywords_file = os.path.basename(etpConst['spm']['global_package_keywords'])
+        pkg_use_file = os.path.basename(etpConst['spm']['global_package_use'])
+        sys_profile_lnk = etpConst['spm']['global_make_profile_link_name']
+        pkg_lic_wl_file = etpConst['etpdatabaselicwhitelistfile']
+        repo_lock_file = etpConst['etpdatabasedownloadlockfile']
+        ca_cert_file = etpConst['etpdatabasecacertfile']
+        server_cert_file = etpConst['etpdatabaseservercertfile']
+        notice_board_filename = os.path.basename(etpRepositories[repo]['notice_board'])
+        ec_cm2 = None
+        ec_cm3 = None
+        ec_cm4 = None
+        if cmethod != None:
+            ec_cm2 = etpConst[cmethod[2]]
+            ec_cm3 = etpConst[cmethod[3]]
+            ec_cm4 = etpConst[cmethod[4]]
 
-        return url, filepath
+        mymap = {
+            'db': ("%s/%s" % (repo_db,ec_cm2,),"%s/%s" % (repo_dbpath,ec_cm2,),),
+            'dbdump': ("%s/%s" % (repo_db,ec_cm3,),"%s/%s" % (repo_dbpath,ec_cm3,),),
+            'rev': ("%s/%s" % (repo_db,ec_rev,),"%s/%s" % (repo_dbpath,ec_rev,),),
+            'ck': ("%s/%s" % (repo_db,ec_hash,),"%s/%s" % (repo_dbpath,ec_hash,),),
+            'dbdumpck': ("%s/%s" % (repo_db,ec_cm4,),"%s/%s" % (repo_dbpath,ec_cm4,),),
+            'mask': ("%s/%s" % (repo_db,ec_maskfile,),"%s/%s" % (repo_dbpath,ec_maskfile,),),
+            'system_mask': ("%s/%s" % (repo_db,ec_sysmaskfile,),"%s/%s" % (repo_dbpath,ec_sysmaskfile,),),
+            'conflicting_tagged': ("%s/%s" % (repo_db,ec_confl_taged,),"%s/%s" % (repo_dbpath,ec_confl_taged,),),
+            'make.conf': ("%s/%s" % (repo_db,make_conf_file,),"%s/%s" % (repo_dbpath,make_conf_file,),),
+            'package.mask': ("%s/%s" % (repo_db,pkg_mask_file,),"%s/%s" % (repo_dbpath,pkg_mask_file,),),
+            'package.unmask': ("%s/%s" % (repo_db,pkg_unmask_file,),"%s/%s" % (repo_dbpath,pkg_unmask_file,),),
+            'package.keywords': ("%s/%s" % (repo_db,pkg_keywords_file,),"%s/%s" % (repo_dbpath,pkg_keywords_file,),),
+            'package.use': ("%s/%s" % (repo_db,pkg_use_file,),"%s/%s" % (repo_dbpath,pkg_use_file,),),
+            'profile.link': ("%s/%s" % (repo_db,sys_profile_lnk,),"%s/%s" % (repo_dbpath,sys_profile_lnk,),),
+            'lic_whitelist': ("%s/%s" % (repo_db,pkg_lic_wl_file,),"%s/%s" % (repo_dbpath,pkg_lic_wl_file,),),
+            'lock': ("%s/%s" % (repo_db,repo_lock_file,),"%s/%s" % (repo_dbpath,repo_lock_file,),),
+            'server.cert': ("%s/%s" % (repo_db,server_cert_file,),"%s/%s" % (repo_dbpath,server_cert_file,),),
+            'ca.cert': ("%s/%s" % (repo_db,ca_cert_file,),"%s/%s" % (repo_dbpath,ca_cert_file,),),
+            'notice_board': (etpRepositories[repo]['notice_board'],"%s/%s" % (repo_dbpath,notice_board_filename,),),
+        }
+
+        return mymap.get(item)
 
     def __remove_repository_files(self, repo, cmethod):
 
         dbfilenameid = cmethod[2]
         self.__validate_repository_id(repo)
+        repo_dbpath = etpRepositories[repo]['dbpath']
 
         if self.dbformat_eapi == 1:
-            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile']):
-                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'])
-            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid]):
-                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[dbfilenameid])
-            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
-                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+            if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabasehashfile']):
+                os.remove(repo_dbpath+"/"+etpConst['etpdatabasehashfile'])
+            if os.path.isfile(repo_dbpath+"/"+etpConst[dbfilenameid]):
+                os.remove(repo_dbpath+"/"+etpConst[dbfilenameid])
+            if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
+                os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
         elif self.dbformat_eapi == 2:
-            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+cmethod[4]):
-                os.remove(etpRepositories[repo]['dbpath']+"/"+cmethod[4])
-            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]]):
-                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]])
-            if os.path.isfile(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']):
-                os.remove(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabaserevisionfile'])
+            if os.path.isfile(repo_dbpath+"/"+cmethod[4]):
+                os.remove(repo_dbpath+"/"+cmethod[4])
+            if os.path.isfile(repo_dbpath+"/"+etpConst[cmethod[3]]):
+                os.remove(repo_dbpath+"/"+etpConst[cmethod[3]])
+            if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
+                os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
         else:
             mytxt = _("self.dbformat_eapi must be in (1,2)")
             raise exceptionTools.InvalidData('InvalidData: %s' % (mytxt,))
@@ -7408,6 +7403,7 @@ class RepoInterface:
             dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
             dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
             dbfile_old = dbfile+".sync"
+            cmethod = self.__validate_compression_method(repo)
 
             while 1:
 
@@ -7416,7 +7412,6 @@ class RepoInterface:
 
                 if self.dbformat_eapi < 3:
 
-                    cmethod = self.__validate_compression_method(repo)
                     down_status = self.handle_database_download(repo, cmethod)
                     if not down_status:
                         self.Entropy.cycleDone()
@@ -7449,7 +7444,11 @@ class RepoInterface:
                             type = "info",
                             header = blue("  # "),
                         )
-                        status = False
+                    except:
+                        # avoid broken entries, deal with every exception
+                        self.__remove_repository_files(repo, cmethod)
+                        raise
+
                     if status == None: # remote db not available anymore ?
                         time.sleep(5)
                         locked = self.handle_repository_lock(repo)
@@ -31710,27 +31709,22 @@ class EntropyDatabaseInterface:
 
         with self.WriteLock:
 
-            self.cursor.execute(
-                    'INSERT into baseinfo VALUES '
-                    '('+myidpackage_string+',?,?,?,?,?,?,?,?,?,?,?)'
-                    , mybaseinfo_data
-            )
+            self.cursor.execute('INSERT into baseinfo VALUES ('+myidpackage_string+',?,?,?,?,?,?,?,?,?,?,?)', mybaseinfo_data)
             if idpackage == None:
                 idpackage = self.cursor.lastrowid
 
             # extrainfo
             self.cursor.execute(
-                    'INSERT into extrainfo VALUES '
-                    '(?,?,?,?,?,?,?,?)'
-                    , (	idpackage,
-                            etpData['description'],
-                            etpData['homepage'],
-                            etpData['download'],
-                            etpData['size'],
-                            idflags,
-                            etpData['digest'],
-                            etpData['datecreation'],
-                            )
+                'INSERT into extrainfo VALUES (?,?,?,?,?,?,?,?)',
+                (   idpackage,
+                    etpData['description'],
+                    etpData['homepage'],
+                    etpData['download'],
+                    etpData['size'],
+                    idflags,
+                    etpData['digest'],
+                    etpData['datecreation'],
+                )
             )
         ### other information iserted below are not as critical as these above
 
@@ -33172,27 +33166,34 @@ class EntropyDatabaseInterface:
 
     # You must provide the full atom to this function
     # WARNING: this function does not support branches
-    def isPackageAvailable(self,pkgatom):
+    def isPackageAvailable(self, pkgatom):
         pkgatom = self.entropyTools.removePackageOperators(pkgatom)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
-    def isIDPackageAvailable(self,idpackage):
+    def isIDPackageAvailable(self, idpackage):
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         result = self.cursor.fetchone()
         if not result:
             return False
         return True
 
-    def isCategoryAvailable(self,category):
+    def areIDPackagesAvailable(self, idpackages):
+        self.cursor.execute('SELECT count(idpackage) FROM baseinfo WHERE idpackage IN %s' % (tuple(idpackages),) )
+        count = self.cursor.fetchone()[0]
+        if count != len(idpackages):
+            return False
+        return True
+
+    def isCategoryAvailable(self, category):
         self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
-    def isProtectAvailable(self,protect):
+    def isProtectAvailable(self, protect):
         self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
         result = self.cursor.fetchone()
         if result: return result[0]
@@ -34477,11 +34478,6 @@ class EntropyDatabaseInterface:
             self.commitChanges()
             self.clearCache()
 
-########################################################
-####
-##   Dependency handling functions
-#
-
     def atomMatchFetchCache(self, *args):
         if self.xcache:
             cached = self.dumpTools.loadobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),))
@@ -34493,6 +34489,28 @@ class EntropyDatabaseInterface:
                 self.ServiceInterface.Cacher.push("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
             else:
                 self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
+
+    def atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
+
+        # time wasted for a reason
+        data, rc = cached_obj
+        if rc != 0: return cached_obj
+
+        if (not extendedResults) and (not multiMatch):
+            if not self.isIDPackageAvailable(data): return None
+        elif extendedResults and (not multiMatch):
+            # ((idpackage,0,version,versiontag,revision,),0)
+            if not self.isIDPackageAvailable(data[0]): return None
+        elif extendedResults and multiMatch:
+            # (set([(idpackage,0,version,version_tag,revision) for x in dbpkginfo]),0)
+            idpackages = set([x[0] for x in data])
+            if not self.areIDPackagesAvailable(idpackages): return None
+        elif (not extendedResults) and multiMatch:
+            # (set([x[0] for x in dbpkginfo]),0)
+            idpackages = set(data)
+            if not self.areIDPackagesAvailable(idpackages): return None
+
+        return cached_obj
 
     def _idpackageValidator_live(self, idpackage, reponame):
         if (idpackage,reponame) in self.ServiceInterface.SystemSettings['live_packagemasking']['mask_matches']:
@@ -34767,7 +34785,9 @@ class EntropyDatabaseInterface:
        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
     '''
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False, matchBranches = (), matchTag = None, matchUse = (), packagesFilter = True, matchRevision = None, extendedResults = False, useCache = True):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False,
+            matchBranches = (), matchTag = None, matchUse = (), packagesFilter = True,
+            matchRevision = None, extendedResults = False, useCache = True ):
 
         if not atom:
             return -1,1
@@ -34779,6 +34799,11 @@ class EntropyDatabaseInterface:
                 matchUse, packagesFilter, matchRevision,
                 extendedResults
             )
+            if isinstance(cached,tuple):
+                try:
+                    cached = self.atomMatchValidateCache(cached, multiMatch, extendedResults)
+                except (TypeError,ValueError,IndexError,KeyError,):
+                    cached = None
             if isinstance(cached,tuple):
                 return cached
 
