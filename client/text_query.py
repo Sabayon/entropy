@@ -764,23 +764,27 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
             tag = Equo.entropyTools.dep_gettag(package)
             package = Equo.entropyTools.remove_slot(package)
             package = Equo.entropyTools.remove_tag(package)
-            result = dbconn.searchPackages(package, slot = slot, tag = tag)
 
-            if (not result): # look for provide
-                result = dbconn.searchProvide(package, slot = slot, tag = tag)
+            try:
 
-            if (result):
-                foundPackages[repo][package] = result
-                # print info
-                for pkg in foundPackages[repo][package]:
-                    idpackage = pkg[1]
-                    if (idreturn):
-                        dataInfo.add((idpackage,repo))
-                    else:
-                        printPackageInfo(idpackage,dbconn, EquoConnection = Equo)
-                if (not idreturn) and (not etpUi['quiet']):
-                    print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
-                    print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(foundPackages[repo][package])))+red(" %s" % (_("entries"),) ))
+                result = dbconn.searchPackages(package, slot = slot, tag = tag)
+                if not result: # look for provide
+                    result = dbconn.searchProvide(package, slot = slot, tag = tag)
+                if result:
+                    foundPackages[repo][package] = result
+                    # print info
+                    for pkg in foundPackages[repo][package]:
+                        idpackage = pkg[1]
+                        if (idreturn):
+                            dataInfo.add((idpackage,repo))
+                        else:
+                            printPackageInfo(idpackage,dbconn, EquoConnection = Equo)
+                    if not idreturn and not etpUi['quiet']:
+                        print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
+                        print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(foundPackages[repo][package])))+red(" %s" % (_("entries"),) ))
+
+            except Equo.dbapi2.DatabaseError:
+                continue
 
 
     if (idreturn):
