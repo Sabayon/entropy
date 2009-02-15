@@ -4269,7 +4269,7 @@ class EquoInterface(TextInterface):
         for x in portage_metadata['RDEPEND'].split():
             if x.startswith("!") or (x in ("(","||",")","")):
                 continue
-            data['dependencies'][x] = 0
+            data['dependencies'][x] = etpConst['spm']['(r)depend_id']
         for x in portage_metadata['PDEPEND'].split():
             if x.startswith("!") or (x in ("(","||",")","")):
                 continue
@@ -4278,7 +4278,7 @@ class EquoInterface(TextInterface):
 
         if (kernelstuff) and (not kernelstuff_kernel):
             # add kname to the dependency
-            data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver] = 0
+            data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver] = etpConst['spm']['(r)depend_id']
 
         # Conflicting tagged packages support
         key = data['category']+"/"+data['name']
@@ -7365,7 +7365,6 @@ class RepoInterface:
             header = "\t",
         )
 
-        #mydbconn.doCleanups()
         mydbconn.commitChanges()
         # now verify if both checksums match
         result = False
@@ -31135,6 +31134,7 @@ class EntropyDatabaseInterface:
 
             # store new digest into database
             self.setRepositoryUpdatesDigest(self.server_repo, portage_dirs_digest)
+            self.commitChanges()
 
     def clientUpdatePackagesData(self, clientDbconn, force = False):
 
@@ -31187,10 +31187,9 @@ class EntropyDatabaseInterface:
 
             # store new digest into database
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
-
             # store new actions
             clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'], update_actions, etpConst['branch'])
-
+            clientDbconn.commitChanges()
             # clear client cache
             clientDbconn.clearCache()
             return True
@@ -31906,96 +31905,62 @@ class EntropyDatabaseInterface:
         with self.WriteLock:
             self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = (?)',(mirrorname,))
 
-    def addMirrors(self,mirrorname,mirrorlist):
+    def addMirrors(self, mirrorname, mirrorlist):
         with self.WriteLock:
-            for x in mirrorlist:
-                self.cursor.execute(
-                    'INSERT into mirrorlinks VALUES '
-                    '(?,?)', (mirrorname,x,)
-                )
+            data = [(mirrorname,x,) for x in mirrorlist]
+            self.cursor.executemany('INSERT into mirrorlinks VALUES (?,?)', data)
 
     def addCategory(self,category):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into categories VALUES '
-                    '(NULL,?)', (category,)
-            )
+            self.cursor.execute('INSERT into categories VALUES (NULL,?)', (category,))
             return self.cursor.lastrowid
-
 
     def addProtect(self,protect):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into configprotectreference VALUES '
-                    '(NULL,?)', (protect,)
-            )
+            self.cursor.execute('INSERT into configprotectreference VALUES (NULL,?)', (protect,))
             return self.cursor.lastrowid
 
 
     def addSource(self,source):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into sourcesreference VALUES '
-                    '(NULL,?)', (source,)
-            )
+            self.cursor.execute('INSERT into sourcesreference VALUES (NULL,?)', (source,))
             return self.cursor.lastrowid
 
     def addDependency(self,dependency):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into dependenciesreference VALUES '
-                    '(NULL,?)', (dependency,)
-            )
+            self.cursor.execute('INSERT into dependenciesreference VALUES (NULL,?)', (dependency,))
             return self.cursor.lastrowid
 
     def addKeyword(self,keyword):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into keywordsreference VALUES '
-                    '(NULL,?)', (keyword,)
-            )
+            self.cursor.execute('INSERT into keywordsreference VALUES (NULL,?)', (keyword,))
             return self.cursor.lastrowid
 
     def addUseflag(self,useflag):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into useflagsreference VALUES '
-                    '(NULL,?)', (useflag,)
-            )
+            self.cursor.execute('INSERT into useflagsreference VALUES (NULL,?)', (useflag,))
             return self.cursor.lastrowid
 
     def addEclass(self,eclass):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into eclassesreference VALUES '
-                    '(NULL,?)', (eclass,)
-            )
+            self.cursor.execute('INSERT into eclassesreference VALUES (NULL,?)', (eclass,))
             return self.cursor.lastrowid
 
     def addNeeded(self,needed):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into neededreference VALUES '
-                    '(NULL,?)', (needed,)
-            )
+            self.cursor.execute('INSERT into neededreference VALUES (NULL,?)', (needed,))
             return self.cursor.lastrowid
 
     def addLicense(self,pkglicense):
         if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into licenses VALUES '
-                    '(NULL,?)', (pkglicense,)
-            )
+            self.cursor.execute('INSERT into licenses VALUES (NULL,?)', (pkglicense,))
             return self.cursor.lastrowid
 
     def addCompileFlags(self,chost,cflags,cxxflags):
         with self.WriteLock:
-            self.cursor.execute(
-                    'INSERT into flags VALUES '
-                    '(NULL,?,?,?)', (chost,cflags,cxxflags,)
-            )
+            self.cursor.execute('INSERT into flags VALUES (NULL,?,?,?)', (chost,cflags,cxxflags,))
             return self.cursor.lastrowid
 
     def setSystemPackage(self, idpackage, do_commit = True):
@@ -32309,7 +32274,11 @@ class EntropyDatabaseInterface:
         if not branch: branch = self.db_branch
         if not branch: branch = etpConst['branch']
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM counters WHERE (counter = (?) OR idpackage = (?)) AND branch = (?)', (counter,idpackage,branch,))
+            self.cursor.execute("""
+            DELETE FROM counters 
+            WHERE (counter = (?) OR 
+            idpackage = (?)) AND 
+            branch = (?)""", (counter,idpackage,branch,))
             self.cursor.execute('INSERT INTO counters VALUES (?,?,?)', (counter,idpackage,branch,))
             self.commitChanges()
 
@@ -32353,7 +32322,10 @@ class EntropyDatabaseInterface:
                 xfile = dbconn.cursor.fetchone()
 
             # now compare
-            self.cursor.execute('SELECT file FROM content WHERE content.idpackage = (?) AND content.file NOT IN (SELECT file from %s)' % (randomtable,), (idpackage,))
+            self.cursor.execute("""
+            SELECT file FROM content 
+            WHERE content.idpackage = (?) AND 
+            content.file NOT IN (SELECT file from %s)""" % (randomtable,), (idpackage,))
             diff = self.fetchall2set(self.cursor.fetchall())
             return diff
         finally:
@@ -32369,31 +32341,42 @@ class EntropyDatabaseInterface:
 
     def cleanupUseflags(self):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM useflagsreference WHERE idflag NOT IN (SELECT idflag FROM useflags)')
-            self.commitChanges()
+            self.cursor.execute("""
+            DELETE FROM useflagsreference 
+            WHERE idflag NOT IN (SELECT idflag FROM useflags)""")
 
     def cleanupSources(self):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM sourcesreference WHERE idsource NOT IN (SELECT idsource FROM sources)')
-            self.commitChanges()
+            self.cursor.execute("""
+            DELETE FROM sourcesreference 
+            WHERE idsource NOT IN (SELECT idsource FROM sources)""")
 
     def cleanupEclasses(self):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM eclassesreference WHERE idclass NOT IN (SELECT idclass FROM eclasses)')
-            self.commitChanges()
+            self.cursor.execute("""
+            DELETE FROM eclassesreference 
+            WHERE idclass NOT IN (SELECT idclass FROM eclasses)""")
 
     def cleanupNeeded(self):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM neededreference WHERE idneeded NOT IN (SELECT idneeded FROM needed)')
-            self.commitChanges()
+            self.cursor.execute("""
+            DELETE FROM neededreference 
+            WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
 
     def cleanupDependencies(self):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM dependenciesreference WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)')
-            self.commitChanges()
+            self.cursor.execute("""
+            DELETE FROM dependenciesreference 
+            WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)""")
 
     def cleanupChangelogs(self):
-        self.cursor.execute('DELETE FROM packagechangelogs WHERE category || "/" || name NOT IN (SELECT categories.category || "/" || baseinfo.name FROM baseinfo,categories WHERE baseinfo.idcategory = categories.idcategory)')
+        with self.WriteLock:
+            self.cursor.execute("""
+            DELETE FROM packagechangelogs 
+            WHERE category || "/" || name NOT IN 
+            (SELECT categories.category || "/" || baseinfo.name FROM baseinfo,categories 
+                WHERE baseinfo.idcategory = categories.idcategory
+            )""")
 
     def getNewNegativeCounter(self):
         counter = -2
@@ -32444,9 +32427,13 @@ class EntropyDatabaseInterface:
 
     def getIDPackageFromDownload(self, download_relative_path, endswith = False):
         if endswith:
-            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download LIKE (?)', ("%"+download_relative_path,))
+            self.cursor.execute("""
+            SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
+            WHERE extrainfo.download LIKE (?)""", ("%"+download_relative_path,))
         else:
-            self.cursor.execute('SELECT baseinfo.idpackage FROM baseinfo,extrainfo WHERE extrainfo.download = (?)', (download_relative_path,))
+            self.cursor.execute("""
+            SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
+            WHERE extrainfo.download = (?)""", (download_relative_path,))
         idpackage = self.cursor.fetchone()
         if idpackage: return idpackage[0]
         return -1
@@ -32466,78 +32453,76 @@ class EntropyDatabaseInterface:
         return self.cursor.fetchone()
 
     def getStrictData(self, idpackage):
-        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.version,baseinfo.versiontag,baseinfo.revision,baseinfo.atom FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        self.cursor.execute("""
+        SELECT categories.category || "/" || baseinfo.name,
+        baseinfo.slot,baseinfo.version,baseinfo.versiontag,
+        baseinfo.revision,baseinfo.atom FROM baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) AND 
+        baseinfo.idcategory = categories.idcategory""", (idpackage,))
         return self.cursor.fetchone()
 
     def getStrictScopeData(self, idpackage):
         self.cursor.execute("""
-                SELECT 
-                        atom,
-                        slot,
-                        revision
-                FROM 
-                        baseinfo
-                WHERE 
-                        idpackage = (?)
-        """, (idpackage,))
+        SELECT atom,slot,revision FROM baseinfo
+        WHERE idpackage = (?)""", (idpackage,))
         rslt = self.cursor.fetchone()
         return rslt
 
     def getScopeData(self, idpackage):
         self.cursor.execute("""
-                SELECT 
-                        baseinfo.atom,
-                        categories.category,
-                        baseinfo.name,
-                        baseinfo.version,
-                        baseinfo.slot,
-                        baseinfo.versiontag,
-                        baseinfo.revision,
-                        baseinfo.branch
-                FROM 
-                        baseinfo,
-                        categories
-                WHERE 
-                        baseinfo.idpackage = (?)
-                        and baseinfo.idcategory = categories.idcategory
+        SELECT 
+            baseinfo.atom,
+            categories.category,
+            baseinfo.name,
+            baseinfo.version,
+            baseinfo.slot,
+            baseinfo.versiontag,
+            baseinfo.revision,
+            baseinfo.branch
+        FROM 
+            baseinfo,
+            categories
+        WHERE 
+            baseinfo.idpackage = (?)
+            and baseinfo.idcategory = categories.idcategory
         """, (idpackage,))
         return self.cursor.fetchone()
 
     def getBaseData(self, idpackage):
 
         sql = """
-                SELECT 
-                        baseinfo.atom,
-                        baseinfo.name,
-                        baseinfo.version,
-                        baseinfo.versiontag,
-                        extrainfo.description,
-                        categories.category,
-                        flags.chost,
-                        flags.cflags,
-                        flags.cxxflags,
-                        extrainfo.homepage,
-                        licenses.license,
-                        baseinfo.branch,
-                        extrainfo.download,
-                        extrainfo.digest,
-                        baseinfo.slot,
-                        baseinfo.etpapi,
-                        extrainfo.datecreation,
-                        extrainfo.size,
-                        baseinfo.revision
-                FROM 
-                        baseinfo,
-                        extrainfo,
-                        categories,
-                        flags,
-                        licenses
-                WHERE 
-                        baseinfo.idpackage = (?) 
-                        and baseinfo.idpackage = extrainfo.idpackage 
-                        and baseinfo.idcategory = categories.idcategory 
-                        and extrainfo.idflags = flags.idflags
-                        and baseinfo.idlicense = licenses.idlicense
+        SELECT 
+            baseinfo.atom,
+            baseinfo.name,
+            baseinfo.version,
+            baseinfo.versiontag,
+            extrainfo.description,
+            categories.category,
+            flags.chost,
+            flags.cflags,
+            flags.cxxflags,
+            extrainfo.homepage,
+            licenses.license,
+            baseinfo.branch,
+            extrainfo.download,
+            extrainfo.digest,
+            baseinfo.slot,
+            baseinfo.etpapi,
+            extrainfo.datecreation,
+            extrainfo.size,
+            baseinfo.revision
+        FROM 
+            baseinfo,
+            extrainfo,
+            categories,
+            flags,
+            licenses
+        WHERE 
+            baseinfo.idpackage = (?) 
+            and baseinfo.idpackage = extrainfo.idpackage 
+            and baseinfo.idcategory = categories.idcategory 
+            and extrainfo.idflags = flags.idflags
+            and baseinfo.idlicense = licenses.idlicense
         """
         self.cursor.execute(sql, (idpackage,))
         return self.cursor.fetchone()
@@ -32699,15 +32684,16 @@ class EntropyDatabaseInterface:
             branch_string = 'and branch = (?)'
             params.append(forbranch)
 
-        self.cursor.execute('SELECT command FROM treeupdatesactions where repository = (?) '+branch_string+' order by date', params)
+        self.cursor.execute("""
+        SELECT command FROM treeupdatesactions WHERE 
+        repository = (?) %s order by date""" % (branch_string,), params)
         return self.fetchall2list(self.cursor.fetchall())
 
     # mainly used to restore a previous table, used by reagent in --initialize
     def bumpTreeUpdatesActions(self, updates):
         with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdatesactions')
-            for update in updates:
-                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', update)
+            self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', updates)
             self.commitChanges()
 
     def removeTreeUpdatesActions(self, repository):
@@ -32717,29 +32703,29 @@ class EntropyDatabaseInterface:
 
     def insertTreeUpdatesActions(self, updates, repository):
         with self.WriteLock:
-            for update in updates:
-                update = list(update)
-                update.insert(0,repository)
-                self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', update)
+            myupdates = [[repository]+list(x) for x in updates]
+            self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', myupdates)
             self.commitChanges()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
         with self.WriteLock:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
             self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository,digest,))
-            self.commitChanges()
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
 
         mytime = str(self.entropyTools.getCurrentUnixTime())
         with self.WriteLock:
-            for command in actions:
-                if not self.doesTreeupdatesActionExist(repository, command, branch):
-                    self.cursor.execute('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', (repository,command,branch,mytime,))
-            self.commitChanges()
+            myupdates = [
+                (repository,x,branch,mytime,) for x in actions \
+                if not self.doesTreeupdatesActionExist(repository, x, branch)
+            ]
+            self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', myupdates)
 
     def doesTreeupdatesActionExist(self, repository, command, branch):
-        self.cursor.execute('SELECT * FROM treeupdatesactions WHERE repository = (?) and command = (?) and branch = (?)', (repository,command,branch,))
+        self.cursor.execute("""
+        SELECT * FROM treeupdatesactions 
+        WHERE repository = (?) and command = (?) and branch = (?)""", (repository,command,branch,))
         result = self.cursor.fetchone()
         if result:
             return True
@@ -32818,19 +32804,18 @@ class EntropyDatabaseInterface:
 
     def retrieveCounter(self, idpackage):
         counter = -1
-        self.cursor.execute('SELECT counters.counter FROM counters,baseinfo WHERE counters.idpackage = (?) AND baseinfo.idpackage = counters.idpackage AND baseinfo.branch = counters.branch', (idpackage,))
+        self.cursor.execute("""
+        SELECT counters.counter FROM counters,baseinfo 
+        WHERE counters.idpackage = (?) AND 
+        baseinfo.idpackage = counters.idpackage AND 
+        baseinfo.branch = counters.branch""", (idpackage,))
         mycounter = self.cursor.fetchone()
         if mycounter: return mycounter[0]
         return counter
 
     def retrieveMessages(self, idpackage):
-        messages = []
-        try:
-            self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
-            messages = self.fetchall2list(self.cursor.fetchall())
-        except:
-            pass
-        return messages
+        self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
+        return self.fetchall2list(self.cursor.fetchall())
 
     # in bytes
     def retrieveSize(self, idpackage):
@@ -32857,17 +32842,23 @@ class EntropyDatabaseInterface:
         if name: return name[0]
 
     def retrieveKeySlot(self, idpackage):
-        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        self.cursor.execute("""
+        SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory""", (idpackage,))
         data = self.cursor.fetchone()
         return data
 
     def retrieveKeySlotAggregated(self, idpackage):
-        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name || ":" || baseinfo.slot FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        self.cursor.execute("""
+        SELECT categories.category || "/" || baseinfo.name || ":" || baseinfo.slot FROM baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory""", (idpackage,))
         data = self.cursor.fetchone()
         if data: return data[0]
 
     def retrieveKeySlotTag(self, idpackage):
-        self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.versiontag FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        self.cursor.execute("""
+        SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.versiontag FROM baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory""", (idpackage,))
         data = self.cursor.fetchone()
         return data
 
@@ -32892,24 +32883,39 @@ class EntropyDatabaseInterface:
         if api: return api[0]
 
     def retrieveUseflags(self, idpackage):
-        self.cursor.execute('SELECT flagname FROM useflags,useflagsreference WHERE useflags.idpackage = (?) and useflags.idflag = useflagsreference.idflag', (idpackage,))
+        self.cursor.execute("""
+        SELECT flagname FROM useflags,useflagsreference 
+        WHERE useflags.idpackage = (?) AND 
+        useflags.idflag = useflagsreference.idflag""", (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveEclasses(self, idpackage):
-        self.cursor.execute('SELECT classname FROM eclasses,eclassesreference WHERE eclasses.idpackage = (?) and eclasses.idclass = eclassesreference.idclass', (idpackage,))
+        self.cursor.execute("""
+        SELECT classname FROM eclasses,eclassesreference 
+        WHERE eclasses.idpackage = (?) AND 
+        eclasses.idclass = eclassesreference.idclass""", (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeededRaw(self, idpackage):
-        self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded', (idpackage,))
+        self.cursor.execute("""
+        SELECT library FROM needed,neededreference 
+        WHERE needed.idpackage = (?) AND 
+        needed.idneeded = neededreference.idneeded""", (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeeded(self, idpackage, extended = False, format = False):
 
         if extended:
-            self.cursor.execute('SELECT library,elfclass FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded order by library', (idpackage,))
+            self.cursor.execute("""
+            SELECT library,elfclass FROM needed,neededreference 
+            WHERE needed.idpackage = (?) AND 
+            needed.idneeded = neededreference.idneeded order by library""", (idpackage,))
             needed = self.cursor.fetchall()
         else:
-            self.cursor.execute('SELECT library FROM needed,neededreference WHERE needed.idpackage = (?) and needed.idneeded = neededreference.idneeded order by library', (idpackage,))
+            self.cursor.execute("""
+            SELECT library FROM needed,neededreference 
+            WHERE needed.idpackage = (?) AND 
+            needed.idneeded = neededreference.idneeded ORDER BY library""", (idpackage,))
             needed = self.fetchall2list(self.cursor.fetchall())
 
         if extended and format:
@@ -32929,11 +32935,28 @@ class EntropyDatabaseInterface:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependenciesList(self, idpackage):
-        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) AND dependencies.iddependency = dependenciesreference.iddependency UNION SELECT "!" || conflict FROM conflicts WHERE idpackage = (?)', (idpackage,idpackage,))
+        self.cursor.execute("""
+        SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
+        WHERE dependencies.idpackage = (?) AND 
+        dependencies.iddependency = dependenciesreference.iddependency 
+        UNION SELECT "!" || conflict FROM conflicts 
+        WHERE idpackage = (?)""", (idpackage,idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrievePostDependencies(self, idpackage):
-        self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) AND dependencies.iddependency = dependenciesreference.iddependency AND dependencies.type = (?)', (idpackage,etpConst['spm']['pdepend_id'],))
+        self.cursor.execute("""
+        SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
+        WHERE dependencies.idpackage = (?) AND 
+        dependencies.iddependency = dependenciesreference.iddependency AND 
+        dependencies.type = (?)""", (idpackage,etpConst['spm']['pdepend_id'],))
+        return self.fetchall2set(self.cursor.fetchall())
+
+    def retrieveManualDependencies(self, idpackage):
+        self.cursor.execute("""
+        SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
+        WHERE dependencies.idpackage = (?) AND 
+        dependencies.iddependency = dependenciesreference.iddependency
+        AND dependencies.type = (?)""", (idpackage,etpConst['spm']['mdepend_id'],))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None):
@@ -32946,10 +32969,16 @@ class EntropyDatabaseInterface:
             searchdata.append(deptype)
 
         if extended:
-            self.cursor.execute('SELECT dependenciesreference.dependency,dependencies.type FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency'+depstring, searchdata)
+            self.cursor.execute("""
+            SELECT dependenciesreference.dependency,dependencies.type FROM dependencies,dependenciesreference 
+            WHERE dependencies.idpackage = (?) AND 
+            dependencies.iddependency = dependenciesreference.iddependency"""+depstring, searchdata)
             deps = self.cursor.fetchall()
         else:
-            self.cursor.execute('SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference WHERE dependencies.idpackage = (?) and dependencies.iddependency = dependenciesreference.iddependency'+depstring, searchdata)
+            self.cursor.execute("""
+            SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
+            WHERE dependencies.idpackage = (?) AND 
+            dependencies.iddependency = dependenciesreference.iddependency"""+depstring, searchdata)
             deps = self.fetchall2set(self.cursor.fetchall())
 
         return deps
@@ -32965,25 +32994,37 @@ class EntropyDatabaseInterface:
         return dep
 
     def retrieveKeywords(self, idpackage):
-        self.cursor.execute('SELECT keywordname FROM keywords,keywordsreference WHERE keywords.idpackage = (?) and keywords.idkeyword = keywordsreference.idkeyword', (idpackage,))
+        self.cursor.execute("""
+        SELECT keywordname FROM keywords,keywordsreference 
+        WHERE keywords.idpackage = (?) AND 
+        keywords.idkeyword = keywordsreference.idkeyword""", (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveProtect(self, idpackage):
-        self.cursor.execute('SELECT protect FROM configprotect,configprotectreference WHERE configprotect.idpackage = (?) and configprotect.idprotect = configprotectreference.idprotect', (idpackage,))
+        self.cursor.execute("""
+        SELECT protect FROM configprotect,configprotectreference 
+        WHERE configprotect.idpackage = (?) AND 
+        configprotect.idprotect = configprotectreference.idprotect""", (idpackage,))
         protect = self.cursor.fetchone()
         if not protect: protect = ''
         else: protect = protect[0]
         return protect
 
     def retrieveProtectMask(self, idpackage):
-        self.cursor.execute('SELECT protect FROM configprotectmask,configprotectreference WHERE idpackage = (?) and configprotectmask.idprotect= configprotectreference.idprotect', (idpackage,))
+        self.cursor.execute("""
+        SELECT protect FROM configprotectmask,configprotectreference 
+        WHERE idpackage = (?) AND 
+        configprotectmask.idprotect = configprotectreference.idprotect""", (idpackage,))
         protect = self.cursor.fetchone()
         if not protect: protect = ''
         else: protect = protect[0]
         return protect
 
     def retrieveSources(self, idpackage, extended = False):
-        self.cursor.execute('SELECT sourcesreference.source FROM sources,sourcesreference WHERE idpackage = (?) and sources.idsource = sourcesreference.idsource', (idpackage,))
+        self.cursor.execute("""
+        SELECT sourcesreference.source FROM sources,sourcesreference 
+        WHERE idpackage = (?) AND 
+        sources.idsource = sourcesreference.idsource""", (idpackage,))
         sources = self.fetchall2set(self.cursor.fetchall())
         if not extended:
             return sources
@@ -33047,7 +33088,12 @@ class EntropyDatabaseInterface:
         if not self.doesTableExist('packagechangelogs'):
             return None
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-        self.cursor.execute('SELECT packagechangelogs.changelog FROM packagechangelogs,baseinfo,categories WHERE baseinfo.idpackage = (?) AND baseinfo.idcategory = categories.idcategory AND packagechangelogs.name = baseinfo.name AND packagechangelogs.category = categories.category', (idpackage,))
+        self.cursor.execute("""
+        SELECT packagechangelogs.changelog FROM packagechangelogs,baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) AND 
+        baseinfo.idcategory = categories.idcategory AND 
+        packagechangelogs.name = baseinfo.name AND 
+        packagechangelogs.category = categories.category""", (idpackage,))
         changelog = self.cursor.fetchone()
         if changelog: return unicode(changelog[0],'raw_unicode_escape')
 
@@ -33075,7 +33121,10 @@ class EntropyDatabaseInterface:
         return mirrorlist
 
     def retrieveCategory(self, idpackage):
-        self.cursor.execute('SELECT category FROM baseinfo,categories WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory', (idpackage,))
+        self.cursor.execute("""
+        SELECT category FROM baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) AND 
+        baseinfo.idcategory = categories.idcategory""", (idpackage,))
         cat = self.cursor.fetchone()
         if cat: return cat[0]
 
@@ -33148,12 +33197,18 @@ class EntropyDatabaseInterface:
         return str(text[0])
 
     def retrieveLicense(self, idpackage):
-        self.cursor.execute('SELECT license FROM baseinfo,licenses WHERE baseinfo.idpackage = (?) and baseinfo.idlicense = licenses.idlicense', (idpackage,))
+        self.cursor.execute("""
+        SELECT license FROM baseinfo,licenses 
+        WHERE baseinfo.idpackage = (?) AND 
+        baseinfo.idlicense = licenses.idlicense""", (idpackage,))
         licname = self.cursor.fetchone()
         if licname: return licname[0]
 
     def retrieveCompileFlags(self, idpackage):
-        self.cursor.execute('SELECT chost,cflags,cxxflags FROM flags,extrainfo WHERE extrainfo.idpackage = (?) and extrainfo.idflags = flags.idflags', (idpackage,))
+        self.cursor.execute("""
+        SELECT chost,cflags,cxxflags FROM flags,extrainfo 
+        WHERE extrainfo.idpackage = (?) AND 
+        extrainfo.idflags = flags.idflags""", (idpackage,))
         flags = self.cursor.fetchone()
         if not flags:
             flags = ("N/A","N/A","N/A")
@@ -33167,13 +33222,25 @@ class EntropyDatabaseInterface:
             self.regenerateDependsTable(output = False)
 
         if atoms:
-            self.cursor.execute('SELECT baseinfo.atom FROM dependstable,dependencies,baseinfo WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency and baseinfo.idpackage = dependencies.idpackage', (idpackage,))
+            self.cursor.execute("""
+            SELECT baseinfo.atom FROM dependstable,dependencies,baseinfo 
+            WHERE dependstable.idpackage = (?) AND 
+            dependstable.iddependency = dependencies.iddependency AND 
+            baseinfo.idpackage = dependencies.idpackage""", (idpackage,))
             result = self.fetchall2set(self.cursor.fetchall())
         elif key_slot:
-            self.cursor.execute('SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories,dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency and baseinfo.idpackage = dependencies.idpackage and categories.idcategory = baseinfo.idcategory', (idpackage,))
+            self.cursor.execute("""
+            SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories,dependstable,dependencies 
+            WHERE dependstable.idpackage = (?) AND 
+            dependstable.iddependency = dependencies.iddependency AND 
+            baseinfo.idpackage = dependencies.idpackage AND 
+            categories.idcategory = baseinfo.idcategory""", (idpackage,))
             result = self.cursor.fetchall()
         else:
-            self.cursor.execute('SELECT dependencies.idpackage FROM dependstable,dependencies WHERE dependstable.idpackage = (?) and dependstable.iddependency = dependencies.iddependency', (idpackage,))
+            self.cursor.execute("""
+            SELECT dependencies.idpackage FROM dependstable,dependencies 
+            WHERE dependstable.idpackage = (?) AND 
+            dependstable.iddependency = dependencies.iddependency""", (idpackage,))
             result = self.fetchall2set(self.cursor.fetchall())
 
         return result
@@ -33183,7 +33250,10 @@ class EntropyDatabaseInterface:
         # sanity check on the table
         if not self.isDependsTableSane(): # is empty, need generation
             self.regenerateDependsTable(output = False)
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage NOT IN (SELECT idpackage FROM dependstable) ORDER BY atom')
+        self.cursor.execute("""
+        SELECT idpackage FROM baseinfo 
+        WHERE idpackage NOT IN (SELECT idpackage FROM dependstable) ORDER BY atom
+        """)
         return self.fetchall2list(self.cursor.fetchall())
 
     # You must provide the full atom to this function
@@ -33239,12 +33309,7 @@ class EntropyDatabaseInterface:
         mypaths = [os.path.join(x,needed) for x in ldpaths]
 
         query = """
-        SELECT
-                idpackage,file
-        FROM
-                content
-        WHERE
-                content.file IN (%s)
+        SELECT idpackage,file FROM content WHERE content.file IN (%s)
         """ % ( ('?,'*len(mypaths))[:-1], )
 
         self.cursor.execute(query,mypaths)
@@ -33383,16 +33448,25 @@ class EntropyDatabaseInterface:
             branchstring = ' and baseinfo.branch '+branch_operator+' (?)'
 
         if like:
-            self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file LIKE (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
+            self.cursor.execute("""
+            SELECT content.idpackage FROM content,baseinfo 
+            WHERE file LIKE (?) AND 
+            content.idpackage = baseinfo.idpackage %s""" % (branchstring,), searchkeywords)
         else:
-            self.cursor.execute('SELECT content.idpackage FROM content,baseinfo WHERE file = (?) and content.idpackage = baseinfo.idpackage '+branchstring, searchkeywords)
+            self.cursor.execute("""SELECT content.idpackage FROM content,baseinfo 
+            WHERE file = (?) AND 
+            content.idpackage = baseinfo.idpackage %s""" % (branchstring,), searchkeywords)
 
         return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages that uses the eclass provided '''
     def searchEclassedPackages(self, eclass, atoms = False): # atoms = return atoms directly
         if atoms:
-            self.cursor.execute('SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference WHERE eclassesreference.classname = (?) and eclassesreference.idclass = eclasses.idclass and eclasses.idpackage = baseinfo.idpackage', (eclass,))
+            self.cursor.execute("""
+            SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference 
+            WHERE eclassesreference.classname = (?) AND 
+            eclassesreference.idclass = eclasses.idclass AND 
+            eclasses.idpackage = baseinfo.idpackage""", (eclass,))
             return self.cursor.fetchall()
         else:
             self.cursor.execute('SELECT idpackage FROM baseinfo WHERE versiontag = (?)', (eclass,))
@@ -33417,9 +33491,15 @@ class EntropyDatabaseInterface:
             request = "baseinfo.atom,baseinfo.idpackage"
 
         if caseSensitive:
-            self.cursor.execute('SELECT '+request+' FROM baseinfo,licenses WHERE licenses.license LIKE (?) and licenses.idlicense = baseinfo.idlicense', ("%"+mylicense+"%",))
+            self.cursor.execute("""
+            SELECT %s FROM baseinfo,licenses 
+            WHERE licenses.license LIKE (?) AND 
+            licenses.idlicense = baseinfo.idlicense""" % (request,), ("%"+mylicense+"%",))
         else:
-            self.cursor.execute('SELECT '+request+' FROM baseinfo,licenses WHERE LOWER(licenses.license) LIKE (?) and licenses.idlicense = baseinfo.idlicense', ("%"+mylicense+"%".lower(),))
+            self.cursor.execute("""
+            SELECT %s FROM baseinfo,licenses 
+            WHERE LOWER(licenses.license) LIKE (?) AND 
+            licenses.idlicense = baseinfo.idlicense""" % (request,), ("%"+mylicense+"%".lower(),))
         if atoms:
             return self.cursor.fetchall()
         return self.fetchall2set(self.cursor.fetchall())
@@ -33442,15 +33522,26 @@ class EntropyDatabaseInterface:
             params.append(branch)
             branchstring = 'and baseinfo.branch = (?)'
 
-        self.cursor.execute('SELECT idpackage FROM baseinfo,categories WHERE baseinfo.idcategory = categories.idcategory AND categories.category = (?) AND baseinfo.name = (?) AND baseinfo.slot = (?) %s' % (branchstring,), params)
+        self.cursor.execute("""
+        SELECT idpackage FROM baseinfo,categories 
+        WHERE baseinfo.idcategory = categories.idcategory AND 
+        categories.category = (?) AND 
+        baseinfo.name = (?) AND 
+        baseinfo.slot = (?) %s""" % (branchstring,), params)
         return self.cursor.fetchall()
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword, like = False):
         if like:
-            self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library LIKE (?) and needed.idneeded = neededreference.idneeded', (keyword,))
+            self.cursor.execute("""
+            SELECT needed.idpackage FROM needed,neededreference 
+            WHERE library LIKE (?) AND 
+            needed.idneeded = neededreference.idneeded""", (keyword,))
         else:
-            self.cursor.execute('SELECT needed.idpackage FROM needed,neededreference WHERE library = (?) and needed.idneeded = neededreference.idneeded', (keyword,))
+            self.cursor.execute("""
+            SELECT needed.idpackage FROM needed,neededreference 
+            WHERE library = (?) AND 
+            needed.idneeded = neededreference.idneeded""", (keyword,))
 	return self.fetchall2set(self.cursor.fetchall())
 
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
@@ -33485,7 +33576,9 @@ class EntropyDatabaseInterface:
     def searchSimilarPackages(self, mystring, atom = False):
         s_item = 'name'
         if atom: s_item = 'atom'
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE soundex(%s) = soundex((?)) ORDER BY %s' % (s_item,s_item,), (mystring,))
+        self.cursor.execute("""
+        SELECT idpackage FROM baseinfo 
+        WHERE soundex(%s) = soundex((?)) ORDER BY %s""" % (s_item,s_item,), (mystring,))
         return self.fetchall2list(self.cursor.fetchall())
 
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom', just_id = False):
@@ -33511,9 +33604,18 @@ class EntropyDatabaseInterface:
         if just_id: search_elements = 'idpackage'
 
         if (sensitive):
-            self.cursor.execute('SELECT '+search_elements+' FROM baseinfo WHERE atom LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
+            self.cursor.execute("""
+            SELECT %s FROM baseinfo WHERE atom LIKE (?) %s %s %s %s""" %  (
+                search_elements,slotstring,tagstring,branchstring,order_by_string,),
+                searchkeywords
+            )
         else:
-            self.cursor.execute('SELECT '+search_elements+' FROM baseinfo WHERE LOWER(atom) LIKE (?)'+slotstring+tagstring+branchstring+order_by_string, searchkeywords)
+            self.cursor.execute("""
+            SELECT %s FROM baseinfo WHERE 
+            LOWER(atom) LIKE (?) %s %s %s %s""" % (
+                search_elements,slotstring,tagstring,branchstring,order_by_string,),
+                searchkeywords
+            )
         if just_id:
             return self.fetchall2list(self.cursor.fetchall())
         return self.cursor.fetchall()
@@ -33537,7 +33639,13 @@ class EntropyDatabaseInterface:
         if not justid:
             atomstring = 'baseinfo.atom,'
 
-        self.cursor.execute('SELECT '+atomstring+'baseinfo.idpackage FROM baseinfo,provide WHERE provide.atom = (?) and provide.idpackage = baseinfo.idpackage'+slotstring+tagstring+branchstring, searchkeywords)
+        self.cursor.execute("""
+        SELECT %s baseinfo.idpackage FROM baseinfo,provide 
+        WHERE provide.atom = (?) AND 
+        provide.idpackage = baseinfo.idpackage %s %s %s""" % (
+            atomstring,slotstring,tagstring,branchstring,),
+            searchkeywords
+        )
 
         if justid:
             results = self.fetchall2list(self.cursor.fetchall())
@@ -33546,7 +33654,10 @@ class EntropyDatabaseInterface:
         return results
 
     def searchPackagesByDescription(self, keyword):
-        self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM extrainfo,baseinfo WHERE LOWER(extrainfo.description) LIKE (?) and baseinfo.idpackage = extrainfo.idpackage', ("%"+keyword.lower()+"%",))
+        self.cursor.execute("""
+        SELECT baseinfo.atom,baseinfo.idpackage FROM extrainfo,baseinfo 
+        WHERE LOWER(extrainfo.description) LIKE (?) AND 
+        baseinfo.idpackage = extrainfo.idpackage""", ("%"+keyword.lower()+"%",))
         return self.cursor.fetchall()
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None, justid = False):
@@ -33564,9 +33675,13 @@ class EntropyDatabaseInterface:
             branchstring = ' and branch = (?)'
 
         if sensitive:
-            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE name = (?)'+branchstring, searchkeywords)
+            self.cursor.execute("""
+            SELECT %s idpackage FROM baseinfo 
+            WHERE name = (?) %s""" % (atomstring,branchstring,), searchkeywords)
         else:
-            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE LOWER(name) = (?)'+branchstring, searchkeywords)
+            self.cursor.execute("""
+            SELECT %s idpackage FROM baseinfo 
+            WHERE LOWER(name) = (?) %s""" % (atomstring,branchstring,), searchkeywords)
 
         if justid:
             results = self.fetchall2list(self.cursor.fetchall())
@@ -33584,9 +33699,15 @@ class EntropyDatabaseInterface:
             branchstring = 'and branch = (?)'
 
         if like:
-            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category LIKE (?) and baseinfo.idcategory = categories.idcategory %s' % (branchstring,), searchkeywords)
+            self.cursor.execute("""
+            SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories 
+            WHERE categories.category LIKE (?) AND 
+            baseinfo.idcategory = categories.idcategory %s""" % (branchstring,), searchkeywords)
         else:
-            self.cursor.execute('SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories WHERE categories.category = (?) and baseinfo.idcategory = categories.idcategory %s' % (branchstring,), searchkeywords)
+            self.cursor.execute("""
+            SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories 
+            WHERE categories.category = (?) AND 
+            baseinfo.idcategory = categories.idcategory %s""" % (branchstring,), searchkeywords)
 
         return self.cursor.fetchall()
 
@@ -33608,10 +33729,21 @@ class EntropyDatabaseInterface:
             atomstring = 'atom,'
 
         if sensitive:
-            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE name = (?) AND idcategory IN (SELECT idcategory FROM categories WHERE category = (?))'+branchstring, searchkeywords)
+            self.cursor.execute("""
+            SELECT %s idpackage FROM baseinfo 
+            WHERE name = (?) AND 
+            idcategory IN (
+                SELECT idcategory FROM categories 
+                WHERE category = (?)
+            ) %s""" % (atomstring,branchstring,), searchkeywords)
         else:
-            self.cursor.execute('SELECT '+atomstring+'idpackage FROM baseinfo WHERE LOWER(name) = (?) AND idcategory IN (SELECT idcategory FROM categories WHERE LOWER(category) = (?))'+branchstring, searchkeywords)
-            ''
+            self.cursor.execute("""
+            SELECT %s idpackage FROM baseinfo 
+            WHERE LOWER(name) = (?) AND 
+            idcategory IN (
+                SELECT idcategory FROM categories 
+                WHERE LOWER(category) = (?)
+            ) %s""" % (atomstring,branchstring,), searchkeywords)
 
         if justid:
             results = self.fetchall2list(self.cursor.fetchall())
@@ -33719,7 +33851,10 @@ class EntropyDatabaseInterface:
     def listBranchPackagesTbz2(self, branch, do_sort = True, full_path = False):
         order_string = ''
         if do_sort: order_string = 'ORDER BY extrainfo.download'
-        self.cursor.execute('SELECT extrainfo.download FROM baseinfo,extrainfo WHERE baseinfo.branch = (?) AND baseinfo.idpackage = extrainfo.idpackage %s' % (order_string,), (branch,))
+        self.cursor.execute("""
+        SELECT extrainfo.download FROM baseinfo,extrainfo 
+        WHERE baseinfo.branch = (?) AND 
+        baseinfo.idpackage = extrainfo.idpackage %s""" % (order_string,), (branch,))
 
         if do_sort: results = self.fetchall2list(self.cursor.fetchall())
         else: results = self.fetchall2set(self.cursor.fetchall())
@@ -33751,7 +33886,10 @@ class EntropyDatabaseInterface:
     def listConfigProtectDirectories(self, mask = False):
         mask_t = ''
         if mask: mask_t = 'mask'
-        self.cursor.execute('SELECT DISTINCT(protect) FROM configprotectreference where idprotect >= 1 and idprotect <= (SELECT max(idprotect) FROM configprotect%s) order by protect' % (mask_t,))
+        self.cursor.execute("""
+        SELECT DISTINCT(protect) FROM configprotectreference 
+        WHERE idprotect >= 1 AND 
+        idprotect <= (SELECT max(idprotect) FROM configprotect%s) ORDER BY protect""" % (mask_t,))
         results = self.fetchall2set(self.cursor.fetchall())
         dirs = set()
         for mystr in results:
@@ -34019,12 +34157,18 @@ class EntropyDatabaseInterface:
             import hashlib
             m = hashlib.md5()
 
-        self.cursor.execute('select idpackage,atom,name,version,versiontag,revision,branch,slot,etpapi,trigger from baseinfo %s' % (idpackage_order,))
+        self.cursor.execute("""
+        SELECT idpackage,atom,name,version,versiontag,
+        revision,branch,slot,etpapi,trigger FROM 
+        baseinfo %s""" % (idpackage_order,))
         if strings:
             do_update_md5(m,self.cursor)
         else:
             a_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select idpackage,description,homepage,download,size,digest,datecreation from extrainfo %s' % (idpackage_order,))
+        self.cursor.execute("""
+        SELECT idpackage,description,homepage,
+        download,size,digest,datecreation FROM 
+        extrainfo %s""" % (idpackage_order,))
         if strings:
             do_update_md5(m,self.cursor)
         else:

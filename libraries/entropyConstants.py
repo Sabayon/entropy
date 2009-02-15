@@ -662,7 +662,9 @@ def const_defaultSettings(rootdir):
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {
+            '(r)depend_id': 0,
             'pdepend_id': 1,
+            'mdepend_id': 2, # actually, this is entropy-only
             'ebuild_file_extension': "ebuild",
             'ebuild_pkg_tag_var': "ENTROPY_PROJECT_TAG",
             'global_make_conf': rootdir+"/etc/make.conf",

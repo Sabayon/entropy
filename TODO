@@ -2,7 +2,6 @@ TODO list
 
 Proposed for Entropy 0.6+ (before and after) (requires API changes, perhaps):
 
-  - OpenGL setup with NVIDIA, again
   - server-side: manual dependencies add/remove tool (backporting from previous package in scope too?)
   - External trigger: add support to use a bash-based hook
     - entropy.sh
