@@ -173,9 +173,6 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 except exceptionTools.MissingParameter:
                     print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
                     status = False
-                except exceptionTools.OnlineMirrorError:
-                    print_error(darkred(" @@ ")+red(_("You are not connected to the Internet. You should.")))
-                    status = False
                 except Exception, e:
                     print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
                     status = False
@@ -261,7 +258,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
     remove = [x for x in remove if Equo.clientDbconn.isIDPackageAvailable(x)]
 
-    if remove:
+    if remove and Equo.validRepositories:
         remove = sorted(remove)
         print_info(red(" @@ ") + \
             blue("%s." % (

@@ -173,9 +173,6 @@ def do_sync(reponames = [], forceUpdate = False):
     except exceptionTools.MissingParameter:
         print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
         return 127
-    except exceptionTools.OnlineMirrorError:
-        print_error(darkred(" @@ ")+red(_("You are not connected to the Internet. You should.")))
-        return 126
     except Exception, e:
         print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
         return 2
