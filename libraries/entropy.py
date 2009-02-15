@@ -325,6 +325,9 @@ class EntropyCacher:
         self.CacheBuffer = self.entropyTools.lifobuffer()
         self.CacheLock = self.threading.Lock()
 
+    def __copy_obj(self, obj):
+        return copy.deepcopy(obj)
+
     def start(self):
         self.CacheWriter = self.entropyTools.TimeScheduled(self.Cacher,1)
         self.CacheWriter.delay_before = True
@@ -344,7 +347,7 @@ class EntropyCacher:
         if not self.alive: return
         if async:
             with self.CacheLock:
-                self.CacheBuffer.push((key,data,))
+                self.CacheBuffer.push((key,self.__copy_obj(data),))
         else:
             self.dumpTools.dumpobj(key,data)
 
@@ -668,7 +671,7 @@ class EquoInterface(TextInterface):
         self.store_repository_list_cache()
 
     def store_repository_list_cache(self):
-        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder)[:], async = False)
+        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder), async = False)
 
     def backup_setting(self, setting_name):
         if etpConst.has_key(setting_name):
@@ -1591,7 +1594,7 @@ class EquoInterface(TextInterface):
         del match
 
         if self.xcache:
-            self.Cacher.push(c_hash,(found,matched)[:])
+            self.Cacher.push(c_hash,(found,matched))
 
         return found, matched
 
@@ -1648,7 +1651,7 @@ class EquoInterface(TextInterface):
             status = False
         return status
 
-    def __handle_multi_repo_matches(self, results, extended_results, valid_repos, open_db):
+    def __handle_multi_repo_matches(self, results, extended_results, valid_repos, server_inst):
 
         packageInformation = {}
         versionInformation = {}
@@ -1672,7 +1675,7 @@ class EquoInterface(TextInterface):
                 packageInformation[repo]['versiontag'] = results[repo][2]
                 packageInformation[repo]['revision'] = results[repo][3]
             else:
-                dbconn = open_db(repo)
+                dbconn = self.__atom_match_open_db(repo, server_inst)
                 packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(results[repo])
                 packageInformation[repo]['revision'] = dbconn.retrieveRevision(results[repo])
                 version = dbconn.retrieveVersion(results[repo])
@@ -1742,9 +1745,41 @@ class EquoInterface(TextInterface):
             if reponame in conflictingRevisions:
                 return (results[reponame],reponame)
 
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, matchBranches = (), matchTag = None, packagesFilter = True,
-            multiMatch = False, multiRepo = False, matchRevision = None, matchRepo = None,
-            server_repos = [], serverInstance = None, extendedResults = False, useCache = True):
+    def __validate_atom_match_cache(self, cached_obj, multiMatch, extendedResults, multiRepo, server_inst):
+
+        data, rc = cached_obj
+        if rc == 1: return cached_obj
+
+        if multiRepo or multiMatch:
+            matches = data # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
+            if extendedResults:
+                # set([((14789, u'3.3.8b', u'', 0), 'sabayonlinux.org')])
+                matches = [(x[0][0],x[1],) for x in data]
+            for m_id, m_repo in matches:
+                m_db = self.__atom_match_open_db(m_repo, server_inst)
+                if not m_db.isIDPackageAvailable(m_id): return None
+        else:
+            m_id, m_repo = cached_obj # (14479, 'sabayonlinux.org')
+            if extendedResults:
+                # ((14479, u'4.4.2', u'', 0), 'sabayonlinux.org')
+                m_id, m_repo = cached_obj[0][0],cached_obj[1]
+            m_db = self.__atom_match_open_db(m_repo, server_inst)
+            if not m_db.isIDPackageAvailable(m_id): return None
+
+        return cached_obj
+
+    def __atom_match_open_db(self, repoid, server_inst):
+        if server_inst != None:
+            dbconn = server_inst.openServerDatabase(just_reading = True, repo = repoid)
+        else:
+            dbconn = self.openRepositoryDatabase(repoid)
+        return dbconn
+
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None,
+            matchBranches = (), matchTag = None, packagesFilter = True,
+            multiMatch = False, multiRepo = False, matchRevision = None,
+            matchRepo = None, server_repos = [], serverInstance = None,
+            extendedResults = False, useCache = True):
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
@@ -1776,6 +1811,11 @@ class EquoInterface(TextInterface):
         if self.xcache and useCache:
             cached = self.Cacher.pop(c_hash)
             if cached != None:
+                try:
+                    cached = self.__validate_atom_match_cache(cached, multiMatch, extendedResults, multiRepo, serverInstance)
+                except (TypeError,ValueError,IndexError,KeyError,):
+                    cached = None
+            if cached != None:
                 return cached
 
         if server_repos:
@@ -1788,18 +1828,11 @@ class EquoInterface(TextInterface):
         if matchRepo and (type(matchRepo) in (list,tuple,set)):
             valid_repos = list(matchRepo)
 
-        def open_db(repoid):
-            if server_repos:
-                dbconn = serverInstance.openServerDatabase(just_reading = True, repo = repoid)
-            else:
-                dbconn = self.openRepositoryDatabase(repoid)
-            return dbconn
-
         repoResults = {}
         for repo in valid_repos:
 
             # search
-            dbconn = open_db(repo)
+            dbconn = self.__atom_match_open_db(repo, serverInstance)
             use_cache = useCache
             while 1:
                 try:
@@ -1827,10 +1860,9 @@ class EquoInterface(TextInterface):
                     continue
                 break
 
+        dbpkginfo = (-1,1)
         if extendedResults:
             dbpkginfo = ((-1,None,None,None),1)
-        else:
-            dbpkginfo = (-1,1)
 
         if multiRepo and repoResults:
 
@@ -1847,7 +1879,7 @@ class EquoInterface(TextInterface):
         elif len(repoResults) > 1:
 
             # we have to decide which version should be taken
-            mypkginfo = self.__handle_multi_repo_matches(repoResults, extendedResults, valid_repos, open_db)
+            mypkginfo = self.__handle_multi_repo_matches(repoResults, extendedResults, valid_repos, serverInstance)
             if mypkginfo != None: dbpkginfo = mypkginfo
 
         # multimatch support
@@ -1857,7 +1889,7 @@ class EquoInterface(TextInterface):
                 if multiRepo:
                     data = set()
                     for q_id,q_repo in dbpkginfo[0]:
-                        dbconn = open_db(q_repo)
+                        dbconn = self.__atom_match_open_db(q_repo, serverInstance)
                         query_data, query_rc = dbconn.atomMatch(
                             atom,
                             caseSensitive = caseSensitive,
@@ -1875,7 +1907,7 @@ class EquoInterface(TextInterface):
                             for x in query_data: data.add((x,q_repo))
                     dbpkginfo = (data,0)
                 else:
-                    dbconn = open_db(dbpkginfo[1])
+                    dbconn = self.__atom_match_open_db(dbpkginfo[1], serverInstance)
                     query_data, query_rc = dbconn.atomMatch(
                                                 atom,
                                                 caseSensitive = caseSensitive,
@@ -1892,7 +1924,7 @@ class EquoInterface(TextInterface):
                         dbpkginfo = (set([(x,dbpkginfo[1]) for x in query_data]),0)
 
         if self.xcache and useCache:
-            self.Cacher.push(c_hash,dbpkginfo[:])
+            self.Cacher.push(c_hash,dbpkginfo)
 
         return dbpkginfo
 
@@ -1954,6 +1986,13 @@ class EquoInterface(TextInterface):
         if package_set == '*': package_set = ''
         return self.packageSetMatch(package_set, matchRepo = matchRepo, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
 
+    def __package_set_match_open_db(self, repoid, server_inst):
+        if server_inst != None:
+            dbconn = server_inst.openServerDatabase(just_reading = True, repo = repoid)
+        else:
+            dbconn = self.openRepositoryDatabase(repoid)
+        return dbconn
+
     def packageSetMatch(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
 
         # support match in repository from shell
@@ -1972,13 +2011,6 @@ class EquoInterface(TextInterface):
 
         if matchRepo and (type(matchRepo) in (list,tuple,set)):
             valid_repos = list(matchRepo)
-
-        def open_db(repoid):
-            if server_repos:
-                dbconn = serverInstance.openServerDatabase(just_reading = True, repo = repoid)
-            else:
-                dbconn = self.openRepositoryDatabase(repoid)
-            return dbconn
 
         # if we search, we return all the matches available
         if search: multiMatch = True
@@ -2001,7 +2033,7 @@ class EquoInterface(TextInterface):
                         if not multiMatch: break
 
             for repoid in valid_repos:
-                dbconn = open_db(repoid)
+                dbconn = self.__package_set_match_open_db(repoid, serverInstance)
                 if search:
                     mysets = dbconn.searchSets(package_set)
                     for myset in mysets:
@@ -2410,17 +2442,7 @@ class EquoInterface(TextInterface):
                 myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
                 if myidpackage == -1: m_idpackage = -1
             else:
-                m_use_cache = True
-                while 1:
-                    m_idpackage, m_repo = atom_match(dep_atom, useCache = m_use_cache)
-                    if m_idpackage == -1: break
-                    matchdb = open_repo(m_repo)
-                    if matchdb.isIDPackageAvailable(m_idpackage):
-                        break
-                    if m_use_cache:
-                        m_use_cache = False
-                        continue
-                    break
+                m_idpackage, m_repo = atom_match(dep_atom)
             if m_idpackage == -1:
                 deps_not_found.add(dep_atom)
                 mydep = mybuffer.pop()
@@ -2669,7 +2691,7 @@ class EquoInterface(TextInterface):
         client_atoms |= repo_atoms
 
         if self.xcache:
-            self.Cacher.push(c_hash,client_atoms.copy())
+            self.Cacher.push(c_hash,client_atoms)
 
         return client_atoms
 
@@ -2736,7 +2758,7 @@ class EquoInterface(TextInterface):
             return error_tree,error_generated
 
         if self.xcache:
-            self.Cacher.push(c_hash,(deptree,0)[:])
+            self.Cacher.push(c_hash,(deptree,0))
 
         return deptree,0
 
@@ -2845,7 +2867,7 @@ class EquoInterface(TextInterface):
                 x += 1
 
         if self.xcache:
-            self.Cacher.push(c_hash,(tree,0)[:])
+            self.Cacher.push(c_hash,(tree,0))
         return tree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
     def list_repo_categories(self):
@@ -2970,7 +2992,7 @@ class EquoInterface(TextInterface):
             data = {}
             data['chash'] = c_hash
             data['available'] = available
-            self.Cacher.push(etpCache['world_available'],data.copy())
+            self.Cacher.push(etpCache['world_available'],data)
         return available
 
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
@@ -4923,7 +4945,7 @@ class PackageInterface:
                         if self.matched_atom in disk_cache['available']:
                             disk_cache['available'].remove(self.matched_atom)
 
-                        self.Entropy.Cacher.push(etpCache['world_available'],disk_cache.copy())
+                        self.Entropy.Cacher.push(etpCache['world_available'],disk_cache)
 
                 except KeyError:
                     self.Entropy.Cacher.push(etpCache['world_available'],{})
@@ -6485,7 +6507,7 @@ class FileUpdatesInterface:
                             except:
                                 pass # possible encoding issues
         # store data
-        self.Entropy.Cacher.push(etpCache['configfiles'],scandata.copy())
+        self.Entropy.Cacher.push(etpCache['configfiles'],scandata)
         self.scandata = scandata.copy()
         return scandata
 
@@ -6533,7 +6555,7 @@ class FileUpdatesInterface:
         index += 1
         mydata = self.generate_dict(filepath)
         self.scandata[index] = mydata.copy()
-        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata.copy())
+        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata)
 
     def remove_from_cache(self, key):
         self.scanfs(dcache = True)
@@ -6541,7 +6563,7 @@ class FileUpdatesInterface:
             del self.scandata[key]
         except:
             pass
-        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata.copy())
+        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata)
         return self.scandata
 
     def generate_dict(self, filepath):
@@ -11395,7 +11417,7 @@ class SecurityInterface:
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
             c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
-            self.Entropy.Cacher.push(c_hash,adv_metadata.copy())
+            self.Entropy.Cacher.push(c_hash,adv_metadata)
 
     def get_advisories_list(self):
         if not self.check_advisories_availability():
@@ -32647,7 +32669,7 @@ class EntropyDatabaseInterface:
     def storeSearchCache(self, key, function, search_cache_data, extra_hash = 0):
         if self.xcache:
             c_hash = "%s/%s/%s/%s" % (self.dbSearchCacheKey,self.dbname,key,"%s%s" % (hash(function),extra_hash,),)
-            if self.ServiceInterface: self.ServiceInterface.Cacher.push(c_hash, search_cache_data.copy())
+            if self.ServiceInterface: self.ServiceInterface.Cacher.push(c_hash, search_cache_data)
             else: self.dumpTools.dumpobj(c_hash,search_cache_data)
 
     def retrieveRepositoryUpdatesDigest(self, repository):
@@ -34486,9 +34508,9 @@ class EntropyDatabaseInterface:
     def atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
             if self.ServiceInterface:
-                self.ServiceInterface.Cacher.push("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
+                self.ServiceInterface.Cacher.push("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result'))
             else:
-                self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result')[:])
+                self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result'))
 
     def atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
 
