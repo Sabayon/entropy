@@ -454,9 +454,6 @@ class EquoInterface(TextInterface):
 
         # setup package settings (masking and other stuff)
         self.SystemSettings = SystemSettings(self)
-        # settle settings, especially package masking ones
-        # useful for third party softwares that use this interface directly
-        self.SystemSettings.scan()
 
         # needs to be started here otherwise repository cache will be
         # always dropped, trust me, it will be stopped later in the init
@@ -10669,11 +10666,12 @@ timeout=10
             )
             return "(hd0,0)"
 
-class SystemSettings:
+class SystemSettings(dict):
 
     import entropyTools
     def __init__(self, EquoInstance):
 
+        dict.__init__(self)
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
@@ -10713,9 +10711,6 @@ class SystemSettings:
             'repos_license_whitelist': {},
         }
 
-        import threading
-        self.L = threading.Lock()
-        self.__settings = None
         self.__persistent_settings = {
             'pkg_masking_reasons': {
                 0: _('reason not available'),
@@ -10748,16 +10743,17 @@ class SystemSettings:
                 'user_live_mask': 12,
             },
         }
+        self.__scan()
 
-    def scan(self):
+    def __scan(self):
 
-        self.__settings = self.parse()
+        self.update(self.__parse())
         # merge universal keywords
-        for x in self.__settings['keywords']['universal']:
+        for x in self['keywords']['universal']:
             etpConst['keywords'].add(x)
 
         # live package masking / unmasking
-        self.__settings.update(
+        self.update(
             {
                 'live_packagemasking': {
                     'unmask_matches': set(),
@@ -10767,8 +10763,8 @@ class SystemSettings:
         )
 
         # match installed packages of system_mask
-        self.__settings['repos_system_mask_installed'] = []
-        self.__settings['repos_system_mask_installed_keys'] = {}
+        self['repos_system_mask_installed'] = []
+        self['repos_system_mask_installed_keys'] = {}
         if isinstance(self.Entropy.clientDbconn,EntropyDatabaseInterface):
             while 1:
                 try:
@@ -10776,106 +10772,33 @@ class SystemSettings:
                 except exceptionTools.SystemDatabaseError:
                     break
                 mc_cache = set()
-                m_list = self.__settings['repos_system_mask']+self.__settings['system_mask']
+                m_list = self['repos_system_mask']+self['system_mask']
                 for atom in m_list:
                     m_ids,m_r = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
                     if m_r != 0: continue
                     mykey = self.entropyTools.dep_getkey(atom)
-                    if mykey not in self.__settings['repos_system_mask_installed_keys']:
-                        self.__settings['repos_system_mask_installed_keys'][mykey] = set()
+                    if mykey not in self['repos_system_mask_installed_keys']:
+                        self['repos_system_mask_installed_keys'][mykey] = set()
                     for xm in m_ids:
                         if xm in mc_cache: continue
                         mc_cache.add(xm)
-                        self.__settings['repos_system_mask_installed'].append(xm)
-                        self.__settings['repos_system_mask_installed_keys'][mykey].add(xm)
+                        self['repos_system_mask_installed'].append(xm)
+                        self['repos_system_mask_installed_keys'][mykey].add(xm)
                 break
 
         # Live package masking
-        self.__settings.update(self.__persistent_settings)
+        self.update(self.__persistent_settings)
 
     def __setitem__(self, mykey, myvalue):
-        with self.L:
-            if self.__settings == None: self.scan()
-            if mykey in self.__persistent_settings: # backup here too
-                self.__persistent_settings[mykey] = myvalue
-                self.__settings.update(self.__persistent_settings)
-            self.__settings[mykey] = myvalue
-
-    def __getitem__(self, mykey):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings[mykey]
-
-    def __contains__(self, mykey):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return mykey in self.__settings
-
-    def __cmp__(self, other):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return cmp(self.__settings,other)
-
-    def get(self, mykey, default = None):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.get(mykey, default)
-
-    def has_key(self, mykey):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return mykey in self.__settings
+        if self.__persistent_settings.has_key(mykey): # backup here too
+            self.__persistent_settings[mykey] = myvalue
+        dict.__setitem__(self, mykey, myvalue)
 
     def clear(self):
-        with self.L:
-            self.__settings = None
+        dict.clear(self)
+        self.__scan()
 
-    def keys(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.keys()
-
-    def items(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.items()
-
-    def iteritems(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.iteritems()
-
-    def iterkeys(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.iterkeys()
-
-    def popitem(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.popitem()
-
-    def setdefault(self, key, default = None):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.setdefault(key, default)
-
-    def values(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.values()
-
-    def copy(self):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.copy()
-
-    def fromkeys(self, seq, value = None):
-        with self.L:
-            if self.__settings == None: self.scan()
-            return self.__settings.fromkeys(seq, value)
-
-    def parse(self):
+    def __parse(self):
 
         # append repositories mask files
         # append repositories mtime files
