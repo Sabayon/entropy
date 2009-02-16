@@ -33852,6 +33852,20 @@ class EntropyDatabaseInterface:
         self.live_cache['listAllBranches'] = results.copy()
         return results
 
+    def listIdPackagesInIdcategory(self,idcategory, order_by = 'atom'):
+        order_by_string = ''
+        if order_by in ("atom","name","version",):
+            order_by_string = ' ORDER BY %s' % (order_by,)
+        self.cursor.execute('SELECT idpackage FROM baseinfo where idcategory = (?)'+order_by_string, (idcategory,))
+        return self.fetchall2set(self.cursor.fetchall())
+
+    def listIdpackageDependencies(self, idpackage):
+        self.cursor.execute("""
+        SELECT dependenciesreference.iddependency,dependenciesreference.dependency FROM dependenciesreference,dependencies 
+        WHERE dependencies.idpackage = (?) AND 
+        dependenciesreference.iddependency = dependencies.iddependency""", (idpackage,))
+        return set(self.cursor.fetchall())
+
     def listBranchPackagesTbz2(self, branch, do_sort = True, full_path = False):
         order_string = ''
         if do_sort: order_string = 'ORDER BY extrainfo.download'
