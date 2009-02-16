@@ -1,13 +1,17 @@
 TODO list
 
-Proposed for Entropy 0.6+ (before and after) (requires API changes, perhaps):
+Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   - server-side: manual dependencies add/remove tool (backporting from previous package in scope too?)
+    - make server-side injection print out the manual deps already present
+    - add a manual deps listing tool
+
   - External trigger: add support to use a bash-based hook
     - entropy.sh
     - python caller + variables setup
     - hook structure (pkg_preinst, pkg_postinst, pkg_prerm, pkg_postrm)
 
+  - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)
   - System Package Set representing what's inside a stock distribution
     - Connect Smart applications to it to filter out common deps and eventually make it usable

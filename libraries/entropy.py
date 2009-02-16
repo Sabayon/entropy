@@ -9110,7 +9110,11 @@ class rssFeed:
             self.channel = self.rssdoc.getElementsByTagName("channel")[0]
             self.title = self.channel.getElementsByTagName("title")[0].firstChild.data.strip()
             self.link = self.channel.getElementsByTagName("link")[0].firstChild.data.strip()
-            self.description = self.channel.getElementsByTagName("description")[0].firstChild.data.strip()
+            description = self.channel.getElementsByTagName("description")[0].firstChild
+            if description != None:
+                self.description = ''
+            else:
+                self.description = description.data.strip()
             try:
                 self.language = self.channel.getElementsByTagName("language")[0].firstChild.data.strip()
             except IndexError:
