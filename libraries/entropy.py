@@ -33200,7 +33200,8 @@ class EntropyDatabaseInterface:
         return True
 
     def areIDPackagesAvailable(self, idpackages):
-        self.cursor.execute('SELECT count(idpackage) FROM baseinfo WHERE idpackage IN %s' % (tuple(idpackages),) )
+        sql = 'SELECT count(idpackage) FROM baseinfo WHERE idpackage IN (%s)' % (','.join([str(x) for x in set(idpackages)]),)
+        self.cursor.execute(sql)
         count = self.cursor.fetchone()[0]
         if count != len(idpackages):
             return False
