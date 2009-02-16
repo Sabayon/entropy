@@ -9111,10 +9111,10 @@ class rssFeed:
             self.title = self.channel.getElementsByTagName("title")[0].firstChild.data.strip()
             self.link = self.channel.getElementsByTagName("link")[0].firstChild.data.strip()
             description = self.channel.getElementsByTagName("description")[0].firstChild
-            if description != None:
-                self.description = ''
-            else:
+            if hasattr(description,"data"):
                 self.description = description.data.strip()
+            else:
+                self.description = ''
             try:
                 self.language = self.channel.getElementsByTagName("language")[0].firstChild.data.strip()
             except IndexError:
