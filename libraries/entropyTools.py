@@ -1003,6 +1003,120 @@ def ververify(myverx, silent=1):
         return 0
 
 
+# Copyright 2003-2004 Gentoo Foundation
+# Distributed under the terms of the GNU General Public License v2
+# $Id: dep.py 11813 2008-11-06 04:56:17Z zmedico $
+valid_category = re.compile("^\w[\w-]*")
+invalid_atom_chars_regexp = re.compile("[()|@]")
+
+def isvalidatom(myatom, allow_blockers = True):
+    """
+    Check to see if a depend atom is valid
+
+    Example usage:
+            >>> isvalidatom('media-libs/test-3.0')
+            0
+            >>> isvalidatom('>=media-libs/test-3.0')
+            1
+
+    @param atom: The depend atom to check against
+    @type atom: String
+    @rtype: Integer
+    @return: One of the following:
+            1) 0 if the atom is invalid
+            2) 1 if the atom is valid
+    """
+    atom = remove_tag(myatom)
+    atom = remove_usedeps(atom)
+    if invalid_atom_chars_regexp.search(atom):
+        return 0
+    if allow_blockers and atom[:1] == "!":
+        if atom[1:2] == "!":
+            atom = atom[2:]
+        else:
+            atom = atom[1:]
+
+    # media-sound/amarok/x ?
+    if atom.count("/") > 1:
+        return 0
+
+    cpv = dep_getcpv(atom)
+    cpv_catsplit = catsplit(cpv)
+    mycpv_cps = None
+    if cpv:
+        if len(cpv_catsplit) == 2:
+            if valid_category.match(cpv_catsplit[0]) is None:
+                return 0
+            if cpv_catsplit[0] == "null":
+                # "null" category is valid, missing category is not.
+                mycpv_cps = catpkgsplit(cpv.replace("null/", "cat/", 1))
+                if mycpv_cps:
+                    mycpv_cps = list(mycpv_cps)
+                    mycpv_cps[0] = "null"
+        if not mycpv_cps:
+            mycpv_cps = catpkgsplit(cpv)
+
+    operator = get_operator(atom)
+    if operator:
+        if operator[0] in "<>" and remove_slot(atom).endswith("*"):
+            return 0
+        if mycpv_cps:
+            if len(cpv_catsplit) == 2:
+                # >=cat/pkg-1.0
+                return 1
+            else:
+                return 0
+        else:
+            # >=cat/pkg or >=pkg-1.0 (no category)
+            return 0
+    if mycpv_cps:
+        # cat/pkg-1.0
+        return 0
+
+    if len(cpv_catsplit) == 2:
+        # cat/pkg
+        return 1
+    return 0
+
+def catsplit(mydep):
+    return mydep.split("/", 1)
+
+def get_operator(mydep):
+    """
+    Return the operator used in a depstring.
+
+    Example usage:
+            >>> from portage.dep import *
+            >>> get_operator(">=test-1.0")
+            '>='
+
+    @param mydep: The dep string to check
+    @type mydep: String
+    @rtype: String
+    @return: The operator. One of:
+            '~', '=', '>', '<', '=*', '>=', or '<='
+    """
+    if mydep:
+        mydep = remove_slot(mydep)
+    if not mydep:
+        return None
+    if mydep[0] == "~":
+        operator = "~"
+    elif mydep[0] == "=":
+        if mydep[-1] == "*":
+            operator = "=*"
+        else:
+            operator = "="
+    elif mydep[0] in "><":
+        if len(mydep) > 1 and mydep[1] == "=":
+            operator = mydep[0:2]
+        else:
+            operator = mydep[0]
+    else:
+        operator = None
+
+    return operator
+
 def isjustname(mypkg):
     """
     Checks to see if the depstring is only the package name (no version parts)
