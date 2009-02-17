@@ -16589,6 +16589,26 @@ class ServerInterface(TextInterface):
             header = red(" @@ ")
         )
 
+        manual_deps = sorted(dbconn.retrieveManualDependencies(idpackage))
+        if manual_deps:
+            self.updateProgress(
+                "[repo:%s] %s: %s" % (
+                            darkgreen(repo),
+                            blue(_("manual dependencies for")),
+                            darkgreen(atom),
+                    ),
+                importance = 1,
+                type = "warning",
+                header = darkgreen("   ## ")
+            )
+            for m_dep in manual_deps:
+                self.updateProgress(
+                    brown(m_dep),
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("    # ")
+                )
+
         download_url = self._setup_repository_package_filename(idpackage, repo = repo)
         downloadfile = os.path.basename(download_url)
         destination_path = os.path.join(upload_dir,downloadfile)
@@ -32888,21 +32908,11 @@ class EntropyDatabaseInterface:
         WHERE idpackage = (?)""", (idpackage,idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
-    def retrievePostDependencies(self, idpackage):
-        self.cursor.execute("""
-        SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
-        WHERE dependencies.idpackage = (?) AND 
-        dependencies.iddependency = dependenciesreference.iddependency AND 
-        dependencies.type = (?)""", (idpackage,etpConst['spm']['pdepend_id'],))
-        return self.fetchall2set(self.cursor.fetchall())
+    def retrievePostDependencies(self, idpackage, extended = False):
+        return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['pdepend_id'])
 
-    def retrieveManualDependencies(self, idpackage):
-        self.cursor.execute("""
-        SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
-        WHERE dependencies.idpackage = (?) AND 
-        dependencies.iddependency = dependenciesreference.iddependency
-        AND dependencies.type = (?)""", (idpackage,etpConst['spm']['mdepend_id'],))
-        return self.fetchall2set(self.cursor.fetchall())
+    def retrieveManualDependencies(self, idpackage, extended = False):
+        return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['mdepend_id'])
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None):
 
