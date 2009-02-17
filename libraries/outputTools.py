@@ -528,7 +528,8 @@ class TextInterface:
         ('identifier 1','input text 1',input_verification_callback,False),
         ('password','Password',input_verification_callback,True),
         ('item_3',('checkbox','Checkbox option (boolean request) - please choose',),input_verification_callback,True),
-        ('item_4',('combo',('Select your favorite option',['option 1', 'option 2', 'option 3']),),input_verification_callback,True)
+        ('item_4',('combo',('Select your favorite option',['option 1', 'option 2', 'option 3']),),input_verification_callback,True),
+        ('item_4',('list',('Setup your list',['default list item 1', 'default list item 2']),),input_verification_callback,True)
     ]
      @ cancel_button: show cancel button ?
      @ output: dictionary as follows:
@@ -563,8 +564,92 @@ class TextInterface:
                 if selected != None:
                     return myresult, selected
 
+        def list_editor(option_data, can_cancel, callback):
+
+            def selaction():
+                self.updateProgress('')
+                self.updateProgress(darkred(_("Please select an option")))
+                if can_cancel:
+                    self.updateProgress("  ("+blue("-1")+") "+darkred(_("Discard all")))
+                self.updateProgress("  ("+blue("0")+")  "+darkgreen(_("Confirm")))
+                self.updateProgress("  ("+blue("1")+")  "+brown(_("Add item")))
+                self.updateProgress("  ("+blue("2")+")  "+darkblue(_("Remove item")))
+                self.updateProgress("  ("+blue("3")+")  "+darkgreen(_("Show current list")))
+                # wait user interaction
+                self.updateProgress('')
+                action = readtext(darkgreen(_("Your choice (type a number and press enter):"))+" ")
+                return action
+
+            mydict = {}
+            counter = 1
+            valid_actions = [0,1,2,3]
+            if can_cancel: valid_actions.insert(0,-1)
+            option_text, option_list = option_data
+            txt = "%s:" % (blue(option_text),)
+            self.updateProgress(txt)
+
+            for item in option_list:
+                mydict[counter] = item
+                txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
+                self.updateProgress(txt)
+                counter += 1
+
+            def show_current_list():
+                for key in sorted(mydict):
+                    txt = "[%s] %s" % (darkgreen(str(key)), blue(mydict[key]),)
+                    self.updateProgress(txt)
+
+            while 1:
+                try:
+                    action = int(selaction())
+                except (ValueError,TypeError,):
+                    self.updateProgress(_("You don't have typed a number."), type = "warning")
+                    continue
+                if action not in valid_actions:
+                    self.updateProgress(_("Invalid action."), type = "warning")
+                    continue
+                if action == -1:
+                    raise KeyboardInterrupt
+                elif action == 0:
+                    break
+                elif action == 1:
+                    while 1:
+                        try:
+                            s_el = readtext(darkred(_("String to add:"))+" ")
+                            if not callback(s_el):
+                                raise ValueError
+                            mydict[counter] = s_el
+                            counter += 1
+                        except (ValueError,):
+                            self.updateProgress(_("Invalid string."), type = "warning")
+                            continue
+                        break
+                    show_current_list()
+                    continue
+                elif action == 2:
+                    while 1:
+                        try:
+                            s_el = int(readtext(darkred(_("Element number to remove:"))+" "))
+                            if s_el not in mydict:
+                                raise ValueError
+                            del mydict[s_el]
+                        except (ValueError,TypeError,):
+                            self.updateProgress(_("Invalid element."), type = "warning")
+                            continue
+                        break
+                    show_current_list()
+                    continue
+                elif action == 3:
+                    show_current_list()
+                    continue
+                break
+
+            mylist = [mydict[x] for x in sorted(mydict)]
+            return mylist
+
         for identifier, input_text, callback, password in input_parameters:
             while 1:
+                use_cb = True
                 try:
                     if isinstance(input_text,tuple):
                         myresult = False
@@ -572,15 +657,20 @@ class TextInterface:
                         if input_type == "checkbox":
                             answer = self.askQuestion(data)
                             if answer == "Yes": myresult = True
-                        if input_type == "combo":
+                        elif input_type == "combo":
                             myresult = option_chooser(data)
+                        elif input_type == "list":
+                            use_cb = False
+                            myresult = list_editor(data, cancel_button, callback)
                     else:
                         myresult = readtext(input_text+":", password = password).decode('utf-8')
                 except (KeyboardInterrupt,EOFError,):
                     if not cancel_button: # use with care
                         continue
                     return None
-                valid = callback(myresult)
+                valid = True
+                if use_cb:
+                    valid = callback(myresult)
                 if valid:
                     results[identifier] = myresult
                     break
