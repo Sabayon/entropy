@@ -31595,6 +31595,7 @@ class EntropyDatabaseInterface:
         elif not etpData.has_key('revision'):
             etpData['revision'] = revision
 
+        manual_deps = set()
         if do_remove:
             removelist = self.retrieve_packages_to_remove(
                             etpData['name'],
@@ -31602,8 +31603,9 @@ class EntropyDatabaseInterface:
                             etpData['slot'],
                             etpData['injected']
             )
-            for pkg in removelist:
-                self.removePackage(pkg)
+            for r_idpackage in removelist:
+                manual_deps |= self.retrieveManualDependencies(r_idpackage)
+                self.removePackage(r_idpackage)
 
         ### create new ids
 
@@ -31648,12 +31650,18 @@ class EntropyDatabaseInterface:
 
         myidpackage_string = 'NULL'
         if isinstance(idpackage,int):
+            manual_deps |= self.retrieveManualDependencies(idpackage)
             # does it exist?
             self.removePackage(idpackage, do_cleanup = False, do_commit = False, do_rss = False)
             myidpackage_string = '?'
             mybaseinfo_data.insert(0,idpackage)
         else:
             idpackage = None
+
+        # merge old manual dependencies
+        for manual_dep in manual_deps:
+            if manual_dep in etpData['dependencies']: continue
+            etpData['dependencies'][manual_dep] = etpConst['spm']['mdepend_id']
 
         with self.WriteLock:
 
@@ -31992,6 +32000,12 @@ class EntropyDatabaseInterface:
         deps = [x for x in map(mymf,depdata) if type(x) != int]
         with self.WriteLock:
             self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
+
+    def insertManualDependencies(self, idpackage, manual_deps):
+        mydict = {}
+        for manual_dep in manual_deps:
+            mydict[manual_dep] = etpConst['spm']['mdepend_id']
+        return self.insertDependencies(idpackage, mydict)
 
     def removeContent(self, idpackage):
         with self.WriteLock:
