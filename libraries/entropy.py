@@ -2188,7 +2188,7 @@ class EquoInterface(TextInterface):
             self.reload_constants()
         self.validate_repositories()
 
-    def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = {}):
+    def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = None):
 
         if self.xcache:
             c_data = sorted(list(dependencies))
@@ -2197,6 +2197,9 @@ class EquoInterface(TextInterface):
             c_hash = "unsat_%s" % (hash(c_hash),)
             cached = self.dumpTools.loadobj(etpCache['filter_satisfied_deps']+c_hash)
             if cached != None: return cached
+
+        if not isinstance(depcache,dict):
+            depcache = {}
 
         cdb_am = self.clientDbconn.atomMatch
         am = self.atomMatch
@@ -2541,7 +2544,8 @@ class EquoInterface(TextInterface):
             if mymatch not in mydata:
                 # check if not found
                 myaction = self.get_package_action(mymatch)
-                if myaction != 0: mydata.append(mymatch) # upgrades, installs and downgrades allowed
+                # only if the package is not installed
+                if myaction == 1: mydata.append(mymatch)
             cached_items.add(mymatch)
         return mydata
 
@@ -3422,7 +3426,7 @@ class EquoInterface(TextInterface):
         # read all idpackages
         try:
             myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
-        except:
+        except (AttributeError, self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
             return -2,atoms_contained
         if len(myidpackages) > 1:
             repodata[basefile]['smartpackage'] = True
