@@ -122,12 +122,86 @@ def repositories(options):
                 idpackages.append(match[0])
             else:
                 print_warning(  brown(" * ") + \
-                                red("%s: " % (_("Cannot match"),) )+bold(package) + \
-                                red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
-                                )
+                    red("%s: " % (_("Cannot match"),) )+bold(package) + \
+                    red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
+                )
         if not idpackages: return 2
         status, data = Entropy.tag_packages(tag_string, idpackages, repo = repo)
         return status
+
+    elif cmd == "manual-deps":
+
+        if len(myopts) < 2:
+            return 1
+        repo = myopts[0]
+
+        if repo not in etpConst['server_repositories']:
+            return 3
+
+        atoms = myopts[1:]
+        # match
+        idpackages = []
+        for package in atoms:
+            match = Entropy.atomMatch(package, matchRepo = [repo], matchTag = '')
+            if match[1] == repo:
+                idpackages.append(match[0])
+            else:
+                print_warning(  brown(" * ") + \
+                    red("%s: " % (_("Cannot match"),) )+bold(package) + \
+                    red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
+                )
+        if not idpackages: return 2
+        dbconn = Entropy.openServerDatabase(repo = repo, just_reading = True)
+
+        def dep_check_cb(s):
+            return Entropy.entropyTools.isvalidatom(s)
+
+        for idpackage in idpackages:
+            atom = dbconn.retrieveAtom(idpackage)
+            orig_deps = dbconn.retrieveDependencies(idpackage, extended = True)
+            atom_deps = [x for x in orig_deps if x[1] != etpConst['spm']['mdepend_id']]
+            atom_manual_deps = [x for x in orig_deps if x not in atom_deps]
+            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),darkgreen(_("package dependencies")),))
+            for dep_str, dep_id in atom_deps:
+                print_info("%s [type:%s] %s" % (brown("    # "),darkgreen(str(dep_id)),darkred(dep_str),))
+            if not atom_deps:
+                print_info("%s %s" % (brown("    # "),_("No dependencies"),))
+            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),darkgreen(_("package manual dependencies")),))
+            for dep_str, dep_id in atom_manual_deps:
+                print_info("%s [type:%s] %s" % (brown("    # "),darkgreen(str(dep_id)),purple(dep_str),))
+            if not atom_manual_deps:
+                print_info("%s %s" % (brown("    # "),_("No dependencies"),))
+            print
+            current_mdeps = sorted([x[0] for x in atom_manual_deps])
+            input_params = [
+                ('new_mdeps',('list',('Manual dependencies',current_mdeps),),dep_check_cb,True)
+            ]
+            data = Entropy.inputBox(_("Manual dependencies editor"),input_params)
+            if data == None: return 4
+            new_mdeps = sorted(data.get('new_mdeps',[]))
+
+            if current_mdeps == new_mdeps:
+                print_info(brown(" @@ ")+blue("%s: %s" % (atom,_("no changes made"),) ))
+                continue
+
+            w_dbconn = Entropy.openServerDatabase(repo = repo, read_only = False)
+            atom_deps += [(x,etpConst['spm']['mdepend_id'],) for x in new_mdeps]
+            deps_dict = {}
+            for atom_dep, dep_id in atom_deps:
+                deps_dict[atom_dep] = dep_id
+
+            while 1:
+                try:
+                    w_dbconn.removeDependencies(idpackage)
+                    w_dbconn.insertDependencies(idpackage, deps_dict)
+                    w_dbconn.commitChanges()
+                except (KeyboardInterrupt, SystemExit,):
+                    continue
+                break
+            print_info(brown(" @@ ")+"%s: %s" % (blue(atom),darkgreen(_("manual dependencies added successfully")),))
+
+        Entropy.close_server_databases()
+        return 0
 
     elif cmd in ["move","copy"]:
         matches = []
@@ -142,9 +216,9 @@ def repositories(options):
                     matches.append(match)
                 else:
                     print_warning(  brown(" * ") + \
-                                    red("%s: " % (_("Cannot match"),) )+bold(package) + \
-                                    red(" %s " % (_("in"),) )+bold(repoid)+red(" %s" % (_("repository"),) )
-                                 )
+                        red("%s: " % (_("Cannot match"),) )+bold(package) + \
+                        red(" %s " % (_("in"),) )+bold(repoid)+red(" %s" % (_("repository"),) )
+                    )
             if not matches:
                 return 1
         if cmd == "move":
