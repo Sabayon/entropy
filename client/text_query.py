@@ -1107,7 +1107,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         if mydate:
             pkgcreatedate = Equo.entropyTools.convertUnixTimeToHumanTime(float(mydate))
         pkgsize = Equo.entropyTools.bytesIntoHuman(pkgsize)
-        pkgdeps = dbconn.retrieveDependencies(idpackage)
+        pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
         pkgconflicts = dbconn.retrieveConflicts(idpackage)
 
     pkghome = dbconn.retrieveHomepage(idpackage)
@@ -1163,8 +1163,8 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         print_info(darkgreen("       %s:\t\t" % (_("Checksum"),) )+brown(str(pkgdigest)))
         if (pkgdeps):
             print_info(darkred("       ##")+darkgreen(" %s:" % (_("Dependencies"),) ))
-            for pdep in pkgdeps:
-                print_info(darkred("       ## \t\t\t")+brown(pdep))
+            for pdep, p_id in pkgdeps:
+                print_info(darkred("       ## \t\t\t")+blue(" [")+unicode(p_id)+blue("] ")+brown(pdep))
         if (pkgconflicts):
             print_info(darkred("       ##")+darkgreen(" %s:" % (_("Conflicts"),) ))
             for conflict in pkgconflicts:
