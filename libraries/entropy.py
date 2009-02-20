@@ -7862,8 +7862,7 @@ class RepoInterface:
         # kill previous
         self.current_repository_got_locked = False
         self.kill_previous_repository_lock_scanner()
-        self.LockScanner = self.entropyTools.TimeScheduled( self.repository_lock_scanner, 2, {'repo': repo} )
-        self.LockScanner.setName("Lock_Scanner::"+str(abs(hash(os.urandom(20)))))
+        self.LockScanner = self.entropyTools.TimeScheduled( self.repository_lock_scanner, 5, {'repo': repo} )
         self.LockScanner.start()
 
     def kill_previous_repository_lock_scanner(self):
@@ -13699,6 +13698,7 @@ class SocketHostInterface:
             def __getattr__(self, function) :
                 return getattr(self.connection, function)
 
+        import entropyTools
         import socket as socket_mod
         import select
         import SocketServer
@@ -13839,7 +13839,8 @@ class SocketHostInterface:
                             max_conn_per_ip_barrier,
                         )
                     )
-                    time.sleep(times[abs(hash(os.urandom(1)))%len(times)])
+                    rnd_num = self.entropyTools.getRandomNumber()
+                    time.sleep(times[abs(hash(rnd_num))%len(times)])
 
             return True
 
@@ -15241,14 +15242,12 @@ class SocketHostInterface:
 
     def start_python_garbage_collector(self):
         self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600 )
-        self.PythonGarbageCollector.setName("Garbage_Collector::"+str(abs(hash(os.urandom(20)))))
         self.PythonGarbageCollector.exc = exceptionTools.InterruptError('InterruptError: interrupted')
         self.PythonGarbageCollector.accurate = False
         self.PythonGarbageCollector.start()
 
     def start_session_garbage_collector(self):
         self.Gc = self.entropyTools.TimeScheduled( self.gc_clean, 5 )
-        self.Gc.setName("Socket_GC::"+str(abs(hash(os.urandom(20)))))
         self.Gc.exc = exceptionTools.InterruptError('InterruptError: interrupted')
         self.Gc.start()
 
@@ -20995,7 +20994,7 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
     def _get_unique_id(self):
         import hashlib
         m = hashlib.md5()
-        rnd = str(abs(hash(os.urandom(20))))
+        rnd = str(abs(hash(os.urandom(1))))
         m.update(rnd)
         x = m.hexdigest()[:-16]
         del m
@@ -21003,8 +21002,14 @@ class phpBB3AuthInterface(DistributionAuthInterface,RemoteDbSkelInterface):
 
     def _get_random_number(self):
         myrand = 0
-        while (myrand < 100000) or (myrand > 999999):
-            myrand = hash(os.urandom(50))%999999
+        low_n = 100000
+        high_n = 999999
+        while (myrand < low_n) or (myrand > high_n):
+            try:
+                myrand = hash(os.urandom(1))%high_n
+            except NotImplementedError:
+                random.seed()
+                myrand = random.randint(low_n,high_n)
         return myrand
 
     def _get_password_hash(self, password):
@@ -21544,7 +21549,6 @@ class RepositorySocketServerInterface(SocketHostInterface):
 
     def start_repository_lock_scanner(self):
         self.LockScanner = self.entropyTools.TimeScheduled( self.lock_scan, 0.5 )
-        self.LockScanner.setName("Lock_Scanner::"+str(abs(hash(os.urandom(20)))))
         self.LockScanner.start()
 
     def set_repository_db_availability(self, repo_tuple):
@@ -25730,7 +25734,11 @@ class SystemManagerServerInterface(SocketHostInterface):
                 continue
             current_ids |= set(self.ManagerQueue[key])
         while 1:
-            queue_id = abs(hash(os.urandom(20)))
+            try:
+                queue_id = abs(hash(os.urandom(1)))
+            except NotImplementedError:
+                random.seed()
+                queue_id = random.randint(1000000000000000000,9999999999999999999)
             if queue_id not in current_ids:
                 return queue_id
 

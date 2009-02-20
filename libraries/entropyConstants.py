@@ -484,8 +484,6 @@ def const_defaultSettings(rootdir):
 
     ETP_DIR = rootdir+"/var/lib/entropy"
     ETP_TMPDIR = "/tmp"
-    ETP_RANDOM = str(random.random())[2:7]
-    ETP_TMPFILE = "/.random-"+ETP_RANDOM+".tmp"
     ETP_REPODIR = "/packages/"+ETP_ARCH_CONST
     ETP_PORTDIR = rootdir+"/usr/portage"
     ETP_DISTFILESDIR = "/distfiles"
@@ -519,7 +517,6 @@ def const_defaultSettings(rootdir):
         'sql_init': etpSQLInit,
         'installdir': '/usr/lib/entropy', # entropy default installation directory
         'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
-        'packagestmpfile': ETP_DIR+ETP_TMPDIR+ETP_TMPFILE, # etpConst['packagestmpfile'] --> general purpose tmp file
         'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
                             # by the clients: to query if a package has been already downloaded
                             # by the servers or rsync mirrors: to store already uploaded packages to the main rsync server

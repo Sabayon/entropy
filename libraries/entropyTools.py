@@ -487,7 +487,11 @@ def applicationLockCheck(option = None, gentle = False, silent = False):
     return False
 
 def getRandomNumber():
-    return abs(hash(os.urandom(2)))%99999
+    try:
+        return abs(hash(os.urandom(2)))%99999
+    except NotImplementedError:
+        random.seed()
+        return random.randint(10000,99999)
 
 def countdown(secs=5,what="Counting...", back = False):
     if secs:
