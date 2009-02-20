@@ -294,10 +294,12 @@ def database(options):
             print_error(mytxt)
             return
         # spawn process
-        if os.path.isfile(etpConst['packagestmpfile']):
-            os.remove(etpConst['packagestmpfile'])
-        os.system("find "+etpConst['systemroot']+"/ -mount 1> "+etpConst['packagestmpfile'])
-        if not os.path.isfile(etpConst['packagestmpfile']):
+        rnd_num = Equo.entropyTools.getRandomNumber()
+        tmpfile = os.path.join(etpConst['packagestmpdir'],"%s" % (rnd_num,))
+        if os.path.isfile(tmpfile):
+            os.remove(tmpfile)
+        os.system("find "+etpConst['systemroot']+"/ -mount 1> "+tmpfile)
+        if not os.path.isfile(tmpfile):
             mytxt = "%s: %s!" % (
                 darkred(_("Attention")),
                 red(_("'find' couldn't generate an output file")),
@@ -305,7 +307,7 @@ def database(options):
             print_error(mytxt)
             return
 
-        f = open(etpConst['packagestmpfile'],"r")
+        f = open(tmpfile,"r")
         # creating list of files
         filelist = set()
         item = f.readline().strip()
@@ -353,7 +355,7 @@ def database(options):
         print_info(mytxt)
         count = str(len(pkgsfound))
         cnt = 0
-        os.remove(etpConst['packagestmpfile'])
+        os.remove(tmpfile)
 
         for pkgfound in pkgsfound:
             cnt += 1
