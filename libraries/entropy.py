@@ -52,11 +52,10 @@ class urlFetcher:
         self.entropyTools, self.socket = entropyTools, socket
         self.url = url
         self.resume = resume
-        self.url = self.encode_url(self.url)
+        self.url = self.__encode_url(self.url)
         self.path_to_save = path_to_save
         self.checksum = checksum
         self.show_speed = show_speed
-        self.init_vars()
         self.progress = None
         self.abort_check_func = abort_check_func
         self.disallow_redirect = disallow_redirect
@@ -71,7 +70,7 @@ class urlFetcher:
         )
         self.extra_header_data = {}
 
-    def setup_resume_support(self):
+    def __setup_resume_support(self):
         # resume support
         if os.path.isfile(self.path_to_save) and os.access(self.path_to_save,os.W_OK) and self.resume:
             self.localfile = open(self.path_to_save,"awb")
@@ -86,7 +85,7 @@ class urlFetcher:
                     pass
             self.localfile = open(self.path_to_save,"wb")
 
-    def setup_proxy(self):
+    def __setup_proxy(self):
         # setup proxy, doing here because config is dynamic
         mydict = {}
         if etpConst['proxy']['ftp']:
@@ -101,12 +100,12 @@ class urlFetcher:
             # unset
             urllib2._opener = None
 
-    def encode_url(self, url):
+    def __encode_url(self, url):
         import urllib
         url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
         return url
 
-    def init_vars(self):
+    def _init_vars(self):
         self.resumed = False
         self.bufferSize = 8192
         self.status = None
@@ -123,12 +122,14 @@ class urlFetcher:
         self.updatestep = 0.2
         self.speedlimit = etpConst['downloadspeedlimit'] # kbytes/sec
         self.transferpollingtime = float(1)/4
-        self.setup_resume_support()
-        self.setup_proxy()
+        self.__setup_resume_support()
+        self.__setup_proxy()
 
     def download(self):
+
+        self._init_vars()
         self.speedUpdater = self.entropyTools.TimeScheduled(
-            self.update_speed,
+            self.__update_speed,
             self.transferpollingtime
         )
         self.speedUpdater.start()
@@ -190,7 +191,8 @@ class urlFetcher:
                 except:
                     pass
             elif (self.startingposition == self.remotesize):
-                return self.prepare_return()
+                self.close()
+                return self.__prepare_return()
             else:
                 self.localfile = open(self.path_to_save,"wb")
             self.remotefile = urllib2.urlopen(request)
@@ -237,10 +239,10 @@ class urlFetcher:
 
         # kill thread
         self.close()
-        return self.prepare_return()
+        return self.__prepare_return()
 
 
-    def prepare_return(self):
+    def __prepare_return(self):
         if self.checksum:
             self.status = self.entropyTools.md5sum(self.path_to_save)
             return self.status
@@ -269,7 +271,7 @@ class urlFetcher:
         self.speedUpdater.kill()
         self.socket.setdefaulttimeout(2)
 
-    def update_speed(self):
+    def __update_speed(self):
         self.elapsed += self.transferpollingtime
         # we have the diff size
         self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
