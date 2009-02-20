@@ -70,12 +70,10 @@ class urlFetcher:
             uname[2],
         )
         self.extra_header_data = {}
-        self.setup_resume_support()
-        self.setup_proxy()
 
     def setup_resume_support(self):
         # resume support
-        if os.path.isfile(self.path_to_save) and os.access(self.path_to_save,os.R_OK) and self.resume:
+        if os.path.isfile(self.path_to_save) and os.access(self.path_to_save,os.W_OK) and self.resume:
             self.localfile = open(self.path_to_save,"awb")
             self.localfile.seek(0,2)
             self.startingposition = int(self.localfile.tell())
@@ -125,9 +123,10 @@ class urlFetcher:
         self.updatestep = 0.2
         self.speedlimit = etpConst['downloadspeedlimit'] # kbytes/sec
         self.transferpollingtime = float(1)/4
+        self.setup_resume_support()
+        self.setup_proxy()
 
     def download(self):
-        self.init_vars()
         self.speedUpdater = self.entropyTools.TimeScheduled(
             self.update_speed,
             self.transferpollingtime

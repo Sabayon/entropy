@@ -22,4 +22,5 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   - UGC: bug report documents?
   - UGC: bbcode docs?
   - SSL improvements
+  - Unit Test module
 
