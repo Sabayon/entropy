@@ -18702,7 +18702,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_entropy_release_strings_id(self, release_string):
         self.check_connection()
-        self.execute_query('SELECT `entropy_release_strings_id` FROM entropy_release_strings WHERE `entropy_release_strings_id` = %s', (release_string,))
+        self.execute_query('SELECT `entropy_release_strings_id` FROM entropy_release_strings WHERE `release_string` = %s', (release_string,))
         data = self.fetchone()
         if data: return data['entropy_release_strings_id']
         return -1
