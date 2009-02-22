@@ -19,8 +19,6 @@
 
 # Filtering action class
 
-import re
-
 class SpritzFiltering:
     def __init__(self):
         self.filters = []

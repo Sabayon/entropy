@@ -219,7 +219,6 @@ def searchChangeLog(atoms, dbconn = None, EquoConnection = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("ChangeLog Search"),)))
 
-    tot_results = 0
     for atom in atoms:
         if dbconn != None:
             idpackage, rc = dbconn.atomMatch(atom)

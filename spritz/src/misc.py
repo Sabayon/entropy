@@ -19,7 +19,6 @@
 
 from entropy_i18n import _
 from spritz_setup import cleanMarkupString, SpritzConf
-import time
 
 class SpritzQueue:
 
