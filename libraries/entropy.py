@@ -18421,7 +18421,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `entropy_distribution_usage_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `entropy_branches_id` INT NOT NULL,
             `entropy_release_strings_id` INT NOT NULL,
-            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `ts` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `ip_address` VARCHAR( 15 ),
             `entropy_ip_locations_id` INT UNSIGNED NULL DEFAULT 0,
             FOREIGN KEY  (`entropy_branches_id`) REFERENCES `entropy_branches` (`entropy_branches_id`),
@@ -22363,10 +22363,16 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def ugc_do_download_stats(self, session_id, branch, release_string, pkgkeys):
+    def ugc_do_download_stats(self, session_id, pkgkeys):
+
+        release_string = '--N/A--'
+        rel_file = etpConst['systemreleasefile']
+        if os.path.isfile(rel_file) and os.access(rel_file,os.R_OK):
+            with open(rel_file,"r") as f:
+                release_string = f.read(512)
 
         mydict = {
-            'branch': branch,
+            'branch': etpConst['branch'],
             'release_string': release_string,
             'pkgkeys': ' '.join(pkgkeys),
         }
@@ -28054,8 +28060,8 @@ class UGCClientInterface:
             self.UGCCache.update_downloads_cache(repository, down_dict)
         return down_dict, err_msg
 
-    def add_download_stats(self, repository, branch, release_string, pkgkeys):
-        return self.do_cmd(repository, False, "ugc_do_download_stats", [branch, release_string, pkgkeys], {})
+    def add_download_stats(self, repository, pkgkeys):
+        return self.do_cmd(repository, False, "ugc_do_download_stats", [pkgkeys], {})
 
     def send_file(self, repository, pkgkey, file_path, title, description, keywords):
         self.UGCCache.clear_alldocs_cache(repository)
