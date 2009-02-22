@@ -1,0 +1,12 @@
+Entropy Requirements:
+
+# mandatory:
+    sys-devel/gettext
+    sys-apps/diffutils
+    >=dev-lang/python-2.5[sqlite]
+    dev-db/sqlite[soundex]
+
+# optional:
+    dev-python/pyopenssl
+    dev-python/geoip-python
+    dev-python/gdata
