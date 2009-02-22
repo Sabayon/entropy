@@ -44,6 +44,8 @@ except ImportError: # fallback to embedded pysqlite
             )
         )
 
+
+
 class urlFetcher:
 
     def __init__(self, url, path_to_save, checksum = True, show_speed = True, resume = True, abort_check_func = None, disallow_redirect = False):
@@ -246,9 +248,8 @@ class urlFetcher:
         if self.checksum:
             self.status = self.entropyTools.md5sum(self.path_to_save)
             return self.status
-        else:
-            self.status = "-2"
-            return self.status
+        self.status = "-2"
+        return self.status
 
     def commit(self, mybuffer):
         # writing file buffer
@@ -322,47 +323,18 @@ class EntropyCacher:
     import dumpTools
     import threading
     def __init__(self):
-        self.alive = False
-        self.CacheBuffer = self.entropyTools.lifobuffer()
-        self.CacheLock = self.threading.Lock()
+        self.__alive = False
+        self.__CacheBuffer = self.entropyTools.lifobuffer()
+        self.__CacheLock = self.threading.Lock()
 
     def __copy_obj(self, obj):
         return copy.deepcopy(obj)
 
-    def start(self):
-        self.CacheWriter = self.entropyTools.TimeScheduled(self.Cacher,1)
-        self.CacheWriter.delay_before = True
-        self.CacheWriter.start()
-        while not self.CacheWriter.isAlive():
-            continue
-        self.alive = True
-
-    def sync(self, wait = False):
-        if not self.alive: return
-        wd = 10
-        while self.CacheBuffer.is_filled() and ((wd > 0) or wait):
-            if not wait: wd -= 1
-            time.sleep(0.5)
-
-    def push(self, key, data, async = True):
-        if not self.alive: return
-        if async:
-            with self.CacheLock:
-                self.CacheBuffer.push((key,self.__copy_obj(data),))
-        else:
-            self.dumpTools.dumpobj(key,data)
-
-    def pop(self, key):
-        with self.CacheLock:
-            l_o = self.dumpTools.loadobj
-            if not l_o: return
-            return l_o(key)
-
-    def Cacher(self):
+    def __cacher(self):
         while 1:
-            if not self.alive: break
-            with self.CacheLock:
-                data = self.CacheBuffer.pop()
+            if not self.__alive: break
+            with self.__CacheLock:
+                data = self.__CacheBuffer.pop()
             if data == None: break
             key, data = data
             d_o = self.dumpTools.dumpobj
@@ -372,18 +344,126 @@ class EntropyCacher:
     def __del__(self):
         self.stop()
 
+    def start(self):
+        self.__CacheWriter = self.entropyTools.TimeScheduled(self.__cacher,1)
+        self.__CacheWriter.delay_before = True
+        self.__CacheWriter.start()
+        while not self.__CacheWriter.isAlive():
+            continue
+        self.__alive = True
+
+    def sync(self, wait = False):
+        if not self.__alive: return
+        wd = 10
+        while self.__CacheBuffer.is_filled() and ((wd > 0) or wait):
+            if not wait: wd -= 1
+            time.sleep(0.5)
+
+    def push(self, key, data, async = True):
+        if not self.__alive: return
+        if async:
+            with self.__CacheLock:
+                self.__CacheBuffer.push((key,self.__copy_obj(data),))
+        else:
+            self.dumpTools.dumpobj(key,data)
+
+    def pop(self, key):
+        with self.__CacheLock:
+            l_o = self.dumpTools.loadobj
+            if not l_o: return
+            return l_o(key)
+
     def stop(self):
-        if not self.alive: return
-        if hasattr(self,"CacheBuffer"):
-            if self.CacheBuffer and self.alive:
+        if not self.__alive: return
+        if hasattr(self,"__CacheBuffer"):
+            if self.__CacheBuffer and self.__alive:
                 wd = 20
-                while self.CacheBuffer.is_filled() and wd:
+                while self.__CacheBuffer.is_filled() and wd:
                     wd -= 1
                     time.sleep(0.5)
-                self.CacheBuffer.clear()
-        self.alive = False
-        if hasattr(self,"CacheWriter"):
-            self.CacheWriter.kill()
+                self.__CacheBuffer.clear()
+        self.__alive = False
+        if hasattr(self,"__CacheWriter"):
+            self.__CacheWriter.kill()
+
+class EntropyGeoIP:
+
+    """
+        Entropy geo-tagging interface containing useful
+        methods to ease metadata management and transfor-
+        mation.
+        It's a wrapper over GeoIP at the moment
+        dev-python/geoip-python required
+    """
+
+    def __init__(self, geoip_dbfile):
+
+        """
+        @param1: valid GeoIP (Maxmind) database file (.dat)
+        """
+
+        import GeoIP
+        self.__GeoIP = GeoIP
+        # http://www.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+        if not (os.path.isfile(geoip_dbfile) and os.access(geoip_dbfile,os.R_OK)):
+            raise AttributeError(
+                "expecting a valid filepath for geoip_dbfile, got: %s" % (
+                    repr(geoip_dbfile),
+                )
+            )
+        self.__geoip_dbfile = geoip_dbfile
+
+    def __get_geo_ip_generic(self):
+        return self.__GeoIP.new(self.__GeoIP.GEOIP_MEMORY_CACHE)
+
+    def __get_geo_ip_open(self):
+        return self.__GeoIP.open(self.__geoip_dbfile, self.__GeoIP.GEOIP_STANDARD)
+
+    def get_geoip_country_name_from_ip(self, ip_address):
+        """
+        @return: string or None
+        @param1: ip address string
+        """
+        gi = self.__get_geo_ip_generic()
+        return gi.country_name_by_addr(ip_address)
+
+    def get_geoip_country_code_from_ip(self, ip_address):
+        """
+        @return: string or None
+        @param1: ip address string
+        """
+        gi = self.__get_geo_ip_generic()
+        return gi.country_code_by_addr(ip_address)
+
+    def get_geoip_record_from_ip(self, ip_address):
+        """
+        @return: dict() or None
+        @param1: ip address string
+        dict data:
+            {
+                'city': 'Treviso',
+                'region': '20',
+                'area_code': 0,
+                'longitude': 12.244999885559082,
+                'country_code3': 'ITA',
+                'latitude': 45.666698455810547,
+                'postal_code': None,
+                'dma_code': 0,
+                'country_code': 'IT',
+                'country_name': 'Italy'
+            }
+        """
+        go = self.__get_geo_ip_open()
+        return go.record_by_addr(ip_address)
+
+    def get_geoip_record_from_hostname(self, hostname):
+        """
+        @return: dict() or None
+        @param1: hostname
+        """
+        go = self.__get_geo_ip_open()
+        return go.record_by_name(hostname)
+
 
 '''
     Main Entropy (client side) package management class
@@ -2192,11 +2272,11 @@ class EquoInterface(TextInterface):
     def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = None):
 
         if self.xcache:
-            c_data = sorted(list(dependencies))
+            c_data = sorted(dependencies)
             client_checksum = self.clientDbconn.database_checksum()
-            c_hash = str(hash(tuple(c_data)))+str(hash(deep_deps))+client_checksum
-            c_hash = "unsat_%s" % (hash(c_hash),)
-            cached = self.dumpTools.loadobj(etpCache['filter_satisfied_deps']+c_hash)
+            c_hash = hash("%s|%s|%s" % (c_data,deep_deps,client_checksum,))
+            c_hash = "%s%s" % (etpCache['filter_satisfied_deps'],c_hash,)
+            cached = self.dumpTools.loadobj(c_hash)
             if cached != None: return cached
 
         if not isinstance(depcache,dict):
@@ -2207,9 +2287,10 @@ class EquoInterface(TextInterface):
         open_repo = self.openRepositoryDatabase
         intf_error = self.dbapi2.InterfaceError
         cdb_getversioning = self.clientDbconn.getVersioningData
-        cdb_retrieveneededraw = self.clientDbconn.retrieveNeededRaw
+        #cdb_retrieveneededraw = self.clientDbconn.retrieveNeededRaw
         etp_cmp = self.entropyTools.entropyCompareVersions
-        do_needed_check = False
+        etp_get_rev = self.entropyTools.dep_get_entropy_revision
+        #do_needed_check = False
 
         def fm_dep(dependency):
 
@@ -2239,14 +2320,14 @@ class EquoInterface(TextInterface):
                 depcache[dependency] = dependency
                 return dependency
 
-            if do_needed_check:
-                dbconn = open_repo(r_repo)
-                installed_needed = cdb_retrieveneededraw(c_id)
-                repo_needed = dbconn.retrieveNeededRaw(r_id)
-                if installed_needed != repo_needed:
-                    return dependency
-                #elif not deep_deps:
-                #    return 0
+            #if do_needed_check:
+            #    dbconn = open_repo(r_repo)
+            #    installed_needed = cdb_retrieveneededraw(c_id)
+            #    repo_needed = dbconn.retrieveNeededRaw(r_id)
+            #    if installed_needed != repo_needed:
+            #        return dependency
+            #    #elif not deep_deps:
+            #    #    return 0
 
             dbconn = open_repo(r_repo)
             try:
@@ -2262,9 +2343,17 @@ class EquoInterface(TextInterface):
                 installedTag = ''
                 installedRev = 0
 
+            # support for app-foo/foo-123~-1
+            # -1 revision means, always pull the latest
+            do_deep = deep_deps
+            if not do_deep:
+                string_rev = etp_get_rev(dependency)
+                if string_rev == -1:
+                    do_deep = True
+
             vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,), (installedVer,installedTag,installedRev,))
             if vcmp != 0:
-                if not deep_deps and ((repo_pkgver,repo_pkgtag,) == (installedVer,installedTag,)) and (repo_pkgrev != installedRev):
+                if not do_deep and ((repo_pkgver,repo_pkgtag,) == (installedVer,installedTag,)) and (repo_pkgrev != installedRev):
                     depcache[dependency] = 0
                     return 0
                 depcache[dependency] = dependency
@@ -2276,10 +2365,7 @@ class EquoInterface(TextInterface):
         unsatisfied = set([x for x in unsatisfied if x != 0])
 
         if self.xcache:
-            try:
-                self.dumpTools.dumpobj(etpCache['filter_satisfied_deps']+c_hash,unsatisfied)
-            except IOError:
-                pass
+            self.Cacher.push(c_hash,unsatisfied)
 
         return unsatisfied
 
@@ -2922,10 +3008,8 @@ class EquoInterface(TextInterface):
         return sum_hashes
 
     def get_available_packages_chash(self, branch):
-        repo_digest = self.all_repositories_checksum()
         # client digest not needed, cache is kept updated
-        c_hash = "%s%s%s" % (hash(repo_digest),hash(branch),hash(tuple(self.validRepositories)),)
-        return str(hash(c_hash))
+        return str(hash("%s%s%s" % (self.all_repositories_checksum(),branch,self.validRepositories,)))
 
     def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
         if myhash == None:
@@ -4280,7 +4364,7 @@ class EquoInterface(TextInterface):
 
         if (kernelstuff) and (not kernelstuff_kernel):
             # add kname to the dependency
-            data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver] = etpConst['spm']['(r)depend_id']
+            data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver+"~-1"] = etpConst['spm']['(r)depend_id']
 
         # Conflicting tagged packages support
         key = data['category']+"/"+data['name']
@@ -7368,6 +7452,7 @@ class RepoInterface:
         )
 
         mydbconn.commitChanges()
+        mydbconn.clearCache()
         # now verify if both checksums match
         result = False
         mychecksum = mydbconn.database_checksum(do_order = True, strict = False, strings = True)
@@ -18294,7 +18379,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             CREATE TABLE `entropy_downloads_data` (
             `iddownload` INT UNSIGNED NOT NULL,
             `ip_address` VARCHAR(40) NULL DEFAULT '',
-            `location` TINYINT NULL DEFAULT 0,
+            `entropy_ip_locations_id` INT UNSIGNED NULL DEFAULT 0,
             FOREIGN KEY  (`iddownload`) REFERENCES `entropy_downloads` (`iddownload`)
             );
         """,
@@ -18331,6 +18416,40 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             FOREIGN KEY  (`iddoc`) REFERENCES `entropy_docs` (`iddoc`)
             );
         """,
+        'entropy_distribution_usage': """
+            CREATE TABLE `entropy_distribution_usage` (
+            `entropy_distribution_usage_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `entropy_branches_id` INT NOT NULL,
+            `entropy_release_strings_id` INT NOT NULL,
+            `ts` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            `ip_address` VARCHAR( 15 ),
+            `entropy_ip_locations_id` INT UNSIGNED NULL DEFAULT 0,
+            FOREIGN KEY  (`entropy_branches_id`) REFERENCES `entropy_branches` (`entropy_branches_id`),
+            FOREIGN KEY  (`entropy_release_strings_id`) REFERENCES `entropy_release_strings` (`entropy_release_strings_id`),
+            KEY `ip_address` (`ip_address`),
+            KEY `entropy_ip_locations_id` (`entropy_ip_locations_id`)
+            );
+        """,
+        'entropy_branches': """
+            CREATE TABLE `entropy_branches` (
+            `entropy_branches_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `entropy_branch` VARCHAR( 100 )
+            );
+        """,
+        'entropy_release_strings': """
+            CREATE TABLE `entropy_release_strings` (
+            `entropy_release_strings_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `release_string` VARCHAR( 255 )
+            );
+        """,
+        'entropy_ip_locations': """
+            CREATE TABLE `entropy_ip_locations` (
+            `entropy_ip_locations_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `ip_latitude` FLOAT( 8,5 ),
+            `ip_longitude` FLOAT( 8,5 ),
+            KEY `ip_locations_lat_lon` (`ip_latitude`,`ip_longitude`)
+            );
+        """,
     }
     VOTE_RANGE = etpConst['ugc_voterange'] # [1, 2, 3, 4, 5]
     VIRUS_CHECK_EXEC = '/usr/bin/clamscan'
@@ -18344,7 +18463,6 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     COMMENTS_SCORE_WEIGHT = 5
     DOCS_SCORE_WEIGHT = 10
     VOTES_SCORE_WEIGHT = 2
-    DOWNLOADS_STORE_LOCATION = 0
 
     '''
         dependencies:
@@ -18405,6 +18523,15 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if not self.cached_results.get(cache_item): return None
         key = self.get_cache_item_key(cache_item)
         self.dumpTools.dumpobj(key, r)
+
+    def _get_geoip_data_from_ip_address(self, ip_address):
+        geoip_dbpath = self.connection_data.get('geoip_dbpath','')
+        if os.path.isfile(geoip_dbpath) and os.access(geoip_dbpath,os.R_OK):
+            try:
+                geo = EntropyGeoIP(geoip_dbpath)
+                return geo.get_geoip_record_from_ip(ip_address)
+            except: # lame, but I don't know what exceptions are thrown
+                pass
 
     # expired get_ugc_alldownloads 0 86400 1228577077
     def get_cached_result(self, cache_item):
@@ -18490,20 +18617,51 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         if do_commit: self.commit()
         return myid
 
-    def update_download(self, iddownload, key, ddate, incr, do_commit = False):
+    def insert_entropy_branch(self, branch, do_commit = False):
         self.check_connection()
-        self.execute_query('SELECT `count` FROM entropy_downloads WHERE `iddownload` = %s', (iddownload,))
-        data = self.fetchone()
-        if not data: # !?!?
-            return self.insert_download(key, ddate, count = 1)
-        count = data['count']+incr
-        # now update
-        self.execute_query('UPDATE entropy_downloads SET `count` = %s WHERE `iddownload` = %s', (count,iddownload,))
+        self.execute_query('INSERT INTO entropy_branches VALUES (%s,%s)', (None,branch,))
+        myid = self.lastrowid()
+        if do_commit: self.commit()
+        return myid
+
+    def insert_entropy_release_string(self, release_string, do_commit = False):
+        self.check_connection()
+        self.execute_query('INSERT INTO entropy_release_strings VALUES (%s,%s)', (None,release_string,))
+        myid = self.lastrowid()
+        if do_commit: self.commit()
+        return myid
+
+    def insert_entropy_ip_locations_id(self, ip_latitude, ip_longitude, do_commit = False):
+        self.check_connection()
+        self.execute_query('INSERT INTO entropy_ip_locations VALUES (%s,%s,%s)', (None,ip_latitude,ip_longitude,))
+        myid = self.lastrowid()
+        if do_commit: self.commit()
+        return myid
+
+    def handle_entropy_ip_locations_id(self, ip_addr):
+        entropy_ip_locations_id = 0
+        geo_data = self._get_geoip_data_from_ip_address(ip_addr)
+        if isinstance(geo_data,dict):
+            ip_lat = geo_data.get('latitude')
+            ip_long = geo_data.get('longitude')
+            if isinstance(ip_lat,float) and isinstance(ip_long,float):
+                ip_lat = round(ip_lat,5)
+                ip_long = round(ip_long,5)
+                entropy_ip_locations_id = self.get_entropy_ip_locations_id(ip_lat, ip_long)
+                if entropy_ip_locations_id == -1:
+                    entropy_ip_locations_id = self.insert_entropy_ip_locations_id(ip_lat, ip_long)
+        return entropy_ip_locations_id
+
+    def update_download(self, iddownload, do_commit = False):
+        self.check_connection()
+        self.execute_query('UPDATE entropy_downloads SET `count` = `count`+1 WHERE `iddownload` = %s', (iddownload,))
         if do_commit: self.commit()
         return iddownload
 
-    def store_download_data(self, iddownload, ip_addr, do_commit = False):
-        self.execute_query('INSERT INTO entropy_downloads_data VALUES (%s,%s,%s)', (iddownload,ip_addr,self.DOWNLOADS_STORE_LOCATION))
+    def store_download_data(self, iddownloads, ip_addr, do_commit = False):
+        entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
+        mydata = [(x,ip_addr,entropy_ip_locations_id,) for x in iddownloads]
+        self.execute_many('INSERT INTO entropy_downloads_data VALUES (%s,%s,%s)', mydata)
         if do_commit: self.commit()
 
     def get_date(self):
@@ -18533,6 +18691,30 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         self.execute_query('SELECT `iddoctype` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
         data = self.fetchone()
         if data: return data['iddoctype']
+        return -1
+
+    def get_entropy_branches_id(self, branch):
+        self.check_connection()
+        self.execute_query('SELECT `entropy_branches_id` FROM entropy_branches WHERE `entropy_branch` = %s', (branch,))
+        data = self.fetchone()
+        if data: return data['entropy_branches_id']
+        return -1
+
+    def get_entropy_release_strings_id(self, release_string):
+        self.check_connection()
+        self.execute_query('SELECT `entropy_release_strings_id` FROM entropy_release_strings WHERE `entropy_release_strings_id` = %s', (release_string,))
+        data = self.fetchone()
+        if data: return data['entropy_release_strings_id']
+        return -1
+
+    def get_entropy_ip_locations_id(self, ip_latitude, ip_longitude):
+        self.check_connection()
+        self.execute_query("""
+        SELECT `entropy_ip_locations_id` FROM 
+        entropy_ip_locations WHERE 
+        `ip_latitude` = %s AND `ip_longitude` = %s""", (ip_latitude,ip_longitude,))
+        data = self.fetchone()
+        if data: return data['entropy_ip_locations_id']
         return -1
 
     def get_pkgkey(self, idkey):
@@ -18569,7 +18751,12 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
         self.check_connection()
         metadata = []
-        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_base.`key` = %s AND entropy_docs.`iddoctype` IN %s ORDER BY entropy_docs.`ts` ASC', (pkgkey,typeslist,))
+        self.execute_query("""
+            SELECT * FROM entropy_docs,entropy_base WHERE 
+            entropy_docs.`idkey` = entropy_base.`idkey` AND 
+            entropy_base.`key` = %s AND 
+            entropy_docs.`iddoctype` IN %s 
+            ORDER BY entropy_docs.`ts` ASC""", (pkgkey,typeslist,))
         metadata = self.fetchall()
         for mydict in metadata:
             mydict = self._get_ugc_extra_metadata(mydict)
@@ -18631,7 +18818,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
         vote = 0.0
-        self.execute_query('SELECT avg(entropy_votes.`vote`) as avg_vote FROM entropy_votes,entropy_base WHERE entropy_base.`key` = %s AND entropy_base.idkey = entropy_votes.idkey', (pkgkey,))
+        self.execute_query("""
+        SELECT avg(entropy_votes.`vote`) as avg_vote FROM entropy_votes,entropy_base WHERE 
+        entropy_base.`key` = %s AND 
+        entropy_base.idkey = entropy_votes.idkey""", (pkgkey,))
         data = self.fetchone()
         if isinstance(data,dict):
             if data.get('avg_vote'):
@@ -18647,7 +18837,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         self.check_connection()
         vote_data = {}
-        self.execute_query('SELECT entropy_base.`key` as `vkey`,avg(entropy_votes.vote) as `avg_vote` FROM entropy_votes,entropy_base WHERE entropy_votes.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`')
+        self.execute_query("""
+        SELECT entropy_base.`key` as `vkey`,avg(entropy_votes.vote) as `avg_vote` FROM 
+        entropy_votes,entropy_base WHERE 
+        entropy_votes.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`""")
         data = self.fetchall()
         for d_dict in data:
             vote_data[d_dict['vkey']] = d_dict['avg_vote']
@@ -18659,14 +18852,16 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_ugc_downloads(self, pkgkey):
         self.check_connection()
         downloads = 0
-        self.execute_query('SELECT SQL_CACHE sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_base.key = %s AND entropy_base.idkey = entropy_downloads.idkey', (pkgkey,))
+        self.execute_query("""
+        SELECT SQL_CACHE sum(entropy_downloads.`count`) as `tot_downloads` FROM 
+        entropy_downloads,entropy_base WHERE entropy_base.key = %s AND 
+        entropy_base.idkey = entropy_downloads.idkey""", (pkgkey,))
         data = self.fetchone()
         if data['tot_downloads'] != None:
             downloads = data['tot_downloads']
         return downloads
 
     def get_ugc_alldownloads(self):
-
         # cached?
         cache_item = 'get_ugc_alldownloads'
         cached = self.get_cached_result(cache_item)
@@ -18674,7 +18869,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
         self.check_connection()
         down_data = {}
-        self.execute_query('SELECT SQL_CACHE entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM entropy_downloads,entropy_base WHERE entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`idkey`')
+        self.execute_query("""
+        SELECT SQL_CACHE entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM 
+        entropy_downloads,entropy_base WHERE 
+        entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`idkey`""")
         data = self.fetchall()
         for d_dict in data:
             down_data[d_dict['vkey']] = d_dict['tot_downloads']
@@ -18738,7 +18936,9 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
     def get_user_score_ranking(self, userid):
         self.check_connection()
         self.execute_query('SET @row = 0')
-        self.execute_query('SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s', (userid,))
+        self.execute_query("""
+        SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM 
+        entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s""", (userid,))
         data = self.fetchone()
         if isinstance(data,dict):
             if data.get('Row'): return data['Row']
@@ -18822,7 +19022,10 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def get_user_alldocs(self, userid):
         self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_docs.`userid` = %s AND entropy_base.idkey = entropy_docs.idkey ORDER BY entropy_base.`key`', (userid,))
+        self.execute_query("""
+        SELECT * FROM entropy_docs,entropy_base WHERE 
+        entropy_docs.`userid` = %s AND 
+        entropy_base.idkey = entropy_docs.idkey ORDER BY entropy_base.`key`""", (userid,))
         return self.fetchall()
 
     def get_user_docs(self, userid):
@@ -18915,7 +19118,18 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_base.`key` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query("""
+        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
+        sum(entropy_downloads.`count`) as `tot_downloads`, 
+        entropy_user_scores.`score` as `score` FROM 
+        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
+        entropy_base.`key` LIKE %s AND 
+        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
+        entropy_docs.`idkey` = entropy_base.`idkey` AND 
+        entropy_votes.`idkey` = entropy_base.`idkey` AND 
+        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
+        entropy_docs.`userid` = entropy_user_scores.`userid` 
+        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
@@ -18946,7 +19160,17 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs.`username` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query("""
+        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
+        sum(entropy_downloads.`count`) as `tot_downloads`, 
+        entropy_user_scores.`score` as `score` FROM 
+        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
+        entropy_docs.`username` LIKE %s AND entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
+        entropy_docs.`idkey` = entropy_base.`idkey` AND 
+        entropy_votes.`idkey` = entropy_base.`idkey` AND 
+        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
+        entropy_docs.`userid` = entropy_user_scores.`userid` 
+        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
@@ -18976,7 +19200,18 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query("""
+        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
+        sum(entropy_downloads.`count`) as `tot_downloads`, 
+        entropy_user_scores.`score` as `score` FROM 
+        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
+        (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND 
+        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
+        entropy_docs.`idkey` = entropy_base.`idkey` AND 
+        entropy_votes.`idkey` = entropy_base.`idkey` AND 
+        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
+        entropy_docs.`userid` = entropy_user_scores.`userid` 
+        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
@@ -19007,7 +19242,19 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs_keywords.`keyword` LIKE %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query("""
+        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
+        sum(entropy_downloads.`count`) as `tot_downloads`, 
+        entropy_user_scores.`score` as `score` FROM 
+        entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
+        entropy_docs_keywords.`keyword` LIKE %s AND 
+        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
+        entropy_docs.`idkey` = entropy_base.`idkey` AND 
+        entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND 
+        entropy_votes.`idkey` = entropy_base.`idkey` AND 
+        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
+        entropy_docs.`userid` = entropy_user_scores.`userid` 
+        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
@@ -19041,7 +19288,18 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         elif order_by == "downloads":
             order_by_string = 'ORDER BY tot_downloads DESC'
 
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, sum(entropy_downloads.`count`) as `tot_downloads`, entropy_user_scores.`score` as `score` FROM entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE entropy_docs.`iddoc` = %s AND entropy_docs.`iddoctype` IN '+iddoctypes+' AND entropy_docs.`idkey` = entropy_base.`idkey` AND entropy_votes.`idkey` = entropy_base.`idkey` AND entropy_downloads.`idkey` = entropy_base.`idkey` AND entropy_docs.`userid` = entropy_user_scores.`userid` GROUP BY entropy_docs.`iddoc` '+order_by_string+' LIMIT %s,%s', search_params)
+        self.execute_query("""
+        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
+        sum(entropy_downloads.`count`) as `tot_downloads`, 
+        entropy_user_scores.`score` as `score` FROM 
+        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
+        entropy_docs.`iddoc` = %s AND 
+        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
+        entropy_docs.`idkey` = entropy_base.`idkey` AND 
+        entropy_votes.`idkey` = entropy_base.`idkey` AND 
+        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
+        entropy_docs.`userid` = entropy_user_scores.`userid` 
+        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
@@ -19196,33 +19454,73 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             return True
         return False
 
-    # increment +1 the number of downloads
-    def do_download(self, pkgkey, ip_addr = None, do_commit = False):
-        self.check_connection()
-        mydate = self.get_date()
-        iddownload = self.get_iddownload(pkgkey, mydate)
-        if iddownload == -1:
-            iddownload = self.insert_download(pkgkey, mydate, count = 1)
-        else:
-            self.update_download(iddownload, pkgkey, mydate, 1)
-        if do_commit: self.commit()
-        if (iddownload > 0) and isinstance(ip_addr,basestring):
-            self.store_download_data(iddownload, ip_addr)
-        return True
-
+    # icrement +1 download usage for the provided package keys
     def do_downloads(self, pkgkeys, ip_addr = None, do_commit = False):
         self.check_connection()
         mydate = self.get_date()
+        iddownloads = set()
         for pkgkey in pkgkeys:
             iddownload = self.get_iddownload(pkgkey, mydate)
             if iddownload == -1:
                 iddownload = self.insert_download(pkgkey, mydate, count = 1)
             else:
-                self.update_download(iddownload, pkgkey, mydate, 1)
+                self.update_download(iddownload)
             if (iddownload > 0) and isinstance(ip_addr,basestring):
-                self.store_download_data(iddownload, ip_addr)
+                iddownloads.add(iddownload)
+
+        if iddownloads: self.store_download_data(iddownloads, ip_addr)
         if do_commit: self.commit()
         return True
+
+    def do_download_stats(self, branch, release_string, pkgkeys, ip_addr, do_commit = False):
+        self.check_connection()
+
+        branch_id = self.get_entropy_branches_id(branch)
+        if branch_id == -1:
+            branch_id = self.insert_entropy_branch(branch)
+
+        rel_strings_id = self.get_entropy_release_strings_id(release_string)
+        if rel_strings_id == -1:
+            rel_strings_id = self.insert_entropy_release_string(release_string)
+
+        self.do_downloads(pkgkeys, ip_addr = ip_addr)
+
+        # FIXME: (is it correct?) check if ip_addr is already in the DB
+        entropy_distribution_usage_id = self.is_user_ip_available_in_entropy_distribution_usage(ip_addr)
+        if entropy_distribution_usage_id == -1:
+            entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
+            self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s)',(
+                    None,
+                    branch_id,
+                    release_string_id,
+                    None,
+                    ip_addr,
+                    entropy_ip_locations_id,
+                )
+            )
+        else:
+            self.execute_query("""
+            UPDATE entropy_distribution_usage SET `entropy_branches_id` = %s, 
+            `entropy_release_strings_id` = %s WHERE `entropy_distribution_usage_id` = %s
+            """,(
+                    branch_id,
+                    release_string_id,
+                    entropy_distribution_usage_id,
+                )
+            )
+
+        if do_commit: self.commit()
+        return True
+
+        pass
+
+    def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
+        self.check_connection()
+        self.execute_query('SELECT entropy_distribution_usage_id WHERE `ip_address` = %s',(ip_address,))
+        data = self.fetchone()
+        if data:
+            return data['entropy_distribution_usage_id']
+        return -1
 
     def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
         self.check_connection()
@@ -19523,6 +19821,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
         srv.ProgrammaticLogin()
         return srv
 
+
 class DistributionUGCCommands(SocketCommandsSkel):
 
     import dumpTools, entropyTools
@@ -19538,7 +19837,10 @@ class DistributionUGCCommands(SocketCommandsSkel):
             self.DOC_TYPES['generic_file'],
             self.DOC_TYPES['youtube_video'],
         ]
-        self.raw_commands = ['ugc:add_comment', 'ugc:edit_comment', 'ugc:register_stream']
+        self.raw_commands = [
+            'ugc:add_comment', 'ugc:edit_comment',
+            'ugc:register_stream','ugc:do_download_stats'
+        ]
 
         self.valid_commands = {
             'ugc:get_comments':    {
@@ -19651,16 +19953,6 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
                 'from': unicode(self), # from what class
             },
-            'ugc:do_download':    {
-                'auth': False,
-                'built_in': False,
-                'cb': self.docmd_do_download,
-                'args': ["authenticator","myargs"],
-                'as_user': False,
-                'desc': "inform the system of a downloaded application",
-                'syntax': "<SESSION_ID> ugc:do_download app-foo/foo",
-                'from': unicode(self), # from what class
-            },
             'ugc:do_downloads':    {
                 'auth': False,
                 'built_in': False,
@@ -19739,6 +20031,16 @@ class DistributionUGCCommands(SocketCommandsSkel):
                 'as_user': False,
                 'desc': "remove a youtube video (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_youtube_video <iddoc>",
+                'from': unicode(self), # from what class
+            },
+            'ugc:do_download_stats':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_do_download_stats,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "send information regarding downloads and distribution used",
+                'syntax': "<SESSION_ID> ugc:do_download_stats <valid xml formatted data>",
                 'from': unicode(self), # from what class
             },
         }
@@ -20065,19 +20367,6 @@ class DistributionUGCCommands(SocketCommandsSkel):
             return voted,'already voted'
         return voted,'ok'
 
-    def docmd_do_download(self, authenticator, myargs):
-
-        if not myargs:
-            return None,'wrong arguments'
-        pkgkey = myargs[0]
-
-        ip_addr = self._get_session_ip_address(authenticator)
-        ugc = self._load_ugc_interface()
-        done = ugc.do_download(pkgkey, ip_addr = ip_addr)
-        if not done:
-            return done,'download not stored'
-        return done,'ok'
-
     def docmd_do_downloads(self, authenticator, myargs):
 
         if not myargs:
@@ -20088,6 +20377,32 @@ class DistributionUGCCommands(SocketCommandsSkel):
         done = ugc.do_downloads(myargs, ip_addr = ip_addr)
         if not done:
             return done,'download not stored'
+        return done,'ok'
+
+    def docmd_do_download_stats(self, authenticator, myargs):
+
+        if not myargs:
+            return None,'wrong arguments'
+
+        xml_string = ' '.join(myargs)
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None,"error: %s" % (e,)
+        if not (mydict.has_key('branch') and \
+            mydict.has_key('release_string') and \
+            mydict.has_key('pkgkeys')):
+            return None,'wrong dict arguments, xml must have 3 items with attr value -> branch, release_string, pkgkeys'
+
+        branch = mydict.get('branch')
+        release_string = mydict.get('release_string')
+        pkgkeys = mydict.get('pkgkeys').split()
+        ip_addr = self._get_session_ip_address(authenticator)
+
+        ugc = self._load_ugc_interface()
+        done = ugc.do_download_stats(branch, release_string, pkgkeys, ip_addr)
+        if not done:
+            return done,'stats not stored'
         return done,'ok'
 
     def _get_generic_doctypes(self, pkgkey, doctypes):
@@ -20320,8 +20635,6 @@ class DistributionAuthInterface:
         return False
 
     def is_in_group(self, group):
-        mygroup = group
-        del mygroup
         self.check_connection()
         self.check_login_data()
         self.check_logged_in()
@@ -22041,21 +22354,28 @@ class RepositorySocketClientCommands(EntropySocketClientCommands):
 
         return data
 
-    def ugc_do_download(self, session_id, pkgkey):
-
-        cmd = "%s %s %s" % (
-            session_id,
-            'ugc:do_download',
-            pkgkey,
-        )
-        return self.do_generic_handler(cmd, session_id)
-
     def ugc_do_downloads(self, session_id, pkgkeys):
 
         cmd = "%s %s %s" % (
             session_id,
             'ugc:do_downloads',
             ' '.join(pkgkeys),
+        )
+        return self.do_generic_handler(cmd, session_id)
+
+    def ugc_do_download_stats(self, session_id, branch, release_string, pkgkeys):
+
+        mydict = {
+            'branch': branch,
+            'release_string': release_string,
+            'pkgkeys': ' '.join(pkgkeys),
+        }
+        xml_string = self.entropyTools.xml_from_dict(mydict)
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:do_download_stats',
+            xml_string,
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -22335,7 +22655,8 @@ class SystemSocketClientInterface:
     import entropyTools
     import zlib
     import select
-    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25): #, server_ca_cert = None, server_cert = None):
+    def __init__(self, EntropyInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25):
+        #, server_ca_cert = None, server_cert = None):
 
         if not isinstance(EntropyInterface, (EquoInterface, ServerInterface)) and \
             not issubclass(EntropyInterface, (EquoInterface, ServerInterface)):
@@ -27715,9 +28036,6 @@ class UGCClientInterface:
             self.UGCCache.update_vote_cache(repository, votes_dict)
         return votes_dict, err_msg
 
-    def add_download(self, repository, pkgkey):
-        return self.do_cmd(repository, False, "ugc_do_download", [pkgkey], {})
-
     def add_downloads(self, repository, pkgkeys):
         return self.do_cmd(repository, False, "ugc_do_downloads", [pkgkeys], {})
 
@@ -27735,6 +28053,9 @@ class UGCClientInterface:
         if isinstance(down_dict,dict):
             self.UGCCache.update_downloads_cache(repository, down_dict)
         return down_dict, err_msg
+
+    def add_download_stats(self, repository, branch, release_string, pkgkeys):
+        return self.do_cmd(repository, False, "ugc_do_download_stats", [branch, release_string, pkgkeys], {})
 
     def send_file(self, repository, pkgkey, file_path, title, description, keywords):
         self.UGCCache.clear_alldocs_cache(repository)
@@ -34015,6 +34336,7 @@ class EntropyDatabaseInterface:
         self.clearCache()
         self.commitChanges()
         self.regenerateDependsTable(output = False)
+        dbconn.clearCache()
 
         # verify both checksums, if they don't match, bomb out
         mycheck = self.database_checksum(do_order = True, strict = False)
@@ -34116,6 +34438,10 @@ class EntropyDatabaseInterface:
 
     def database_checksum(self, do_order = False, strict = True, strings = False):
 
+        c_tup = ("database_checksum",do_order,strict,strings,)
+        cache = self.live_cache.get(c_tup)
+        if cache != None: return cache
+
         idpackage_order = ''
         category_order = ''
         license_order = ''
@@ -34170,9 +34496,14 @@ class EntropyDatabaseInterface:
                 do_update_md5(m,self.cursor)
             else:
                 e_hash = hash(tuple(self.cursor.fetchall()))
+
         if strings:
-            return m.hexdigest()
-        return "%s:%s:%s:%s:%s" % (a_hash,b_hash,c_hash,d_hash,e_hash,)
+            result = m.hexdigest()
+        else:
+            result = "%s:%s:%s:%s:%s" % (a_hash,b_hash,c_hash,d_hash,e_hash,)
+
+        self.live_cache[c_tup] = result[:]
+        return result
 
 
 ########################################################
@@ -34959,6 +35290,8 @@ class EntropyDatabaseInterface:
             atomUse = ()
         atomSlot = self.entropyTools.dep_getslot(atom)
         atomRev = self.entropyTools.dep_get_entropy_revision(atom)
+        if isinstance(atomRev,(int,long,)):
+            if atomRev < 0: atomRev = None
 
         # use match
         scan_atom = self.entropyTools.remove_usedeps(atom)
@@ -35444,3 +35777,4 @@ class EmailSender:
 
         composed = outer.as_string()
         return self.default_sender(sender_email, destination_emails, composed)
+
