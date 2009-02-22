@@ -19516,7 +19516,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
 
     def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
         self.check_connection()
-        self.execute_query('SELECT entropy_distribution_usage_id WHERE `ip_address` = %s',(ip_address,))
+        self.execute_query('SELECT entropy_distribution_usage_id FROM entropy_distribution_usage WHERE `ip_address` = %s',(ip_address,))
         data = self.fetchone()
         if data:
             return data['entropy_distribution_usage_id']
