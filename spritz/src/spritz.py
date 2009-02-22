@@ -1869,7 +1869,7 @@ class SpritzApplication(Controller):
         # live masked, and anyway, better wasting
         # 2-3 more cycles than having unattended
         # behaviours
-        self.Equo.SystemSettings.scan()
+        self.Equo.SystemSettings.clear()
         self.Equo.closeAllRepositoryDatabases()
 
     def __validateRepoSubmit(self, repodata, edit = False):
