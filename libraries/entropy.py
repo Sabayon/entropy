@@ -224,6 +224,8 @@ class urlFetcher:
                 self.close()
                 raise
             except:
+                if etpUi['debug']:
+                    self.entropyTools.printTraceback()
                 # python 2.4 timeouts go here
                 self.close()
                 self.status = "-3"
