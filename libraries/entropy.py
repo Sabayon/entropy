@@ -19492,7 +19492,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s)',(
                     None,
                     branch_id,
-                    release_string_id,
+                    rel_strings_id,
                     None,
                     ip_addr,
                     entropy_ip_locations_id,
@@ -19504,7 +19504,7 @@ class DistributionUGCInterface(RemoteDbSkelInterface):
             `entropy_release_strings_id` = %s WHERE `entropy_distribution_usage_id` = %s
             """,(
                     branch_id,
-                    release_string_id,
+                    rel_strings_id,
                     entropy_distribution_usage_id,
                 )
             )
