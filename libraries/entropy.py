@@ -3662,6 +3662,14 @@ class EquoInterface(TextInterface):
         except NameError:
             raise
         except:
+            if etpUi['debug']:
+                self.updateProgress(
+                    "fetch_file:",
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                self.entropyTools.printTraceback()
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             return -3, data_transfer, resumed
