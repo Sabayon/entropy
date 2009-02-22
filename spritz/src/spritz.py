@@ -655,7 +655,7 @@ class SpritzApplication(Controller):
             pix_tmp_path = entropyTools.getRandomTempFile()
             fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
             rc = fetchConn.download()
-            if rc in ("-1","-2","-3"):
+            if rc in ("-1","-2","-3","-4"):
                 tries -= 1
                 continue
 

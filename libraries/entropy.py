@@ -223,6 +223,12 @@ class urlFetcher:
             except KeyboardInterrupt:
                 self.close()
                 raise
+            except self.socket.timeout:
+                if etpUi['debug']:
+                    self.entropyTools.printTraceback()
+                self.close()
+                self.status = "-4"
+                return self.status
             except:
                 if etpUi['debug']:
                     self.entropyTools.printTraceback()
@@ -3660,7 +3666,7 @@ class EquoInterface(TextInterface):
             data_transfer = fetchConn.datatransfer
             resumed = fetchConn.resumed
         except KeyboardInterrupt:
-            return -4, data_transfer, resumed
+            return -100, data_transfer, resumed
         except NameError:
             raise
         except:
@@ -3675,6 +3681,8 @@ class EquoInterface(TextInterface):
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             return -3, data_transfer, resumed
+        elif fetchChecksum == "-4":
+            return -4, data_transfer, resumed
 
         del fetchConn
         if digest:
@@ -3749,6 +3757,7 @@ class EquoInterface(TextInterface):
                 continue
 
             do_resume = True
+            timeout_try_count = 5
             while 1:
                 try:
                     mytxt = mirrorCountText
@@ -3781,7 +3790,7 @@ class EquoInterface(TextInterface):
                         )
 
                         return 0
-                    elif resumed:
+                    elif resumed and rc != -4:
                         do_resume = False
                         continue
                     else:
@@ -3798,8 +3807,14 @@ class EquoInterface(TextInterface):
                             error_message += " - %s." % (_("wrong checksum"),)
                         elif rc == -3:
                             #self.add_failing_mirror(uri,2)
-                            error_message += " - not found."
-                        elif rc == -4:
+                            error_message += " - %s." % (_("not found"),)
+                        elif rc == -4: # timeout!
+                            timeout_try_count -= 1
+                            if timeout_try_count > 0:
+                                error_message += " - %s." % (_("timeout, retrying on this mirror"),)
+                            else:
+                                error_message += " - %s." % (_("timeout, giving up"),)
+                        elif rc == -100:
                             error_message += " - %s." % (_("discarded download"),)
                         else:
                             self.add_failing_mirror(uri, 5)
@@ -3810,7 +3825,10 @@ class EquoInterface(TextInterface):
                                             type = "warning",
                                             header = red("   ## ")
                                         )
-                        if rc == -4: # user discarded fetch
+                        if rc == -4: # timeout
+                            if timeout_try_count > 0:
+                                continue
+                        elif rc == -100: # user discarded fetch
                             return 1
                         if uri in remaining:
                             remaining.remove(uri)
@@ -5690,7 +5708,7 @@ class PackageInterface:
                     error_message += " - %s." % (_("file not available on this mirror"),)
                 elif rc == -3:
                     error_message += " - not found."
-                elif rc == -4:
+                elif rc == -100:
                     error_message += " - %s." % (_("discarded download"),)
                 else:
                     error_message += " - %s: %s" % (_("unknown reason"),rc,)
@@ -7065,7 +7083,7 @@ class RepoInterface:
 
         rc = fetchConn.download()
         del fetchConn
-        if rc in ("-1","-2","-3"):
+        if rc in ("-1","-2","-3","-4"):
             return False
         self.Entropy.setup_default_file_perms(filepath)
         return True
@@ -11367,7 +11385,7 @@ class SecurityInterface:
         fetchConn.progress = self.Entropy.progress
         rc = fetchConn.download()
         del fetchConn
-        if rc in ("-1","-2","-3"):
+        if rc in ("-1","-2","-3","-4"):
             return False
         # setup permissions
         self.Entropy.setup_default_file_perms(save_to)
@@ -27649,7 +27667,7 @@ class UGCCacheInterface:
 
         fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file, resume = False)
         rc = fetcher.download()
-        if rc in ("-1","-2","-3"): return None
+        if rc in ("-1","-2","-3","-4"): return None
         if not os.path.isfile(cache_file): return None
 
         try:
