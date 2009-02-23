@@ -23237,7 +23237,7 @@ class SystemManagerExecutorInterface:
                     killed = True
         if killed:
             return False, 'killed by user'
-        return True, t.result
+        return True, t.get_rc()
 
 
 class SystemManagerExecutorServerRepositoryInterface:

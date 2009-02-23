@@ -448,7 +448,7 @@ class EntropyApplet:
                 self.status_icon.set_visible(True)
                 self.task_queue_executor()
                 time.sleep(0.3)
-            return t.result
+            return t.get_rc()
         finally:
             self.refresh_lock.release()
 

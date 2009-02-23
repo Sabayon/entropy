@@ -131,27 +131,19 @@ class TimeScheduled(threading.Thread):
         self.__alive = 0
 
 class parallelTask(threading.Thread):
+
     def __init__(self, *args, **kwargs):
         threading.Thread.__init__(self)
-        self.function = args[0]
-        self.args = args[1:][:]
-        self.exc = SystemExit
-        self.kwargs = kwargs.copy()
-        self.result = None
-
-    def parallel_wait(self):
-        while len(threading.enumerate()) > etpSys['maxthreads']:
-            time.sleep(0.01)
+        self.__function = args[0]
+        self.__args = args[1:][:]
+        self.__kwargs = kwargs.copy()
+        self.__rc = None
 
     def run(self):
-        self.result = self.function(*self.args,**self.kwargs)
+        self.__rc = self.__function(*self.__args,**self.__kwargs)
 
-    def nuke(self):
-        raise self.exc
-
-    def kill(self):
-        pass
-
+    def get_rc(self):
+        return self.__rc
 
 def printTraceback(f = None):
     import traceback

@@ -3960,7 +3960,6 @@ class PkgInfoMenu(MenuSkel):
 
         if spawn_fetch:
             self.ugc_preview_fetcher = self.Entropy.entropyTools.parallelTask(self.spawn_docs_fetch)
-            self.ugc_preview_fetcher.parallel_wait()
             self.ugc_preview_fetcher.start()
 
         #search_col = 0
@@ -4763,7 +4762,7 @@ class UGCAddMenu(MenuSkel):
                 while gtk.events_pending():
                     gtk.main_iteration()
                 time.sleep(0.06)
-            rslt, data = t.result
+            rslt, data = t.get_rc()
         finally:
             self.Entropy.UGC.show_progress = old_show_progress
             self.Entropy.updateProgress = bck_updateProgress

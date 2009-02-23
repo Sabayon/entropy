@@ -225,7 +225,6 @@ class EntropyPackageView:
 
         # start view refresher
         t = self.Equo.entropyTools.parallelTask(self.view_refresher)
-        t.parallel_wait()
         t.start()
 
     def view_refresher(self):
@@ -1046,7 +1045,6 @@ class EntropyPackageView:
         self.view.queue_draw()
 
         t = self.Equo.entropyTools.parallelTask(self.vote_submit_thread, repository, key, obj)
-        t.parallel_wait()
         t.start()
 
 
@@ -1060,7 +1058,6 @@ class EntropyPackageView:
         self.ui.UGCMessageLabel.set_markup(msg)
         gtk.gdk.threads_leave()
         t = self.Equo.entropyTools.parallelTask(self.refresh_vote_info, obj)
-        t.parallel_wait()
         t.start()
 
 
