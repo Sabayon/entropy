@@ -135,15 +135,15 @@ class QueueExecutor:
             del Package
             self.Entropy.cycleDone()
 
-        def spawn_ugc():
-            try:
-                if self.Entropy.UGC != None:
-                    for myrepo in mykeys:
-                        mypkgkeys = list(mykeys[myrepo])
-                        self.Entropy.UGC.add_downloads(myrepo, mypkgkeys)
-            except:
-                pass
         if not download_sources:
+            def spawn_ugc():
+                try:
+                    if self.Entropy.UGC != None:
+                        for myrepo in mykeys:
+                            mypkgkeys = sorted(mykeys[myrepo])
+                            self.Entropy.UGC.add_download_stats(myrepo, mypkgkeys)
+                except:
+                    pass
             t = self.Entropy.entropyTools.parallelTask(spawn_ugc)
             t.start()
 

@@ -988,8 +988,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             try:
                 if Equo.UGC != None:
                     for myrepo in mykeys:
-                        mypkgkeys = list(mykeys[myrepo])
-                        Equo.UGC.add_downloads(myrepo, mypkgkeys)
+                        mypkgkeys = sorted(mykeys[myrepo])
+                        Equo.UGC.add_download_stats(myrepo, mypkgkeys)
             except:
                 pass
         t = Equo.entropyTools.parallelTask(spawn_ugc)
