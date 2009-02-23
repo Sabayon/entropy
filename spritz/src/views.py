@@ -596,25 +596,29 @@ class EntropyPackageView:
 
         busyCursor(self.main_window)
         new_objs = []
+        just_show_objs = []
 
         for obj in self.selected_objs:
             if obj.installed_match:
-                obj, new = self.etpbase.getPackageItem(obj.installed_match,True)
+                iobj, new = self.etpbase.getPackageItem(obj.installed_match,True)
+                new_objs.append(iobj)
+                just_show_objs.append(obj)
+            else:
                 new_objs.append(obj)
 
         q_cache = {}
-        for obj in self.selected_objs+new_objs:
+        for obj in just_show_objs+new_objs:
             q_cache[obj.matched_atom] = (obj.queued,obj.do_purge,)
             obj.queued = action
             if action:
                 obj.do_purge = do_purge
 
         if action:
-            status = self.add_to_queue(self.selected_objs+new_objs, action)
+            status = self.add_to_queue(new_objs, action)
         else:
-            status = self.remove_queued(self.selected_objs+new_objs)
+            status = self.remove_queued(new_objs)
         if status != 0:
-            for obj in self.selected_objs+new_objs:
+            for obj in just_show_objs+new_objs:
                 queued, do_purge = q_cache[obj.matched_atom]
                 obj.queued = queued
                 obj.do_purge = do_purge
