@@ -9446,7 +9446,8 @@ class TriggerInterface:
             raise exceptionTools.InvalidData("InvalidData: %s" % (mytxt,))
 
     def prepare(self):
-        self.triggers = eval("self."+self.phase)()
+        func = getattr(self,self.phase)
+        self.triggers = func()
         remove = set()
         for trigger in self.triggers:
             if trigger in etpUi[self.phase+'_triggers_disable']:
@@ -9457,7 +9458,9 @@ class TriggerInterface:
 
     def run(self):
         for trigger in self.triggers:
-            eval("self.trigger_"+trigger)()
+            fname = 'trigger_%s' % (trigger,)
+            if not hasattr(self,fname): continue
+            getattr(self,fname)()
 
     def kill(self):
         self.prepared = False
@@ -9479,17 +9482,22 @@ class TriggerInterface:
             functions.append("binutilsswitch")
 
         # opengl configuration
-        if (self.pkgdata['category'] == "x11-drivers") and (self.pkgdata['name'].startswith("nvidia-") or self.pkgdata['name'].startswith("ati-")):
-            if "ebuild_postinstall" in functions:
-                functions.remove("ebuild_postinstall") # disabling gentoo postinstall since we reimplemented it
-            functions.append("openglsetup")
+        if (self.pkgdata['category'] == "x11-drivers") and \
+            (self.pkgdata['name'].startswith("nvidia-") or \
+            self.pkgdata['name'].startswith("ati-")):
+                if "ebuild_postinstall" in functions:
+                    # disabling gentoo postinstall since we reimplemented it
+                    functions.remove("ebuild_postinstall")
+                functions.append("openglsetup")
 
         # load linker paths
         ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
         for x in self.pkgdata['content']:
 
-            if (x.startswith("/etc/conf.d") or x.startswith("/etc/init.d")) and ("conftouch" not in functions):
-                functions.append('conftouch')
+            if (x.startswith("/etc/conf.d") or \
+                x.startswith("/etc/init.d")) and \
+                ("conftouch" not in functions):
+                    functions.append('conftouch')
 
             if x.startswith('/lib/modules/') and ("kernelmod" not in functions):
                 if "ebuild_postinstall" in functions:
@@ -9643,15 +9651,24 @@ class TriggerInterface:
             sys.stdout = stdfile
             sys.stderr = stdfile
 
-        triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(self.Entropy.entropyTools.getRandomNumber())
-        while os.path.isfile(triggerfile):
-            triggerfile = etpConst['entropyunpackdir']+"/trigger-"+str(self.Entropy.entropyTools.getRandomNumber())
+        tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
+        while 1:
+            triggerfile = "%s%s" % (tg_pfx,self.Entropy.entropyTools.getRandomNumber(),)
+            if not os.path.isfile(triggerfile): break
+
         triggerdir = os.path.dirname(triggerfile)
         if not os.path.isdir(triggerdir):
             os.makedirs(triggerdir)
+
         f = open(triggerfile,"w")
-        for x in self.pkgdata['trigger']:
-            f.write(x)
+        chunk = 1024
+        start = 0
+        while 1:
+            buf = self.pkgdata['trigger'][start:]
+            if not buf: break
+            f.write(buf)
+            start += chunk
+        f.flush()
         f.close()
 
         # if mute, restore old stdout/stderr
