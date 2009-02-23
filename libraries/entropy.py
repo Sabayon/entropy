@@ -3746,7 +3746,7 @@ class EquoInterface(TextInterface):
                 continue
 
             do_resume = True
-            timeout_try_count = 5
+            timeout_try_count = 50
             while 1:
                 try:
                     mytxt = mirrorCountText
@@ -3779,7 +3779,7 @@ class EquoInterface(TextInterface):
                         )
 
                         return 0
-                    elif resumed and rc != -4:
+                    elif resumed and rc not in (-3,-4,):
                         do_resume = False
                         continue
                     else:
