@@ -71,47 +71,51 @@ def kill_threads():
 
 class TimeScheduled(threading.Thread):
 
-    def __init__(self, function, delay, dictData = {}):
+    def __init__(self, delay, *args, **kwargs):
         threading.Thread.__init__(self)
-        self.function = function
-        self.delay = delay
-        self.exc = SystemExit
-        self.data = dictData
-        self.accurate = True
-        self.delay_before = False
+        self.__f = args[0]
+        self.__delay = delay
+        self.__args = args[1:][:]
+        self.__kwargs = kwargs.copy()
+        self.__accurate = True
+        self.__delay_before = False
 
-    def set_delay(self, d):
-        self.delay = d
+    def set_delay(self, delay):
+        self.__delay = delay
+
+    def set_delay_before(self, do):
+        self.__delay_before = bool(do)
+
+    def set_accuracy(self, do):
+        self.__accurate = bool(do)
 
     def run(self):
-        self.alive = 1
-        while self.alive:
+        self.__alive = 1
+        while self.__alive:
 
-            if self.delay_before:
-                do_break = self.do_delay()
+            if self.__delay_before:
+                do_break = self.__do_delay()
                 if do_break: break
 
-            if self.function == None: break
-            if self.data:
-                self.function(self.data)
-            else:
-                self.function()
+            if self.__f == None: break
+            self.__f(*self.__args,**self.__kwargs)
 
-            if not self.delay_before:
-                do_break = self.do_delay()
+            if not self.__delay_before:
+                do_break = self.__do_delay()
                 if do_break: break
 
 
-    def do_delay(self):
+    def __do_delay(self):
 
-        if (self.delay > 5) and not self.accurate:
-            mydelay = int(self.delay)
+        if (self.__delay > 5) and not self.__accurate:
+            mydelay = int(self.__delay)
             broke = False
             while mydelay:
-                if not self.alive:
+                if not self.__alive:
                     broke = True
                     break
-                if time == None: return True # shut down?
+                if time == None:
+                    return True # shut down?
                 time.sleep(1)
                 mydelay -= 1
 
@@ -119,15 +123,12 @@ class TimeScheduled(threading.Thread):
                 return True
         else:
             if time == None: return True # shut down?
-            time.sleep(self.delay)
+            time.sleep(self.__delay)
 
         return False
 
     def kill(self):
-        self.alive = 0
-
-    def nuke(self):
-        raise self.exc
+        self.__alive = 0
 
 class parallelTask(threading.Thread):
     def __init__(self, *args, **kwargs):

@@ -610,11 +610,11 @@ class SpritzApplication(Controller):
         self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
         self.ad_url = 'http://www.silkbit.com'
         self.ui.bannerEventBox.show_all()
-        self.adTask = entropyTools.TimeScheduled(self.spawnAdRotation, 60)
+        self.adTask = entropyTools.TimeScheduled(60, self.spawnAdRotation)
         self.adTask.start()
 
     def setupUgc(self):
-        self.ugcTask = entropyTools.TimeScheduled(self.spawnUgcUpdate, 300)
+        self.ugcTask = entropyTools.TimeScheduled(300, self.spawnUgcUpdate)
         if "--nougc" not in sys.argv:
             self.ugcTask.start()
 

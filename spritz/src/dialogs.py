@@ -402,9 +402,9 @@ class RepositoryManagerMenu(MenuSkel):
         self.TaskQueue = []
         self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
 
-        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_queue_view, 5)
-        self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_output_view, 0.5)
-        self.PinboardUpdater = self.Entropy.entropyTools.TimeScheduled(self.update_pinboard_view, 60)
+        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(5, self.update_queue_view)
+        self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(0.5, self.update_output_view)
+        self.PinboardUpdater = self.Entropy.entropyTools.TimeScheduled(60, self.update_pinboard_view)
         self.notebook_pages = {
             'queue': 0,
             'commands': 1,

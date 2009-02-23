@@ -129,8 +129,8 @@ class urlFetcher:
 
         self._init_vars()
         self.speedUpdater = self.entropyTools.TimeScheduled(
+            self.transferpollingtime,
             self.__update_speed,
-            self.transferpollingtime
         )
         self.speedUpdater.start()
         # set timeout
@@ -351,8 +351,8 @@ class EntropyCacher:
         self.stop()
 
     def start(self):
-        self.__CacheWriter = self.entropyTools.TimeScheduled(self.__cacher,1)
-        self.__CacheWriter.delay_before = True
+        self.__CacheWriter = self.entropyTools.TimeScheduled(1,self.__cacher)
+        self.__CacheWriter.set_delay_before(True)
         self.__CacheWriter.start()
         while not self.__CacheWriter.isAlive():
             continue
@@ -7966,7 +7966,7 @@ class RepoInterface:
         # kill previous
         self.current_repository_got_locked = False
         self.kill_previous_repository_lock_scanner()
-        self.LockScanner = self.entropyTools.TimeScheduled( self.repository_lock_scanner, 5, {'repo': repo} )
+        self.LockScanner = self.entropyTools.TimeScheduled(5, self.repository_lock_scanner, repo = repo)
         self.LockScanner.start()
 
     def kill_previous_repository_lock_scanner(self):
@@ -15104,16 +15104,8 @@ class SocketHostInterface:
             self.Server.alive = False
         if self.Gc != None:
             self.Gc.kill()
-            try:
-                self.Gc.nuke()
-            except exceptionTools.InterruptError:
-                pass
         if self.PythonGarbageCollector != None:
             self.PythonGarbageCollector.kill()
-            try:
-                self.PythonGarbageCollector.nuke()
-            except exceptionTools.InterruptError:
-                pass
 
     def append_eos(self, data):
         return str(len(data)) + \
@@ -15345,14 +15337,12 @@ class SocketHostInterface:
         self.AuthenticatorInst = (auth_inst[0],[self]+auth_inst[1],auth_inst[2],)
 
     def start_python_garbage_collector(self):
-        self.PythonGarbageCollector = self.entropyTools.TimeScheduled( self.python_garbage_collect, 3600 )
-        self.PythonGarbageCollector.exc = exceptionTools.InterruptError('InterruptError: interrupted')
-        self.PythonGarbageCollector.accurate = False
+        self.PythonGarbageCollector = self.entropyTools.TimeScheduled(3600, self.python_garbage_collect)
+        self.PythonGarbageCollector.set_accuracy(False)
         self.PythonGarbageCollector.start()
 
     def start_session_garbage_collector(self):
-        self.Gc = self.entropyTools.TimeScheduled( self.gc_clean, 5 )
-        self.Gc.exc = exceptionTools.InterruptError('InterruptError: interrupted')
+        self.Gc = self.entropyTools.TimeScheduled(5, self.gc_clean)
         self.Gc.start()
 
     def python_garbage_collect(self):
@@ -21880,7 +21870,7 @@ class RepositorySocketServerInterface(SocketHostInterface):
             self.LockScanner.kill()
 
     def start_repository_lock_scanner(self):
-        self.LockScanner = self.entropyTools.TimeScheduled( self.lock_scan, 0.5 )
+        self.LockScanner = self.entropyTools.TimeScheduled(0.5, self.lock_scan)
         self.LockScanner.start()
 
     def set_repository_db_availability(self, repo_tuple):
@@ -25929,7 +25919,7 @@ class SystemManagerServerInterface(SocketHostInterface):
             return self.PinboardData.copy()
 
     def load_queue_processor(self):
-        self.QueueProcessor = self.entropyTools.TimeScheduled(self.queue_processor, 2)
+        self.QueueProcessor = self.entropyTools.TimeScheduled(2, self.queue_processor)
         self.QueueProcessor.start()
 
     def get_stored_queue(self):
@@ -27273,7 +27263,7 @@ class SystemManagerClientInterface:
         # expires
         self.do_cache_session = do_cache_session
         if self.do_cache_connection:
-            self.connection_killer = self.entropyTools.TimeScheduled(self.connection_killer_handler, 2)
+            self.connection_killer = self.entropyTools.TimeScheduled(2, self.connection_killer_handler)
             self.connection_killer.start()
 
     def __del__(self):

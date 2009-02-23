@@ -306,8 +306,8 @@ class EntropyApplet:
     def enable_refresh_timer(self, when = etp_applet_config.settings['REFRESH_INTERVAL'] * 1000):
         if self.current_state in [ "CRITICAL" ]: return
         if not self.refresh_timeout_tag:
-            self.refresh_timeout_tag = entropyTools.TimeScheduled(self.refresh_handler, when/1000)
-            self.refresh_timeout_tag.delay_before = True
+            self.refresh_timeout_tag = entropyTools.TimeScheduled(when/1000, self.refresh_handler)
+            self.refresh_timeout_tag.set_delay_before(True)
             self.refresh_timeout_tag.start()
 
     def disable_refresh_timer(self):
@@ -611,8 +611,8 @@ class EntropyApplet:
     def enable_network_timer(self, when = etp_applet_config.settings['NETWORK_RETRY_INTERVAL'] * 1000, force = 0):
         if self.current_state != "DISCONNECTED": return
         if not self.network_timeout_tag:
-            self.network_timeout_tag = entropyTools.TimeScheduled(self.network_retry_handler, when/1000, dictData = {'force': force})
-            self.network_timeout_tag.delay_before = True
+            self.network_timeout_tag = entropyTools.TimeScheduled(when/1000, self.network_retry_handler, force = force)
+            self.network_timeout_tag.set_delay_before(True)
             self.network_timeout_tag.start()
 
     def disable_network_timer(self):
