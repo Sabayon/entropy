@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Name=Spritz Package Manager
 Comment=Entropy Graphical Package Manager
-Categories=Application;System
+Categories=Application;System;Settings
 Icon=/usr/share/pixmaps/spritz/spritz-icon.png
 Exec=spritz %U
 Type=Application
