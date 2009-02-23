@@ -9,6 +9,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)
+  - Updates daemon + shrink notification applet?
   - System Package Set representing what's inside a stock distribution
     - Connect Smart applications to it to filter out common deps and eventually make it usable
       - Implement Smart applications in Spritz too

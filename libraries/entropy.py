@@ -44,8 +44,6 @@ except ImportError: # fallback to embedded pysqlite
             )
         )
 
-
-
 class urlFetcher:
 
     def __init__(self, url, path_to_save, checksum = True, show_speed = True, resume = True, abort_check_func = None, disallow_redirect = False):
@@ -3823,11 +3821,12 @@ class EquoInterface(TextInterface):
                             return 1
                         if uri in remaining:
                             remaining.remove(uri)
+                        # make sure we don't have nasty issues
+                        if not remaining:
+                            return 3
                         break
                 except KeyboardInterrupt:
                     break
-                except:
-                    raise
         return 0
 
     def quickpkg(self, atomstring, savedir = None):
