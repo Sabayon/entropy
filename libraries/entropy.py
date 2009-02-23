@@ -3020,14 +3020,8 @@ class EquoInterface(TextInterface):
         return str(hash("%s%s%s" % (self.all_repositories_checksum(),branch,self.validRepositories,)))
 
     def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
-        if myhash == None:
-            myhash = self.get_available_packages_chash(branch)
-        disk_cache = self.Cacher.pop(etpCache['world_available'])
-        try:
-            if disk_cache['chash'] == myhash:
-                return disk_cache['available']
-        except (KeyError,TypeError,):
-            return None
+        if myhash == None: myhash = self.get_available_packages_chash(branch)
+        return self.Cacher.pop("%s%s" % (etpCache['world_available'],myhash))
 
     # this function searches all the not installed packages available in the repositories
     def calculate_available_packages(self, use_cache = True):
@@ -3083,10 +3077,7 @@ class EquoInterface(TextInterface):
             self.cycleDone()
 
         if self.xcache:
-            data = {}
-            data['chash'] = c_hash
-            data['available'] = available
-            self.Cacher.push(etpCache['world_available'],data)
+            self.Cacher.push("%s%s" % (etpCache['world_available'],c_hash),available)
         return available
 
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
