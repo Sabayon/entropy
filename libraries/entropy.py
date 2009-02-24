@@ -7865,15 +7865,11 @@ class RepoInterface:
                 type = "info",
                 header = blue(" @@ ")
             )
-            if os.path.lexists(repo_make_profile):
-                shutil.move(system_make_profile,"%s.entropy_old" % (system_make_profile,))
-            # broken symlink?
-            if os.path.islink(system_make_profile) and not os.path.isdir(system_make_profile):
-                os.remove(system_make_profile)
-            os.symlink(repo_profile_link_data,system_make_profile)
-            if not self.entropyTools.is_valid_path(system_make_profile):
-                if os.path.lexists(system_make_profile):
-                    os.remove(system_make_profile)
+            merge_sfx = ".entropy_merge"
+            os.symlink(repo_profile_link_data,system_make_profile+merge_sfx)
+            if self.entropyTools.is_valid_path(system_make_profile+merge_sfx):
+                os.rename(system_make_profile+merge_sfx,system_make_profile)
+            else:
                 # revert change, link does not exist yet
                 self.Entropy.updateProgress(
                     "%s: %s %s. %s." % (
@@ -7884,7 +7880,7 @@ class RepoInterface:
                     type = "info",
                     header = blue(" @@ ")
                 )
-                os.symlink(current_profile_link,system_make_profile)
+                os.remove(system_make_profile+merge_sfx)
 
 
     def check_entropy_updates(self):
@@ -7966,15 +7962,14 @@ class RepoInterface:
         # kill previous
         self.current_repository_got_locked = False
         self.kill_previous_repository_lock_scanner()
-        self.LockScanner = self.entropyTools.TimeScheduled(5, self.repository_lock_scanner, repo = repo)
+        self.LockScanner = self.entropyTools.TimeScheduled(5, self.repository_lock_scanner, repo)
         self.LockScanner.start()
 
     def kill_previous_repository_lock_scanner(self):
         if self.LockScanner != None:
             self.LockScanner.kill()
 
-    def repository_lock_scanner(self, data):
-        repo = data['repo']
+    def repository_lock_scanner(self, repo):
         locked = self.handle_repository_lock(repo)
         if locked:
             self.current_repository_got_locked = True
@@ -9677,16 +9672,57 @@ class TriggerInterface:
             sys.stdout = oldsysstdout
             stdfile.close()
 
-        stage = self.phase
-        pkgdata = self.pkgdata
-        # since I am sick of seeing pychecker reporting this
-        # let me do a nasty thing
-        x = type(stage),type(pkgdata)
-        del x
-        my_ext_status = 0
-        execfile(triggerfile)
-        os.remove(triggerfile)
-        return my_ext_status
+        class MyEntropyPySandbox:
+
+            def run(self, stage, pkgdata, trigger_file):
+                my_ext_status = 1
+                if os.path.isfile(trigger_file):
+                    execfile(trigger_file)
+                if os.path.isfile(trigger_file):
+                    os.remove(trigger_file)
+                return my_ext_status
+
+        class MyEntropyShSandbox:
+
+            def __variables_setup(self, stage, pkgdata):
+                os.environ["ETP_STAGE"] = stage
+                os.environ["ETP_PHASE"] = self.__get_sh_stage()
+                # FIXME: complete this
+                os.environ["B"] = "1"
+
+            def __get_sh_stage(self, stage):
+                mydict = {
+                    "preinstall": "pkg_preinst",
+                    "postinstall": "pkg_postinst",
+                    "preremove": "pkg_prerm",
+                    "postremove": "pkg_postrm",
+                }
+                return mydict.get(stage)
+
+            def run(self, stage, pkgdata, trigger_file):
+                self.__variables_setup()
+                p = subprocess.Popen([trigger_file,stage],
+                    stdout = sys.stdout, stderr = sys.stderr
+                )
+                rc = p.wait()
+                if os.path.isfile(trigger_file):
+                    os.remove(trigger_file)
+                return rc
+
+
+        print repr(self.pkgdata)
+
+        f = open(triggerfile,"r")
+        interpreter = f.readline().strip()
+        f.close()
+        entropy_sh = etpConst['trigger_sh_interpreter']
+        if interpreter == "#!%s" % (entropy_sh,):
+            os.chmod(triggerfile,0775)
+            my = MyEntropyShSandbox()
+        else:
+            my = MyEntropyPySandbox()
+        return my.run(self.phase, self.pkgdata, triggerfile)
+
 
     def trigger_purgecache(self):
         self.Entropy.clientLog.log(

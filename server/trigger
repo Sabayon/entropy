@@ -1,5 +1,5 @@
 '''
-    Copyright (C) 2007 Fabio Erculiani
+    Copyright (C) 2009 Fabio Erculiani
     Released under GPLv2 License
     
     - This is a template for external triggers. Only 4 functions will be called by Entropy:

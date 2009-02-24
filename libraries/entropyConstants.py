@@ -593,6 +593,7 @@ def const_defaultSettings(rootdir):
         'packagesexpirationfileext': ".expired", # Extension of the file that "contains" expiration mtime
         'packagesexpirationdays': 15, # number of days after a package will be removed from mirrors
         'triggername': "trigger", # name of the trigger file that would be executed by equo inside triggerTools
+        'trigger_sh_interpreter': "/usr/sbin/entropy.sh",
         'proxy': {
             'ftp': None,
             'http': None,

@@ -3,9 +3,7 @@ TODO list
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   - External trigger: add support to use a bash-based hook
-    - entropy.sh
     - python caller + variables setup
-    - hook structure (pkg_preinst, pkg_postinst, pkg_prerm, pkg_postrm)
 
   - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)
