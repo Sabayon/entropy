@@ -2542,7 +2542,7 @@ def dict_from_xml_extended(xml_string):
             data = item.firstChild.data
         except AttributeError:
             data = ''
-        mydict[key] = mytype_m(data)
+        mydict[key] = mytype_m(eval(data))
     return mydict
 
 def xml_from_dict(dictionary):
