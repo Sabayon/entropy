@@ -2542,7 +2542,12 @@ def dict_from_xml_extended(xml_string):
             data = item.firstChild.data
         except AttributeError:
             data = ''
-        mydict[key] = mytype_m(eval(data))
+        if mytype in ("list","set","frozenset","dict","tuple",):
+            if data:
+                if data[0] not in ("(","[","s",): data = ''
+            mydict[key] = eval(data)
+        else:
+            mydict[key] = mytype_m(data)
     return mydict
 
 def xml_from_dict(dictionary):
