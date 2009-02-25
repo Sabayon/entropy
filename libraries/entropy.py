@@ -6395,6 +6395,7 @@ class PackageInterface:
         self.infoDict['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
         self.infoDict['triggers']['install']['accept_license'] = self.infoDict['accept_license']
         self.infoDict['triggers']['install']['unpackdir'] = self.infoDict['unpackdir']
+        self.infoDict['triggers']['install']['imagedir'] = self.infoDict['imagedir']
         if etpConst['gentoo-compat']:
             #self.infoDict['triggers']['install']['xpakpath'] = self.infoDict['xpakpath']
             self.infoDict['triggers']['install']['xpakdir'] = self.infoDict['xpakdir']
@@ -9616,8 +9617,9 @@ class TriggerInterface:
             return self.do_trigger_call_ext_generic()
         except Exception, e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
-            self.entropyTools.printTraceback()
-            self.entropyTools.printTraceback(f = self.Entropy.clientLog)
+            tb = self.entropyTools.getTraceback()
+            self.Entropy.updateProgress(tb, importance = 0, type = "error")
+            self.Entropy.clientLog.write(tb)
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
@@ -9636,7 +9638,149 @@ class TriggerInterface:
             )
             return 0
 
+    class EntropyShSandbox:
+
+        def __env_setup(self, stage, pkgdata):
+
+            # mandatory variables
+            category = pkgdata.get('category')
+            if isinstance(category,unicode):
+                category = category.encode('utf-8')
+
+            pn = pkgdata.get('name')
+            if isinstance(pn,unicode):
+                pn = pn.encode('utf-8')
+
+            pv = pkgdata.get('version')
+            if isinstance(pv,unicode):
+                pv = pv.encode('utf-8')
+
+            pr = self.entropyTools.dep_get_portage_revision(pv)
+            pvr = pv
+            if pr == "r0": pvr += "-%s" % (pr,)
+
+            pet = pkgdata.get('versiontag')
+            if isinstance(pet,unicode):
+                pet = pet.encode('utf-8')
+
+            per = pkgdata.get('revision')
+            if isinstance(per,unicode):
+                per = per.encode('utf-8')
+
+            etp_branch = pgkdata.get('branch')
+            if isinstance(etp_branch,unicode):
+                etp_branch = etp_branch.encode('utf-8')
+
+            slot = pgkdata.get('slot')
+            if isinstance(slot,unicode):
+                slot = slot.encode('utf-8')
+
+            pkgatom = pkgdata.get('atom')
+            pkgkey = self.entropyTools.dep_getkey(pkgatom)
+            pvrte = pkgatom[len(pkgkey)+1:]
+            if isinstance(pvrte,unicode):
+                pvrte = pvrte.encode('utf-8')
+
+            etpapi = pkgdata.get('etpapi')
+            if isinstance(etpapi,unicode):
+                etpapi = etpapi.encode('utf-8')
+
+            p = pkgatom
+            if isinstance(p,unicode):
+                p = p.encode('utf-8')
+
+            chost, cflags, cxxflags = pkgdata.get('chost'), pkgdata.get('cflags'), pkgdata.get('cxxflags')
+
+            chost = pkgdata.get('etpapi')
+            if isinstance(chost,unicode):
+                chost = chost.encode('utf-8')
+
+            cflags = pkgdata.get('etpapi')
+            if isinstance(cflags,unicode):
+                cflags = cflags.encode('utf-8')
+
+            cxxflags = pkgdata.get('etpapi')
+            if isinstance(cxxflags,unicode):
+                cxxflags = cxxflags.encode('utf-8')
+
+            # Not mandatory variables
+
+            eclasses = ' '.join(pkgdata.get('eclasses',[]))
+            if isinstance(eclasses,unicode):
+                eclasses = eclasses.encode('utf-8')
+
+            unpackdir = pkgdata.get('unpackdir','')
+            if isinstance(unpackdir,unicode):
+                unpackdir = unpackdir.encode('utf-8')
+
+            imagedir = pkgdata.get('imagedir','')
+            if isinstance(imagedir,unicode):
+                imagedir = imagedir.encode('utf-8')
+
+            myenv = {
+                "ETP_API": etpSys['api'],
+                "ETP_LOG": self.Entropy.clientLog.get_fpath(),
+                "ETP_STAGE": stage, # entropy trigger stage
+                "ETP_PHASE": self.__get_sh_stage(), # entropy trigger phase
+                "ETP_BRANCH": etp_branch,
+                "CATEGORY": category, # package category
+                "PN": pn, # product name
+                "PV": pv, # package version
+                "PR": pr, # package revision (portage)
+                "PVR": pvr, # package version+revision
+                "PVRTE": pvrte, # package version+revision+entropy tag+entropy rev
+                "PER": per, # package entropy revision
+                "PET": pet, # package entropy tag
+                "SLOT": slot, # package slot
+                "PAPI": etpapi, # package entropy api
+                "P": p, # complete package atom
+                "WORKDIR": unpackdir, # temporary package workdir
+                "B": unpackdir, # unpacked binary package directory?
+                "D": imagedir, # package unpack destination (before merging to live)
+                "ENTROPY_TMPDIR": etpConst['packagestmpdir'], # entropy temporary directory
+                "CFLAGS": cflags, # compile flags
+                "CXXFLAGS": cxxflags, # compile flags
+                "CHOST": chost, # *nix CHOST
+                "PORTAGE_ECLASSES": eclasses, # portage eclasses, ":" separated
+                "ROOT": etpConst['systemroot'],
+            }
+            sysenv = os.environ.copy()
+            sysenv.update(myenv)
+            return sysenv
+
+        def __get_sh_stage(self, stage):
+            mydict = {
+                "preinstall": "pkg_preinst",
+                "postinstall": "pkg_postinst",
+                "preremove": "pkg_prerm",
+                "postremove": "pkg_postrm",
+            }
+            return mydict.get(stage)
+
+        def run(self, stage, pkgdata, trigger_file):
+            env = self.__env_setup(stage, pkgdata)
+            p = subprocess.Popen([trigger_file, stage],
+                stdout = sys.stdout, stderr = sys.stderr,
+                env = env
+            )
+            rc = p.wait()
+            if os.path.isfile(trigger_file):
+                os.remove(trigger_file)
+            return rc
+
+    class EntropyPySandbox:
+
+        def run(self, stage, pkgdata, trigger_file):
+            my_ext_status = 1
+            if os.path.isfile(trigger_file):
+                execfile(trigger_file)
+            if os.path.isfile(trigger_file):
+                os.remove(trigger_file)
+            return my_ext_status
+
     def do_trigger_call_ext_generic(self):
+
+        print repr(self.pkgdata)
 
         # if mute, supress portage output
         if etpUi['mute']:
@@ -9672,55 +9816,15 @@ class TriggerInterface:
             sys.stdout = oldsysstdout
             stdfile.close()
 
-        class MyEntropyPySandbox:
-
-            def run(self, stage, pkgdata, trigger_file):
-                my_ext_status = 1
-                if os.path.isfile(trigger_file):
-                    execfile(trigger_file)
-                if os.path.isfile(trigger_file):
-                    os.remove(trigger_file)
-                return my_ext_status
-
-        class MyEntropyShSandbox:
-
-            def __variables_setup(self, stage, pkgdata):
-                os.environ["ETP_STAGE"] = stage
-                os.environ["ETP_PHASE"] = self.__get_sh_stage()
-                # FIXME: complete this
-                os.environ["B"] = "1"
-
-            def __get_sh_stage(self, stage):
-                mydict = {
-                    "preinstall": "pkg_preinst",
-                    "postinstall": "pkg_postinst",
-                    "preremove": "pkg_prerm",
-                    "postremove": "pkg_postrm",
-                }
-                return mydict.get(stage)
-
-            def run(self, stage, pkgdata, trigger_file):
-                self.__variables_setup()
-                p = subprocess.Popen([trigger_file,stage],
-                    stdout = sys.stdout, stderr = sys.stderr
-                )
-                rc = p.wait()
-                if os.path.isfile(trigger_file):
-                    os.remove(trigger_file)
-                return rc
-
-
-        print repr(self.pkgdata)
-
         f = open(triggerfile,"r")
         interpreter = f.readline().strip()
         f.close()
         entropy_sh = etpConst['trigger_sh_interpreter']
         if interpreter == "#!%s" % (entropy_sh,):
             os.chmod(triggerfile,0775)
-            my = MyEntropyShSandbox()
+            my = self.EntropyShSandbox()
         else:
-            my = MyEntropyPySandbox()
+            my = self.EntropyPySandbox()
         return my.run(self.phase, self.pkgdata, triggerfile)
 
 
@@ -13564,12 +13668,13 @@ class PortageInterface:
 
 class LogFile:
 
-    def __init__ (self, level = 0, filename = None, header = "[LOG]"):
+    def __init__(self, level = 0, filename = None, header = "[LOG]"):
         self.handler = self.default_handler
         self.level = level
         self.header = header
         self.logFile = None
         self.open(filename)
+        self.__filename = filename
 
     def __del__(self):
         self.close()
@@ -13579,6 +13684,9 @@ class LogFile:
             self.logFile.close()
         except (IOError,OSError,):
             pass
+
+    def get_fpath(self):
+        return self.__filename
 
     def flush(self):
         self.logFile.flush()
@@ -32840,7 +32948,8 @@ class EntropyDatabaseInterface:
             baseinfo.slot,
             baseinfo.versiontag,
             baseinfo.revision,
-            baseinfo.branch
+            baseinfo.branch,
+            baseinfo.etpapi
         FROM 
             baseinfo,
             categories
@@ -32890,84 +32999,99 @@ class EntropyDatabaseInterface:
         return self.cursor.fetchone()
 
     def getTriggerInfo(self, idpackage):
-        data = {}
 
-        mydata = self.getScopeData(idpackage)
+        atom, category, name, \
+        version, slot, versiontag, \
+        revision, branch, etpapi = self.getScopeData(idpackage)
+        chost, cflags, cxxflags = self.retrieveCompileFlags(idpackage)
 
-        data['atom'] = mydata[0]
-        data['category'] = mydata[1]
-        data['name'] = mydata[2]
-        data['version'] = mydata[3]
-        data['versiontag'] = mydata[5]
-        flags = self.retrieveCompileFlags(idpackage)
-        data['chost'] = flags[0]
-        data['cflags'] = flags[1]
-        data['cxxflags'] = flags[2]
-
-        data['trigger'] = self.retrieveTrigger(idpackage)
-        data['eclasses'] = self.retrieveEclasses(idpackage)
-        data['content'] = self.retrieveContent(idpackage)
-
+        data = {
+            'atom': atom,
+            'category': category,
+            'name': name,
+            'version': version,
+            'versiontag': versiontag,
+            'revision': revision,
+            'branch': branch,
+            'chost': chost,
+            'cflags': cflags,
+            'cxxflags': cxxflags,
+            'etpapi': etpapi,
+            'trigger': self.retrieveTrigger(idpackage),
+            'eclasses': self.retrieveEclasses(idpackage),
+            'content': self.retrieveContent(idpackage),
+        }
         return data
 
     def getPackageData(self, idpackage, get_content = True, content_insert_formatted = False, trigger_unicode = False):
         data = {}
 
         try:
-            data['atom'], data['name'], data['version'], data['versiontag'], \
-            data['description'], data['category'], data['chost'], \
-            data['cflags'], data['cxxflags'],data['homepage'], \
-            data['license'], data['branch'], data['download'], \
-            data['digest'], data['slot'], data['etpapi'], \
-            data['datecreation'], data['size'], data['revision']  = self.getBaseData(idpackage)
+            atom, name, version, versiontag, \
+            description, category, chost, \
+            cflags, cxxflags,homepage, \
+            mylicense, branch, download, \
+            digest, slot, etpapi, \
+            datecreation, size, revision  = self.getBaseData(idpackage)
         except TypeError:
             return None
 
-        ### risky to add to the sql above
-        data['counter'] = self.retrieveCounter(idpackage)
-        data['messages'] = self.retrieveMessages(idpackage)
-        data['trigger'] = self.retrieveTrigger(idpackage, get_unicode = trigger_unicode)
-        data['disksize'] = self.retrieveOnDiskSize(idpackage)
-        data['changelog'] = self.retrieveChangelog(idpackage)
-
-        data['injected'] = self.isInjected(idpackage)
-        data['systempackage'] = False
-        if self.isSystemPackage(idpackage):
-            data['systempackage'] = True
-
-        data['config_protect'] = self.retrieveProtect(idpackage)
-        data['config_protect_mask'] = self.retrieveProtectMask(idpackage)
-        data['useflags'] = self.retrieveUseflags(idpackage)
-        data['keywords'] = self.retrieveKeywords(idpackage)
-        data['sources'] = self.retrieveSources(idpackage)
-        data['eclasses'] = self.retrieveEclasses(idpackage)
-        data['needed'] = self.retrieveNeeded(idpackage, extended = True)
-        data['provide'] = self.retrieveProvide(idpackage)
-        data['conflicts'] = self.retrieveConflicts(idpackage)
-        data['licensedata'] = self.retrieveLicensedata(idpackage)
-
-        mirrornames = set()
-        for x in data['sources']:
-            if x.startswith("mirror://"):
-                mirrornames.add(x.split("/")[2])
-        data['mirrorlinks'] = []
-        for mirror in mirrornames:
-            data['mirrorlinks'].append([mirror,self.retrieveMirrorInfo(mirror)])
-
-        data['content'] = {}
+        content = {}
         if get_content:
-            data['content'] = self.retrieveContent(
-                idpackage,
-                extended = True,
-                formatted = True,
-                insert_formatted = content_insert_formatted
+            content = self.retrieveContent(
+                idpackage, extended = True,
+                formatted = True, insert_formatted = content_insert_formatted
             )
 
-        mydeps = {}
-        depdata = self.retrieveDependencies(idpackage, extended = True)
-        for dep,deptype in depdata:
-            mydeps[dep] = deptype
-        data['dependencies'] = mydeps
+        sources = self.retrieveSources(idpackage)
+        mirrornames = set()
+        for x in sources:
+            if x.startswith("mirror://"):
+                mirrornames.add(x.split("/")[2])
+
+        data = {
+            'atom': atom,
+            'name': name, 
+            'version': version,
+            'versiontag':versiontag,
+            'description': description,
+            'category': category,
+            'chost': chost,
+            'cflags': cflags,
+            'cxxflags': cxxflags,
+            'homepage': homepage,
+            'license': mylicense,
+            'branch': branch,
+            'download': download,
+            'digest': digest,
+            'slot': slot,
+            'etpapi': etpapi,
+            'datecreation': datecreation,
+            'size': size,
+            'revision': revision,
+            # risky to add to the sql above, still
+            'counter': self.retrieveCounter(idpackage),
+            'messages': self.retrieveMessages(idpackage),
+            'trigger': self.retrieveTrigger(idpackage, get_unicode = trigger_unicode),
+            'disksize': self.retrieveOnDiskSize(idpackage),
+            'changelog': self.retrieveChangelog(idpackage),
+            'injected': self.isInjected(idpackage),
+            'systempackage': self.isSystemPackage(idpackage),
+            'config_protect': self.retrieveProtect(idpackage),
+            'config_protect_mask': self.retrieveProtectMask(idpackage),
+            'useflags': self.retrieveUseflags(idpackage),
+            'keywords': self.retrieveKeywords(idpackage),
+            'sources': sources,
+            'eclasses': self.retrieveEclasses(idpackage),
+            'needed': self.retrieveNeeded(idpackage, extended = True),
+            'provide': self.retrieveProvide(idpackage),
+            'conflicts': self.retrieveConflicts(idpackage),
+            'licensedata': self.retrieveLicensedata(idpackage),
+            'content': content,
+            'dependencies': dict((x,y,) for x,y in \
+                self.retrieveDependencies(idpackage, extended = True)),
+            'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],
+        }
 
         return data
 
@@ -34482,7 +34606,6 @@ class EntropyDatabaseInterface:
         # remember to close the file
 
 
-    # FIXME: this is only compatible with SQLITE
     def doesTableExist(self, table):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table",table))
         rslt = self.cursor.fetchone()
@@ -34490,7 +34613,6 @@ class EntropyDatabaseInterface:
             return False
         return True
 
-    # FIXME: this is only compatible with SQLITE
     def doesColumnInTableExist(self, table, column):
         self.cursor.execute('PRAGMA table_info( '+table+' )')
         rslt = self.cursor.fetchall()

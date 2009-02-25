@@ -1,9 +1,9 @@
 TODO list
 
-Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
+Entropy 0.52:
+ - /usr/sbin/entropy.sh install
 
-  - External trigger: add support to use a bash-based hook
-    - python caller + variables setup
+Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)
