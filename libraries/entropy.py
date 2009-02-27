@@ -4662,6 +4662,7 @@ class PackageInterface:
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
+        self.Cacher = EntropyCacher()
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
@@ -5226,7 +5227,7 @@ class PackageInterface:
         # update world available cache
         if self.Entropy.xcache and (self.action in ("remove","install")):
 
-            disk_cache = self.Entropy.Cacher.pop(etpCache['world_available'])
+            disk_cache = self.Cacher.pop(etpCache['world_available'])
             if disk_cache != None:
                 c_hash = self.Entropy.get_available_packages_chash(etpConst['branch'])
                 try:
@@ -5258,10 +5259,10 @@ class PackageInterface:
                         if self.matched_atom in disk_cache['available']:
                             disk_cache['available'].remove(self.matched_atom)
 
-                        self.Entropy.Cacher.push(etpCache['world_available'],disk_cache)
+                        self.Cacher.push(etpCache['world_available'],disk_cache)
 
                 except KeyError:
-                    self.Entropy.Cacher.push(etpCache['world_available'],{})
+                    self.Cacher.push(etpCache['world_available'],{})
 
         elif not self.Entropy.xcache:
             self.Entropy.clear_dump_cache(etpCache['world_available'])
@@ -6680,6 +6681,7 @@ class FileUpdatesInterface:
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
+        self.Cacher = EntropyCacher()
         self.scandata = None
 
     def merge_file(self, key):
@@ -6821,12 +6823,12 @@ class FileUpdatesInterface:
                             except:
                                 pass # possible encoding issues
         # store data
-        self.Entropy.Cacher.push(etpCache['configfiles'],scandata)
+        self.Cacher.push(etpCache['configfiles'],scandata)
         self.scandata = scandata.copy()
         return scandata
 
     def load_cache(self):
-        sd = self.Entropy.Cacher.pop(etpCache['configfiles'])
+        sd = self.Cacher.pop(etpCache['configfiles'])
         if not isinstance(sd,dict):
             raise exceptionTools.CacheCorruptionError("CacheCorruptionError")
         # quick test if data is reliable
@@ -6869,7 +6871,7 @@ class FileUpdatesInterface:
         index += 1
         mydata = self.generate_dict(filepath)
         self.scandata[index] = mydata.copy()
-        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata)
+        self.Cacher.push(etpCache['configfiles'],self.scandata)
 
     def remove_from_cache(self, key):
         self.scanfs(dcache = True)
@@ -6877,7 +6879,7 @@ class FileUpdatesInterface:
             del self.scandata[key]
         except:
             pass
-        self.Entropy.Cacher.push(etpCache['configfiles'],self.scandata)
+        self.Cacher.push(etpCache['configfiles'],self.scandata)
         return self.scandata
 
     def generate_dict(self, filepath):
@@ -7631,7 +7633,7 @@ class RepoInterface:
         maxcount = len(added_ids)
         for idpackage in added_ids:
             count += 1
-            mydata = self.Entropy.Cacher.pop("%s%s" % (etpCache['eapi3_fetch'],idpackage,))
+            mydata = self.Cacher.pop("%s%s" % (etpCache['eapi3_fetch'],idpackage,))
             if mydata == None:
                 mytxt = "%s: %s" % (
                     blue(_("Fetch error on segment while adding")),
@@ -11810,7 +11812,7 @@ class SecurityInterface:
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
             c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
-            adv_metadata = self.Entropy.Cacher.pop(c_hash)
+            adv_metadata = self.Cacher.pop(c_hash)
             if adv_metadata != None:
                 self.adv_metadata = adv_metadata.copy()
                 return self.adv_metadata
@@ -11819,7 +11821,7 @@ class SecurityInterface:
         if self.Entropy.xcache:
             dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
             c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
-            self.Entropy.Cacher.push(c_hash,adv_metadata)
+            self.Cacher.push(c_hash,adv_metadata)
 
     def get_advisories_list(self):
         if not self.check_advisories_availability():
@@ -16045,7 +16047,7 @@ class ServerInterface(Singleton,TextInterface):
             repo_validation = False,
             noclientdb = 1
         )
-        self.Cacher = self.ClientService.Cacher
+        self.Cacher = EntropyCacher()
         self.ClientService.updateProgress = self.updateProgress
         self.ClientService.FtpInterface = self.FtpInterface
         self.SystemSettings = self.ClientService.SystemSettings
@@ -28508,6 +28510,7 @@ class ServerMirrorsInterface:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = ServerInstance
+        self.Cacher = EntropyCacher()
         self.FtpInterface = self.Entropy.FtpInterface
         self.rssFeed = self.Entropy.rssFeed
 
@@ -29256,7 +29259,7 @@ class ServerMirrorsInterface:
         rss_description = "Keep you updated on what's going on in the %s Repository." % (etpConst['systemname'],)
         Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = etpConst['rss-max-entries'])
         # load dump
-        db_actions = self.Entropy.Cacher.pop(rss_dump_name)
+        db_actions = self.Cacher.pop(rss_dump_name)
         if db_actions:
             try:
                 f = open(db_revision_path)
@@ -31515,6 +31518,7 @@ class EntropyDatabaseInterface:
         if dbFile == None:
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (_("valid database path needed"),) )
 
+        self.Cacher = EntropyCacher()
         self.WriteLock = self.threading.Lock()
         self.dbapi2 = dbapi2
         # setup output interface
@@ -33345,15 +33349,13 @@ class EntropyDatabaseInterface:
     def fetchSearchCache(self, key, function, extra_hash = 0):
         if self.xcache:
             c_hash = "%s/%s/%s/%s" % (self.dbSearchCacheKey,self.dbname,key,"%s%s" % (hash(function),extra_hash,),)
-            if self.ServiceInterface: cached = self.ServiceInterface.Cacher.pop(c_hash)
-            else: cached = self.dumpTools.loadobj(c_hash)
+            cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
     def storeSearchCache(self, key, function, search_cache_data, extra_hash = 0):
         if self.xcache:
             c_hash = "%s/%s/%s/%s" % (self.dbSearchCacheKey,self.dbname,key,"%s%s" % (hash(function),extra_hash,),)
-            if self.ServiceInterface: self.ServiceInterface.Cacher.push(c_hash, search_cache_data)
-            else: self.dumpTools.dumpobj(c_hash,search_cache_data)
+            self.Cacher.push(c_hash, search_cache_data)
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         if not self.doesTableExist("treeupdates"):
@@ -35362,10 +35364,10 @@ class EntropyDatabaseInterface:
 
     def atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
-            if self.ServiceInterface:
-                self.ServiceInterface.Cacher.push("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result'))
-            else:
-                self.dumpTools.dumpobj("%s/%s/%s" % (self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),kwargs.get('result'))
+            self.Cacher.push("%s/%s/%s" % (
+                self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),
+                kwargs.get('result')
+            )
 
     def atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
 
