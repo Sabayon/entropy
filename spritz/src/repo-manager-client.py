@@ -33,7 +33,7 @@ sys.path.insert(3,"/usr/lib/entropy/client")
 from entropyConstants import *
 import entropyTools
 from packages import EntropyPackages
-from entropyapi import EquoConnection, QueueExecutor
+from entropyapi import Equo, QueueExecutor
 from entropy import ErrorReportInterface
 from entropy_i18n import _
 
@@ -63,7 +63,7 @@ class ManagerApplication:
         self.ui = None
         self.progressLogWrite = sys.stdout
         self.output = sys.stdout
-        self.Equo = EquoConnection
+        self.Equo = Equo()
         self.progress = None
         self.Equo.connect_to_gui(self)
         mymenu = MyRepositoryManager(self.Equo, None)
@@ -87,14 +87,14 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
-        EquoConnection.destroy()
+        Equo.destroy()
     except SystemExit:
         print "Quit by User"
-        EquoConnection.destroy()
+        Equo.destroy()
         raise SystemExit(0)
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        EquoConnection.destroy()
+        Equo.destroy()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
         my = ExceptionDialog()

@@ -16,6 +16,24 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+# Pre-declared public functions
+
+function pkg_preinst() {
+    return 0
+}
+
+function pkg_postinst() {
+    return 0
+}
+
+function pkg_prerm() {
+    return 0
+}
+
+function pkg_postrm() {
+    return 0
+}
+
 # that's it, for now
 source $1
-$2
+sandbox $2

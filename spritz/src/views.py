@@ -23,7 +23,7 @@ import gobject
 from spritz_setup import const, cleanMarkupString, SpritzConf
 from etpgui.widgets import UI,CellRendererStars
 from packages import DummyEntropyPackage
-from entropyapi import EquoConnection
+from entropyapi import Equo
 from etpgui import *
 from entropyConstants import *
 from entropy_i18n import _,_LOCALE
@@ -62,7 +62,7 @@ class EntropyPackageView:
 
     def __init__( self, treeview, qview, ui, etpbase, main_window, spritz_app = None ):
 
-        self.Equo = EquoConnection
+        self.Equo = Equo()
         self.Spritz = spritz_app
         self.pkgcolumn_text = _("Selection")
         self.pkgcolumn_text_rating = _("Rating")
@@ -1310,7 +1310,7 @@ class EntropyQueueView:
         self.view = widget
         self.model = self.setup_view()
         self.queue = queue
-        self.Equo = EquoConnection
+        self.Equo = Equo()
 
     def setup_view( self ):
 
@@ -1671,7 +1671,7 @@ class EntropyRepoView:
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
         self.store = self.setup_view()
-        self.Equo = EquoConnection
+        self.Equo = Equo()
         self.ui = ui
         self.okDialog = okDialog
         self.Spritz = spritz_app

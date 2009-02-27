@@ -19,8 +19,9 @@
 #    Tim Lauridsen <tla@rasmil.dk>
 
 from entropyConstants import *
-from entropyapi import EquoConnection
+from entropyapi import Equo
 from spritz_setup import cleanMarkupString, SpritzConf
+EquoIntf = Equo()
 
 class DummyEntropyPackage:
 
@@ -78,7 +79,7 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_from, set_name, set_deps = EquoConnection.packageSetMatch(self.matched_atom[1:])[0]
+            set_from, set_name, set_deps = EquoIntf.packageSetMatch(self.matched_atom[1:])[0]
             self.from_installed = False
             self.dbconn = None
             self.dummy_type = -2
@@ -98,7 +99,7 @@ class EntropyPackage:
 
         elif self.remote:
 
-            self.dbconn = EquoConnection.openMemoryDatabase()
+            self.dbconn = EquoIntf.openMemoryDatabase()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
             self.matched_atom = (idpackage,matched_atom[1])
             self.from_installed = False
@@ -106,10 +107,10 @@ class EntropyPackage:
         else:
 
             if matched_atom[1] == 0:
-                self.dbconn = EquoConnection.clientDbconn
+                self.dbconn = EquoIntf.clientDbconn
                 self.from_installed = True
             else:
-                self.dbconn = EquoConnection.openRepositoryDatabase(matched_atom[1])
+                self.dbconn = EquoIntf.openRepositoryDatabase(matched_atom[1])
                 self.from_installed = False
 
         if isinstance(self.matched_atom,tuple):
@@ -154,18 +155,18 @@ class EntropyPackage:
     def isUserMasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoConnection.atomMatch(key, matchSlot = slot)
+            m_id, m_r = EquoIntf.atomMatch(key, matchSlot = slot)
             if m_id == -1: return False
-            return EquoConnection.is_match_masked_by_user((m_id, m_r,))
-        return EquoConnection.is_match_masked_by_user(self.matched_atom)
+            return EquoIntf.is_match_masked_by_user((m_id, m_r,))
+        return EquoIntf.is_match_masked_by_user(self.matched_atom)
 
     def isUserUnmasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoConnection.atomMatch(key, matchSlot = slot)
+            m_id, m_r = EquoIntf.atomMatch(key, matchSlot = slot)
             if m_id == -1: return False
-            return EquoConnection.is_match_unmasked_by_user((m_id, m_r,))
-        return EquoConnection.is_match_unmasked_by_user(self.matched_atom)
+            return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))
+        return EquoIntf.is_match_unmasked_by_user(self.matched_atom)
 
     def getNameDesc(self):
 
@@ -180,12 +181,12 @@ class EntropyPackage:
         if self.from_installed: repo = self.getRepoId()
         else: repo = self.matched_repo
         key = self.entropyTools.dep_getkey(atom)
-        downloads = EquoConnection.UGC.UGCCache.get_package_downloads(repo,key)
+        downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo,key)
         ugc_string = "<small>[%s]</small> " % (downloads,)
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
-            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SpritzConf.color_title2,EquoConnection.SystemSettings['pkg_masking_reasons'][self.masked],)
+            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SpritzConf.color_title2,EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
 
         desc = self.getDescription(markup = False)
         if len(desc) > 56:
@@ -234,7 +235,7 @@ class EntropyPackage:
             match = self.installed_match
 
         # check if it's a system package
-        s = EquoConnection.validatePackageRemoval(match[0])
+        s = EquoIntf.validatePackageRemoval(match[0])
         return not s
 
     # 0: from installed db, so it's installed for sure
@@ -247,11 +248,11 @@ class EntropyPackage:
         if self.from_installed:
             return 0
         key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-        matches = EquoConnection.clientDbconn.searchKeySlot(key,slot)
+        matches = EquoIntf.clientDbconn.searchKeySlot(key,slot)
         if not matches: # not installed, new!
             return 1
         else:
-            rc, matched = EquoConnection.check_package_update(key+":"+slot, deep = True)
+            rc, matched = EquoIntf.check_package_update(key+":"+slot, deep = True)
             if rc: return 2
             return 3
 
@@ -386,11 +387,11 @@ class EntropyPackage:
 
     def getDownSizeFmt(self):
         if self.pkgset: return 0
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_id))
+        return EquoIntf.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_id))
 
     def getDiskSizeFmt(self):
         if self.pkgset: return 0
-        return EquoConnection.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_id))
+        return EquoIntf.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_id))
 
     def getArch(self):
         return etpConst['currentarch']
@@ -401,7 +402,7 @@ class EntropyPackage:
 
     def getEpochFmt(self):
         if self.pkgset: return 0
-        return EquoConnection.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_id)))
+        return EquoIntf.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_id)))
 
     def getRel(self):
         if self.pkgset: return etpConst['branch']
@@ -411,7 +412,7 @@ class EntropyPackage:
         if self.pkgset: return -1
         atom = self.getName()
         if not atom: return None
-        return EquoConnection.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
+        return EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
 
     def getUGCPackageVoted(self):
         return self.voted
@@ -422,7 +423,7 @@ class EntropyPackage:
         atom = self.getName()
         if not atom: return 0
         key = self.entropyTools.dep_getkey(atom)
-        return EquoConnection.UGC.UGCCache.get_package_downloads(self.matched_repo,key)
+        return EquoIntf.UGC.UGCCache.get_package_downloads(self.matched_repo,key)
 
     def getAttr(self,attr):
         x = None

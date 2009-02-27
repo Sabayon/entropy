@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy Object Oriented Interface
 
-    Copyright (C) 2007-2008 Fabio Erculiani
+    Copyright (C) 2007-2009 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,10 +23,7 @@
 from __future__ import with_statement
 import shutil, commands, urllib2, time, thread, copy, subprocess
 from entropyConstants import *
-from outputTools import TextInterface, \
-    print_info, print_warning, print_error, \
-    red, brown, blue, green, purple, darkgreen, \
-    darkred, bold, darkblue, readtext, nocolor
+from outputTools import TextInterface, red, brown, blue, green, purple, darkgreen, darkred, bold, darkblue
 import exceptionTools
 from entropy_i18n import _
 
@@ -44,10 +41,25 @@ except ImportError: # fallback to embedded pysqlite
             )
         )
 
+class Singleton(object):
+
+    def __new__(cls, *args, **kwds):
+        it = cls.__dict__.get("__it__")
+        if it is not None:
+            return it
+        cls.__it__ = it = object.__new__(cls)
+        it.init_singleton(*args, **kwds)
+        return it
+
 class urlFetcher:
 
-    def __init__(self, url, path_to_save, checksum = True, show_speed = True, resume = True, abort_check_func = None, disallow_redirect = False):
+    def __init__(self, url, path_to_save, checksum = True,
+            show_speed = True, resume = True,
+            abort_check_func = None, disallow_redirect = False,
+            thread_stop_func = None, speed_limit = etpConst['downloadspeedlimit'],
+            OutputInterface = None):
 
+        self.th_id = 0
         import entropyTools, socket
         self.entropyTools, self.socket = entropyTools, socket
         self.url = url
@@ -58,7 +70,9 @@ class urlFetcher:
         self.show_speed = show_speed
         self.progress = None
         self.abort_check_func = abort_check_func
+        self.thread_stop_func = thread_stop_func
         self.disallow_redirect = disallow_redirect
+        self.speedlimit = speed_limit # kbytes/sec
         uname = os.uname()
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
             etpConst['entropyversion'],
@@ -69,6 +83,12 @@ class urlFetcher:
             uname[2],
         )
         self.extra_header_data = {}
+        self.Output = OutputInterface
+        if self.Output == None:
+            self.Output = TextInterface()
+        elif not isinstance(self.Output,(EquoInterface,ServerInterface,TextInterface,)):
+            mytxt = _("A valid TextInterface instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
     def __setup_resume_support(self):
         # resume support
@@ -85,7 +105,7 @@ class urlFetcher:
                     pass
             self.localfile = open(self.path_to_save,"wb")
 
-    def __setup_proxy(self):
+    def _setup_proxy(self):
         # setup proxy, doing here because config is dynamic
         mydict = {}
         if etpConst['proxy']['ftp']:
@@ -118,12 +138,15 @@ class urlFetcher:
         self.startingposition = 0
         self.datatransfer = 0
         self.time_remaining = "(infinite)"
+        self.time_remaining_secs = 0
         self.elapsed = 0.0
         self.updatestep = 0.2
-        self.speedlimit = etpConst['downloadspeedlimit'] # kbytes/sec
         self.transferpollingtime = float(1)/4
         self.__setup_resume_support()
-        self.__setup_proxy()
+        self._setup_proxy()
+
+    def set_id(self, th_id):
+        self.th_id = th_id
 
     def download(self):
 
@@ -148,7 +171,7 @@ class urlFetcher:
             try:
                 self.remotefile = urllib2.urlopen(req)
             except KeyboardInterrupt:
-                self.close()
+                self.__close()
                 raise
             except urllib2.HTTPError, e:
                 if (e.code == 405) and not u_agent_error:
@@ -156,11 +179,11 @@ class urlFetcher:
                     req = self.url
                     u_agent_error = True
                     continue
-                self.close()
+                self.__close()
                 self.status = "-3"
                 return self.status
             except:
-                self.close()
+                self.__close()
                 self.status = "-3"
                 return self.status
             break
@@ -169,7 +192,7 @@ class urlFetcher:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
             self.remotefile.close()
         except KeyboardInterrupt:
-            self.close()
+            self.__close()
             raise
         except:
             pass
@@ -186,21 +209,21 @@ class urlFetcher:
                         }
                     )
                 except KeyboardInterrupt:
-                    self.close()
+                    self.__close()
                     raise
                 except:
                     pass
             elif (self.startingposition == self.remotesize):
-                self.close()
+                self.__close()
                 return self.__prepare_return()
             else:
                 self.localfile = open(self.path_to_save,"wb")
             self.remotefile = urllib2.urlopen(request)
         except KeyboardInterrupt:
-            self.close()
+            self.__close()
             raise
         except:
-            self.close()
+            self.__close()
             self.status = "-3"
             return self.status
 
@@ -208,7 +231,7 @@ class urlFetcher:
             self.remotesize = float(int(self.remotesize))/1024
 
         if self.disallow_redirect and (self.url != self.remotefile.geturl()):
-            self.close()
+            self.__close()
             self.status = "-3"
             return self.status
 
@@ -218,24 +241,31 @@ class urlFetcher:
                 if rsx == '': break
                 if self.abort_check_func != None:
                     self.abort_check_func()
+                if self.thread_stop_func != None:
+                    self.thread_stop_func()
             except KeyboardInterrupt:
-                self.close()
+                self.__close()
                 raise
             except self.socket.timeout:
                 if etpUi['debug']:
                     self.entropyTools.printTraceback()
-                self.close()
+                self.__close()
                 self.status = "-4"
                 return self.status
             except:
                 if etpUi['debug']:
                     self.entropyTools.printTraceback()
                 # python 2.4 timeouts go here
-                self.close()
+                self.__close()
                 self.status = "-3"
                 return self.status
-            self.commit(rsx)
+            self.__commit(rsx)
             if self.show_speed:
+                self.handle_statistics(self.th_id, self.downloadedsize,
+                    self.remotesize, self.average, self.oldaverage,
+                    self.updatestep, self.show_speed, self.datatransfer,
+                    self.time_remaining, self.time_remaining_secs
+                )
                 self.updateProgress()
                 self.oldaverage = self.average
             if self.speedlimit:
@@ -246,7 +276,7 @@ class urlFetcher:
                         self.oldaverage = self.average
 
         # kill thread
-        self.close()
+        self.__close()
         return self.__prepare_return()
 
 
@@ -257,7 +287,7 @@ class urlFetcher:
         self.status = "-2"
         return self.status
 
-    def commit(self, mybuffer):
+    def __commit(self, mybuffer):
         # writing file buffer
         self.localfile.write(mybuffer)
         # update progress info
@@ -265,7 +295,7 @@ class urlFetcher:
         kbytecount = float(self.downloadedsize)/1024
         self.average = int((kbytecount/self.remotesize)*100)
 
-    def close(self):
+    def __close(self):
         try:
             self.localfile.flush()
             self.localfile.close()
@@ -283,10 +313,15 @@ class urlFetcher:
         # we have the diff size
         self.datatransfer = (self.downloadedsize-self.startingposition) / self.elapsed
         try:
-            self.time_remaining = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
-            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining)
+            self.time_remaining_secs = int(round((int(round(self.remotesize*1024,0))-int(round(self.downloadedsize,0)))/self.datatransfer,0))
+            self.time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.time_remaining_secs)
         except:
             self.time_remaining = "(%s)" % (_("infinite"),)
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        pass
 
     def updateProgress(self):
 
@@ -321,14 +356,188 @@ class urlFetcher:
             if len(average) < 2:
                 average = " "+average
             currentText += " <->  "+average+"% "+bartext
-            print_info(currentText,back = True)
+            self.Output.updateProgress(currentText, back = True)
 
-class EntropyCacher:
+class MultipleUrlFetcher:
+
+    import entropyTools
+    def __init__(self, url_path_list, checksum = True,
+            show_speed = True, resume = True,
+            abort_check_func = None, disallow_redirect = False,
+            OutputInterface = None, urlFetcherClass = None):
+        """
+            @param url_path_list list [(url,path_to_save,),...]
+        """
+        self.__url_path_list = url_path_list
+        self.__resume = resume
+        self.__checksum = checksum
+        self.__show_speed = show_speed
+        self.__abort_check_func = abort_check_func
+        self.__disallow_redirect = disallow_redirect
+        self.Output = OutputInterface
+        if self.Output == None:
+            self.Output = TextInterface()
+        elif not isinstance(self.Output,(EquoInterface,ServerInterface,TextInterface,)):
+            mytxt = _("A valid TextInterface instance is needed")
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        self.urlFetcher = urlFetcherClass
+        if self.urlFetcher == None:
+            self.urlFetcher = urlFetcher
+
+
+    def __handle_threads_stop(self):
+        if self.__stop_threads:
+            raise exceptionTools.InterruptError
+
+    def _init_vars(self):
+        self.__progress_data = {}
+        self.__thread_pool = {}
+        self.__download_statuses = {}
+        self.__show_progress = False
+        self.__stop_threads = False
+        self.__first_refreshes = 50
+
+    def download(self):
+        self._init_vars()
+
+        th_id = 0
+        speed_limit = 0
+        dsl = etpConst['downloadspeedlimit']
+        if isinstance(dsl,int) and self.__url_path_list:
+            speed_limit = dsl/len(self.__url_path_list)
+
+        for url, path_to_save in self.__url_path_list:
+            th_id += 1
+            downloader = self.urlFetcher(url, path_to_save,
+                checksum = self.__checksum, show_speed = self.__show_speed,
+                resume = self.__resume, abort_check_func = self.__abort_check_func,
+                disallow_redirect = self.__disallow_redirect,
+                thread_stop_func = self.__handle_threads_stop,
+                speed_limit = speed_limit,
+                OutputInterface = self.Output
+            )
+            downloader.set_id(th_id)
+            downloader.updateProgress = self.updateProgress
+            downloader.handle_statistics = self.handle_statistics
+
+            def do_download(ds, th_id, downloader):
+                ds[th_id] = downloader.download()
+
+            t = self.entropyTools.parallelTask(do_download, self.__download_statuses, th_id, downloader)
+            self.__thread_pool[th_id] = t
+            t.start()
+        self.show_download_files_info()
+        self.__show_progress = True
+        while len(self.__url_path_list) != len(self.__download_statuses):
+            try:
+                time.sleep(0.5)
+            except (SystemExit, KeyboardInterrupt,):
+                self.__stop_threads = True
+                raise
+
+        return self.__download_statuses
+
+    def show_download_files_info(self):
+        count = 0
+        pl = self.__url_path_list[:]
+        self.Output.updateProgress(
+            "%s: %s %s" % (
+                darkblue(_("Aggregated download")),
+                darkred(str(len(pl))),
+                darkblue(_("items")),
+            ),
+            importance = 0,
+            type = "info",
+            header = purple("  ## ")
+        )
+        for url, save_path in pl:
+            count += 1
+            self.Output.updateProgress(
+                "[%s] => %s" % (
+                    darkblue(str(count)),
+                    darkgreen(url),
+                ),
+                importance = 0,
+                type = "info",
+                header = brown("   # ")
+            )
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__progress_data[th_id] = locals().copy()
+
+    def updateProgress(self):
+
+        if not self.__show_progress: return
+
+        eta_txt = _("ETA")
+        sec_txt = _("sec") # as in XX kb/sec
+        downloaded_size = 0
+        total_size = 0
+        time_remaining = 0
+        data_transfer = 0
+        average = 0
+        old_average = 0
+        update_step = 0
+        pd = self.__progress_data.copy()
+        pdlen = len(pd)
+
+        # calculation
+        for th_id in sorted(pd):
+            data = pd.get(th_id)
+
+            downloaded_size += data.get('downloaded_size',0)
+            total_size += data.get('total_size',0)
+            average += data.get('average',0)
+            old_average += data.get('old_average',0)
+            data_transfer += data.get('data_transfer',0)
+            tr = data.get('time_remaining_secs',0)
+            if tr > 0: time_remaining += tr
+            update_step += data.get('update_step',0)
+
+        average = average/pdlen
+        old_average = old_average/pdlen
+        update_step = update_step/pdlen
+        time_remaining = self.entropyTools.convertSecondsToFancyOutput(time_remaining)
+
+        if (average > old_average+update_step) or (self.__first_refreshes > 0):
+
+            self.__first_refreshes -= 1
+            currentText = darkgreen(str(round(float(downloaded_size)/1024,1))) + "/" + \
+                red(str(round(total_size,1))) + " kB"
+            # create progress bar
+            barsize = 5
+            bartext = "["
+            curbarsize = 1
+            averagesize = (average*barsize)/100
+            while averagesize > 0:
+                curbarsize += 1
+                bartext += "="
+                averagesize -= 1
+            bartext += ">"
+            diffbarsize = barsize-curbarsize
+            while diffbarsize > 0:
+                bartext += " "
+                diffbarsize -= 1
+            if self.__show_speed:
+                bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(data_transfer),)
+                bartext += "/%s : %s: %s" % (sec_txt,eta_txt,time_remaining,)
+            else:
+                bartext += "]"
+            average = str(average)
+            if len(average) < 2:
+                average = " "+average
+            currentText += " <->  "+average+"% "+bartext+" "
+            self.Output.updateProgress(currentText, back = True)
+
+
+class EntropyCacher(Singleton):
 
     import entropyTools
     import dumpTools
     import threading
-    def __init__(self):
+    def init_singleton(self):
         self.__alive = False
         self.__CacheBuffer = self.entropyTools.lifobuffer()
         self.__CacheLock = self.threading.Lock()
@@ -474,9 +683,9 @@ class EntropyGeoIP:
 '''
     Main Entropy (client side) package management class
 '''
-class EquoInterface(TextInterface):
+class EquoInterface(Singleton,TextInterface):
 
-    def __init__(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True, load_ugc = True, url_fetcher = urlFetcher):
+    def init_singleton(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True, load_ugc = True, url_fetcher = urlFetcher):
 
         # modules import
         import dumpTools, entropyTools
@@ -598,16 +807,16 @@ class EquoInterface(TextInterface):
                 t = _("Repository") + " " + repoid + " " + _("is not available") + ". " + _("Cannot validate")
                 t2 = _("Please update your repositories now in order to remove this message!")
                 self.updateProgress(
-                                    darkred(t),
-                                    importance = 1,
-                                    type = "warning"
-                                   )
+                    darkred(t),
+                    importance = 1,
+                    type = "warning"
+                )
                 self.updateProgress(
-                                    purple(t2),
-                                    header = bold("!!! "),
-                                    importance = 1,
-                                    type = "warning"
-                                   )
+                    purple(t2),
+                    header = bold("!!! "),
+                    importance = 1,
+                    type = "warning"
+                )
                 continue # repo not available
             except (dbapi2.OperationalError,dbapi2.DatabaseError,exceptionTools.SystemDatabaseError,):
                 t = _("Repository") + " " + repoid + " " + _("is corrupted") + ". " + _("Cannot validate")
@@ -9009,23 +9218,24 @@ class FtpInterface:
         # get the buffer size
         self.mykByteCount += float(buf_len)/1024
         # create percentage
-        if self.myFileSize < 1:
-            myUploadPercentage = 100.0
-        else:
+        myUploadPercentage = 100.0
+        if self.myFileSize >= 1:
             myUploadPercentage = round((round(self.mykByteCount,1)/self.myFileSize)*100,1)
         currentprogress = myUploadPercentage
         myUploadSize = round(self.mykByteCount,1)
-        if (currentprogress > self.oldprogress+0.5) and (myUploadPercentage < 100.1) and (myUploadSize <= self.myFileSize):
-            myUploadPercentage = str(myUploadPercentage)+"%"
+        if (currentprogress > self.oldprogress+1.0) and \
+            (myUploadPercentage < 100.1) and \
+            (myUploadSize <= self.myFileSize):
 
+            myUploadPercentage = str(myUploadPercentage)+"%"
             # create text
             mytxt = _("Upload status")
             currentText = brown("    <-> %s: " % (mytxt,)) + \
                 green(str(myUploadSize)) + "/" + red(str(self.myFileSize)) + " kB " + \
                 brown("[") + str(myUploadPercentage) + brown("]")
-            print_info(currentText, back = True)
-            # XXX too slow, reimplement self.updateProgress and do whatever you want
-            #self.Entropy.updateProgress(currentText, importance = 0, type = "info", back = True)
+            # WARN: re-enabled updateProgress, this may cause slowdowns
+            # print_info(currentText, back = True)
+            self.Entropy.updateProgress(currentText, back = True)
             self.oldprogress = currentprogress
 
     def uploadFile(self,file,ascii = False):
@@ -9087,7 +9297,7 @@ class FtpInterface:
 
         self.oldprogress = 0.0
 
-        def downloadFileStoreAndUpdateProgress(buf):
+        def df_up(buf):
             # writing file buffer
             f.write(buf)
             # update progress
@@ -9119,7 +9329,7 @@ class FtpInterface:
                 self.myFileSize = 0
             if (not ascii):
                 f = open(downloaddir+"/"+filename,"wb")
-                rc = self.ftpconn.retrbinary('RETR '+filename, downloadFileStoreAndUpdateProgress, 1024)
+                rc = self.ftpconn.retrbinary('RETR '+filename, df_up, 1024)
             else:
                 f = open(downloaddir+"/"+filename,"w")
                 rc = self.ftpconn.retrlines('RETR '+filename, f.write)
@@ -9717,6 +9927,8 @@ class TriggerInterface:
             if isinstance(imagedir,unicode):
                 imagedir = imagedir.encode('utf-8')
 
+            sandbox_write = ':'.join([unpackdir,imagedir])
+
             myenv = {
                 "ETP_API": etpSys['api'],
                 "ETP_LOG": self.Entropy.clientLog.get_fpath(),
@@ -9724,7 +9936,7 @@ class TriggerInterface:
                 "ETP_PHASE": self.__get_sh_stage(), # entropy trigger phase
                 "ETP_BRANCH": etp_branch,
                 "CATEGORY": category, # package category
-                "PN": pn, # product name
+                "PN": pn, # package name
                 "PV": pv, # package version
                 "PR": pr, # package revision (portage)
                 "PVR": pvr, # package version+revision
@@ -9741,8 +9953,10 @@ class TriggerInterface:
                 "CFLAGS": cflags, # compile flags
                 "CXXFLAGS": cxxflags, # compile flags
                 "CHOST": chost, # *nix CHOST
-                "PORTAGE_ECLASSES": eclasses, # portage eclasses, ":" separated
+                "PORTAGE_ECLASSES": eclasses, # portage eclasses, " " separated
                 "ROOT": etpConst['systemroot'],
+                "SANDBOX_WRITE": sandbox_write,
+                "SANDBOX_READ": sandbox_write,
             }
             sysenv = os.environ.copy()
             sysenv.update(myenv)
@@ -9779,8 +9993,6 @@ class TriggerInterface:
             return my_ext_status
 
     def do_trigger_call_ext_generic(self):
-
-        print repr(self.pkgdata)
 
         # if mute, supress portage output
         if etpUi['mute']:
@@ -15688,9 +15900,9 @@ class SocketUrlFetcher(urlFetcher):
         self.progress( mytxt+": "+str((round(float(self.average),1)))+"%"+kbprogress, back = True )
 
 
-class ServerInterface(TextInterface):
+class ServerInterface(Singleton,TextInterface):
 
-    def __init__(self, default_repository = None, save_repository = False, community_repo = False):
+    def init_singleton(self, default_repository = None, save_repository = False, community_repo = False):
 
         if etpConst['uid'] != 0:
             mytxt = _("Entropy ServerInterface must be run as root")

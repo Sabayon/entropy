@@ -338,5 +338,3 @@ class GuiUrlFetcher(urlFetcher):
             )
             self.gui_last_avg = myavg
 
-
-EquoConnection = Equo(url_fetcher = GuiUrlFetcher)

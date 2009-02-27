@@ -2503,6 +2503,9 @@ def xml_from_dict_extended(dictionary):
             mytype = "int"
         elif isinstance(value,float):
             mytype = "float"
+        elif value == None:
+            mytype = "None"
+            value = "None"
         else: raise TypeError
         item.setAttribute('type',mytype)
         item_value = doc.createTextNode("%s" % (value,))
@@ -2529,6 +2532,7 @@ def dict_from_xml_extended(xml_string):
         "tuple": tuple,
         "int": int,
         "float": float,
+        "None": None,
     }
 
     mydict = {}
@@ -2544,8 +2548,10 @@ def dict_from_xml_extended(xml_string):
             data = ''
         if mytype in ("list","set","frozenset","dict","tuple",):
             if data:
-                if data[0] not in ("(","[","s",): data = ''
+                if data[0] not in ("(","[","s","{",): data = ''
             mydict[key] = eval(data)
+        elif mytype == "None":
+            mydict[key] = None
         else:
             mydict[key] = mytype_m(data)
     return mydict

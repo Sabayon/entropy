@@ -33,7 +33,7 @@ sys.path.insert(3,"/usr/lib/entropy/client")
 from entropyConstants import *
 import exceptionTools, entropyTools
 from packages import EntropyPackages
-from entropyapi import EquoConnection, QueueExecutor
+from entropyapi import Equo
 from entropy_i18n import _
 
 # Spritz Imports
@@ -254,7 +254,7 @@ class SpritzApplication(Controller):
 
     def __init__(self):
 
-        self.Equo = EquoConnection
+        self.Equo = Equo()
         self.TaskQueueAlive = True
         self.TaskQueue = []
         self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
@@ -272,7 +272,7 @@ class SpritzApplication(Controller):
             self.safe_mode_txt = _("Safe Mode")
 
         self.isBusy = False
-        self.etpbase = EntropyPackages(EquoConnection)
+        self.etpbase = EntropyPackages(Equo())
 
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )

@@ -106,16 +106,10 @@ def query(options):
 
 
 
-def searchInstalledPackages(packages, idreturn = False, dbconn = None, EquoConnection = None):
+def searchInstalledPackages(packages, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(brown(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
@@ -139,7 +133,7 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None, EquoConne
                 if (idreturn):
                     dataInfo.add(idpackage)
                 else:
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = Equo)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, Equo = Equo)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
@@ -150,16 +144,10 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None, EquoConne
     return 0
 
 
-def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None):
+def searchBelongs(files, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Belong Search"),)))
@@ -195,7 +183,7 @@ def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None)
                 elif (etpUi['quiet']):
                     print clientDbconn.retrieveAtom(idpackage)
                 else:
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = Equo)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, Equo = Equo)
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+xfile))
                 print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(result)))+red(" entries"))
@@ -205,16 +193,10 @@ def searchBelongs(files, idreturn = False, dbconn = None, EquoConnection = None)
     return 0
 
 
-def searchChangeLog(atoms, dbconn = None, EquoConnection = None):
+def searchChangeLog(atoms, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("ChangeLog Search"),)))
@@ -246,16 +228,10 @@ def searchChangeLog(atoms, dbconn = None, EquoConnection = None):
     return 0
 
 
-def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None):
+def searchDepends(atoms, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Depends Search"),) ))
@@ -299,9 +275,9 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
                     dataInfo.add(idpackage)
                 else:
                     if (etpUi['verbose']):
-                        printPackageInfo(idpackage, dbconn, clientSearch = True, EquoConnection = Equo)
+                        printPackageInfo(idpackage, dbconn, clientSearch = True, Equo = Equo)
                     else:
-                        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
+                        printPackageInfo(idpackage, dbconn, clientSearch = True, strictOutput = True, Equo = Equo)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+atom))
@@ -326,16 +302,10 @@ def searchDepends(atoms, idreturn = False, dbconn = None, EquoConnection = None)
         return dataInfo
     return 0
 
-def searchNeeded(atoms, idreturn = False, dbconn = None, EquoConnection = None):
+def searchNeeded(atoms, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
 
     if (not idreturn) and (not etpUi['quiet']):
@@ -368,16 +338,10 @@ def searchNeeded(atoms, idreturn = False, dbconn = None, EquoConnection = None):
         return dataInfo
     return 0
 
-def searchRequired(libraries, idreturn = False, dbconn = None, EquoConnection = None):
+def searchRequired(libraries, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
 
     if (not idreturn) and (not etpUi['quiet']):
@@ -398,7 +362,7 @@ def searchRequired(libraries, idreturn = False, dbconn = None, EquoConnection = 
             elif (etpUi['quiet']):
                 print clientDbconn.retrieveAtom(result)
             else:
-                printPackageInfo(result, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
+                printPackageInfo(result, clientDbconn, clientSearch = True, strictOutput = True, Equo = Equo)
 
         if (not idreturn) and (not etpUi['quiet']):
             print_info(blue(" %s: " % (_("Library"),))+bold("\t"+library))
@@ -408,16 +372,10 @@ def searchRequired(libraries, idreturn = False, dbconn = None, EquoConnection = 
         return dataInfo
     return 0
 
-def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = None):
+def searchEclass(eclasses, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
 
     if (not idreturn) and (not etpUi['quiet']):
@@ -442,9 +400,9 @@ def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = Non
                 print myatom
             else:
                 if (etpUi['verbose']):
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, EquoConnection = Equo)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, Equo = Equo)
                 else:
-                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, EquoConnection = Equo)
+                    printPackageInfo(idpackage, clientDbconn, clientSearch = True, strictOutput = True, Equo = Equo)
         if (not etpUi['quiet']):
             print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(matches)))+red(" %s" % (_("packages"),) ))
 
@@ -452,16 +410,10 @@ def searchEclass(eclasses, idreturn = False, dbconn = None, EquoConnection = Non
         return dataInfo
     return 0
 
-def searchFiles(atoms, idreturn = False, dbconn = None, EquoConnection = None):
+def searchFiles(atoms, idreturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
@@ -470,7 +422,7 @@ def searchFiles(atoms, idreturn = False, dbconn = None, EquoConnection = None):
         results = searchInstalledPackages(atoms, idreturn = True)
         clientDbconn = Equo.clientDbconn
     else:
-        results = searchInstalledPackages(atoms, idreturn = True, dbconn = dbconn, EquoConnection = EquoConnection)
+        results = searchInstalledPackages(atoms, idreturn = True, dbconn = dbconn, Equo = Equo)
         clientDbconn = dbconn
 
     dataInfo = set() # when idreturn is True
@@ -500,16 +452,10 @@ def searchFiles(atoms, idreturn = False, dbconn = None, EquoConnection = None):
 
 
 
-def searchOrphans(EquoConnection = None):
+def searchOrphans(Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Orphans Search"),)))
@@ -626,16 +572,10 @@ def searchOrphans(EquoConnection = None):
     return 0
 
 
-def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
+def searchRemoval(atoms, idreturn = False, deep = False, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     clientDbconn = Equo.clientDbconn
 
@@ -689,16 +629,10 @@ def searchRemoval(atoms, idreturn = False, deep = False, EquoConnection = None):
 
 
 
-def searchInstalled(idreturn = False, EquoConnection = None, dbconn = None):
+def searchInstalled(idreturn = False, Equo = None, dbconn = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Installed Search"),)))
@@ -733,15 +667,10 @@ def searchInstalled(idreturn = False, EquoConnection = None, dbconn = None):
         return list(idpackages)
 
 
-def searchPackage(packages, idreturn = False, EquoConnection = None):
+def searchPackage(packages, idreturn = False, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None: Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
     dataInfo = set() # when idreturn is True
@@ -777,7 +706,7 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
                         if (idreturn):
                             dataInfo.add((idpackage,repo))
                         else:
-                            printPackageInfo(idpackage,dbconn, EquoConnection = Equo)
+                            printPackageInfo(idpackage,dbconn, Equo = Equo)
                     if not idreturn and not etpUi['quiet']:
                         print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
                         print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(foundPackages[repo][package])))+red(" %s" % (_("entries"),) ))
@@ -790,16 +719,10 @@ def searchPackage(packages, idreturn = False, EquoConnection = None):
         return dataInfo
     return 0
 
-def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False, showDesc = False, EquoConnection = None):
+def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = False, showRepo = False, showDesc = False, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     dataInfo = set() # when idreturn is True
 
@@ -826,7 +749,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
                     dataInfo.add(tuple(match))
                 else:
                     dbconn = Equo.openRepositoryDatabase(match[1])
-                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc, EquoConnection = Equo)
+                    printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc, Equo = Equo)
                     found = True
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+package))
@@ -839,16 +762,10 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
         return dataInfo
     return 0
 
-def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnection = None):
+def searchSlottedPackages(slots, datareturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
     dbclose = True
@@ -874,7 +791,7 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
                 foundPackages[repo][result[1]] = result[0]
                 # print info
                 if (not datareturn):
-                    printPackageInfo(result[1],dbconn, EquoConnection = Equo)
+                    printPackageInfo(result[1],dbconn, Equo = Equo)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+slot))
                 print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
@@ -883,16 +800,10 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, EquoConnecti
         return foundPackages
     return 0
 
-def searchPackageSets(items, datareturn = False, EquoConnection = None):
+def searchPackageSets(items, datareturn = False, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
 
@@ -921,16 +832,10 @@ def searchPackageSets(items, datareturn = False, EquoConnection = None):
         return foundPackages
     return 0
 
-def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection = None):
+def searchTaggedPackages(tags, datareturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
     dbclose = True
@@ -955,7 +860,7 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
             for result in results:
                 foundPackages[repo][result[1]] = result[0]
                 if (not datareturn):
-                    printPackageInfo(result[1],dbconn, EquoConnection = Equo)
+                    printPackageInfo(result[1],dbconn, Equo = Equo)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+tag))
                 print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),)))
@@ -964,16 +869,10 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, EquoConnection
         return foundPackages
     return 0
 
-def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection = None):
+def searchLicenses(licenses, datareturn = False, dbconn = None, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
     dbclose = True
@@ -1001,7 +900,7 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
                 foundPackages[repo][result[1]] = result[0]
                 # print info
                 if (not datareturn):
-                    printPackageInfo(result[1],dbconn, EquoConnection = Equo)
+                    printPackageInfo(result[1],dbconn, Equo = Equo)
             if (not datareturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),))+bold("\t"+mylicense))
                 print_info(blue(" %s:   " % (_("Found"),))+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
@@ -1010,16 +909,10 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, EquoConnection =
         return foundPackages
     return 0
 
-def searchDescription(descriptions, idreturn = False, EquoConnection = None):
+def searchDescription(descriptions, idreturn = False, Equo = None):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     foundPackages = {}
 
@@ -1035,7 +928,7 @@ def searchDescription(descriptions, idreturn = False, EquoConnection = None):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
         dbconn = Equo.openRepositoryDatabase(repo)
-        dataInfo, descdata = searchDescriptions(descriptions, dbconn, idreturn, EquoConnection = Equo)
+        dataInfo, descdata = searchDescriptions(descriptions, dbconn, idreturn, Equo = Equo)
         foundPackages[repo].update(descdata)
 
     if (idreturn):
@@ -1045,7 +938,7 @@ def searchDescription(descriptions, idreturn = False, EquoConnection = None):
 '''
    Internal functions
 '''
-def searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = None):
+def searchDescriptions(descriptions, dbconn, idreturn = False, Equo = None):
     dataInfo = set() # when idreturn is True
     mydescdata = {}
 
@@ -1060,23 +953,17 @@ def searchDescriptions(descriptions, dbconn, idreturn = False, EquoConnection = 
                 elif (etpUi['quiet']):
                     print dbconn.retrieveAtom(idpackage)
                 else:
-                    printPackageInfo(idpackage,dbconn, EquoConnection = EquoConnection)
+                    printPackageInfo(idpackage,dbconn, Equo = Equo)
             # print info
             if (not idreturn) and (not etpUi['quiet']):
                 print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+desc))
                 print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(mydescdata[desc])))+red(" %s" % (_("entries"),) ))
     return dataInfo,mydescdata
 
-def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, EquoConnection = None, showRepoOnQuiet = False, showDescOnQuiet = False):
+def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = False, extended = False, Equo = None, showRepoOnQuiet = False, showDescOnQuiet = False):
 
-    if EquoConnection != None:
-        Equo = EquoConnection
-    else:
-        try:
-            if Equo == None:
-                Equo = EquoInterface()
-        except NameError:
-            Equo = EquoInterface()
+    if Equo == None:
+        Equo = EquoInterface()
 
     # now fetch essential info
     pkgatom = dbconn.retrieveAtom(idpackage)

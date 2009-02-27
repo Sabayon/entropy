@@ -51,7 +51,7 @@ def query(myopts):
                                                 dbconn,
                                                 clientSearch = True,
                                                 extended = True,
-                                                EquoConnection = Entropy
+                                                Equo = Entropy
                                             )
 
         if not count:
@@ -61,23 +61,23 @@ def query(myopts):
     elif cmd == "tags":
         searchTaggedPackages(myopts, dbconn, Entropy)
     elif cmd == "sets":
-        text_query.searchPackageSets(myopts, EquoConnection = Entropy)
+        text_query.searchPackageSets(myopts, Equo = Entropy)
     elif cmd == "files":
-        text_query.searchFiles(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchFiles(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "belongs":
-        text_query.searchBelongs(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchBelongs(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "description":
-        text_query.searchDescriptions(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchDescriptions(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "needed":
-        text_query.searchNeeded(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchNeeded(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "depends":
-        text_query.searchDepends(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchDepends(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "eclass":
-        text_query.searchEclass(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchEclass(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "list":
-        text_query.searchInstalled(dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchInstalled(dbconn = dbconn, Equo = Entropy)
     elif cmd == "changelog":
-        text_query.searchChangeLog(myopts, dbconn = dbconn, EquoConnection = Entropy)
+        text_query.searchChangeLog(myopts, dbconn = dbconn, Equo = Entropy)
 
     del Entropy
     return rc
@@ -95,7 +95,7 @@ def searchTaggedPackages(tags, dbconn, entropy):
             if etpUi['quiet']:
                 print dbconn.retrieveAtom(result[1])
             else:
-                text_query.printPackageInfo(result[1], dbconn, EquoConnection = entropy)
+                text_query.printPackageInfo(result[1], dbconn, Equo = entropy)
         if not etpUi['quiet']:
             print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+tag))
             print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))

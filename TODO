@@ -2,19 +2,20 @@ TODO list
 
 Entropy 0.52:
  - /usr/sbin/entropy.sh install
+ - dependency on sandbox
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+  - parallel http/ftp fetching
+  - Updates daemon + shrink notification applet? (dev-python/dbus-python)
   - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)
-  - Updates daemon + shrink notification applet?
   - System Package Set representing what's inside a stock distribution
     - Connect Smart applications to it to filter out common deps and eventually make it usable
       - Implement Smart applications in Spritz too
     - Implement entropy:// URI handler
   - Entropy codebase refactoring
   - Spritz codebase refactoring
-  - parallel http/ftp fetching
   - use expiration as a base to have and handle multiple packages in repo?
   - UGC: personal package sets
   - UGC: bug report documents?
