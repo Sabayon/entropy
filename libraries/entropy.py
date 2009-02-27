@@ -465,7 +465,19 @@ class MultipleUrlFetcher:
     def handle_statistics(self, th_id, downloaded_size, total_size,
             average, old_average, update_step, show_speed, data_transfer,
             time_remaining, time_remaining_secs):
-        self.__progress_data[th_id] = locals().copy()
+        data = {
+            'th_id': th_id,
+            'downloaded_size': downloaded_size,
+            'total_size': total_size,
+            'average': average,
+            'old_average': old_average,
+            'update_step': update_step,
+            'show_speed': show_speed,
+            'data_transfer': data_transfer,
+            'time_remaining': time_remaining,
+            'time_remaining_secs': time_remaining_secs,
+        }
+        self.__progress_data[th_id] = data
 
     def updateProgress(self):
 
@@ -685,7 +697,10 @@ class EntropyGeoIP:
 '''
 class EquoInterface(Singleton,TextInterface):
 
-    def init_singleton(self, indexing = True, noclientdb = 0, xcache = True, user_xcache = False, repo_validation = True, load_ugc = True, url_fetcher = urlFetcher):
+    def init_singleton(self, indexing = True, noclientdb = 0,
+            xcache = True, user_xcache = False, repo_validation = True,
+            load_ugc = True, url_fetcher = urlFetcher,
+            multiple_url_fetcher = MultipleUrlFetcher):
 
         # modules import
         import dumpTools, entropyTools
@@ -707,9 +722,13 @@ class EquoInterface(Singleton,TextInterface):
 
         self.clientLog = LogFile(level = etpConst['equologlevel'],filename = etpConst['equologfile'], header = "[client]")
 
-        self.urlFetcher = url_fetcher # in this way, can be reimplemented (so you can override updateProgress)
-        self.progress = None # supporting external updateProgress stuff, you can point self.progress to your progress bar
-                             # and reimplement updateProgress
+        # in this way, can be reimplemented (so you can override updateProgress)
+        self.MultipleUrlFetcher = multiple_url_fetcher
+        self.urlFetcher = url_fetcher
+        # supporting external updateProgress stuff, you can point self.progress
+        # to your progress bar and reimplement updateProgress
+        self.progress = None
+
         self.clientDbconn = None
         self.safe_mode = 0
         self.FtpInterface = FtpInterface # for convenience
@@ -746,7 +765,7 @@ class EquoInterface(Singleton,TextInterface):
 
         if self.openclientdb:
             self.openClientDatabase()
-        self.FileUpdates = self.FileUpdatesInterfaceLoader()
+        self.FileUpdates = FileUpdatesInterface(EquoInstance = self)
 
         # setup package settings (masking and other stuff)
         self.SystemSettings = SystemSettings(self)
@@ -3906,7 +3925,8 @@ class EquoInterface(Singleton,TextInterface):
         else:
             return item
 
-    def fetch_file_on_mirrors(self, repository, branch, filename, digest = False, verified = False, fetch_abort_function = None):
+    def fetch_file_on_mirrors(self, repository, branch, filename,
+            digest = False, verified = False, fetch_abort_function = None):
 
         uris = etpRepositories[repository]['packages'][::-1]
         remaining = set(uris[:])
@@ -4018,11 +4038,11 @@ class EquoInterface(Singleton,TextInterface):
                             self.add_failing_mirror(uri, 5)
                             error_message += " - %s." % (_("unknown reason"),)
                         self.updateProgress(
-                                            error_message,
-                                            importance = 1,
-                                            type = "warning",
-                                            header = red("   ## ")
-                                        )
+                            error_message,
+                            importance = 1,
+                            type = "warning",
+                            header = red("   ## ")
+                        )
                         if rc == -4: # timeout
                             if timeout_try_count > 0:
                                 continue
@@ -4055,16 +4075,8 @@ class EquoInterface(Singleton,TextInterface):
         else:
             return 0,atom,resultfile
 
-    def quickpkg_handler(
-                                self,
-                                pkgdata,
-                                dirpath,
-                                edb = True,
-                                portdbPath = None,
-                                fake = False,
-                                compression = "bz2",
-                                shiftpath = ""
-                        ):
+    def quickpkg_handler(self, pkgdata, dirpath, edb = True,
+           portdbPath = None, fake = False, compression = "bz2", shiftpath = ""):
 
         import stat
         import tarfile
@@ -4644,11 +4656,6 @@ class EquoInterface(Singleton,TextInterface):
     def Repositories(self, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
         conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate, noEquoCheck = noEquoCheck, fetchSecurity = fetchSecurity)
         return conn
-
-    def FileUpdatesInterfaceLoader(self):
-        conn = FileUpdatesInterface(EquoInstance = self)
-        return conn
-
 
 '''
     Real package actions (install/remove) interface
@@ -6956,6 +6963,7 @@ class RepoInterface:
         )
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
+        self.Cacher = EntropyCacher()
         self.dbapi2 = dbapi2
         self.reponames = reponames
         self.forceUpdate = forceUpdate
@@ -11144,12 +11152,12 @@ timeout=10
             )
             return "(hd0,0)"
 
-class SystemSettings(dict):
+class SystemSettings(Singleton):
 
     import entropyTools
-    def __init__(self, EquoInstance):
+    def init_singleton(self, EquoInstance):
 
-        dict.__init__(self)
+        self.__data = {}
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
@@ -11225,13 +11233,13 @@ class SystemSettings(dict):
 
     def __scan(self):
 
-        self.update(self.__parse())
+        self.__data.update(self.__parse())
         # merge universal keywords
-        for x in self['keywords']['universal']:
+        for x in self.__data['keywords']['universal']:
             etpConst['keywords'].add(x)
 
         # live package masking / unmasking
-        self.update(
+        self.__data.update(
             {
                 'live_packagemasking': {
                     'unmask_matches': set(),
@@ -11241,8 +11249,8 @@ class SystemSettings(dict):
         )
 
         # match installed packages of system_mask
-        self['repos_system_mask_installed'] = []
-        self['repos_system_mask_installed_keys'] = {}
+        self.__data['repos_system_mask_installed'] = []
+        self.__data['repos_system_mask_installed_keys'] = {}
         if isinstance(self.Entropy.clientDbconn,EntropyDatabaseInterface):
             while 1:
                 try:
@@ -11250,30 +11258,90 @@ class SystemSettings(dict):
                 except exceptionTools.SystemDatabaseError:
                     break
                 mc_cache = set()
-                m_list = self['repos_system_mask']+self['system_mask']
+                m_list = self.__data['repos_system_mask']+self.__data['system_mask']
                 for atom in m_list:
                     m_ids,m_r = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
                     if m_r != 0: continue
                     mykey = self.entropyTools.dep_getkey(atom)
-                    if mykey not in self['repos_system_mask_installed_keys']:
-                        self['repos_system_mask_installed_keys'][mykey] = set()
+                    if mykey not in self.__data['repos_system_mask_installed_keys']:
+                        self.__data['repos_system_mask_installed_keys'][mykey] = set()
                     for xm in m_ids:
                         if xm in mc_cache: continue
                         mc_cache.add(xm)
-                        self['repos_system_mask_installed'].append(xm)
-                        self['repos_system_mask_installed_keys'][mykey].add(xm)
+                        self.__data['repos_system_mask_installed'].append(xm)
+                        self.__data['repos_system_mask_installed_keys'][mykey].add(xm)
                 break
 
         # Live package masking
-        self.update(self.__persistent_settings)
+        self.__data.update(self.__persistent_settings)
 
     def __setitem__(self, mykey, myvalue):
         if self.__persistent_settings.has_key(mykey): # backup here too
             self.__persistent_settings[mykey] = myvalue
-        dict.__setitem__(self, mykey, myvalue)
+        self.__data[mykey] = myvalue
+
+    def __getitem__(self, mykey):
+        return self.__data[mykey]
+
+    def __delitem__(self, mykey):
+        del self.__data[mykey]
+
+    def __iter__(self):
+        return iter(self.__data)
+
+    def __contains__(self, item):
+        return item in self.__data
+
+    def __cmp__(self, other):
+        return cmp(self.__data,other)
+
+    def __hash__(self):
+        return hash(self.__data)
+
+    def __len__(self):
+        return len(self.__data)
+
+    def get(self, mykey):
+        return self.__data.get(mykey)
+
+    def has_key(self, mykey):
+        return self.__data.has_key(mykey)
+
+    def copy(self):
+        return self.__data.copy()
+
+    def fromkeys(self, seq, val = None):
+        return self.__data.fromkeys(seq, val)
+
+    def items(self):
+        return self.__data.items()
+
+    def iteritems(self):
+        return self.__data.iteritems()
+
+    def iterkeys(self):
+        return self.__data.iterkeys()
+
+    def keys(self):
+        return self.__data.keys()
+
+    def pop(self, mykey, default = None):
+        return self.__data.pop(mykey,default)
+
+    def popitem(self):
+        return self.__data.popitem()
+
+    def setdefault(self, mykey, default = None):
+        return self.__data.setdefault(mykey,default)
+
+    def update(self, **kwargs):
+        return self.__data.update(kwargs)
+
+    def values(self):
+        return self.__data.values()
 
     def clear(self):
-        dict.clear(self)
+        self.__data.clear()
         self.__scan()
 
     def __parse(self):
@@ -11519,6 +11587,7 @@ class SystemSettings(dict):
                 self.__removeRepoCache(repoid = repoid)
                 self.__saveFileMtime(maskfile,mtimefile)
 
+
 class Callable:
     def __init__(self, anycallable):
         self.__call__ = anycallable
@@ -11673,6 +11742,7 @@ class SecurityInterface:
             mytxt = _("A valid EquoInterface instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
+        self.Cacher = EntropyCacher()
         self.lastfetch = None
         self.previous_checksum = "0"
         self.advisories_changed = None
