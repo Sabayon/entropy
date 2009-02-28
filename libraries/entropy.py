@@ -490,10 +490,13 @@ class MultipleUrlFetcher:
         )
         for url, save_path in pl:
             count += 1
+            fname = os.path.basename(url)
+            uri = self.entropyTools.spliturl(url)[1]
             self.Output.updateProgress(
-                "[%s] => %s" % (
+                "[%s] %s => %s" % (
                     darkblue(str(count)),
-                    darkgreen(url),
+                    darkgreen(uri),
+                    blue(fname),
                 ),
                 importance = 0,
                 type = "info",
@@ -653,6 +656,8 @@ class EntropyCacher(Singleton):
         self.__alive = False
         if hasattr(self,"__CacheWriter"):
             self.__CacheWriter.kill()
+            while self.__CacheWriter.isAlive():
+                time.sleep(0.2)
 
 class EntropyGeoIP:
 
@@ -738,7 +743,6 @@ class MirrorStatusInterface(dict):
         dict.__init__(self)
 
     def add_failing_mirror(self, mirrorname, increment = 1):
-        item = self.get(mirrorname)
         if not self.has_key(mirrorname):
             self[mirrorname] = 0
         self[mirrorname] += increment
@@ -3953,16 +3957,16 @@ class EquoInterface(Singleton,TextInterface):
         # load class
         fetchConn = self.MultipleUrlFetcher(url_path_list, resume = resume,
             abort_check_func = fetch_file_abort_function, OutputInterface = self,
-            urlFetcherClass = self.urlFetcher)
+            urlFetcherClass = self.urlFetcher, checksum = checksum)
         try:
             data = fetchConn.download()
         except KeyboardInterrupt:
             return -100, {}, 0
 
         diff_map = {}
-        if checksum_map: # verify checksums
-            diff_map = dict(((url_path_list[x][0],checksum_map.get(x)) for x in checksum_map \
-                if checksum_map.get(x) != data.get(x)))
+        if checksum_map and checksum: # verify checksums
+            diff_map = dict((url_path_list[x-1][0],checksum_map.get(x)) for x in checksum_map \
+                if checksum_map.get(x) != data.get(x))
 
         data_transfer = fetchConn.get_data_transfer()
         if diff_map:
@@ -3981,6 +3985,200 @@ class EquoInterface(Singleton,TextInterface):
             return defval, diff_map, data_transfer
 
         return 0, diff_map, data_transfer
+
+    def fetch_files_on_mirrors(self, download_list, checksum = False, fetch_abort_function = None):
+        """
+            @param download_map list [(repository,branch,filename,checksum (digest),),..]
+            @param checksum bool verify checksum?
+            @param fetch_abort_function callable method that could raise exceptions
+        """
+        repo_uris = dict(((x[0],etpRepositories[x[0]]['packages'][::-1],) for x in download_list))
+        remaining = repo_uris.copy()
+        my_download_list = download_list[:]
+
+        def get_best_mirror(repository):
+            try:
+                return remaining[repository][0]
+            except IndexError:
+                return None
+
+        def update_download_list(down_list, failed_down):
+            newlist = []
+            for repo,branch,fname,cksum in down_list:
+                myuri = get_best_mirror(repo)
+                myuri = os.path.join(myuri,fname)
+                if myuri not in failed_down:
+                    continue
+                newlist.append((repo,branch,fname,cksum,))
+            return newlist
+
+        # return True: for failing, return False: for fine
+        def mirror_fail_check(repository, best_mirror):
+            # check if uri is sane
+            if not self.MirrorStatus.get_failing_mirror_status(best_mirror) >= 30:
+                return False
+            # set to 30 for convenience
+            self.MirrorStatus.set_failing_mirror_status(best_mirror, 30)
+            mirrorcount = repo_uris[repo].index(best_mirror)+1
+            mytxt = "( mirror #%s ) " % (mirrorcount,)
+            mytxt += blue(" %s: ") % (_("Mirror"),)
+            mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
+            mytxt += " - %s." % (_("maximum failure threshold reached"),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = red("   ## ")
+            )
+
+            if self.MirrorStatus.get_failing_mirror_status(best_mirror) == 30:
+                self.MirrorStatus.add_failing_mirror(best_mirror,45)
+            elif self.MirrorStatus.get_failing_mirror_status(best_mirror) > 31:
+                self.MirrorStatus.add_failing_mirror(best_mirror,-4)
+            else:
+                self.MirrorStatus.set_failing_mirror_status(best_mirror, 0)
+
+            remaining[repository].discard(best_mirror)
+            return True
+
+        def show_download_summary(down_list):
+            # fetch_files_list.append((myuri,None,cksum,branch,))
+            for repo, branch, fname, cksum in down_list:
+                best_mirror = get_best_mirror(repo)
+                mirrorcount = repo_uris[repo].index(best_mirror)+1
+                mytxt = "( mirror #%s ) " % (mirrorcount,)
+                basef = os.path.basename(fname)
+                mytxt += "[%s] %s " % (brown(basef),blue("@"),)
+                mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
+                # now fetch the new one
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = red("   ## ")
+                )
+
+        def show_successful_download(down_list, data_transfer):
+            for repo, branch, fname, cksum in down_list:
+                best_mirror = get_best_mirror(repo)
+                mirrorcount = repo_uris[repo].index(best_mirror)+1
+                mytxt = "( mirror #%s ) " % (mirrorcount,)
+                basef = os.path.basename(fname)
+                mytxt += "[%s] %s %s " % (brown(basef),darkred(_("success")),blue("@"),)
+                mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = red("   ## ")
+                )
+            mytxt = " %s: %s%s%s" % (
+                blue(_("Aggregated transfer rate")),
+                bold(self.entropyTools.bytesIntoHuman(data_transfer)),
+                darkred("/"),
+                darkblue(_("second")),
+            )
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
+
+        def show_download_error(down_list, rc):
+            for repo, branch, fname, cksum in down_list:
+                best_mirror = get_best_mirror(repo)
+                mirrorcount = repo_uris[repo].index(best_mirror)+1
+                mytxt = "( mirror #%s ) " % (mirrorcount,)
+                mytxt += blue("%s: %s") % (
+                    _("Error downloading from"),
+                    red(self.entropyTools.spliturl(best_mirror)[1]),
+                )
+                if rc == -1:
+                    mytxt += " - %s." % (_("files not available on this mirror"),)
+                elif rc == -2:
+                    self.MirrorStatus.add_failing_mirror(best_mirror,1)
+                    mytxt += " - %s." % (_("wrong checksum"),)
+                elif rc == -3:
+                    mytxt += " - %s." % (_("not found"),)
+                elif rc == -4: # timeout!
+                    mytxt += " - %s." % (_("timeout error"),)
+                elif rc == -100:
+                    mytxt += " - %s." % (_("discarded download"),)
+                else:
+                    self.MirrorStatus.add_failing_mirror(best_mirror, 5)
+                    mytxt += " - %s." % (_("unknown reason"),)
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+
+        def remove_failing_mirrors(repos):
+            for repo in repos:
+                best_mirror = get_best_mirror(repo)
+                if remaining[repo]:
+                    remaining[repo].pop(0)
+
+        def check_remaining_mirror_failure(repos):
+            return [x for x in repos if not remaining.get(x)]
+
+        while 1:
+
+            do_resume = True
+            timeout_try_count = 50
+            while 1:
+
+                fetch_files_list = []
+                for repo, branch, fname, cksum in my_download_list:
+                    best_mirror = get_best_mirror(repo)
+                    if best_mirror != None:
+                        mirror_fail_check(repo, best_mirror)
+                        best_mirror = get_best_mirror(repo)
+                    if best_mirror == None:
+                        # at least one package failed to download
+                        # properly, give up with everything
+                        return 3, my_download_list
+                    myuri = os.path.join(best_mirror,fname)
+                    fetch_files_list.append((myuri,None,cksum,branch,))
+
+                try:
+
+                    show_download_summary(my_download_list)
+                    rc, failed_downloads, data_transfer = self.fetch_files(
+                        fetch_files_list, checksum = checksum,
+                        fetch_file_abort_function = fetch_abort_function,
+                        resume = do_resume
+                    )
+                    if rc == 0:
+                        show_successful_download(my_download_list, data_transfer)
+                        return 0, []
+
+                    # update my_download_list
+                    my_download_list = update_download_list(my_download_list,failed_downloads)
+                    if rc not in (-3,-4,-100,) and failed_downloads and do_resume:
+                        # disable resume
+                        do_resume = False
+                        continue
+                    else:
+                        show_download_error(my_download_list, rc)
+                        if rc == -4: # timeout
+                            timeout_try_count -= 1
+                            if timeout_try_count > 0:
+                                continue
+                        elif rc == -100: # user discarded fetch
+                            return 1, []
+                        myrepos = set([x[0] for x in my_download_list])
+                        remove_failing_mirrors(myrepos)
+                        # make sure we don't have nasty issues
+                        remaining_failure = check_remaining_mirror_failure(myrepos)
+                        if remaining_failure:
+                            return 3, my_download_list
+                        break
+                except KeyboardInterrupt:
+                    return 1, []
+        return 0, []
 
 
     def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
@@ -4036,13 +4234,10 @@ class EquoInterface(Singleton,TextInterface):
 
 
     def fetch_file_on_mirrors(self, repository, branch, filename,
-            digest = False, verified = False, fetch_abort_function = None):
+            digest = False, fetch_abort_function = None):
 
         uris = etpRepositories[repository]['packages'][::-1]
-        remaining = set(uris[:])
-
-        if verified: # file is already in place, match_checksum set infoDict['verified'] to True
-            return 0
+        remaining = set(uris)
 
         mirrorcount = 0
         for uri in uris:
@@ -4052,7 +4247,7 @@ class EquoInterface(Singleton,TextInterface):
                 return 3
 
             mirrorcount += 1
-            mirrorCountText = "( mirror #"+str(mirrorcount)+" ) "
+            mirrorCountText = "( mirror #%s ) " % (mirrorcount,)
             url = uri+"/"+filename
 
             # check if uri is sane
@@ -4062,7 +4257,7 @@ class EquoInterface(Singleton,TextInterface):
                 self.MirrorStatus.set_failing_mirror_status(uri, 30)
                 mytxt = mirrorCountText
                 mytxt += blue(" %s: ") % (_("Mirror"),)
-                mytxt += red(self.entropyTools.spliturl(url)[1])
+                mytxt += red(self.entropyTools.spliturl(uri)[1])
                 mytxt += " - %s." % (_("maximum failure threshold reached"),)
                 self.updateProgress(
                     mytxt,
@@ -4075,17 +4270,15 @@ class EquoInterface(Singleton,TextInterface):
                     # put to 75 then decrement by 4 so we
                     # won't reach 30 anytime soon ahahaha
                     self.MirrorStatus.add_failing_mirror(uri,45)
-                else:
+                elif self.MirrorStatus.get_failing_mirror_status(uri) > 31:
                     # now decrement each time this point is reached,
                     # if will be back < 30, then equo will try to use it again
-                    if self.MirrorStatus.get_failing_mirror_status(uri) > 31:
-                        self.MirrorStatus.add_failing_mirror(uri,-4)
-                    else:
-                        # put to 0 - reenable mirror, welcome back uri!
-                        self.MirrorStatus.set_failing_mirror_status(uri, 0)
+                    self.MirrorStatus.add_failing_mirror(uri,-4)
+                else:
+                    # put to 0 - reenable mirror, welcome back uri!
+                    self.MirrorStatus.set_failing_mirror_status(uri, 0)
 
-                if uri in remaining:
-                    remaining.remove(uri)
+                remaining.discard(uri)
                 continue
 
             do_resume = True
@@ -4094,7 +4287,7 @@ class EquoInterface(Singleton,TextInterface):
                 try:
                     mytxt = mirrorCountText
                     mytxt += blue("%s: ") % (_("Downloading from"),)
-                    mytxt += red(self.entropyTools.spliturl(url)[1])
+                    mytxt += red(self.entropyTools.spliturl(uri)[1])
                     # now fetch the new one
                     self.updateProgress(
                         mytxt,
@@ -4112,7 +4305,7 @@ class EquoInterface(Singleton,TextInterface):
                     if rc == 0:
                         mytxt = mirrorCountText
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
-                        mytxt += red(self.entropyTools.spliturl(url)[1])
+                        mytxt += red(self.entropyTools.spliturl(uri)[1])
                         mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
                         self.updateProgress(
                             mytxt,
@@ -4122,14 +4315,14 @@ class EquoInterface(Singleton,TextInterface):
                         )
 
                         return 0
-                    elif resumed and rc not in (-3,-4,):
+                    elif resumed and rc not in (-3,-4,-100,):
                         do_resume = False
                         continue
                     else:
                         error_message = mirrorCountText
                         error_message += blue("%s: %s") % (
                             _("Error downloading from"),
-                            red(self.entropyTools.spliturl(url)[1]),
+                            red(self.entropyTools.spliturl(uri)[1]),
                         )
                         # something bad happened
                         if rc == -1:
@@ -4161,14 +4354,13 @@ class EquoInterface(Singleton,TextInterface):
                                 continue
                         elif rc == -100: # user discarded fetch
                             return 1
-                        if uri in remaining:
-                            remaining.remove(uri)
+                        remaining.discard(uri)
                         # make sure we don't have nasty issues
                         if not remaining:
                             return 3
                         break
                 except KeyboardInterrupt:
-                    break
+                    return 1
         return 0
 
     def quickpkg(self, atomstring, savedir = None):
@@ -4786,7 +4978,9 @@ class PackageInterface:
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
-        self.valid_actions = ("source","fetch","remove","remove_conflict","install","config")
+        self.valid_actions = ("source","fetch","multi_fetch","remove",
+            "remove_conflict","install","config"
+        )
         self.action = None
         self.fetch_abort_function = None
         self.xterm_title = ''
@@ -4814,8 +5008,16 @@ class PackageInterface:
             mytxt = _("Action must be in")
             raise exceptionTools.InvalidData("InvalidData: %s %s" % (mytxt,self.valid_actions,))
 
-    def match_checksum(self):
+    def match_checksum(self, repository = None, checksum = None, download = None):
         self.error_on_not_prepared()
+
+        if repository == None:
+            repository = self.infoDict['repository']
+        if checksum == None:
+            checksum = self.infoDict['checksum']
+        if download == None:
+            download = self.infoDict['download']
+
         dlcount = 0
         match = False
         while dlcount <= 5:
@@ -4826,10 +5028,11 @@ class PackageInterface:
                 header = red("   ## "),
                 back = True
             )
-            dlcheck = self.Entropy.check_needed_package_download(self.infoDict['download'], checksum = self.infoDict['checksum'])
+            dlcheck = self.Entropy.check_needed_package_download(download, checksum = checksum)
             if dlcheck == 0:
+                basef = os.path.basename(download)
                 self.Entropy.updateProgress(
-                    blue(_("Package checksum matches.")),
+                    "%s: %s" % (blue(_("Package checksum matches")),darkgreen(basef),),
                     importance = 0,
                     type = "info",
                     header = red("   ## ")
@@ -4847,12 +5050,12 @@ class PackageInterface:
                     back = True
                 )
                 fetch = self.Entropy.fetch_file_on_mirrors(
-                            self.infoDict['repository'],
-                            self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
-                            self.infoDict['download'],
-                            self.infoDict['checksum'],
-                            fetch_abort_function = self.fetch_abort_function
-                        )
+                    repository,
+                    self.Entropy.get_branch_from_download_relative_uri(download),
+                    download,
+                    checksum,
+                    fetch_abort_function = self.fetch_abort_function
+                )
                 if fetch != 0:
                     self.Entropy.updateProgress(
                         blue(_("Cannot properly fetch package! Quitting.")),
@@ -4874,6 +5077,13 @@ class PackageInterface:
             )
             return 1
         return 0
+
+    def multi_match_checksum(self):
+        rc = 0
+        for repository, branch, download, digest in self.infoDict['multi_checksum_list']:
+            rc = self.match_checksum(repository, digest, download)
+            if rc != 0: break
+        return rc
 
     '''
     @description: unpack the given package file into the unpack dir
@@ -5481,7 +5691,8 @@ class PackageInterface:
             dbdirs = os.listdir(portDbDir)
             if self.infoDict['category'] in dbdirs:
                 catdirs = os.listdir(portDbDir+"/"+self.infoDict['category'])
-                dirsfound = set([self.infoDict['category']+"/"+x for x in catdirs if key == self.entropyTools.dep_getkey(self.infoDict['category']+"/"+x)])
+                dirsfound = set([self.infoDict['category']+"/"+x for x in catdirs if \
+                    key == self.entropyTools.dep_getkey(self.infoDict['category']+"/"+x)])
                 atomsfound.update(dirsfound)
 
             ### REMOVE
@@ -5524,7 +5735,9 @@ class PackageInterface:
                 try:
                     shutil.copytree(copypath,destination)
                 except (IOError,), e:
-                    mytxt = "%s: %s: %s: %s" % (red(_("QA")),brown(_("Cannot update Portage database to destination")),purple(destination),e,)
+                    mytxt = "%s: %s: %s: %s" % (red(_("QA")),
+                        brown(_("Cannot update Portage database to destination")),
+                        purple(destination),e,)
                     self.Entropy.updateProgress(
                         mytxt,
                         importance = 1,
@@ -5632,7 +5845,9 @@ class PackageInterface:
         data['injected'] = False
         data['counter'] = -1 # gentoo counter will be set in self._install_package_into_gentoo_database()
 
-        idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(etpData = data, forcedRevision = data['revision'], formattedContent = True)
+        idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(
+            etpData = data, forcedRevision = data['revision'],
+            formattedContent = True)
 
         # update datecreation
         ctime = self.entropyTools.getCurrentUnixTime()
@@ -6053,14 +6268,15 @@ class PackageInterface:
             header = red("   ## ")
         )
 
-        rc = self.Entropy.fetch_file_on_mirrors(
-            self.infoDict['repository'],
-            self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
-            self.infoDict['download'],
-            self.infoDict['checksum'],
-            self.infoDict['verified'],
-            fetch_abort_function = self.fetch_abort_function
-        )
+        rc = 0
+        if not self.infoDict['verified']:
+            rc = self.Entropy.fetch_file_on_mirrors(
+                self.infoDict['repository'],
+                self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
+                self.infoDict['download'],
+                self.infoDict['checksum'],
+                fetch_abort_function = self.fetch_abort_function
+            )
         if rc != 0:
             mytxt = "%s. %s: %s" % (
                 red(_("Package cannot be fetched. Try to update repositories and retry")),
@@ -6073,8 +6289,45 @@ class PackageInterface:
                 type = "error",
                 header = darkred("   ## ")
             )
-            return rc
-        return 0
+        return rc
+
+    def multi_fetch_step(self):
+        self.error_on_not_prepared()
+        m_fetch_len = len(self.infoDict['multi_fetch_list'])
+        mytxt = "%s: %s %s" % (blue(_("Downloading")),darkred(str(m_fetch_len)),_("archives"),)
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
+        # fetch_files_on_mirrors(self, download_list, checksum = False, fetch_abort_function = None)
+        rc, err_list = self.Entropy.fetch_files_on_mirrors(
+            self.infoDict['multi_fetch_list'],
+            self.infoDict['checksum'],
+            fetch_abort_function = self.fetch_abort_function
+        )
+        if rc != 0:
+            mytxt = "%s. %s: %s" % (
+                red(_("Some packages cannot be fetched. Try to update repositories and retry")),
+                blue(_("Error")),
+                rc,
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "error",
+                header = darkred("   ## ")
+            )
+            for repo,branch,fname,cksum in err_list:
+                self.Entropy.updateProgress(
+                    "[%s:%s|%s] %s" % (blue(repo),brown(branch),
+                        darkgreen(cksum),darkred(fname),),
+                    importance = 1,
+                    type = "error",
+                    header = darkred("    # ")
+                )
+        return rc
 
     def fetch_not_available_step(self):
         self.Entropy.updateProgress(
@@ -6096,8 +6349,11 @@ class PackageInterface:
 
     def checksum_step(self):
         self.error_on_not_prepared()
-        rc = self.match_checksum()
-        return rc
+        return self.match_checksum()
+
+    def multi_checksum_step(self):
+        self.error_on_not_prepared()
+        return self.multi_match_checksum()
 
     def unpack_step(self):
         self.error_on_not_prepared()
@@ -6382,6 +6638,12 @@ class PackageInterface:
             self.Entropy.setTitle(self.xterm_title)
             return self.fetch_step()
 
+        def do_multi_fetch():
+            self.xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
+                len(self.infoDict['multi_fetch_list']),_("packages"),)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.multi_fetch_step()
+
         def do_sources_fetch():
             self.xterm_title += ' %s: %s' % (_("Fetching sources"),os.path.basename(self.infoDict['atom']),)
             self.Entropy.setTitle(self.xterm_title)
@@ -6391,6 +6653,12 @@ class PackageInterface:
             self.xterm_title += ' %s: %s' % (_("Verifying"),os.path.basename(self.infoDict['download']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.checksum_step()
+
+        def do_multi_checksum():
+            self.xterm_title += ' %s: %s %s' % (_("Multi Verification"),
+                len(self.infoDict['multi_checksum_list']),_("packages"),)
+            self.Entropy.setTitle(self.xterm_title)
+            return self.multi_checksum_step()
 
         def do_unpack():
             if not self.infoDict['merge_from']:
@@ -6453,6 +6721,8 @@ class PackageInterface:
 
         steps_data = {
             "fetch": do_fetch,
+            "multi_fetch": do_multi_fetch,
+            "multi_checksum": do_multi_checksum,
             "sources_fetch": do_sources_fetch,
             "checksum": do_checksum,
             "unpack": do_unpack,
@@ -6522,6 +6792,7 @@ class PackageInterface:
             (2000,u'sabayonlinux.org')
             NOTE: in case of remove action, matched_atom must be:
             (idpackage,)
+            NOTE: in case of multi_fetch, matched_atom can be a list of matches
         @input action(string): is an action to take, which must be one in self.valid_actions
     '''
     def prepare(self, matched_atom, action, metaopts = {}):
@@ -6541,6 +6812,8 @@ class PackageInterface:
 
         if self.action == "fetch":
             self.__generate_fetch_metadata()
+        elif self.action == "multi_fetch":
+            self.__generate_multi_fetch_metadata()
         elif self.action in ("remove","remove_conflict"):
             self.__generate_remove_metadata()
         elif self.action == "install":
@@ -6792,6 +7065,64 @@ class PackageInterface:
                 f.close()
                 if repo_size == disk_size:
                     self.infoDict['steps'].reverse()
+        return 0
+
+    def __generate_multi_fetch_metadata(self):
+        self.infoDict.clear()
+
+        if not isinstance(self.matched_atom,list):
+            raise exceptionTools.IncorrectParameter("IncorrectParameter: "
+                "matched_atom must be a list of tuples, not %s" % (type(self.matched_atom,))
+            )
+
+        dochecksum = True
+
+        # meta options
+        if self.metaopts.has_key('fetch_abort_function'):
+            self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+        if self.metaopts.has_key('dochecksum'):
+            dochecksum = self.metaopts.get('dochecksum')
+        self.infoDict['checksum'] = dochecksum
+
+        matches = self.matched_atom
+        self.infoDict['matches'] = matches
+        self.infoDict['atoms'] = []
+        temp_fetch_list = []
+        temp_checksum_list = []
+        temp_already_downloaded_count = 0
+        etp_workdir = etpConst['entropyworkdir']
+        for idpackage, repository in matches:
+            if repository.endswith(etpConst['packagesext']): continue
+            dbconn = self.Entropy.openRepositoryDatabase(repository)
+            self.infoDict['atoms'].append(dbconn.retrieveAtom(idpackage))
+            download = dbconn.retrieveDownloadURL(idpackage)
+            #branch = dbconn.retrieveBranch(idpackage)
+            digest = dbconn.retrieveDigest(idpackage)
+            repo_size = dbconn.retrieveSize(idpackage)
+            orig_branch = self.Entropy.get_branch_from_download_relative_uri(download)
+            if self.Entropy.check_needed_package_download(download, None) < 0:
+                temp_fetch_list.append((repository, orig_branch, download, digest))
+                continue
+            elif dochecksum:
+                temp_checksum_list.append((repository, orig_branch, download, digest))
+            down_path = os.path.join(etp_workdir,download)
+            if os.path.isfile(down_path):
+                with open(down_path,"r") as f:
+                    f.seek(0,2)
+                    disk_size = f.tell()
+                if repo_size == disk_size:
+                    temp_already_downloaded_count += 1
+
+        self.infoDict['steps'] = []
+        self.infoDict['multi_fetch_list'] = temp_fetch_list
+        self.infoDict['multi_checksum_list'] = temp_checksum_list
+        if self.infoDict['multi_fetch_list']:
+            self.infoDict['steps'].append("multi_fetch")
+        if self.infoDict['multi_checksum_list']:
+            self.infoDict['steps'].append("multi_checksum")
+        if temp_already_downloaded_count == len(temp_checksum_list):
+            self.infoDict['steps'].reverse()
+
         return 0
 
 class FileUpdatesInterface:

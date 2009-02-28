@@ -1566,11 +1566,14 @@ def const_islive():
 
 def const_kill_threads():
     import threading
+    import time
     threads = threading.enumerate()
     for t in threads:
         if not hasattr(t,'kill'):
             continue
         t.kill()
+        while t.isAlive():
+            time.sleep(0.2)
 
 def const_HandleException(etype, value, tb):
     try:

@@ -3,6 +3,7 @@ TODO list
 Entropy 0.52:
  - /usr/sbin/entropy.sh install
  - dependency on sandbox
+ - equo/reagent/activator: bind to python2
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
@@ -22,4 +23,5 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   - UGC: bbcode docs?
   - SSL improvements
   - Unit Test module
+  - Entropy repository daemon facilities (init script, config, etc)
 

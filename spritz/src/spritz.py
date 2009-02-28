@@ -289,6 +289,8 @@ class SpritzApplication(Controller):
         self.TaskQueueAlive = False
         if self.ugcTask != None:
             self.ugcTask.kill()
+            while self.ugcTask.isAlive():
+                time.sleep(0.2)
         ''' Main destroy Handler '''
         self.Equo.destroy()
 
