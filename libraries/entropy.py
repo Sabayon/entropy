@@ -732,6 +732,23 @@ class EntropyGeoIP:
         go = self.__get_geo_ip_open()
         return go.record_by_name(hostname)
 
+class MirrorStatusInterface(dict):
+
+    def __init__(self):
+        dict.__init__(self)
+
+    def add_failing_mirror(self, mirrorname, increment = 1):
+        item = self.get(mirrorname)
+        if not self.has_key(mirrorname):
+            self[mirrorname] = 0
+        self[mirrorname] += increment
+        return self[mirrorname]
+
+    def get_failing_mirror_status(self, mirrorname):
+        return self.get(mirrorname,0)
+
+    def set_failing_mirror_status(self, mirrorname, value):
+        self[mirrorname] = value
 
 '''
     Main Entropy (client side) package management class
@@ -755,7 +772,6 @@ class EquoInterface(Singleton,TextInterface):
         self.securityCache = {}
         self.QACache = {}
         self.spmCache = {}
-        self.mirrorDownloadFailures = {}
         self.repo_error_messages_cache = set()
         self.package_match_validator_cache = {}
         self.memoryDbInstances = {}
@@ -808,6 +824,9 @@ class EquoInterface(Singleton,TextInterface):
             self.openClientDatabase()
         self.FileUpdates = FileUpdatesInterface(EquoInstance = self)
 
+        # mirror status interface
+        self.MirrorStatus = MirrorStatusInterface()
+
         # setup package settings (masking and other stuff)
         self.SystemSettings = SystemSettings(self)
 
@@ -851,7 +870,7 @@ class EquoInterface(Singleton,TextInterface):
         initConfig_clientConstants()
 
     def validate_repositories(self):
-        self.mirrorDownloadFailures.clear()
+        self.MirrorStatus.clear()
         self.repo_error_messages_cache.clear()
         self.package_match_validator_cache.clear()
         # valid repositories
@@ -4015,20 +4034,6 @@ class EquoInterface(Singleton,TextInterface):
                 return 0, data_transfer, resumed
         return 0, data_transfer, resumed
 
-    def add_failing_mirror(self, mirrorname,increment = 1):
-        item = self.mirrorDownloadFailures.get(mirrorname)
-        if item == None:
-            self.mirrorDownloadFailures[mirrorname] = increment
-        else:
-            self.mirrorDownloadFailures[mirrorname] += increment # add a failure
-        return self.mirrorDownloadFailures[mirrorname]
-
-    def get_failing_mirror_status(self, mirrorname):
-        item = self.mirrorDownloadFailures.get(mirrorname)
-        if item == None:
-            return 0
-        else:
-            return item
 
     def fetch_file_on_mirrors(self, repository, branch, filename,
             digest = False, verified = False, fetch_abort_function = None):
@@ -4051,9 +4056,10 @@ class EquoInterface(Singleton,TextInterface):
             url = uri+"/"+filename
 
             # check if uri is sane
-            if self.get_failing_mirror_status(uri) >= 30:
+            if self.MirrorStatus.get_failing_mirror_status(uri) >= 30:
                 # ohohoh!
-                self.mirrorDownloadFailures[uri] = 30 # set to 30 for convenience
+                # set to 30 for convenience
+                self.MirrorStatus.set_failing_mirror_status(uri, 30)
                 mytxt = mirrorCountText
                 mytxt += blue(" %s: ") % (_("Mirror"),)
                 mytxt += red(self.entropyTools.spliturl(url)[1])
@@ -4065,15 +4071,18 @@ class EquoInterface(Singleton,TextInterface):
                     header = red("   ## ")
                 )
 
-                if self.get_failing_mirror_status(uri) == 30:
-                    self.add_failing_mirror(uri,45) # put to 75 then decrement by 4 so we won't reach 30 anytime soon ahahaha
+                if self.MirrorStatus.get_failing_mirror_status(uri) == 30:
+                    # put to 75 then decrement by 4 so we
+                    # won't reach 30 anytime soon ahahaha
+                    self.MirrorStatus.add_failing_mirror(uri,45)
                 else:
-                    # now decrement each time this point is reached, if will be back < 30, then equo will try to use it again
-                    if self.get_failing_mirror_status(uri) > 31:
-                        self.add_failing_mirror(uri,-4)
+                    # now decrement each time this point is reached,
+                    # if will be back < 30, then equo will try to use it again
+                    if self.MirrorStatus.get_failing_mirror_status(uri) > 31:
+                        self.MirrorStatus.add_failing_mirror(uri,-4)
                     else:
                         # put to 0 - reenable mirror, welcome back uri!
-                        self.mirrorDownloadFailures[uri] = 0
+                        self.MirrorStatus.set_failing_mirror_status(uri, 0)
 
                 if uri in remaining:
                     remaining.remove(uri)
@@ -4126,10 +4135,9 @@ class EquoInterface(Singleton,TextInterface):
                         if rc == -1:
                             error_message += " - %s." % (_("file not available on this mirror"),)
                         elif rc == -2:
-                            self.add_failing_mirror(uri,1)
+                            self.MirrorStatus.add_failing_mirror(uri,1)
                             error_message += " - %s." % (_("wrong checksum"),)
                         elif rc == -3:
-                            #self.add_failing_mirror(uri,2)
                             error_message += " - %s." % (_("not found"),)
                         elif rc == -4: # timeout!
                             timeout_try_count -= 1
@@ -4140,7 +4148,7 @@ class EquoInterface(Singleton,TextInterface):
                         elif rc == -100:
                             error_message += " - %s." % (_("discarded download"),)
                         else:
-                            self.add_failing_mirror(uri, 5)
+                            self.MirrorStatus.add_failing_mirror(uri, 5)
                             error_message += " - %s." % (_("unknown reason"),)
                         self.updateProgress(
                             error_message,
