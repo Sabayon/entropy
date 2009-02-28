@@ -73,6 +73,11 @@ class urlFetcher:
         self.thread_stop_func = thread_stop_func
         self.disallow_redirect = disallow_redirect
         self.speedlimit = speed_limit # kbytes/sec
+
+        # important to have this here too
+        self.datatransfer = 0
+        self.resumed = False
+
         uname = os.uname()
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
             etpConst['entropyversion'],
@@ -318,6 +323,12 @@ class urlFetcher:
         except:
             self.time_remaining = "(%s)" % (_("infinite"),)
 
+    def get_transfer_rate(self):
+        return self.datatransfer
+
+    def is_resumed(self):
+        return self.resumed
+
     def handle_statistics(self, th_id, downloaded_size, total_size,
             average, old_average, update_step, show_speed, data_transfer,
             time_remaining, time_remaining_secs):
@@ -367,6 +378,15 @@ class MultipleUrlFetcher:
             OutputInterface = None, urlFetcherClass = None):
         """
             @param url_path_list list [(url,path_to_save,),...]
+            @param checksum bool return checksum data
+            @param show_speed bool show transfer speed on the output
+            @param resume bool enable resume support
+            @param abort_check_func callable function that could
+                raise exception and stop transfer
+            @param disallow_redirect bool disable automatic HTTP redirect
+            @param OutputInterface TextInterface instance used to
+                print instance output through a common interface
+            @param urlFetcherClass, urlFetcher instance/interface used
         """
         self.__url_path_list = url_path_list
         self.__resume = resume
@@ -374,6 +394,12 @@ class MultipleUrlFetcher:
         self.__show_speed = show_speed
         self.__abort_check_func = abort_check_func
         self.__disallow_redirect = disallow_redirect
+
+        # important to have a declaration here
+        self.__data_transfer = 0
+        self.__average = 0
+        self.__time_remaining_sec = 0
+
         self.Output = OutputInterface
         if self.Output == None:
             self.Output = TextInterface()
@@ -396,6 +422,9 @@ class MultipleUrlFetcher:
         self.__show_progress = False
         self.__stop_threads = False
         self.__first_refreshes = 50
+        self.__data_transfer = 0
+        self.__average = 0
+        self.__time_remaining_sec = 0
 
     def download(self):
         self._init_vars()
@@ -436,6 +465,15 @@ class MultipleUrlFetcher:
                 raise
 
         return self.__download_statuses
+
+    def get_data_transfer(self):
+        return self.__data_transfer
+
+    def get_average(self):
+        return self.__average
+
+    def get_seconds_remaining(self):
+        return self.__time_remaining_sec
 
     def show_download_files_info(self):
         count = 0
@@ -481,8 +519,6 @@ class MultipleUrlFetcher:
 
     def updateProgress(self):
 
-        if not self.__show_progress: return
-
         eta_txt = _("ETA")
         sec_txt = _("sec") # as in XX kb/sec
         downloaded_size = 0
@@ -508,10 +544,15 @@ class MultipleUrlFetcher:
             if tr > 0: time_remaining += tr
             update_step += data.get('update_step',0)
 
+        self.__data_transfer = data_transfer
         average = average/pdlen
+        self.__average = average
         old_average = old_average/pdlen
         update_step = update_step/pdlen
+        self.__time_remaining_sec = time_remaining
         time_remaining = self.entropyTools.convertSecondsToFancyOutput(time_remaining)
+
+        if not self.__show_progress: return
 
         if (average > old_average+update_step) or (self.__first_refreshes > 0):
 
@@ -3862,17 +3903,79 @@ class EquoInterface(Singleton,TextInterface):
         else:
             return -1
 
+    def fetch_files(self, url_data_list, checksum = True, resume = True, fetch_file_abort_function = None):
+        """
+            Fetch multiple files simultaneously on URLs.
+
+            @param url_data_list list
+                [(url,dest_path [or None],checksum ['ab86fff46f6ec0f4b1e0a2a4a82bf323' or None],branch,),..]
+            @param digest bool, digest check (checksum)
+            @param resume bool enable resume support
+            @param fetch_file_abort_function callable method that could raise exceptions
+            @return general_status_code, {'url': (status_code,checksum,resumed,)}, data_transfer
+        """
+        pkgs_bindir = etpConst['packagesbindir']
+        url_path_list = []
+        checksum_map = {}
+        count = 0
+        for url, dest_path, cksum, branch in url_data_list:
+            count += 1
+            filename = os.path.basename(url)
+            if dest_path == None:
+                dest_path = os.path.join(pkgs_bindir,branch,filename,)
+
+            dest_dir = os.path.dirname(dest_path)
+            if not os.path.isdir(dest_dir):
+                os.makedirs(dest_dir,0755)
+
+            url_path_list.append((url,dest_path,))
+            if cksum != None: checksum_map[count] = cksum
+
+        # load class
+        fetchConn = self.MultipleUrlFetcher(url_path_list, resume = resume,
+            abort_check_func = fetch_file_abort_function, OutputInterface = self,
+            urlFetcherClass = self.urlFetcher)
+        try:
+            data = fetchConn.download()
+        except KeyboardInterrupt:
+            return -100, {}, 0
+
+        diff_map = {}
+        if checksum_map: # verify checksums
+            diff_map = dict(((url_path_list[x][0],checksum_map.get(x)) for x in checksum_map \
+                if checksum_map.get(x) != data.get(x)))
+
+        data_transfer = fetchConn.get_data_transfer()
+        if diff_map:
+            defval = -1
+            for key, val in diff_map.items():
+                if val == "-1": # general error
+                    diff_map[key] = -1
+                elif val == "-2":
+                    diff_map[key] = -2
+                elif val == "-4": # timeout
+                    diff_map[key] = -4
+                elif val == "-3": # not found
+                    diff_map[key] = -3
+                elif val == -100:
+                    defval = -100
+            return defval, diff_map, data_transfer
+
+        return 0, diff_map, data_transfer
+
+
     def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
-        # remove old
+
         filename = os.path.basename(url)
         if not filepath:
-            filepath = etpConst['packagesbindir']+"/"+branch+"/"+filename
+            filepath = os.path.join(etpConst['packagesbindir'],branch,filename)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir):
             os.makedirs(filepath_dir,0755)
 
         # load class
-        fetchConn = self.urlFetcher(url, filepath, resume = resume, abort_check_func = fetch_file_abort_function)
+        fetchConn = self.urlFetcher(url, filepath, resume = resume,
+            abort_check_func = fetch_file_abort_function, OutputInterface = self)
         fetchConn.progress = self.progress
 
         # start to download
@@ -3880,8 +3983,8 @@ class EquoInterface(Singleton,TextInterface):
         resumed = False
         try:
             fetchChecksum = fetchConn.download()
-            data_transfer = fetchConn.datatransfer
-            resumed = fetchConn.resumed
+            data_transfer = fetchConn.get_transfer_rate()
+            resumed = fetchConn.is_resumed()
         except KeyboardInterrupt:
             return -100, data_transfer, resumed
         except NameError:
@@ -3897,8 +4000,10 @@ class EquoInterface(Singleton,TextInterface):
                 self.entropyTools.printTraceback()
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
+            # not found
             return -3, data_transfer, resumed
         elif fetchChecksum == "-4":
+            # timeout
             return -4, data_transfer, resumed
 
         del fetchConn
