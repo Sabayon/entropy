@@ -47,6 +47,7 @@ def package(options):
     equoRequestUpgradeTo = None
     equoRequestListfiles = False
     equoRequestChecksum = True
+    equoRequestMultifetch = 1
     rc = 0
     _myopts = []
     mytbz2paths = []
@@ -72,6 +73,16 @@ def package(options):
             equoRequestUpgrade = True
         elif (opt == "--resume"):
             equoRequestResume = True
+        elif (opt == "--multifetch"):
+            equoRequestMultifetch = 3
+        elif (opt.startswith("--multifetch=")):
+            try:
+                myn = int(opt[len("--multifetch="):])
+            except ValueError:
+                continue
+            if myn not in range(2,11):
+                continue
+            equoRequestMultifetch = myn
         elif (opt == "--nochecksum"):
             equoRequestChecksum = False
         elif (opt == "--skipfirst"):
@@ -114,13 +125,19 @@ def package(options):
 
     elif (options[0] == "install"):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
-            status, rc = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps, onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep, configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum)
+            status, rc = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps,
+                onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep,
+                configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume,
+                skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum,
+                multifetch = equoRequestMultifetch)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
 
     elif (options[0] == "world"):
-        status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps), upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst, human = True, dochecksum = equoRequestChecksum)
+        status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps),
+            upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst,
+            human = True, dochecksum = equoRequestChecksum, multifetch = equoRequestMultifetch)
 
     elif (options[0] == "remove"):
         if myopts or equoRequestResume:
@@ -142,7 +159,8 @@ def package(options):
     return rc
 
 
-def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False, skipfirst = False, human = False, dochecksum = True):
+def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False,
+    skipfirst = False, human = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
@@ -246,7 +264,8 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
             resume = resume,
             skipfirst = skipfirst,
             dochecksum = dochecksum,
-            deepdeps = True
+            deepdeps = True,
+            multifetch = multifetch
         )
         if rc[1] != 0:
             return 1,rc[0]
@@ -586,7 +605,7 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
 
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, dochecksum = True):
+def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
     if (not Equo.entropyTools.isRoot()):
@@ -960,29 +979,69 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         ### Before starting the real install, fetch packages and verify checksum.
         fetchqueue = 0
         mykeys = {}
-        for packageInfo in runQueue:
-            fetchqueue += 1
+        mymultifetch = multifetch
+        if multifetch > 1:
+            myqueue = []
+            mystart = 0
+            while 1:
+                mylist = runQueue[mystart:mymultifetch]
+                if not mylist: break
+                myqueue.append(mylist)
+                mystart += multifetch
+                mymultifetch += multifetch
+            mytotalqueue = str(len(myqueue))
 
-            metaopts = {}
-            metaopts['dochecksum'] = dochecksum
-            Package = Equo.Package()
-            Package.prepare(packageInfo,"fetch", metaopts)
-            myrepo = Package.infoDict['repository']
-            if not mykeys.has_key(myrepo):
-                mykeys[myrepo] = set()
-            mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.infoDict['atom']))
+            for matches in myqueue:
+                fetchqueue += 1
 
-            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+                metaopts = {}
+                metaopts['dochecksum'] = dochecksum
+                Package = Equo.Package()
+                Package.prepare(matches, "multi_fetch", metaopts)
+                myrepo_data = Package.infoDict['repository_atoms']
+                for myrepo in myrepo_data:
+                    if not mykeys.has_key(myrepo):
+                        mykeys[myrepo] = set()
+                    for myatom in myrepo_data[myrepo]:
+                        mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
 
-            rc = Package.run(xterm_header = xterm_header)
-            if rc != 0:
-                dirscleanup()
-                return -1,rc
-            Package.kill()
+                xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
+                print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                    red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+_("packages"))
 
-            del metaopts
-            del Package
+                rc = Package.run(xterm_header = xterm_header)
+                if rc != 0:
+                    dirscleanup()
+                    return -1,rc
+                Package.kill()
+
+                del metaopts
+                del Package
+        else:
+            for packageInfo in runQueue:
+                fetchqueue += 1
+
+                metaopts = {}
+                metaopts['dochecksum'] = dochecksum
+                Package = Equo.Package()
+                Package.prepare(packageInfo,"fetch", metaopts)
+                myrepo = Package.infoDict['repository']
+                if not mykeys.has_key(myrepo):
+                    mykeys[myrepo] = set()
+                mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.infoDict['atom']))
+
+                xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+                print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                    red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+
+                rc = Package.run(xterm_header = xterm_header)
+                if rc != 0:
+                    dirscleanup()
+                    return -1,rc
+                Package.kill()
+
+                del metaopts
+                del Package
 
         def spawn_ugc():
             try:
