@@ -398,6 +398,7 @@ class MultipleUrlFetcher:
         # important to have a declaration here
         self.__data_transfer = 0
         self.__average = 0
+        self.__old_average = 0
         self.__time_remaining_sec = 0
 
         self.Output = OutputInterface
@@ -424,6 +425,7 @@ class MultipleUrlFetcher:
         self.__first_refreshes = 50
         self.__data_transfer = 0
         self.__average = 0
+        self.__old_average = 0
         self.__time_remaining_sec = 0
 
     def download(self):
@@ -528,42 +530,39 @@ class MultipleUrlFetcher:
         total_size = 0
         time_remaining = 0
         data_transfer = 0
-        average = 0
-        old_average = 0
         update_step = 0
+        average = 100
         pd = self.__progress_data.copy()
         pdlen = len(pd)
 
         # calculation
         for th_id in sorted(pd):
             data = pd.get(th_id)
-
             downloaded_size += data.get('downloaded_size',0)
             total_size += data.get('total_size',0)
-            average += data.get('average',0)
-            old_average += data.get('old_average',0)
             data_transfer += data.get('data_transfer',0)
             tr = data.get('time_remaining_secs',0)
             if tr > 0: time_remaining += tr
             update_step += data.get('update_step',0)
 
+        # total_size is in kbytes
+        # downloaded_size is in bytes
+        if total_size > 0:
+            average = int(float(downloaded_size/1024)/total_size * 100)
         self.__data_transfer = data_transfer
-        average = average/pdlen
         self.__average = average
-        old_average = old_average/pdlen
         update_step = update_step/pdlen
         self.__time_remaining_sec = time_remaining
         time_remaining = self.entropyTools.convertSecondsToFancyOutput(time_remaining)
 
-        if not self.__show_progress: return
-
-        if (average > old_average+update_step) or (self.__first_refreshes > 0):
+        if ((average > self.__old_average+update_step) or \
+            (self.__first_refreshes > 0)) and self.__show_progress:
 
             self.__first_refreshes -= 1
             currentText = darkgreen(str(round(float(downloaded_size)/1024,1))) + "/" + \
                 red(str(round(total_size,1))) + " kB"
             # create progress bar
-            barsize = 5
+            barsize = 10
             bartext = "["
             curbarsize = 1
             averagesize = (average*barsize)/100
@@ -581,11 +580,13 @@ class MultipleUrlFetcher:
                 bartext += "/%s : %s: %s" % (sec_txt,eta_txt,time_remaining,)
             else:
                 bartext += "]"
-            average = str(average)
-            if len(average) < 2:
-                average = " "+average
-            currentText += " <->  "+average+"% "+bartext+" "
+            myavg = str(average)
+            if len(myavg) < 2:
+                myavg = " "+myavg
+            currentText += " <->  "+myavg+"% "+bartext+" "
             self.Output.updateProgress(currentText, back = True)
+
+        self.__old_average = average
 
 
 class EntropyCacher(Singleton):
@@ -7087,14 +7088,23 @@ class PackageInterface:
         matches = self.matched_atom
         self.infoDict['matches'] = matches
         self.infoDict['atoms'] = []
+        self.infoDict['repository_atoms'] = {}
         temp_fetch_list = []
         temp_checksum_list = []
         temp_already_downloaded_count = 0
         etp_workdir = etpConst['entropyworkdir']
         for idpackage, repository in matches:
             if repository.endswith(etpConst['packagesext']): continue
+
             dbconn = self.Entropy.openRepositoryDatabase(repository)
-            self.infoDict['atoms'].append(dbconn.retrieveAtom(idpackage))
+            myatom = dbconn.retrieveAtom(idpackage)
+
+            # general purpose metadata
+            self.infoDict['atoms'].append(myatom)
+            if not self.infoDict['repository_atoms'].has_key(repository):
+                self.infoDict['repository_atoms'][repository] = set()
+            self.infoDict['repository_atoms'][repository].add(myatom)
+
             download = dbconn.retrieveDownloadURL(idpackage)
             #branch = dbconn.retrieveBranch(idpackage)
             digest = dbconn.retrieveDigest(idpackage)
