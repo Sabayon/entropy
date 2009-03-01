@@ -1285,9 +1285,9 @@ def const_readActivatorSettings():
         for line in actconffile:
             line = line.strip()
             if line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
-                format = line.split("database-format|")[1]
-                if format in etpConst['etpdatabasesupportedcformats']:
-                    etpConst['etpdatabasefileformat'] = format
+                fmt = line.split("database-format|")[1]
+                if fmt in etpConst['etpdatabasesupportedcformats']:
+                    etpConst['etpdatabasefileformat'] = fmt
 
 def const_readReagentSettings():
 

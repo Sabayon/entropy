@@ -23580,6 +23580,7 @@ class SystemSocketClientInterface:
             mytxt = _("A valid EntropySocketClientCommands based class is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass,mytxt,))
 
+        self.ssl_mod = None
         self.setup_ssl(ssl) #, server_ca_cert, server_cert)
 
         self.answers = etpConst['socket_service']['answers']
@@ -23632,6 +23633,13 @@ class SystemSocketClientInterface:
                 from OpenSSL import SSL, crypto
             except ImportError:
                 self.pyopenssl = False
+
+            # SSL module (Python 2.6)
+            try:
+                import ssl as ssl_mod
+                self.ssl_mod = ssl_mod
+            except ImportError:
+                pass
 
             '''
             if not (self.server_cert and self.server_ca_cert):
@@ -24015,7 +24023,10 @@ class SystemSocketClientInterface:
         try:
             self.sock_conn.connect((self.hostname, self.hostport))
             if self.ssl and not self.pyopenssl:
-                self.sock_conn = self.socket.ssl(self.real_sock_conn)
+                if self.ssl_mod != None:
+                    self.sock_conn = self.ssl_mod.wrap_socket(self.real_sock_conn)
+                else:
+                    self.sock_conn = self.socket.ssl(self.real_sock_conn)
                 # inform about certificate verification
                 if not self.quiet:
                     mytxt = _("Warning: you are using an emergency SSL interface, SSL certificate can't be verified. Please install dev-python/pyopenssl")
@@ -25667,7 +25678,8 @@ class SystemManagerRepositoryCommands(SocketCommandsSkel):
             'cflags': cflags,
         }
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'compile_atoms', [atoms[:]], add_dict.copy(), False, False, interactive = True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs),
+            uid, gid, 'compile_atoms', [atoms[:]], add_dict.copy(), False, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 

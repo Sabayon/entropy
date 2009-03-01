@@ -2,6 +2,9 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+  - Entropy codebase refactoring
+  - Spritz codebase refactoring
+  - Unit Test module
   - Updates daemon + shrink notification applet? (dev-python/dbus-python)
   - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)
@@ -9,13 +12,10 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Connect Smart applications to it to filter out common deps and eventually make it usable
       - Implement Smart applications in Spritz too
     - Implement entropy:// URI handler
-  - Entropy codebase refactoring
-  - Spritz codebase refactoring
   - use expiration as a base to have and handle multiple packages in repo?
   - UGC: personal package sets
   - UGC: bug report documents?
   - UGC: bbcode docs?
   - SSL improvements
-  - Unit Test module
   - Entropy repository daemon facilities (init script, config, etc)
 
