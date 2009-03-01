@@ -7,7 +7,6 @@ Entropy 0.52:
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  - parallel http/ftp fetching
   - Updates daemon + shrink notification applet? (dev-python/dbus-python)
   - Autobuild system (NLnet Milestone 6)
   - Documentation + man page (NLnet Milestone 7)

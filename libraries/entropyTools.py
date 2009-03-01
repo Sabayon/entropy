@@ -77,7 +77,11 @@ class TimeScheduled(threading.Thread):
         self.__delay = delay
         self.__args = args[1:][:]
         self.__kwargs = kwargs.copy()
-        self.__accurate = True
+        # never enable this by default
+        # otherwise kill() and thread
+        # check will hang until
+        # time.sleep() is done
+        self.__accurate = False
         self.__delay_before = False
 
     def set_delay(self, delay):
@@ -110,14 +114,14 @@ class TimeScheduled(threading.Thread):
         if (self.__delay > 5) and not self.__accurate:
             mydelay = int(self.__delay)
             broke = False
-            while mydelay:
+            while mydelay > 0:
                 if not self.__alive:
                     broke = True
                     break
                 if time == None:
                     return True # shut down?
-                time.sleep(1)
-                mydelay -= 1
+                time.sleep(0.5)
+                mydelay -= 0.5
 
             if broke:
                 return True

@@ -1360,7 +1360,8 @@ class SpritzApplication(Controller):
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
             bootstrap = True
             self.setPage('output')
-        elif (self.Equo.get_available_packages_cache() == None) and ('available' in masks):
+        elif (self.Equo.get_available_packages_cache() == None) and \
+            (('available' in masks) or ('updates' in masks)):
             bootstrap = True
             self.setPage('output')
         self.progress.total.hide()
@@ -2213,17 +2214,23 @@ class SpritzApplication(Controller):
             okDialog( self.ui.main, _("Please select at least one repository") )
             return
         self.setPage('output')
-        self.startWorking()
-        status = self.updateRepositories(repos)
-        self.endWorking()
-        self.progress.reset_progress()
-        self.resetSpritzCacheStatus()
-        self.setupRepoView()
-        self.setupSpritz()
-        self.setupAdvisories()
-        self.setPage('repos')
-        if status:
-            self.showNoticeBoard()
+        self.ui.main.queue_draw()
+        self.uiLock(True)
+        try:
+            self.gtkLoop()
+            self.startWorking()
+            status = self.updateRepositories(repos)
+            self.endWorking()
+            self.progress.reset_progress()
+            self.resetSpritzCacheStatus()
+            self.setupRepoView()
+            self.setupSpritz()
+            self.setupAdvisories()
+            self.setPage('repos')
+            if status:
+                self.showNoticeBoard()
+        finally:
+            self.uiLock(False)
 
     def on_cacheButton_clicked(self,widget):
         self.repoView.get_selected()
@@ -2747,10 +2754,16 @@ if __name__ == "__main__":
         mainApp.quit()
     except SystemExit:
         print "Quit by User (SystemExit)"
-        mainApp.quit()
+        try:
+            mainApp.quit()
+        except NameError:
+            pass
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        mainApp.quit()
+        try:
+            mainApp.quit()
+        except NameError:
+            pass
     except: # catch other exception and write it to the logger.
         entropyTools.kill_threads()
         mainApp.quit(sysexit = False)
