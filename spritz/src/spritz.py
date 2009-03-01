@@ -33,7 +33,7 @@ sys.path.insert(3,"/usr/lib/entropy/client")
 from entropyConstants import *
 import exceptionTools, entropyTools
 from packages import EntropyPackages
-from entropyapi import Equo
+from entropyapi import Equo, QueueExecutor
 from entropy_i18n import _
 
 # Spritz Imports
