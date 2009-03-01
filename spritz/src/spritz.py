@@ -1249,7 +1249,20 @@ class SpritzApplication(Controller):
             self.progressLog(msg, extra = "repositories")
             self.disable_ugc = False
             return 2
-        rc = repoConn.sync()
+
+        self.__repo_update_rc = -1000
+        def run_up():
+            self.__repo_update_rc = repoConn.sync()
+
+        t = self.Equo.entropyTools.parallelTask(run_up)
+        t.start()
+        while t.isAlive():
+            time.sleep(0.2)
+            if self.do_debug:
+                print "updateRepositories: update thread still alive"
+            self.gtkLoop()
+        rc = self.__repo_update_rc
+
         if repoConn.syncErrors or (rc != 0):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(_('Please check logs below for more info'))
@@ -1452,8 +1465,6 @@ class SpritzApplication(Controller):
                 self.uiLock(True)
 
                 controller = QueueExecutor(self)
-                gtk.gdk.threads_enter()
-
                 self.my_inst_errors = None
                 self.my_inst_abort = False
                 def run_tha_bstrd():
@@ -1475,12 +1486,8 @@ class SpritzApplication(Controller):
                     self.gtkLoop()
 
                 e,i = self.my_inst_errors
-
                 if self.do_debug:
-                    print "processPackageQueue: threads leave?"
-                gtk.gdk.threads_leave()
-                if self.do_debug:
-                    print "processPackageQueue: ok, left"
+                    print "processPackageQueue: left all"
 
                 self.ui.skipMirror.hide()
                 self.ui.abortQueue.hide()
