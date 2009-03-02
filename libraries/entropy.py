@@ -9408,9 +9408,9 @@ class QAInterface:
 
         rdepends_plain -= r_keyslots
         for r_keyslot in r_keyslots:
-            keys = idpackage_map_reverse.get(keyslot,[])
+            keys = [x for x in idpackage_map_reverse.get(keyslot,set()) if x in rdepends]
             for key in keys:
-                rdepends[key].remove(r_keyslot)
+                rdepends[key].discard(r_keyslot)
                 if not rdepends[key]:
                     del rdepends[key]
 
@@ -9485,6 +9485,10 @@ class FtpInterface:
                 break
             except (self.socket.gaierror,), e:
                 raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
+            except (self.socket.error,), e:
+                if not count:
+                    raise exceptionTools.ConnectionError('ConnectionError: %s' % (e,))
+                continue
             except:
                 if not count: raise
                 continue
@@ -9720,7 +9724,7 @@ class FtpInterface:
                 if self.isFileAvailable(filename+".tmp"):
                     self.deleteFile(filename+".tmp")
 
-                if (ascii):
+                if ascii:
                     rc = self.ftpconn.storlines("STOR "+filename+".tmp",f)
                 else:
                     rc = self.advancedStorBinary("STOR "+filename+".tmp", f, callback = uploadFileAndUpdateProgress )
@@ -9731,8 +9735,7 @@ class FtpInterface:
 
                 if rc.find("226") != -1: # upload complete
                     return True
-                else:
-                    return False
+                return False
 
             except Exception, e: # connection reset by peer
                 import traceback
@@ -9755,7 +9758,6 @@ class FtpInterface:
                     self.deleteFile(filename)
                 if self.isFileAvailable(filename+".tmp"):
                     self.deleteFile(filename+".tmp")
-                pass
 
     def downloadFile(self, filename, downloaddir, ascii = False):
 
@@ -29096,7 +29098,11 @@ class ServerMirrorsInterface:
                 back = True
             )
 
-            ftp = self.FtpInterface(uri, self.Entropy)
+            try:
+                ftp = self.FtpInterface(uri, self.Entropy)
+            except exceptionTools.ConnectionError:
+                self.entropyTools.printTraceback()
+                return True # issues
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
             ftp.setCWD(my_path, dodir = True)
 
@@ -29172,7 +29178,11 @@ class ServerMirrorsInterface:
                 back = True
             )
 
-            ftp = self.FtpInterface(uri, self.Entropy)
+            try:
+                ftp = self.FtpInterface(uri, self.Entropy)
+            except exceptionTools.ConnectionError:
+                self.entropyTools.printTraceback()
+                return True # issues
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
             ftp.setCWD(my_path, dodir = True)
 
@@ -29219,7 +29229,11 @@ class ServerMirrorsInterface:
 
         my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
         if not ftp_connection:
-            ftp_connection = self.FtpInterface(uri, self.Entropy)
+            try:
+                ftp_connection = self.FtpInterface(uri, self.Entropy)
+            except exceptionTools.ConnectionError:
+                self.entropyTools.printTraceback()
+                return False # issues
             ftp_connection.setCWD(my_path, dodir = True)
         else:
             mycwd = ftp_connection.getCWD()
@@ -29276,7 +29290,11 @@ class ServerMirrorsInterface:
 
         my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
         if not ftp_connection:
-            ftp_connection = self.FtpInterface(uri, self.Entropy)
+            try:
+                ftp_connection = self.FtpInterface(uri, self.Entropy)
+            except exceptionTools.ConnectionError:
+                self.entropyTools.printTraceback()
+                return False # issues
             ftp_connection.setCWD(my_path)
         else:
             mycwd = ftp_connection.getCWD()
@@ -29393,7 +29411,11 @@ class ServerMirrorsInterface:
                 back = True
             )
 
-            ftp = self.FtpInterface(uri, self.Entropy)
+            try:
+                ftp = self.FtpInterface(uri, self.Entropy)
+            except exceptionTools.ConnectionError:
+                self.entropyTools.printTraceback()
+                return False # issues
             dirpath = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),pkg_to_join_dirpath)
             ftp.setCWD(dirpath, dodir = True)
 
@@ -29448,7 +29470,7 @@ class ServerMirrorsInterface:
                     header = darkred(" !!! ")
                 )
                 ftp.closeConnection()
-                return 0
+                return False
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
             self.Entropy.updateProgress(
@@ -29529,6 +29551,7 @@ class ServerMirrorsInterface:
         data = []
         for uri in mirrors:
 
+            # let it raise an exception if connection is impossible
             ftp = self.FtpInterface(uri, self.Entropy)
             try:
                 my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
@@ -30147,7 +30170,11 @@ class ServerMirrorsInterface:
                     type = "info",
                     header = blue(" @@ ")
                 )
-                ftp = self.FtpInterface(uri, self.Entropy)
+                try:
+                    ftp = self.FtpInterface(uri, self.Entropy)
+                except exceptionTools.ConnectionError:
+                    self.entropyTools.printTraceback()
+                    return True,fine_uris,broken_uris # issues
                 my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo),etpConst['branch'])
                 self.Entropy.updateProgress(
                     "[%s|%s] %s %s..." % (
@@ -30442,7 +30469,11 @@ class ServerMirrorsInterface:
 
         gave_up = False
         crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-        ftp = self.FtpInterface(uri, self.Entropy)
+        try:
+            ftp = self.FtpInterface(uri, self.Entropy)
+        except exceptionTools.ConnectionError:
+            self.entropyTools.printTraceback()
+            return True # gave up
         my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
         ftp.setCWD(my_path, dodir = True)
 
@@ -31159,6 +31190,7 @@ class ServerMirrorsInterface:
         my_path = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         if ftp_connection == None:
             close_conn = True
+            # let it raise an exception if things go bad
             ftp_connection = self.FtpInterface(uri, self.Entropy)
         ftp_connection.setCWD(my_path, dodir = True)
 

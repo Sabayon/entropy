@@ -226,11 +226,11 @@ class QueueExecutor:
 class Equo(EquoInterface):
 
     def __init__(self, *args, **kwargs):
+        EquoInterface.__init__(self, *args, **kwargs)
         self.progressLog = None
         self.output = None
         self.progress = None
         self.urlFetcher = None
-        EquoInterface.__init__(self, *args, **kwargs)
         self.xcache = True # force xcache enabling
         if "--debug" in sys.argv:
             self.UGC.quiet = False
@@ -265,7 +265,7 @@ class Equo(EquoInterface):
             if importance > 0:
                 myfunc(count_str+text)
 
-        if not back and self.progressLog:
+        if not back and hasattr(self,'progressLog'):
             if callable(self.progressLog):
                 self.progressLog(count_str+text)
         elif not back:
