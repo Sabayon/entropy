@@ -10393,7 +10393,8 @@ class TriggerInterface:
             if isinstance(imagedir,unicode):
                 imagedir = imagedir.encode('utf-8')
 
-            sandbox_write = ':'.join([unpackdir,imagedir])
+            sb_dirs = [unpackdir,imagedir]
+            sb_write = ':'.join(sb_dirs)
 
             myenv = {
                 "ETP_API": etpSys['api'],
@@ -10421,8 +10422,7 @@ class TriggerInterface:
                 "CHOST": chost, # *nix CHOST
                 "PORTAGE_ECLASSES": eclasses, # portage eclasses, " " separated
                 "ROOT": etpConst['systemroot'],
-                "SANDBOX_WRITE": sandbox_write,
-                "SANDBOX_READ": sandbox_write,
+                "SANDBOX_WRITE": sb_write,
             }
             sysenv = os.environ.copy()
             sysenv.update(myenv)
