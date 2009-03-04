@@ -3723,7 +3723,7 @@ class EquoInterface(Singleton,TextInterface):
             if not os.path.isdir(sets_dir):
                 if os.path.lexists(sets_dir):
                     os.remove(sets_dir)
-                os.makedirs(sets_dir,0755)
+                os.makedirs(sets_dir,0775)
                 const_setup_perms(sets_dir, etpConst['entropygid'])
 
         try:
@@ -3731,7 +3731,7 @@ class EquoInterface(Singleton,TextInterface):
         except (UnicodeEncodeError,UnicodeDecodeError,):
             raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name,_("must be an ASCII string"),))
 
-        if set_name.startswith(etpConst['packagesetprefix']):
+        if set_name.startswith(etpConst['packagesetprefix']sets_dir):
             raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
         set_match, rc = self.packageSetMatch(set_name)
         if rc: return -1,_("Name already taken")
@@ -7735,6 +7735,10 @@ class RepoInterface:
         # otherwise new permissions won't be written
         if os.path.isfile(filepath):
             os.remove(filepath)
+        filepath_dir = os.path.dirname(filepath)
+        if not os.path.isdir(filepath_dir) and not os.path.lexists(filepath_dir):
+            os.makedirs(filepath_dir,0775)
+            const_setup_perms(filepath_dir, etpConst['entropygid'])
 
         fetchConn = self.Entropy.urlFetcher(
             url,
