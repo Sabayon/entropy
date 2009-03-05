@@ -47,7 +47,7 @@ class Singleton(object):
         it = cls.__dict__.get("__it__")
         if it != None:
             try:
-                ck_dst = getattr(it,'is_destroyed')
+                ck_dst = it.is_destroyed
                 if not callable(ck_dst): raise AttributeError
                 destroyed = ck_dst()
             except AttributeError:
@@ -664,8 +664,7 @@ class EntropyCacher(Singleton):
         self.__alive = False
         if hasattr(self,"__CacheWriter"):
             self.__CacheWriter.kill()
-            while self.__CacheWriter.isAlive():
-                time.sleep(0.2)
+            self.__CacheWriter.join()
 
 class EntropyGeoIP:
 

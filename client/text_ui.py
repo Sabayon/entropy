@@ -1460,7 +1460,7 @@ def unusedPackagesTest():
         #print "%s: %s" % (darkgreen(_("Atom string")),' '.join(atoms),)
     else:
         for atom in atoms:
-            print_info("  # %s" % (darkblue(atom),))
+            print_info("  # %s" % (blue(atom),))
     return 0,0
 
 def dependenciesTest():

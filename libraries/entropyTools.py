@@ -111,21 +111,20 @@ class TimeScheduled(threading.Thread):
 
     def __do_delay(self):
 
-        if (self.__delay > 5) and not self.__accurate:
-            mydelay = int(self.__delay)
-            broke = False
-            while mydelay > 0:
+        if not self.__accurate:
+
+            mydelay = float(self.__delay)
+            t_frac = 0.3
+            while mydelay > 0.0:
                 if not self.__alive:
-                    broke = True
-                    break
+                    return True
                 if time == None:
                     return True # shut down?
-                time.sleep(0.5)
-                mydelay -= 0.5
+                time.sleep(t_frac)
+                mydelay -= t_frac
 
-            if broke:
-                return True
         else:
+
             if time == None: return True # shut down?
             time.sleep(self.__delay)
 
