@@ -45,8 +45,15 @@ class Singleton(object):
 
     def __new__(cls, *args, **kwds):
         it = cls.__dict__.get("__it__")
-        if it is not None:
-            return it
+        if it != None:
+            try:
+                ck_dst = getattr(it,'is_destroyed')
+                if not callable(ck_dst): raise AttributeError
+                destroyed = ck_dst()
+            except AttributeError:
+                destroyed = False
+            if not destroyed:
+                return it
         cls.__it__ = it = object.__new__(cls)
         it.init_singleton(*args, **kwds)
         return it
@@ -765,6 +772,7 @@ class EquoInterface(Singleton,TextInterface):
             load_ugc = True, url_fetcher = urlFetcher,
             multiple_url_fetcher = MultipleUrlFetcher):
 
+        self.__instance_destroyed = False
         # modules import
         import dumpTools, entropyTools
         self.dumpTools = dumpTools
@@ -852,6 +860,7 @@ class EquoInterface(Singleton,TextInterface):
             self.UGC = UGCClientInterface(self)
 
     def destroy(self):
+        self.__instance_destroyed = True
         if hasattr(self,'clientDbconn'):
             if self.clientDbconn != None:
                 self.clientDbconn.closeDB()
@@ -866,6 +875,9 @@ class EquoInterface(Singleton,TextInterface):
         self.closeAllRepositoryDatabases(mask_clear = False)
         self.closeAllSecurity()
         self.closeAllQA()
+
+    def is_destroyed(self):
+        return self.__instance_destroyed
 
     def __del__(self):
         self.destroy()
@@ -3731,7 +3743,7 @@ class EquoInterface(Singleton,TextInterface):
         except (UnicodeEncodeError,UnicodeDecodeError,):
             raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name,_("must be an ASCII string"),))
 
-        if set_name.startswith(etpConst['packagesetprefix']sets_dir):
+        if set_name.startswith(etpConst['packagesetprefix']):
             raise exceptionTools.InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
         set_match, rc = self.packageSetMatch(set_name)
         if rc: return -1,_("Name already taken")
@@ -16436,6 +16448,7 @@ class ServerInterface(Singleton,TextInterface):
 
     def init_singleton(self, default_repository = None, save_repository = False, community_repo = False):
 
+        self.__instance_destroyed = False
         if etpConst['uid'] != 0:
             mytxt = _("Entropy ServerInterface must be run as root")
             raise exceptionTools.PermissionDenied("PermissionDenied: %s" % (mytxt,))
@@ -16493,11 +16506,15 @@ class ServerInterface(Singleton,TextInterface):
         self.switch_default_repository(self.default_repository)
 
     def destroy(self):
+        self.__instance_destroyed = True
         if hasattr(self,'serverLog'):
             self.serverLog.close()
         if hasattr(self,'ClientService'):
             self.ClientService.destroy()
         self.close_server_databases()
+
+    def is_destroyed(self):
+        return self.__instance_destroyed
 
     def __del__(self):
         self.destroy()

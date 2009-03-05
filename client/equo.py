@@ -410,20 +410,19 @@ def load_conf_cache():
     Equo = EquoInterface(noclientdb = 2)
     if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
     try:
-        oldquiet = etpUi['quiet']
-        etpUi['quiet'] = True
         while 1:
             try:
-                scandata = Equo.FileUpdates.scanfs(dcache = True)
+                scandata = Equo.FileUpdates.scanfs(dcache = True, quiet = True)
                 break
             except KeyboardInterrupt:
                 continue
-        etpUi['quiet'] = oldquiet
     except:
         if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching not run.")))
         Equo.destroy()
         return
+
     if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching complete.")))
+
     if scandata: # can be None
         if len(scandata) > 0: # strict check
             if not etpUi['quiet']:
