@@ -34106,8 +34106,8 @@ class EntropyDatabaseInterface:
     def retrieveDigest(self, idpackage):
         self.cursor.execute('SELECT digest FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         digest = self.cursor.fetchone()
-        if digest: return digest[0]
-
+        if digest: return digest[0] 
+        
     def retrieveName(self, idpackage):
         self.cursor.execute('SELECT name FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         name = self.cursor.fetchone()
@@ -35758,6 +35758,7 @@ class EntropyDatabaseInterface:
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
+                self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex ON extrainfo ( idpackage )')
                 self.commitChanges()
 
     def createEclassesIndex(self):
