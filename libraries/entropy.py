@@ -21,7 +21,7 @@
 '''
 
 from __future__ import with_statement
-import shutil, commands, urllib2, time, thread, copy, subprocess
+import shutil, urllib2, time, thread, subprocess
 from entropyConstants import *
 from outputTools import TextInterface, red, brown, blue, green, purple, darkgreen, darkred, bold, darkblue
 import exceptionTools
@@ -35,7 +35,7 @@ except ImportError: # fallback to embedded pysqlite
     except ImportError, e:
         raise exceptionTools.SystemError(
             "%s. %s: %s" % (
-                _("Entropy needs a working sqlite+pysqlite or Python compiled with sqlite support"),
+                _("Entropy needs a working sqlite3+pysqlite or Python compiled with sqlite3 support"),
                 _("Error"),
                 e,
             )
@@ -605,9 +605,11 @@ class EntropyCacher(Singleton):
         self.__alive = False
         self.__CacheBuffer = self.entropyTools.lifobuffer()
         self.__CacheLock = self.threading.Lock()
+        import copy
+        self.copy = copy
 
     def __copy_obj(self, obj):
-        return copy.deepcopy(obj)
+        return self.copy.deepcopy(obj)
 
     def __cacher(self):
         while 1:
@@ -870,6 +872,9 @@ class EquoInterface(Singleton,TextInterface):
             self.clientLog.close()
         if hasattr(self,'Cacher'):
             self.Cacher.stop()
+        if hasattr(self,'SystemSettings'):
+            if hasattr(self.SystemSettings,'destroy'):
+                self.SystemSettings.destroy()
 
         self.closeAllRepositoryDatabases(mask_clear = False)
         self.closeAllSecurity()
@@ -2711,8 +2716,7 @@ class EquoInterface(Singleton,TextInterface):
             if flat:
                 maskedtree.update(mydict)
             else:
-                maskedtree[treelevel] = {}
-                maskedtree[treelevel].update(mydict)
+                maskedtree[treelevel] = mydict
 
         mydeps = mydbconn.retrieveDependencies(match_id)
         for mydep in mydeps: mybuffer.push(mydep)
@@ -4967,12 +4971,12 @@ class EquoInterface(Singleton,TextInterface):
     '''
 
     def Triggers(self, *args, **kwargs):
-        conn = TriggerInterface(self, *args, **kwargs)
-        return conn
+        return TriggerInterface(self, *args, **kwargs)
 
     def Repositories(self, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
-        conn = RepoInterface(EquoInstance = self, reponames = reponames, forceUpdate = forceUpdate, noEquoCheck = noEquoCheck, fetchSecurity = fetchSecurity)
-        return conn
+        return RepoInterface(EquoInstance = self, reponames = reponames,
+            forceUpdate = forceUpdate, noEquoCheck = noEquoCheck,
+            fetchSecurity = fetchSecurity)
 
 '''
     Real package actions (install/remove) interface
@@ -5981,8 +5985,8 @@ class PackageInterface:
                         os.makedirs(rootdir)
 
                 if not os.path.islink(rootdir) and os.access(rootdir,os.W_OK):
-                    # symlink don't need permissions, also until os.walk ends they might be broken
-                    # XXX also, added os.access() check because there might be directories/files unwriteable
+                    # symlink doesn't need permissions, also until os.walk ends they might be broken
+                    # XXX also, added os.access() check because there might be directories/files unwritable
                     # what to do otherwise?
                     user = os.stat(imagepathDir)[stat.ST_UID]
                     group = os.stat(imagepathDir)[stat.ST_GID]
@@ -7155,6 +7159,8 @@ class FileUpdatesInterface:
         self.Entropy = EquoInstance
         self.Cacher = EntropyCacher()
         self.scandata = None
+        import commands
+        self.commands = commands
 
     def merge_file(self, key):
         self.scanfs(dcache = True)
@@ -7382,7 +7388,7 @@ class FileUpdatesInterface:
                     # if it's broken, skip diff and automerge
                     if not os.path.exists(filepath):
                         return mydict
-                result = commands.getoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath,tofilepath,))
+                result = self.commands.getoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath,tofilepath,))
                 if not result:
                     mydict['automerge'] = True
             except:
@@ -10088,6 +10094,8 @@ class TriggerInterface:
             mytxt = _("A valid Entropy Instance is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
+        import commands
+        self.commands = commands
         self.Entropy = EquoInstance
         self.clientLog = self.Entropy.clientLog
         self.validPhases = ("preinstall","postinstall","preremove","postremove")
@@ -11508,7 +11516,7 @@ timeout=10
             )
             return "(hd0,0)"
 
-        gboot = commands.getoutput("df /boot").split("\n")[-1].split()[0]
+        gboot = self.commands.getoutput("df /boot").split("\n")[-1].split()[0]
         if gboot.startswith("/dev/"):
             # it's ok - handle /dev/md
             if gboot.startswith("/dev/md"):
@@ -11629,6 +11637,7 @@ class SystemSettings(Singleton):
     def init_singleton(self, EquoInstance):
 
         self.__data = {}
+        self.__is_destroyed = False
         if not isinstance(EquoInstance,EquoInterface):
             mytxt = _("A valid Equo instance or subclass is needed")
             raise exceptionTools.IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
@@ -11701,6 +11710,9 @@ class SystemSettings(Singleton):
             },
         }
         self.__scan()
+
+    def destroy(self):
+        self.__is_destroyed = True
 
     def __scan(self):
 
@@ -12138,6 +12150,8 @@ class ErrorReportInterface:
         self.opener = urllib2.build_opener(MultipartPostHandler)
         self.generated = False
         self.params = {}
+        import commands
+        self.commands = commands
 
         mydict = {}
         if etpConst['proxy']['ftp']:
@@ -12169,10 +12183,10 @@ class ErrorReportInterface:
             self.params['system_version'] = f.readlines()
             f.close()
 
-        self.params['processes'] = commands.getoutput('ps auxf')
-        self.params['lspci'] = commands.getoutput('/usr/sbin/lspci')
-        self.params['dmesg'] = commands.getoutput('dmesg')
-        self.params['locale'] = commands.getoutput('locale -v')
+        self.params['processes'] = self.commands.getoutput('ps auxf')
+        self.params['lspci'] = self.commands.getoutput('/usr/sbin/lspci')
+        self.params['dmesg'] = self.commands.getoutput('dmesg')
+        self.params['locale'] = self.commands.getoutput('locale -v')
         self.params['stacktrace'] += "\n\n"+self.params['locale'] # just for a while, won't hurt
 
         self.generated = True
@@ -15853,6 +15867,7 @@ class SocketHostInterface:
             return alive
 
         def docmd_hello(self, transmitter):
+            import commands
             uname = os.uname()
             kern_string = uname[2]
             running_host = uname[1]
@@ -17963,6 +17978,11 @@ class ServerInterface(Singleton,TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseupdatefile'])
+
+    def get_local_database_compressed_metafiles_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemetafilesfile'])
 
     def get_local_database_sets_dir(self, repo = None, branch = None):
         if repo == None:
@@ -26293,6 +26313,8 @@ class SystemManagerServerInterface(SocketHostInterface):
         import entropyTools
         def __init__(self, HostInterface):
 
+            import copy
+            self.copy = copy
             SocketCommandsSkel.__init__(self, HostInterface, inst_name = "systemsrv")
             self.raw_commands = [
                 'systemsrv:add_to_pinboard',
@@ -26434,7 +26456,7 @@ class SystemManagerServerInterface(SocketHostInterface):
 
         def docmd_get_queue(self, myargs):
 
-            myqueue = copy.deepcopy(self.HostInterface.ManagerQueue)
+            myqueue = self.copy.deepcopy(self.HostInterface.ManagerQueue)
 
             extended = False
             if myargs:
@@ -26712,6 +26734,8 @@ class SystemManagerServerInterface(SocketHostInterface):
         self.entropyTools, self.dumpTools, self.threading = entropyTools, dumpTools, threading
         from datetime import datetime
         self.datetime = datetime
+        import copy
+        self.copy = copy
 
         self.setup_stdout_storage_dir()
 
@@ -26915,8 +26939,8 @@ class SystemManagerServerInterface(SocketHostInterface):
             'command_desc': self.valid_commands[command_name]['desc'],
             'command_text': command_text,
             'call': function,
-            'args': copy.deepcopy(args),
-            'kwargs': copy.deepcopy(kwargs),
+            'args': self.copy.deepcopy(args),
+            'kwargs': self.copy.deepcopy(kwargs),
             'user_id': user_id,
             'group_id': group_id,
             'stdout': self.assign_unique_stdout_file(queue_id),
@@ -29910,6 +29934,7 @@ class ServerMirrorsInterface:
     def get_files_to_sync(self, cmethod, download = False, repo = None):
 
         critical = []
+        extra_text_files = []
         data = {}
         data['database_revision_file'] = self.Entropy.get_local_database_revision_file(repo)
         critical.append(data['database_revision_file'])
@@ -29919,24 +29944,28 @@ class ServerMirrorsInterface:
             data['database_package_mask_file'] = database_package_mask_file
             if not download:
                 critical.append(data['database_package_mask_file'])
+            extra_text_files.append(data['database_package_mask_file'])
 
         database_package_system_mask_file = self.Entropy.get_local_database_system_mask_file(repo)
         if os.path.isfile(database_package_system_mask_file) or download:
             data['database_package_system_mask_file'] = database_package_system_mask_file
             if not download:
                 critical.append(data['database_package_system_mask_file'])
+            extra_text_files.append(data['database_package_system_mask_file'])
 
         database_package_confl_tagged_file = self.Entropy.get_local_database_confl_tagged_file(repo)
         if os.path.isfile(database_package_confl_tagged_file) or download:
             data['database_package_confl_tagged_file'] = database_package_confl_tagged_file
             if not download:
                 critical.append(data['database_package_confl_tagged_file'])
+            extra_text_files.append(data['database_package_confl_tagged_file'])
 
         database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
         if os.path.isfile(database_license_whitelist_file) or download:
             data['database_license_whitelist_file'] = database_license_whitelist_file
             if not download:
                 critical.append(data['database_license_whitelist_file'])
+            extra_text_files.append(data['database_license_whitelist_file'])
 
         database_rss_file = self.Entropy.get_local_database_rss_file(repo)
         if os.path.isfile(database_rss_file) or download:
@@ -29948,9 +29977,12 @@ class ServerMirrorsInterface:
             data['database_rss_light_file'] = database_rss_light_file
             if not download:
                 critical.append(data['database_rss_light_file'])
+            extra_text_files.append(data['database_rss_light_file'])
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
+            data['metafiles_path'] = self.Entropy.get_local_database_compressed_metafiles_file(repo)
+            critical.append(data['metafiles_path'])
             data['dump_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[3]])
             critical.append(data['dump_path'])
             data['dump_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[4]])
@@ -29972,11 +30004,13 @@ class ServerMirrorsInterface:
             data['ssl_ca_cert_file'] = ssl_ca_cert
             if not download:
                 critical.append(ssl_ca_cert)
+            extra_text_files.append(data['ssl_ca_cert_file'])
         ssl_server_cert = self.Entropy.get_local_database_server_cert_file()
         if os.path.isfile(ssl_server_cert):
             data['ssl_server_cert_file'] = ssl_server_cert
             if not download:
                 critical.append(ssl_server_cert)
+            extra_text_files.append(data['ssl_server_cert_file'])
 
         # Some information regarding how packages are built
         spm_files = [
@@ -29989,6 +30023,7 @@ class ServerMirrorsInterface:
         for myfile,myname in spm_files:
             if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
                 data[myname] = myfile
+                extra_text_files.append(myfile)
 
         make_profile = etpConst['spm']['global_make_profile']
         if os.path.islink(make_profile):
@@ -30000,8 +30035,9 @@ class ServerMirrorsInterface:
             f.flush()
             f.close()
             data['global_make_profile'] = mytmpfile
+            extra_text_files.append(mytmpfile)
 
-        return data, critical
+        return data, critical, extra_text_files
 
     class FileTransceiver:
 
@@ -30464,6 +30500,13 @@ class ServerMirrorsInterface:
             header = brown("    # ")
         )
 
+    def _create_metafiles_file(self, compressed_dest_path, file_list):
+        file_list = [x for x in file_list if os.path.isfile(x) and \
+            os.access(x,os.F_OK) and os.access(x,os.R_OK)]
+        if os.path.isfile(compressed_dest_path):
+            os.remove(compressed_dest_path)
+        self.entropyTools.compress_files(compressed_dest_path, file_list)
+
     def create_mirror_directories(self, ftp_connection, path_to_create):
         bdir = ""
         for mydir in path_to_create.split("/"):
@@ -30622,7 +30665,7 @@ class ServerMirrorsInterface:
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
-            upload_data, critical = self.get_files_to_sync(cmethod, repo = repo)
+            upload_data, critical, text_files = self.get_files_to_sync(cmethod, repo = repo)
 
             if lock_check:
                 given_up = self.mirror_lock_check(uri, repo = repo)
@@ -30668,6 +30711,7 @@ class ServerMirrorsInterface:
             self.shrink_database_and_close(repo)
 
             # EAPI 3
+            self._create_metafiles_file(upload_data['metafiles_path'], text_files)
             self._show_eapi3_upload_messages(crippled_uri, database_path, repo)
 
             # EAPI 2
@@ -30766,7 +30810,7 @@ class ServerMirrorsInterface:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
-            download_data, critical = self.get_files_to_sync(cmethod, download = True, repo = repo)
+            download_data, critical, text_files = self.get_files_to_sync(cmethod, download = True, repo = repo)
             mytmpdir = self.entropyTools.getRandomTempFile()
             os.makedirs(mytmpdir)
 
@@ -31385,7 +31429,7 @@ class ServerMirrorsInterface:
         }
         removal = []
         download = []
-        copy = []
+        do_copy = []
         upload = []
 
         for item in removalQueue:
@@ -31409,7 +31453,7 @@ class ServerMirrorsInterface:
                 download.append((local_filepath,size))
             else:
                 size = self.entropyTools.get_file_size(local_filepath)
-                copy.append((local_filepath,size))
+                do_copy.append((local_filepath,size))
 
         for item in uploadQueue:
             if not item.endswith(etpConst['packagesext']):
@@ -31425,7 +31469,7 @@ class ServerMirrorsInterface:
             metainfo['upload'] += size
 
 
-        return upload, download, removal, copy, metainfo
+        return upload, download, removal, do_copy, metainfo
 
 
     def _sync_run_removal_queue(self, removal_queue, branch, repo = None):
@@ -34091,7 +34135,6 @@ class EntropyDatabaseInterface:
         if home: return home[0]
 
     def retrieveCounter(self, idpackage):
-        counter = -1
         self.cursor.execute("""
         SELECT counters.counter FROM counters,baseinfo 
         WHERE counters.idpackage = (?) AND 
@@ -34099,7 +34142,7 @@ class EntropyDatabaseInterface:
         baseinfo.branch = counters.branch""", (idpackage,))
         mycounter = self.cursor.fetchone()
         if mycounter: return mycounter[0]
-        return counter
+        return -1
 
     def retrieveMessages(self, idpackage):
         self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
@@ -36494,7 +36537,7 @@ class EntropyDatabaseInterface:
 
                 # if we found something at least...
                 if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual","null")):
-                    foundCat = sorted(list(cats))[0]
+                    foundCat = sorted(cats)[0]
 
                 if not foundCat:
                     # got the issue

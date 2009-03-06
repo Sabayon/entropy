@@ -2,6 +2,8 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+
+  - Move TriggerInterface.trigger_configure_boot_grub & friends to ebuild (reduce size of TriggerInterface)
   - compact all the repo service files to one (server and client support)
   - Entropy codebase refactoring
   - Spritz codebase refactoring

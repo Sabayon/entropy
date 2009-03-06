@@ -552,6 +552,7 @@ def const_defaultSettings(rootdir):
         'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist",
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasemissingdepsblfile': ETP_DBFILE+".missing_deps_blacklist", # missing dependencies black list file
+        'etpdatabasemetafilesfile': ETP_DBFILE+".meta", # compressed file that contains all the "meta" files in a repository dir
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",
         'etpdatabasedumphashfilegzip': ETP_DBFILE+".dump.gz.md5",
