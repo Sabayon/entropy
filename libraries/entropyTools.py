@@ -645,6 +645,28 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
     f_out.close()
     f_in.close()
 
+# files_to_compress must be a list of valid file paths
+def compress_files(dest_file, files_to_compress, compressor = "bz2"):
+
+    if compressor not in ("bz2","gz",):
+        raise AttributeError("invalid compressor specified")
+
+    import tarfile
+    id_strings = {}
+    tar = tarfile.open(dest_file,"w:%s" % (compressor,))
+    try:
+        for path in files_to_compress:
+            exist = os.lstat(path)
+            tarinfo = tar.gettarinfo(path, os.path.basename(path))
+            tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
+            tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
+            if not stat.S_ISREG(exist.st_mode): continue
+            tarinfo.type = tarfile.REGTYPE
+            with open(path) as f:
+                tar.addfile(tarinfo, f)
+    finally:
+        tar.close()
+
 def unpackGzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
@@ -1959,9 +1981,6 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 
     finally:
         tar.close()
-
-    #'''
-
 
     if os.listdir(extractPath):
         return 0
