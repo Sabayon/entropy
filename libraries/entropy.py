@@ -30030,32 +30030,32 @@ class ServerMirrorsInterface:
         critical.append(data['database_revision_file'])
 
         database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
+        extra_text_files.append(database_package_mask_file)
         if os.path.isfile(database_package_mask_file) or download:
             data['database_package_mask_file'] = database_package_mask_file
             if not download:
                 critical.append(data['database_package_mask_file'])
-            extra_text_files.append(data['database_package_mask_file'])
 
         database_package_system_mask_file = self.Entropy.get_local_database_system_mask_file(repo)
+        extra_text_files.append(database_package_system_mask_file)
         if os.path.isfile(database_package_system_mask_file) or download:
             data['database_package_system_mask_file'] = database_package_system_mask_file
             if not download:
                 critical.append(data['database_package_system_mask_file'])
-            extra_text_files.append(data['database_package_system_mask_file'])
 
         database_package_confl_tagged_file = self.Entropy.get_local_database_confl_tagged_file(repo)
+        extra_text_files.append(database_package_confl_tagged_file)
         if os.path.isfile(database_package_confl_tagged_file) or download:
             data['database_package_confl_tagged_file'] = database_package_confl_tagged_file
             if not download:
                 critical.append(data['database_package_confl_tagged_file'])
-            extra_text_files.append(data['database_package_confl_tagged_file'])
 
         database_license_whitelist_file = self.Entropy.get_local_database_licensewhitelist_file(repo)
+        extra_text_files.append(database_license_whitelist_file)
         if os.path.isfile(database_license_whitelist_file) or download:
             data['database_license_whitelist_file'] = database_license_whitelist_file
             if not download:
                 critical.append(data['database_license_whitelist_file'])
-            extra_text_files.append(data['database_license_whitelist_file'])
 
         database_rss_file = self.Entropy.get_local_database_rss_file(repo)
         if os.path.isfile(database_rss_file) or download:
@@ -30063,11 +30063,11 @@ class ServerMirrorsInterface:
             if not download:
                 critical.append(data['database_rss_file'])
         database_rss_light_file = self.Entropy.get_local_database_rsslight_file(repo)
+        extra_text_files.append(database_rss_light_file)
         if os.path.isfile(database_rss_light_file) or download:
             data['database_rss_light_file'] = database_rss_light_file
             if not download:
                 critical.append(data['database_rss_light_file'])
-            extra_text_files.append(data['database_rss_light_file'])
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
@@ -30090,17 +30090,17 @@ class ServerMirrorsInterface:
 
         # SSL cert file, just for reference
         ssl_ca_cert = self.Entropy.get_local_database_ca_cert_file()
+        extra_text_files.append(ssl_ca_cert)
         if os.path.isfile(ssl_ca_cert):
             data['ssl_ca_cert_file'] = ssl_ca_cert
             if not download:
                 critical.append(ssl_ca_cert)
-            extra_text_files.append(data['ssl_ca_cert_file'])
         ssl_server_cert = self.Entropy.get_local_database_server_cert_file()
+        extra_text_files.append(ssl_server_cert)
         if os.path.isfile(ssl_server_cert):
             data['ssl_server_cert_file'] = ssl_server_cert
             if not download:
                 critical.append(ssl_server_cert)
-            extra_text_files.append(data['ssl_server_cert_file'])
 
         # Some information regarding how packages are built
         spm_files = [
@@ -30113,19 +30113,19 @@ class ServerMirrorsInterface:
         for myfile,myname in spm_files:
             if os.path.isfile(myfile) and os.access(myfile,os.R_OK):
                 data[myname] = myfile
-                extra_text_files.append(myfile)
+            extra_text_files.append(myfile)
 
         make_profile = etpConst['spm']['global_make_profile']
+        mytmpdir = os.path.dirname(self.Entropy.entropyTools.getRandomTempFile())
+        mytmpfile = os.path.join(mytmpdir,etpConst['spm']['global_make_profile_link_name'])
+        extra_text_files.append(mytmpfile)
         if os.path.islink(make_profile):
             mylink = os.readlink(make_profile)
-            mytmpdir = os.path.dirname(self.Entropy.entropyTools.getRandomTempFile())
-            mytmpfile = os.path.join(mytmpdir,'profile.link')
             f = open(mytmpfile,"w")
             f.write(mylink)
             f.flush()
             f.close()
             data['global_make_profile'] = mytmpfile
-            extra_text_files.append(mytmpfile)
 
         return data, critical, extra_text_files
 
