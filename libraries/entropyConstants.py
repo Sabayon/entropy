@@ -67,292 +67,294 @@ data = {
 }
 '''
 
-# Entropy SQL initialization Schema and data structure
-etpSQLInitDestroyAll = """
-DROP TABLE IF EXISTS baseinfo;
-DROP TABLE IF EXISTS extrainfo;
-DROP TABLE IF EXISTS content;
-DROP TABLE IF EXISTS contentreference;
-DROP TABLE IF EXISTS contenttypes;
-DROP TABLE IF EXISTS dependencies;
-DROP TABLE IF EXISTS dependenciesreference;
-DROP TABLE IF EXISTS provide;
-DROP TABLE IF EXISTS conflicts;
-DROP TABLE IF EXISTS neededlibs;
-DROP TABLE IF EXISTS libraries;
-DROP TABLE IF EXISTS mirrorlinks;
-DROP TABLE IF EXISTS sources;
-DROP TABLE IF EXISTS sourcesreference;
-DROP TABLE IF EXISTS useflags;
-DROP TABLE IF EXISTS useflagsreference;
-DROP TABLE IF EXISTS keywords;
-DROP TABLE IF EXISTS binkeywords;
-DROP TABLE IF EXISTS keywordsreference;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS licenses;
-DROP TABLE IF EXISTS flags;
-DROP TABLE IF EXISTS systempackages;
-DROP TABLE IF EXISTS configprotect;
-DROP TABLE IF EXISTS configprotectmask;
-DROP TABLE IF EXISTS configprotectreference;
-DROP TABLE IF EXISTS installedtable;
-DROP TABLE IF EXISTS dependstable;
-DROP TABLE IF EXISTS sizes;
-DROP TABLE IF EXISTS messages;
-DROP TABLE IF EXISTS counters;
-DROP TABLE IF EXISTS eclasses;
-DROP TABLE IF EXISTS eclassesreference;
-DROP TABLE IF EXISTS needed;
-DROP TABLE IF EXISTS neededreference;
-DROP TABLE IF EXISTS triggers;
-DROP TABLE IF EXISTS countersdata;
-DROP TABLE IF EXISTS injected;
-DROP TABLE IF EXISTS treeupdates;
-DROP TABLE IF EXISTS treeupdatesactions;
-DROP TABLE IF EXISTS library_breakages;
-DROP TABLE IF EXISTS licensedata;
-DROP TABLE IF EXISTS licenses_accepted;
-DROP TABLE IF EXISTS trashedcounters;
-DROP TABLE IF EXISTS entropy_misc_counters;
-DROP TABLE IF EXISTS categoriesdescription;
-DROP TABLE IF EXISTS packagesets;
-DROP TABLE IF EXISTS packagechangelogs;
-"""
+class EntropySQLSchema:
 
-etpSQLInit = """
+    def get_destroy_all(self):
+        return """
+            DROP TABLE IF EXISTS baseinfo;
+            DROP TABLE IF EXISTS extrainfo;
+            DROP TABLE IF EXISTS content;
+            DROP TABLE IF EXISTS contentreference;
+            DROP TABLE IF EXISTS contenttypes;
+            DROP TABLE IF EXISTS dependencies;
+            DROP TABLE IF EXISTS dependenciesreference;
+            DROP TABLE IF EXISTS provide;
+            DROP TABLE IF EXISTS conflicts;
+            DROP TABLE IF EXISTS neededlibs;
+            DROP TABLE IF EXISTS libraries;
+            DROP TABLE IF EXISTS mirrorlinks;
+            DROP TABLE IF EXISTS sources;
+            DROP TABLE IF EXISTS sourcesreference;
+            DROP TABLE IF EXISTS useflags;
+            DROP TABLE IF EXISTS useflagsreference;
+            DROP TABLE IF EXISTS keywords;
+            DROP TABLE IF EXISTS binkeywords;
+            DROP TABLE IF EXISTS keywordsreference;
+            DROP TABLE IF EXISTS categories;
+            DROP TABLE IF EXISTS licenses;
+            DROP TABLE IF EXISTS flags;
+            DROP TABLE IF EXISTS systempackages;
+            DROP TABLE IF EXISTS configprotect;
+            DROP TABLE IF EXISTS configprotectmask;
+            DROP TABLE IF EXISTS configprotectreference;
+            DROP TABLE IF EXISTS installedtable;
+            DROP TABLE IF EXISTS dependstable;
+            DROP TABLE IF EXISTS sizes;
+            DROP TABLE IF EXISTS messages;
+            DROP TABLE IF EXISTS counters;
+            DROP TABLE IF EXISTS eclasses;
+            DROP TABLE IF EXISTS eclassesreference;
+            DROP TABLE IF EXISTS needed;
+            DROP TABLE IF EXISTS neededreference;
+            DROP TABLE IF EXISTS triggers;
+            DROP TABLE IF EXISTS countersdata;
+            DROP TABLE IF EXISTS injected;
+            DROP TABLE IF EXISTS treeupdates;
+            DROP TABLE IF EXISTS treeupdatesactions;
+            DROP TABLE IF EXISTS library_breakages;
+            DROP TABLE IF EXISTS licensedata;
+            DROP TABLE IF EXISTS licenses_accepted;
+            DROP TABLE IF EXISTS trashedcounters;
+            DROP TABLE IF EXISTS entropy_misc_counters;
+            DROP TABLE IF EXISTS categoriesdescription;
+            DROP TABLE IF EXISTS packagesets;
+            DROP TABLE IF EXISTS packagechangelogs;
+        """
 
-CREATE TABLE baseinfo (
-    idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-    atom VARCHAR,
-    idcategory INTEGER,
-    name VARCHAR,
-    version VARCHAR,
-    versiontag VARCHAR,
-    revision INTEGER,
-    branch VARCHAR,
-    slot VARCHAR,
-    idlicense INTEGER,
-    etpapi INTEGER,
-    trigger INTEGER
-);
+    def get_init(self):
+        return """
+            CREATE TABLE baseinfo (
+                idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
+                atom VARCHAR,
+                idcategory INTEGER,
+                name VARCHAR,
+                version VARCHAR,
+                versiontag VARCHAR,
+                revision INTEGER,
+                branch VARCHAR,
+                slot VARCHAR,
+                idlicense INTEGER,
+                etpapi INTEGER,
+                trigger INTEGER
+            );
 
-CREATE TABLE extrainfo (
-    idpackage INTEGER PRIMARY KEY,
-    description VARCHAR,
-    homepage VARCHAR,
-    download VARCHAR,
-    size VARCHAR,
-    idflags INTEGER,
-    digest VARCHAR,
-    datecreation VARCHAR
-);
+            CREATE TABLE extrainfo (
+                idpackage INTEGER PRIMARY KEY,
+                description VARCHAR,
+                homepage VARCHAR,
+                download VARCHAR,
+                size VARCHAR,
+                idflags INTEGER,
+                digest VARCHAR,
+                datecreation VARCHAR
+            );
 
-CREATE TABLE content (
-    idpackage INTEGER,
-    file VARCHAR,
-    type VARCHAR
-);
+            CREATE TABLE content (
+                idpackage INTEGER,
+                file VARCHAR,
+                type VARCHAR
+            );
 
-CREATE TABLE provide (
-    idpackage INTEGER,
-    atom VARCHAR
-);
+            CREATE TABLE provide (
+                idpackage INTEGER,
+                atom VARCHAR
+            );
 
-CREATE TABLE dependencies (
-    idpackage INTEGER,
-    iddependency INTEGER,
-    type INTEGER
-);
+            CREATE TABLE dependencies (
+                idpackage INTEGER,
+                iddependency INTEGER,
+                type INTEGER
+            );
 
-CREATE TABLE dependenciesreference (
-    iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
-    dependency VARCHAR
-);
+            CREATE TABLE dependenciesreference (
+                iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
+                dependency VARCHAR
+            );
 
-CREATE TABLE dependstable (
-    iddependency INTEGER PRIMARY KEY,
-    idpackage INTEGER
-);
+            CREATE TABLE dependstable (
+                iddependency INTEGER PRIMARY KEY,
+                idpackage INTEGER
+            );
 
-CREATE TABLE conflicts (
-    idpackage INTEGER,
-    conflict VARCHAR
-);
+            CREATE TABLE conflicts (
+                idpackage INTEGER,
+                conflict VARCHAR
+            );
 
-CREATE TABLE mirrorlinks (
-    mirrorname VARCHAR,
-    mirrorlink VARCHAR
-);
+            CREATE TABLE mirrorlinks (
+                mirrorname VARCHAR,
+                mirrorlink VARCHAR
+            );
 
-CREATE TABLE sources (
-    idpackage INTEGER,
-    idsource INTEGER
-);
+            CREATE TABLE sources (
+                idpackage INTEGER,
+                idsource INTEGER
+            );
 
-CREATE TABLE sourcesreference (
-    idsource INTEGER PRIMARY KEY AUTOINCREMENT,
-    source VARCHAR
-);
+            CREATE TABLE sourcesreference (
+                idsource INTEGER PRIMARY KEY AUTOINCREMENT,
+                source VARCHAR
+            );
 
-CREATE TABLE useflags (
-    idpackage INTEGER,
-    idflag INTEGER
-);
+            CREATE TABLE useflags (
+                idpackage INTEGER,
+                idflag INTEGER
+            );
 
-CREATE TABLE useflagsreference (
-    idflag INTEGER PRIMARY KEY AUTOINCREMENT,
-    flagname VARCHAR
-);
+            CREATE TABLE useflagsreference (
+                idflag INTEGER PRIMARY KEY AUTOINCREMENT,
+                flagname VARCHAR
+            );
 
-CREATE TABLE keywords (
-    idpackage INTEGER,
-    idkeyword INTEGER
-);
+            CREATE TABLE keywords (
+                idpackage INTEGER,
+                idkeyword INTEGER
+            );
 
-CREATE TABLE keywordsreference (
-    idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
-    keywordname VARCHAR
-);
+            CREATE TABLE keywordsreference (
+                idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
+                keywordname VARCHAR
+            );
 
-CREATE TABLE categories (
-    idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
-    category VARCHAR
-);
+            CREATE TABLE categories (
+                idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
+                category VARCHAR
+            );
 
-CREATE TABLE licenses (
-    idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
-    license VARCHAR
-);
+            CREATE TABLE licenses (
+                idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
+                license VARCHAR
+            );
 
-CREATE TABLE flags (
-    idflags INTEGER PRIMARY KEY AUTOINCREMENT,
-    chost VARCHAR,
-    cflags VARCHAR,
-    cxxflags VARCHAR
-);
+            CREATE TABLE flags (
+                idflags INTEGER PRIMARY KEY AUTOINCREMENT,
+                chost VARCHAR,
+                cflags VARCHAR,
+                cxxflags VARCHAR
+            );
 
-CREATE TABLE configprotect (
-    idpackage INTEGER PRIMARY KEY,
-    idprotect INTEGER
-);
+            CREATE TABLE configprotect (
+                idpackage INTEGER PRIMARY KEY,
+                idprotect INTEGER
+            );
 
-CREATE TABLE configprotectmask (
-    idpackage INTEGER PRIMARY KEY,
-    idprotect INTEGER
-);
+            CREATE TABLE configprotectmask (
+                idpackage INTEGER PRIMARY KEY,
+                idprotect INTEGER
+            );
 
-CREATE TABLE configprotectreference (
-    idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
-    protect VARCHAR
-);
+            CREATE TABLE configprotectreference (
+                idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
+                protect VARCHAR
+            );
 
-CREATE TABLE systempackages (
-    idpackage INTEGER PRIMARY KEY
-);
+            CREATE TABLE systempackages (
+                idpackage INTEGER PRIMARY KEY
+            );
 
-CREATE TABLE injected (
-    idpackage INTEGER PRIMARY KEY
-);
+            CREATE TABLE injected (
+                idpackage INTEGER PRIMARY KEY
+            );
 
-CREATE TABLE installedtable (
-    idpackage INTEGER PRIMARY KEY,
-    repositoryname VARCHAR
-);
+            CREATE TABLE installedtable (
+                idpackage INTEGER PRIMARY KEY,
+                repositoryname VARCHAR
+            );
 
-CREATE TABLE sizes (
-    idpackage INTEGER PRIMARY KEY,
-    size INTEGER
-);
+            CREATE TABLE sizes (
+                idpackage INTEGER PRIMARY KEY,
+                size INTEGER
+            );
 
-CREATE TABLE messages (
-    idpackage INTEGER,
-    message VARCHAR
-);
+            CREATE TABLE messages (
+                idpackage INTEGER,
+                message VARCHAR
+            );
 
-CREATE TABLE counters (
-    counter INTEGER,
-    idpackage INTEGER,
-    branch VARCHAR,
-    PRIMARY KEY(idpackage,branch)
-);
+            CREATE TABLE counters (
+                counter INTEGER,
+                idpackage INTEGER,
+                branch VARCHAR,
+                PRIMARY KEY(idpackage,branch)
+            );
 
-CREATE TABLE trashedcounters (
-    counter INTEGER
-);
+            CREATE TABLE trashedcounters (
+                counter INTEGER
+            );
 
-CREATE TABLE eclasses (
-    idpackage INTEGER,
-    idclass INTEGER
-);
+            CREATE TABLE eclasses (
+                idpackage INTEGER,
+                idclass INTEGER
+            );
 
-CREATE TABLE eclassesreference (
-    idclass INTEGER PRIMARY KEY AUTOINCREMENT,
-    classname VARCHAR
-);
+            CREATE TABLE eclassesreference (
+                idclass INTEGER PRIMARY KEY AUTOINCREMENT,
+                classname VARCHAR
+            );
 
-CREATE TABLE needed (
-    idpackage INTEGER,
-    idneeded INTEGER,
-    elfclass INTEGER
-);
+            CREATE TABLE needed (
+                idpackage INTEGER,
+                idneeded INTEGER,
+                elfclass INTEGER
+            );
 
-CREATE TABLE neededreference (
-    idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
-    library VARCHAR
-);
+            CREATE TABLE neededreference (
+                idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
+                library VARCHAR
+            );
 
-CREATE TABLE treeupdates (
-    repository VARCHAR PRIMARY KEY,
-    digest VARCHAR
-);
+            CREATE TABLE treeupdates (
+                repository VARCHAR PRIMARY KEY,
+                digest VARCHAR
+            );
 
-CREATE TABLE treeupdatesactions (
-    idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
-    repository VARCHAR,
-    command VARCHAR,
-    branch VARCHAR,
-    date VARCHAR
-);
+            CREATE TABLE treeupdatesactions (
+                idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
+                repository VARCHAR,
+                command VARCHAR,
+                branch VARCHAR,
+                date VARCHAR
+            );
 
-CREATE TABLE licensedata (
-    licensename VARCHAR UNIQUE,
-    text BLOB,
-    compressed INTEGER
-);
+            CREATE TABLE licensedata (
+                licensename VARCHAR UNIQUE,
+                text BLOB,
+                compressed INTEGER
+            );
 
-CREATE TABLE licenses_accepted (
-    licensename VARCHAR UNIQUE
-);
+            CREATE TABLE licenses_accepted (
+                licensename VARCHAR UNIQUE
+            );
 
-CREATE TABLE triggers (
-    idpackage INTEGER PRIMARY KEY,
-    data BLOB
-);
+            CREATE TABLE triggers (
+                idpackage INTEGER PRIMARY KEY,
+                data BLOB
+            );
 
-CREATE TABLE entropy_misc_counters (
-    idtype INTEGER PRIMARY KEY,
-    counter INTEGER
-);
+            CREATE TABLE entropy_misc_counters (
+                idtype INTEGER PRIMARY KEY,
+                counter INTEGER
+            );
 
-CREATE TABLE categoriesdescription (
-    category VARCHAR,
-    locale VARCHAR,
-    description VARCHAR
-);
+            CREATE TABLE categoriesdescription (
+                category VARCHAR,
+                locale VARCHAR,
+                description VARCHAR
+            );
 
-CREATE TABLE packagesets (
-    setname VARCHAR,
-    dependency VARCHAR
-);
+            CREATE TABLE packagesets (
+                setname VARCHAR,
+                dependency VARCHAR
+            );
 
-CREATE TABLE packagechangelogs (
-    category VARCHAR,
-    name VARCHAR,
-    changelog BLOB,
-    PRIMARY KEY (category, name)
-);
+            CREATE TABLE packagechangelogs (
+                category VARCHAR,
+                name VARCHAR,
+                changelog BLOB,
+                PRIMARY KEY (category, name)
+            );
 
-"""
+        """
 
 # ETP_ARCH_CONST setup
 if os.uname()[4] == "x86_64":
@@ -513,8 +515,6 @@ def const_defaultSettings(rootdir):
             'mode': False,
         },
         'backed_up': {},
-        'sql_destroy': etpSQLInitDestroyAll,
-        'sql_init': etpSQLInit,
         'installdir': '/usr/lib/entropy', # entropy default installation directory
         'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
         'packagesbindir': ETP_DIR+ETP_REPODIR, # etpConst['packagesbindir'] --> repository where the packages will be stored
@@ -883,6 +883,8 @@ def const_extractClientRepositoryParameters(repostring):
     repopackages = [x.strip() for x in repopackages.split() if x.strip()]
     repopackages = [x for x in repopackages if (x.startswith('http://') or x.startswith('ftp://') or x.startswith('file://'))]
     for x in repopackages:
+        try: x = str(x)
+        except: continue
         mydata['plain_packages'].append(x)
         mydata['packages'].append(x+"/"+etpConst['product']+"/"+reponame)
 

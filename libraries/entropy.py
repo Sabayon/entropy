@@ -7991,18 +7991,13 @@ class RepoInterface:
             fetch_count = 0
             max_fetch_count = 5
 
-            error_caught = False
-            error_rc = None
-
             while 1:
 
                 # anti loop protection
                 if fetch_count > max_fetch_count:
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    error_caught = True
-                    error_rc = False
-                    break
+                    return False
 
                 fetch_count += 1
                 pkgdata = eapi3_interface.CmdInterface.get_package_information(
@@ -8026,8 +8021,7 @@ class RepoInterface:
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    error_caught = True
-                    break
+                    return None
                 elif isinstance(pkgdata,tuple):
                     mytxt = "%s: %s, %s. %s" % ( blue(_("Service status")), pkgdata[0], pkgdata[1], darkred("Error processing the command"),)
                     self.Entropy.updateProgress(
@@ -8036,8 +8030,7 @@ class RepoInterface:
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    error_caught = True
-                    break
+                    return None
 
                 try:
                     for idpackage in pkgdata:
@@ -8054,12 +8047,9 @@ class RepoInterface:
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
-                    error_caught = True
-                    break
+                    return None
 
                 break
-
-            if error_caught: return error_rc
 
         del added_segments
 
@@ -8910,7 +8900,7 @@ class RepoInterface:
             ),
             (
                 "rev",
-                etpConst['etpdatabasemaskfile'],
+                etpConst['etpdatabaserevisionfile'],
                 False,
                 "%s %s %s" % (
                     red(_("Downloading revision")),
@@ -9000,7 +8990,7 @@ class RepoInterface:
         def my_show_file_unpack(fp):
             self.Entropy.updateProgress(
                 "%s: %s" % (darkgreen(_("unpacked meta file")),brown(fp),),
-                header = blue(u"\t § ")
+                header = blue(u"\t  << ")
             )
 
         downloaded_by_unpack = set()
@@ -30027,6 +30017,7 @@ class ServerMirrorsInterface:
         extra_text_files = []
         data = {}
         data['database_revision_file'] = self.Entropy.get_local_database_revision_file(repo)
+        extra_text_files.append(data['database_revision_file'])
         critical.append(data['database_revision_file'])
 
         database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
@@ -30775,10 +30766,10 @@ class ServerMirrorsInterface:
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s" % (
-                    repo,
-                    crippled_uri,
-                    _("upload"),
-                    _("preparing to upload database to mirror"),
+                    blue(repo),
+                    red(crippled_uri),
+                    darkgreen(_("upload")),
+                    darkgreen(_("preparing to upload database to mirror")),
                 ),
                 importance = 1,
                 type = "info",
@@ -32418,13 +32409,15 @@ class EntropyDatabaseInterface:
     # never use this unless you know what you're doing
     def initializeDatabase(self):
         self.checkReadOnly()
-        self.cursor.executescript(etpConst['sql_destroy'])
-        self.cursor.executescript(etpConst['sql_init'])
+        my = EntropySQLSchema()
+        self.cursor.executescript(my.get_destroy_all())
+        self.cursor.executescript(my.get_init())
         self.databaseStructureUpdates()
         # set cache size
         self.setCacheSize(6000)
         self.setDefaultCacheSize(6000)
         self.commitChanges()
+        del my
 
     def checkReadOnly(self):
         if self.readOnly:
