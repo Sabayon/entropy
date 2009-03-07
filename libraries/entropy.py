@@ -30593,7 +30593,7 @@ class ServerMirrorsInterface:
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
             os.access(x,os.F_OK) and os.access(x,os.R_OK)]
-        not_found_file_list = ["%s\n" % (x,) for x in file_list if x not in found_file_list]
+        not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in file_list if x not in found_file_list]
         metafile_not_found_file = self.Entropy.get_local_database_metafiles_not_found_file(repo)
         f = open(metafile_not_found_file,"w")
         f.writelines(not_found_file_list)
