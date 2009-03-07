@@ -121,7 +121,7 @@ class const:
 
     CREDITS = (
            (('Spritz Package Manager - %s' % __spritz_version__),
-           ('Copyright 2008','Fabio Erculiani')),
+           ('Copyright 2007-2009','Fabio Erculiani')),
 
            (_("Programming:"),
            ("Fabio Erculiani",)),
