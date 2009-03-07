@@ -32,6 +32,7 @@ import threading
 import time
 import commands
 import shutil
+import tarfile
 
 def isRoot():
     if (etpConst['uid'] == 0):
@@ -651,7 +652,6 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
     if compressor not in ("bz2","gz",):
         raise AttributeError("invalid compressor specified")
 
-    import tarfile
     id_strings = {}
     tar = tarfile.open(dest_file,"w:%s" % (compressor,))
     try:
@@ -666,6 +666,55 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
                 tar.addfile(tarinfo, f)
     finally:
         tar.close()
+
+def universal_uncompress(compressed_file, dest_path, catch_empty = False):
+
+    try:
+        tar = tarfile.open(compressed_file,"r")
+    except tarfile.ReadError:
+        if catch_empty:
+            return True
+        return False
+    except EOFError:
+        return False
+
+    try:
+        def mymf(tarinfo):
+            if tarinfo.isdir():
+                # Extract directory with a safe mode, so that
+                # all files below can be extracted as well.
+                try: os.makedirs(os.path.join(dest_path.encode('utf-8'), tarinfo.name), 0777)
+                except EnvironmentError: pass
+                return tarinfo
+            tar.extract(tarinfo, dest_path.encode('utf-8'))
+            del tar.members[:]
+            return 0
+
+        def mycmp(a,b):
+            return cmp(a.name,b.name)
+
+        directories = sorted([x for x in map(mymf,tar) if type(x) != int], mycmp, reverse = True)
+
+        # Set correct owner, mtime and filemode on directories.
+        def mymf2(tarinfo):
+            epath = os.path.join(dest_path, tarinfo.name)
+            try:
+                tar.chown(tarinfo, epath)
+                tar.utime(tarinfo, epath)
+                tar.chmod(tarinfo, epath)
+            except tarfile.ExtractError:
+                if tar.errorlevel > 1:
+                    return False
+        done = map(mymf2,directories)
+        del done
+
+    except EOFError:
+        return False
+
+    finally:
+        tar.close()
+
+    return True
 
 def unpackGzip(gzipfilepath):
     import gzip
@@ -1935,7 +1984,6 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     if not os.path.isfile(filepath):
         raise exceptionTools.FileNotFound('FileNotFound: archive does not exist')
 
-    import tarfile
     try:
         tar = tarfile.open(filepath,"r")
     except tarfile.ReadError:
@@ -2391,7 +2439,6 @@ def writeNewBranch(branch):
 
 
 def isEntropyTbz2(tbz2file):
-    import tarfile
     if not os.path.exists(tbz2file):
         return False
     return tarfile.is_tarfile(tbz2file)
