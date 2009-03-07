@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 '''
     # DESCRIPTION:
     # Entropy Object Oriented Interface
@@ -7429,7 +7430,7 @@ class RepoInterface:
             "lock","mask","system_mask","dbdump", "conflicting_tagged",
             "dbdumpck","lic_whitelist","make.conf",
             "package.mask","package.unmask","package.keywords","profile.link",
-            "package.use","server.cert","ca.cert",
+            "package.use","server.cert","ca.cert","meta_file",
             "notice_board"
         )
         self.big_socket_timeout = 25
@@ -7569,6 +7570,7 @@ class RepoInterface:
         ca_cert_file = etpConst['etpdatabasecacertfile']
         server_cert_file = etpConst['etpdatabaseservercertfile']
         notice_board_filename = os.path.basename(etpRepositories[repo]['notice_board'])
+        meta_file = etpConst['etpdatabasemetafilesfile']
         ec_cm2 = None
         ec_cm3 = None
         ec_cm4 = None
@@ -7597,6 +7599,7 @@ class RepoInterface:
             'server.cert': ("%s/%s" % (repo_db,server_cert_file,),"%s/%s" % (repo_dbpath,server_cert_file,),),
             'ca.cert': ("%s/%s" % (repo_db,ca_cert_file,),"%s/%s" % (repo_dbpath,ca_cert_file,),),
             'notice_board': (etpRepositories[repo]['notice_board'],"%s/%s" % (repo_dbpath,notice_board_filename,),),
+            'meta_file': ("%s/%s" % (repo_db,meta_file,),"%s/%s" % (repo_dbpath,meta_file,),),
         }
 
         return mymap.get(item)
@@ -8825,7 +8828,26 @@ class RepoInterface:
 
     def do_standard_items_download(self, repo):
 
+        g_make_conf = os.path.basename(etpConst['spm']['global_make_conf'])
+        pkg_unmask = os.path.basename(etpConst['spm']['global_package_unmask'])
+        pkg_keywords = os.path.basename(etpConst['spm']['global_package_keywords'])
+        pkg_use = os.path.basename(etpConst['spm']['global_package_use'])
+        profile_link = etpConst['spm']['global_make_profile_link_name']
+        notice_board = os.path.basename(etpRepositories[repo]['local_notice_board'])
+
+        objects_to_unpack = ("meta_file",)
+
         download_items = [
+            (
+                "meta_file",
+                etpConst['etpdatabasemetafilesfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading repository metafile")),
+                    darkgreen(etpConst['etpdatabasemetafilesfile']),
+                    red("..."),
+                )
+            ),
             (
                 "ca.cert",
                 etpConst['etpdatabasecacertfile'],
@@ -8898,90 +8920,153 @@ class RepoInterface:
             ),
             (
                 "make.conf",
-                os.path.basename(etpConst['spm']['global_make_conf']),
+                g_make_conf,
                 True,
                 "%s %s %s" % (
                     red(_("Downloading SPM global configuration")),
-                    darkgreen(os.path.basename(etpConst['spm']['global_make_conf'])),
+                    darkgreen(g_make_conf),
                     red("..."),
                 )
             ),
             (
                 "package.unmask",
-                os.path.basename(etpConst['spm']['global_package_unmask']),
+                pkg_unmask,
                 True,
                 "%s %s %s" % (
                     red(_("Downloading SPM package unmasking configuration")),
-                    darkgreen(os.path.basename(etpConst['spm']['global_package_unmask'])),
+                    darkgreen(pkg_unmask),
                     red("..."),
                 )
             ),
             (
                 "package.keywords",
-                os.path.basename(etpConst['spm']['global_package_keywords']),
+                pkg_keywords,
                 True,
                 "%s %s %s" % (
                     red(_("Downloading SPM package keywording configuration")),
-                    darkgreen(os.path.basename(etpConst['spm']['global_package_keywords'])),
+                    darkgreen(pkg_keywords),
                     red("..."),
                 )
             ),
             (
                 "package.use",
-                os.path.basename(etpConst['spm']['global_package_use']),
+                pkg_use,
                 True,
                 "%s %s %s" % (
                     red(_("Downloading SPM package USE flags configuration")),
-                    darkgreen(os.path.basename(etpConst['spm']['global_package_use'])),
+                    darkgreen(pkg_use),
                     red("..."),
                 )
             ),
             (
                 "profile.link",
-                etpConst['spm']['global_make_profile_link_name'],
+                profile_link,
                 True,
                 "%s %s %s" % (
                     red(_("Downloading SPM Profile configuration")),
-                    darkgreen(etpConst['spm']['global_make_profile_link_name']),
+                    darkgreen(profile_link),
                     red("..."),
                 )
             ),
             (
                 "notice_board",
-                os.path.basename(etpRepositories[repo]['local_notice_board']),
+                notice_board,
                 True,
                 "%s %s %s" % (
                     red(_("Downloading Notice Board")),
-                    darkgreen(os.path.basename(etpRepositories[repo]['local_notice_board'])),
+                    darkgreen(notice_board),
                     red("..."),
                 )
             )
         ]
 
-        for item, myfile, ignorable, mytxt in download_items:
+        def my_show_info(txt):
             self.Entropy.updateProgress(
-                mytxt,
+                txt,
                 importance = 0,
                 type = "info",
                 header = "\t",
                 back = True
             )
-            mystatus = self.download_item(item, repo, disallow_redirect = True)
-            mytype = 'info'
-            if not mystatus:
-                if ignorable:
-                    message = "%s: %s." % (blue(myfile),red(_("not available, it's ok")))
-                else:
-                    mytype = 'warning'
-                    message = "%s: %s." % (blue(myfile),darkred(_("not available, not much ok!")))
-            else:
-                message = "%s: %s." % (blue(myfile),darkgreen(_("available, w00t!")))
+
+        def my_show_down_status(message, mytype):
             self.Entropy.updateProgress(
                 message,
                 importance = 0,
                 type = mytype,
                 header = "\t"
             )
+
+        def my_show_file_unpack(fp):
+            self.Entropy.updateProgress(
+                "%s: %s" % (darkgreen(_("unpacked meta file")),brown(fp),),
+                header = blue(u"\t § ")
+            )
+
+        downloaded_by_unpack = set()
+        for item, myfile, ignorable, mytxt in download_items:
+
+            # if it's been already downloaded, skip
+            if myfile in downloaded_by_unpack: continue
+
+            my_show_info(mytxt)
+            mystatus = self.download_item(item, repo, disallow_redirect = True)
+            mytype = 'info'
+
+            # download failed, is it critical?
+            if not mystatus:
+                if ignorable:
+                    message = "%s: %s." % (blue(myfile),red(_("not available, it's ok")))
+                else:
+                    mytype = 'warning'
+                    message = "%s: %s." % (blue(myfile),darkred(_("not available, not much ok!")))
+                my_show_down_status(message, mytype)
+                continue
+
+            myurl, mypath = self._construct_paths(item, repo, None)
+            message = "%s: %s." % (blue(myfile),darkgreen(_("available, w00t!")))
+            my_show_down_status(message, mytype)
+            if item not in objects_to_unpack: continue
+            if not (os.path.isfile(mypath) and os.access(mypath,os.R_OK)): continue
+
+            while 1:
+                tmpdir = os.path.join(os.path.dirname(mypath),"meta_unpack_%s" % (random.randint(1,10000),))
+                if not os.path.lexists(tmpdir): break
+            os.makedirs(tmpdir,0775)
+
+            repo_dir = etpRepositories[repo]['dbpath']
+            try:
+                done = self.entropyTools.universal_uncompress(mypath, tmpdir, catch_empty = True)
+                if not done: continue
+                myfiles_to_move = set(os.listdir(tmpdir))
+
+                # exclude files not available by default
+                files_not_found_file = etpConst['etpdatabasemetafilesnotfound']
+                if files_not_found_file in myfiles_to_move:
+                    myfiles_to_move.remove(files_not_found_file)
+                    try:
+                        with open(os.path.join(tmpdir,files_not_found_file),"r") as f:
+                            f_nf = [x.strip() for x in f.readlines()]
+                            downloaded_by_unpack |= set(f_nf)
+                    except IOError:
+                        pass
+
+                for myfile in sorted(myfiles_to_move):
+                    from_mypath = os.path.join(tmpdir,myfile)
+                    to_mypath = os.path.join(repo_dir,myfile)
+                    try:
+                        os.rename(from_mypath,to_mypath)
+                        downloaded_by_unpack.add(myfile)
+                        my_show_file_unpack(myfile)
+                    except OSError:
+                        continue
+
+            finally:
+
+                shutil.rmtree(tmpdir,True)
+                try: os.rmdir(tmpdir)
+                except OSError: pass
+
 
         mytxt = "%s: %s" % (
             red(_("Repository revision")),
@@ -17983,6 +18068,11 @@ class ServerInterface(Singleton,TextInterface):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemetafilesfile'])
+
+    def get_local_database_metafiles_not_found_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemetafilesnotfound'])
 
     def get_local_database_sets_dir(self, repo = None, branch = None):
         if repo == None:
@@ -30500,12 +30590,19 @@ class ServerMirrorsInterface:
             header = brown("    # ")
         )
 
-    def _create_metafiles_file(self, compressed_dest_path, file_list):
-        file_list = [x for x in file_list if os.path.isfile(x) and \
+    def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
+        found_file_list = [x for x in file_list if os.path.isfile(x) and \
             os.access(x,os.F_OK) and os.access(x,os.R_OK)]
+        not_found_file_list = ["%s\n" % (x,) for x in file_list if x not in found_file_list]
+        metafile_not_found_file = self.Entropy.get_local_database_metafiles_not_found_file(repo)
+        f = open(metafile_not_found_file,"w")
+        f.writelines(not_found_file_list)
+        f.flush()
+        f.close()
+        found_file_list.append(metafile_not_found_file)
         if os.path.isfile(compressed_dest_path):
             os.remove(compressed_dest_path)
-        self.entropyTools.compress_files(compressed_dest_path, file_list)
+        self.entropyTools.compress_files(compressed_dest_path, found_file_list)
 
     def create_mirror_directories(self, ftp_connection, path_to_create):
         bdir = ""
@@ -30711,7 +30808,7 @@ class ServerMirrorsInterface:
             self.shrink_database_and_close(repo)
 
             # EAPI 3
-            self._create_metafiles_file(upload_data['metafiles_path'], text_files)
+            self._create_metafiles_file(upload_data['metafiles_path'], text_files, repo)
             self._show_eapi3_upload_messages(crippled_uri, database_path, repo)
 
             # EAPI 2

@@ -553,6 +553,7 @@ def const_defaultSettings(rootdir):
         'etpdatabaserevisionfile': ETP_DBFILE+".revision", # the local/remote database revision file
         'etpdatabasemissingdepsblfile': ETP_DBFILE+".missing_deps_blacklist", # missing dependencies black list file
         'etpdatabasemetafilesfile': ETP_DBFILE+".meta", # compressed file that contains all the "meta" files in a repository dir
+        'etpdatabasemetafilesnotfound': ETP_DBFILE+".meta_notfound", # file that contains a list of the "meta" files not available in the repository
         'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
         'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",
         'etpdatabasedumphashfilegzip': ETP_DBFILE+".dump.gz.md5",
@@ -1512,7 +1513,7 @@ def const_set_chmod(myfile, chmod):
         os.chmod(myfile,chmod)
 
 def const_get_entropy_gid():
-    group_file = os.path.join(etpConst['systemroot'],'/etc/group')
+    group_file = etpConst['systemroot']+'/etc/group'
     if not os.path.isfile(group_file):
         raise KeyError
     f = open(group_file,"r")
@@ -1526,7 +1527,7 @@ def const_get_entropy_gid():
     raise KeyError
 
 def const_add_entropy_group():
-    group_file = os.path.join(etpConst['systemroot'],'/etc/group')
+    group_file = etpConst['systemroot']+'/etc/group'
     if not os.path.isfile(group_file):
         raise KeyError
     ids = set()
@@ -1540,10 +1541,10 @@ def const_add_entropy_group():
             ids.add(myid)
     if ids:
         # starting from 1000, get the first free
+        new_id = 1000
         while 1:
-            new_id = 1000
-            if new_id not in ids:
-                break
+            new_id += 1
+            if new_id not in ids: break
     else:
         new_id = 10000
 
