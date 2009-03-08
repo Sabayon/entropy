@@ -13,9 +13,12 @@ if "--ssl" in sys.argv:
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
-import entropyTools, exceptionTools
-from entropy import RepositorySocketServerInterface, phpBB3AuthInterface, phpbb3Authenticator, phpbb3Commands, DistributionUGCCommands
-
+import entropyTools
+from entropy.services.repository.interfaces import Server as RepositorySocketServerInterface
+from entropy.services.auth_interfaces import phpBB3Auth as phpBB3AuthInterface
+from entropy.services.authenticators import phpBB3 as phpbb3Authenticator
+from entropy.services.commands import phpBB3 as phpbb3Commands
+from entropy.services.ugc.commands import UGC as DistributionUGCCommands
 
 connection_data = {
     'hostname': 'localhost',

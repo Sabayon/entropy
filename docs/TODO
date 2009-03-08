@@ -2,7 +2,7 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  - Entropy codebase refactoring (camelCase to underscore)
+  - Entropy codebase => camelCase to underscore
   - Spritz codebase refactoring
   - Unit Test module
   - Move Trigger.trigger_configure_boot_grub & friends to ebuild (reduce size of Trigger)

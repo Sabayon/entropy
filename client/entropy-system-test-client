@@ -1,6 +1,9 @@
 import sys
 sys.path.insert(0,'../libraries')
-from entropy import SystemManagerClientInterface, SystemManagerRepositoryClientCommands, SystemManagerRepositoryMethodsInterface, EquoInterface
+from entropy.client.services.system.interfaces import Client as SystemManagerClientInterface
+from entropy.client.services.system.commands import Repository as SystemManagerRepositoryClientCommands
+from entropy.client.services.system.methods import Repository as SystemManagerRepositoryMethodsInterface
+from entropy.client.interfaces import Client as EquoInterface
 from entropyConstants import *
 Entropy = EquoInterface()
 cli_srv = SystemManagerClientInterface(

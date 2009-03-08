@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0,'../libraries')
-from entropy import SystemSocketClientInterface, RepositorySocketClientCommands, EquoInterface
+from entropy.client.services.system.interfaces import Client as SystemSocketClientInterface
+from entropy.client.services.ugc.commands import Client as RepositorySocketClientCommands
+from entropy.client.interfaces import Client as EquoInterface
 from entropyConstants import *
 repository = 'sabayonlinux.org'
 Entropy = EquoInterface()

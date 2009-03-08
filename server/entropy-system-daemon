@@ -21,8 +21,11 @@ if "--port" in sys.argv:
         pass
 
 from entropyConstants import *
-import entropyTools, exceptionTools
-from entropy import SystemManagerServerInterface, SystemManagerExecutorServerRepositoryInterface, SystemManagerRepositoryCommands, ServerInterface
+import entropyTools
+from entropy.services.system.interfaces import Server as SystemManagerServerInterface
+from entropy.services.system.executors import Base as SystemManagerExecutorServerRepositoryInterface
+from entropy.services.system.commands import Repository as SystemManagerRepositoryCommands
+from entropy.server.interfaces import Server as ServerInterface
 etpConst['community']['mode'] = True
 etpConst['socket_service']['session_ttl'] = 300
 
