@@ -1,10 +1,6 @@
 ../libraries/dumpTools.py
 ../libraries/entropyConstants.py
-../libraries/entropy_i18n.py
-../libraries/entropy.py
 ../libraries/entropyTools.py
-../libraries/etpXpak.py
-../libraries/exceptionTools.py
 ../libraries/outputTools.py
 ../client/equo.py
 ../client/text_cache.py
@@ -26,6 +22,7 @@
 ../spritz/src/filters.py
 ../spritz/src/misc.py
 ../spritz/src/packages.py
+../spritz/src/repo-manager-client.py
 ../spritz/src/spritz.py
 ../spritz/src/spritz_setup.py
 ../spritz/src/views.py
