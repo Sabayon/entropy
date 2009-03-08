@@ -134,18 +134,6 @@ etpCache = {
     'ugc_srv_cache': 'ugc/ugc_srv_cache'
 }
 
-# ahahaha
-etpExitMessages = {
-    0: _("You should run equo --help"),
-    1: _("You didn't run equo --help, did you?"),
-    2: _("Did you even read equo --help??"),
-    3: _("I give up. Run that equo --help !!!!!!!"),
-    4: _("OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"),
-    5: _("Illiteracy is a huge problem in this world"),
-    6: _("Ok i give up, you are hopeless"),
-    7: _("Go to hell."),
-}
-
 # Client packages/database repositories
 etpRepositories = {}
 etpRepositoriesExcluded = {}
