@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Entropy Package Manager client
 
-    Copyright (C) 2007-2008 Fabio Erculiani
+    Copyright (C) 2007-2009 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -402,16 +402,16 @@ def writeerrorstatus(status):
 
 def reset_cache():
     try:
-        from entropy import EquoInterface
-        Equo = EquoInterface(noclientdb = 2)
+        from entropy.client.interfaces import Client
+        Equo = Client(noclientdb = 2)
         Equo.purge_cache()
         Equo.destroy()
     except:
         pass
 
 def load_conf_cache():
-    from entropy import EquoInterface
-    Equo = EquoInterface(noclientdb = 2)
+    from entropy.client.interfaces import Client
+    Equo = Client(noclientdb = 2)
     if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
     try:
         while 1:

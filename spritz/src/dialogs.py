@@ -24,10 +24,7 @@ from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities, fakeoutfile, fakeinfile
 from entropy.i18n import _,_LOCALE
 import packages
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
+from entropy.exceptions import *
 from entropyConstants import *
 
 
@@ -62,7 +59,7 @@ class NoticeBoardWindow(MenuSkel):
 
     def __init__( self, window, entropy ):
 
-        from entropy import rssFeed
+        from entropy.misc import rssFeed
         self.rssFeed = rssFeed
         self.Entropy = entropy
         self.window = window
@@ -422,9 +419,9 @@ class RepositoryManagerMenu(MenuSkel):
         self.data_tree_selection_mode = None
         self.DataViewVbox = self.sm_ui.dataViewVbox
 
-        from entropy import SystemManagerClientInterface, \
-            SystemManagerRepositoryClientCommands, \
-            SystemManagerRepositoryMethodsInterface
+        from entropy.client.services.system.interfaces import Client as SystemManagerClientInterface
+        from entropy.client.services.system.commands import Repository as SystemManagerRepositoryClientCommands
+        from entropy.client.services.system.methods import Repository as SystemManagerRepositoryMethodsInterface
         self.Service = SystemManagerClientInterface(
             self.Entropy,
             MethodsInterface = SystemManagerRepositoryMethodsInterface,

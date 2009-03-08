@@ -3,7 +3,7 @@
     # DESCRIPTION:
     # Equo integrity handling library
 
-    Copyright (C) 2007-2008 Fabio Erculiani
+    Copyright (C) 2007-2009 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,12 +27,9 @@
 
 from entropyConstants import *
 from outputTools import *
-from entropy import EquoInterface
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
-Equo = EquoInterface(noclientdb = True)
+from entropy.client.interfaces import Client
+from entropy.exceptions import *
+Equo = Client(noclientdb = True)
 from entropy.i18n import _
 
 def test_spm():
@@ -695,7 +692,7 @@ def pythonUpdater():
     if len(mydirs) <= 1:
         print_info(brown(" @@ ")+blue(_("Your Python installation seems fine.")))
         return 0
-    mydirs.sort()
+    mydirs = sorted(mydirs)
     print_info(brown(" @@ ")+blue(_("Multiple Python directories found:")))
     for pdir in mydirs:
         print_info(red("    # ")+blue("/usr/lib/%s" % (pdir,) ))

@@ -24,7 +24,8 @@ from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, input
 
 # Entropy Imports
 from entropyConstants import *
-from entropy import EquoInterface, urlFetcher
+from entropy.client.interfaces import Client as EquoInterface
+from entropy.transceivers import urlFetcher
 from entropy.i18n import _
 
 '''

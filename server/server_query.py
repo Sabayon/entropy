@@ -23,7 +23,7 @@
 from outputTools import *
 from entropyConstants import *
 import text_query
-from entropy import ServerInterface
+from entropy.server.interfaces import Server
 from entropy.i18n import _
 
 def query(myopts):
@@ -36,7 +36,7 @@ def query(myopts):
         return 10
 
     rc = 0
-    Entropy = ServerInterface()
+    Entropy = Server()
     dbconn = Entropy.openServerDatabase(just_reading = True)
 
     if cmd == "search":

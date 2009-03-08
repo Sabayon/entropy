@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-    Copyright (C) 2007-2008 Fabio Erculiani
+    Copyright (C) 2007-2009 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -19,9 +19,9 @@
 
 from entropyConstants import *
 from outputTools import *
-from entropy import EquoInterface
+from entropy.client.interfaces import Client
 from entropy.i18n import _
-Equo = EquoInterface()
+Equo = Client()
 Equo.UGC.show_progress = True
 
 

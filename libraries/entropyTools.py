@@ -2445,10 +2445,10 @@ def isEntropyTbz2(tbz2file):
 
 def appendXpak(tbz2file, atom):
     import etpXpak
-    from entropy import SpmInterface
-    SpmIntf = SpmInterface(None)
-    Spm = SpmIntf.intf
-    dbdir = Spm.get_vdb_path()+"/"+atom+"/"
+    from entropy.spm import Spm
+    SpmIntf = Spm(None)
+    spm = SpmIntf.intf
+    dbdir = spm.get_vdb_path()+"/"+atom+"/"
     if os.path.isdir(dbdir):
         tbz2 = etpXpak.tbz2(tbz2file)
         tbz2.recompose(dbdir)

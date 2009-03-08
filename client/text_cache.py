@@ -20,13 +20,13 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from entropy import EquoInterface
+from entropy.client.interfaces import Client
 def cache(options):
     rc = 0
     if len(options) < 1:
         return -10
 
-    Equo = EquoInterface(noclientdb = True)
+    Equo = Client(noclientdb = True)
     if options[0] == "clean":
         Equo.purge_cache()
     elif options[0] == "generate":

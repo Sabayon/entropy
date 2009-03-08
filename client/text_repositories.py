@@ -31,8 +31,10 @@ try:
     from entropy.exceptions import *
 except ImportError:
     from exceptionTools import *
-from entropy import EquoInterface, rssFeed
-Equo = EquoInterface(noclientdb = True)
+
+from entropy.client.interfaces import Client
+from entropy.misc import rssFeed
+Equo = Client(noclientdb = True)
 from entropy.i18n import _
 
 def repositories(options):

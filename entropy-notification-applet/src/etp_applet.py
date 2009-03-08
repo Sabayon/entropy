@@ -37,7 +37,10 @@ try:
 except ImportError:
     from exceptionTools import *
 import entropyTools
-from entropy import EquoInterface, RepoInterface, urlFetcher
+from entropy.client.interfaces import Client as EquoInterface
+from entropy.client.interfaces import Repository as RepoInterface
+from entropy.transceivers import urlFetcher
+
 from entropy.i18n import _
 
 class Entropy(EquoInterface):
