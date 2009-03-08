@@ -25,7 +25,8 @@ import subprocess
 import time
 import shutil
 from entropy.core import Singleton
-from outputTools import TextInterface, brown, blue, bold, darkgreen, darkblue, red, purple, darkred
+# print_info, print_error, print_warning for Python-based triggers
+from outputTools import TextInterface, brown, blue, bold, darkgreen, darkblue, red, purple, darkred, print_info, print_error, print_warning
 from entropyConstants import *
 from entropy.exceptions import *
 from entropy.i18n import _

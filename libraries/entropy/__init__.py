@@ -20,14 +20,6 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from __future__ import with_statement
-import shutil, urllib2, time, subprocess
-from entropyConstants import *
-# print_* for python triggers
-from outputTools import TextInterface, red, brown, blue, green, purple, darkgreen, \
-    darkred, bold, darkblue, print_info, print_error, print_warning
-from entropy.i18n import _
-
 # Imports kept for compatibility
 # WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 # !!! Will be removed after 10-10-2009 !!!
