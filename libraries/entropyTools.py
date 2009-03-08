@@ -775,14 +775,14 @@ def readXpak(tbz2file):
 
 def unpackXpak(xpakfile, tmpdir = None):
     try:
-        import etpXpak
+        import entropy.xpak as xpak
         if tmpdir is None:
             tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(xpakfile)[:-5]+"/"
         if os.path.isdir(tmpdir):
             shutil.rmtree(tmpdir,True)
         os.makedirs(tmpdir)
-        xpakdata = etpXpak.getboth(xpakfile)
-        etpXpak.xpand(xpakdata,tmpdir)
+        xpakdata = xpak.getboth(xpakfile)
+        xpak.xpand(xpakdata,tmpdir)
         del xpakdata
         try:
             os.remove(xpakfile)
@@ -2447,13 +2447,13 @@ def isEntropyTbz2(tbz2file):
     return tarfile.is_tarfile(tbz2file)
 
 def appendXpak(tbz2file, atom):
-    import etpXpak
+    import entropy.xpak as xpak
     from entropy.spm import Spm
     SpmIntf = Spm(None)
     spm = SpmIntf.intf
     dbdir = spm.get_vdb_path()+"/"+atom+"/"
     if os.path.isdir(dbdir):
-        tbz2 = etpXpak.tbz2(tbz2file)
+        tbz2 = xpak.tbz2(tbz2file)
         tbz2.recompose(dbdir)
     return tbz2file
 

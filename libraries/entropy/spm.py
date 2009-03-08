@@ -534,8 +534,8 @@ class PortagePlugin:
         tar.close()
 
         # appending xpak informations
-        import etpXpak
-        tbz2 = etpXpak.tbz2(dirpath)
+        import entropy.xpak as xpak
+        tbz2 = xpak.tbz2(dirpath)
         tbz2.recompose(dbdir)
 
         dblnk.unlockdb()

@@ -3743,7 +3743,7 @@ class Client(Singleton,TextInterface):
 
         # appending xpak metadata
         if etpConst['gentoo-compat']:
-            import etpXpak
+            import entropy.xpak as xpak
             Spm = self.Spm()
 
             gentoo_name = self.entropyTools.remove_tag(pkgname)
@@ -3753,7 +3753,7 @@ class Client(Singleton,TextInterface):
             else:
                 dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
             if os.path.isdir(dbdir):
-                tbz2 = etpXpak.tbz2(dirpath)
+                tbz2 = xpak.tbz2(dirpath)
                 tbz2.recompose(dbdir)
 
         if edb:

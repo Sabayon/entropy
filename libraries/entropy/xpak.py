@@ -16,7 +16,7 @@
 # (integer) == encodeint(integer)  ===> 4 characters (big-endian copy)
 # '+' means concatenate the fields ===> All chunks are strings
 
-import os,shutil,errno
+import os, shutil, errno
 from stat import *
 
 def addtolist(mylist,curdir):
