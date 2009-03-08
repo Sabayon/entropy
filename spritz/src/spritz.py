@@ -617,10 +617,12 @@ class SpritzApplication(Controller):
         self.ad_url = 'http://www.silkbit.com'
         self.ui.bannerEventBox.show_all()
         self.adTask = entropyTools.TimeScheduled(60, self.spawnAdRotation)
+        self.adTask.set_delay_before(True)
         self.adTask.start()
 
     def setupUgc(self):
-        self.ugcTask = entropyTools.TimeScheduled(300, self.spawnUgcUpdate)
+        self.ugcTask = entropyTools.TimeScheduled(30, self.spawnUgcUpdate)
+        self.ugcTask.set_delay_before(True)
         if "--nougc" not in sys.argv:
             self.ugcTask.start()
 
@@ -693,6 +695,7 @@ class SpritzApplication(Controller):
             break
 
     def spawnUgcUpdate(self):
+        self.ugcTask.set_delay(300)
         if self.do_debug: print "entering UGC"
         try:
             self.ugc_update()
@@ -2762,6 +2765,7 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
+        entropyTools.kill_threads()
         mainApp.quit()
     except SystemExit:
         print "Quit by User (SystemExit)"
@@ -2777,7 +2781,10 @@ if __name__ == "__main__":
             pass
     except: # catch other exception and write it to the logger.
         entropyTools.kill_threads()
-        mainApp.quit(sysexit = False)
+        try:
+            mainApp.quit(sysexit = False)
+        except NameError:
+            pass
         my = ExceptionDialog()
         my.show()
 

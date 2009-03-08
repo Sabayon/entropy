@@ -76,19 +76,28 @@ if do_ssl:
 task = entropyTools.parallelTask(run_srv, srv)
 task.setName('repodaemon')
 task.start()
+task2 = None
 if srv_ssl != None:
-    task = entropyTools.parallelTask(run_srv, srv_ssl)
-    task.setName('repodaemon_ssl')
-    task.start()
+    task2 = entropyTools.parallelTask(run_srv, srv_ssl)
+    task2.setName('repodaemon_ssl')
+    task2.start()
+
+run_map = {
+    "repodaemon": srv,
+    "repodaemon_ssl": srv_ssl,
+}
+t_map = {
+    "repodaemon": task,
+    "repodaemon_ssl": task2,
+}
 
 while 1:
     try:
-        threads = entropyTools.threading.enumerate()
-        for t in threads:
-            if t.getName() in ["repodaemon","repodaemon_ssl"]:
-                func = t.get_function()
-                func.killall()
-                t.join()
+        time.sleep(1)
     except (KeyboardInterrupt, SystemExit,):
-        const_kill_threads()
-    break
+        for obj in run_map.values():
+            obj.killall()
+        for t in t_map.values():
+            t.join()
+        break
+raise SystemExit(0)
