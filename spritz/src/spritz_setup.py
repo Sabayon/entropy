@@ -20,7 +20,7 @@
 import os, sys
 import entropyTools
 from entropyConstants import *
-from entropy_i18n import _
+from entropy.i18n import _
 
 class const:
 

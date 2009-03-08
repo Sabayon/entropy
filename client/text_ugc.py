@@ -20,7 +20,7 @@
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
-from entropy_i18n import _
+from entropy.i18n import _
 Equo = EquoInterface()
 Equo.UGC.show_progress = True
 

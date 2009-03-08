@@ -30,7 +30,7 @@ sys.path.insert(5,'/usr/lib/entropy/server')
 from outputTools import *
 from entropyConstants import *
 import entropyTools
-from entropy_i18n import _
+from entropy.i18n import _
 
 myopts = [
     None,

@@ -26,13 +26,13 @@ import stat
 import errno
 from outputTools import *
 from entropyConstants import *
-import exceptionTools
 import re
 import threading
 import time
 import commands
 import shutil
 import tarfile
+from entropy.exceptions import *
 
 def isRoot():
     if (etpConst['uid'] == 0):
@@ -268,7 +268,7 @@ def is_supported_image_file(path):
 def add_proxy_opener(module, data):
     import types
     if type(module) != types.ModuleType: # FIXME: check if it's urllib2
-        raise exceptionTools.InvalidDataType("InvalidDataType: not a module")
+        raise InvalidDataType("InvalidDataType: not a module")
     if not data:
         return
 
@@ -520,7 +520,7 @@ def md5sum(filepath):
 
 def md5sum_directory(directory, get_obj = False):
     if not os.path.isdir(directory):
-        raise exceptionTools.DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
+        raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
     import hashlib
     m = hashlib.md5()
@@ -1423,21 +1423,21 @@ def dep_getusedeps(depend):
     while( open_bracket != -1 ):
         bracket_count += 1
         if bracket_count > 1:
-            raise exceptionTools.InvalidAtom("USE Dependency with more " + \
+            raise InvalidAtom("USE Dependency with more " + \
                 "than one set of brackets: %s" % (depend,))
         close_bracket = depend.find(']', open_bracket )
         if close_bracket == -1:
-            raise exceptionTools.InvalidAtom("USE Dependency with no closing bracket: %s" % depend )
+            raise InvalidAtom("USE Dependency with no closing bracket: %s" % depend )
         use = depend[open_bracket + 1: close_bracket]
         # foo[1:1] may return '' instead of None, we don't want '' in the result
         if not use:
-            raise exceptionTools.InvalidAtom("USE Dependency with " + \
+            raise InvalidAtom("USE Dependency with " + \
                 "no use flag ([]): %s" % depend )
         if not comma_separated:
             comma_separated = "," in use
 
         if comma_separated and bracket_count > 1:
-            raise exceptionTools.InvalidAtom("USE Dependency contains a mixture of " + \
+            raise InvalidAtom("USE Dependency contains a mixture of " + \
                 "comma and bracket separators: %s" % depend )
 
         if comma_separated:
@@ -1445,7 +1445,7 @@ def dep_getusedeps(depend):
                 if x:
                     use_list.append(x)
                 else:
-                    raise exceptionTools.InvalidAtom("USE Dependency with no use " + \
+                    raise InvalidAtom("USE Dependency with no use " + \
                             "flag next to comma: %s" % depend )
         else:
             use_list.append(use)
@@ -1691,7 +1691,7 @@ def compareVersions(ver1, ver2):
 '''
 def entropyCompareVersions(listA,listB):
     if len(listA) != 3 or len(listB) != 3:
-        raise exceptionTools.InvalidDataType("InvalidDataType: listA or listB are not properly formatted.")
+        raise InvalidDataType("InvalidDataType: listA or listB are not properly formatted.")
 
     # if both are tagged, check tag first
     rc = 0
@@ -1982,7 +1982,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
     if extractPath == None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
-        raise exceptionTools.FileNotFound('FileNotFound: archive does not exist')
+        raise FileNotFound('FileNotFound: archive does not exist')
 
     try:
         tar = tarfile.open(filepath,"r")
@@ -2519,7 +2519,7 @@ def read_elf_dynamic_libraries(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
-            raise exceptionTools.FileNotFound('FileNotFound: no readelf')
+            raise FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     return set([x.strip().split()[-1][1:-1] for x in commands.getoutput('/usr/bin/readelf -d %s' % (elf_file,)).split("\n") if (x.find("(NEEDED)") != -1)])
 
@@ -2527,7 +2527,7 @@ def read_elf_broken_symbols(elf_file):
     global ldd_avail_check
     if not ldd_avail_check:
         if not os.access(etpConst['systemroot']+"/usr/bin/ldd",os.X_OK):
-            raise exceptionTools.FileNotFound('FileNotFound: no ldd')
+            raise FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in commands.getoutput('/usr/bin/ldd -r %s' % (elf_file,)).split("\n") if (x.find("undefined symbol:") != -1)])
 
@@ -2537,7 +2537,7 @@ def read_elf_linker_paths(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
-            raise exceptionTools.FileNotFound('FileNotFound: no readelf')
+            raise FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     data = [x.strip().split()[-1][1:-1].split(":") for x in commands.getoutput('readelf -d %s' % (elf_file,)).split("\n") if not ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
     mypaths = []

@@ -1,10 +1,9 @@
-#!/usr/bin/python
 '''
     # DESCRIPTION:
     # Entropy exceptions class
 
-    Copyright (C) 2007-2008 Fabio Erculiani
-    
+    Copyright (C) 2007-2009 Fabio Erculiani
+
     structure inspired from portage_exception.py
     Copyright 1998-2004 Gentoo Foundation
     # $Id: portage_exception.py 6885 2007-06-20 05:45:31Z zmedico $

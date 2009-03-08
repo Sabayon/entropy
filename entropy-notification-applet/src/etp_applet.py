@@ -32,9 +32,13 @@ import etp_applet_config
 
 # Entropy imports
 from entropyConstants import *
-import exceptionTools, entropyTools
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
+import entropyTools
 from entropy import EquoInterface, RepoInterface, urlFetcher
-from entropy_i18n import _
+from entropy.i18n import _
 
 class Entropy(EquoInterface):
 
@@ -89,11 +93,11 @@ class GuiUrlFetcher(urlFetcher):
         self.progress = progress
 
     def updateProgress(self):
-        self.gather = self.downloadedsize
+        self.gather = self.__downloadedsize
         message = "Fetching data %s/%s kB @ %s" % (
-                                        str(round(float(self.downloadedsize)/1024,1)),
-                                        str(round(self.remotesize,1)),
-                                        str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                        str(round(float(self.__downloadedsize)/1024,1)),
+                                        str(round(self.__remotesize,1)),
+                                        str(self.entropyTools.bytesIntoHuman(self.__datatransfer))+"/sec",
                                     )
         self.progress(message)
 
@@ -102,7 +106,7 @@ class EntropyApplet:
     def set_state(self, new_state, use_busy_icon = 0):
 
         if not new_state in etp_applet_config.APPLET_STATES:
-            raise exceptionTools.IncorrectParameter("Error: invalid state %s" % new_state)
+            raise IncorrectParameter("Error: invalid state %s" % new_state)
 
         def _set_state(new_state, use_busy_icon):
             self.status_icon.set_blinking(False)
@@ -407,9 +411,9 @@ class EntropyApplet:
 
         try:
             repoConn = self.Entropy.Repositories(noEquoCheck = True, fetchSecurity = False)
-        except exceptionTools.MissingParameter:
+        except MissingParameter:
             return repos,1 # no repositories specified
-        except exceptionTools.OnlineMirrorError:
+        except OnlineMirrorError:
             return repos,2 # not connected ??
         except Exception, e:
             return repos,str(e) # unknown error
@@ -487,11 +491,11 @@ class EntropyApplet:
                 try:
                     repoConn = self.Entropy.Repositories(repos, fetchSecurity = False, noEquoCheck = True)
                     if self.debug: print "run_refresh: repository interface loaded"
-                except exceptionTools.MissingParameter, e:
+                except MissingParameter, e:
                     self.last_error = "%s: %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)
                     self.error_threshold += 1
                     if self.debug: print "run_refresh: MissingParameter exception, error: %s" % (e,)
-                except exceptionTools.OnlineMirrorError, e:
+                except OnlineMirrorError, e:
                     self.last_error = _("Repository Network Error")
                     self.last_error_is_network_error = 1
                     if self.debug: print "run_refresh: OnlineMirrorError exception, error: %s" % (e,)

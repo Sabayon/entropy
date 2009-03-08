@@ -25,15 +25,9 @@ import shutil
 import commands
 from entropyConstants import *
 from outputTools import *
-import exceptionTools
 from entropy import EquoInterface
 Equo = EquoInterface() # client db must be available, it is for a reason!
-from entropy_i18n import _
-
-# test if diff is installed
-difftest = Equo.entropyTools.spawnCommand("diff -v", redirect = "&> /dev/null")
-if (difftest):
-    raise exceptionTools.FileNotFound("FileNotFound: %s" % (_("can't find diff"),) )
+from entropy.i18n import _
 
 ########################################################
 ####

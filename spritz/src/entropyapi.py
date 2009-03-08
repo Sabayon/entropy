@@ -24,9 +24,8 @@ from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, input
 
 # Entropy Imports
 from entropyConstants import *
-import exceptionTools
 from entropy import EquoInterface, urlFetcher
-from entropy_i18n import _
+from entropy.i18n import _
 
 '''
 
@@ -318,22 +317,33 @@ class GuiUrlFetcher(urlFetcher):
 
     def connect_to_gui(self, progress):
         self.progress = progress
+        self.__average = 0
+        self.__downloadedsize = 0
+        self.__remotesize = 0
+        self.__datatransfer = 0
 
-    # reimplementing updateProgress
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__average = average
+        self.__downloadedsize = downloaded_size
+        self.__remotesize = total_size
+        self.__datatransfer = data_transfer
+
     def updateProgress(self):
 
         if self.progress == None: return
 
-        myavg = abs(int(round(float(self.average),1)))
+        myavg = abs(int(round(float(self.__average),1)))
         if abs((myavg - self.gui_last_avg)) < 1: return
 
         if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
-            self.progress.set_progress( round(float(self.average)/100,1), str(myavg)+"%" )
+            self.progress.set_progress( round(float(self.__average)/100,1), str(myavg)+"%" )
             self.progress.set_extraLabel("%s/%s kB @ %s" % (
-                                            str(round(float(self.downloadedsize)/1024,1)),
-                                            str(round(self.remotesize,1)),
-                                            str(self.entropyTools.bytesIntoHuman(self.datatransfer))+"/sec",
+                                            str(round(float(self.__downloadedsize)/1024,1)),
+                                            str(round(self.__remotesize,1)),
+                                            str(self.entropyTools.bytesIntoHuman(self.__datatransfer))+"/sec",
                                         )
             )
             self.gui_last_avg = myavg

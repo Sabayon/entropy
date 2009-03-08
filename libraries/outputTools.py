@@ -25,7 +25,7 @@
 import sys, os
 import curses
 from entropyConstants import etpUi
-from entropy_i18n import _
+from entropy.i18n import _
 stuff = {}
 stuff['cols'] = 30
 try:
@@ -424,8 +424,6 @@ def my_raw_input(txt = ''):
 
 class TextInterface:
 
-    import entropyTools
-
     # @input text: text to write
     # @input back: write on on the same line?
     # @input importance:
@@ -490,8 +488,11 @@ class TextInterface:
         colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
         colours += colours[:]
         if len(responses) > len(colours):
-            import exceptionTools
-            raise exceptionTools.IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
+            try:
+                from entropy.exceptions import IncorrectParameter
+            except ImportError:
+                from exceptionTools import IncorrectParameter
+            raise IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
         try:
             print darkgreen(question),
         except UnicodeEncodeError:

@@ -26,11 +26,16 @@ sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
+
 from entropyConstants import *
 from outputTools import *
 import entropyTools
 try:
-    from entropy_i18n import _
+    from entropy.i18n import _
 except ImportError:
     def _(x): return x
 
@@ -313,7 +318,6 @@ myopts = [
 ]
 
 
-import exceptionTools
 options = sys.argv[1:]
 _options = []
 
@@ -647,27 +651,27 @@ try:
     entropyTools.kill_threads()
     raise SystemExit(rc)
 
-except exceptionTools.SystemDatabaseError:
+except SystemDatabaseError:
     reset_cache()
     print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
     raise SystemExit(101)
-except exceptionTools.OnlineMirrorError, e:
+except OnlineMirrorError, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     raise SystemExit(101)
-except exceptionTools.RepositoryError, e:
+except RepositoryError, e:
     reset_cache()
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     raise SystemExit(101)
-except exceptionTools.FtpError, e:
+except FtpError, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     raise SystemExit(101)
-except exceptionTools.PermissionDenied, e:
+except PermissionDenied, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     raise SystemExit(1)
-except exceptionTools.FileNotFound, e:
+except FileNotFound, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     raise SystemExit(1)
-except exceptionTools.SPMError, e:
+except SPMError, e:
     print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
     raise SystemExit(1)
 except dbapi2Exceptions['OperationalError'], e:
@@ -706,7 +710,7 @@ except:
     entropyTools.printException()
 
     import traceback
-    from entropy import ErrorReportInterface
+    from entropy.qa import ErrorReportInterface
     exception_data = ""
     try:
         ferror = open("/tmp/equoerror.txt","w")

@@ -23,7 +23,7 @@ import shutil
 from entropyConstants import *
 from outputTools import *
 import text_ui
-from entropy_i18n import _
+from entropy.i18n import _
 
 def smart(options):
 

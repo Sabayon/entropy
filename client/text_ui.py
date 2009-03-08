@@ -22,11 +22,16 @@
 ##   Packages user handling function
 #
 
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
+
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
 Equo = EquoInterface()
-from entropy_i18n import _
+from entropy.i18n import _
 
 def package(options):
 
@@ -184,11 +189,11 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 status = True
                 try:
                     repoConn = Equo.Repositories([], False)
-                except exceptionTools.PermissionDenied:
+                except PermissionDenied:
                     mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
                     print_error("\t"+mytxt)
                     status = False
-                except exceptionTools.MissingParameter:
+                except MissingParameter:
                     print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
                     status = False
                 except Exception, e:
@@ -407,7 +412,7 @@ def _scanPackages(packages, tbz2):
                 print_warning(mytxt)
                 continue
             else:
-                raise exceptionTools.InvalidDataType("InvalidDataType: ??????")
+                raise InvalidDataType("InvalidDataType: ??????")
 
     return foundAtoms
 

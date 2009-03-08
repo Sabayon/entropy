@@ -26,8 +26,12 @@ from packages import DummyEntropyPackage
 from entropyapi import Equo
 from etpgui import *
 from entropyConstants import *
-from entropy_i18n import _,_LOCALE
+from entropy.i18n import _,_LOCALE
 from dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
 
 TOGGLE_WIDTH = 12
 
@@ -765,7 +769,7 @@ class EntropyPackageView:
         for match in exp_matches:
             try:
                 yp, new = self.etpbase.getPackageItem(match,True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return
             if add and yp.queued != None:
                 continue

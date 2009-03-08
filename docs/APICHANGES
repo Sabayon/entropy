@@ -1,0 +1,7 @@
+From SVN 3112 there have been several API changes:
+- entropy module is now a python package
+- exceptionTools => entropy.exceptions
+- urlFetcher features several private class property moves (you need to rework your updateProgress)
+- FtpInterface features several private class property moves and switched to underscore API signatures
+- SocketUrlFetcher has been removed
+- rssFeed features several private class property moves

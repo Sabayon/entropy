@@ -22,9 +22,12 @@ import time, gtk, gobject, pango, thread, pty, sys
 from etpgui.widgets import UI
 from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
 from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities, fakeoutfile, fakeinfile
-from entropy_i18n import _,_LOCALE
+from entropy.i18n import _,_LOCALE
 import packages
-import exceptionTools
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
 from entropyConstants import *
 
 
@@ -960,7 +963,7 @@ class RepositoryManagerMenu(MenuSkel):
             srv.disconnect()
             self.connection_done = True
             return True, None
-        except exceptionTools.SSLError:
+        except SSLError:
             return False,_("SSL Error, are you sure the server supports SSL?")
 
     def load(self):
@@ -6011,7 +6014,7 @@ class ExceptionDialog:
     def show(self):
 
         import entropyTools
-        from entropy import ErrorReportInterface
+        from entropy.qa import ErrorReportInterface
 
         errmsg = entropyTools.getTraceback()
         conntest = entropyTools.get_remote_data(etpConst['conntestlink'])

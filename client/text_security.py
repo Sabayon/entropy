@@ -23,7 +23,7 @@ from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
 Equo = EquoInterface()
-from entropy_i18n import _
+from entropy.i18n import _
 
 def security(options):
 

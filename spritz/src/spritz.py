@@ -30,11 +30,15 @@ sys.path.insert(0,"../../libraries")
 sys.path.insert(1,"../../client")
 sys.path.insert(2,"/usr/lib/entropy/libraries")
 sys.path.insert(3,"/usr/lib/entropy/client")
-from entropyConstants import *
-import exceptionTools, entropyTools
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
+import entropyTools
 from packages import EntropyPackages
 from entropyapi import Equo, QueueExecutor
-from entropy_i18n import _
+from entropyConstants import *
+from entropy.i18n import _
 
 # Spritz Imports
 import gtk, gobject
@@ -1188,7 +1192,7 @@ class SpritzApplication(Controller):
         cached = None
         try:
             cached = self.Equo.FileUpdates.load_cache()
-        except exceptionTools.CacheCorruptionError:
+        except CacheCorruptionError:
             pass
         if cached == None:
             self.setBusy()
@@ -1231,16 +1235,16 @@ class SpritzApplication(Controller):
 
         try:
             repoConn = self.Equo.Repositories(repos, forceUpdate = forceUpdate)
-        except exceptionTools.PermissionDenied:
+        except PermissionDenied:
             self.progressLog(_('You must run this application as root'), extra = "repositories")
             self.disable_ugc = False
             return 1
-        except exceptionTools.MissingParameter:
+        except MissingParameter:
             msg = "%s: %s" % (_('No repositories specified in'),etpConst['repositoriesconf'],)
             self.progressLog( msg, extra = "repositories")
             self.disable_ugc = False
             return 127
-        except exceptionTools.OnlineMirrorError:
+        except OnlineMirrorError:
             self.progressLog(_('You are not connected to the Internet. You should.'), extra = "repositories")
             self.disable_ugc = False
             return 126
@@ -1470,7 +1474,7 @@ class SpritzApplication(Controller):
                 def run_tha_bstrd():
                     try:
                         e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
-                    except exceptionTools.QueueError:
+                    except QueueError:
                         self.my_inst_abort = True
                         e,i = 1,None
                     except:
@@ -2411,13 +2415,13 @@ class SpritzApplication(Controller):
         if self.abortQueueNow:
             self.abortQueueNow = False
             mytxt = _("Aborting queue tasks.")
-            raise exceptionTools.QueueError('QueueError %s' % (mytxt,))
+            raise QueueError('QueueError %s' % (mytxt,))
 
     def mirror_bombing(self):
         if self.skipMirrorNow:
             self.skipMirrorNow = False
             mytxt = _("Skipping current mirror.")
-            raise exceptionTools.OnlineMirrorError('OnlineMirrorError %s' % (mytxt,))
+            raise OnlineMirrorError('OnlineMirrorError %s' % (mytxt,))
 
     def on_search_clicked(self,widget):
         self.etpbase.setFilter(filters.spritzFilter.processFilters)
@@ -2663,7 +2667,7 @@ class SpritzApplication(Controller):
                 self.abortQueueNow = False
                 mytxt = _("Aborting queue tasks.")
                 self.ui.abortQueue.hide()
-                raise exceptionTools.QueueError('QueueError %s' % (mytxt,))
+                raise QueueError('QueueError %s' % (mytxt,))
 
         do_start()
 
@@ -2674,7 +2678,7 @@ class SpritzApplication(Controller):
                 x, y, z = self.Equo.libraries_test(task_bombing_func = task_bombing)
                 packages_matched.update(x)
                 broken_execs.update(y)
-            except exceptionTools.QueueError:
+            except QueueError:
                 self.libtest_abort = True
 
         t = self.Equo.entropyTools.parallelTask(exec_task)

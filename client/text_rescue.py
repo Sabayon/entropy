@@ -28,9 +28,12 @@
 from entropyConstants import *
 from outputTools import *
 from entropy import EquoInterface
-import exceptionTools
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
 Equo = EquoInterface(noclientdb = True)
-from entropy_i18n import _
+from entropy.i18n import _
 
 def test_spm():
     # test if portage is available
@@ -46,7 +49,7 @@ def test_spm():
 def test_clientdb():
     try:
         Equo.clientDbconn.validateDatabase()
-    except exceptionTools.SystemDatabaseError:
+    except SystemDatabaseError:
         mytxt = _("Installed packages database not available")
         print_error(darkred(" * ")+red("%s !" % (mytxt,)))
         return 1

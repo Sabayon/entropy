@@ -20,9 +20,12 @@
 from etpgui.packages import EntropyPackage, DummyEntropyPackage
 import logging
 from spritz_setup import SpritzConf
-from entropy_i18n import _
+from entropy.i18n import _
 from entropyConstants import *
-import exceptionTools
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
 
 class EntropyPackages:
 
@@ -88,7 +91,7 @@ class EntropyPackages:
         def mymf(pkgdata):
             try:
                 yp, new = self.getPackageItem(pkgdata,True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return 0
             return yp
         self._categoryPackages[category] = [x for x in map(mymf,catsdata) if type(x) != int]
@@ -138,7 +141,7 @@ class EntropyPackages:
         def fm(idpackage):
             try:
                 yp, new = gp_call((idpackage,0),True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return 0
             yp.action = 'r'
             yp.color = SpritzConf.color_install
@@ -156,7 +159,7 @@ class EntropyPackages:
         def fm(match):
             try:
                 yp, new = gp_call(match,True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return 0
             yp.action = 'i'
             return yp
@@ -173,7 +176,7 @@ class EntropyPackages:
         def fm(match):
             try:
                 yp, new = gp_call(match,True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return 0
             key, slot = yp.keyslot
             installed_match = cdb_atomMatch(key, matchSlot = slot)
@@ -189,7 +192,7 @@ class EntropyPackages:
             idpackage, matched = match
             try:
                 yp, new = self.getPackageItem(matched,True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return 0
             yp.installed_match = (idpackage,0)
             yp.action = 'rr'
@@ -205,7 +208,7 @@ class EntropyPackages:
             match, idreason = match
             try:
                 yp, new = gp_call(match,True)
-            except exceptionTools.RepositoryError:
+            except RepositoryError:
                 return 0
             action = gmp_action(match)
             yp.action = action
@@ -294,7 +297,7 @@ class EntropyPackages:
                 else:
                     try:
                         yp, new = gp_call(match,True)
-                    except exceptionTools.RepositoryError:
+                    except RepositoryError:
                         broken = True
                         break
                 myobjs.append(yp)

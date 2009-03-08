@@ -24,7 +24,7 @@ from outputTools import *
 from entropyConstants import *
 import text_query
 from entropy import ServerInterface
-from entropy_i18n import _
+from entropy.i18n import _
 
 def query(myopts):
 

@@ -8,7 +8,7 @@
 # $Id: rhn_applet_dialogs.py,v 1.30 2003/10/14 17:41:34 veillard Exp $
 
 from entropyConstants import *
-from entropy_i18n import _
+from entropy.i18n import _
 import gnome
 import gnome.ui
 import gobject

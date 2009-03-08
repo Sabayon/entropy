@@ -34,8 +34,8 @@ from entropyConstants import *
 import entropyTools
 from packages import EntropyPackages
 from entropyapi import Equo, QueueExecutor
-from entropy import ErrorReportInterface
-from entropy_i18n import _
+from entropy.qa import ErrorReportInterface
+from entropy.i18n import _
 
 # Spritz Imports
 import gtk, gobject

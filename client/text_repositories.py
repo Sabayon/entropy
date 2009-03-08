@@ -27,10 +27,13 @@
 
 from entropyConstants import *
 from outputTools import *
-import exceptionTools
+try:
+    from entropy.exceptions import *
+except ImportError:
+    from exceptionTools import *
 from entropy import EquoInterface, rssFeed
 Equo = EquoInterface(noclientdb = True)
-from entropy_i18n import _
+from entropy.i18n import _
 
 def repositories(options):
 
@@ -166,11 +169,11 @@ def do_sync(reponames = [], forceUpdate = False):
     # load repository class
     try:
         repoConn = Equo.Repositories(reponames, forceUpdate)
-    except exceptionTools.PermissionDenied:
+    except PermissionDenied:
         mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
         print_error("\t"+mytxt)
         return 1
-    except exceptionTools.MissingParameter:
+    except MissingParameter:
         print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
         return 127
     except Exception, e:

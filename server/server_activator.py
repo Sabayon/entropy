@@ -23,7 +23,7 @@
 from entropyConstants import *
 from outputTools import *
 from entropy import ServerInterface
-from entropy_i18n import _
+from entropy.i18n import _
 Entropy = ServerInterface(community_repo = etpConst['community']['mode'])
 
 
