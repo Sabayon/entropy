@@ -146,6 +146,9 @@ class parallelTask(threading.Thread):
     def run(self):
         self.__rc = self.__function(*self.__args,**self.__kwargs)
 
+    def get_function(self):
+        return self.__function
+
     def get_rc(self):
         return self.__rc
 

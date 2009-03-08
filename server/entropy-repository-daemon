@@ -86,6 +86,8 @@ while 1:
         threads = entropyTools.threading.enumerate()
         for t in threads:
             if t.getName() in ["repodaemon","repodaemon_ssl"]:
+                func = t.get_function()
+                func.killall()
                 t.join()
     except (KeyboardInterrupt, SystemExit,):
         const_kill_threads()
