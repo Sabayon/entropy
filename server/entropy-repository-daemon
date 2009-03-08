@@ -83,18 +83,10 @@ if srv_ssl != None:
 
 while 1:
     try:
-        time.sleep(1)
-        found = False
         threads = entropyTools.threading.enumerate()
-        for thread in threads:
-            if thread.getName() in ["repodaemon","repodaemon_ssl"]:
-                found = True
-                break
-        if not found:
-            break
+        for t in threads:
+            if t.getName() in ["repodaemon","repodaemon_ssl"]:
+                t.join()
     except (KeyboardInterrupt, SystemExit,):
-        threads = entropyTools.threading.enumerate()
-        for thread in threads:
-            if thread.getName() in ["repodaemon","repodaemon_ssl"]:
-                thread.args[0].killall()
-        raise SystemExit
+        const_kill_threads()
+    break

@@ -878,8 +878,11 @@ class Client(Singleton,TextInterface):
                     item = os.path.join(path,item)
                     try: os.remove(item)
                     except OSError: pass
-            if not os.listdir(path):
-                os.rmdir(path)
+            try:
+                if not os.listdir(path):
+                    os.rmdir(path)
+            except OSError:
+                pass
 
     '''
        Cache stuff :: end
