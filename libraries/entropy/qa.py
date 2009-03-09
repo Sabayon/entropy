@@ -33,7 +33,7 @@ class QAInterface:
 
         self.Output = OutputInterface
 
-        elif not hasattr(self.Output,'updateProgress'):
+        if not hasattr(self.Output,'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         elif not callable(self.Output.updateProgress):
