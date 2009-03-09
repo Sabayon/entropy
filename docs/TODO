@@ -2,6 +2,7 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+  - FtpInterface (upload ETA)
   - Entropy codebase => camelCase to underscore
   - Spritz codebase refactoring
   - Unit Test module

@@ -48,10 +48,10 @@ class SystemSettings(Singleton):
 
         self.__data = {}
         self.__is_destroyed = False
-        # XXX disabled for now
-        #if not isinstance(EquoInstance,EquoInterface):
-        #    mytxt = _("A valid Equo instance or subclass is needed")
-        #    raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        from entropy.client.interfaces import Client
+        if not isinstance(EquoInstance,Client):
+            mytxt = _("A valid Client interface instance is needed")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
 
         self.etpSettingFiles = {

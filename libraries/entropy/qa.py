@@ -29,17 +29,21 @@ import entropy
 class QAInterface:
 
     import entropyTools
-    def __init__(self, EntropyInterface):
-        if not isinstance(EntropyInterface, (entropy.EquoInterface, entropy.ServerInterface)) and \
-            not issubclass(EntropyInterface, (entropy.EquoInterface, entropy.ServerInterface)):
-                mytxt = _("A valid EquoInterface/ServerInterface based instance is needed")
-                raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (EntropyInterface,mytxt,))
-        self.Entropy = EntropyInterface
+    def __init__(self, OutputInterface):
+
+        self.Output = OutputInterface
+
+        elif not hasattr(self.Output,'updateProgress'):
+            mytxt = _("Output interface passed doesn't have the updateProgress method")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        elif not callable(self.Output.updateProgress):
+            mytxt = _("Output interface passed doesn't have the updateProgress method")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
     def test_depends_linking(self, idpackages, dbconn, repo = etpConst['officialrepositoryid']):
 
         scan_msg = blue(_("Now searching for broken depends"))
-        self.Entropy.updateProgress(
+        self.Output.updateProgress(
             "[repo:%s] %s..." % (
                         darkgreen(repo),
                         scan_msg,
@@ -57,7 +61,7 @@ class QAInterface:
             count += 1
             atom = dbconn.retrieveAtom(idpackage)
             scan_msg = "%s, %s:" % (blue(_("scanning for broken depends")),darkgreen(atom),)
-            self.Entropy.updateProgress(
+            self.Output.updateProgress(
                 "[repo:%s] %s" % (
                     darkgreen(repo),
                     scan_msg,
@@ -73,7 +77,7 @@ class QAInterface:
                 continue
             for mydepend in mydepends:
                 myatom = dbconn.retrieveAtom(mydepend)
-                self.Entropy.updateProgress(
+                self.Output.updateProgress(
                     "[repo:%s] %s => %s" % (
                         darkgreen(repo),
                         darkgreen(atom),
@@ -90,7 +94,7 @@ class QAInterface:
                 if not mybreakages:
                     continue
                 broken = True
-                self.Entropy.updateProgress(
+                self.Output.updateProgress(
                     "[repo:%s] %s %s => %s" % (
                         darkgreen(repo),
                         darkgreen(atom),
@@ -103,7 +107,7 @@ class QAInterface:
                     count = (count,maxcount,)
                 )
                 for mylib in mybreakages:
-                    self.Entropy.updateProgress(
+                    self.Output.updateProgress(
                         "%s %s:" % (
                             darkgreen(mylib),
                             red(_("needs")),
@@ -113,7 +117,7 @@ class QAInterface:
                         header = brown("   ## ")
                     )
                     for needed in mybreakages[mylib]:
-                        self.Entropy.updateProgress(
+                        self.Output.updateProgress(
                             "%s" % (
                                 red(needed),
                             ),
@@ -131,7 +135,7 @@ class QAInterface:
 
         taint = False
         scan_msg = blue(_("Now searching for missing RDEPENDs"))
-        self.Entropy.updateProgress(
+        self.Output.updateProgress(
             "[repo:%s] %s..." % (
                         darkgreen(repo),
                         scan_msg,
@@ -147,7 +151,7 @@ class QAInterface:
             count += 1
             atom = dbconn.retrieveAtom(idpackage)
             if not atom: continue
-            self.Entropy.updateProgress(
+            self.Output.updateProgress(
                 "[repo:%s] %s: %s" % (
                             darkgreen(repo),
                             scan_msg,
@@ -167,7 +171,7 @@ class QAInterface:
                     del missing_extended[item]
             if (not missing) or (not missing_extended):
                 continue
-            self.Entropy.updateProgress(
+            self.Output.updateProgress(
                 "[repo:%s] %s: %s %s:" % (
                             darkgreen(repo),
                             blue("package"),
@@ -180,29 +184,29 @@ class QAInterface:
                 count = (count,maxcount,)
             )
             for missing_data in missing_extended:
-                self.Entropy.updateProgress(
+                self.Output.updateProgress(
                         "%s:" % (brown(unicode(missing_data)),),
                         importance = 0,
                         type = "info",
                         header = purple("   ## ")
                 )
                 for dependency in missing_extended[missing_data]:
-                    self.Entropy.updateProgress(
+                    self.Output.updateProgress(
                             "%s" % (darkred(dependency),),
                             importance = 0,
                             type = "info",
                             header = blue("     # ")
                     )
             if ask:
-                rc = self.Entropy.askQuestion(_("Do you want to add them?"))
+                rc = self.Output.askQuestion(_("Do you want to add them?"))
                 if rc == "No":
                     continue
-                rc = self.Entropy.askQuestion(_("Selectively?"))
+                rc = self.Output.askQuestion(_("Selectively?"))
                 if rc == "Yes":
                     newmissing = set()
                     new_blacklist = set()
                     for dependency in missing:
-                        self.Entropy.updateProgress(
+                        self.Output.updateProgress(
                             "[repo:%s|%s] %s" % (
                                     darkgreen(repo),
                                     brown(atom),
@@ -212,11 +216,11 @@ class QAInterface:
                             type = "info",
                             header = blue(" @@ ")
                         )
-                        rc = self.Entropy.askQuestion(_("Want to add?"))
+                        rc = self.Output.askQuestion(_("Want to add?"))
                         if rc == "Yes":
                             newmissing.add(dependency)
                         else:
-                            rc = self.Entropy.askQuestion(_("Want to blacklist?"))
+                            rc = self.Output.askQuestion(_("Want to blacklist?"))
                             if rc == "Yes":
                                 new_blacklist.add(dependency)
                     if new_blacklist and (black_list_adder != None):
@@ -226,7 +230,7 @@ class QAInterface:
                 taint = True
                 dbconn.insertDependencies(idpackage,missing)
                 dbconn.commitChanges()
-                self.Entropy.updateProgress(
+                self.Output.updateProgress(
                     "[repo:%s] %s: %s" % (
                                 darkgreen(repo),
                                 darkgreen(atom),

@@ -46,12 +46,14 @@ class SecurityInterface:
     # - getting GLSAs from http/ftp servers (not really useful without the fixed ebuilds)
     # - GPG signing/verification (until key policy is clear)
 
+    import entropyTools
     def __init__(self, EquoInstance):
 
         # disabled for now
-        #if not isinstance(EquoInstance,EquoInterface):
-        #    mytxt = _("A valid EquoInterface instance or subclass is needed")
-        #    raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        from entropy.client.interfaces import Client
+        if not isinstance(EquoInstance,Client):
+            mytxt = _("A valid Client interface instance is needed")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = EquoInstance
         from entropy.cache import EntropyCacher
@@ -77,7 +79,7 @@ class SecurityInterface:
                             "rlt": "<" # <~
         }
 
-        self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.Entropy.entropyTools.getRandomNumber()))
+        self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.entropyTools.getRandomNumber()))
         self.security_url = etpConst['securityurl']
         self.unpacked_package = os.path.join(self.unpackdir,"glsa_package")
         self.security_url_checksum = etpConst['securityurl']+etpConst['packageshashfileext']
@@ -152,13 +154,13 @@ class SecurityInterface:
             self.advisories_changed = False
         else:
             self.advisories_changed = True
-        md5res = self.Entropy.entropyTools.compareMd5(self.download_package,checksum)
+        md5res = self.entropyTools.compareMd5(self.download_package,checksum)
         if not md5res:
             return 3
         return 0
 
     def __unpack_advisories(self):
-        rc = self.Entropy.entropyTools.uncompressTarBz2(
+        rc = self.entropyTools.uncompressTarBz2(
             self.download_package,
             self.unpacked_package,
             catchEmpty = True
@@ -193,7 +195,7 @@ class SecurityInterface:
             return self.adv_metadata
 
         if self.Entropy.xcache:
-            dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
+            dir_checksum = self.entropyTools.md5sum_directory(etpConst['securitydir'])
             c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
             adv_metadata = self.Cacher.pop(c_hash)
             if adv_metadata != None:
@@ -202,7 +204,7 @@ class SecurityInterface:
 
     def set_advisories_cache(self, adv_metadata):
         if self.Entropy.xcache:
-            dir_checksum = self.Entropy.entropyTools.md5sum_directory(etpConst['securitydir'])
+            dir_checksum = self.entropyTools.md5sum_directory(etpConst['securitydir'])
             c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
             self.Cacher.push(c_hash,adv_metadata)
 
