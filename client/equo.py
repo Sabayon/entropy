@@ -26,11 +26,7 @@ sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
-
+from entropy.exceptions import *
 from entropyConstants import *
 from outputTools import *
 import entropyTools

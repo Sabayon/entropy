@@ -35,7 +35,9 @@ class Singleton(object):
                 destroyed = ck_dst()
             except AttributeError:
                 destroyed = False
-            if not destroyed:
+            if destroyed:
+                del it
+            else:
                 return it
         cls.__it__ = it = object.__new__(cls)
         it.init_singleton(*args, **kwds)

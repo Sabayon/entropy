@@ -30,6 +30,7 @@ class EntropyCacher(Singleton):
     import threading
     def init_singleton(self):
         self.__alive = False
+        self.__CacheWriter = None
         self.__CacheBuffer = self.entropyTools.lifobuffer()
         self.__CacheLock = self.threading.Lock()
         import copy
@@ -83,14 +84,13 @@ class EntropyCacher(Singleton):
 
     def stop(self):
         if not self.__alive: return
-        if hasattr(self,"__CacheBuffer"):
-            if self.__CacheBuffer and self.__alive:
-                wd = 20
-                while self.__CacheBuffer.is_filled() and wd:
-                    wd -= 1
-                    time.sleep(0.5)
-                self.__CacheBuffer.clear()
-        self.__alive = False
-        if hasattr(self,"__CacheWriter"):
+        if self.__CacheBuffer and self.__alive:
+            wd = 20
+            while self.__CacheBuffer.is_filled() and wd:
+                wd -= 1
+                time.sleep(0.5)
+            self.__CacheBuffer.clear()
+        if self.__CacheWriter != None:
             self.__CacheWriter.kill()
             self.__CacheWriter.join()
+        self.__alive = False
