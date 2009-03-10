@@ -1202,7 +1202,7 @@ class Server(RemoteDatabase):
             self.execute_query("""
             UPDATE entropy_distribution_usage SET `entropy_branches_id` = %s, 
             `entropy_release_strings_id` = %s, 
-            `hits` = `hits`+1, 
+            `hits` = `hits`+1 
             WHERE `entropy_distribution_usage_id` = %s
             """,(
                     branch_id,
