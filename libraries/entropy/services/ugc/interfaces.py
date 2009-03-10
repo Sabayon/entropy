@@ -27,8 +27,8 @@ import subprocess
 import shutil
 from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
-from entropyConstants import etpConst, etpUi, etpCache, const_setup_perms, const_set_chmod, const_setup_file
-from outputTools import brown, bold, blue
+from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, const_set_chmod, const_setup_file
+from entropy.output import brown, bold, blue
 
 class Server(RemoteDatabase):
 
@@ -117,6 +117,8 @@ class Server(RemoteDatabase):
             `ts` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             `ip_address` VARCHAR( 15 ),
             `entropy_ip_locations_id` INT UNSIGNED NULL DEFAULT 0,
+            `creation_date` DATETIME DEFAULT NULL,
+            `hits` INT UNSIGNED NULL DEFAULT 0,
             FOREIGN KEY  (`entropy_branches_id`) REFERENCES `entropy_branches` (`entropy_branches_id`),
             FOREIGN KEY  (`entropy_release_strings_id`) REFERENCES `entropy_release_strings` (`entropy_release_strings_id`),
             KEY `ip_address` (`ip_address`),
@@ -162,7 +164,8 @@ class Server(RemoteDatabase):
             dev-python/gdata
     '''
     def __init__(self, connection_data, store_path, store_url = ''):
-        import entropyTools, dumpTools
+        import entropy.dump as dumpTools
+        import entropy.tools as entropyTools
         from entropy.misc import EntropyGeoIP
         self.EntropyGeoIP = EntropyGeoIP
         self.entropyTools, self.dumpTools = entropyTools, dumpTools
@@ -1184,19 +1187,23 @@ class Server(RemoteDatabase):
         entropy_distribution_usage_id = self.is_user_ip_available_in_entropy_distribution_usage(ip_addr)
         if entropy_distribution_usage_id == -1:
             entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
-            self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s)',(
+            self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',(
                     None,
                     branch_id,
                     rel_strings_id,
                     None,
                     ip_addr,
                     entropy_ip_locations_id,
+                    self.get_date(),
+                    1,
                 )
             )
         else:
             self.execute_query("""
             UPDATE entropy_distribution_usage SET `entropy_branches_id` = %s, 
-            `entropy_release_strings_id` = %s WHERE `entropy_distribution_usage_id` = %s
+            `entropy_release_strings_id` = %s, 
+            `hits` = `hits`+1, 
+            WHERE `entropy_distribution_usage_id` = %s
             """,(
                     branch_id,
                     rel_strings_id,
@@ -1206,8 +1213,6 @@ class Server(RemoteDatabase):
 
         if do_commit: self.commit()
         return True
-
-        pass
 
     def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
         self.check_connection()
@@ -1519,8 +1524,8 @@ class Server(RemoteDatabase):
 class Client:
 
     import socket
-    import dumpTools
-    import entropyTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     import zlib
     import select
     def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25):
