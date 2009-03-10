@@ -1,9 +1,8 @@
-#!/usr/bin/python
 '''
     # DESCRIPTION:
     # Variables container
 
-    Copyright (C) 2007-2008 Fabio Erculiani
+    Copyright (C) 2007-2009 Fabio Erculiani
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
