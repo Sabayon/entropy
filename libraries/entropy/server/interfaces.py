@@ -26,8 +26,8 @@ import shutil
 import time
 from entropy.core import Singleton
 from entropy.exceptions import *
-from outputTools import TextInterface, purple, green, red, darkgreen, bold, brown, blue, darkred, darkblue
-from entropyConstants import etpConst, etpSys, const_setup_perms, const_createWorkingDirectories, const_readServerSettings
+from entropy.output import TextInterface, purple, green, red, darkgreen, bold, brown, blue, darkred, darkblue
+from entropy.const import etpConst, etpSys, const_setup_perms, const_createWorkingDirectories, const_readServerSettings
 
 
 class Server(Singleton,TextInterface):
@@ -1279,6 +1279,7 @@ class Server(Singleton,TextInterface):
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage,destination_path))
             except Exception, e:
+                self.entropyTools.printTraceback()
                 self.updateProgress(
                     "[repo:%s] %s: %s" % (
                                 darkgreen(repo),
@@ -2695,7 +2696,9 @@ class Server(Singleton,TextInterface):
 
 class MirrorsServer:
 
-    import entropyTools, dumpTools, socket
+    import socket
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     def __init__(self,  ServerInstance, repo = None):
 
         if not isinstance(ServerInstance,Server):
@@ -3654,7 +3657,7 @@ class MirrorsServer:
 
     class FileTransceiver:
 
-        import entropyTools
+        import entropy.tools as entropyTools
         def __init__(   self,
                         ftp_interface,
                         entropy_interface,
