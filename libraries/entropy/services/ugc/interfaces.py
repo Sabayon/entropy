@@ -368,6 +368,12 @@ class Server(RemoteDatabase):
         mydate = self.datetime(mydate.year,mydate.month,mydate.day)
         return mydate
 
+    def get_datetime(self):
+        mytime = time.time()
+        mydate = self.datetime.fromtimestamp(mytime)
+        mydate = self.datetime(mydate.year,mydate.month,mydate.day,mydate.hour,mydate.minute,mydate.second)
+        return mydate
+
     def get_iddownload(self, key, ddate):
         self.check_connection()
         idkey = self.handle_pkgkey(key)
@@ -1194,7 +1200,7 @@ class Server(RemoteDatabase):
                     None,
                     ip_addr,
                     entropy_ip_locations_id,
-                    self.get_date(),
+                    self.get_datetime(),
                     1,
                 )
             )
@@ -1202,7 +1208,7 @@ class Server(RemoteDatabase):
             self.execute_query("""
             UPDATE entropy_distribution_usage SET `entropy_branches_id` = %s, 
             `entropy_release_strings_id` = %s, 
-            hits = hits+1 
+            `hits` = `hits`+1 
             WHERE `entropy_distribution_usage_id` = %s
             """,(
                     branch_id,
