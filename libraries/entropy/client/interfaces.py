@@ -5485,9 +5485,11 @@ class Package:
     def sources_fetch_step(self):
         self.error_on_not_prepared()
         down_data = self.infoDict['download']
+        down_keys = down_data.keys()
         d_cache = set()
-        for key in sorted(down_data.keys()):
-            rc = 1
+        rc = 0
+        key_cache = [os.path.basename(x) for x in down_keys]
+        for key in sorted(down_keys):
             key_name = os.path.basename(key)
             if key_name in d_cache: continue
             # first fine wins
@@ -5495,9 +5497,13 @@ class Package:
                 file_name = os.path.basename(url)
                 dest_file = os.path.join(self.infoDict['unpackdir'],file_name)
                 rc = self._fetch_source(url, dest_file)
-                if rc == 0: break
-            if rc != 0: break
-            d_cache.add(key_name)
+                if rc == 0:
+                    d_cache.add(key_name)
+                    break
+            key_cache.remove(key_name)
+            if rc != 0 and key_name not in key_cache:
+                break
+            rc = 0
 
         return rc
 
