@@ -25,8 +25,8 @@
 ##   Repositories Tools
 #
 
-from entropyConstants import *
-from outputTools import *
+from entropy.const import *
+from entropy.output import *
 from entropy.client.interfaces import Client
 from entropy.exceptions import *
 Equo = Client(noclientdb = True)

@@ -1,7 +1,19 @@
 From SVN 3112 there have been several API changes:
-- entropy module is now a python package
-- exceptionTools => entropy.exceptions
-- urlFetcher features several private class property moves (you need to rework your updateProgress)
-- FtpInterface features several private class property moves and switched to underscore API signatures
-- SocketUrlFetcher has been removed
-- rssFeed features several private class property moves
+
+  - entropy module is now a python package
+
+  - urlFetcher features several private class property moves (you need to rework your updateProgress)
+
+  - FtpInterface features several private class property moves and switched to underscore API signatures
+
+  - SocketUrlFetcher has been removed
+
+  - rssFeed features several private class property moves
+
+  - entropyTools, dumpTools, outputTools, entropyConstants, exceptionTools have been
+    moved under the entropy package, except for exceptionTools, for others backward
+    module loading compatibility has been kept.
+
+  - entropyTools API changes:
+      entropyTools.parallelTask and TimeScheduled moved to entropy.misc
+      entropyTools.lifobuffer moved to entropy.misc as Lifo

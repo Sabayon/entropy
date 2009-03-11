@@ -18,7 +18,7 @@
 # Authors:
 #    Tim Lauridsen <tla@rasmil.dk>
 
-from entropyConstants import *
+from entropy.const import *
 from entropyapi import Equo
 from spritz_setup import cleanMarkupString, SpritzConf
 EquoIntf = Equo()
@@ -51,7 +51,7 @@ class DummyEntropyPackage:
 
 class EntropyPackage:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, matched_atom, avail, remote = None, pkgset = None):
 
         self.pkgset = pkgset

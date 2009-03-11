@@ -5485,18 +5485,25 @@ class Package:
     def sources_fetch_step(self):
         self.error_on_not_prepared()
         down_data = self.infoDict['download']
-        rc = 0
+        d_cache = set()
         for key in sorted(down_data.keys()):
+            rc = 1
+            key_name = os.path.basename(key)
+            if key_name in d_cache: continue
             # first fine wins
             for url in down_data[key]:
-                dest_file = os.path.join(self.infoDict['unpackdir'],os.path.basename(url))
+                file_name = os.path.basename(url)
+                dest_file = os.path.join(self.infoDict['unpackdir'],file_name)
                 rc = self._fetch_source(url, dest_file)
-                if not rc: break
-            if rc: break
+                if rc == 0: break
+            if rc == 0:
+                d_cache.add(key_name)
+                break
 
         return rc
 
     def _fetch_source(self, url, dest_file):
+        rc = 1
         try:
             mytxt = "%s: %s" % (blue(_("Downloading")),brown(url),)
             # now fetch the new one
@@ -5531,8 +5538,6 @@ class Package:
                     type = "info",
                     header = red("      # ")
                 )
-
-                return 0
             else:
                 error_message = blue("%s: %s") % (
                     _("Error downloading from"),
@@ -5553,10 +5558,9 @@ class Package:
                                     type = "warning",
                                     header = red("   ## ")
                                 )
-                if rc == -4: # user discarded fetch
-                    return 1
         except KeyboardInterrupt:
-            return 1
+            pass
+        return rc
 
     def fetch_step(self):
         self.error_on_not_prepared()

@@ -2,6 +2,8 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+  - merge all the server config files to server.conf?
+  - iron out new FtpInterface
   - FtpInterface (upload ETA)
   - Entropy codebase => camelCase to underscore
   - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)

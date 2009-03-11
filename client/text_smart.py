@@ -20,10 +20,10 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 import shutil
-from entropyConstants import *
-from outputTools import *
-import text_ui
+from entropy.const import *
+from entropy.output import *
 from entropy.i18n import _
+import text_ui
 
 def smart(options):
 
@@ -408,7 +408,7 @@ def smartappsHandler(mypackages, emptydeps = False):
 # tool that generates .tar.bz2 packages with all the binary dependencies included
 def smartgenerator(atomInfo, emptydeps = False):
 
-    import entropyTools
+    import entropy.tools as entropyTools
     dbconn = text_ui.Equo.openRepositoryDatabase(atomInfo[1])
     idpackage = atomInfo[0]
     atom = dbconn.retrieveAtom(idpackage)

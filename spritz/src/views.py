@@ -25,13 +25,11 @@ from etpgui.widgets import UI,CellRendererStars
 from packages import DummyEntropyPackage
 from entropyapi import Equo
 from etpgui import *
-from entropyConstants import *
 from entropy.i18n import _,_LOCALE
 from dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
+from entropy.exceptions import *
+from entropy.const import *
+from entropy.misc import ParallelTask
 
 TOGGLE_WIDTH = 12
 
@@ -228,7 +226,7 @@ class EntropyPackageView:
         self.pkgset_undoremove.set_image(self.img_pkgset_undoremove)
 
         # start view refresher
-        t = self.Equo.entropyTools.parallelTask(self.view_refresher)
+        t = ParallelTask(self.view_refresher)
         t.start()
 
     def view_refresher(self):
@@ -1048,7 +1046,7 @@ class EntropyPackageView:
         self.queueView.refresh()
         self.view.queue_draw()
 
-        t = self.Equo.entropyTools.parallelTask(self.vote_submit_thread, repository, key, obj)
+        t = ParallelTask(self.vote_submit_thread, repository, key, obj)
         t.start()
 
 
@@ -1061,7 +1059,7 @@ class EntropyPackageView:
         gtk.gdk.threads_enter()
         self.ui.UGCMessageLabel.set_markup(msg)
         gtk.gdk.threads_leave()
-        t = self.Equo.entropyTools.parallelTask(self.refresh_vote_info, obj)
+        t = ParallelTask(self.refresh_vote_info, obj)
         t.start()
 
 

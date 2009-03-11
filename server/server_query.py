@@ -20,8 +20,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from outputTools import *
-from entropyConstants import *
+from entropy.output import *
+from entropy.const import *
 import text_query
 from entropy.server.interfaces import Server
 from entropy.i18n import _

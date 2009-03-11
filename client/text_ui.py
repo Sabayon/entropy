@@ -23,11 +23,12 @@
 #
 
 from entropy.exceptions import *
-from entropyConstants import *
-from outputTools import *
+from entropy.const import *
+from entropy.output import *
 from entropy.client.interfaces import Client
-Equo = Client()
+from entropy.misc import ParallelTask
 from entropy.i18n import _
+Equo = Client()
 
 def package(options):
 
@@ -1052,7 +1053,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         Equo.UGC.add_download_stats(myrepo, mypkgkeys)
             except:
                 pass
-        t = Equo.entropyTools.parallelTask(spawn_ugc)
+        t = ParallelTask(spawn_ugc)
         t.start()
 
     if onlyfetch:

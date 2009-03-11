@@ -21,11 +21,8 @@ from etpgui.packages import EntropyPackage, DummyEntropyPackage
 import logging
 from spritz_setup import SpritzConf
 from entropy.i18n import _
-from entropyConstants import *
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
+from entropy.const import *
+from entropy.exceptions import *
 
 class EntropyPackages:
 

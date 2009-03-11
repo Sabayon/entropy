@@ -23,10 +23,11 @@ from spritz_setup import const
 from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
 
 # Entropy Imports
-from entropyConstants import *
+from entropy.const import *
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.transceivers import urlFetcher
 from entropy.i18n import _
+from entropy.misc import ParallelTask
 
 '''
 
@@ -144,7 +145,7 @@ class QueueExecutor:
                             self.Entropy.UGC.add_download_stats(myrepo, mypkgkeys)
                 except:
                     pass
-            t = self.Entropy.entropyTools.parallelTask(spawn_ugc)
+            t = ParallelTask(spawn_ugc)
             t.start()
 
         self.Spritz.ui.skipMirror.hide()

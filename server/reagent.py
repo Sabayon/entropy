@@ -29,9 +29,9 @@ sys.path.insert(3,'/usr/lib/entropy/client')
 sys.path.insert(4,'/usr/lib/entropy/libraries')
 sys.path.insert(5,'/usr/lib/entropy/server')
 from entropy.i18n import _
-import entropyTools
-from outputTools import *
-from entropyConstants import *
+import entropy.tools as entropyTools
+from entropy.output import *
+from entropy.const import *
 
 myopts = [
     None,

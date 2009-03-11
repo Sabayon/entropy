@@ -6,7 +6,7 @@
 # $Id: applet.py,v 1.10 2003/09/15 15:07:19 veillard Exp $
 
 import os
-import dumpTools
+import entropy.dump as dumpTools
 
 APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY", "CRITICAL", "BUSY", "ERROR", "DISCONNECTED", "DISABLE" ]
 APPLET_MENUS = [ "about", "update_now", "web_panel", "web_site", "configure_applet", "check_now" ]

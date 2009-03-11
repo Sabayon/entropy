@@ -30,8 +30,8 @@ sys.path.insert(0,"../../libraries")
 sys.path.insert(1,"../../client")
 sys.path.insert(2,"/usr/lib/entropy/libraries")
 sys.path.insert(3,"/usr/lib/entropy/client")
-from entropyConstants import *
-import entropyTools
+from entropy.const import *
+import entropy.tools as entropyTools
 from packages import EntropyPackages
 from entropyapi import Equo, QueueExecutor
 from entropy.qa import ErrorReportInterface

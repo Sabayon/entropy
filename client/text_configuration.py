@@ -23,8 +23,8 @@
 
 import shutil
 import commands
-from entropyConstants import *
-from outputTools import *
+from entropy.const import *
+from entropy.output import *
 from entropy.client.interfaces import Client
 Equo = Client() # client db must be available, it is for a reason!
 from entropy.i18n import _

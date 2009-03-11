@@ -18,8 +18,8 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import os, sys
-import entropyTools
-from entropyConstants import *
+import entropy.tools as entropyTools
+from entropy.const import *
 from entropy.i18n import _
 
 class const:

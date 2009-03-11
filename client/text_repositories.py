@@ -25,13 +25,9 @@
 ##   Repositories Tools
 #
 
-from entropyConstants import *
-from outputTools import *
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
-
+from entropy.const import *
+from entropy.output import *
+from entropy.exceptions import *
 from entropy.client.interfaces import Client
 from entropy.misc import rssFeed
 Equo = Client(noclientdb = True)

@@ -30,15 +30,13 @@ sys.path.insert(0,"../../libraries")
 sys.path.insert(1,"../../client")
 sys.path.insert(2,"/usr/lib/entropy/libraries")
 sys.path.insert(3,"/usr/lib/entropy/client")
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
-import entropyTools
+from entropy.exceptions import *
+import entropy.tools
 from packages import EntropyPackages
 from entropyapi import Equo, QueueExecutor
-from entropyConstants import *
+from entropy.cont import *
 from entropy.i18n import _
+from entropy.misc import TimeScheduled, ParallelTask
 
 # Spritz Imports
 import gtk, gobject
@@ -616,12 +614,12 @@ class SpritzApplication(Controller):
         self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
         self.ad_url = 'http://www.silkbit.com'
         self.ui.bannerEventBox.show_all()
-        self.adTask = entropyTools.TimeScheduled(60, self.spawnAdRotation)
+        self.adTask = TimeScheduled(60, self.spawnAdRotation)
         self.adTask.set_delay_before(True)
         self.adTask.start()
 
     def setupUgc(self):
-        self.ugcTask = entropyTools.TimeScheduled(30, self.spawnUgcUpdate)
+        self.ugcTask = TimeScheduled(30, self.spawnUgcUpdate)
         self.ugcTask.set_delay_before(True)
         if "--nougc" not in sys.argv:
             self.ugcTask.start()
@@ -642,7 +640,7 @@ class SpritzApplication(Controller):
         tries = 5
         while tries:
 
-            ads_data = entropyTools.get_remote_data(self.ad_list_url)
+            ads_data = entropy.tools.get_remote_data(self.ad_list_url)
             if not ads_data:
                 tries -= 1
                 continue
@@ -660,7 +658,7 @@ class SpritzApplication(Controller):
             mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
             myurl = ' '.join(mydata[1:])
 
-            pix_tmp_path = entropyTools.getRandomTempFile()
+            pix_tmp_path = entropy.tools.getRandomTempFile()
             fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
             rc = fetchConn.download()
             if rc in ("-1","-2","-3","-4"):
@@ -713,7 +711,7 @@ class SpritzApplication(Controller):
         self.isWorking = True
         self.spawning_ugc = True
         if self.do_debug: print "are we connected?"
-        connected = entropyTools.get_remote_data(etpConst['conntestlink'])
+        connected = entropy.tools.get_remote_data(etpConst['conntestlink'])
         if self.do_debug:
             cr = False
             if connected: cr = True
@@ -739,8 +737,8 @@ class SpritzApplication(Controller):
         self.dbBackupStore.clear()
         backed_up_dbs = self.Equo.list_backedup_client_databases()
         for mypath in backed_up_dbs:
-            mymtime = self.Equo.entropyTools.getFileUnixMtime(mypath)
-            mytime = self.Equo.entropyTools.convertUnixTimeToHumanTime(mymtime)
+            mymtime = entropy.tools.getFileUnixMtime(mypath)
+            mytime = entropy.tools.convertUnixTimeToHumanTime(mymtime)
             self.dbBackupStore.append( (mypath,os.path.basename(mypath),mytime,) )
 
     def on_console_click(self, widget, event):
@@ -953,7 +951,7 @@ class SpritzApplication(Controller):
             return saveParameter(config_file, name, writedata)
 
         def saveParameter(config_file, name, data):
-            return entropyTools.writeParameterToFile(config_file,name,data)
+            return entropy.tools.writeParameterToFile(config_file,name,data)
 
         self.Preferences = {
             etpConst['entropyconf']: [
@@ -1210,7 +1208,7 @@ class SpritzApplication(Controller):
             board_file = etpRepositories[repoid]['local_notice_board']
             if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
                 continue
-            if self.Equo.entropyTools.get_file_size(board_file) < 10:
+            if entropy.tools.get_file_size(board_file) < 10:
                 continue
             repoids[repoid] = board_file
         if repoids:
@@ -1261,7 +1259,7 @@ class SpritzApplication(Controller):
         def run_up():
             self.__repo_update_rc = repoConn.sync()
 
-        t = self.Equo.entropyTools.parallelTask(run_up)
+        t = ParallelTask(run_up)
         t.start()
         while t.isAlive():
             time.sleep(0.2)
@@ -1484,7 +1482,7 @@ class SpritzApplication(Controller):
                         e,i = 1,None
                     self.my_inst_errors = (e,i,)
 
-                t = self.Equo.entropyTools.parallelTask(run_tha_bstrd)
+                t = ParallelTask(run_tha_bstrd)
                 t.start()
                 while t.isAlive():
                     time.sleep(0.2)
@@ -1592,7 +1590,7 @@ class SpritzApplication(Controller):
 
     def runEditor(self, filename, delete = False):
         cmd = ' '.join([self.fileEditor,filename])
-        task = entropyTools.parallelTask(self.__runEditor, cmd, delete, filename)
+        task = ParallelTask(self.__runEditor, cmd, delete, filename)
         task.start()
 
     def __runEditor(self, cmd, delete, filename):
@@ -1751,7 +1749,7 @@ class SpritzApplication(Controller):
         identifier, source, dest = self.__get_Edit_filename()
         if not identifier:
             return True
-        randomfile = entropyTools.getRandomTempFile()+".diff"
+        randomfile = entropy.tools.getRandomTempFile()+".diff"
         diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
         os.system(diffcmd)
         self.runEditor(randomfile, delete = True)
@@ -1987,7 +1985,7 @@ class SpritzApplication(Controller):
         repostuff = selection.get_selected()
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
-            repodata = entropyTools.getRepositorySettings(repoid)
+            repodata = entropy.tools.getRepositorySettings(repoid)
             self.__loadRepodata(repodata)
             self.addrepo_ui.addRepoWin.show()
 
@@ -2166,7 +2164,7 @@ class SpritzApplication(Controller):
             rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
         except:
             if self.do_debug:
-                self.Equo.entropyTools.printTraceback()
+                entropy.tools.printTraceback()
                 import pdb; pdb.set_trace()
             else:
                 raise
@@ -2269,7 +2267,7 @@ class SpritzApplication(Controller):
             rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
         except:
             if self.do_debug:
-                self.Equo.entropyTools.printTraceback()
+                entropy.tools.printTraceback()
                 import pdb; pdb.set_trace()
             else: raise
         self.resetQueueProgressBars()
@@ -2684,7 +2682,7 @@ class SpritzApplication(Controller):
             except QueueError:
                 self.libtest_abort = True
 
-        t = self.Equo.entropyTools.parallelTask(exec_task)
+        t = ParallelTask(exec_task)
         t.start()
         while t.isAlive():
             time.sleep(0.2)
@@ -2765,7 +2763,7 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
-        entropyTools.kill_threads()
+        entropy.tools.kill_threads()
         mainApp.quit()
     except SystemExit:
         print "Quit by User (SystemExit)"
@@ -2780,7 +2778,7 @@ if __name__ == "__main__":
         except NameError:
             pass
     except: # catch other exception and write it to the logger.
-        entropyTools.kill_threads()
+        entropy.tools.kill_threads()
         try:
             mainApp.quit(sysexit = False)
         except NameError:

@@ -25,8 +25,8 @@ from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentit
 from entropy.i18n import _,_LOCALE
 import packages
 from entropy.exceptions import *
-from entropyConstants import *
-
+from entropy.const import *
+from entropy.misc import TimeScheduled, ParallelTask
 
 class MenuSkel:
 
@@ -160,7 +160,7 @@ class NoticeBoardWindow(MenuSkel):
 
 class RemoteConnectionMenu(MenuSkel):
 
-    import dumpTools
+    import entropy.dump as dumpTools
     store_path = 'connection_manager'
     def __init__( self, Entropy, verification_callback, window ):
 
@@ -371,7 +371,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.do_debug = False
         if etpUi['debug']: self.do_debug = True
         self.BufferLock = self.threading.Lock()
-        import entropyTools
+        import entropy.tools as entropyTools
         self.entropyTools = entropyTools
         self.Entropy = Entropy
         self.window = window
@@ -402,9 +402,9 @@ class RepositoryManagerMenu(MenuSkel):
         self.TaskQueue = []
         self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
 
-        self.QueueUpdater = self.Entropy.entropyTools.TimeScheduled(5, self.update_queue_view)
-        self.OutputUpdater = self.Entropy.entropyTools.TimeScheduled(0.5, self.update_output_view)
-        self.PinboardUpdater = self.Entropy.entropyTools.TimeScheduled(60, self.update_pinboard_view)
+        self.QueueUpdater = TimeScheduled(5, self.update_queue_view)
+        self.OutputUpdater = TimeScheduled(0.5, self.update_output_view)
+        self.PinboardUpdater = TimeScheduled(60, self.update_pinboard_view)
         self.notebook_pages = {
             'queue': 0,
             'commands': 1,
@@ -701,7 +701,7 @@ class RepositoryManagerMenu(MenuSkel):
         cell = gtk.CellRendererText()
         self.EntropyRepositoryCombo.pack_start(cell, True)
         self.EntropyRepositoryCombo.add_attribute(cell, 'text', 0)
-        self.EntropyRepositoryComboLoader = self.Entropy.entropyTools.parallelTask(self.load_available_repositories)
+        self.EntropyRepositoryComboLoader = ParallelTask(self.load_available_repositories)
 
     def setup_commands_view(self):
 
@@ -1051,7 +1051,7 @@ class RepositoryManagerMenu(MenuSkel):
         def task():
             self.do_update_queue_view()
 
-        t = self.entropyTools.parallelTask(task)
+        t = ParallelTask(task)
         t.start()
 
     def do_update_queue_view(self):
@@ -1435,7 +1435,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.update_notice_board_data_view(repo_data, repoid)
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id, repoid)
+            t = ParallelTask(task, queue_id, repoid)
             t.start()
 
     def run_write_to_running_command_pipe(self, queue_id, write_to_stdout, txt):
@@ -1505,7 +1505,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.categories_updates_data_view, [data, categories], {'expand': True, 'reload_function': reload_function,},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id, categories, world)
+            t = ParallelTask(task, queue_id, categories, world)
             t.start()
 
     def run_sync_spm(self):
@@ -1541,7 +1541,7 @@ class RepositoryManagerMenu(MenuSkel):
                 self.is_processing = {'queue_id': queue_id}
                 self.set_notebook_page(self.notebook_pages['output'])
 
-        t = self.entropyTools.parallelTask(task, data)
+        t = ParallelTask(task, data)
         t.start()
 
     def run_compile_atoms(self, data):
@@ -1584,7 +1584,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.is_processing = {'queue_id': queue_id}
             self.set_notebook_page(self.notebook_pages['output'])
 
-    # fine without parallelTask
+    # fine without ParallelTask
     def run_enable_uses_for_atoms(self, atoms, use, load_view):
 
         with self.BufferLock:
@@ -1599,7 +1599,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         return status
 
-    # fine without parallelTask
+    # fine without ParallelTask
     def run_disable_uses_for_atoms(self, atoms, use, load_view):
 
         with self.BufferLock:
@@ -1632,7 +1632,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.categories_updates_data_view, [data,categories], {'expand': True, 'reload_function': reload_function,},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, categories, atoms)
+            t = ParallelTask(task, categories, atoms)
             t.start()
 
     def run_kill_processing_queue_id(self, queue_id):
@@ -1670,7 +1670,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.categories_updates_data_view, [data, categories, expand], {},))
 
         if status:
-            t = self.entropyTools.parallelTask(queue_id, task, categories, expand)
+            t = ParallelTask(queue_id, task, categories, expand)
             t.start()
 
     def run_entropy_deptest(self):
@@ -1738,7 +1738,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.entropy_mirror_updates_data_view, [repo_data],{},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id, repos)
+            t = ParallelTask(task, queue_id, repos)
             t.start()
         else:
             self.service_status_message(queue_id)
@@ -1856,7 +1856,7 @@ class RepositoryManagerMenu(MenuSkel):
             if not status: return
             self.TaskQueue.append((reload_func,[],{},))
 
-        t = self.entropyTools.parallelTask(task, queue_id, reload_func)
+        t = ParallelTask(task, queue_id, reload_func)
         t.start()
 
     def run_entropy_database_updates_scan(self):
@@ -1878,7 +1878,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.entropy_database_updates_data_view, [data], {},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id)
+            t = ParallelTask(task, queue_id)
             t.start()
         else:
             self.service_status_message(queue_id)
@@ -1903,7 +1903,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.is_writing_output = True
             self.is_processing = {'queue_id': queue_id }
             self.set_notebook_page(self.notebook_pages['output'])
-            t = self.entropyTools.parallelTask(task, queue_id, reload_func)
+            t = ParallelTask(task, queue_id, reload_func)
             t.start()
         else:
             self.service_status_message(queue_id)
@@ -1929,7 +1929,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((reload_func,[],{},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id, repoid, title, notice_text, link, reload_func)
+            t = ParallelTask(task, queue_id, repoid, title, notice_text, link, reload_func)
             t.start()
 
     def run_remove_notice_board_entries(self, repoid, ids, reload_func = None):
@@ -1953,7 +1953,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((reload_func,[],{},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id, repoid, ids, reload_func)
+            t = ParallelTask(task, queue_id, repoid, ids, reload_func)
             t.start()
 
     def update_notice_board_data_view(self, repo_data, repoid):
@@ -2155,7 +2155,7 @@ class RepositoryManagerMenu(MenuSkel):
 
             if run_data:
                 self.clear_data_store_and_view()
-                t = self.entropyTools.parallelTask(self.execute_entropy_mirror_updates, run_data)
+                t = ParallelTask(self.execute_entropy_mirror_updates, run_data)
                 t.start()
 
         h1 = self.DataViewButtons['mirror_updates']['execute_button'].connect('clicked',execute_button_clicked)
@@ -2727,7 +2727,7 @@ class RepositoryManagerMenu(MenuSkel):
                             self.service_status_message(e)
                             return
                     self.update_queue_view()
-                t = self.entropyTools.parallelTask(task)
+                t = ParallelTask(task)
                 t.start()
 
     def on_repoManagerQueueUp_clicked(self, widget):
@@ -2756,7 +2756,7 @@ class RepositoryManagerMenu(MenuSkel):
                             self.service_status_message(e)
                             return
                     self.update_queue_view()
-                t = self.entropyTools.parallelTask(task)
+                t = ParallelTask(task)
                 t.start()
 
     def on_repoManagerCategoryUpdButton_clicked(self, widget, categories = [], expand = False):
@@ -3219,7 +3219,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.glsa_data_view,[data],{},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, queue_id, data)
+            t = ParallelTask(task, queue_id, data)
             t.start()
         else:
             self.service_status_message(queue_id)
@@ -3244,7 +3244,7 @@ class RepositoryManagerMenu(MenuSkel):
             if repo_info: self.TaskQueue.append((self.load_available_repositories,[],{'repo_info': repo_info,},))
 
         if status:
-            t = self.entropyTools.parallelTask(task)
+            t = ParallelTask(task)
             t.start()
         else:
             self.service_status_message(queue_id)
@@ -3287,7 +3287,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.TaskQueue.append((self.entropy_available_packages_data_view,[repo_data,data['repoid']],{'reload_func': reload_func},))
 
         if status:
-            t = self.entropyTools.parallelTask(task, repo_data, data)
+            t = ParallelTask(task, repo_data, data)
             t.start()
         else:
             self.service_status_message(repo_data)
@@ -3636,6 +3636,7 @@ class SmQueueMenu(MenuSkel):
 
 class PkgInfoMenu(MenuSkel):
 
+    import entropy.tools as entropyTools
     def __init__(self, Entropy, pkg, window):
 
         self.pkg_pixmap = const.pkg_pixmap
@@ -3708,7 +3709,7 @@ class PkgInfoMenu(MenuSkel):
                     _("Identifier"),
                     obj['iddoc'],
                     _("Size"),
-                    self.Entropy.entropyTools.bytesIntoHuman(obj['size']),
+                    self.entropyTools.bytesIntoHuman(obj['size']),
                     _("Author"),
                     obj['username'],
                     obj['ts'],
@@ -3959,7 +3960,7 @@ class PkgInfoMenu(MenuSkel):
                     counter += 1
 
         if spawn_fetch:
-            self.ugc_preview_fetcher = self.Entropy.entropyTools.parallelTask(self.spawn_docs_fetch)
+            self.ugc_preview_fetcher = ParallelTask(self.spawn_docs_fetch)
             self.ugc_preview_fetcher.start()
 
         #search_col = 0
@@ -4230,7 +4231,7 @@ class PkgInfoMenu(MenuSkel):
         pkgatom = pkg.name
         self.vote = int(pkg.vote)
         self.repository = pkg.repoid
-        self.pkgkey = self.Entropy.entropyTools.dep_getkey(pkgatom)
+        self.pkgkey = self.entropyTools.dep_getkey(pkgatom)
         self.set_stars_from_repository()
         self.pkginfo_ui.pkgImage.set_from_file(self.pkg_pixmap)
         self.pkginfo_ui.ugcSmallIcon.set_from_file(self.ugc_small_pixmap)
@@ -4636,7 +4637,7 @@ class UGCInfoMenu(MenuSkel):
         self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (unicode(self.ugc_data['username'],'raw_unicode_escape'),))
         self.ugcinfo_ui.dateContent.set_markup("<u>%s</u>" % (self.ugc_data['ts'],))
         self.ugcinfo_ui.keywordsContent.set_markup("%s" % (unicode(', '.join(self.ugc_data['keywords']),'raw_unicode_escape'),))
-        self.ugcinfo_ui.sizeContent.set_markup("%s" % (self.Entropy.entropyTools.bytesIntoHuman(self.ugc_data['size']),))
+        self.ugcinfo_ui.sizeContent.set_markup("%s" % (self.entropyTools.bytesIntoHuman(self.ugc_data['size']),))
 
         bold_items = [
             self.ugcinfo_ui.titleLabel,
@@ -4678,7 +4679,7 @@ class UGCInfoMenu(MenuSkel):
 
 class UGCAddMenu(MenuSkel):
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, Entropy, pkgkey, repository, window, refresh_cb):
 
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
@@ -4755,7 +4756,7 @@ class UGCAddMenu(MenuSkel):
         bck_updateProgress = self.Entropy.updateProgress
         self.Entropy.updateProgress = self.do_label_update_progress
         try:
-            t = self.entropyTools.parallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
+            t = ParallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
             t.start()
             while 1:
                 if not t.isAlive(): break
@@ -6009,12 +6010,10 @@ class ExceptionDialog:
         pass
 
     def show(self):
-
-        import entropyTools
+        import entropy.tools
         from entropy.qa import ErrorReportInterface
-
-        errmsg = entropyTools.getTraceback()
-        conntest = entropyTools.get_remote_data(etpConst['conntestlink'])
+        errmsg = entropy.tools.getTraceback()
+        conntest = entropy.tools.get_remote_data(etpConst['conntestlink'])
         rc, (name,mail,description) = errorMessage(
             None,
             _( "Exception caught" ),

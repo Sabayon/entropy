@@ -19,8 +19,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-from entropyConstants import *
-from outputTools import *
+from entropy.const import *
+from entropy.output import *
 from entropy.client.interfaces import Client
 Equo = Client()
 from entropy.i18n import _

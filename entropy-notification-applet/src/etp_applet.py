@@ -8,6 +8,11 @@
 # def help added by Tammy Fox
 #
 # $Id: rhn_applet.py,v 1.114 2003/11/09 16:56:33 veillard Exp $
+import os
+import sys
+import time
+import threading
+import subprocess
 
 import gnome
 import gnome.ui
@@ -15,10 +20,7 @@ import gnome.ui
 import gtk
 import gobject
 import gtk.gdk
-import egg.trayicon
 import pynotify
-
-import os, sys, math, time, threading, subprocess
 
 import etp_applet_animation
 from etp_applet_dialogs import \
@@ -31,17 +33,14 @@ from etp_applet_dialogs import \
 import etp_applet_config
 
 # Entropy imports
-from entropyConstants import *
-try:
-    from entropy.exceptions import *
-except ImportError:
-    from exceptionTools import *
-import entropyTools
+from entropy.misc import TimeScheduled, ParallelTask
+from entropy.i18n import _
+from entropy.exceptions import *
+import entropy.tools as entropyTools
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.client.interfaces import Repository as RepoInterface
 from entropy.transceivers import urlFetcher
-
-from entropy.i18n import _
+from entropy.const import etpConst, etpRepositories
 
 class Entropy(EquoInterface):
 
@@ -92,15 +91,28 @@ class Entropy(EquoInterface):
 
 class GuiUrlFetcher(urlFetcher):
 
+    def __init__(self, *args, **kwargs):
+        urlFetcher.__init__(self, *args, **kwargs)
+        self.__remotesize = 0
+        self.__downloadedsize = 0
+        self.__datatransfer = 0
+
     def connect_to_gui(self, progress):
         self.progress = progress
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__remotesize = total_size
+        self.__downloadedsize = downloaded_size
+        self.__datatransfer = data_transfer
 
     def updateProgress(self):
         self.gather = self.__downloadedsize
         message = "Fetching data %s/%s kB @ %s" % (
                                         str(round(float(self.__downloadedsize)/1024,1)),
                                         str(round(self.__remotesize,1)),
-                                        str(self.entropyTools.bytesIntoHuman(self.__datatransfer))+"/sec",
+                                        str(entropyTools.bytesIntoHuman(self.__datatransfer))+"/sec",
                                     )
         self.progress(message)
 
@@ -313,7 +325,7 @@ class EntropyApplet:
     def enable_refresh_timer(self, when = etp_applet_config.settings['REFRESH_INTERVAL'] * 1000):
         if self.current_state in [ "CRITICAL" ]: return
         if not self.refresh_timeout_tag:
-            self.refresh_timeout_tag = entropyTools.TimeScheduled(when/1000, self.refresh_handler)
+            self.refresh_timeout_tag = TimeScheduled(when/1000, self.refresh_handler)
             self.refresh_timeout_tag.set_delay_before(True)
             self.refresh_timeout_tag.start()
 
@@ -328,7 +340,7 @@ class EntropyApplet:
     def end_working(self):
         self.isWorking = False
 
-    def change_icon(self, image, cycle_image = None):
+    def change_icon(self, image):
         to_image = self.icons.best_match(image, self.applet_size)
         self.status_icon.set_from_pixbuf(to_image)
 
@@ -391,7 +403,7 @@ class EntropyApplet:
         def spawn_spritz():
             os.execv('/usr/bin/spritz', ['spritz'])
 
-        t = entropyTools.parallelTask(spawn_spritz)
+        t = ParallelTask(spawn_spritz)
         t.start()
 
     def show_alert(self, title, text, urgency = None):
@@ -449,7 +461,7 @@ class EntropyApplet:
 
         self.refresh_lock.acquire()
         try:
-            t = entropyTools.parallelTask(self.run_refresh, force)
+            t = ParallelTask(self.run_refresh, force)
             t.start()
             while t.isAlive():
                 self.status_icon.set_visible(True)
@@ -618,7 +630,7 @@ class EntropyApplet:
     def enable_network_timer(self, when = etp_applet_config.settings['NETWORK_RETRY_INTERVAL'] * 1000, force = 0):
         if self.current_state != "DISCONNECTED": return
         if not self.network_timeout_tag:
-            self.network_timeout_tag = entropyTools.TimeScheduled(when/1000, self.network_retry_handler, force = force)
+            self.network_timeout_tag = TimeScheduled(when/1000, self.network_retry_handler, force = force)
             self.network_timeout_tag.set_delay_before(True)
             self.network_timeout_tag.start()
 

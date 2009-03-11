@@ -20,8 +20,8 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from entropyConstants import *
-from outputTools import *
+from entropy.const import *
+from entropy.output import *
 from entropy.server.interfaces import Server
 from entropy.i18n import _
 Entropy = Server(community_repo = etpConst['community']['mode'])

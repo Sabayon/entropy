@@ -27,9 +27,9 @@ sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
 from entropy.exceptions import *
-from entropyConstants import *
-from outputTools import *
-import entropyTools
+from entropy.const import *
+from entropy.output import *
+import entropy.tools as entropyTools
 try:
     from entropy.i18n import _
 except ImportError:
