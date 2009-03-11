@@ -5496,9 +5496,8 @@ class Package:
                 dest_file = os.path.join(self.infoDict['unpackdir'],file_name)
                 rc = self._fetch_source(url, dest_file)
                 if rc == 0: break
-            if rc == 0:
-                d_cache.add(key_name)
-                break
+            if rc != 0: break
+            d_cache.add(key_name)
 
         return rc
 
