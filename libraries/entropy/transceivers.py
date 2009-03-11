@@ -727,12 +727,12 @@ class FtpInterface:
         return [x.split("/")[-1] for x in self.__ftpconn.nlst()]
 
     def is_file_available(self, filename):
-        try:
-            xx = []
-            self.__ftpconn.retrlines('NLST %s' % (filename,),xx.append)
-            return True
-        except self.ftplib.error_temp:
-            return False
+        xx = []
+        def cb(x):
+            if x == filename: xx.append(x)
+        self.__ftpconn.retrlines('NLST',cb)
+        if xx: return True
+        return False
 
     def delete_file(self,file):
         rc = self.__ftpconn.delete(file)
