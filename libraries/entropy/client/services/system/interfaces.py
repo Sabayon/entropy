@@ -23,7 +23,7 @@ from __future__ import with_statement
 import time
 from entropy.exceptions import *
 from entropy.i18n import _
-
+from entropy.misc import TimeScheduled
 
 class Client:
 
@@ -55,7 +55,8 @@ class Client:
         else:
             self.MethodsInterface = BaseMethods
 
-        import socket, struct, entropyTools
+        import socket, struct
+        import entropy.tools as entropyTools
         self.socket, self.struct, self.entropyTools = socket, struct, entropyTools
         from datetime import datetime
         self.datetime = datetime
@@ -85,7 +86,7 @@ class Client:
         # expires
         self.do_cache_session = do_cache_session
         if self.do_cache_connection:
-            self.connection_killer = self.entropyTools.TimeScheduled(2, self.connection_killer_handler)
+            self.connection_killer = TimeScheduled(2, self.connection_killer_handler)
             self.connection_killer.start()
 
     def __del__(self):

@@ -23,13 +23,13 @@ from __future__ import with_statement
 import os
 import sys
 import subprocess
-from entropyConstants import etpConst
-from outputTools import blue, red
+from entropy.const import etpConst
+from entropy.output import blue, red
 
 
 class Base:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
 
         try:

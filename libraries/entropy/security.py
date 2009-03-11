@@ -23,7 +23,7 @@
 import os
 import shutil
 from entropy.exceptions import *
-from entropyConstants import etpConst, etpCache, etpUi, const_setup_perms
+from entropy.const import etpConst, etpCache, etpUi, const_setup_perms
 from entropy.i18n import _
 from outputTools import blue, bold, red, darkgreen, darkred
 
@@ -46,7 +46,7 @@ class SecurityInterface:
     # - getting GLSAs from http/ftp servers (not really useful without the fixed ebuilds)
     # - GPG signing/verification (until key policy is clear)
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, EquoInstance):
 
         # disabled for now

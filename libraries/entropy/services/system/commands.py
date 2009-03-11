@@ -22,11 +22,11 @@
 
 import os
 from entropy.services.skel import SocketCommands
-from entropyConstants import etpConst
+from entropy.const import etpConst
 
 class Base(SocketCommands):
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, HostInterface):
 
         import copy
@@ -420,7 +420,8 @@ class Base(SocketCommands):
 
 class Repository(SocketCommands):
 
-    import entropyTools, dumpTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     def __init__(self, HostInterface):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "srvrepo")

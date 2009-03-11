@@ -23,8 +23,9 @@
 from __future__ import with_statement
 import os
 from entropy.services.interfaces import SocketHost
-from outputTools import TextInterface, blue, brown
-from entropyConstants import etpConst, etpCache
+from entropy.output import TextInterface, blue, brown
+from entropy.const import etpConst, etpCache
+from entropy.misc import TimeScheduled
 
 class Server(SocketHost):
 
@@ -32,7 +33,8 @@ class Server(SocketHost):
         def __init__(self, *args, **kwargs):
             pass
 
-    import entropyTools, dumpTools
+    import entropy.tools as entropyTools
+    import entropy.dump as dumpTools
     def __init__(self, repositories, do_ssl = False, stdout_logging = True, **kwargs):
         from entropy.services.repository.commands import Repository
         self.RepositoryCommands = Repository
@@ -72,7 +74,7 @@ class Server(SocketHost):
             self.LockScanner.kill()
 
     def start_repository_lock_scanner(self):
-        self.LockScanner = self.entropyTools.TimeScheduled(0.5, self.lock_scan)
+        self.LockScanner = TimeScheduled(0.5, self.lock_scan)
         self.LockScanner.start()
 
     def set_repository_db_availability(self, repo_tuple):

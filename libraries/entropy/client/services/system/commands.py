@@ -25,7 +25,7 @@ from entropy.client.services.ugc.commands import Base
 
 class Client(Base):
 
-    import entropyTools
+    import entropy.dump as dumpTools
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
 
@@ -175,7 +175,7 @@ class Client(Base):
 
 class Repository(Client):
 
-    import dumpTools
+    import entropy.dump as dumpTools
 
     def sync_spm(self, session_id):
 

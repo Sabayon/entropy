@@ -19,11 +19,126 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
+from __future__ import with_statement
 import os
 import time
 import urllib2
-from entropyConstants import *
+import threading
+from entropy.const import *
+
+class Lifo:
+
+    def __init__(self):
+        self.counter = -1
+        self.buf = {}
+        self.L = threading.Lock()
+
+    def push(self,item):
+        with self.L:
+            self.counter += 1
+            self.buf[self.counter] = item
+
+    def clear(self):
+        with self.L:
+            self.counter = -1
+            self.buf.clear()
+
+    def is_filled(self):
+        if self.counter == -1:
+            return False
+        return True
+
+    def pop(self):
+        with self.L:
+            if self.counter == -1:
+                return None
+            self.counter -= 1
+            try:
+                return self.buf.pop(self.counter+1)
+            except KeyError:
+                pass
+
+class TimeScheduled(threading.Thread):
+
+    def __init__(self, delay, *args, **kwargs):
+        threading.Thread.__init__(self)
+        self.__f = args[0]
+        self.__delay = delay
+        self.__args = args[1:][:]
+        self.__kwargs = kwargs.copy()
+        # never enable this by default
+        # otherwise kill() and thread
+        # check will hang until
+        # time.sleep() is done
+        self.__accurate = False
+        self.__delay_before = False
+
+    def set_delay(self, delay):
+        self.__delay = delay
+
+    def set_delay_before(self, do):
+        self.__delay_before = bool(do)
+
+    def set_accuracy(self, do):
+        self.__accurate = bool(do)
+
+    def run(self):
+        self.__alive = 1
+        while self.__alive:
+
+            if self.__delay_before:
+                do_break = self.__do_delay()
+                if do_break: break
+
+            if self.__f == None: break
+            self.__f(*self.__args,**self.__kwargs)
+
+            if not self.__delay_before:
+                do_break = self.__do_delay()
+                if do_break: break
+
+
+    def __do_delay(self):
+
+        if not self.__accurate:
+
+            mydelay = float(self.__delay)
+            t_frac = 0.3
+            while mydelay > 0.0:
+                if not self.__alive:
+                    return True
+                if time == None:
+                    return True # shut down?
+                time.sleep(t_frac)
+                mydelay -= t_frac
+
+        else:
+
+            if time == None: return True # shut down?
+            time.sleep(self.__delay)
+
+        return False
+
+    def kill(self):
+        self.__alive = 0
+
+class ParallelTask(threading.Thread):
+
+    def __init__(self, *args, **kwargs):
+        threading.Thread.__init__(self)
+        self.__function = args[0]
+        self.__args = args[1:][:]
+        self.__kwargs = kwargs.copy()
+        self.__rc = None
+
+    def run(self):
+        self.__rc = self.__function(*self.__args,**self.__kwargs)
+
+    def get_function(self):
+        return self.__function
+
+    def get_rc(self):
+        return self.__rc
 
 class EmailSender:
 
@@ -196,7 +311,7 @@ class EntropyGeoIP:
 
 class rssFeed:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, filename, title, description, maxentries = 100):
 
         self.__feed_title = title

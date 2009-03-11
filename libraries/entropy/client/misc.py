@@ -25,8 +25,9 @@ import shutil
 import subprocess
 from entropy.client.interfaces import Client
 from entropy.exceptions import *
-from entropyConstants import etpConst, etpCache
-from outputTools import darkred, darkgreen, red, brown, blue
+from entropy.const import etpConst, etpCache
+from entropy.output import darkred, darkgreen, red, brown, blue
+from entropy.tools import getstatusoutput
 
 class FileUpdatesInterface:
 
@@ -38,8 +39,6 @@ class FileUpdatesInterface:
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.scandata = None
-        import commands
-        self.commands = commands
 
     def merge_file(self, key):
         self.scanfs(dcache = True)
@@ -267,7 +266,7 @@ class FileUpdatesInterface:
                     # if it's broken, skip diff and automerge
                     if not os.path.exists(filepath):
                         return mydict
-                result = self.commands.getoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath,tofilepath,))
+                result = getstatusoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath,tofilepath,))[1]
                 if not result:
                     mydict['automerge'] = True
             except:

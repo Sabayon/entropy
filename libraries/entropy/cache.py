@@ -21,17 +21,18 @@
 '''
 from __future__ import with_statement
 from entropy.core import Singleton
+from entropy.misc import TimeScheduled, Lifo
 import time
 
 class EntropyCacher(Singleton):
 
-    import entropyTools
-    import dumpTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     import threading
     def init_singleton(self):
         self.__alive = False
         self.__CacheWriter = None
-        self.__CacheBuffer = self.entropyTools.lifobuffer()
+        self.__CacheBuffer = Lifo()
         self.__CacheLock = self.threading.Lock()
         import copy
         self.copy = copy
@@ -54,7 +55,7 @@ class EntropyCacher(Singleton):
         self.stop()
 
     def start(self):
-        self.__CacheWriter = self.entropyTools.TimeScheduled(1,self.__cacher)
+        self.__CacheWriter = TimeScheduled(1,self.__cacher)
         self.__CacheWriter.set_delay_before(True)
         self.__CacheWriter.start()
         while not self.__CacheWriter.isAlive():

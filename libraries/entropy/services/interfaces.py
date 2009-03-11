@@ -24,7 +24,7 @@ from __future__ import with_statement
 import os
 import shutil
 import time
-from entropyConstants import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO
+from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 
@@ -36,7 +36,7 @@ class SocketHost:
 
     class BasicPamAuthenticator(SocketAuthenticator):
 
-        import entropyTools
+        import entropy.tools as entropyTools
 
         def __init__(self, HostInterface, *args, **kwargs):
             self.valid_auth_types = [ "plain", "shadow", "md5" ]
@@ -186,7 +186,7 @@ class SocketHost:
             def __getattr__(self, function) :
                 return getattr(self.connection, function)
 
-        import entropyTools
+        import entropy.tools as entropyTools
         import socket as socket_mod
         import select
         import SocketServer
@@ -382,7 +382,7 @@ class SocketHost:
         import SocketServer
         import select
         import socket
-        import entropyTools
+        import entropy.tools as entropyTools
         import gc
         timed_out = False
 
@@ -606,7 +606,7 @@ class SocketHost:
 
     class CommandProcessor:
 
-        import entropyTools
+        import entropy.tools as entropyTools
         import socket
         import gc
 
@@ -959,7 +959,7 @@ class SocketHost:
 
     class BuiltInCommands(SocketCommands):
 
-        import dumpTools
+        import entropy.dump as dumpTools
         import zlib
 
         def __init__(self, HostInterface):
@@ -1294,12 +1294,12 @@ class SocketHost:
             return alive
 
         def docmd_hello(self, transmitter):
-            import commands
+            from entropy.tools import getstatusoutput
             uname = os.uname()
             kern_string = uname[2]
             running_host = uname[1]
             running_arch = uname[4]
-            load_stats = commands.getoutput('uptime').split("\n")[0]
+            load_stats = getstatusoutput('uptime')[1].split("\n")[0]
             text = "Entropy Server %s, connections: %s ~ running on: %s ~ host: %s ~ arch: %s, kernel: %s, stats: %s\n" % (
                     etpConst['entropyversion'],
                     self.HostInterface.connections,
@@ -1392,7 +1392,9 @@ class SocketHost:
         self.gc = gc
         import threading
         self.threading = threading
-        import entropyTools
+        import entropy.tools as entropyTools
+        from entropy.misc import TimeScheduled
+        self.TimeScheduled = TimeScheduled
         self.entropyTools = entropyTools
         self.Server = None
         self.Gc = None
@@ -1701,12 +1703,12 @@ class SocketHost:
         self.AuthenticatorInst = (auth_inst[0],[self]+auth_inst[1],auth_inst[2],)
 
     def start_python_garbage_collector(self):
-        self.PythonGarbageCollector = self.entropyTools.TimeScheduled(3600, self.python_garbage_collect)
+        self.PythonGarbageCollector = self.TimeScheduled(3600, self.python_garbage_collect)
         self.PythonGarbageCollector.set_accuracy(False)
         self.PythonGarbageCollector.start()
 
     def start_session_garbage_collector(self):
-        self.Gc = self.entropyTools.TimeScheduled(5, self.gc_clean)
+        self.Gc = self.TimeScheduled(5, self.gc_clean)
         self.Gc.start()
 
     def python_garbage_collect(self):

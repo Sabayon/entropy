@@ -21,14 +21,14 @@
 '''
 
 import os
-from entropyConstants import etpConst
-from outputTools import blue, darkgreen, red, darkred, bold, purple, brown
+from entropy.const import etpConst
+from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
 from entropy.exceptions import *
-import entropy
 
 class QAInterface:
 
-    import entropyTools
+    import entropy.tools as entropyTools
+    from entropy.misc import Lifo
     def __init__(self, OutputInterface):
 
         self.Output = OutputInterface
@@ -405,7 +405,7 @@ class QAInterface:
 
     def _get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
 
-        mybuffer = self.entropyTools.lifobuffer()
+        mybuffer = self.Lifo()
         matchcache = set()
         depcache = set()
         mydeps = dbconn.retrieveDependencies(idpackage)
@@ -439,7 +439,7 @@ class QAInterface:
 
 class ErrorReportInterface:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, post_url = etpConst['handlers']['errorsend']):
         from entropy.misc import MultipartPostHandler
         import urllib2
@@ -447,8 +447,6 @@ class ErrorReportInterface:
         self.opener = urllib2.build_opener(MultipartPostHandler)
         self.generated = False
         self.params = {}
-        import commands
-        self.commands = commands
 
         mydict = {}
         if etpConst['proxy']['ftp']:
@@ -466,6 +464,7 @@ class ErrorReportInterface:
     def prepare(self, tb_text, name, email, report_data = "", description = ""):
 
         import sys
+        from entropy.tools import getstatusoutput
         self.params['arch'] = etpConst['currentarch']
         self.params['stacktrace'] = tb_text
         self.params['name'] = name
@@ -481,10 +480,10 @@ class ErrorReportInterface:
             self.params['system_version'] = f.readlines()
             f.close()
 
-        self.params['processes'] = self.commands.getoutput('ps auxf')
-        self.params['lspci'] = self.commands.getoutput('/usr/sbin/lspci')
-        self.params['dmesg'] = self.commands.getoutput('dmesg')
-        self.params['locale'] = self.commands.getoutput('locale -v')
+        self.params['processes'] = getstatusoutput('ps auxf')[1]
+        self.params['lspci'] = getstatusoutput('/usr/sbin/lspci')[1]
+        self.params['dmesg'] = getstatusoutput('dmesg')[1]
+        self.params['locale'] = getstatusoutput('locale -v')[1]
         self.params['stacktrace'] += "\n\n"+self.params['locale'] # just for a while, won't hurt
 
         self.generated = True

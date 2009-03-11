@@ -23,10 +23,11 @@ from __future__ import with_statement
 import os
 import urllib2
 import time
-from entropyConstants import etpConst
-from outputTools import TextInterface, darkblue, darkred, purple, blue, brown, darkgreen, red
+from entropy.const import etpConst
+from entropy.output import TextInterface, darkblue, darkred, purple, blue, brown, darkgreen, red
 from entropy.exceptions import *
 from entropy.i18n import _
+from entropy.misc import TimeScheduled, ParallelTask
 
 
 class urlFetcher:
@@ -38,7 +39,8 @@ class urlFetcher:
             OutputInterface = None):
 
         self.progress = None
-        import entropyTools, socket
+        import entropy.tools as entropyTools
+        import socket
         self.entropyTools, self.socket = entropyTools, socket
         self.__th_id = 0
         self.__resume = resume
@@ -137,7 +139,7 @@ class urlFetcher:
     def download(self):
 
         self._init_vars()
-        self.speedUpdater = self.entropyTools.TimeScheduled(
+        self.speedUpdater = TimeScheduled(
             self.__transferpollingtime,
             self.__update_speed,
         )
@@ -348,7 +350,7 @@ class urlFetcher:
 
 class MultipleUrlFetcher:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, url_path_list, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
@@ -435,7 +437,7 @@ class MultipleUrlFetcher:
             def do_download(ds, th_id, downloader):
                 ds[th_id] = downloader.download()
 
-            t = self.entropyTools.parallelTask(do_download, self.__download_statuses, th_id, downloader)
+            t = ParallelTask(do_download, self.__download_statuses, th_id, downloader)
             self.__thread_pool[th_id] = t
             t.start()
         self.show_download_files_info()
@@ -582,7 +584,8 @@ class FtpInterface:
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
 
-        import socket, ftplib, entropyTools
+        import socket, ftplib
+        import entropy.tools as entropyTools
         self.socket, self.ftplib, self.entropyTools = socket, ftplib, entropyTools
         self.Entropy = OutputInterface
         self.__verbose = verbose
@@ -725,7 +728,8 @@ class FtpInterface:
 
     def is_file_available(self, filename):
         try:
-            self.send_cmd("stat %s" % (filename,))
+            xx = []
+            self.__ftpconn.retrlines('NLST %s' % (filename,),xx.append)
             return True
         except self.ftplib.error_temp:
             return False

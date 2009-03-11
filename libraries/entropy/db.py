@@ -24,9 +24,9 @@ from __future__ import with_statement
 import os
 import shutil
 import subprocess
-from entropyConstants import etpConst, etpCache
+from entropy.const import etpConst, etpCache
 from entropy.exceptions import *
-from outputTools import brown, bold, red, blue, darkred, darkgreen, TextInterface
+from entropy.output import brown, bold, red, blue, darkred, darkgreen, TextInterface
 from entropy.cache import EntropyCacher
 from entropy.core import Singleton
 
@@ -372,7 +372,9 @@ class Schema:
 
 class LocalRepository:
 
-    import entropyTools, dumpTools, threading
+    import entropy.tools as entropyTools
+    import entropy.dump as dumpTools
+    import threading
     def __init__(self, readOnly = False, noUpload = False, dbFile = None, clientDatabase = False,
         xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = None,
         ServiceInterface = None, skipChecks = False, useBranch = None, lockRemote = True):

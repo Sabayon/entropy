@@ -22,7 +22,7 @@
 
 import os
 from entropy.exceptions import *
-from entropyConstants import *
+from entropy.const import *
 
 class Singleton(object):
 
@@ -35,9 +35,7 @@ class Singleton(object):
                 destroyed = ck_dst()
             except AttributeError:
                 destroyed = False
-            if destroyed:
-                del it
-            else:
+            if not destroyed:
                 return it
         cls.__it__ = it = object.__new__(cls)
         it.init_singleton(*args, **kwds)
@@ -45,7 +43,7 @@ class Singleton(object):
 
 class SystemSettings(Singleton):
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def init_singleton(self, EquoInstance):
 
         self.__data = {}

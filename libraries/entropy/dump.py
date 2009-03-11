@@ -21,7 +21,8 @@
 '''
 
 from __future__ import with_statement
-from entropyConstants import *
+import os
+from entropy.const import etpConst, const_setup_perms, const_setup_file
 try:
     import cPickle as pickle
 except ImportError:

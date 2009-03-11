@@ -24,12 +24,13 @@ from __future__ import with_statement
 import os
 import shutil
 from entropy.services.skel import SocketCommands
-from entropyConstants import etpConst
+from entropy.const import etpConst
 from entropy.services.ugc.interfaces import Server
 
 class UGC(SocketCommands):
 
-    import dumpTools, entropyTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     def __init__(self, HostInterface, connection_data, store_path, store_url):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "ugc-commands")

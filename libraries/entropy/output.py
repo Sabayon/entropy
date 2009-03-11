@@ -24,7 +24,7 @@
 
 import sys, os
 import curses
-from entropyConstants import etpUi
+from entropy.const import etpUi
 from entropy.i18n import _
 stuff = {}
 stuff['cols'] = 30
@@ -187,8 +187,8 @@ def xtermTitleReset():
                 if prompt_command == "":
                         default_xterm_title = ""
                 elif prompt_command is not None:
-                        import commands
-                        default_xterm_title = commands.getoutput(prompt_command)
+                        from entropy.tools import getstatusoutput
+                        default_xterm_title = getstatusoutput(prompt_command)[1]
                 else:
                         pwd = os.getenv('PWD','')
                         home = os.getenv('HOME', '')

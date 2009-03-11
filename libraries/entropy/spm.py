@@ -22,9 +22,9 @@
 import os
 import sys
 import shutil
-from entropyConstants import etpConst, etpUi
+from entropy.const import etpConst, etpUi
 from entropy.exceptions import *
-from outputTools import darkred, darkgreen, brown, darkblue, purple, red, bold
+from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, bold
 
 class Spm:
 
@@ -54,7 +54,7 @@ class Spm:
 
 class PortagePlugin:
 
-    import entropyTools
+    import entropy.tools as entropyTools
 
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce

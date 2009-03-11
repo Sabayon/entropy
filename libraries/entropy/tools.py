@@ -22,22 +22,23 @@
 '''
 
 from __future__ import with_statement
+import random
 import stat
 import errno
-from outputTools import *
-from entropyConstants import *
 import re
+import os
 import threading
 import time
-import commands
 import shutil
 import tarfile
+from entropy.misc import TimeScheduled, ParallelTask as parallelTask, Lifo as lifobuffer
+from entropy.output import *
+from entropy.const import *
 from entropy.exceptions import *
 
+
 def isRoot():
-    if (etpConst['uid'] == 0):
-        return True
-    return False
+    return not etpConst['uid']
 
 def is_user_in_entropy_group(uid = None):
 
@@ -70,87 +71,7 @@ def is_user_in_entropy_group(uid = None):
 def kill_threads():
     const_kill_threads()
 
-class TimeScheduled(threading.Thread):
 
-    def __init__(self, delay, *args, **kwargs):
-        threading.Thread.__init__(self)
-        self.__f = args[0]
-        self.__delay = delay
-        self.__args = args[1:][:]
-        self.__kwargs = kwargs.copy()
-        # never enable this by default
-        # otherwise kill() and thread
-        # check will hang until
-        # time.sleep() is done
-        self.__accurate = False
-        self.__delay_before = False
-
-    def set_delay(self, delay):
-        self.__delay = delay
-
-    def set_delay_before(self, do):
-        self.__delay_before = bool(do)
-
-    def set_accuracy(self, do):
-        self.__accurate = bool(do)
-
-    def run(self):
-        self.__alive = 1
-        while self.__alive:
-
-            if self.__delay_before:
-                do_break = self.__do_delay()
-                if do_break: break
-
-            if self.__f == None: break
-            self.__f(*self.__args,**self.__kwargs)
-
-            if not self.__delay_before:
-                do_break = self.__do_delay()
-                if do_break: break
-
-
-    def __do_delay(self):
-
-        if not self.__accurate:
-
-            mydelay = float(self.__delay)
-            t_frac = 0.3
-            while mydelay > 0.0:
-                if not self.__alive:
-                    return True
-                if time == None:
-                    return True # shut down?
-                time.sleep(t_frac)
-                mydelay -= t_frac
-
-        else:
-
-            if time == None: return True # shut down?
-            time.sleep(self.__delay)
-
-        return False
-
-    def kill(self):
-        self.__alive = 0
-
-class parallelTask(threading.Thread):
-
-    def __init__(self, *args, **kwargs):
-        threading.Thread.__init__(self)
-        self.__function = args[0]
-        self.__args = args[1:][:]
-        self.__kwargs = kwargs.copy()
-        self.__rc = None
-
-    def run(self):
-        self.__rc = self.__function(*self.__args,**self.__kwargs)
-
-    def get_function(self):
-        return self.__function
-
-    def get_rc(self):
-        return self.__rc
 
 def printTraceback(f = None):
     import traceback
@@ -358,6 +279,15 @@ def check_required_space(mountpoint, bytes_required):
         return False
     return True
 
+def getstatusoutput(cmd):
+    """Return (status, output) of executing cmd in a shell."""
+    pipe = os.popen('{ ' + cmd + '; } 2>&1', 'r')
+    text = pipe.read()
+    sts = pipe.close()
+    if sts is None: sts = 0
+    if text[-1:] == '\n': text = text[:-1]
+    return sts, text
+
 # Copyright 1998-2004 Gentoo Foundation
 # Copyright 2009 Fabio Erculiani (reducing code complexity)
 # Distributed under the terms of the GNU General Public License v2
@@ -431,7 +361,7 @@ def movefile(src, dest, src_basedir = None):
                 return False
         else:
             #we don't yet handle special, so we need to fall back to /bin/mv
-            a = commands.getstatusoutput("mv -f '%s' '%s'" % (src,dest,))
+            a = getstatusoutput("mv -f '%s' '%s'" % (src,dest,))
             if a[0]!=0:
                 print "!!! Failed to move special file:"
                 print "!!! '"+src+"' to '"+dest+"'"
@@ -846,6 +776,17 @@ def suckXpak(tbz2file, outputpath):
     except OSError:
         pass
     return xpakpath
+
+def appendXpak(tbz2file, atom):
+    import entropy.xpak as xpak
+    from entropy.spm import Spm
+    SpmIntf = Spm(None)
+    spm = SpmIntf.intf
+    dbdir = spm.get_vdb_path()+"/"+atom+"/"
+    if os.path.isdir(dbdir):
+        tbz2 = xpak.tbz2(tbz2file)
+        tbz2.recompose(dbdir)
+    return tbz2file
 
 def aggregateEdb(tbz2file,dbfile):
     f = open(tbz2file,"abw")
@@ -2252,38 +2193,6 @@ def flatten(l, ltypes=(list, tuple)):
     i += 1
   return l
 
-class lifobuffer:
-
-    def __init__(self):
-        self.counter = -1
-        self.buf = {}
-        self.L = threading.Lock()
-
-    def push(self,item):
-        with self.L:
-            self.counter += 1
-            self.buf[self.counter] = item
-
-    def clear(self):
-        with self.L:
-            self.counter = -1
-            self.buf.clear()
-
-    def is_filled(self):
-        if self.counter == -1:
-            return False
-        return True
-
-    def pop(self):
-        with self.L:
-            if self.counter == -1:
-                return None
-            self.counter -= 1
-            try:
-                return self.buf.pop(self.counter+1)
-            except KeyError:
-                pass
-
 def read_repositories_conf():
     content = []
     if os.path.isfile(etpConst['repositoriesconf']):
@@ -2446,16 +2355,7 @@ def isEntropyTbz2(tbz2file):
         return False
     return tarfile.is_tarfile(tbz2file)
 
-def appendXpak(tbz2file, atom):
-    import entropy.xpak as xpak
-    from entropy.spm import Spm
-    SpmIntf = Spm(None)
-    spm = SpmIntf.intf
-    dbdir = spm.get_vdb_path()+"/"+atom+"/"
-    if os.path.isdir(dbdir):
-        tbz2 = xpak.tbz2(tbz2file)
-        tbz2.recompose(dbdir)
-    return tbz2file
+
 
 def is_valid_string(string):
     mystring = str(string)
@@ -2524,7 +2424,7 @@ def read_elf_dynamic_libraries(elf_file):
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
             raise FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
-    return set([x.strip().split()[-1][1:-1] for x in commands.getoutput('/usr/bin/readelf -d %s' % (elf_file,)).split("\n") if (x.find("(NEEDED)") != -1)])
+    return set([x.strip().split()[-1][1:-1] for x in getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") if (x.find("(NEEDED)") != -1)])
 
 def read_elf_broken_symbols(elf_file):
     global ldd_avail_check
@@ -2532,7 +2432,7 @@ def read_elf_broken_symbols(elf_file):
         if not os.access(etpConst['systemroot']+"/usr/bin/ldd",os.X_OK):
             raise FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
-    return set([x.strip().split("\t")[0].split()[-1] for x in commands.getoutput('/usr/bin/ldd -r %s' % (elf_file,)).split("\n") if (x.find("undefined symbol:") != -1)])
+    return set([x.strip().split("\t")[0].split()[-1] for x in getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if (x.find("undefined symbol:") != -1)])
 
 
 # FIXME: reimplement this
@@ -2542,7 +2442,7 @@ def read_elf_linker_paths(elf_file):
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
             raise FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
-    data = [x.strip().split()[-1][1:-1].split(":") for x in commands.getoutput('readelf -d %s' % (elf_file,)).split("\n") if not ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
+    data = [x.strip().split()[-1][1:-1].split(":") for x in getstatusoutput('readelf -d %s' % (elf_file,))[1].split("\n") if not ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
     mypaths = []
     for mypath in data:
         for xpath in mypath:

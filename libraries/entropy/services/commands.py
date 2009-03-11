@@ -24,8 +24,8 @@ from entropy.services.skel import SocketCommands
 
 class phpBB3(SocketCommands):
 
-    import dumpTools
-    import entropyTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     def __init__(self, HostInterface):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "phpbb3-commands")

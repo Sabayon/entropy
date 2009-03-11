@@ -23,12 +23,12 @@
 from __future__ import with_statement
 import os
 from entropy.services.skel import SocketCommands
-from entropyConstants import etpConst
+from entropy.const import etpConst
 
 class Repository(SocketCommands):
 
-    import dumpTools
-    import entropyTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
 
     def __init__(self, HostInterface):
 

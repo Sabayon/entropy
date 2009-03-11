@@ -23,8 +23,8 @@
 from __future__ import with_statement
 import os
 from entropy.exceptions import *
-from entropyConstants import etpConst
-from outputTools import darkblue, bold, blue, darkgreen, darkred, brown
+from entropy.const import etpConst
+from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
 
 class Base:
@@ -43,7 +43,9 @@ class Base:
                 mytxt = _("A valid entropy.services.ugc.interfaces.Client based instance is needed")
                 raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service,mytxt,))
 
-        import entropyTools, socket, zlib, struct, dumpTools
+        import socket, zlib, struct
+        import entropy.tools as entropyTools
+        import entropy.dump as dumpTools
         self.entropyTools, self.socket, self.zlib, self.struct, self.dumpTools = entropyTools, socket, zlib, struct, dumpTools
         self.Output = OutputInterface
         self.Service = Service

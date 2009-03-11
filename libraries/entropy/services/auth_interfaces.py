@@ -26,11 +26,11 @@ import time
 import random
 from entropy.services.skel import Authenticator, RemoteDatabase
 from entropy.exceptions import *
-from entropyConstants import etpConst
+from entropy.const import etpConst
 
 class phpBB3Auth(Authenticator,RemoteDatabase):
 
-    import entropyTools
+    from entropy import tools as entropyTools
     def __init__(self):
         Authenticator.__init__(self)
         RemoteDatabase.__init__(self)

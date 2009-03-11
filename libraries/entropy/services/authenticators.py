@@ -30,7 +30,7 @@ from entropy.exceptions import *
 # Authenticator that can be used by SocketHostInterface based instances
 class phpBB3(phpBB3Auth,SocketAuthenticator):
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, HostInterface, *args, **kwargs):
         SocketAuthenticator.__init__(self, HostInterface)
         phpBB3Auth.__init__(self)

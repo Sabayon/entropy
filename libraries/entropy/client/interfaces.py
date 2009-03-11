@@ -21,16 +21,18 @@
 '''
 from __future__ import with_statement
 import os
+import random
 import subprocess
 import time
 import shutil
 from entropy.core import Singleton
 # print_info, print_error, print_warning for Python-based triggers
-from outputTools import TextInterface, brown, blue, bold, darkgreen, darkblue, red, purple, darkred, print_info, print_error, print_warning
-from entropyConstants import *
+from entropy.output import TextInterface, brown, blue, bold, darkgreen, darkblue, red, purple, darkred, print_info, print_error, print_warning
+from entropy.const import *
 from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.db import dbapi2, LocalRepository
+from entropy.misc import TimeScheduled, Lifo
 
 class Client(Singleton,TextInterface):
 
@@ -41,7 +43,8 @@ class Client(Singleton,TextInterface):
 
         self.__instance_destroyed = False
         # modules import
-        import dumpTools, entropyTools
+        import entropy.dump as dumpTools
+        import entropy.tools as entropyTools
         self.dumpTools = dumpTools
         self.entropyTools = entropyTools
 
@@ -1981,7 +1984,7 @@ class Client(Singleton,TextInterface):
             matchfilter = set()
 
         maskedtree = {}
-        mybuffer = self.entropyTools.lifobuffer()
+        mybuffer = Lifo()
         depcache = set()
         treelevel = -1
 
@@ -2073,7 +2076,7 @@ class Client(Singleton,TextInterface):
         conflicts = set()
 
         mydep = (1,myatom)
-        mybuffer = self.entropyTools.lifobuffer()
+        mybuffer = Lifo()
         deptree = set()
         if atomInfo not in matchfilter:
             deptree.add((1,atomInfo))
@@ -4263,7 +4266,7 @@ class Client(Singleton,TextInterface):
 
 class Package:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,Client):
@@ -6428,8 +6431,8 @@ class Package:
 
 class Repository:
 
-    import dumpTools
-    import entropyTools
+    import entropy.dump as dumpTools
+    import entropy.tools as entropyTools
     import socket
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
 
@@ -7668,7 +7671,7 @@ class Repository:
         # kill previous
         self.current_repository_got_locked = False
         self.kill_previous_repository_lock_scanner()
-        self.LockScanner = self.entropyTools.TimeScheduled(5, self.repository_lock_scanner, repo)
+        self.LockScanner = TimeScheduled(5, self.repository_lock_scanner, repo)
         self.LockScanner.start()
 
     def kill_previous_repository_lock_scanner(self):
@@ -8160,15 +8163,13 @@ class Repository:
 
 class Trigger:
 
-    import entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, EquoInstance, phase, pkgdata, package_action = None):
 
         if not isinstance(EquoInstance,Client):
             mytxt = _("A valid Entropy Instance is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
-        import commands
-        self.commands = commands
         self.Entropy = EquoInstance
         self.clientLog = self.Entropy.clientLog
         self.validPhases = ("preinstall","postinstall","preremove","postremove")
@@ -9589,7 +9590,8 @@ timeout=10
             )
             return "(hd0,0)"
 
-        gboot = self.commands.getoutput("df /boot").split("\n")[-1].split()[0]
+        from entropy.tools import getstatusoutput
+        gboot = getstatusoutput("df /boot")[1].split("\n")[-1].split()[0]
         if gboot.startswith("/dev/"):
             # it's ok - handle /dev/md
             if gboot.startswith("/dev/md"):

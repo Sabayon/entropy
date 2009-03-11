@@ -24,13 +24,14 @@ import time
 import os
 import random
 from entropy.services.interfaces import SocketHost
-from entropyConstants import etpConst, const_setup_perms
-from outputTools import TextInterface
+from entropy.const import etpConst, const_setup_perms
+from entropy.output import TextInterface
+from entropy.misc import ParallelTask
 
 class TaskExecutor:
 
     def __init__(self, SystemInterface, Entropy):
-        import entropyTools
+        import entropy.tools as entropyTools
         self.entropyTools = entropyTools
         self.Entropy = Entropy
         self.SystemInterface = SystemInterface
@@ -55,7 +56,7 @@ class TaskExecutor:
 
         args.insert(0,queue_id)
         self.task_result = None
-        t = self.entropyTools.parallelTask(data['func'], *args, **kwargs)
+        t = ParallelTask(data['func'], *args, **kwargs)
         t.start()
         killed = False
         while 1:
@@ -99,7 +100,12 @@ class Server(SocketHost):
     def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, entropy_interface_kwargs = {}, **kwargs):
 
         self.queue_loaded = False
-        import entropyTools, dumpTools, threading
+        from entropy.misc import TimeScheduled
+        self.TimeScheduled = TimeScheduled
+
+        import entropy.tools as entropyTools
+        import entropy.dump as dumpTools
+        import threading
         self.entropyTools, self.dumpTools, self.threading = entropyTools, dumpTools, threading
         from datetime import datetime
         self.datetime = datetime
@@ -245,7 +251,7 @@ class Server(SocketHost):
             return self.PinboardData.copy()
 
     def load_queue_processor(self):
-        self.QueueProcessor = self.entropyTools.TimeScheduled(2, self.queue_processor)
+        self.QueueProcessor = self.TimeScheduled(2, self.queue_processor)
         self.QueueProcessor.start()
 
     def get_stored_queue(self):
@@ -467,7 +473,7 @@ class Server(SocketHost):
         self.remove_queue_ext_rc(queue_id)
         try:
             if command_data.get('do_parallel') and not fork_data:
-                t = self.entropyTools.parallelTask(self.queue_processor, fork_data = (command_data, queue_id,))
+                t = ParallelTask(self.queue_processor, fork_data = (command_data, queue_id,))
                 t.start()
                 return
             done, result = self.SystemExecutor.execute_task(command_data)

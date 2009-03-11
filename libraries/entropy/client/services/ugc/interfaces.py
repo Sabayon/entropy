@@ -24,7 +24,7 @@ from __future__ import with_statement
 import os
 from entropy.core import Singleton
 from entropy.exceptions import *
-from entropyConstants import etpConst, etpCache, etpRepositories, const_setup_file, const_setup_perms
+from entropy.const import etpConst, etpCache, etpRepositories, const_setup_file, const_setup_perms
 from entropy.i18n import _
 
 class Client:
@@ -449,7 +449,7 @@ class Cache:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         import threading
-        import dumpTools
+        import entropy.dump as dumpTools
         self.CacheLock = threading.Lock()
         self.dumpTools = dumpTools
         self.Service = UGCClientInstance

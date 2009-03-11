@@ -20,7 +20,7 @@
 '''
 
 
-import random, sys, os, stat
+import sys, os, stat
 from entropy.i18n import _
 
 
