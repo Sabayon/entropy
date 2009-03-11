@@ -311,7 +311,6 @@ class EntropyGeoIP:
 
 class rssFeed:
 
-    import entropy.tools as entropyTools
     def __init__(self, filename, title, description, maxentries = 100):
 
         self.__feed_title = title
@@ -330,6 +329,8 @@ class rssFeed:
         self.__maxentries = maxentries
         from xml.dom import minidom
         self.minidom = minidom
+        import entropy.tools as entropyTools
+        self.entropyTools = entropyTools
 
         # sanity check
         broken = False
