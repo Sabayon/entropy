@@ -589,11 +589,10 @@ class FtpInterface:
         self.socket, self.ftplib, self.entropyTools = socket, ftplib, entropyTools
         self.Entropy = OutputInterface
         self.__verbose = verbose
-        self.__oldprogress = 0.0
-        self.__filesize = 0
-        self.__filekbcount = 0
+        self.__init_vars()
         self.socket.setdefaulttimeout(60)
         self.__ftpuri = ftpuri
+        self.__speed_updater = None
         self.__currentdir = '.'
         self.__ftphost = self.entropyTools.extractFTPHostFromUri(self.__ftpuri)
         self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = self.entropyTools.extract_ftp_data(ftpuri)
@@ -635,6 +634,17 @@ class FtpInterface:
                 header = darkgreen(" * ")
             )
         self.set_cwd(self.__ftpdir, dodir = True)
+
+    def __init_vars(self):
+        self.__oldprogress = 0.0
+        self.__filesize = 0
+        self.__filekbcount = 0
+        self.__transfersize = 0
+        self.__startingposition = 0
+        self.__elapsed = 0.0
+        self.__time_remaining_secs = 0
+        self.__time_remaining = "(%s)" % (_("infinite"),)
+        self.__transferpollingtime = float(1)/4
 
     def set_basedir(self):
         return self.set_cwd(self.__ftpdir)
@@ -780,14 +790,18 @@ class FtpInterface:
                 return "226"
             return rc
 
-        self.__oldprogress = 0.0
-
         def up_file_up_progress(buf):
             self.updateProgress(len(buf))
 
-        for i in range(10): # ten tries
-            filename = file.split("/")[len(file.split("/"))-1]
+        tries = 0
+        while tries < 10:
+
+            tries += 1
+            filename = os.path.basename(file)
+            self.__init_vars()
+            self.__start_speed_counter()
             try:
+
                 with open(file,"r") as f:
 
                     self.__filesize = round(float(self.entropyTools.get_file_size(file))/1024,1)
@@ -809,13 +823,13 @@ class FtpInterface:
                 return False
 
             except Exception, e: # connection reset by peer
+
                 self.entropyTools.printTraceback()
-                self.Entropy.updateProgress(" ", importance = 0, type = "info")
                 mytxt = red("%s: %s, %s... #%s") % (
                     _("Upload issue"),
                     e,
                     _("retrying"),
-                    i+1,
+                    tries+1,
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -829,9 +843,10 @@ class FtpInterface:
                 if self.is_file_available(filename+".tmp"):
                     self.delete_file(filename+".tmp")
 
-    def download_file(self, filename, downloaddir, ascii = False):
+            finally:
+                self.__stop_speed_counter()
 
-        self.__oldprogress = 0.0
+    def download_file(self, filename, downloaddir, ascii = False):
 
         def df_up(buf):
             # writing file buffer
@@ -852,30 +867,56 @@ class FtpInterface:
                 percent = True
             )
 
-        # look if the file exist
-        if self.is_file_available(filename):
-            self.__filekbcount = 0
-            # get the file size
-            self.__filesize = self.get_file_size_compat(filename)
-            if (self.__filesize):
-                self.__filesize = round(float(int(self.__filesize))/1024,1)
-                if (self.__filesize == 0):
-                    self.__filesize = 1
-            else:
-                self.__filesize = 0
-            if not ascii:
-                f = open(downloaddir+"/"+filename,"wb")
-                rc = self.__ftpconn.retrbinary('RETR '+filename, df_up, 1024)
-            else:
-                f = open(downloaddir+"/"+filename,"w")
-                rc = self.__ftpconn.retrlines('RETR '+filename, f.write)
-            f.flush()
-            f.close()
-            if rc.find("226") != -1: # upload complete
-                return True
-            return False
-        else:
-            return None
+        tries = 10
+        while tries:
+            tries -= 1
+
+            self.__init_vars()
+            self.__start_speed_counter()
+            try:
+
+                # look if the file exist
+                if self.is_file_available(filename):
+                    self.__filekbcount = 0
+                    # get the file size
+                    self.__filesize = self.get_file_size_compat(filename)
+                    if (self.__filesize):
+                        self.__filesize = round(float(int(self.__filesize))/1024,1)
+                        if (self.__filesize == 0):
+                            self.__filesize = 1
+                    else:
+                        self.__filesize = 0
+                    if not ascii:
+                        f = open(downloaddir+"/"+filename,"wb")
+                        rc = self.__ftpconn.retrbinary('RETR '+filename, df_up, 1024)
+                    else:
+                        f = open(downloaddir+"/"+filename,"w")
+                        rc = self.__ftpconn.retrlines('RETR '+filename, f.write)
+                    f.flush()
+                    f.close()
+                    if rc.find("226") != -1: # upload complete
+                        return True
+                    return False
+
+            except Exception, e: # connection reset by peer
+
+                self.entropyTools.printTraceback()
+                mytxt = red("%s: %s, %s... #%s") % (
+                    _("Download issue"),
+                    e,
+                    _("retrying"),
+                    i+1,
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "  "
+                    )
+                self.reconnect_host() # reconnect
+
+            finally:
+                self.__stop_speed_counter()
 
     # also used to move files
     def rename_file(self, fromfile, tofile):
@@ -911,9 +952,31 @@ class FtpInterface:
             # timeout, who cares!
             pass
 
+    def __start_speed_counter(self):
+        self.__speed_updater = TimeScheduled(
+            self.__transferpollingtime,
+            self.__update_speed,
+        )
+        self.__speed_updater.start()
+
+    def __stop_speed_counter(self):
+        if self.__speed_updater != None:
+            self.__speed_updater.kill()
+
+    def __update_speed(self):
+        self.__elapsed += self.__transferpollingtime
+        # we have the diff size
+        self.__datatransfer = (self.__filesize-self.__startingposition) / self.__elapsed
+        try:
+            self.__time_remaining_secs = int(round((int(round(self.__filesize*1024,0))-int(round(self.__transfersize,0)))/self.__datatransfer,0))
+            self.__time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.__time_remaining_secs)
+        except:
+            self.__time_remaining = "(%s)" % (_("infinite"),)
+
     def updateProgress(self, buf_len):
         # get the buffer size
         self.__filekbcount += float(buf_len)/1024
+        self.__transfersize += buf_len
         # create percentage
         myUploadPercentage = 100.0
         if self.__filesize >= 1:
@@ -926,10 +989,11 @@ class FtpInterface:
 
             myUploadPercentage = str(myUploadPercentage)+"%"
             # create text
-            mytxt = _("Upload status")
+            mytxt = _("Transfer status")
             currentText = brown("    <-> %s: " % (mytxt,)) + \
                 darkgreen(str(myUploadSize)) + "/" + red(str(self.__filesize)) + " kB " + \
-                brown("[") + str(myUploadPercentage) + brown("]")
+                brown("[") + str(myUploadPercentage) + brown("]") + " " + self.__time_remaining + \
+                self.entropyTools.bytesIntoHuman(self.__datatransfer) + "/"+_("sec")
             # WARN: re-enabled updateProgress, this may cause slowdowns
             # print_info(currentText, back = True)
             self.Entropy.updateProgress(currentText, back = True)

@@ -164,9 +164,7 @@ def initConfig_entropyConstants(rootdir):
     const_configureLockPaths()
     initConfig_clientConstants()
     # server stuff
-    const_readReagentSettings()
     const_readServerSettings()
-    const_readActivatorSettings()
 
     # reflow back settings
     etpConst.update(backed_up_settings)
@@ -233,9 +231,7 @@ def const_defaultSettings(rootdir):
         'confsetsdirname': ETP_SETSDIRNAME, # just the dirname
         'entropyconf': ETP_CONF_DIR+"/entropy.conf", # entropy.conf file
         'repositoriesconf': ETP_CONF_DIR+"/repositories.conf", # repositories.conf file
-        'activatorconf': ETP_CONF_DIR+"/activator.conf", # activator.conf file
         'serverconf': ETP_CONF_DIR+"/server.conf", # server.conf file (generic server side settings)
-        'reagentconf': ETP_CONF_DIR+"/reagent.conf", # reagent.conf file
         'equoconf': ETP_CONF_DIR+"/equo.conf", # equo.conf file
         'socketconf': ETP_CONF_DIR+"/socket.conf", # socket.conf file
         'packagesrelativepath': "packages/"+ETP_ARCH_CONST+"/", # user by client interfaces
@@ -981,58 +977,6 @@ def const_configureLockPaths():
     }
 
 
-def const_readActivatorSettings():
-
-    if os.path.isfile(etpConst['activatorconf']):
-
-        f = open(etpConst['activatorconf'],"r")
-        actconffile = f.readlines()
-        f.close()
-        for line in actconffile:
-            line = line.strip()
-            if line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
-                fmt = line.split("database-format|")[1]
-                if fmt in etpConst['etpdatabasesupportedcformats']:
-                    etpConst['etpdatabasefileformat'] = fmt
-
-def const_readReagentSettings():
-
-    if (os.path.isfile(etpConst['reagentconf'])):
-        f = open(etpConst['reagentconf'],"r")
-        reagentconf = f.readlines()
-        f.close()
-        for line in reagentconf:
-
-            if line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
-                feed = line.split("rss-feed|")[1]
-                if feed in ("enable","enabled","true","1"):
-                    etpConst['rss-feed'] = True
-                elif feed in ("disable","disabled","false","0","no",):
-                    etpConst['rss-feed'] = False
-            elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
-                feedname = line.split("rss-name|")[1].strip()
-                etpConst['rss-name'] = feedname
-            elif line.startswith("rss-base-url|") and (len(line.split("rss-base-url|")) == 2):
-                etpConst['rss-base-url'] = line.split("rss-base-url|")[1].strip()
-                if not etpConst['rss-base-url'][-1] == "/":
-                    etpConst['rss-base-url'] += "/"
-            elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
-                etpConst['rss-website-url'] = line.split("rss-website-url|")[1].strip()
-            elif line.startswith("managing-editor|") and (len(line.split("managing-editor|")) == 2):
-                etpConst['rss-managing-editor'] = line.split("managing-editor|")[1].strip()
-            elif line.startswith("max-rss-entries|") and (len(line.split("max-rss-entries|")) == 2):
-                try:
-                    entries = int(line.split("max-rss-entries|")[1].strip())
-                    etpConst['rss-max-entries'] = entries
-                except ValueError:
-                    pass
-            elif line.startswith("max-rss-light-entries|") and (len(line.split("max-rss-light-entries|")) == 2):
-                try:
-                    entries = int(line.split("max-rss-light-entries|")[1].strip())
-                    etpConst['rss-light-max-entries'] = entries
-                except ValueError:
-                    pass
-
 def const_readServerSettings():
 
     if not os.access(etpConst['serverconf'],os.R_OK):
@@ -1041,7 +985,7 @@ def const_readServerSettings():
     etpConst['server_repositories'].clear()
 
     f = open(etpConst['serverconf'],"r")
-    serverconf = f.readlines()
+    serverconf = [x.strip() for x in f.readlines()]
     f.close()
 
     for line in serverconf:
@@ -1067,13 +1011,53 @@ def const_readServerSettings():
                 pass
 
         elif line.startswith("repository|") and (len(line.split("|")) in [5,6]):
-
             repoid, repodata = const_extractServerRepositoryParameters(line)
             if repoid in etpConst['server_repositories']:
                 # just update mirrors
                 etpConst['server_repositories'][repoid]['mirrors'].extend(repodata['mirrors'])
             else:
                 etpConst['server_repositories'][repoid] = repodata.copy()
+
+        elif line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
+            fmt = line.split("database-format|")[1]
+            if fmt in etpConst['etpdatabasesupportedcformats']:
+                etpConst['etpdatabasefileformat'] = fmt
+
+        elif line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
+            feed = line.split("rss-feed|")[1]
+            if feed in ("enable","enabled","true","1"):
+                etpConst['rss-feed'] = True
+            elif feed in ("disable","disabled","false","0","no",):
+                etpConst['rss-feed'] = False
+
+        elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
+            feedname = line.split("rss-name|")[1].strip()
+            etpConst['rss-name'] = feedname
+
+        elif line.startswith("rss-base-url|") and (len(line.split("rss-base-url|")) == 2):
+            etpConst['rss-base-url'] = line.split("rss-base-url|")[1].strip()
+            if not etpConst['rss-base-url'][-1] == "/":
+                etpConst['rss-base-url'] += "/"
+
+        elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
+            etpConst['rss-website-url'] = line.split("rss-website-url|")[1].strip()
+
+        elif line.startswith("managing-editor|") and (len(line.split("managing-editor|")) == 2):
+            etpConst['rss-managing-editor'] = line.split("managing-editor|")[1].strip()
+
+        elif line.startswith("max-rss-entries|") and (len(line.split("max-rss-entries|")) == 2):
+            try:
+                entries = int(line.split("max-rss-entries|")[1].strip())
+                etpConst['rss-max-entries'] = entries
+            except (ValueError,IndexError,):
+                pass
+
+        elif line.startswith("max-rss-light-entries|") and (len(line.split("max-rss-light-entries|")) == 2):
+            try:
+                entries = int(line.split("max-rss-light-entries|")[1].strip())
+                etpConst['rss-light-max-entries'] = entries
+            except (ValueError,IndexError,):
+                pass
 
     const_configureServerRepoPaths()
 

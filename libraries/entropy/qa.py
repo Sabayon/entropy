@@ -128,7 +128,9 @@ class QAInterface:
         return broken
 
 
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True, self_check = False, repo = etpConst['officialrepositoryid'], black_list = None, black_list_adder = None):
+    def scan_missing_dependencies(self, idpackages, dbconn, ask = True,
+            self_check = False, repo = etpConst['officialrepositoryid'],
+            black_list = None, black_list_adder = None):
 
         if not isinstance(black_list,set):
             black_list = set()
