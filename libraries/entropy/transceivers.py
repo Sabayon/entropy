@@ -966,7 +966,7 @@ class FtpInterface:
     def __update_speed(self):
         self.__elapsed += self.__transferpollingtime
         # we have the diff size
-        self.__datatransfer = (self.__filesize-self.__startingposition) / self.__elapsed
+        self.__datatransfer = (self.__transfersize-self.__startingposition) / self.__elapsed
         try:
             self.__time_remaining_secs = int(round((int(round(self.__filesize*1024,0))-int(round(self.__transfersize,0)))/self.__datatransfer,0))
             self.__time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.__time_remaining_secs)
@@ -993,7 +993,7 @@ class FtpInterface:
             currentText = brown("    <-> %s: " % (mytxt,)) + \
                 darkgreen(str(myUploadSize)) + "/" + red(str(self.__filesize)) + " kB " + \
                 brown("[") + str(myUploadPercentage) + brown("]") + " " + self.__time_remaining + \
-                self.entropyTools.bytesIntoHuman(self.__datatransfer) + "/"+_("sec")
+                " " + self.entropyTools.bytesIntoHuman(self.__datatransfer) + "/"+_("sec")
             # WARN: re-enabled updateProgress, this may cause slowdowns
             # print_info(currentText, back = True)
             self.Entropy.updateProgress(currentText, back = True)
