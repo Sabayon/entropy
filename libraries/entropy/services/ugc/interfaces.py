@@ -158,6 +158,9 @@ class Server(RemoteDatabase):
     COMMENTS_SCORE_WEIGHT = 5
     DOCS_SCORE_WEIGHT = 10
     VOTES_SCORE_WEIGHT = 2
+    STATS_MAP = {
+        'installer': "installer",
+    }
 
     '''
         dependencies:
@@ -1189,8 +1192,10 @@ class Server(RemoteDatabase):
 
         self.do_downloads(pkgkeys, ip_addr = ip_addr)
 
-        # FIXME: (is it correct?) check if ip_addr is already in the DB
         entropy_distribution_usage_id = self.is_user_ip_available_in_entropy_distribution_usage(ip_addr)
+        hits = 1
+        if self.STATS_MAP['installer'] in pkgkeys:
+            hits = 0
         if entropy_distribution_usage_id == -1:
             entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
             self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',(
@@ -1201,18 +1206,19 @@ class Server(RemoteDatabase):
                     ip_addr,
                     entropy_ip_locations_id,
                     self.get_datetime(),
-                    1,
+                    hits,
                 )
             )
         else:
             self.execute_query("""
             UPDATE entropy_distribution_usage SET `entropy_branches_id` = %s, 
             `entropy_release_strings_id` = %s, 
-            `hits` = `hits`+1 
+            `hits` = `hits`+%s 
             WHERE `entropy_distribution_usage_id` = %s
             """,(
                     branch_id,
                     rel_strings_id,
+                    hits,
                     entropy_distribution_usage_id,
                 )
             )
