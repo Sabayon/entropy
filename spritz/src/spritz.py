@@ -34,7 +34,7 @@ from entropy.exceptions import *
 import entropy.tools
 from packages import EntropyPackages
 from entropyapi import Equo, QueueExecutor
-from entropy.cont import *
+from entropy.const import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 
