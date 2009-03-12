@@ -279,7 +279,7 @@ class SecurityInterface:
                 valid = False
                 skipping_keys = set()
                 for a_key in affected_keys:
-                    match = self.Entropy.atomMatch(a_key)
+                    match = self.Entropy.atom_match(a_key)
                     if match[0] != -1:
                         # it's in the repos, it's valid
                         valid = True

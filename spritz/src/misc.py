@@ -72,7 +72,7 @@ class SpritzQueue:
             if type(match[1]) is int: # installed package
                 dbconn = self.Entropy.clientDbconn
             else:
-                dbconn = self.Entropy.openRepositoryDatabase(match[1])
+                dbconn = self.Entropy.open_repository(match[1])
             keyslot = dbconn.retrieveKeySlot(match[0])
             if keyslot in self.keyslotFilter:
                 blocked.append(pkg)
@@ -95,7 +95,7 @@ class SpritzQueue:
 
     def checkSystemPackage(self, pkg):
         # check if it's a system package
-        valid = self.Entropy.validatePackageRemoval(pkg.matched_atom[0])
+        valid = self.Entropy.validate_package_removal(pkg.matched_atom[0])
         if not valid:
             pkg.queued = None
         return valid
@@ -111,7 +111,7 @@ class SpritzQueue:
         newdepends = set()
         # get depends tree
         if new_proposed_idpackages_queue:
-            newdepends = self.Entropy.retrieveRemovalQueue(new_proposed_idpackages_queue)
+            newdepends = self.Entropy.get_removal_queue(new_proposed_idpackages_queue)
 
         for idpackage in to_be_reinserted:
             if idpackage not in newdepends:
@@ -174,7 +174,7 @@ class SpritzQueue:
 
         atoms = []
         for idpackage, repoid in crying_items:
-            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            dbconn = self.Entropy.open_repository(repoid)
             mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
                 SpritzConf.color_title,
                 dbconn.retrieveAtom(idpackage),
@@ -242,7 +242,7 @@ class SpritzQueue:
 
                 xlist = [x.matched_atom[0] for x in self.packages[action[0]] if x not in pkgs]
                 #toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
-                mydepends = set(self.Entropy.retrieveRemovalQueue([x.matched_atom[0] for x in pkgs]))
+                mydepends = set(self.Entropy.get_removal_queue([x.matched_atom[0] for x in pkgs]))
                 mydependencies = set()
                 myQA = self.Entropy.QA()
                 for pkg in pkgs:
@@ -365,7 +365,7 @@ class SpritzQueue:
         if status != 0:
             return status
 
-        (runQueue, removalQueue, status) = self.Entropy.retrieveInstallQueue(xlist,False,deep_deps, quiet = True)
+        (runQueue, removalQueue, status) = self.Entropy.get_install_queue(xlist,False,deep_deps, quiet = True)
         if status == -2: # dependencies not found
             confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                         runQueue,
@@ -477,7 +477,7 @@ class SpritzQueue:
             return x.matched_atom[0]
 
         r_cache = set(map(r_cache_map,self.packages['r']))
-        removalQueue = self.Entropy.retrieveRemovalQueue(mylist)
+        removalQueue = self.Entropy.get_removal_queue(mylist)
 
         if removalQueue:
             todo = []

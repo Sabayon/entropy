@@ -293,10 +293,10 @@ def showdiff(fromfile,tofile):
     f.flush()
     f.close()
     print
-    os.system("cat /tmp/"+os.path.basename(fromfile)+" | less --no-init --QUIT-AT-EOF")
+    os.system("cat \"%s\" | less --no-init --QUIT-AT-EOF" % ("/tmp/"+os.path.basename(fromfile),))
     try:
 	os.remove("/tmp/"+os.path.basename(fromfile))
-    except:
+    except OSError:
 	pass
     if output == ['']: output = [] #FIXME beautify
     return output

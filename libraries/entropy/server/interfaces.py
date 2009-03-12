@@ -648,7 +648,7 @@ class Server(Singleton,TextInterface):
 
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
-                xmatch = self.atomMatch(xdep)
+                xmatch = self.atom_match(xdep)
                 if xmatch[0] == -1:
                     deps_not_satisfied.add(xdep)
 
@@ -866,7 +866,7 @@ class Server(Singleton,TextInterface):
             header = darkgreen(" * "),
             back = True
         )
-        dbconn = self.ClientService.openGenericDatabase(dbpath)
+        dbconn = self.ClientService.open_generic_database(dbpath)
         dbconn.initializeDatabase()
         dbconn.commitChanges()
         dbconn.closeDB()
@@ -1662,29 +1662,29 @@ class Server(Singleton,TextInterface):
     def get_branch_from_download_relative_uri(self, mypath):
         return self.ClientService.get_branch_from_download_relative_uri(mypath)
 
-    def packageSetList(self, *args, **kwargs):
+    def package_set_list(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.packageSetList(*args,**kwargs)
+        return self.ClientService.package_set_list(*args,**kwargs)
 
-    def packageSetSearch(self, *args, **kwargs):
+    def package_set_search(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.packageSetSearch(*args,**kwargs)
+        return self.ClientService.package_set_search(*args,**kwargs)
 
-    def packageSetMatch(self, *args, **kwargs):
+    def package_set_match(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.packageSetMatch(*args,**kwargs)
+        return self.ClientService.package_set_match(*args,**kwargs)
 
-    def atomMatch(self, *args, **kwargs):
+    def atom_match(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.atomMatch(*args,**kwargs)
+        return self.ClientService.atom_match(*args,**kwargs)
 
     def scan_package_changes(self):
 
@@ -3997,7 +3997,7 @@ class MirrorsServer:
             type = "info",
             header = darkgreen(" * ")
         )
-        sets_data = self.Entropy.packageSetList(matchRepo = repo)
+        sets_data = self.Entropy.package_set_list(matchRepo = repo)
         if not sets_data:
             self.Entropy.updateProgress(
                 "%s" % (_("None configured"),),

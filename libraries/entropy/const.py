@@ -19,7 +19,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-
+from __future__ import with_statement
 import sys, os, stat
 from entropy.i18n import _
 
@@ -203,6 +203,11 @@ def const_defaultSettings(rootdir):
     ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
     ETP_VAR_DIR = rootdir+"/var/tmp/entropy"
     edbCOUNTER = rootdir+"/var/cache/edb/counter"
+    cmdline = []
+    cmdline_file = "/proc/cmdline"
+    if os.access(cmdline_file,os.R_OK) and os.path.isfile(cmdline_file):
+        with open(cmdline_file,"r") as f:
+            cmdline = f.readline().strip().split()
 
     etpConst.clear()
     myConst = {
@@ -210,6 +215,7 @@ def const_defaultSettings(rootdir):
         'community': {
             'mode': False,
         },
+        'cmdline': cmdline,
         'backed_up': {},
         'installdir': '/usr/lib/entropy', # entropy default installation directory
         'packagestmpdir': ETP_DIR+ETP_TMPDIR, # etpConst['packagestmpdir'] --> temp directory
@@ -1255,12 +1261,7 @@ def const_add_entropy_group():
     f.close()
 
 def const_islive():
-    if not os.path.isfile("/proc/cmdline"):
-        return False
-    f = open("/proc/cmdline")
-    cmdline = f.readline().strip().split()
-    f.close()
-    if "cdroot" in cmdline:
+    if "cdroot" in etpConst['cmdline']:
         return True
     return False
 

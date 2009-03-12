@@ -29,7 +29,7 @@ from entropy.const import etpConst, etpCache
 from entropy.output import darkred, darkgreen, red, brown, blue
 from entropy.tools import getstatusoutput
 
-class FileUpdatesInterface:
+class FileUpdates:
 
     def __init__(self, EquoInstance):
         if not isinstance(EquoInstance,Client):

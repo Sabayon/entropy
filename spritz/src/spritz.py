@@ -748,7 +748,7 @@ class SpritzApplication(Controller):
     def on_dbBackupButton_clicked(self, widget):
         self.show_wait_window()
         self.startWorking()
-        status, err_msg = self.Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
+        status, err_msg = self.Equo.backup_database(etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
         if not status:
             self.hide_wait_window()
@@ -766,9 +766,9 @@ class SpritzApplication(Controller):
         dbpath = model.get_value(myiter, 0)
         self.show_wait_window()
         self.startWorking()
-        status, err_msg = self.Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
+        status, err_msg = self.Equo.restore_database(dbpath, etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
-        self.Equo.reopenClientDbconn()
+        self.Equo.reopen_client_repository()
         self.resetSpritzCacheStatus()
         self.addPackages()
         if not status:
@@ -1528,12 +1528,12 @@ class SpritzApplication(Controller):
                     print "processPackageQueue: cleared caches"
 
                 for myrepo in remove_repos:
-                    self.Equo.removeRepository(myrepo)
+                    self.Equo.remove_repository(myrepo)
 
                 self.resetSpritzCacheStatus()
                 if self.do_debug:
                     print "processPackageQueue: closed repo dbs"
-                self.Equo.reopenClientDbconn()
+                self.Equo.reopen_client_repository()
                 if self.do_debug:
                     print "processPackageQueue: cleared caches (again)"
                 # regenerate packages information
@@ -1651,7 +1651,7 @@ class SpritzApplication(Controller):
         if not matches:
             # resolve atoms ?
             for atom in atoms:
-                match = self.Equo.atomMatch(atom)
+                match = self.Equo.atom_match(atom)
                 if match[0] != -1:
                     matches.add(match)
         if not matches:
@@ -1760,7 +1760,7 @@ class SpritzApplication(Controller):
             path = iterdata[0].get_path(iterdata[1])[0]
             if path > 0 and idx > 0:
                 idx -= 1
-                self.Equo.shiftRepository(repoid, idx)
+                self.Equo.shift_repository(repoid, idx)
                 # get next iter
                 prev = iterdata[0].get_iter(path-1)
                 self.repoView.store.swap(iterdata[1],prev)
@@ -1771,7 +1771,7 @@ class SpritzApplication(Controller):
             next = iterdata[0].iter_next(iterdata[1])
             if next:
                 idx += 1
-                self.Equo.shiftRepository(repoid, idx)
+                self.Equo.shift_repository(repoid, idx)
                 self.repoView.store.swap(iterdata[1],next)
 
     def on_mirrorDown_clicked( self, widget ):
@@ -1861,9 +1861,9 @@ class SpritzApplication(Controller):
             disable = False
             if etpRepositoriesExcluded.has_key(repodata['repoid']):
                 disable = True
-            self.Equo.removeRepository(repodata['repoid'], disable = disable)
+            self.Equo.remove_repository(repodata['repoid'], disable = disable)
             if not disable:
-                self.Equo.addRepository(repodata)
+                self.Equo.add_repository(repodata)
             self.resetSpritzCacheStatus()
 
             self.setupRepoView()
@@ -1885,7 +1885,7 @@ class SpritzApplication(Controller):
         # 2-3 more cycles than having unattended
         # behaviours
         self.Equo.SystemSettings.clear()
-        self.Equo.closeAllRepositoryDatabases()
+        self.Equo.close_all_repositories()
 
     def __validateRepoSubmit(self, repodata, edit = False):
         errors = []
@@ -1934,7 +1934,7 @@ class SpritzApplication(Controller):
         # validate
         errors = self.__validateRepoSubmit(repodata)
         if not errors:
-            self.Equo.addRepository(repodata)
+            self.Equo.add_repository(repodata)
             self.resetSpritzCacheStatus()
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
@@ -1969,7 +1969,7 @@ class SpritzApplication(Controller):
             if repoid == etpConst['officialrepositoryid']:
                 okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
                 return True
-            self.Equo.removeRepository(repoid)
+            self.Equo.remove_repository(repoid)
             self.resetSpritzCacheStatus()
             self.setupRepoView()
             msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),_("Update Repositories"),_("or the"),_("Regenerate Cache"),_("now"))
@@ -2131,9 +2131,9 @@ class SpritzApplication(Controller):
             return
 
         def clean_n_quit(newrepo):
-            self.Equo.removeRepository(newrepo)
+            self.Equo.remove_repository(newrepo)
             self.resetSpritzCacheStatus()
-            self.Equo.reopenClientDbconn()
+            self.Equo.reopen_client_repository()
             # regenerate packages information
             self.setupSpritz()
 
@@ -2361,7 +2361,7 @@ class SpritzApplication(Controller):
                 if type(repoid) is int:
                     dbconn = self.Equo.clientDbconn
                 else:
-                    dbconn = self.Equo.openRepositoryDatabase(repoid)
+                    dbconn = self.Equo.open_repository(repoid)
                 if dbconn.isLicensedataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     found = True
@@ -2526,7 +2526,7 @@ class SpritzApplication(Controller):
 
     def on_pkgsetAddButton_clicked(self, widget):
 
-        current_sets = self.Equo.packageSetList()
+        current_sets = self.Equo.package_set_list()
         def fake_callback(s):
             if (s not in current_sets) and (" " not in s) and (not s.startswith(etpConst['packagesetprefix'])):
                 return True
@@ -2535,7 +2535,7 @@ class SpritzApplication(Controller):
         def lv_callback(atom):
             c_id, c_rc = self.Equo.clientDbconn.atomMatch(atom)
             if c_id != -1: return True
-            c_id, c_rc = self.Equo.atomMatch(atom)
+            c_id, c_rc = self.Equo.atom_match(atom)
             if c_id != -1: return True
             return False
 
@@ -2566,7 +2566,7 @@ class SpritzApplication(Controller):
             if set_from == etpConst['userpackagesetsid']:
                 return set_name
             return 0
-        avail_pkgsets = [x for x in map(mymf,self.Equo.packageSetList()) if x != 0]
+        avail_pkgsets = [x for x in map(mymf,self.Equo.package_set_list()) if x != 0]
 
         def fake_callback(s):
             return s
@@ -2606,7 +2606,7 @@ class SpritzApplication(Controller):
         found_deps = set()
         not_all = False
         for dep in deps_not_matched:
-            match = self.Equo.atomMatch(dep)
+            match = self.Equo.atom_match(dep)
             if match[0] != -1:
                 found_deps.add(dep)
                 continue
@@ -2617,7 +2617,7 @@ class SpritzApplication(Controller):
                 for c_idpackage in c_idpackages:
                     key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
                     key_slot = "%s:%s" % (key,slot,)
-                    match = self.Equo.atomMatch(key, matchSlot = slot)
+                    match = self.Equo.atom_match(key, matchSlot = slot)
                     cmpstat = 0
                     if match[0] != -1:
                         cmpstat = self.Equo.get_package_action(match)

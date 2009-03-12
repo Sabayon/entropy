@@ -27,7 +27,7 @@
 # from entropy.client.interfaces import Client as EquoInterface, Package as PackageInterface, Repository as RepoInterface
 # from entropy.db import LocalRepository as EntropyDatabaseInterface, dbapi2
 # from entropy.spm import Spm as SpmInterface
-# from entropy.client.misc import FileUpdatesInterface
+# from entropy.client.misc import FileUpdates
 # from entropy.services.interfaces import SocketHost as SocketHostInterface
 # from entropy.services.skel import SocketCommands as SocketCommandsSkel, \
 #    SocketAuthenticator as SocketAuthenticatorSkel, RemoteDatabase as RemoteDbSkelInterface, \

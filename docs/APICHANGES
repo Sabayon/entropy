@@ -17,3 +17,39 @@ From SVN 3112 there have been several API changes:
   - entropyTools API changes:
       entropyTools.parallelTask and TimeScheduled moved to entropy.misc
       entropyTools.lifobuffer moved to entropy.misc as Lifo
+
+  - EquoInterface (now entropy.client.interfaces.Client) API changes:
+
+      - now deprecated:
+      closeAllRepositoryDatabases => close_all_repositories
+      addRepository => add_repository
+      removeRepository => remove_repository
+      shiftRepository => shift_repository
+      enableRepository => enable_repository
+      disableRepository => disable_repository
+      reopenClientDbconn => reopen_client_repository
+      openClientDatabase => open_client_repository
+      clientDatabaseSanityCheck => client_repository_sanity_check
+      retrieveInstallQueue => get_install_queue
+      validatePackageRemoval => validate_package_removal
+      retrieveWorldQueue => get_world_queue
+      packageSetMatch => package_set_match
+      packageSetSearch => package_set_search
+      packageSetList => package_set_list
+      packageSetExpand => package_set_expand
+      packagesExpand => packages_expand
+      atomMatch => atom_match
+
+      - property changes
+      repoDbCache => __repodb_cache
+      repo_error_messages_cache => __repo_error_messages_cache
+      securityCache => __security_cache
+      QACache => __QA_cache
+      memoryDbInstances => _memory_db_instances
+      package_match_validator_cache => _package_match_validator_cache
+      spmCache => __spm_cache
+
+
+      - removed methods
+      check_equo_updates
+

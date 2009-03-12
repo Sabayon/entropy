@@ -79,7 +79,7 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_from, set_name, set_deps = EquoIntf.packageSetMatch(self.matched_atom[1:])[0]
+            set_from, set_name, set_deps = EquoIntf.package_set_match(self.matched_atom[1:])[0]
             self.from_installed = False
             self.dbconn = None
             self.dummy_type = -2
@@ -99,7 +99,7 @@ class EntropyPackage:
 
         elif self.remote:
 
-            self.dbconn = EquoIntf.openMemoryDatabase()
+            self.dbconn = EquoIntf.open_memory_database()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
             self.matched_atom = (idpackage,matched_atom[1])
             self.from_installed = False
@@ -110,7 +110,7 @@ class EntropyPackage:
                 self.dbconn = EquoIntf.clientDbconn
                 self.from_installed = True
             else:
-                self.dbconn = EquoIntf.openRepositoryDatabase(matched_atom[1])
+                self.dbconn = EquoIntf.open_repository(matched_atom[1])
                 self.from_installed = False
 
         if isinstance(self.matched_atom,tuple):
@@ -155,7 +155,7 @@ class EntropyPackage:
     def isUserMasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoIntf.atomMatch(key, matchSlot = slot)
+            m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
             if m_id == -1: return False
             return EquoIntf.is_match_masked_by_user((m_id, m_r,))
         return EquoIntf.is_match_masked_by_user(self.matched_atom)
@@ -163,7 +163,7 @@ class EntropyPackage:
     def isUserUnmasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoIntf.atomMatch(key, matchSlot = slot)
+            m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
             if m_id == -1: return False
             return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))
         return EquoIntf.is_match_unmasked_by_user(self.matched_atom)
@@ -235,7 +235,7 @@ class EntropyPackage:
             match = self.installed_match
 
         # check if it's a system package
-        s = EquoIntf.validatePackageRemoval(match[0])
+        s = EquoIntf.validate_package_removal(match[0])
         return not s
 
     # 0: from installed db, so it's installed for sure

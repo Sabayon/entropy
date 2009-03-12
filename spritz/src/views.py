@@ -747,7 +747,7 @@ class EntropyPackageView:
 
         exp_atoms = set()
         for pkgset in pkgsets:
-            exp_atoms |= self.Equo.packageSetExpand(pkgset)
+            exp_atoms |= self.Equo.package_set_expand(pkgset)
 
         exp_matches = set()
         if remove_action:
@@ -757,7 +757,7 @@ class EntropyPackageView:
                 exp_matches.add(exp_match)
         else:
             for exp_atom in exp_atoms:
-                exp_match = self.Equo.atomMatch(exp_atom)
+                exp_match = self.Equo.atom_match(exp_atom)
                 if exp_match[0] == -1: continue
                 exp_matches.add(exp_match)
 
@@ -841,9 +841,9 @@ class EntropyPackageView:
         repo_objs = []
         for idpackage,rid in exp_matches:
             key, slot = self.Equo.clientDbconn.retrieveKeySlot(idpackage)
-            if not self.Equo.validatePackageRemoval(idpackage):
+            if not self.Equo.validate_package_removal(idpackage):
                 continue
-            mymatch = self.Equo.atomMatch(key, matchSlot = slot)
+            mymatch = self.Equo.atom_match(key, matchSlot = slot)
             if mymatch[0] == -1: continue
             yp, new = self.etpbase.getPackageItem(mymatch,True)
             repo_objs.append(yp)
@@ -942,7 +942,7 @@ class EntropyPackageView:
         objs = []
         for x in self.selected_objs:
             key, slot = x.keyslot
-            m = self.Equo.atomMatch(key, matchSlot = slot)
+            m = self.Equo.atom_match(key, matchSlot = slot)
             if m[0] != -1: objs.append(m)
 
         busyCursor(self.main_window)
@@ -1131,7 +1131,7 @@ class EntropyPackageView:
                 mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
                 mydummy.color = SpritzConf.color_package_category
                 if pkgsets:
-                    set_data = self.Equo.packageSetMatch(category)[0]
+                    set_data = self.Equo.package_set_match(category)[0]
                     if not set_data: continue
                     set_from, set_name, set_deps = set_data
                     mydummy.set_category = category
@@ -1686,10 +1686,10 @@ class EntropyRepoView:
         if repoid != etpConst['officialrepositoryid']:
             if state:
                 self.store.set_value(myiter,1, not state)
-                self.Equo.disableRepository(repoid)
+                self.Equo.disable_repository(repoid)
                 initConfig_entropyConstants(etpSys['rootdir'])
             else:
-                self.Equo.enableRepository(repoid)
+                self.Equo.enable_repository(repoid)
                 initConfig_entropyConstants(etpSys['rootdir'])
             self.Spritz.resetSpritzCacheStatus()
             self.Spritz.addPackages(back_to_page = "repos")

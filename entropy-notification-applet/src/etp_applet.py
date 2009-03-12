@@ -734,7 +734,7 @@ class EntropyApplet:
         names = {}
         entropy_data = {}
         for pkg in self.available_packages:
-            dbconn = self.Entropy.openRepositoryDatabase(pkg[1])
+            dbconn = self.Entropy.open_repository(pkg[1])
             atom = dbconn.retrieveAtom(pkg[0])
             avail = dbconn.retrieveVersion(pkg[0])
             avail_rev = dbconn.retrieveRevision(pkg[0])

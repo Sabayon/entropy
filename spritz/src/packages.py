@@ -238,7 +238,7 @@ class EntropyPackages:
                 set_matches.append((set_dep,None,))
                 set_installed_matches.append((set_dep,None,))
             else:
-                set_match = self.Entropy.atomMatch(set_dep)
+                set_match = self.Entropy.atom_match(set_dep)
                 if set_match[0] != -1: set_matches.append(set_match)
                 else: install_incomplete = True
                 set_installed_match = self.Entropy.clientDbconn.atomMatch(set_dep)
@@ -338,7 +338,7 @@ class EntropyPackages:
 
     def isReinstallable(self, atom, slot, revision):
         for repoid in self.Entropy.validRepositories:
-            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            dbconn = self.Entropy.open_repository(repoid)
             idpackage, idreason = dbconn.isPackageScopeAvailable(atom, slot, revision)
             if idpackage == -1:
                 continue
@@ -346,13 +346,13 @@ class EntropyPackages:
         return None
 
     def getPackageSets(self):
-        return self.Entropy.packageSetList()
+        return self.Entropy.package_set_list()
 
     def getMaskedPackages(self):
         maskdata = []
 
         for repoid in self.Entropy.validRepositories:
-            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            dbconn = self.Entropy.open_repository(repoid)
             repodata = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')
             def fm(idpackage):
                 idpackage_filtered, idreason = dbconn.idpackageValidator(idpackage)
@@ -373,7 +373,7 @@ class EntropyPackages:
             return 'rr'
 
     def getInstalledMatch(self, match):
-        dbconn = self.Entropy.openRepositoryDatabase(match[1])
+        dbconn = self.Entropy.open_repository(match[1])
         try:
             atom, slot, revision = dbconn.getStrictScopeData(match[0])
         except TypeError:
@@ -391,7 +391,7 @@ class EntropyPackages:
 
         matched_data = set()
         for repoid in self.Entropy.validRepositories:
-            dbconn = self.Entropy.openRepositoryDatabase(repoid)
+            dbconn = self.Entropy.open_repository(repoid)
             repodata = dbconn.listAllPackages(get_scope = True, branch = etpConst['branch'], branch_operator = "<=")
             mydata = {}
             for idpackage, atom, slot, revision in repodata:

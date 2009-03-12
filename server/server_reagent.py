@@ -117,7 +117,7 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atomMatch(package, matchRepo = [repo], matchTag = '')
+            match = Entropy.atom_match(package, matchRepo = [repo], matchTag = '')
             if (match[1] == repo):
                 idpackages.append(match[0])
             else:
@@ -142,7 +142,7 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atomMatch(package, matchRepo = [repo], matchTag = '')
+            match = Entropy.atom_match(package, matchRepo = [repo], matchTag = '')
             if match[1] == repo:
                 idpackages.append(match[0])
             else:
@@ -211,7 +211,7 @@ def repositories(options):
         if "world" not in myopts:
             # match
             for package in myopts:
-                match = Entropy.atomMatch(package, matchRepo = [repoid])
+                match = Entropy.atom_match(package, matchRepo = [repoid])
                 if (match[1] == repoid):
                     matches.append(match)
                 else:
@@ -358,7 +358,7 @@ def update(options):
             try:
                 Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
             except OSError:
-                entropyTools.printTraceback()
+                Entropy.entropyTools.printTraceback()
                 print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))
 
     tbz2files = os.listdir(Entropy.get_local_store_directory())
@@ -435,7 +435,7 @@ def database(options):
         dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
 
         pkglist = dbconn.listAllIdpackages(branch = from_branch)
-        myatoms = options[3:]
+        #myatoms = options[3:]
 
         print_info(darkgreen(" * ")+red("%s %s: %s %s" % (_("These are the packages that would be marked"),to_branch,len(pkglist),_("packages"),)))
 
@@ -561,7 +561,7 @@ def database(options):
     elif (options[0] == "backup"):
 
         db_path = Entropy.get_local_database_file()
-        rc, err_msg = Entropy.ClientService.backupDatabase(db_path, backup_dir = os.path.dirname(db_path))
+        rc, err_msg = Entropy.ClientService.backup_database(db_path, backup_dir = os.path.dirname(db_path))
         if not rc:
             print_info(darkred(" ** ")+red("%s: %s" % (_("Error"),err_msg,) ))
             return 1
@@ -605,7 +605,7 @@ def database(options):
             if not os.path.isfile(dbpath): continue
             break
 
-        status, err_msg = Entropy.ClientService.restoreDatabase(dbpath, db_file)
+        status, err_msg = Entropy.ClientService.restore_database(dbpath, db_file)
         if status:
             return 0
         return 1

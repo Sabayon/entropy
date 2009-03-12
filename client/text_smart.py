@@ -23,12 +23,13 @@ import shutil
 from entropy.const import *
 from entropy.output import *
 from entropy.i18n import _
-import text_ui
+from entropy.client.interfaces import Client
+Equo = Client()
 
 def smart(options):
 
     # check if I am root
-    if (not text_ui.Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.isRoot()):
         mytxt = _("You are not") # you are not root
         print_error(red(mytxt)+bold("root")+red("."))
         return 1
@@ -90,12 +91,12 @@ def QuickpkgHandler(mypackages, savedir = None):
 
     packages = []
     for opt in mypackages:
-        match = text_ui.Equo.clientDbconn.atomMatch(opt)
+        match = Equo.clientDbconn.atomMatch(opt)
         if match[0] != -1:
             packages.append(match)
         else:
             if not etpUi['quiet']: print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = text_ui.Equo.entropyTools.filterDuplicatedEntries(packages)
+    packages = Equo.entropyTools.filterDuplicatedEntries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
@@ -105,21 +106,21 @@ def QuickpkgHandler(mypackages, savedir = None):
     if (not etpUi['quiet']) or (etpUi['ask']): print_info(darkgreen(" * ")+red(mytxt+":"))
     pkgInfo = {}
     for pkg in packages:
-        atom = text_ui.Equo.clientDbconn.retrieveAtom(pkg[0])
+        atom = Equo.clientDbconn.retrieveAtom(pkg[0])
         pkgInfo[pkg] = {}
         pkgInfo[pkg]['atom'] = atom
         pkgInfo[pkg]['idpackage'] = pkg[0]
         print_info(brown("\t[")+red("%s:" % (_("from"),))+bold(_("installed"))+brown("]")+" - "+atom)
 
     if (not etpUi['quiet']) or (etpUi['ask']):
-        rc = text_ui.Equo.askQuestion(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
+        rc = Equo.askQuestion(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
         if rc == "No":
             return 0
 
     for pkg in packages:
         if not etpUi['quiet']: print_info(brown(" * ")+red("%s: " % (_("Compressing"),))+darkgreen(pkgInfo[pkg]['atom']))
-        pkgdata = text_ui.Equo.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
-        resultfile = text_ui.Equo.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
+        pkgdata = Equo.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
+        resultfile = Equo.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             if not etpUi['quiet']:
                 print_error(darkred(" * ") + red("%s: " % (_("Error while creating package for"),)) + \
@@ -137,10 +138,10 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
     # test if portage is available
     try:
-        Spm = text_ui.Equo.Spm()
+        Spm = Equo.Spm()
         del Spm
     except Exception, e:
-        text_ui.Equo.entropyTools.printTraceback()
+        Equo.entropyTools.printTraceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
         return 1
@@ -155,7 +156,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
     for tbz2 in mytbz2s:
         #print_info(brown(" * ")+darkred("Analyzing: ")+tbz2)
         if not (os.path.isfile(tbz2) and tbz2.endswith(etpConst['packagesext']) and \
-            text_ui.Equo.entropyTools.isEntropyTbz2(tbz2)):
+            Equo.entropyTools.isEntropyTbz2(tbz2)):
                 print_error(darkred(" * ")+bold(tbz2)+red(" %s" % (_("is not a valid Entropy package"),)))
                 return 1
 
@@ -180,7 +181,7 @@ def InflateHandler(mytbz2s, savedir):
         etptbz2path = savedir+"/"+os.path.basename(tbz2)
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
             shutil.copy2(tbz2,etptbz2path)
-        mydata = text_ui.Equo.extract_pkg_metadata(etptbz2path)
+        mydata = Equo.extract_pkg_metadata(etptbz2path)
         # append arbitrary revision
         mydata['revision'] = 9999
         mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"
@@ -189,18 +190,18 @@ def InflateHandler(mytbz2s, savedir):
         shutil.move(etptbz2path,final_tbz2path)
         etptbz2path = final_tbz2path
         # create temp database
-        dbpath = etpConst['packagestmpdir']+"/"+str(text_ui.Equo.entropyTools.getRandomNumber())
+        dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.getRandomNumber())
         while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+"/"+str(text_ui.Equo.entropyTools.getRandomNumber())
+            dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.getRandomNumber())
         # create
-        mydbconn = text_ui.Equo.openGenericDatabase(dbpath)
+        mydbconn = Equo.open_generic_database(dbpath)
         mydbconn.initializeDatabase()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
-        myQA = text_ui.Equo.QA()
+        myQA = Equo.QA()
         myQA.scan_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
-        text_ui.Equo.entropyTools.aggregateEdb(tbz2file = etptbz2path, dbfile = dbpath)
+        Equo.entropyTools.aggregateEdb(tbz2file = etptbz2path, dbfile = dbpath)
         os.remove(dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Inflated package"),))+etptbz2path)
 
@@ -211,9 +212,9 @@ def DeflateHandler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflating"),))+tbz2, back = True)
-        mytbz2 = text_ui.Equo.entropyTools.removeEdb(tbz2,savedir)
+        mytbz2 = Equo.entropyTools.removeEdb(tbz2,savedir)
         tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
-        tbz2name = text_ui.Equo.entropyTools.remove_tag(tbz2name)+etpConst['packagesext']
+        tbz2name = Equo.entropyTools.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(mytbz2)+"/"+tbz2name
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflated package"),))+newtbz2)
 
@@ -228,7 +229,7 @@ def ExtractHandler(mytbz2s, savedir):
         if os.path.isfile(dbpath):
             os.remove(dbpath)
         # extract
-        out = text_ui.Equo.entropyTools.extractEdb(tbz2,dbpath = dbpath)
+        out = Equo.entropyTools.extractEdb(tbz2,dbpath = dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracted Entropy metadata from"),))+out)
 
     return 0
@@ -241,12 +242,12 @@ def smartPackagesHandler(mypackages):
 
     packages = []
     for opt in mypackages:
-        match = text_ui.Equo.atomMatch(opt)
+        match = Equo.atom_match(opt)
         if match[0] != -1:
             packages.append(match)
         else:
             print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = text_ui.Equo.entropyTools.filterDuplicatedEntries(packages)
+    packages = Equo.entropyTools.filterDuplicatedEntries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
@@ -255,12 +256,12 @@ def smartPackagesHandler(mypackages):
     print_info(darkgreen(" * ")+red("%s:" % (_("This is the list of the packages that would be merged into a single one"),)))
     pkgInfo = {}
     for pkg in packages:
-        dbconn = text_ui.Equo.openRepositoryDatabase(pkg[1])
+        dbconn = Equo.open_repository(pkg[1])
         atom = dbconn.retrieveAtom(pkg[0])
         pkgInfo[pkg] = atom
         print_info(brown("\t[")+red("%s:" % (_("from"),))+pkg[1]+brown("]")+" - "+atom)
 
-    rc = text_ui.Equo.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
+    rc = Equo.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
     if rc == "No":
         return 0
 
@@ -278,7 +279,7 @@ def smartpackagegenerator(matchedPackages):
     fetchdata = []
     matchedAtoms = {}
     for x in matchedPackages:
-        xdbconn = text_ui.Equo.openRepositoryDatabase(x[1])
+        xdbconn = Equo.open_repository(x[1])
         matchedAtoms[x] = {}
         xatom = xdbconn.retrieveAtom(x[0])
         xdownload = xdbconn.retrieveDownloadURL(x[0])
@@ -287,15 +288,16 @@ def smartpackagegenerator(matchedPackages):
         matchedAtoms[x]['download'] = xdownload
         matchedAtoms[x]['revision'] = xrevision
         fetchdata.append(x)
+    import text_ui
     # run installPackages with onlyfetch
     rc = text_ui.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 
     # create unpack dir and unpack all packages
-    unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(text_ui.Equo.entropyTools.getRandomNumber())
+    unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.getRandomNumber())
     while os.path.isdir(unpackdir):
-        unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(text_ui.Equo.entropyTools.getRandomNumber())
+        unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.getRandomNumber())
     if os.path.isdir(unpackdir):
         shutil.rmtree(unpackdir)
     os.makedirs(unpackdir)
@@ -303,22 +305,22 @@ def smartpackagegenerator(matchedPackages):
     os.mkdir(unpackdir+"/db")
     # create master database
     dbfile = unpackdir+"/db/merged.db"
-    mergeDbconn = text_ui.Equo.openGenericDatabase(dbfile, dbname = "client")
+    mergeDbconn = Equo.open_generic_database(dbfile, dbname = "client")
     mergeDbconn.initializeDatabase()
     mergeDbconn.createXpakTable()
     tmpdbfile = dbfile+"--readingdata"
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
-        text_ui.Equo.entropyTools.extractEdb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'],tmpdbfile)
+        Equo.entropyTools.extractEdb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'],tmpdbfile)
         # read db and add data to mergeDbconn
-        mydbconn = text_ui.Equo.openGenericDatabase(tmpdbfile)
+        mydbconn = Equo.open_generic_database(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
 
         for myidpackage in idpackages:
             data = mydbconn.getPackageData(myidpackage)
             if len(idpackages) == 1:
                 # just a plain package that would like to become smart
-                xpakdata = text_ui.Equo.entropyTools.readXpak(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'])
+                xpakdata = Equo.entropyTools.readXpak(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'])
             else:
                 xpakdata = mydbconn.retrieveXpakMetadata(myidpackage) # already a smart package
             # add
@@ -334,7 +336,7 @@ def smartpackagegenerator(matchedPackages):
     # merge packages
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("unpacking content"))
-        rc = text_ui.Equo.entropyTools.uncompressTarBz2(etpConst['entropyworkdir']+"/"+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
+        rc = Equo.entropyTools.uncompressTarBz2(etpConst['entropyworkdir']+"/"+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
         if rc != 0:
             print_error(darkred(" * ")+red("%s." % (_("Unpack failed due to unknown reasons"),)))
             return rc
@@ -346,7 +348,7 @@ def smartpackagegenerator(matchedPackages):
     for x in matchedAtoms:
         atoms.append(matchedAtoms[x]['atom'].split("/")[1])
     atoms = '+'.join(atoms)
-    rc = text_ui.Equo.entropyTools.compressTarBz2(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],unpackdir+"/content")
+    rc = Equo.entropyTools.compressTarBz2(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],unpackdir+"/content")
     if rc != 0:
         print_error(darkred(" * ")+red("%s." % (_("Compression failed due to unknown reasons"),)))
         return rc
@@ -355,7 +357,7 @@ def smartpackagegenerator(matchedPackages):
         print_error(darkred(" * ")+red("%s." % (_("Compressed file does not exist"),)))
         return 1
 
-    text_ui.Equo.entropyTools.aggregateEdb(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],dbfile)
+    Equo.entropyTools.aggregateEdb(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],dbfile)
     print_info("\t"+etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'])
     shutil.rmtree(unpackdir,True)
     return 0
@@ -374,7 +376,7 @@ def smartappsHandler(mypackages, emptydeps = False):
 
     packages = set()
     for opt in mypackages:
-        match = text_ui.Equo.atomMatch(opt)
+        match = Equo.atom_match(opt)
         if match[0] != -1:
             packages.add(match)
         else:
@@ -388,12 +390,12 @@ def smartappsHandler(mypackages, emptydeps = False):
     print_info(darkgreen(" * ")+red("%s:" % (_("This is the list of the packages that would be worked out"),)))
     pkgInfo = {}
     for pkg in packages:
-        dbconn = text_ui.Equo.openRepositoryDatabase(pkg[1])
+        dbconn = Equo.open_repository(pkg[1])
         atom = dbconn.retrieveAtom(pkg[0])
         pkgInfo[pkg] = atom
         print_info(brown("\t[")+red("%s:" % (_("from"),))+pkg[1]+red("|SMART")+brown("]")+" - "+atom)
 
-    rc = text_ui.Equo.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
+    rc = Equo.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
     if rc == "No":
         return 0
 
@@ -409,7 +411,7 @@ def smartappsHandler(mypackages, emptydeps = False):
 def smartgenerator(atomInfo, emptydeps = False):
 
     import entropy.tools as entropyTools
-    dbconn = text_ui.Equo.openRepositoryDatabase(atomInfo[1])
+    dbconn = Equo.open_repository(atomInfo[1])
     idpackage = atomInfo[0]
     atom = dbconn.retrieveAtom(idpackage)
 
@@ -420,7 +422,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     pkgfilename = os.path.basename(pkgfilepath)
     pkgname = pkgfilename.split(etpConst['packagesext'])[0].replace(":","_").replace("~","_")
 
-    pkgdependencies, removal, result = text_ui.Equo.retrieveInstallQueue([atomInfo], empty_deps = emptydeps, deep_deps = False)
+    pkgdependencies, removal, result = Equo.get_install_queue([atomInfo], empty_deps = emptydeps, deep_deps = False)
     #FIXME: fix dependencies stuff
     # flatten them
     if (result == 0):
@@ -435,7 +437,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     if pkgs:
         print_info(darkgreen(" * ")+red("%s:" % (_("This is the list of the dependencies that would be included"),)))
     for i in pkgs:
-        mydbconn = text_ui.Equo.openRepositoryDatabase(i[1])
+        mydbconn = Equo.open_repository(i[1])
         atom = mydbconn.retrieveAtom(i[0])
         print_info(darkgreen("   (x) ")+red(atom))
 
@@ -443,6 +445,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     fetchdata.append(atomInfo)
     fetchdata += pkgs
     # run installPackages with onlyfetch
+    import text_ui
     rc = text_ui.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
@@ -467,7 +470,7 @@ def smartgenerator(atomInfo, emptydeps = False):
 
     # now uncompress all the rest
     for dep in pkgs:
-        mydbconn = text_ui.Equo.openRepositoryDatabase(dep[1])
+        mydbconn = Equo.open_repository(dep[1])
         download = os.path.basename(mydbconn.retrieveDownloadURL(dep[0]))
         depbranch = mydbconn.retrieveBranch(dep[0])
         depatom = mydbconn.retrieveAtom(dep[0])
@@ -542,7 +545,7 @@ int main() {
     smartpath = "%s/%s-%s%s" % (etpConst['smartappsdir'],pkgname,etpConst['currentarch'],etpConst['packagesext'],)
     print_info(darkgreen(" * ")+red("%s: " % (_("Compressing smart application"),))+bold(atom))
     print_info("\t%s" % (smartpath,))
-    text_ui.Equo.entropyTools.compressTarBz2(smartpath,pkgtmpdir)
+    Equo.entropyTools.compressTarBz2(smartpath,pkgtmpdir)
     shutil.rmtree(pkgtmpdir,True)
 
     return 0

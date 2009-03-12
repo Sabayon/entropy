@@ -63,7 +63,7 @@ class QueueExecutor:
         for match in self.Spritz.etpbase.unmaskingPackages:
             result = self.Entropy.unmask_match(match)
             if not result or self.Entropy.is_match_masked(match):
-                dbconn = self.Entropy.openRepositoryDatabase(match[1])
+                dbconn = self.Entropy.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
                 okDialog( self.Spritz.ui.main, "%s: %s" % (_("Error enabling masked package"),atom) )
                 return -2,1
@@ -72,7 +72,7 @@ class QueueExecutor:
         runQueue = []
         conflicts_queue = []
         if install_queue:
-            runQueue, conflicts_queue, status = self.Entropy.retrieveInstallQueue(install_queue,False,False)
+            runQueue, conflicts_queue, status = self.Entropy.get_install_queue(install_queue,False,False)
         if removal_queue:
             removalQueue += [(x,False) for x in removal_queue if x not in conflicts_queue]
 

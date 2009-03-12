@@ -237,7 +237,7 @@ def install_packages(fetch = False):
         # get key + slot
         key, slot = Equo.clientDbconn.retrieveKeySlot(match[0])
         # match in repos
-        match = Equo.atomMatch(key, matchSlot = slot)
+        match = Equo.atom_match(key, matchSlot = slot)
         if match[0] != -1:
             valid_matches.add(match)
 

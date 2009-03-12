@@ -109,12 +109,12 @@ def database(options):
         # Now reinitialize it
         mytxt = darkred("  %s %s") % (_("Initializing the new database at"),bold(etpConst['etpdatabaseclientfilepath']),)
         print_info(mytxt, back = True)
-        Equo.reopenClientDbconn()
+        Equo.reopen_client_repository()
         dbfile = Equo.clientDbconn.dbFile
         Equo.clientDbconn.closeDB()
         if os.path.isfile(dbfile):
             os.remove(dbfile)
-        Equo.openClientDatabase()
+        Equo.open_client_repository()
         Equo.clientDbconn.initializeDatabase()
         mytxt = darkred("  %s %s") % (_("Database reinitialized correctly at"),bold(etpConst['etpdatabaseclientfilepath']),)
         print_info(mytxt)
@@ -219,7 +219,7 @@ def database(options):
 
     elif (options[0] == "check"):
         if Equo.clientDbconn.doesTableExist("baseinfo"):
-            Equo.clientDatabaseSanityCheck()
+            Equo.client_repository_sanity_check()
         else:
             mytxt = "# %s: %s" % (bold(_("ATTENTION")),red(_("database does not exist or is badly broken")),)
             print_warning(mytxt)
@@ -267,7 +267,7 @@ def database(options):
         dbpath = etpConst['etpdatabaseclientfilepath']
         if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
             os.remove(dbpath)
-        dbc = Equo.openGenericDatabase(dbpath, dbname = etpConst['clientdbid']) # don't do this at home
+        dbc = Equo.open_generic_database(dbpath, dbname = etpConst['clientdbid']) # don't do this at home
         dbc.initializeDatabase()
         dbc.commitChanges()
         Equo.clientDbconn = dbc
@@ -326,7 +326,7 @@ def database(options):
             mytxt = red("  %s: %s") % (_("Matching in repository"),etpRepositories[repo]['description'],)
             print_info(mytxt)
             # get all idpackages
-            dbconn = Equo.openRepositoryDatabase(repo)
+            dbconn = Equo.open_repository(repo)
             idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
             count = str(len(idpackages))
             cnt = 0
@@ -419,7 +419,7 @@ def database(options):
 
         # make it crash
         Equo.noclientdb = False
-        Equo.reopenClientDbconn()
+        Equo.reopen_client_repository()
 
         # test if counters table exists, because if not, it's useless to run the diff scan
         try:
@@ -614,7 +614,7 @@ def database(options):
 
     elif (options[0] == "backup"):
 
-        status, err_msg = Equo.backupDatabase(etpConst['etpdatabaseclientfilepath'])
+        status, err_msg = Equo.backup_database(etpConst['etpdatabaseclientfilepath'])
         if status:
             return 0
         return 1
@@ -653,7 +653,7 @@ def database(options):
             if not os.path.isfile(dbpath): continue
             break
 
-        status, err_msg = Equo.restoreDatabase(dbpath, etpConst['etpdatabaseclientfilepath'])
+        status, err_msg = Equo.restore_database(dbpath, etpConst['etpdatabaseclientfilepath'])
         if status:
             return 0
         return 1
@@ -729,7 +729,7 @@ def pythonUpdater():
     matchedAtoms = set()
     for atomkey,slot in keyslots:
         print_info(brown("   @@ ")+red("%s " % (_("Matching"),) )+bold(atomkey)+red(":")+darkgreen(slot), back = True)
-        match = Equo.atomMatch(atomkey, matchSlot = slot)
+        match = Equo.atom_match(atomkey, matchSlot = slot)
         if match[0] != -1:
             matchedAtoms.add((atomkey+":"+slot,match))
     del idpackages
@@ -801,7 +801,7 @@ def getinfo(dict = False):
         dbfile = etpRepositories[x]['dbpath']+"/"+etpConst['etpdatabasefile']
         if os.path.isfile(dbfile):
             # print info about this database
-            dbconn = Equo.openRepositoryDatabase(x)
+            dbconn = Equo.open_repository(x)
             info['Repository databases'][x] = {}
             info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectDirectories()
             info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectDirectories(mask = True)

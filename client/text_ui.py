@@ -317,13 +317,13 @@ def _scanPackages(packages, tbz2):
     foundAtoms = []
 
     # expand package
-    packages = Equo.packagesExpand(packages)
+    packages = Equo.packages_expand(packages)
 
     for package in packages:
         # clear masking reasons
-        match = Equo.atomMatch(package)
+        match = Equo.atom_match(package)
         if match[0] == -1:
-            masked_matches = Equo.atomMatch(package, packagesFilter = False, multiMatch = True)
+            masked_matches = Equo.atom_match(package, packagesFilter = False, multiMatch = True)
             if masked_matches[1] == 0:
 
                 mytxt = "%s %s %s %s." % (
@@ -345,7 +345,7 @@ def _scanPackages(packages, tbz2):
                 for idreason, reason in sorted(m_reasons.keys()):
                     print_warning(bold("    # ")+red("Reason: ")+blue(reason))
                     for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
-                        dbconn = Equo.openRepositoryDatabase(m_repo)
+                        dbconn = Equo.open_repository(m_repo)
                         try:
                             m_atom = dbconn.retrieveAtom(m_idpackage)
                         except TypeError:
@@ -380,7 +380,7 @@ def _scanPackages(packages, tbz2):
                     )
                     print_info(mytxt)
                     for m_idpackage, m_repo in items:
-                        dbc = Equo.openRepositoryDatabase(m_repo)
+                        dbc = Equo.open_repository(m_repo)
                         key, slot = dbc.retrieveKeySlot(m_idpackage)
                         if (key,slot) not in items_cache:
                             print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
@@ -423,7 +423,7 @@ def _showPackageInfo(foundAtoms, deps):
         for idpackage,reponame in foundAtoms:
             atomscounter += 1
             # open database
-            dbconn = Equo.openRepositoryDatabase(reponame)
+            dbconn = Equo.open_repository(reponame)
 
             # get needed info
             pkgatom = dbconn.retrieveAtom(idpackage)
@@ -508,13 +508,13 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
 
     if deps:
         print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
-        runQueue, removalQueue, status = Equo.retrieveInstallQueue(foundAtoms, emptydeps, deepdeps)
+        runQueue, removalQueue, status = Equo.get_install_queue(foundAtoms, emptydeps, deepdeps)
         if status == -2:
 
             print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
             for package in runQueue:
 
-                masked_matches = Equo.atomMatch(package, packagesFilter = False, multiMatch = True)
+                masked_matches = Equo.atom_match(package, packagesFilter = False, multiMatch = True)
                 if masked_matches[1] == 0:
 
                     mytxt = "%s %s %s %s." % (
@@ -536,7 +536,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
                     for idreason, reason in sorted(m_reasons.keys()):
                         print_warning(bold("    # ")+red("Reason: ")+blue(reason))
                         for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
-                            dbconn = Equo.openRepositoryDatabase(m_repo)
+                            dbconn = Equo.open_repository(m_repo)
                             try:
                                 m_atom = dbconn.retrieveAtom(m_idpackage)
                             except TypeError:
@@ -674,7 +674,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             for idpackage,reponame in runQueue:
                 count += 1
 
-                dbconn = Equo.openRepositoryDatabase(reponame)
+                dbconn = Equo.open_repository(reponame)
                 pkgatom = dbconn.retrieveAtom(idpackage)
                 if not pkgatom:
                     continue
@@ -909,7 +909,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 return 128,-1
 
             if skipfirst and runQueue:
-                runQueue, x, status = Equo.retrieveInstallQueue(runQueue[1:], emptydeps, deepdeps)
+                runQueue, x, status = Equo.get_install_queue(runQueue[1:], emptydeps, deepdeps)
                 del x # was removalQueue
                 # save new queues
                 resume_cache['runQueue'] = runQueue
@@ -948,7 +948,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         for key in keys:
             print_info(red("    :: %s: " % (_("License"),) )+bold(key)+red(", %s:" % (_("needed by"),) ))
             for match in licenses[key]:
-                dbconn = Equo.openRepositoryDatabase(match[1])
+                dbconn = Equo.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
                 print_info(blue("       ## ")+"["+brown(_("from"))+":"+red(match[1])+"] "+bold(atom))
             while 1:
@@ -1114,7 +1114,7 @@ def configurePackages(packages = []):
         etpUi['pretend'] = True
 
     foundAtoms = []
-    packages = Equo.packagesExpand(packages)
+    packages = Equo.packages_expand(packages)
 
     for package in packages:
         idpackage, result = Equo.clientDbconn.atomMatch(package)
@@ -1206,7 +1206,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
         else:
 
             # expand package
-            packages = Equo.packagesExpand(packages)
+            packages = Equo.packages_expand(packages)
 
             for package in packages:
                 idpackage, result = Equo.clientDbconn.atomMatch(package)
@@ -1259,7 +1259,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                 continue
 
             if systemPackagesCheck:
-                valid = Equo.validatePackageRemoval(idpackage)
+                valid = Equo.validate_package_removal(idpackage)
                 if not valid:
                     mytxt = "   %s (%s/%s) %s: %s. %s." % (
                         bold("!!!"),
@@ -1307,7 +1307,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
         if lookForOrphanedPackages:
             choosenRemovalQueue = []
-            choosenRemovalQueue = Equo.retrieveRemovalQueue(plainRemovalQueue, deep = deep)
+            choosenRemovalQueue = Equo.get_removal_queue(plainRemovalQueue, deep = deep)
             if choosenRemovalQueue:
                 print_info(red(" @@ ")+blue("%s:" % (_("This is the new removal queue"),) ))
                 totalatoms = str(len(choosenRemovalQueue))
@@ -1485,7 +1485,7 @@ def dependenciesTest():
                         crying_atoms[dep] = set()
                     crying_atoms[dep].add(iatom)
 
-            match = Equo.atomMatch(dep)
+            match = Equo.atom_match(dep)
             if match[0] != -1:
                 found_deps.add(dep)
                 continue
@@ -1496,7 +1496,7 @@ def dependenciesTest():
                 for c_idpackage in c_idpackages:
                     key, slot = Equo.clientDbconn.retrieveKeySlot(c_idpackage)
                     key_slot = "%s:%s" % (key,slot,)
-                    match = Equo.atomMatch(key, matchSlot = slot)
+                    match = Equo.atom_match(key, matchSlot = slot)
 
                     cmpstat = 0
                     if match[0] != -1:
@@ -1570,14 +1570,14 @@ def librariesTest(listfiles = False):
         print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
         for mylib in packagesMatched:
             for idpackage, repoid in packagesMatched[mylib]:
-                dbconn = Equo.openRepositoryDatabase(repoid)
+                dbconn = Equo.open_repository(repoid)
                 myatom = dbconn.retrieveAtom(idpackage)
                 atomsdata.add((idpackage,repoid))
                 print_info("   "+red(mylib)+" => "+brown(myatom)+" ["+red(repoid)+"]")
     else:
         for mylib in packagesMatched:
             for idpackage, repoid in packagesMatched[mylib]:
-                dbconn = Equo.openRepositoryDatabase(repoid)
+                dbconn = Equo.open_repository(repoid)
                 myatom = dbconn.retrieveAtom(idpackage)
                 atomsdata.add((idpackage,repoid))
                 print myatom

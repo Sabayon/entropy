@@ -5972,7 +5972,7 @@ class LicenseDialog:
             license_text = ''
             for package in packages:
                 repoid = package[1]
-                dbconn = self.Entropy.openRepositoryDatabase(repoid)
+                dbconn = self.Entropy.open_repository(repoid)
                 if dbconn.isLicensedataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     break
@@ -6000,7 +6000,7 @@ class LicenseDialog:
             parent = self.model.append( None, [lic,True] )
             packages = licenses[lic]
             for match in packages:
-                dbconn = self.Entropy.openRepositoryDatabase(match[1])
+                dbconn = self.Entropy.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
                 self.model.append( parent, [atom,None] )
 

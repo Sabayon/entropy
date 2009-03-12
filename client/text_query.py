@@ -208,11 +208,11 @@ def searchChangeLog(atoms, dbconn = None, Equo = None):
                 print_info(darkred("%s: %s" % (_("No match for"),bold(atom),)))
                 continue
         else:
-            idpackage, r_id = Equo.atomMatch(atom)
+            idpackage, r_id = Equo.atom_match(atom)
             if idpackage == -1:
                 print_info(darkred("%s: %s" % (_("No match for"),bold(atom),)))
                 continue
-            dbconn = Equo.openRepositoryDatabase(r_id)
+            dbconn = Equo.open_repository(r_id)
 
         db_atom = dbconn.retrieveAtom(idpackage)
         if etpUi['quiet']: print_generic("%s :" % (db_atom,))
@@ -236,10 +236,10 @@ def searchDepends(atoms, idreturn = False, dbconn = None, Equo = None):
     if (not idreturn) and (not etpUi['quiet']):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Depends Search"),) ))
 
-    # XXX hack to get Equo.atomMatch to not raise AttributeError
+    # XXX hack to get Equo.atom_match to not raise AttributeError
     match_repo = True
     try:
-        x = Equo.atomMatch
+        x = Equo.atom_match
         del x
     except AttributeError:
         match_repo = False
@@ -256,14 +256,14 @@ def searchDepends(atoms, idreturn = False, dbconn = None, Equo = None):
         repoMasked = False
         if (result[0] == -1) and match_repo:
             matchInRepo = True
-            result = Equo.atomMatch(atom)
+            result = Equo.atom_match(atom)
         if (result[0] == -1) and match_repo:
-            result = Equo.atomMatch(atom, packagesFilter = False)
+            result = Equo.atom_match(atom, packagesFilter = False)
             if result[0] != -1:
                 repoMasked = True
         if (result[0] != -1):
             if (matchInRepo):
-                dbconn = Equo.openRepositoryDatabase(result[1])
+                dbconn = Equo.open_repository(result[1])
             else:
                 dbconn = clientDbconn
             found_atom = dbconn.retrieveAtom(result[0])
@@ -467,7 +467,7 @@ def searchOrphans(Equo = None):
     filepath = Equo.entropyTools.getRandomTempFile()
     if os.path.isfile(filepath):
         os.remove(filepath)
-    tdbconn = Equo.openGenericDatabase(filepath)
+    tdbconn = Equo.open_generic_database(filepath)
     tdbconn.initializeDatabase()
     for xdir in dirs:
         try:
@@ -686,7 +686,7 @@ def searchPackage(packages, idreturn = False, Equo = None):
         if (not idreturn) and (not etpUi['quiet']):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
-        dbconn = Equo.openRepositoryDatabase(repo)
+        dbconn = Equo.open_repository(repo)
         for package in packages:
             slot = Equo.entropyTools.dep_getslot(package)
             tag = Equo.entropyTools.dep_gettag(package)
@@ -735,7 +735,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
         if (not idreturn) and (not etpUi['quiet']):
             print_info(blue("  # ")+bold(package))
 
-        match = Equo.atomMatch(package, multiMatch = multiMatch, multiRepo = multiRepo, packagesFilter = False)
+        match = Equo.atom_match(package, multiMatch = multiMatch, multiRepo = multiRepo, packagesFilter = False)
         if match[1] != 1:
             if not multiMatch:
                 if multiRepo:
@@ -748,7 +748,7 @@ def matchPackage(packages, idreturn = False, multiMatch = False, multiRepo = Fal
                 if (idreturn):
                     dataInfo.add(tuple(match))
                 else:
-                    dbconn = Equo.openRepositoryDatabase(match[1])
+                    dbconn = Equo.open_repository(match[1])
                     printPackageInfo(match[0],dbconn, showRepoOnQuiet = showRepo, showDescOnQuiet = showDesc, Equo = Equo)
                     found = True
             if (not idreturn) and (not etpUi['quiet']):
@@ -784,7 +784,7 @@ def searchSlottedPackages(slots, datareturn = False, dbconn = None, Equo = None)
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
         if dbclose:
-            dbconn = Equo.openRepositoryDatabase(repo)
+            dbconn = Equo.open_repository(repo)
         for slot in slots:
             results = dbconn.searchSlottedPackages(slot, atoms = True)
             for result in results:
@@ -814,7 +814,7 @@ def searchPackageSets(items, datareturn = False, Equo = None):
 
     matchNumber = 0
     for item in items:
-        results = Equo.packageSetSearch(item)
+        results = Equo.package_set_search(item)
         for repo, set_name, set_data in results:
             matchNumber += 1
             if (not datareturn) and (not etpUi['quiet']):
@@ -854,7 +854,7 @@ def searchTaggedPackages(tags, datareturn = False, dbconn = None, Equo = None):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
         if dbclose:
-            dbconn = Equo.openRepositoryDatabase(repo)
+            dbconn = Equo.open_repository(repo)
         for tag in tags:
             results = dbconn.searchTaggedPackages(tag, atoms = True)
             for result in results:
@@ -891,7 +891,7 @@ def searchLicenses(licenses, datareturn = False, dbconn = None, Equo = None):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
         if dbclose:
-            dbconn = Equo.openRepositoryDatabase(repo)
+            dbconn = Equo.open_repository(repo)
         for mylicense in licenses:
             results = dbconn.searchLicenses(mylicense, atoms = True)
             if not results:
@@ -927,7 +927,7 @@ def searchDescription(descriptions, idreturn = False, Equo = None):
         if (not idreturn) and (not etpUi['quiet']):
             print_info(blue("  #"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
 
-        dbconn = Equo.openRepositoryDatabase(repo)
+        dbconn = Equo.open_repository(repo)
         dataInfo, descdata = searchDescriptions(descriptions, dbconn, idreturn, Equo = Equo)
         foundPackages[repo].update(descdata)
 
