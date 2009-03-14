@@ -1,5 +1,6 @@
 ../libraries/dumpTools.py
 ../libraries/entropyConstants.py
+../libraries/entropy_i18n.py
 ../libraries/entropyTools.py
 ../libraries/outputTools.py
 ../client/equo.py

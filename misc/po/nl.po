@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-08 22:43+0100\n"
+"POT-Creation-Date: 2009-03-14 17:54+0100\n"
 "PO-Revision-Date: 2009-03-05 12:19-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -19,856 +19,733 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: KBabel 1.11.4\n"
 
-#: ../../libraries/entropyConstants.py:139
+#: ../../client/equo.py:54
 msgid "You should run equo --help"
 msgstr "Probeer eens equo --help"
 
-#: ../../libraries/entropyConstants.py:140
+#: ../../client/equo.py:55
 msgid "You didn't run equo --help, did you?"
 msgstr "Heb je equo --help al eens geprobeerd?"
 
-#: ../../libraries/entropyConstants.py:141
+#: ../../client/equo.py:56
 msgid "Did you even read equo --help??"
 msgstr "Nog steeds equo --help niet gelezen??"
 
-#: ../../libraries/entropyConstants.py:142
+#: ../../client/equo.py:57
 msgid "I give up. Run that equo --help !!!!!!!"
 msgstr "Ik geef het op. doe equo --help !!!!!!!"
 
-#: ../../libraries/entropyConstants.py:143
+#: ../../client/equo.py:58
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
 msgstr "O MIJN GOD. DOE NOU equo --heeeeeeeeeeeeeelp"
 
-#: ../../libraries/entropyConstants.py:144
+#: ../../client/equo.py:59
 msgid "Illiteracy is a huge problem in this world"
 msgstr "Analfabetisme is een groot probleem in deze wereld"
 
-#: ../../libraries/entropyConstants.py:145
+#: ../../client/equo.py:60
 msgid "Ok i give up, you are hopeless"
 msgstr "Ok, ik geef het op. Jij bent hopeloos"
 
-#: ../../libraries/entropyConstants.py:146
+#: ../../client/equo.py:61
 msgid "Go to hell."
 msgstr "STERF!"
 
-#: ../../libraries/entropyConstants.py:439
-msgid "All fine"
-msgstr "Alles is goed"
-
-#: ../../libraries/entropyConstants.py:440
-msgid "Corrupted Entropy installed packages database. Please restore a backup."
-msgstr ""
-"Corrupte Entropy geïnstalleerde pakketten database. Herstel een back-up."
-
-#: ../../libraries/entropyConstants.py:494
-msgid "Comments"
-msgstr "Commentaren"
-
-#: ../../libraries/entropyConstants.py:495
-msgid "BBcode Documents"
-msgstr "BBcode Documenten"
-
-#: ../../libraries/entropyConstants.py:496
-msgid "Images/Screenshots"
-msgstr "Plaatjes/Screenshots"
-
-#: ../../libraries/entropyConstants.py:497
-msgid "Generic Files"
-msgstr "Generieke Bestanden"
-
-#: ../../libraries/entropyConstants.py:498
-msgid "YouTube(tm) Videos"
-msgstr "YouTube(tm) Video's"
-
-#: ../../libraries/entropyConstants.py:501
-msgid "Comment"
-msgstr "Commentaar"
-
-#: ../../libraries/entropyConstants.py:502
-msgid "BBcode Document"
-msgstr "BBcode Document"
-
-#: ../../libraries/entropyConstants.py:503
-msgid "Image/Screenshot"
-msgstr "Plaatje/Screenshot"
-
-#: ../../libraries/entropyConstants.py:504
-msgid "Generic File"
-msgstr "Generiek Bestand"
-
-#: ../../libraries/entropyConstants.py:505
-msgid "YouTube(tm) Video"
-msgstr "YouTube(tm) Video"
-
-#: ../../libraries/outputTools.py:394 ../../spritz/src/entropyapi.py:297
-msgid "Entropy needs your attention"
-msgstr "Entropy vraagt om uw aandacht"
-
-#: ../../libraries/outputTools.py:495
-msgid "maximum responses length"
-msgstr "maximale lengte van reacties"
-
-#: ../../libraries/outputTools.py:503
-msgid "Entropy got a question for you"
-msgstr "Entropy heeft een vraag voor u"
-
-#: ../../libraries/outputTools.py:520
-msgid "Interrupted"
-msgstr "Onderbroken"
-
-#: ../../libraries/outputTools.py:559
-msgid "Selected number"
-msgstr "Geselecteerd nummer"
-
-#: ../../libraries/outputTools.py:572 ../../client/text_ui.py:925
-msgid "Please select an option"
-msgstr "selecteer een optie"
-
-#: ../../libraries/outputTools.py:574
-msgid "Discard all"
-msgstr "Alles afwijzen"
-
-#: ../../libraries/outputTools.py:575
-msgid "Confirm"
-msgstr "Bevestigen"
-
-#: ../../libraries/outputTools.py:576
-msgid "Add item"
-msgstr "Item toevoegen"
-
-#: ../../libraries/outputTools.py:577
-msgid "Remove item"
-msgstr "Verwijder item"
-
-#: ../../libraries/outputTools.py:578
-msgid "Show current list"
-msgstr "geef huidige lijst weer"
-
-#. wait user interaction
-#: ../../libraries/outputTools.py:581 ../../client/text_configuration.py:256
-#: ../../client/text_configuration.py:271
-msgid "Your choice (type a number and press enter):"
-msgstr "Jouw keuze (typ een nummer en druk op enter):"
-
-#: ../../libraries/outputTools.py:607 ../../client/text_configuration.py:175
-msgid "You don't have typed a number."
-msgstr "Je hebt geen nummer gegeven."
-
-#: ../../libraries/outputTools.py:610
-msgid "Invalid action."
-msgstr "Ongeldige actie."
-
-#: ../../libraries/outputTools.py:619
-msgid "String to add:"
-msgstr "Invoer om toe te voegen:"
-
-#: ../../libraries/outputTools.py:625
-msgid "Invalid string."
-msgstr "Ongeldige invoer."
-
-#: ../../libraries/outputTools.py:633
-msgid "Element number to remove:"
-msgstr "Nummer van element om te verwijderen:"
-
-#: ../../libraries/outputTools.py:638
-msgid "Invalid element."
-msgstr "Ongeldig element."
-
-#: ../../client/equo.py:61 ../../server/activator.py:39
+#: ../../client/equo.py:68 ../../server/activator.py:39
 #: ../../server/reagent.py:40
 msgid "Basic Options"
 msgstr "Basis Opties"
 
-#: ../../client/equo.py:63 ../../server/activator.py:41
+#: ../../client/equo.py:70 ../../server/activator.py:41
 #: ../../server/reagent.py:42
 msgid "this output"
 msgstr "deze uitvoer"
 
-#: ../../client/equo.py:64 ../../server/activator.py:42
+#: ../../client/equo.py:71 ../../server/activator.py:42
 #: ../../server/reagent.py:43
 msgid "print version"
 msgstr "versie weergeven"
 
-#: ../../client/equo.py:65 ../../server/activator.py:43
+#: ../../client/equo.py:72 ../../server/activator.py:43
 #: ../../server/reagent.py:44
 msgid "disable colorized output"
 msgstr "schakel gekleurde weergave uit"
 
-#: ../../client/equo.py:67 ../../server/activator.py:45
+#: ../../client/equo.py:74 ../../server/activator.py:45
 #: ../../server/reagent.py:46
 msgid "Application Options"
 msgstr "Programma Opties"
 
-#: ../../client/equo.py:69
+#: ../../client/equo.py:76
 msgid "update configured repositories"
 msgstr "update geconfigureerde repositories"
 
-#: ../../client/equo.py:70
+#: ../../client/equo.py:77
 msgid "force sync regardless repositories status"
 msgstr "forceer sync ongeacht de status van de repositories"
 
-#: ../../client/equo.py:71
+#: ../../client/equo.py:78
 msgid "show repositories information"
 msgstr "repositories informatie weergeven"
 
-#: ../../client/equo.py:72
+#: ../../client/equo.py:79
 msgid "show make.conf for the chosen repositories"
 msgstr "geef make.conf weer voor de gekozen repositories"
 
-#: ../../client/equo.py:73
+#: ../../client/equo.py:80
 msgid "show package.mask for the chosen repositories"
 msgstr "geef package.mask weer voor de gekozen repositories"
 
-#: ../../client/equo.py:74
+#: ../../client/equo.py:81
 msgid "show package.unmask for the chosen repositories"
 msgstr "geef package.unmask weer voor de gekozen repositories"
 
-#: ../../client/equo.py:75
+#: ../../client/equo.py:82
 msgid "show package.keywords for the chosen repositories"
 msgstr "geef package.keywords weer voor de gekozen repositories"
 
-#: ../../client/equo.py:76
+#: ../../client/equo.py:83
 msgid "show package.use for the chosen repositories"
 msgstr "geef package.use weer voor de gekozen repositories"
 
-#: ../../client/equo.py:77
+#: ../../client/equo.py:84
 msgid "show make.profile link for the chosen repositories"
 msgstr "geef make.profile koppeling weer voor de gekozen repositories"
 
-#: ../../client/equo.py:78
+#: ../../client/equo.py:85
 msgid "repository notice board reader"
 msgstr "repositorie notitie bord lezer"
 
-#: ../../client/equo.py:79
+#: ../../client/equo.py:86
 msgid "show respositories status"
 msgstr "geef repositories status weer"
 
-#: ../../client/equo.py:81
+#: ../../client/equo.py:88
 msgid "search packages in repositories"
 msgstr "zoek naar pakketten in repositories"
 
-#: ../../client/equo.py:82
+#: ../../client/equo.py:89
 msgid "match a package in repositories"
 msgstr "vergelijk een pakket in de repositories"
 
-#: ../../client/equo.py:83
+#: ../../client/equo.py:90
 msgid "return all the possible matches"
 msgstr "geef alle mogelijke gelijkenissen weer"
 
-#: ../../client/equo.py:84
+#: ../../client/equo.py:91
 msgid "return matches from every repository"
 msgstr "geef overeenkomsten van alle repositories"
 
-#: ../../client/equo.py:85
+#: ../../client/equo.py:92
 msgid "print repository information (w/--quiet)"
 msgstr "print repository informatie (incl. --quiet)"
 
-#: ../../client/equo.py:86
+#: ../../client/equo.py:93
 msgid "print description too (w/--quiet)"
 msgstr "print ook de beschrijving (incl. --quiet)"
 
-#: ../../client/equo.py:88
+#: ../../client/equo.py:95
 msgid "update system with the latest available packages"
 msgstr "update systeem met de laatst beschikbare pakketten"
 
-#: ../../client/equo.py:89 ../../client/equo.py:109 ../../client/equo.py:115
-#: ../../client/equo.py:131 ../../client/equo.py:135 ../../client/equo.py:143
-#: ../../client/equo.py:148 ../../client/equo.py:157 ../../client/equo.py:211
-#: ../../client/equo.py:230 ../../server/activator.py:56
+#: ../../client/equo.py:96 ../../client/equo.py:116 ../../client/equo.py:122
+#: ../../client/equo.py:138 ../../client/equo.py:142 ../../client/equo.py:150
+#: ../../client/equo.py:155 ../../client/equo.py:164 ../../client/equo.py:218
+#: ../../client/equo.py:237 ../../server/activator.py:56
 msgid "ask before making any changes"
 msgstr "vragen voor maken van veranderingen"
 
-#: ../../client/equo.py:90 ../../client/equo.py:110
+#: ../../client/equo.py:97 ../../client/equo.py:117
 msgid "just download packages"
 msgstr "pakketten alleen downloaden"
 
-#: ../../client/equo.py:91 ../../client/equo.py:231
+#: ../../client/equo.py:98 ../../client/equo.py:238
 #: ../../server/activator.py:57
 msgid "only show what would be done"
 msgstr "alleen laten zien wat er zou gebeuren"
 
-#: ../../client/equo.py:92 ../../client/equo.py:124
+#: ../../client/equo.py:99 ../../client/equo.py:131
 msgid "show more details about what is going on"
 msgstr "laat meer details zien over wat er gaande is"
 
-#: ../../client/equo.py:93
+#: ../../client/equo.py:100
 msgid "reinstall all the packages and their dependencies"
 msgstr "Her installeer alle pakketten en hun afhankelijkheden"
 
-#: ../../client/equo.py:94
+#: ../../client/equo.py:101
 msgid "same as --replay"
 msgstr "zelfde als --replay"
 
-#: ../../client/equo.py:95 ../../client/equo.py:119 ../../client/equo.py:140
+#: ../../client/equo.py:102 ../../client/equo.py:126 ../../client/equo.py:147
 msgid "resume previously interrupted operations"
 msgstr "vervolg vorige onderbroken actie"
 
-#: ../../client/equo.py:96
+#: ../../client/equo.py:103
 msgid "used with --resume, makes the first package to be skipped"
 msgstr "in combinatie met --resume, wordt het eerste pakket overgeslagen"
 
-#: ../../client/equo.py:97
+#: ../../client/equo.py:104
 msgid "upgrade your distribution to the specified release"
 msgstr "upgrade je distributie naar de gespecificeerde uitgave"
 
-#: ../../client/equo.py:98 ../../client/equo.py:126
+#: ../../client/equo.py:105 ../../client/equo.py:133
 msgid "disable package integrity check"
 msgstr "schakel pakket integriteit check uit"
 
-#: ../../client/equo.py:99 ../../client/equo.py:127
+#: ../../client/equo.py:106 ../../client/equo.py:134
 msgid "download multiple packages in parallel (default 3)"
 msgstr "download meerdere pakketten parallel (standaard 3)"
 
-#: ../../client/equo.py:100 ../../client/equo.py:128
+#: ../../client/equo.py:107 ../../client/equo.py:135
 msgid "download N packages in parallel (max 10)"
 msgstr "download N pakketten parallel (max. 10)"
 
-#: ../../client/equo.py:102
+#: ../../client/equo.py:109
 msgid "security infrastructure functions"
 msgstr "beveiliging infrastructuur functies"
 
-#: ../../client/equo.py:103
+#: ../../client/equo.py:110
 msgid "download the latest Security Advisories"
 msgstr "download de laatste Beveiligings Adviezen"
 
-#: ../../client/equo.py:104
+#: ../../client/equo.py:111
 msgid "list all the available Security Advisories"
 msgstr "laat alle mogelijke Beveiliging Adviezen zien"
 
-#: ../../client/equo.py:105
+#: ../../client/equo.py:112
 msgid "list only affected"
 msgstr "laat alleen aangetasten zien"
 
-#: ../../client/equo.py:106
+#: ../../client/equo.py:113
 msgid "list only unaffected"
 msgstr "laat alleen desinfecteerde zien"
 
-#: ../../client/equo.py:107
+#: ../../client/equo.py:114
 msgid "show information about provided advisories identifiers"
 msgstr "geef informatie over gegeven adviezen herkenningen"
 
-#: ../../client/equo.py:108
+#: ../../client/equo.py:115
 msgid "automatically install all the available security updates"
 msgstr "installeer alle beschikbare beveiliging updates automatisch"
 
-#: ../../client/equo.py:111 ../../client/equo.py:116 ../../client/equo.py:132
-#: ../../client/equo.py:136 ../../client/equo.py:144 ../../client/equo.py:149
-#: ../../client/equo.py:158 ../../client/equo.py:212
+#: ../../client/equo.py:118 ../../client/equo.py:123 ../../client/equo.py:139
+#: ../../client/equo.py:143 ../../client/equo.py:151 ../../client/equo.py:156
+#: ../../client/equo.py:165 ../../client/equo.py:219
 msgid "just show what would be done"
 msgstr "laat alleen zien wat er gedaan zou worden"
 
-#: ../../client/equo.py:112 ../../client/equo.py:147 ../../client/equo.py:152
-#: ../../client/equo.py:156
+#: ../../client/equo.py:119 ../../client/equo.py:154 ../../client/equo.py:159
+#: ../../client/equo.py:163
 msgid "show less details (useful for scripting)"
 msgstr "laat minder details zien (handig voor scripts)"
 
-#: ../../client/equo.py:114
+#: ../../client/equo.py:121
 msgid "install atoms or .tbz2 packages"
 msgstr "installeer atomen of .tbz2 pakketten"
 
-#: ../../client/equo.py:117
+#: ../../client/equo.py:124
 msgid "just download packages without doing the install"
 msgstr "download de pakketten zonder ze te installeren"
 
-#: ../../client/equo.py:118 ../../client/equo.py:137
+#: ../../client/equo.py:125 ../../client/equo.py:144
 msgid "do not pull in any dependency"
 msgstr "voeg geen afhankelijkheden toe"
 
-#: ../../client/equo.py:120
+#: ../../client/equo.py:127
 msgid "used with --resume, makes the first package in queue to be skipped"
 msgstr ""
 "in combinatie met --resume, wordt het eerste pakket in rij overgeslagen"
 
-#: ../../client/equo.py:121
+#: ../../client/equo.py:128
 msgid "remove downloaded packages after being used"
 msgstr "verwijder gedownload pakket nadat deze is gebruikt"
 
-#: ../../client/equo.py:122 ../../client/equo.py:188
+#: ../../client/equo.py:129 ../../client/equo.py:195
 msgid "pull all the dependencies in, regardless their state"
 msgstr "voeg alle afhankelijkheden toe, ongeacht hun status"
 
-#: ../../client/equo.py:123
+#: ../../client/equo.py:130
 msgid "makes dependency rules stricter"
 msgstr "maakt afhankelijkheid regels strikter"
 
-#: ../../client/equo.py:125
+#: ../../client/equo.py:132
 msgid "makes old configuration files to be removed"
 msgstr "zorgt ervoor dat oude configuratie bestanden worden verwijderd"
 
-#: ../../client/equo.py:130
+#: ../../client/equo.py:137
 msgid "download atoms source code"
 msgstr "download atomen bron code"
 
-#: ../../client/equo.py:134
+#: ../../client/equo.py:141
 msgid "remove one or more packages"
 msgstr "verwijder één of meerdere pakketten"
 
-#: ../../client/equo.py:138
+#: ../../client/equo.py:145
 msgid "also pull unused dependencies where depends list is empty"
 msgstr ""
 "neem ook ongebruikte afhankelijkheden mee waar afhankelijken lijst leeg is"
 
-#: ../../client/equo.py:139
+#: ../../client/equo.py:146
 msgid "makes configuration files to be removed"
 msgstr "zorgt voor verwijdering van configuratie bestanden"
 
-#: ../../client/equo.py:142
+#: ../../client/equo.py:149
 msgid "configure one or more installed packages"
 msgstr "configureer een of meer geïnstalleerde pakketten"
 
-#: ../../client/equo.py:146 ../../server/reagent.py:100
+#: ../../client/equo.py:153 ../../server/reagent.py:100
 msgid "look for unsatisfied dependencies"
 msgstr "zoek naar onbevredigde afhankelijkheden"
 
-#: ../../client/equo.py:151
+#: ../../client/equo.py:158
 msgid "look for unused packages (pay attention)"
 msgstr "zoek naar ongebruikte pakketten (houd je aandacht erbij)"
 
-#: ../../client/equo.py:154 ../../server/reagent.py:101
+#: ../../client/equo.py:161 ../../server/reagent.py:101
 msgid "look for missing libraries"
 msgstr "zoek naar ontbrekende bibliotheken"
 
-#: ../../client/equo.py:155
+#: ../../client/equo.py:162
 msgid "print broken files to stdout"
 msgstr "print gebroken bestand naar stdout"
 
-#: ../../client/equo.py:160
+#: ../../client/equo.py:167
 msgid "configuration files update tool"
 msgstr "configuratie bestanden update gereedschap"
 
-#: ../../client/equo.py:161
+#: ../../client/equo.py:168
 msgid "show configuration files to be updated"
 msgstr "geef configuratie bestanden voor update weer"
 
-#: ../../client/equo.py:162
+#: ../../client/equo.py:169
 msgid "run the configuration files update function"
 msgstr "voer de configuratie bestanden update functie uit"
 
-#: ../../client/equo.py:164
+#: ../../client/equo.py:171
 msgid "do misc queries on repository and local databases"
 msgstr "doe diverse queries op repository en lokale databases"
 
-#: ../../client/equo.py:165
+#: ../../client/equo.py:172
 msgid "search from what package a file belongs"
 msgstr "zoek naar welk pakket een bestand behoort"
 
-#: ../../client/equo.py:166 ../../client/equo.py:273
+#: ../../client/equo.py:173 ../../client/equo.py:280
 msgid "show packages changelog"
 msgstr "bekijk pakketten veranderingen-log"
 
-#: ../../client/equo.py:167
+#: ../../client/equo.py:174
 msgid "search what packages depend on the provided atoms"
 msgstr "zoek naar welke pakketten afhangen van de gegeven atomen"
 
-#: ../../client/equo.py:168 ../../client/equo.py:275
+#: ../../client/equo.py:175 ../../client/equo.py:282
 #: ../../server/reagent.py:63
 msgid "search packages by description"
 msgstr "zoek pakketten op beschrijving"
 
-#: ../../client/equo.py:169 ../../client/equo.py:277
+#: ../../client/equo.py:176 ../../client/equo.py:284
 #: ../../server/reagent.py:61
 msgid "show files owned by the provided atoms"
 msgstr "geef bestanden weer behorend aan de gegeven atomen"
 
-#: ../../client/equo.py:170
+#: ../../client/equo.py:177
 msgid "search a package into the local database"
 msgstr "zoek naar een pakket in de lokale database"
 
-#: ../../client/equo.py:171
+#: ../../client/equo.py:178
 msgid "show packages owning the provided licenses"
 msgstr "geef pakketten weer behorende bij de gegeven licenties"
 
-#: ../../client/equo.py:172
+#: ../../client/equo.py:179
 msgid "list packages based on the chosen parameter below"
 msgstr "som pakketten gebaseerd op de gekozen parameter hieronder op"
 
-#: ../../client/equo.py:173
+#: ../../client/equo.py:180
 msgid "list installed packages"
 msgstr "Toon geïnstalleerde pakketten"
 
-#: ../../client/equo.py:174 ../../client/equo.py:279
+#: ../../client/equo.py:181 ../../client/equo.py:286
 #: ../../server/reagent.py:57
 msgid "show runtime libraries needed by the provided atoms"
 msgstr "geef runtime bibliotheken weer die nodig zijn voor de gegeven atomen"
 
-#: ../../client/equo.py:175
+#: ../../client/equo.py:182
 msgid "search files that do not belong to any package"
 msgstr "zoek naar bestanden die niet behoren tot een enkel pakket"
 
-#: ../../client/equo.py:176
+#: ../../client/equo.py:183
 msgid "show the removal tree for the specified atoms"
 msgstr "Geef de verwijder lijst voor de gespecificeerde atomen weer"
 
-#: ../../client/equo.py:177
+#: ../../client/equo.py:184
 msgid "show atoms needing the provided libraries"
 msgstr "geef atomen weer die nodig zijn voor de gegeven bibliotheken"
 
-#: ../../client/equo.py:178 ../../client/equo.py:281
+#: ../../client/equo.py:185 ../../client/equo.py:288
 #: ../../server/reagent.py:60
 msgid "search available package sets"
 msgstr "zoek beschikbare pakket sets"
 
-#: ../../client/equo.py:179
+#: ../../client/equo.py:186
 msgid "show packages owning the provided slot"
 msgstr "geef pakketten weer behorend aan het gegeven slot"
 
-#: ../../client/equo.py:180
+#: ../../client/equo.py:187
 msgid "show packages owning the provided tags"
 msgstr "geef pakketten weer behorend aan de gegeven tags"
 
-#: ../../client/equo.py:181 ../../client/equo.py:283 ../../client/equo.py:311
+#: ../../client/equo.py:188 ../../client/equo.py:290 ../../client/equo.py:318
 #: ../../server/reagent.py:66
 msgid "show more details"
 msgstr "meer details tonen"
 
-#: ../../client/equo.py:182 ../../client/equo.py:284 ../../client/equo.py:312
+#: ../../client/equo.py:189 ../../client/equo.py:291 ../../client/equo.py:319
 #: ../../server/reagent.py:67
 msgid "print results in a scriptable way"
 msgstr "print resultaten in een scriptbare manier"
 
-#: ../../client/equo.py:184
+#: ../../client/equo.py:191
 msgid "Extended Options"
 msgstr "Uitgebreide Opties"
 
-#: ../../client/equo.py:186
+#: ../../client/equo.py:193
 msgid "handles extended functionalities"
 msgstr "behandelt uitgebreide functionaliteiten"
 
-#: ../../client/equo.py:187
+#: ../../client/equo.py:194
 msgid "make a smart application for the provided atoms (experimental)"
 msgstr "maak een 'smart' applicatie voor de gegeven atomen (experimenteel)"
 
-#: ../../client/equo.py:189
+#: ../../client/equo.py:196
 msgid ""
 "make a smart package for the provided atoms (multiple packages into one file)"
 msgstr ""
 "maak een 'smart' pakket voor de gegeven atomen (meerdere pakketten in een "
 "bestand)"
 
-#: ../../client/equo.py:190
+#: ../../client/equo.py:197
 msgid "recreate an Entropy package from your System"
 msgstr "her-creëer een Entropy pakket vanaf jouw Systeem"
 
-#: ../../client/equo.py:191 ../../client/equo.py:193 ../../client/equo.py:195
+#: ../../client/equo.py:198 ../../client/equo.py:200 ../../client/equo.py:202
 msgid "save new packages into the specified directory"
 msgstr "sla nieuwe pakketten op in de gespecificeerde map"
 
-#: ../../client/equo.py:192
+#: ../../client/equo.py:199
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
 msgstr ""
 "converteer gegeven Gentoo .tbz2's naar Entropy pakketten (Portage nodig)"
 
-#: ../../client/equo.py:194
+#: ../../client/equo.py:201
 msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
 msgstr ""
 "converteer gegeven Entropy pakketten naar die van Gentoo (Portage nodig)"
 
-#: ../../client/equo.py:196
+#: ../../client/equo.py:203
 msgid "extract Entropy metadata from provided .tbz2 packages"
 msgstr "pak Entropy metadata uit van gegeven .tbz2 pakketten"
 
-#: ../../client/equo.py:197
+#: ../../client/equo.py:204
 msgid "save new metadata into the specified directory"
 msgstr "sla nieuwe metadata op naar de gespecificeerde map"
 
-#: ../../client/equo.py:199
+#: ../../client/equo.py:206
 msgid "handles installed packages database"
 msgstr "behandelt geïnstalleerde pakketten database"
 
-#: ../../client/equo.py:200
+#: ../../client/equo.py:207
 msgid "check System Database for errors"
 msgstr "check Systeem Database voor fouten"
 
-#: ../../client/equo.py:202
+#: ../../client/equo.py:209
 msgid ""
 "generate installed packages database using files on the system [last hope]"
 msgstr ""
 "genereer geïnstalleerde pakketten database door middel van bestanden op het "
 "systeem [laatste hoop]"
 
-#: ../../client/equo.py:203
+#: ../../client/equo.py:210
 msgid "regenerate depends caching table"
 msgstr "hergenereer afhankelijken caching tabel"
 
-#: ../../client/equo.py:204
+#: ../../client/equo.py:211
 msgid "update/generate counters table (Portage <-> Entropy packages table)"
 msgstr ""
 "update/genereer verschillen tabel (Portage <-> Entropy pakketten tabel)"
 
-#: ../../client/equo.py:205
+#: ../../client/equo.py:212
 msgid "makes Entropy aware of your Portage-updated packages"
 msgstr "maakt Entropy bewust van jouw Portage-bijgewerkte pakketten"
 
-#: ../../client/equo.py:206
+#: ../../client/equo.py:213
 msgid "backup the current Entropy installed packages database"
 msgstr "back up de huidige Entropy geïnstalleerde pakketten database"
 
-#: ../../client/equo.py:207
+#: ../../client/equo.py:214
 msgid "restore a previously backed up Entropy installed packages database"
 msgstr ""
 "herstel een eerdere back up van de Entropy geïnstalleerde pakketten database"
 
-#: ../../client/equo.py:209
+#: ../../client/equo.py:216
 msgid "handles packages helper applications"
 msgstr "behandelt pakketten helper applicaties"
 
-#: ../../client/equo.py:210
+#: ../../client/equo.py:217
 msgid "migrate all Python modules to the latest installed version"
 msgstr "migreer alle Python modules naar de laatste versie geïnstalleerd"
 
-#: ../../client/equo.py:214
+#: ../../client/equo.py:221
 msgid "handles community-side features"
 msgstr "handelt communitie-zijde middelen"
 
-#: ../../client/equo.py:216
+#: ../../client/equo.py:223
 msgid "community repositories management functions"
 msgstr "communitie repositories beheer functies"
 
-#: ../../client/equo.py:217 ../../server/reagent.py:48
+#: ../../client/equo.py:224 ../../server/reagent.py:48
 msgid "scan the System looking for newly compiled packages"
 msgstr "scan het Systeem op nieuw gecompileerde pakketten"
 
-#: ../../client/equo.py:218 ../../client/equo.py:223 ../../client/equo.py:226
-#: ../../client/equo.py:251 ../../client/equo.py:253
+#: ../../client/equo.py:225 ../../client/equo.py:230 ../../client/equo.py:233
+#: ../../client/equo.py:258 ../../client/equo.py:260
 #: ../../server/activator.py:48
 msgid "choose on what branch operating"
 msgstr "kies in welke branche er wordt gewerkt"
 
-#: ../../client/equo.py:219 ../../server/reagent.py:49
+#: ../../client/equo.py:226 ../../server/reagent.py:49
 msgid "analyze the Entropy Store directory directly"
 msgstr "analizeer de Entropy Winkel map meteen"
 
-#: ../../client/equo.py:220 ../../server/reagent.py:50
+#: ../../client/equo.py:227 ../../server/reagent.py:50
 msgid "repackage the specified atoms"
 msgstr "Her-verpak de gespecificeerde atomen"
 
-#: ../../client/equo.py:221 ../../client/equo.py:227
+#: ../../client/equo.py:228 ../../client/equo.py:234
 #: ../../server/activator.py:49 ../../server/reagent.py:51
 msgid "do not ask anything except critical things"
 msgstr "vraag nergens om behalve voor kritische dingen"
 
-#: ../../client/equo.py:222 ../../server/reagent.py:53
+#: ../../client/equo.py:229 ../../server/reagent.py:53
 msgid "add binary packages to repository w/o affecting scopes (multipackages)"
 msgstr ""
 "voeg binaire pakketten toe aan repository zonder 'scopes' te beïnvloeden "
 "(multi-pakketten)"
 
-#: ../../client/equo.py:224
+#: ../../client/equo.py:231
 msgid "community repositories mirrors management functions"
 msgstr "community repositories mirrors management functies"
 
-#: ../../client/equo.py:225 ../../server/activator.py:47
+#: ../../client/equo.py:232 ../../server/activator.py:47
 msgid "sync packages, database and also do some tidy"
 msgstr "sync pakketten, database en doe wat ordening"
 
-#: ../../client/equo.py:228 ../../client/equo.py:232 ../../client/equo.py:235
+#: ../../client/equo.py:235 ../../client/equo.py:239 ../../client/equo.py:242
 #: ../../server/activator.py:50 ../../server/activator.py:58
 #: ../../server/activator.py:68
 msgid "sync all the configured repositories"
 msgstr "sync alle geconfigureerde repositories"
 
-#: ../../client/equo.py:229
+#: ../../client/equo.py:236
 msgid "sync packages across primary mirrors"
 msgstr "sync pakketten over de primaire mirrors"
 
-#: ../../client/equo.py:233 ../../server/activator.py:59
+#: ../../client/equo.py:240 ../../server/activator.py:59
 msgid "also verify packages integrity"
 msgstr "verifieer ook de pakketten integriteit"
 
-#: ../../client/equo.py:234 ../../server/activator.py:62
+#: ../../client/equo.py:241 ../../server/activator.py:62
 msgid "sync the current repository database across primary mirrors"
 msgstr "sync de huidige repository database over de primaire mirrors"
 
-#: ../../client/equo.py:236 ../../server/activator.py:63
+#: ../../client/equo.py:243 ../../server/activator.py:63
 msgid "lock the current repository database (server-side)"
 msgstr "blokkeer de huidige repository database (server-kant)"
 
-#: ../../client/equo.py:237 ../../server/activator.py:64
+#: ../../client/equo.py:244 ../../server/activator.py:64
 msgid "unlock the current repository database (server-side)"
 msgstr "deblokkeer de huidige repository database (server-kant)"
 
-#: ../../client/equo.py:238 ../../server/activator.py:65
+#: ../../client/equo.py:245 ../../server/activator.py:65
 msgid "lock the current repository database (client-side)"
 msgstr "blokkeer de huidige repository database (cliënt-kant)"
 
-#: ../../client/equo.py:239 ../../server/activator.py:66
+#: ../../client/equo.py:246 ../../server/activator.py:66
 msgid "unlock the current repository database (client-side)"
 msgstr "deblokkeer de huidige repository database (cliënt-kant)"
 
-#: ../../client/equo.py:240 ../../server/activator.py:67
+#: ../../client/equo.py:247 ../../server/activator.py:67
 msgid "show current lock status"
 msgstr "geef huidige vergrendel status"
 
-#: ../../client/equo.py:241 ../../server/activator.py:52
+#: ../../client/equo.py:248 ../../server/activator.py:52
 msgid "remove binary packages not in repositories and expired"
 msgstr "verwijder binaire pakketten niet in de repositories en verlopen"
 
-#: ../../client/equo.py:244
+#: ../../client/equo.py:251
 msgid "community repositories database functions"
 msgstr "communitie repositories database functies"
 
-#: ../../client/equo.py:245 ../../server/reagent.py:70
+#: ../../client/equo.py:252 ../../server/reagent.py:70
 msgid "(re)initialize the current repository database"
 msgstr "(her)initialiseren van de huidige repository database"
 
-#: ../../client/equo.py:246 ../../server/reagent.py:71
+#: ../../client/equo.py:253 ../../server/reagent.py:71
 msgid "do not refill database using packages on mirrors"
 msgstr "her vul de database niet met pakketten op de mirrors"
 
-#: ../../client/equo.py:247 ../../server/reagent.py:72
+#: ../../client/equo.py:254 ../../server/reagent.py:72
 msgid "(re)create the database for the specified repository"
 msgstr "(her)creëer de database voor de gespecificeerde repository"
 
-#: ../../client/equo.py:248 ../../server/reagent.py:73
+#: ../../client/equo.py:255 ../../server/reagent.py:73
 msgid "manually force a revision bump for the current repository database"
 msgstr ""
 "forceer een revisie update handmatig voor de huidige repository database"
 
-#: ../../client/equo.py:249 ../../server/reagent.py:74
+#: ../../client/equo.py:256 ../../server/reagent.py:74
 msgid "synchronize the database"
 msgstr "synchroniseer de database"
 
-#: ../../client/equo.py:250 ../../server/reagent.py:75
+#: ../../client/equo.py:257 ../../server/reagent.py:75
 msgid "remove the provided atoms from the current repository database"
 msgstr "verwijder de gegeven atomen van de huidige repository database"
 
-#: ../../client/equo.py:252 ../../server/reagent.py:76
+#: ../../client/equo.py:259 ../../server/reagent.py:76
 msgid "remove the provided injected atoms (all if no atom specified)"
 msgstr ""
 "verwijder de gegeven geinjecteerde atomen (alles als geen atoom is "
 "gespecificeerd)"
 
-#: ../../client/equo.py:254 ../../server/reagent.py:77
+#: ../../client/equo.py:261 ../../server/reagent.py:77
 msgid "create an empty repository database in the provided path"
 msgstr "creëer een lege repository database in het gegeven pad"
 
-#: ../../client/equo.py:255
+#: ../../client/equo.py:262
 msgid "switch to the specified branch the provided atoms (or world)"
 msgstr "wissel de gegeven atomen (of wereld) naar de gespecificeerde branche"
 
-#: ../../client/equo.py:256 ../../server/reagent.py:79
+#: ../../client/equo.py:263 ../../server/reagent.py:79
 msgid "verify integrity of the provided atoms (or world)"
 msgstr "verifieer integriteit van de gegeven atomen (of wereld)"
 
-#: ../../client/equo.py:257 ../../server/reagent.py:80
+#: ../../client/equo.py:264 ../../server/reagent.py:80
 msgid "verify remote integrity of the provided atoms (or world)"
 msgstr "verifieer externe integriteit van de gegeven atomen (of wereld)"
 
-#: ../../client/equo.py:258 ../../server/reagent.py:81
+#: ../../client/equo.py:265 ../../server/reagent.py:81
 msgid "backup current repository database"
 msgstr "back-up huidige repositorie database"
 
-#: ../../client/equo.py:259 ../../server/reagent.py:82
+#: ../../client/equo.py:266 ../../server/reagent.py:82
 msgid "restore a previously backed-up repository database"
 msgstr "herstel een eerdere back up van de repositorie database"
 
-#: ../../client/equo.py:261 ../../server/reagent.py:84
+#: ../../client/equo.py:268 ../../server/reagent.py:84
 msgid "manage a repository"
 msgstr "onderhoud een repository"
 
-#: ../../client/equo.py:262 ../../server/reagent.py:85
+#: ../../client/equo.py:269 ../../server/reagent.py:85
 msgid "enable the specified repository"
 msgstr "gespecificeerde repository aanzetten"
 
-#: ../../client/equo.py:263 ../../server/reagent.py:86
+#: ../../client/equo.py:270 ../../server/reagent.py:86
 msgid "disable the specified repository"
 msgstr "gespecificeerde repository uitzetten"
 
-#: ../../client/equo.py:264 ../../server/reagent.py:87
+#: ../../client/equo.py:271 ../../server/reagent.py:87
 msgid "show the current Server Interface status"
 msgstr "geef de huidige Server Interface status weer"
 
-#: ../../client/equo.py:265 ../../server/reagent.py:88
+#: ../../client/equo.py:272 ../../server/reagent.py:88
 msgid "handle packages manual dependencies"
 msgstr "behandel handmatige pakketten afhankelijkheden"
 
-#: ../../client/equo.py:266
+#: ../../client/equo.py:273
 msgid "clone a package inside a repository assigning it an arbitrary tag"
 msgstr ""
 "kloon een pakket binnen een repositorie en wijs deze toe aan een "
 "willekeurige tag"
 
-#: ../../client/equo.py:267 ../../server/reagent.py:90
+#: ../../client/equo.py:274 ../../server/reagent.py:90
 msgid "move packages from a repository to another"
 msgstr "verplaats pakketten van de ene repository naar een ander"
 
-#: ../../client/equo.py:268 ../../server/reagent.py:91
+#: ../../client/equo.py:275 ../../server/reagent.py:91
 msgid "copy packages from a repository to another"
 msgstr "kopieer pakketten van de ene repository naar de andere"
 
-#: ../../client/equo.py:269 ../../server/reagent.py:92
+#: ../../client/equo.py:276 ../../server/reagent.py:92
 msgid "set the default repository"
 msgstr "standaard repository instellen"
 
-#: ../../client/equo.py:271
+#: ../../client/equo.py:278
 msgid "do some searches into community repository databases"
 msgstr "doe een zoek actie in de communitie repository databases"
 
-#: ../../client/equo.py:272 ../../server/reagent.py:62
+#: ../../client/equo.py:279 ../../server/reagent.py:62
 msgid "show from what package the provided files belong"
 msgstr "geef weer bij welk pakket de gegeven bestanden horen"
 
-#: ../../client/equo.py:274 ../../server/reagent.py:58
+#: ../../client/equo.py:281 ../../server/reagent.py:58
 msgid "show what packages depend on the provided atoms"
 msgstr "geef weer welke pakketten afhangen van de gegeven atomen"
 
-#: ../../client/equo.py:276 ../../server/reagent.py:64
+#: ../../client/equo.py:283 ../../server/reagent.py:64
 msgid "search packages using the provided eclasses"
 msgstr "zoek pakketten gebruik makend van gegeven eclassen"
 
-#: ../../client/equo.py:278 ../../server/reagent.py:65
+#: ../../client/equo.py:285 ../../server/reagent.py:65
 msgid "list all the packages in the default repository"
 msgstr "som alle pakketten in de standaard repository op"
 
-#: ../../client/equo.py:280 ../../server/reagent.py:56
+#: ../../client/equo.py:287 ../../server/reagent.py:56
 msgid "search packages inside the default repository database"
 msgstr "zoek pakketten binnen de standaard repository database"
 
-#: ../../client/equo.py:282 ../../server/reagent.py:59
+#: ../../client/equo.py:289 ../../server/reagent.py:59
 msgid "show packages owning the specified tags"
 msgstr "Geef pakketten weer die de gespecificeerde tags bezitten"
 
-#: ../../client/equo.py:286 ../../server/activator.py:70
+#: ../../client/equo.py:293 ../../server/activator.py:70
 msgid "notice board handling functions"
 msgstr "notitie bord handeling functies"
 
-#: ../../client/equo.py:287 ../../server/activator.py:71
+#: ../../client/equo.py:294 ../../server/activator.py:71
 msgid "add a news item to the notice board"
 msgstr "voeg een nieuws item to aan het notitie bord"
 
-#: ../../client/equo.py:288 ../../server/activator.py:72
+#: ../../client/equo.py:295 ../../server/activator.py:72
 msgid "remove a news item from the notice board"
 msgstr "Verwijder een nieuws item van het notitie bord"
 
-#: ../../client/equo.py:289 ../../server/activator.py:73
+#: ../../client/equo.py:296 ../../server/activator.py:73
 msgid "read the current notice board"
 msgstr "lees het huidige notitie bord"
 
-#: ../../client/equo.py:291
+#: ../../client/equo.py:298
 msgid "look for unsatisfied dependencies across community repositories"
 msgstr "zoek naar onbevredigde afhankelijkheden op communitie repositories"
 
-#: ../../client/equo.py:292 ../../server/reagent.py:102
+#: ../../client/equo.py:299 ../../server/reagent.py:102
 msgid "regenerate the depends table"
 msgstr "hergenereer de afhankelijkheids tabel"
 
-#: ../../client/equo.py:295
+#: ../../client/equo.py:302
 msgid "handles User Generated Content features"
 msgstr "handelt Gebruiker Gedefinieerde Inhoud mogelijkheden"
 
-#: ../../client/equo.py:296
+#: ../../client/equo.py:303
 msgid "login against a specified repository"
 msgstr "Log in op een gespecificeerde repository"
 
-#: ../../client/equo.py:297
+#: ../../client/equo.py:304
 msgid "logout from a specified repository"
 msgstr "uitloggen van een gespecificeerde repository"
 
-#: ../../client/equo.py:298
+#: ../../client/equo.py:305
 msgid "force action"
 msgstr "forceer actie"
 
-#: ../../client/equo.py:299
+#: ../../client/equo.py:306
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
@@ -876,96 +753,96 @@ msgstr ""
 "beheer pakket documenten voor de geselecteerde repository (commentaar, "
 "bestanden, video's)"
 
-#: ../../client/equo.py:300
+#: ../../client/equo.py:307
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "haal beschikbare documenten op voor de gespecificeerde pakket sleutel "
 "(example: x11-libs/qt)"
 
-#: ../../client/equo.py:301
+#: ../../client/equo.py:308
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
 msgstr ""
 "voeg een nieuw document to aan de gespecificeerde pakket sleutel (voorbeeld: "
 "x11-libs/qt)"
 
-#: ../../client/equo.py:302
+#: ../../client/equo.py:309
 msgid "remove documents from database using their identifiers"
 msgstr ""
 "verwijder documenten van de database door middel van hun "
 "identificatiemiddelen"
 
-#: ../../client/equo.py:303
+#: ../../client/equo.py:310
 msgid "manage package votes for the selected repository"
 msgstr "beheer pakket stemmen voor de geselecteerde repository"
 
-#: ../../client/equo.py:304
+#: ../../client/equo.py:311
 msgid "get vote for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "haal stemmen voor de geselecteerde pakket sleutel op (voorbeeld: x11-libs/qt)"
 
-#: ../../client/equo.py:305
+#: ../../client/equo.py:312
 msgid "add vote for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "voeg een stem toe voor de gespecificeerde pakket sleutel (voorbeeld: x11-"
 "libs/qt)"
 
-#: ../../client/equo.py:308
+#: ../../client/equo.py:315
 msgid "handles Entropy cache"
 msgstr "behandeld Entropy cache"
 
-#: ../../client/equo.py:309
+#: ../../client/equo.py:316
 msgid "clean Entropy cache"
 msgstr "gooi Entropy cache leeg"
 
-#: ../../client/equo.py:310
+#: ../../client/equo.py:317
 msgid "regenerate Entropy cache"
 msgstr "hergenereer Entropy cache"
 
-#: ../../client/equo.py:314
+#: ../../client/equo.py:321
 msgid "remove downloaded packages and clean temp. directories"
 msgstr "verwijder gedownloade pakketten en gooi temp. mappen leeg"
 
-#: ../../client/equo.py:316
+#: ../../client/equo.py:323
 msgid "show system information"
 msgstr "systeem informatie weergeven"
 
-#: ../../client/equo.py:415
+#: ../../client/equo.py:422
 msgid "Caching equo conf"
 msgstr "Caching equo conf"
 
-#: ../../client/equo.py:424
+#: ../../client/equo.py:431
 msgid "Caching not run."
 msgstr "Caching niet gestart"
 
-#: ../../client/equo.py:428
+#: ../../client/equo.py:435
 msgid "Caching complete."
 msgstr "Cachen compleet."
 
-#: ../../client/equo.py:434
-#: ../../entropy-notification-applet/src/etp_applet.py:582
+#: ../../client/equo.py:441
+#: ../../entropy-notification-applet/src/etp_applet.py:594
 msgid "There are"
 msgstr "Er is/zijn"
 
-#: ../../client/equo.py:436
+#: ../../client/equo.py:443
 msgid "configuration file(s) needing update"
 msgstr "configuratie bestand(en) toe aan een update"
 
-#: ../../client/equo.py:439
+#: ../../client/equo.py:446
 msgid "Please run"
 msgstr "Voer eerst uit"
 
-#: ../../client/equo.py:546 ../../client/equo.py:561 ../../client/equo.py:580
-#: ../../client/equo.py:590 ../../client/equo.py:610 ../../client/equo.py:619
-#: ../../client/equo.py:629
+#: ../../client/equo.py:553 ../../client/equo.py:568 ../../client/equo.py:587
+#: ../../client/equo.py:597 ../../client/equo.py:617 ../../client/equo.py:626
+#: ../../client/equo.py:636
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr "Je moet sys-apps/entropy-server installeren. :-) Doe het !"
 
-#: ../../client/equo.py:601
+#: ../../client/equo.py:608
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr "Je moet sys-apps/entropy-server installeren/updaten. :-) Doe het !"
 
-#: ../../client/equo.py:656
+#: ../../client/equo.py:663
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
@@ -973,18 +850,18 @@ msgstr ""
 "Geinstalleerde pakketten database niet gevonden of corrupt. Genereer een "
 "nieuwe database met 'equo database' gereedschap"
 
-#: ../../client/equo.py:659 ../../client/equo.py:663 ../../client/equo.py:666
-#: ../../client/equo.py:669 ../../client/equo.py:672 ../../client/equo.py:675
-#: ../../client/text_smart.py:126 ../../client/text_smart.py:270
-#: ../../client/text_smart.py:404
+#: ../../client/equo.py:666 ../../client/equo.py:670 ../../client/equo.py:673
+#: ../../client/equo.py:676 ../../client/equo.py:679 ../../client/equo.py:682
+#: ../../client/text_smart.py:127 ../../client/text_smart.py:271
+#: ../../client/text_smart.py:406
 msgid "Cannot continue"
 msgstr "Kan niet verder"
 
-#: ../../client/equo.py:680
+#: ../../client/equo.py:687
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr "Kan niet doorgaan. Uw harde schijf is waarschijnlijk beschadigd."
 
-#: ../../client/equo.py:691
+#: ../../client/equo.py:698
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
@@ -992,7 +869,7 @@ msgstr ""
 "Je harddisk is vol! Volgende keer moet je niet vergeten even te kijken voor "
 "je start. Sorry, er is niets dat ik kan doen.'T is jouw fout :-("
 
-#: ../../client/equo.py:705
+#: ../../client/equo.py:712
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
@@ -1000,23 +877,23 @@ msgstr ""
 "He. Mijn naam is Bug Reporter. Het spijt me dat ik je moet informeren dat "
 "Equo is gecrashed. Nou ja, weet je, shit happens."
 
-#: ../../client/equo.py:706
+#: ../../client/equo.py:713
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr "Maar er is iets dat je kan doen om Equo een beter programma te maken."
 
-#: ../../client/equo.py:707
+#: ../../client/equo.py:714
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 "-- OOK AL WIL IK NIET DAT JE MEERDERE KEREN HETZELFDE RAPPORT STUURT --"
 
-#: ../../client/equo.py:708
+#: ../../client/equo.py:715
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 "Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te "
 "helpen."
 
-#: ../../client/equo.py:734
+#: ../../client/equo.py:741
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
@@ -1024,11 +901,11 @@ msgstr ""
 "Ach ja, Ik kan niet eens schrijven naar /tmp. Dus, kopieer de fout en mail "
 "hem naar lxnay@sabayonlinux.org."
 
-#: ../../client/equo.py:739
+#: ../../client/equo.py:746
 msgid "Of course you are on the Internet..."
 msgstr "Natuurlijk zijn we verbonden met Internet..."
 
-#: ../../client/equo.py:740
+#: ../../client/equo.py:747
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
@@ -1038,11 +915,11 @@ msgstr ""
 "   over je hardware naar mijn makers zodat zij me kunnen repareren? (Je IP "
 "wordt gelogged)"
 
-#: ../../client/equo.py:742
+#: ../../client/equo.py:749
 msgid "Ok, ok ok ok... Sorry!"
 msgstr "Oké, oké oké oké... Sorry!"
 
-#: ../../client/equo.py:745
+#: ../../client/equo.py:752
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
@@ -1050,19 +927,19 @@ msgstr ""
 "Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan "
 "ook deze vragen:"
 
-#: ../../client/equo.py:746
+#: ../../client/equo.py:753
 msgid "Your Full name:"
 msgstr "Je volledige naam:"
 
-#: ../../client/equo.py:747
+#: ../../client/equo.py:754
 msgid "Your E-Mail address:"
 msgstr "Je e-mail adres:"
 
-#: ../../client/equo.py:748
+#: ../../client/equo.py:755
 msgid "What you were doing:"
 msgstr "Waar was je mee bezig:"
 
-#: ../../client/equo.py:754
+#: ../../client/equo.py:761
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
@@ -1070,7 +947,7 @@ msgstr ""
 "Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo "
 "snel mogelijk verholpen."
 
-#: ../../client/equo.py:756
+#: ../../client/equo.py:763
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -1135,6 +1012,10 @@ msgstr "Auto-samenvoegen van bestand"
 msgid "Selected file"
 msgstr "Geselecteerd bestand"
 
+#: ../../client/text_configuration.py:175
+msgid "You don't have typed a number."
+msgstr "Je hebt geen nummer gegeven."
+
 #: ../../client/text_configuration.py:183
 msgid "Replacing"
 msgstr "Vervangen"
@@ -1174,8 +1055,8 @@ msgid "Other options are:"
 msgstr "Andere opties zijn:"
 
 #: ../../client/text_configuration.py:250
-#: ../../client/text_repositories.py:257
-#: ../../entropy-notification-applet/src/etp_applet.py:212
+#: ../../client/text_repositories.py:253
+#: ../../entropy-notification-applet/src/etp_applet.py:224
 msgid "Exit"
 msgstr "Afsluiten"
 
@@ -1194,6 +1075,12 @@ msgstr "Wijs alle bestanden af na een voor een te vragen"
 #: ../../client/text_configuration.py:254
 msgid "Discard all the files without questioning"
 msgstr "Wijs alle bestanden af zonder te vragen"
+
+#. wait user interaction
+#: ../../client/text_configuration.py:256
+#: ../../client/text_configuration.py:271
+msgid "Your choice (type a number and press enter):"
+msgstr "Jouw keuze (typ een nummer en druk op enter):"
 
 #: ../../client/text_configuration.py:264
 msgid "Please choose an action to take for the selected file."
@@ -1231,9 +1118,9 @@ msgstr "Unieke bestanden die geüpdate kunnen worden"
 msgid "Unique files that would be automerged"
 msgstr "Unieke bestanden die automatisch geüpdate worden"
 
-#: ../../client/text_query.py:46 ../../client/text_repositories.py:51
-#: ../../client/text_smart.py:47 ../../client/text_ugc.py:39
-#: ../../client/text_ui.py:92 ../../server/server_activator.py:41
+#: ../../client/text_query.py:46 ../../client/text_repositories.py:47
+#: ../../client/text_smart.py:48 ../../client/text_ugc.py:39
+#: ../../client/text_ui.py:93 ../../server/server_activator.py:41
 #: ../../server/server_activator.py:103 ../../server/server_activator.py:279
 msgid "Wrong parameters"
 msgstr "Foutieve parameters"
@@ -1279,14 +1166,14 @@ msgid "ChangeLog Search"
 msgstr "Zoeken op Veranderingen-Log"
 
 #: ../../client/text_query.py:208 ../../client/text_query.py:213
-#: ../../client/text_ui.py:361
+#: ../../client/text_ui.py:362
 msgid "No match for"
 msgstr "Geen overeenkomsten voor"
 
 #. atom
 #: ../../client/text_query.py:219 ../../client/text_query.py:334
 #: ../../spritz/src/dialogs.py:2685 ../../spritz/src/dialogs.py:3313
-#: ../../spritz/src/dialogs.py:5654
+#: ../../spritz/src/dialogs.py:5656
 msgid "Atom"
 msgstr "Atoom"
 
@@ -1298,7 +1185,7 @@ msgstr "Geen Veranderingen-Log beschikbaar"
 msgid "Depends Search"
 msgstr "Zoeken op afhankelijken"
 
-#: ../../client/text_query.py:284 ../../client/text_ui.py:1569
+#: ../../client/text_query.py:284 ../../client/text_ui.py:1570
 msgid "Matched"
 msgstr "Overeenkomend"
 
@@ -1328,7 +1215,7 @@ msgid "Library"
 msgstr "Bibliotheek"
 
 #: ../../client/text_query.py:369 ../../client/text_query.py:407
-#: ../../client/text_ui.py:1011 ../../server/server_reagent.py:440
+#: ../../client/text_ui.py:1012 ../../server/server_reagent.py:440
 msgid "packages"
 msgstr "Pakketten"
 
@@ -1340,8 +1227,8 @@ msgstr "Zoeken op Eclass"
 #. glsa id
 #: ../../client/text_query.py:446 ../../client/text_query.py:1037
 #: ../../spritz/src/dialogs.py:2297 ../../spritz/src/dialogs.py:2579
-#: ../../spritz/src/dialogs.py:4433 ../../spritz/src/dialogs.py:5180
-#: ../../spritz/src/dialogs.py:5186 ../../spritz/src/views.py:997
+#: ../../spritz/src/dialogs.py:4434 ../../spritz/src/dialogs.py:5182
+#: ../../spritz/src/dialogs.py:5188 ../../spritz/src/views.py:995
 msgid "Package"
 msgstr "Pakket"
 
@@ -1405,9 +1292,9 @@ msgstr "Totaal verbruikte ruimte"
 msgid "Removal Search"
 msgstr "Zoek op verwijderde"
 
-#: ../../client/text_query.py:593 ../../client/text_ui.py:577
-#: ../../client/text_ui.py:635 ../../client/text_ui.py:1150
-#: ../../client/text_ui.py:1242 ../../server/server_reagent.py:475
+#: ../../client/text_query.py:593 ../../client/text_ui.py:578
+#: ../../client/text_ui.py:636 ../../client/text_ui.py:1151
+#: ../../client/text_ui.py:1243 ../../server/server_reagent.py:475
 #: ../../server/server_reagent.py:520
 msgid "No packages found"
 msgstr "Geen pakketten gevonden"
@@ -1420,10 +1307,10 @@ msgstr "Calculeren van verwijdering van afhankelijkheden, even geduld a.u.b."
 msgid "These are the packages that would added to the removal queue"
 msgstr "De volgende pakketten zullen worden toegevoegd voor verwijdering"
 
-#: ../../client/text_query.py:618 ../../client/text_smart.py:112
-#: ../../client/text_smart.py:261 ../../client/text_smart.py:394
-#: ../../client/text_ui.py:557 ../../client/text_ui.py:785
-#: ../../client/text_ui.py:952 ../../client/text_ui.py:1323
+#: ../../client/text_query.py:618 ../../client/text_smart.py:113
+#: ../../client/text_smart.py:262 ../../client/text_smart.py:396
+#: ../../client/text_ui.py:558 ../../client/text_ui.py:786
+#: ../../client/text_ui.py:953 ../../client/text_ui.py:1324
 msgid "from"
 msgstr "van"
 
@@ -1464,16 +1351,16 @@ msgid "Description Search"
 msgstr "Zoeken op Beschrijving"
 
 #. client info
-#: ../../client/text_query.py:1021 ../../client/text_ui.py:440
-#: ../../client/text_ui.py:469
-#: ../../entropy-notification-applet/src/etp_applet.py:736
+#: ../../client/text_query.py:1021 ../../client/text_ui.py:441
+#: ../../client/text_ui.py:470
+#: ../../entropy-notification-applet/src/etp_applet.py:748
 msgid "Not installed"
 msgstr "niet geïnstalleerd"
 
 #: ../../client/text_query.py:1022 ../../client/text_query.py:1023
 #: ../../spritz/src/dialogs.py:3474 ../../spritz/src/dialogs.py:3533
-#: ../../spritz/src/dialogs.py:3581 ../../spritz/src/dialogs.py:3694
-#: ../../spritz/src/dialogs.py:3697
+#: ../../spritz/src/dialogs.py:3581 ../../spritz/src/dialogs.py:3695
+#: ../../spritz/src/dialogs.py:3698
 msgid "N/A"
 msgstr "N/B"
 
@@ -1486,7 +1373,7 @@ msgid "Name"
 msgstr "Naam"
 
 #: ../../client/text_query.py:1042 ../../spritz/src/dialogs.py:851
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:42
 #: ../../spritz/src/spritz.glade.h:15
 msgid "Available"
 msgstr "Beschikbaar"
@@ -1510,7 +1397,7 @@ msgid "Slot"
 msgstr "Slot"
 
 #: ../../client/text_query.py:1047 ../../client/text_ugc.py:559
-#: ../../spritz/src/dialogs.py:881 ../../spritz/src/dialogs.py:3710
+#: ../../spritz/src/dialogs.py:881 ../../spritz/src/dialogs.py:3711
 #: ../../spritz/src/spritz.glade.h:204
 msgid "Size"
 msgstr "Grootte"
@@ -1523,7 +1410,7 @@ msgstr "Download"
 msgid "Checksum"
 msgstr "Controlesom"
 
-#: ../../client/text_query.py:1051 ../../spritz/src/dialogs.py:4104
+#: ../../client/text_query.py:1051 ../../spritz/src/dialogs.py:4105
 msgid "Dependencies"
 msgstr "Afhankelijkheden"
 
@@ -1540,14 +1427,14 @@ msgstr "Thuispagina"
 #: ../../client/text_query.py:1062 ../../client/text_security.py:89
 #: ../../client/text_ugc.py:366 ../../spritz/src/dialogs.py:716
 #: ../../spritz/src/dialogs.py:729 ../../spritz/src/dialogs.py:870
-#: ../../spritz/src/dialogs.py:3313 ../../spritz/src/dialogs.py:3717
-#: ../../spritz/src/views.py:1515 ../../spritz/src/views.py:1738
+#: ../../spritz/src/dialogs.py:3313 ../../spritz/src/dialogs.py:3718
+#: ../../spritz/src/views.py:1513 ../../spritz/src/views.py:1736
 #: ../../spritz/src/spritz.glade.h:54
 msgid "Description"
 msgstr "Omschrijving"
 
 #. print use flags
-#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:4088
+#: ../../client/text_query.py:1064 ../../spritz/src/dialogs.py:4089
 msgid "USE flags"
 msgstr "USE flags"
 
@@ -1567,7 +1454,7 @@ msgstr "CXXFLAGS"
 msgid "Gentoo eclasses"
 msgstr "Gentoo eclasses"
 
-#: ../../client/text_query.py:1076 ../../spritz/src/dialogs.py:4064
+#: ../../client/text_query.py:1076 ../../spritz/src/dialogs.py:4065
 msgid "Sources"
 msgstr "Broncode"
 
@@ -1584,8 +1471,8 @@ msgid "Compiled with"
 msgstr "gecompileerd met"
 
 #: ../../client/text_query.py:1082 ../../client/text_ugc.py:371
-#: ../../client/text_ugc.py:554 ../../spritz/src/dialogs.py:3719
-#: ../../spritz/src/dialogs.py:4080 ../../spritz/src/spritz.glade.h:104
+#: ../../client/text_ugc.py:554 ../../spritz/src/dialogs.py:3720
+#: ../../spritz/src/dialogs.py:4081 ../../spritz/src/spritz.glade.h:104
 msgid "Keywords"
 msgstr "Keywords"
 
@@ -1593,137 +1480,137 @@ msgstr "Keywords"
 msgid "Created"
 msgstr "Aangemaakt"
 
-#: ../../client/text_query.py:1084 ../../client/text_ui.py:948
-#: ../../spritz/src/dialogs.py:5924
+#: ../../client/text_query.py:1084 ../../client/text_ui.py:949
+#: ../../spritz/src/dialogs.py:5926
 msgid "License"
 msgstr "Licentie"
 
-#: ../../client/text_repositories.py:59 ../../client/text_repositories.py:175
-#: ../../client/text_security.py:47 ../../client/text_ui.py:189
+#: ../../client/text_repositories.py:55 ../../client/text_repositories.py:171
+#: ../../client/text_security.py:47 ../../client/text_ui.py:190
 #, python-format
 msgid "You must be either root or in the %s group."
 msgstr "Je moet root zijn of in de %s groep zitten."
 
-#: ../../client/text_repositories.py:102
+#: ../../client/text_repositories.py:98
 msgid "No valid repositories"
 msgstr "Geen geldige repositories"
 
-#: ../../client/text_repositories.py:109
+#: ../../client/text_repositories.py:105
 msgid "not available"
 msgstr "niet beschikbaar"
 
-#: ../../client/text_repositories.py:116
+#: ../../client/text_repositories.py:112
 msgid "is empty"
 msgstr "is leeg"
 
-#: ../../client/text_repositories.py:120
+#: ../../client/text_repositories.py:116
 msgid "showing"
 msgstr "weergeven"
 
-#: ../../client/text_repositories.py:128
+#: ../../client/text_repositories.py:124
 msgid "Active Repositories"
 msgstr "Actieve Repositories"
 
-#: ../../client/text_repositories.py:136
+#: ../../client/text_repositories.py:132
 msgid "Packages Mirror"
 msgstr "Pakketten Mirror"
 
-#: ../../client/text_repositories.py:137 ../../client/text_repositories.py:159
+#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
 msgid "Database URL"
 msgstr "Database URL"
 
-#: ../../client/text_repositories.py:138
+#: ../../client/text_repositories.py:134
 msgid "Repository identifier"
 msgstr "Repository Herkenner"
 
-#: ../../client/text_repositories.py:139 ../../client/text_repositories.py:161
+#: ../../client/text_repositories.py:135 ../../client/text_repositories.py:157
 msgid "Repository database path"
 msgstr "Repository database pad"
 
-#: ../../client/text_repositories.py:151
+#: ../../client/text_repositories.py:147
 msgid "active"
 msgstr "actief"
 
-#: ../../client/text_repositories.py:153
+#: ../../client/text_repositories.py:149
 msgid "never synced"
 msgstr "nooit gesynchroniseerd"
 
-#: ../../client/text_repositories.py:154 ../../spritz/src/dialogs.py:747
+#: ../../client/text_repositories.py:150 ../../spritz/src/dialogs.py:747
 #: ../../spritz/src/dialogs.py:791 ../../spritz/src/dialogs.py:1323
-#: ../../spritz/src/views.py:1492
+#: ../../spritz/src/views.py:1490
 msgid "Status"
 msgstr "Status"
 
-#: ../../client/text_repositories.py:158
+#: ../../client/text_repositories.py:154
 msgid "Packages URL"
 msgstr "Pakketten URL"
 
-#: ../../client/text_repositories.py:160
+#: ../../client/text_repositories.py:156
 msgid "Repository name"
 msgstr "Repository naam"
 
-#: ../../client/text_repositories.py:164
+#: ../../client/text_repositories.py:160
 msgid "Repository database checksum"
 msgstr "Repository database controlesom"
 
-#: ../../client/text_repositories.py:165
+#: ../../client/text_repositories.py:161
 msgid "Repository revision"
 msgstr "Repository herziening"
 
-#: ../../client/text_repositories.py:179 ../../client/text_ui.py:193
-#: ../../spritz/src/spritz.py:1246
-#: ../../entropy-notification-applet/src/etp_applet.py:498
+#: ../../client/text_repositories.py:175 ../../client/text_ui.py:194
+#: ../../spritz/src/spritz.py:1244
+#: ../../entropy-notification-applet/src/etp_applet.py:510
 msgid "No repositories specified in"
 msgstr "Geen repositories opgegeven in"
 
-#: ../../client/text_repositories.py:182 ../../client/text_ui.py:196
-#: ../../spritz/src/spritz.py:1255
-#: ../../entropy-notification-applet/src/etp_applet.py:508
+#: ../../client/text_repositories.py:178 ../../client/text_ui.py:197
+#: ../../spritz/src/spritz.py:1253
+#: ../../entropy-notification-applet/src/etp_applet.py:520
 msgid "Unhandled exception"
 msgstr "Niet afgehandelde exceptie"
 
-#: ../../client/text_repositories.py:193 ../../server/server_activator.py:226
+#: ../../client/text_repositories.py:189 ../../server/server_activator.py:226
 #: ../../server/server_activator.py:243
 msgid "Notice board not available"
 msgstr "Notitie bord is niet beschikbaar"
 
 #. title
 #. glsa title
-#: ../../client/text_repositories.py:218 ../../client/text_repositories.py:250
-#: ../../client/text_repositories.py:303 ../../client/text_security.py:85
+#: ../../client/text_repositories.py:214 ../../client/text_repositories.py:246
+#: ../../client/text_repositories.py:299 ../../client/text_security.py:85
 #: ../../client/text_ugc.py:361 ../../client/text_ugc.py:545
 #: ../../server/server_activator.py:145 ../../server/server_activator.py:178
 #: ../../server/server_activator.py:210 ../../spritz/src/dialogs.py:100
 #: ../../spritz/src/dialogs.py:1336 ../../spritz/src/dialogs.py:1971
-#: ../../spritz/src/dialogs.py:3715 ../../spritz/src/spritz.glade.h:222
+#: ../../spritz/src/dialogs.py:3716 ../../spritz/src/spritz.glade.h:222
 msgid "Title"
 msgstr "Titel"
 
-#: ../../client/text_repositories.py:224 ../../client/text_ugc.py:551
-#: ../../server/server_activator.py:151 ../../spritz/src/dialogs.py:4163
+#: ../../client/text_repositories.py:220 ../../client/text_ugc.py:551
+#: ../../server/server_activator.py:151 ../../spritz/src/dialogs.py:4164
 #: ../../spritz/src/spritz.glade.h:40
 msgid "Content"
 msgstr "Inhoud"
 
-#: ../../client/text_repositories.py:229 ../../server/server_activator.py:156
+#: ../../client/text_repositories.py:225 ../../server/server_activator.py:156
 #: ../../spritz/src/spritz.glade.h:108
 msgid "Link"
 msgstr "Link"
 
-#: ../../client/text_repositories.py:237 ../../server/server_activator.py:164
+#: ../../client/text_repositories.py:233 ../../server/server_activator.py:164
 msgid "Press Enter to continue"
 msgstr "Druk op Enter om door te gaan"
 
-#: ../../client/text_repositories.py:263 ../../server/server_activator.py:192
+#: ../../client/text_repositories.py:259 ../../server/server_activator.py:192
 msgid "Choose one by typing its identifier"
 msgstr "Kies a.u.b. een door het identificatie nummer te typen."
 
-#: ../../client/text_repositories.py:290 ../../spritz/src/dialogs.py:2029
+#: ../../client/text_repositories.py:286 ../../spritz/src/dialogs.py:2029
 #: ../../spritz/src/spritz.glade.h:126
 msgid "Notice board"
 msgstr "Notitie Bord"
 
-#: ../../client/text_rescue.py:42 ../../client/text_smart.py:144
+#: ../../client/text_rescue.py:42 ../../client/text_smart.py:145
 msgid "Source Package Manager backend not available"
 msgstr "Source Pakket Beheerder back-end niet beschikbaar"
 
@@ -1733,8 +1620,8 @@ msgstr "Geinstalleerde pakketten database niet beschikbaar"
 
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
-#: ../../client/text_ui.py:403 ../../client/text_ui.py:1122
-#: ../../client/text_ui.py:1214
+#: ../../client/text_ui.py:404 ../../client/text_ui.py:1123
+#: ../../client/text_ui.py:1215
 msgid "ATTENTION"
 msgstr "ATTENTIE"
 
@@ -1810,8 +1697,8 @@ msgstr "Alle Gentoo pakketten zijn geïnjecteerd in de Entropy database"
 msgid "Now checking dependency atoms validity"
 msgstr "Checken van afhankelijke atomen validiteit"
 
-#: ../../client/text_rescue.py:187 ../../client/text_ui.py:357
-#: ../../client/text_ui.py:548
+#: ../../client/text_rescue.py:187 ../../client/text_ui.py:358
+#: ../../client/text_ui.py:549
 msgid "atom"
 msgstr "atoom"
 
@@ -1882,10 +1769,10 @@ msgid "Please wait"
 msgstr "Een moment a.u.b."
 
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
-#: ../../client/text_ui.py:854 ../../client/text_ui.py:855
-#: ../../client/text_ui.py:857 ../../client/text_ui.py:858
-#: ../../spritz/src/dialogs.py:5565 ../../spritz/src/misc.py:88
-#: ../../spritz/src/misc.py:372 ../../spritz/src/spritz.py:1080
+#: ../../client/text_ui.py:855 ../../client/text_ui.py:856
+#: ../../client/text_ui.py:858 ../../client/text_ui.py:859
+#: ../../spritz/src/dialogs.py:5567 ../../spritz/src/misc.py:88
+#: ../../spritz/src/misc.py:372 ../../spritz/src/spritz.py:1078
 msgid "Attention"
 msgstr "Attentie"
 
@@ -2043,7 +1930,7 @@ msgstr "Selecteer de database die je wilt herstellen"
 msgid "Entropy installed packages database restore tool"
 msgstr "Entropy geïnstalleerde pakketten database herstel gereedschap"
 
-#: ../../client/text_rescue.py:674 ../../client/text_smart.py:32
+#: ../../client/text_rescue.py:674 ../../client/text_smart.py:33
 msgid "You are not"
 msgstr "U bent niet"
 
@@ -2087,7 +1974,7 @@ msgstr "Geen advisories opgegeven."
 msgid "Advisory"
 msgstr "Advisory"
 
-#: ../../client/text_security.py:73 ../../client/text_smart.py:88
+#: ../../client/text_security.py:73 ../../client/text_smart.py:89
 msgid "does not exist"
 msgstr "bestaat niet"
 
@@ -2164,143 +2051,143 @@ msgstr "Berekenen beveiliging Updates"
 msgid "All the available updates have been already installed"
 msgstr "Alle beschikbare updates zijn al geïnstalleerd"
 
-#: ../../client/text_smart.py:78 ../../client/text_smart.py:135
-#: ../../client/text_smart.py:239 ../../client/text_smart.py:367
+#: ../../client/text_smart.py:79 ../../client/text_smart.py:136
+#: ../../client/text_smart.py:240 ../../client/text_smart.py:369
 msgid "No packages specified"
 msgstr "Geen pakketten opgegeven"
 
-#: ../../client/text_smart.py:97 ../../client/text_smart.py:248
-#: ../../client/text_smart.py:381
+#: ../../client/text_smart.py:98 ../../client/text_smart.py:249
+#: ../../client/text_smart.py:383
 msgid "Cannot find"
 msgstr "Kan `%s' niet vinden."
 
-#: ../../client/text_smart.py:100 ../../client/text_smart.py:251
-#: ../../client/text_smart.py:384
+#: ../../client/text_smart.py:101 ../../client/text_smart.py:252
+#: ../../client/text_smart.py:386
 msgid "No valid packages specified"
 msgstr "Geen geldige pakketten opgegeven"
 
 #. print the list
-#: ../../client/text_smart.py:104
+#: ../../client/text_smart.py:105
 msgid "This is the list of the packages that would be quickpkg'd"
 msgstr "De volgende pakketten zullen worden ge-quickpkgt"
 
-#: ../../client/text_smart.py:112
-#: ../../entropy-notification-applet/src/etp_applet.py:759
+#: ../../client/text_smart.py:113
+#: ../../entropy-notification-applet/src/etp_applet.py:771
 msgid "installed"
 msgstr "Geïnstalleerd"
 
-#: ../../client/text_smart.py:115
+#: ../../client/text_smart.py:116
 msgid "Would you like to recompose the selected packages ?"
 msgstr "Wil je de geselecteerde pakketten her-composeren ?"
 
-#: ../../client/text_smart.py:120
+#: ../../client/text_smart.py:121
 msgid "Compressing"
 msgstr "Comprimeren"
 
-#: ../../client/text_smart.py:125
+#: ../../client/text_smart.py:126
 msgid "Error while creating package for"
 msgstr "Fout bij aanmaken van pakket voor"
 
-#: ../../client/text_smart.py:129
+#: ../../client/text_smart.py:130
 msgid "Saved in"
 msgstr "Opgeslagen in"
 
-#: ../../client/text_smart.py:150
+#: ../../client/text_smart.py:151
 msgid "directory does not exist"
 msgstr "map bestaat niet"
 
-#: ../../client/text_smart.py:159 ../../client/text_ui.py:399
-#: ../../spritz/src/spritz.py:2124
+#: ../../client/text_smart.py:160 ../../client/text_ui.py:400
+#: ../../spritz/src/spritz.py:2122
 msgid "is not a valid Entropy package"
 msgstr "is geen geldig Entropy pakket"
 
-#: ../../client/text_smart.py:175
+#: ../../client/text_smart.py:176
 msgid "Using branch"
 msgstr "Gebruiken van Branche"
 
-#: ../../client/text_smart.py:205
+#: ../../client/text_smart.py:206
 msgid "Inflated package"
 msgstr "Geïnfleerd pakket"
 
-#: ../../client/text_smart.py:213
+#: ../../client/text_smart.py:214
 msgid "Deflating"
 msgstr "Deflatie"
 
-#: ../../client/text_smart.py:218
+#: ../../client/text_smart.py:219
 msgid "Deflated package"
 msgstr "Gedefleerd pakket"
 
-#: ../../client/text_smart.py:226
+#: ../../client/text_smart.py:227
 msgid "Extracting Entropy metadata from"
 msgstr "Entropy metadata wordt uitgepakt vanaf"
 
-#: ../../client/text_smart.py:232
+#: ../../client/text_smart.py:233
 msgid "Extracted Entropy metadata from"
 msgstr "Entropy metadata uitgepakt vanaf"
 
 #. print the list
-#: ../../client/text_smart.py:255
+#: ../../client/text_smart.py:256
 msgid "This is the list of the packages that would be merged into a single one"
 msgstr "De volgende pakketten zullen worden samengevoegd in een enkel pakket"
 
-#: ../../client/text_smart.py:263 ../../client/text_smart.py:396
+#: ../../client/text_smart.py:264 ../../client/text_smart.py:398
 msgid "Would you like to create the packages above ?"
 msgstr "Wilt u de pakketten hierboven creëren ?"
 
-#: ../../client/text_smart.py:267
+#: ../../client/text_smart.py:268
 msgid "Creating merged Smart Package"
 msgstr "Aanmaken van samengevoegde 'Smart Package'"
 
-#: ../../client/text_smart.py:311
+#: ../../client/text_smart.py:313
 msgid "collecting Entropy metadata"
 msgstr "verzamelen van Entropy metadata"
 
-#: ../../client/text_smart.py:339
+#: ../../client/text_smart.py:341
 msgid "Unpack failed due to unknown reasons"
 msgstr "Uitpakken gefaald door een onbekende reden"
 
-#: ../../client/text_smart.py:344
+#: ../../client/text_smart.py:346
 msgid "Compressing smart package"
 msgstr "Comprimeren van 'smart' pakket"
 
-#: ../../client/text_smart.py:351
+#: ../../client/text_smart.py:353
 msgid "Compression failed due to unknown reasons"
 msgstr "Compressie gefaald door een onbekende reden"
 
-#: ../../client/text_smart.py:355
+#: ../../client/text_smart.py:357
 msgid "Compressed file does not exist"
 msgstr "Gecomprimeerd bestand bestaat niet meer"
 
-#: ../../client/text_smart.py:372
+#: ../../client/text_smart.py:374
 msgid "Cannot find G++ compiler"
 msgstr "Kan G++ compiler niet vinden"
 
 #. print the list
-#: ../../client/text_smart.py:388
+#: ../../client/text_smart.py:390
 msgid "This is the list of the packages that would be worked out"
 msgstr "De volgende pakketten worden behandeld"
 
-#: ../../client/text_smart.py:401
+#: ../../client/text_smart.py:403
 msgid "Creating Smart Application from"
 msgstr "Creëren van 'Smart Applicatie' van"
 
-#: ../../client/text_smart.py:429
+#: ../../client/text_smart.py:431
 msgid "Missing dependencies"
 msgstr "Missende afhankelijkheden"
 
-#: ../../client/text_smart.py:436
+#: ../../client/text_smart.py:438
 msgid "This is the list of the dependencies that would be included"
 msgstr "De volgende afhankelijkheden zullen worden toegevoegd"
 
-#: ../../client/text_smart.py:457
+#: ../../client/text_smart.py:460
 msgid "Unpacking the main package"
 msgstr "Uitpakken van het basis pakket"
 
-#: ../../client/text_smart.py:474
+#: ../../client/text_smart.py:477
 msgid "Unpacking dependency package"
 msgstr "Uitpakken van afhankelijkheid pakket"
 
-#: ../../client/text_smart.py:543
+#: ../../client/text_smart.py:546
 msgid "Compressing smart application"
 msgstr "Comprimeren van 'smart' applicatie"
 
@@ -2328,7 +2215,7 @@ msgstr "Van nu af aan, zal elke GGI actie als deze gebruiker worden toegevoegd"
 msgid "Login error. Not logged in."
 msgstr "Log in fout. niet ingelogd."
 
-#: ../../client/text_ugc.py:113 ../../spritz/src/spritz.py:850
+#: ../../client/text_ugc.py:113 ../../spritz/src/spritz.py:848
 msgid "Not logged in"
 msgstr "Niet ingelogd op"
 
@@ -2381,7 +2268,7 @@ msgstr "Stem"
 msgid "Vote added, thank you!"
 msgstr "Stem toegevoegd, Dank je!"
 
-#: ../../client/text_ugc.py:282 ../../spritz/src/dialogs.py:4248
+#: ../../client/text_ugc.py:282 ../../spritz/src/dialogs.py:4249
 msgid "Number of downloads"
 msgstr "Aantal downloads"
 
@@ -2473,62 +2360,62 @@ msgstr "onbekende type"
 msgid "Current package vote"
 msgstr "Huidige pakket stem"
 
-#: ../../client/text_ui.py:57
+#: ../../client/text_ui.py:58
 msgid "Malformed command"
 msgstr "Misvormd commando"
 
-#: ../../client/text_ui.py:124 ../../client/text_ui.py:135
-#: ../../client/text_ui.py:147 ../../client/text_ui.py:154
-#: ../../client/text_ui.py:652 ../../client/text_ui.py:1287
+#: ../../client/text_ui.py:125 ../../client/text_ui.py:136
+#: ../../client/text_ui.py:148 ../../client/text_ui.py:155
+#: ../../client/text_ui.py:653 ../../client/text_ui.py:1288
 msgid "Nothing to do"
 msgstr "Niets te doen"
 
-#: ../../client/text_ui.py:168 ../../client/text_ui.py:570
-#: ../../client/text_ui.py:613 ../../client/text_ui.py:1111
-#: ../../client/text_ui.py:1191
+#: ../../client/text_ui.py:169 ../../client/text_ui.py:571
+#: ../../client/text_ui.py:614 ../../client/text_ui.py:1112
+#: ../../client/text_ui.py:1192
 msgid "Running with"
 msgstr "Starten met"
 
-#: ../../client/text_ui.py:179
+#: ../../client/text_ui.py:180
 msgid "Selected release"
 msgstr "Geselecteerde uitgave"
 
-#: ../../client/text_ui.py:180
+#: ../../client/text_ui.py:181
 msgid "is not available"
 msgstr "is niet beschikbaar"
 
-#: ../../client/text_ui.py:205
+#: ../../client/text_ui.py:206
 msgid "Calculating System Updates"
 msgstr "Calculeren van Systeem Updates"
 
-#: ../../client/text_ui.py:209
+#: ../../client/text_ui.py:210
 msgid "Packages matching update"
 msgstr "Overeenkomende pakketten voor update"
 
-#: ../../client/text_ui.py:210
+#: ../../client/text_ui.py:211
 msgid "Packages matching not available"
 msgstr "Overeenkomende pakketten zijn niet beschikbaar"
 
-#: ../../client/text_ui.py:211
+#: ../../client/text_ui.py:212
 msgid "Packages matching already up to date"
 msgstr "Overeenkomende pakketten zijn reeds bijgewerkt"
 
 #. None or {}
-#: ../../client/text_ui.py:237 ../../client/text_ui.py:890
-#: ../../client/text_ui.py:1374
+#: ../../client/text_ui.py:238 ../../client/text_ui.py:891
+#: ../../client/text_ui.py:1375
 msgid "Nothing to resume"
 msgstr "Niks om te hervatten"
 
-#: ../../client/text_ui.py:248 ../../client/text_ui.py:903
-#: ../../client/text_ui.py:1382
+#: ../../client/text_ui.py:249 ../../client/text_ui.py:904
+#: ../../client/text_ui.py:1383
 msgid "Resume cache corrupted"
 msgstr "Her start cache corrupt"
 
-#: ../../client/text_ui.py:274
+#: ../../client/text_ui.py:275
 msgid "Nothing to update"
 msgstr "Niets te updaten"
 
-#: ../../client/text_ui.py:285
+#: ../../client/text_ui.py:286
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
@@ -2536,285 +2423,289 @@ msgstr ""
 "Op het systeem zijn pakketten aangetroffen die niet meer beschikbaar zijn op "
 "de online repositories"
 
-#: ../../client/text_ui.py:289
+#: ../../client/text_ui.py:290
 msgid "Even if they are usually harmless, it is suggested to remove them."
 msgstr "Zelfs al zijn ze onschadelijk, het is aangeraden om ze te verwijderen."
 
-#: ../../client/text_ui.py:293
+#: ../../client/text_ui.py:294
 msgid "Would you like to scan them ?"
 msgstr "Wil je deze scannen ?"
 
-#: ../../client/text_ui.py:307
+#: ../../client/text_ui.py:308
 msgid "Calculation complete"
 msgstr "Berekenen compleet"
 
-#: ../../client/text_ui.py:310
+#: ../../client/text_ui.py:311
 msgid "Nothing to remove"
 msgstr "Niets te verwijderen"
 
-#: ../../client/text_ui.py:330 ../../client/text_ui.py:521
+#: ../../client/text_ui.py:331 ../../client/text_ui.py:522
 msgid "Every package matching"
 msgstr "Alle overeenkomende pakketten"
 
-#: ../../client/text_ui.py:332 ../../client/text_ui.py:523
+#: ../../client/text_ui.py:333 ../../client/text_ui.py:524
 msgid "is masked"
 msgstr "is gemaskeerd"
 
-#: ../../client/text_ui.py:353 ../../client/text_ui.py:544
+#: ../../client/text_ui.py:354 ../../client/text_ui.py:545
 msgid "matching"
 msgstr "overeenkomend"
 
-#: ../../client/text_ui.py:355 ../../client/text_ui.py:546
+#: ../../client/text_ui.py:356 ../../client/text_ui.py:547
 msgid "is broken"
 msgstr "is beschadigd"
 
-#: ../../client/text_ui.py:363
+#: ../../client/text_ui.py:364
 msgid "in repositories"
 msgstr "in repositories"
 
-#: ../../client/text_ui.py:375 ../../client/text_ui.py:1134
-#: ../../client/text_ui.py:1226
+#: ../../client/text_ui.py:376 ../../client/text_ui.py:1135
+#: ../../client/text_ui.py:1227
 msgid "When you wrote"
 msgstr "Toen je schreef"
 
-#: ../../client/text_ui.py:377 ../../client/text_ui.py:1136
-#: ../../client/text_ui.py:1228
+#: ../../client/text_ui.py:378 ../../client/text_ui.py:1137
+#: ../../client/text_ui.py:1229
 msgid "You Meant(tm)"
 msgstr "U bedoelde(tm)"
 
-#: ../../client/text_ui.py:378 ../../client/text_ui.py:1137
-#: ../../client/text_ui.py:1229
+#: ../../client/text_ui.py:379 ../../client/text_ui.py:1138
+#: ../../client/text_ui.py:1230
 msgid "one of these below?"
 msgstr "een van de onderstaande?"
 
-#: ../../client/text_ui.py:401 ../../spritz/src/spritz.py:2126
+#: ../../client/text_ui.py:402 ../../spritz/src/spritz.py:2124
 msgid "is not compiled with the same architecture of the system"
 msgstr "is niet gecompileerd met de zelfde architectuur als het systeem"
 
-#: ../../client/text_ui.py:406
+#: ../../client/text_ui.py:407
 msgid "Skipped"
 msgstr "Overgeslagen"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:419 ../../client/text_ui.py:1249
+#: ../../client/text_ui.py:420 ../../client/text_ui.py:1250
 msgid "These are the chosen packages"
 msgstr "Dit zijn de gekozen pakketten"
 
-#: ../../client/text_ui.py:443 ../../client/text_ui.py:707
+#: ../../client/text_ui.py:444 ../../client/text_ui.py:708
 msgid "Not available"
 msgstr "Niet beschikbaar"
 
-#: ../../client/text_ui.py:457
+#: ../../client/text_ui.py:458
 msgid "Versions"
 msgstr "Versies"
 
-#: ../../client/text_ui.py:480
+#: ../../client/text_ui.py:481
 msgid "Switch repo"
 msgstr "Wissel repo"
 
-#: ../../client/text_ui.py:481 ../../client/text_ui.py:483
+#: ../../client/text_ui.py:482 ../../client/text_ui.py:484
 #: ../../spritz/src/spritz.glade.h:170
 msgid "Reinstall"
 msgstr "Herinstalleer"
 
-#: ../../client/text_ui.py:486 ../../spritz/src/spritz.glade.h:92
+#: ../../client/text_ui.py:487 ../../spritz/src/spritz.glade.h:92
 msgid "Install"
 msgstr "Installeer"
 
-#: ../../client/text_ui.py:488
+#: ../../client/text_ui.py:489
 msgid "Upgrade"
 msgstr "Upgrade"
 
-#: ../../client/text_ui.py:490
+#: ../../client/text_ui.py:491
 msgid "Downgrade"
 msgstr "Downgrade"
 
-#: ../../client/text_ui.py:491 ../../spritz/src/dialogs.py:2062
+#: ../../client/text_ui.py:492 ../../spritz/src/dialogs.py:2062
 msgid "Action"
 msgstr "Actie"
 
-#: ../../client/text_ui.py:494 ../../client/text_ui.py:1167
-#: ../../client/text_ui.py:1284
+#: ../../client/text_ui.py:495 ../../client/text_ui.py:1168
+#: ../../client/text_ui.py:1285
 msgid "Packages involved"
 msgstr "Pakketten die betrokken zijn"
 
-#: ../../client/text_ui.py:498
+#: ../../client/text_ui.py:499
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr "Wil je doorgaan met de afhankelijkheden calculatie ?"
 
-#: ../../client/text_ui.py:509
+#: ../../client/text_ui.py:510
 msgid "Calculating dependencies"
 msgstr "Berekenen van afhankelijkheden"
 
-#: ../../client/text_ui.py:513
+#: ../../client/text_ui.py:514
 msgid "Cannot find needed dependencies"
 msgstr "Kan benodigde afhankelijkheden niet vinden"
 
-#: ../../client/text_ui.py:552
+#: ../../client/text_ui.py:553
 msgid "Not found"
 msgstr "Niet gevonden"
 
-#: ../../client/text_ui.py:555
+#: ../../client/text_ui.py:556
 msgid "Probably needed by"
 msgstr "Waarschijnlijk gebruikt door"
 
-#: ../../client/text_ui.py:597
+#: ../../client/text_ui.py:598
 msgid "sources fetch"
 msgstr "bronnen ophaal"
 
-#: ../../client/text_ui.py:669 ../../client/text_ui.py:773
+#: ../../client/text_ui.py:670 ../../client/text_ui.py:774
 msgid "These are the packages that would be"
 msgstr "Deze pakketten zullen worden "
 
-#: ../../client/text_ui.py:669
+#: ../../client/text_ui.py:670
 msgid "merged"
 msgstr "samengevoegd"
 
-#: ../../client/text_ui.py:774
+#: ../../client/text_ui.py:775
 msgid "removed"
 msgstr "verwijderd"
 
-#: ../../client/text_ui.py:775
+#: ../../client/text_ui.py:776
 msgid "conflicting/substituted"
 msgstr "conflicterend/vervangen"
 
 #. show download info
-#: ../../client/text_ui.py:790
+#: ../../client/text_ui.py:791
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Pakketten die moeten worden geïnstalleerd/geüpdate/gedowngrade"
 
-#: ../../client/text_ui.py:792
+#: ../../client/text_ui.py:793
 msgid "Packages needing to be removed"
 msgstr "Pakketten die moeten worden verwijderd"
 
-#: ../../client/text_ui.py:796
+#: ../../client/text_ui.py:797
 msgid "Packages needing to be installed"
 msgstr "Pakketten die moeten worden geïnstalleerd"
 
-#: ../../client/text_ui.py:801
+#: ../../client/text_ui.py:802
 msgid "Packages needing to be reinstalled"
 msgstr "Pakketten die moeten worden geherinstalleerd"
 
-#: ../../client/text_ui.py:806
+#: ../../client/text_ui.py:807
 msgid "Packages needing to be updated"
 msgstr "Pakketten die moeten worden geüpdate"
 
-#: ../../client/text_ui.py:811
+#: ../../client/text_ui.py:812
 msgid "Packages needing to be downgraded"
 msgstr "Pakketten die moeten worden gedowngrade"
 
-#: ../../client/text_ui.py:821
+#: ../../client/text_ui.py:822
 msgid "Download size"
 msgstr "Download grootte"
 
-#: ../../client/text_ui.py:827
+#: ../../client/text_ui.py:828
 msgid "Used disk space"
 msgstr "Gebruikte schijf ruimte"
 
-#: ../../client/text_ui.py:829 ../../spritz/src/misc.py:437
+#: ../../client/text_ui.py:830 ../../spritz/src/misc.py:437
 msgid "Freed disk space"
 msgstr "Vrijgemaakte schijfruimte"
 
-#: ../../client/text_ui.py:841
+#: ../../client/text_ui.py:842
 msgid "You need at least"
 msgstr "Je hebt minimaal nodig"
 
-#: ../../client/text_ui.py:843
+#: ../../client/text_ui.py:844
 msgid "of free space"
 msgstr "aan vrije ruimte"
 
-#: ../../client/text_ui.py:851
+#: ../../client/text_ui.py:852
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 "Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
 
-#: ../../client/text_ui.py:861
+#: ../../client/text_ui.py:862
 msgid "Would you like to execute the queue ?"
 msgstr "Wilt u de wachtrij uitvoeren ?"
 
-#: ../../client/text_ui.py:901 ../../client/text_ui.py:1380
+#: ../../client/text_ui.py:902 ../../client/text_ui.py:1381
 msgid "Resuming previous operations"
 msgstr "Doorgaan met vorige acties"
 
 #: ../../client/text_ui.py:926
+msgid "Please select an option"
+msgstr "selecteer een optie"
+
+#: ../../client/text_ui.py:927
 msgid "Read the license"
 msgstr "Lees de licentie"
 
-#: ../../client/text_ui.py:927
+#: ../../client/text_ui.py:928
 msgid "Accept the license (I've read it)"
 msgstr "Accepteer de licentie (Ik heb 'm gelezen)"
 
-#: ../../client/text_ui.py:928
+#: ../../client/text_ui.py:929
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr "Accepteer de licentie en vraag er niet meer om (gelezen)"
 
-#: ../../client/text_ui.py:929
+#: ../../client/text_ui.py:930
 msgid "Quit"
 msgstr "Afsluiten"
 
 #. wait user interaction
-#: ../../client/text_ui.py:931
+#: ../../client/text_ui.py:932
 msgid "Your choice (type a number and press enter)"
 msgstr "Jouw keuze (typ een nummer en druk op enter)"
 
-#: ../../client/text_ui.py:944
+#: ../../client/text_ui.py:945
 msgid "You need to accept the licenses below"
 msgstr "Je moet de licentie hieronder accepteren"
 
-#: ../../client/text_ui.py:948
+#: ../../client/text_ui.py:949
 msgid "needed by"
 msgstr "nodig voor"
 
-#: ../../client/text_ui.py:968
+#: ../../client/text_ui.py:969
 msgid "No file viewer"
 msgstr "Geen bestand viewer"
 
-#: ../../client/text_ui.py:968
+#: ../../client/text_ui.py:969
 msgid "License saved into"
 msgstr "Licentie opgeslagen in"
 
-#: ../../client/text_ui.py:1009 ../../client/text_ui.py:1034
+#: ../../client/text_ui.py:1010 ../../client/text_ui.py:1035
 msgid "fetch"
 msgstr "ophalen"
 
-#: ../../client/text_ui.py:1059
+#: ../../client/text_ui.py:1060
 msgid "Download completed"
 msgstr "Download voltooid"
 
-#: ../../client/text_ui.py:1070
+#: ../../client/text_ui.py:1071
 msgid "install"
 msgstr "Installeer"
 
-#: ../../client/text_ui.py:1098
+#: ../../client/text_ui.py:1099
 msgid "Installation completed"
 msgstr "Installatie voltooid"
 
-#: ../../client/text_ui.py:1124 ../../client/text_ui.py:1216
+#: ../../client/text_ui.py:1125 ../../client/text_ui.py:1217
 msgid "is not installed"
 msgstr "is niet geïnstalleerd"
 
-#: ../../client/text_ui.py:1163 ../../client/text_ui.py:1280
+#: ../../client/text_ui.py:1164 ../../client/text_ui.py:1281
 msgid "Installed from"
 msgstr "geïnstalleerd vanaf"
 
-#: ../../client/text_ui.py:1170
+#: ../../client/text_ui.py:1171
 msgid "Would you like to configure them now ?"
 msgstr "Wil je ze nu configureren ?"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:1268
+#: ../../client/text_ui.py:1269
 msgid "vital package"
 msgstr "vitaal pakket"
 
-#: ../../client/text_ui.py:1269
+#: ../../client/text_ui.py:1270
 msgid "Removal forbidden"
 msgstr "Verwijderen verboden"
 
-#: ../../client/text_ui.py:1279
+#: ../../client/text_ui.py:1280
 msgid "Disk size"
 msgstr "Schijf grootte"
 
-#: ../../client/text_ui.py:1292
+#: ../../client/text_ui.py:1293
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
@@ -2822,81 +2713,81 @@ msgstr ""
 "Wil je zoeken naar pakketten die kunnen worden verwijderd naast de "
 "geselecteerde pakketten hierboven ?"
 
-#: ../../client/text_ui.py:1295 ../../server/server_reagent.py:322
+#: ../../client/text_ui.py:1296 ../../server/server_reagent.py:322
 msgid "Would you like to remove them now ?"
 msgstr "Wilt u ze nu verwijderen ?"
 
-#: ../../client/text_ui.py:1311
+#: ../../client/text_ui.py:1312
 msgid "This is the new removal queue"
 msgstr "Dit is de wachtrij voor verwijdering"
 
-#: ../../client/text_ui.py:1336
+#: ../../client/text_ui.py:1337
 msgid "Would you like to proceed ?"
 msgstr "Wilt u doorgaan ?"
 
-#: ../../client/text_ui.py:1338
+#: ../../client/text_ui.py:1339
 msgid "Would you like to proceed with a selective removal ?"
 msgstr "Wil je doorgaan met een selectieve verwijdering ?"
 
-#: ../../client/text_ui.py:1345
+#: ../../client/text_ui.py:1346
 msgid "Would you like to skip this step then ?"
 msgstr "Wil je deze stap dan maar overslaan ?"
 
-#: ../../client/text_ui.py:1350
+#: ../../client/text_ui.py:1351
 msgid "Starting removal in"
 msgstr "Start verwijderen in"
 
-#: ../../client/text_ui.py:1414
+#: ../../client/text_ui.py:1415
 msgid "Remove this one ?"
 msgstr "Verwijder deze ?"
 
-#: ../../client/text_ui.py:1450
+#: ../../client/text_ui.py:1451
 msgid "All done"
 msgstr "Alles verwerkt"
 
-#: ../../client/text_ui.py:1455
+#: ../../client/text_ui.py:1456
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 "Starten van ongebruikte pakketten test, houdt aandacht, er zijn valse "
 "positieven"
 
-#: ../../client/text_ui.py:1469
+#: ../../client/text_ui.py:1470
 msgid "Running dependency test"
 msgstr "Start afhankelijkheids test"
 
-#: ../../client/text_ui.py:1507
+#: ../../client/text_ui.py:1508
 msgid "These are the dependencies not found"
 msgstr "Deze afhankelijkheden zijn niet gevonden"
 
-#: ../../client/text_ui.py:1511
+#: ../../client/text_ui.py:1512
 msgid "Needed by"
 msgstr "Nodig voor"
 
-#: ../../client/text_ui.py:1516
+#: ../../client/text_ui.py:1517
 msgid "Would you like to install the available packages ?"
 msgstr "Wil je de beschikbare pakketten installeren ?"
 
-#: ../../client/text_ui.py:1521 ../../client/text_ui.py:1598
+#: ../../client/text_ui.py:1522 ../../client/text_ui.py:1599
 msgid "Installing available packages in"
 msgstr "Installeren van beschikbare pakketten in"
 
-#: ../../client/text_ui.py:1522 ../../client/text_ui.py:1599
+#: ../../client/text_ui.py:1523 ../../client/text_ui.py:1600
 msgid "10 seconds"
 msgstr "10 seconden"
 
-#: ../../client/text_ui.py:1557
+#: ../../client/text_ui.py:1558
 msgid "System is healthy"
 msgstr "Systeem is gezond"
 
-#: ../../client/text_ui.py:1563
+#: ../../client/text_ui.py:1564
 msgid "Libraries/Executables statistics"
 msgstr "Statistieken van Bibliotheken/Opstartbestanden"
 
-#: ../../client/text_ui.py:1565
+#: ../../client/text_ui.py:1566
 msgid "Not matched"
 msgstr "Niet overeenkomend"
 
-#: ../../client/text_ui.py:1592
+#: ../../client/text_ui.py:1593
 msgid "Would you like to install them ?"
 msgstr "Will je ze installeren ?"
 
@@ -3096,7 +2987,7 @@ msgstr "Inschakelen"
 msgid "repository"
 msgstr "Repository"
 
-#: ../../server/server_reagent.py:82 ../../spritz/src/dialogs.py:5018
+#: ../../server/server_reagent.py:82 ../../spritz/src/dialogs.py:5020
 msgid "Enabled"
 msgstr "Ingeschakeld"
 
@@ -3108,8 +2999,8 @@ msgstr "Ingeschakeld"
 #: ../../spritz/src/dialogs.py:3263 ../../spritz/src/dialogs.py:3316
 #: ../../spritz/src/dialogs.py:3350 ../../spritz/src/dialogs.py:3373
 #: ../../spritz/src/dialogs.py:3399 ../../spritz/src/dialogs.py:3439
-#: ../../spritz/src/spritz.py:874 ../../spritz/src/views.py:1011
-#: ../../spritz/src/views.py:1676
+#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1009
+#: ../../spritz/src/views.py:1674
 msgid "Repository"
 msgstr "Repository"
 
@@ -3263,6 +3154,7 @@ msgstr ""
 msgid "Collecting packages that would be marked"
 msgstr "Verzamelen van pakketten die worden gemarkeerd"
 
+#. myatoms = options[3:]
 #: ../../server/server_reagent.py:440
 msgid "These are the packages that would be marked"
 msgstr "Dit zijn de pakketten die zouden worden gemarkeerd"
@@ -3299,8 +3191,8 @@ msgstr "Dit zijn de pakketten die zullen worden verwijderd"
 msgid "Bumping Repository database"
 msgstr "Bijwerken Repository database"
 
-#: ../../server/server_reagent.py:566 ../../spritz/src/spritz.py:2558
-#: ../../spritz/src/spritz.py:2589 ../../spritz/src/spritz.glade.h:72
+#: ../../server/server_reagent.py:566 ../../spritz/src/spritz.py:2556
+#: ../../spritz/src/spritz.py:2587 ../../spritz/src/spritz.glade.h:72
 msgid "Error"
 msgstr "Fout"
 
@@ -3433,7 +3325,7 @@ msgstr "Parameters"
 #. date col
 #. date
 #: ../../spritz/src/dialogs.py:759 ../../spritz/src/dialogs.py:799
-#: ../../spritz/src/spritz.py:834 ../../spritz/src/spritz.glade.h:48
+#: ../../spritz/src/spritz.py:832 ../../spritz/src/spritz.glade.h:48
 msgid "Date"
 msgstr "Datum"
 
@@ -3571,7 +3463,7 @@ msgstr "Ja"
 msgid "No"
 msgstr "Nee"
 
-#: ../../spritz/src/dialogs.py:2073 ../../spritz/src/spritz.py:831
+#: ../../spritz/src/dialogs.py:2073 ../../spritz/src/spritz.py:829
 msgid "Database"
 msgstr "Database"
 
@@ -3635,8 +3527,8 @@ msgstr "kies the bestemmings repositorie"
 msgid "To be added"
 msgstr "Voor toevoeging"
 
-#: ../../spritz/src/dialogs.py:2317 ../../spritz/src/dialogs.py:5227
-#: ../../spritz/src/dialogs.py:5245
+#: ../../spritz/src/dialogs.py:2317 ../../spritz/src/dialogs.py:5229
+#: ../../spritz/src/dialogs.py:5247
 msgid "To be removed"
 msgstr "Gemarkeerd voor verwijdering"
 
@@ -3757,7 +3649,7 @@ msgstr "Benodigde Bibliotheken"
 msgid "Reverse dependencies"
 msgstr "Tegengestelde afhankelijkheden"
 
-#: ../../spritz/src/dialogs.py:3313 ../../spritz/src/dialogs.py:4139
+#: ../../spritz/src/dialogs.py:3313 ../../spritz/src/dialogs.py:4140
 msgid "File"
 msgstr "Bestand"
 
@@ -3801,231 +3693,231 @@ msgstr "Mirrors check"
 msgid "Choose what notice board you want to see"
 msgstr "Kies welk notitie bord je wilt zien"
 
-#: ../../spritz/src/dialogs.py:3692
+#: ../../spritz/src/dialogs.py:3693
 msgid "Expand to browse"
 msgstr "Uitvouwen om te doorzoeken"
 
-#: ../../spritz/src/dialogs.py:3708 ../../spritz/src/spritz.glade.h:88
+#: ../../spritz/src/dialogs.py:3709 ../../spritz/src/spritz.glade.h:88
 msgid "Identifier"
 msgstr "Identifier"
 
-#: ../../spritz/src/dialogs.py:3712 ../../spritz/src/spritz.glade.h:14
+#: ../../spritz/src/dialogs.py:3713 ../../spritz/src/spritz.glade.h:14
 msgid "Author"
 msgstr "Auteur"
 
-#: ../../spritz/src/dialogs.py:3988
+#: ../../spritz/src/dialogs.py:3989
 msgid "Package ChangeLog"
 msgstr "Pakket Veranderingen-Log"
 
-#: ../../spritz/src/dialogs.py:4041 ../../spritz/src/views.py:1058
+#: ../../spritz/src/dialogs.py:4042 ../../spritz/src/views.py:1056
 msgid "Vote registered successfully"
 msgstr "Stem registratie succesvol"
 
-#: ../../spritz/src/dialogs.py:4043 ../../spritz/src/views.py:1060
+#: ../../spritz/src/dialogs.py:4044 ../../spritz/src/views.py:1058
 msgid "Error registering vote"
 msgstr "Fout bij het registreren van je stem"
 
-#: ../../spritz/src/dialogs.py:4056
+#: ../../spritz/src/dialogs.py:4057
 msgid "License name"
 msgstr "Licentie naam"
 
-#: ../../spritz/src/dialogs.py:4072 ../../spritz/src/spritz.glade.h:120
+#: ../../spritz/src/dialogs.py:4073 ../../spritz/src/spritz.glade.h:120
 msgid "Mirrors"
 msgstr "Mirrors"
 
-#: ../../spritz/src/dialogs.py:4096
+#: ../../spritz/src/dialogs.py:4097
 msgid "Eclasses"
 msgstr "Eclassen"
 
-#: ../../spritz/src/dialogs.py:4112
+#: ../../spritz/src/dialogs.py:4113
 msgid "Depends"
 msgstr "Afhankelijk van"
 
-#: ../../spritz/src/dialogs.py:4120
+#: ../../spritz/src/dialogs.py:4121
 msgid "Needed libraries"
 msgstr "Benodigde bibliotheken"
 
-#: ../../spritz/src/dialogs.py:4128
+#: ../../spritz/src/dialogs.py:4129
 msgid "Protected item"
 msgstr "Beschermd item"
 
-#: ../../spritz/src/dialogs.py:4131 ../../spritz/src/dialogs.py:4143
-#: ../../spritz/src/dialogs.py:4155
+#: ../../spritz/src/dialogs.py:4132 ../../spritz/src/dialogs.py:4144
+#: ../../spritz/src/dialogs.py:4156
 msgid "Type"
 msgstr "Type"
 
-#: ../../spritz/src/dialogs.py:4243
+#: ../../spritz/src/dialogs.py:4244
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr "Deel jouw mening, jouw documenten, jouw screenshots!"
 
-#: ../../spritz/src/dialogs.py:4244
+#: ../../spritz/src/dialogs.py:4245
 msgid "Be part of our Community!"
 msgstr "Word lid van onze Community!"
 
-#: ../../spritz/src/dialogs.py:4280
+#: ../../spritz/src/dialogs.py:4281
 msgid "From your Operating System"
 msgstr "Van je Besturings Systeem"
 
-#: ../../spritz/src/dialogs.py:4283
+#: ../../spritz/src/dialogs.py:4284
 msgid "Remotely"
 msgstr "Op afstand"
 
-#: ../../spritz/src/dialogs.py:4441
+#: ../../spritz/src/dialogs.py:4442
 msgid "Bug"
 msgstr "Bug"
 
-#: ../../spritz/src/dialogs.py:4449
+#: ../../spritz/src/dialogs.py:4450
 msgid "Reference"
 msgstr "Referentie"
 
-#: ../../spritz/src/dialogs.py:4523
+#: ../../spritz/src/dialogs.py:4524
 msgid "impact"
 msgstr "impact"
 
-#: ../../spritz/src/dialogs.py:4527
+#: ../../spritz/src/dialogs.py:4528
 msgid "access"
 msgstr "toegang"
 
-#: ../../spritz/src/dialogs.py:4542
+#: ../../spritz/src/dialogs.py:4543
 msgid "Vulnerables"
 msgstr "Kwetsbaarheden"
 
-#: ../../spritz/src/dialogs.py:4546
+#: ../../spritz/src/dialogs.py:4547
 msgid "Unaffected"
 msgstr "Onaangetast"
 
-#: ../../spritz/src/dialogs.py:4629
+#: ../../spritz/src/dialogs.py:4631
 msgid "Id"
 msgstr "ID"
 
-#: ../../spritz/src/dialogs.py:4707
+#: ../../spritz/src/dialogs.py:4709
 msgid "Write your"
 msgstr "Schrijf jouw"
 
-#: ../../spritz/src/dialogs.py:4710
+#: ../../spritz/src/dialogs.py:4712
 msgid "Select your"
 msgstr "Selecteer uw"
 
-#: ../../spritz/src/dialogs.py:4717
+#: ../../spritz/src/dialogs.py:4719
 msgid "Submit issue"
 msgstr "Voeg melding toe"
 
-#: ../../spritz/src/dialogs.py:4730
+#: ../../spritz/src/dialogs.py:4732
 msgid "Empty Document"
 msgstr "Leeg Document"
 
-#: ../../spritz/src/dialogs.py:4734
+#: ../../spritz/src/dialogs.py:4736
 msgid "Invalid Description"
 msgstr "Ongeldige Omschrijving"
 
-#: ../../spritz/src/dialogs.py:4740
+#: ../../spritz/src/dialogs.py:4742
 msgid "Invalid Document Type"
 msgstr "Ongeldig Document Soort"
 
-#: ../../spritz/src/dialogs.py:4743
+#: ../../spritz/src/dialogs.py:4745
 msgid "Invalid Title"
 msgstr "Ongeldige Titel"
 
 #. confirm ?
-#: ../../spritz/src/dialogs.py:4747
+#: ../../spritz/src/dialogs.py:4749
 msgid "Do you confirm your submission?"
 msgstr "Wilt u uw indiening bevestigen?"
 
-#: ../../spritz/src/dialogs.py:4773
+#: ../../spritz/src/dialogs.py:4775
 msgid "UGC Error"
 msgstr "GGI Fout"
 
-#: ../../spritz/src/dialogs.py:4777
+#: ../../spritz/src/dialogs.py:4779
 msgid "Document added successfully. Thank you"
 msgstr "Document succesvol toegevoegd. Dank u"
 
-#: ../../spritz/src/dialogs.py:4777
+#: ../../spritz/src/dialogs.py:4779
 msgid "Success!"
 msgstr "Gelukt!"
 
-#: ../../spritz/src/dialogs.py:4832
+#: ../../spritz/src/dialogs.py:4834
 msgid "Write your document"
 msgstr "Schrijf jouw document"
 
-#: ../../spritz/src/dialogs.py:4840
+#: ../../spritz/src/dialogs.py:4842
 msgid "Select your file"
 msgstr "selecteer jouw bestand"
 
-#: ../../spritz/src/dialogs.py:4852
+#: ../../spritz/src/dialogs.py:4854
 msgid "On repository"
 msgstr "In repositorie"
 
-#: ../../spritz/src/dialogs.py:4919
+#: ../../spritz/src/dialogs.py:4921
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
 "Dit zijn de pakketten die moeten geactiveerd worden om aan je vraag te "
 "voldoen"
 
-#: ../../spritz/src/dialogs.py:4921
+#: ../../spritz/src/dialogs.py:4923
 msgid "Some packages are masked"
 msgstr "Sommige pakketten zijn gemaskeerd"
 
-#: ../../spritz/src/dialogs.py:5010
+#: ../../spritz/src/dialogs.py:5012
 msgid "Masked package"
 msgstr "Gemaskeerde Pakketten"
 
-#: ../../spritz/src/dialogs.py:5088 ../../spritz/src/dialogs.py:5251
-#: ../../spritz/src/dialogs.py:5262 ../../spritz/src/dialogs.py:5273
-#: ../../spritz/src/dialogs.py:5284 ../../spritz/src/views.py:1120
-#: ../../spritz/src/views.py:1396
+#: ../../spritz/src/dialogs.py:5090 ../../spritz/src/dialogs.py:5253
+#: ../../spritz/src/dialogs.py:5264 ../../spritz/src/dialogs.py:5275
+#: ../../spritz/src/dialogs.py:5286 ../../spritz/src/views.py:1118
+#: ../../spritz/src/views.py:1394
 msgid "No description"
 msgstr "Geen omschrijving"
 
-#: ../../spritz/src/dialogs.py:5142
+#: ../../spritz/src/dialogs.py:5144
 msgid "Please confirm the actions above"
 msgstr "Bevestig bovenstaande actie"
 
-#: ../../spritz/src/dialogs.py:5203 ../../spritz/src/dialogs.py:5256
+#: ../../spritz/src/dialogs.py:5205 ../../spritz/src/dialogs.py:5258
 msgid "To be reinstalled"
 msgstr "Gemarkeerd voor Herinstallatie"
 
-#: ../../spritz/src/dialogs.py:5209 ../../spritz/src/dialogs.py:5267
+#: ../../spritz/src/dialogs.py:5211 ../../spritz/src/dialogs.py:5269
 msgid "To be installed"
 msgstr "Gemarkeerd voor Installatie"
 
-#: ../../spritz/src/dialogs.py:5215 ../../spritz/src/dialogs.py:5278
+#: ../../spritz/src/dialogs.py:5217 ../../spritz/src/dialogs.py:5280
 msgid "To be updated"
 msgstr "Gemarkeerd voor update"
 
-#: ../../spritz/src/dialogs.py:5221
+#: ../../spritz/src/dialogs.py:5223
 msgid "To be downgraded"
 msgstr "Gemarkeerd voor downgrade"
 
-#: ../../spritz/src/dialogs.py:5415
+#: ../../spritz/src/dialogs.py:5417
 msgid "About"
 msgstr "Over"
 
-#: ../../spritz/src/dialogs.py:5535
+#: ../../spritz/src/dialogs.py:5537
 msgid "Spritz Question"
 msgstr "Spritz Vraag"
 
-#: ../../spritz/src/dialogs.py:5540
+#: ../../spritz/src/dialogs.py:5542
 msgid "Hey!"
 msgstr "Hey!"
 
-#: ../../spritz/src/dialogs.py:5585
+#: ../../spritz/src/dialogs.py:5587
 msgid "Please fill the following form"
 msgstr "Vul het volgende formulier in aub."
 
-#: ../../spritz/src/dialogs.py:5654
+#: ../../spritz/src/dialogs.py:5656
 msgid "Add atom"
 msgstr "Atoom toevoegen"
 
-#: ../../spritz/src/dialogs.py:5774
+#: ../../spritz/src/dialogs.py:5776
 msgid "Invalid entry"
 msgstr "Ongeldige invoer"
 
-#: ../../spritz/src/dialogs.py:5838
+#: ../../spritz/src/dialogs.py:5840
 msgid "Cancel"
 msgstr "Annuleer"
 
 #. new
-#: ../../spritz/src/dialogs.py:5927
+#: ../../spritz/src/dialogs.py:5929
 msgid "Accepted"
 msgstr "Geaccepteerd"
 
@@ -4045,17 +3937,21 @@ msgstr "Je rapport is succesvol opgestuurd! Hartelijk dank."
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "Kan je rapport niet versturen. Heb je wel contact met internet?"
 
-#: ../../spritz/src/entropyapi.py:67
+#: ../../spritz/src/entropyapi.py:68
 msgid "Error enabling masked package"
 msgstr "Fout tijdens het activeren van het afgeschermde pakket"
 
-#: ../../spritz/src/entropyapi.py:106
+#: ../../spritz/src/entropyapi.py:107
 msgid "Fetching"
 msgstr "Ophalen"
 
-#: ../../spritz/src/entropyapi.py:108
+#: ../../spritz/src/entropyapi.py:109
 msgid "Downloading sources"
 msgstr "Bronnen downloaden"
+
+#: ../../spritz/src/entropyapi.py:298
+msgid "Entropy needs your attention"
+msgstr "Entropy vraagt om uw aandacht"
 
 #: ../../spritz/src/misc.py:89
 msgid ""
@@ -4117,42 +4013,42 @@ msgstr "Benodigde schijfruimte"
 msgid "These are the packages that would be removed"
 msgstr "Volgende pakketten worden verwijderd"
 
-#: ../../spritz/src/packages.py:253
+#: ../../spritz/src/packages.py:250
 msgid "Set from"
 msgstr "Set van"
 
-#: ../../spritz/src/packages.py:254
+#: ../../spritz/src/packages.py:251
 msgid "Unknown"
 msgstr "Onbekend"
 
-#: ../../spritz/src/packages.py:258
+#: ../../spritz/src/packages.py:255
 msgid "User configuration"
 msgstr "Gebruiker configuratie"
 
 #. load a pixmap inside the treeview
-#: ../../spritz/src/packages.py:314
+#: ../../spritz/src/packages.py:311
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr "Probeer de %s knop op de %s pagina"
 
-#: ../../spritz/src/packages.py:314 ../../spritz/src/spritz.py:1943
-#: ../../spritz/src/spritz.py:1977
+#: ../../spritz/src/packages.py:311 ../../spritz/src/spritz.py:1941
+#: ../../spritz/src/spritz.py:1975
 msgid "Update Repositories"
 msgstr "Update Repositories"
 
-#: ../../spritz/src/packages.py:314 ../../spritz/src/spritz.py:559
+#: ../../spritz/src/packages.py:311 ../../spritz/src/spritz.py:557
 msgid "Repository Selection"
 msgstr "Repository Selectie"
 
-#: ../../spritz/src/packages.py:318
+#: ../../spritz/src/packages.py:315
 msgid "No updates available"
 msgstr "Geen updates beschikbaar"
 
-#: ../../spritz/src/packages.py:319
+#: ../../spritz/src/packages.py:316
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr "Het ziet ernaar uit dat je systeem reeds up-to-date is. Mooi!"
 
-#: ../../spritz/src/spritz.py:269
+#: ../../spritz/src/spritz.py:267
 msgid ""
 "Entropy resources are locked and not accessible. Another Entropy application "
 "is running. Sorry, can't load Spritz."
@@ -4160,73 +4056,73 @@ msgstr ""
 "Entropy handelingen zijn geblokkeerd en niet beschikbaar. Een ander Entropy "
 "programma is bezig. Sorry, kan Spritz niet laden."
 
-#: ../../spritz/src/spritz.py:275
+#: ../../spritz/src/spritz.py:273
 msgid "Entropy is running in safe mode"
 msgstr "Entropy draait in veilige modus"
 
-#: ../../spritz/src/spritz.py:275
+#: ../../spritz/src/spritz.py:273
 msgid "Please fix as soon as possible"
 msgstr "Repareer zo snel mogelijk"
 
-#: ../../spritz/src/spritz.py:276
+#: ../../spritz/src/spritz.py:274
 msgid "Safe Mode"
 msgstr "Velige modus"
 
-#: ../../spritz/src/spritz.py:520
+#: ../../spritz/src/spritz.py:518
 msgid "Show Package Updates"
 msgstr "Toon Pakket Updates"
 
-#: ../../spritz/src/spritz.py:521
+#: ../../spritz/src/spritz.py:519
 msgid "Show available Packages"
 msgstr "Toon beschikbare Pakketten"
 
-#: ../../spritz/src/spritz.py:522
+#: ../../spritz/src/spritz.py:520
 msgid "Show Installed Packages"
 msgstr "Toon geïnstalleerde pakketten"
 
-#: ../../spritz/src/spritz.py:523
+#: ../../spritz/src/spritz.py:521
 msgid "Show Masked Packages"
 msgstr "Toon gemaskeerde pakketten"
 
-#: ../../spritz/src/spritz.py:524
+#: ../../spritz/src/spritz.py:522
 msgid "Show Package Sets"
 msgstr "Toon Pakket Sets"
 
-#: ../../spritz/src/spritz.py:525
+#: ../../spritz/src/spritz.py:523
 msgid "Show Queued Packages"
 msgstr "Toon in Wachtrij geplaatste pakketten"
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/spritz.py:556 ../../spritz/src/views.py:1324
+#: ../../spritz/src/spritz.py:554 ../../spritz/src/views.py:1322
 #: ../../spritz/src/spritz.glade.h:143
 msgid "Packages"
 msgstr "Pakketten"
 
-#: ../../spritz/src/spritz.py:557
+#: ../../spritz/src/spritz.py:555
 msgid "Package Categories"
 msgstr "Pakket Categorieën"
 
-#: ../../spritz/src/spritz.py:558
+#: ../../spritz/src/spritz.py:556
 msgid "Security Advisories"
 msgstr "Beveiligings Adviesen"
 
-#: ../../spritz/src/spritz.py:560
+#: ../../spritz/src/spritz.py:558
 msgid "Configuration Files"
 msgstr "Configuratie Bestanden"
 
-#: ../../spritz/src/spritz.py:561 ../../spritz/src/spritz.py:609
+#: ../../spritz/src/spritz.py:559 ../../spritz/src/spritz.py:607
 msgid "Preferences"
 msgstr "Voorkeuren"
 
-#: ../../spritz/src/spritz.py:562
+#: ../../spritz/src/spritz.py:560
 msgid "Package Queue"
 msgstr "Pakket Wachtrij"
 
-#: ../../spritz/src/spritz.py:563
+#: ../../spritz/src/spritz.py:561
 msgid "Output"
 msgstr "Output"
 
-#: ../../spritz/src/spritz.py:611
+#: ../../spritz/src/spritz.py:609
 msgid ""
 "Some configuration options are critical for the health of your System. Be "
 "careful."
@@ -4234,73 +4130,73 @@ msgstr ""
 "Sommige configuratie opties zijn kritisch voor de gezondheid van jouw "
 "systeem. Wees voorzichtig."
 
-#: ../../spritz/src/spritz.py:616
+#: ../../spritz/src/spritz.py:614
 msgid "Advertisement"
 msgstr "Advertentie"
 
-#: ../../spritz/src/spritz.py:757
+#: ../../spritz/src/spritz.py:755
 msgid "Error during backup"
 msgstr "Fout tijdens back up"
 
-#: ../../spritz/src/spritz.py:759
+#: ../../spritz/src/spritz.py:757
 msgid "Backup complete"
 msgstr "Back up compleet"
 
-#: ../../spritz/src/spritz.py:778
+#: ../../spritz/src/spritz.py:776
 msgid "Error during restore"
 msgstr "Fout tijdens herstellen"
 
-#: ../../spritz/src/spritz.py:783
+#: ../../spritz/src/spritz.py:781
 msgid "Restore complete"
 msgstr "Herstel compleet"
 
-#: ../../spritz/src/spritz.py:793
+#: ../../spritz/src/spritz.py:791
 msgid "Error during removal"
 msgstr "Fout tijdens verwijderen"
 
-#: ../../spritz/src/spritz.py:805 ../../spritz/src/spritz.py:814
-#: ../../spritz/src/spritz.py:823
+#: ../../spritz/src/spritz.py:803 ../../spritz/src/spritz.py:812
+#: ../../spritz/src/spritz.py:821
 msgid "Item"
 msgstr "Item"
 
-#: ../../spritz/src/spritz.py:882
+#: ../../spritz/src/spritz.py:880
 msgid "Logged in as"
 msgstr "Ingelogd als"
 
-#: ../../spritz/src/spritz.py:889
+#: ../../spritz/src/spritz.py:887
 msgid "UGC Status"
 msgstr "GGI Status"
 
-#: ../../spritz/src/spritz.py:912 ../../spritz/src/spritz.py:938
+#: ../../spritz/src/spritz.py:910 ../../spritz/src/spritz.py:936
 msgid "Error setting parameter"
 msgstr "Fout bij instellen waarde"
 
-#: ../../spritz/src/spritz.py:913
+#: ../../spritz/src/spritz.py:911
 msgid "An issue occured while loading a preference"
 msgstr "Er deed zich een fout voor bij het laden van de voorkeuren"
 
-#: ../../spritz/src/spritz.py:914 ../../spritz/src/spritz.py:940
-#: ../../spritz/src/spritz.py:2022
+#: ../../spritz/src/spritz.py:912 ../../spritz/src/spritz.py:938
+#: ../../spritz/src/spritz.py:2020
 msgid "Parameter"
 msgstr "Parameter"
 
-#: ../../spritz/src/spritz.py:914 ../../spritz/src/spritz.py:940
+#: ../../spritz/src/spritz.py:912 ../../spritz/src/spritz.py:938
 msgid "must be of type"
 msgstr "moet een reeks zijn van"
 
-#: ../../spritz/src/spritz.py:914 ../../spritz/src/spritz.py:940
+#: ../../spritz/src/spritz.py:912 ../../spritz/src/spritz.py:938
 msgid "got"
 msgstr "heeft"
 
-#: ../../spritz/src/spritz.py:939 ../../spritz/src/spritz.py:2021
+#: ../../spritz/src/spritz.py:937 ../../spritz/src/spritz.py:2019
 msgid "An issue occured while saving a preference"
 msgstr "Er deed zich een fout voor bij het opslaan van de voorkeuren"
 
-#: ../../spritz/src/spritz.py:1075
+#: ../../spritz/src/spritz.py:1073
 msgid "Error saving preferences"
 msgstr "Fout bij opslaan eigenschappen"
 
-#: ../../spritz/src/spritz.py:1081
+#: ../../spritz/src/spritz.py:1079
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
@@ -4308,113 +4204,113 @@ msgstr ""
 "Deze pakketten zijn standaard afgeschermd of wegens jouw keuze. Wees "
 "voorzichtig."
 
-#: ../../spritz/src/spritz.py:1142
+#: ../../spritz/src/spritz.py:1140
 msgid "Generating metadata. Please wait."
 msgstr "Genereren van Metadata. Even geduld."
 
-#: ../../spritz/src/spritz.py:1150
+#: ../../spritz/src/spritz.py:1148
 msgid "Error during list population"
 msgstr "Fout tijdens de lijst populatie"
 
-#: ../../spritz/src/spritz.py:1152
+#: ../../spritz/src/spritz.py:1150
 msgid "Retrying in 1 second."
 msgstr "Opnieuw proberen in 1 seconde."
 
-#: ../../spritz/src/spritz.py:1186
+#: ../../spritz/src/spritz.py:1184
 msgid "Error loading advisories"
 msgstr "Fout bij laden van Advisories"
 
-#: ../../spritz/src/spritz.py:1236
+#: ../../spritz/src/spritz.py:1234
 msgid "Initializing Repository module..."
 msgstr "Initialiseren van Repository module"
 
-#: ../../spritz/src/spritz.py:1242
+#: ../../spritz/src/spritz.py:1240
 msgid "You must run this application as root"
 msgstr "Je moet deze applicatie als root uitvoeren"
 
-#: ../../spritz/src/spritz.py:1251
+#: ../../spritz/src/spritz.py:1249
 msgid "You are not connected to the Internet. You should."
 msgstr "Je bent niet verbonden met het internet. Dat is een vereiste."
 
-#: ../../spritz/src/spritz.py:1274
+#: ../../spritz/src/spritz.py:1272
 msgid "Errors updating repositories."
 msgstr "Fouten tijdens het updaten van de repositories"
 
-#: ../../spritz/src/spritz.py:1275
+#: ../../spritz/src/spritz.py:1273
 msgid "Please check logs below for more info"
 msgstr "Controleer onderstaande log voor uitgebreide informatie."
 
-#: ../../spritz/src/spritz.py:1278
+#: ../../spritz/src/spritz.py:1276
 msgid "Repositories updated successfully"
 msgstr "Repositories succesvol geupdate"
 
-#: ../../spritz/src/spritz.py:1281
+#: ../../spritz/src/spritz.py:1279
 msgid "All the repositories were already up to date."
 msgstr "Alle repositories waren reeds up to date"
 
-#: ../../spritz/src/spritz.py:1283
+#: ../../spritz/src/spritz.py:1281
 msgid "repositories were already up to date. Others have been updated."
 msgstr "repositories waren reeds up-to-date, de overige zijn geüpdate."
 
-#: ../../spritz/src/spritz.py:1286
+#: ../../spritz/src/spritz.py:1284
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "sys-apps/entropy dient zo spoedig mogelijk geüpdate te worden!"
 
-#: ../../spritz/src/spritz.py:1294
+#: ../../spritz/src/spritz.py:1292
 msgid "Nothing to do. I am idle."
 msgstr "Niets te doen. Ik wacht."
 
-#: ../../spritz/src/spritz.py:1295
+#: ../../spritz/src/spritz.py:1293
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr "Niets te zien hier mensen, doorlopen!"
 
-#: ../../spritz/src/spritz.py:1296
+#: ../../spritz/src/spritz.py:1294
 msgid "I am still alive and kickin'"
 msgstr "Joehoe! Ik leef nog hoor!"
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1397
+#: ../../spritz/src/spritz.py:1395
 msgid "Generating Metadata, please wait."
 msgstr "Genereren van Metadata, even geduld."
 
-#: ../../spritz/src/spritz.py:1398
+#: ../../spritz/src/spritz.py:1396
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr "Entropy indexeert de repositories, even geduld"
 
-#: ../../spritz/src/spritz.py:1399
+#: ../../spritz/src/spritz.py:1397
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr "Terwijl je wacht kijk eens naar buiten. Regent het?"
 
-#: ../../spritz/src/spritz.py:1401 ../../spritz/src/spritz.py:1407
+#: ../../spritz/src/spritz.py:1399 ../../spritz/src/spritz.py:1405
 msgid "Calculating"
 msgstr "Berekenen"
 
 #. if bootstrap: time.sleep(1)
-#: ../../spritz/src/spritz.py:1420
+#: ../../spritz/src/spritz.py:1418
 msgid "Showing"
 msgstr "Weergeven"
 
-#: ../../spritz/src/spritz.py:1420
+#: ../../spritz/src/spritz.py:1418
 msgid "items"
 msgstr "Items"
 
-#: ../../spritz/src/spritz.py:1447
+#: ../../spritz/src/spritz.py:1445
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr "Een ander Entropy proces draait nog. Kan verzoek niet uitvoeren."
 
-#: ../../spritz/src/spritz.py:1453
+#: ../../spritz/src/spritz.py:1451
 msgid "Running tasks"
 msgstr "Bezig met uitvoeren van taken"
 
-#: ../../spritz/src/spritz.py:1461
+#: ../../spritz/src/spritz.py:1459
 msgid "Processing Packages in queue"
 msgstr "Verwerken van pakket wachtlijst"
 
-#: ../../spritz/src/spritz.py:1513
+#: ../../spritz/src/spritz.py:1511
 msgid "Attention. You chose to abort the processing."
 msgstr "Attentie. Je hebt gekozen de behandeling te stoppen."
 
-#: ../../spritz/src/spritz.py:1516
+#: ../../spritz/src/spritz.py:1514
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
@@ -4423,214 +4319,214 @@ msgstr ""
 "wachtlijst.\n"
 " Kijk in het terminal venster voor meer informatie"
 
-#: ../../spritz/src/spritz.py:1555
+#: ../../spritz/src/spritz.py:1553
 msgid "No packages selected"
 msgstr "Geen pakketten geselecteerd"
 
-#: ../../spritz/src/spritz.py:1624
+#: ../../spritz/src/spritz.py:1622
 msgid "The chosen package is not vulnerable"
 msgstr "Het gekozen pakket is niet kwetsbaar"
 
-#: ../../spritz/src/spritz.py:1632
+#: ../../spritz/src/spritz.py:1630
 msgid "Packages in Advisory have been queued."
 msgstr "Pakketten in 'Advisory' zijn in de wachtrij geplaatst."
 
-#: ../../spritz/src/spritz.py:1647
+#: ../../spritz/src/spritz.py:1645
 msgid "Packages in all Advisories have been queued."
 msgstr "Pakketten in alle 'Advisories' zijn in de wachtrij geplaatst."
 
-#: ../../spritz/src/spritz.py:1661
+#: ../../spritz/src/spritz.py:1659
 msgid "Packages not found in repositories, try again later."
 msgstr "Pakketten niet gevonden in de repositories, probeer het later opnieuw."
 
-#: ../../spritz/src/spritz.py:1800 ../../spritz/src/spritz.py:1822
+#: ../../spritz/src/spritz.py:1798 ../../spritz/src/spritz.py:1820
 msgid "Insert URL"
 msgstr "Voer URL in"
 
-#: ../../spritz/src/spritz.py:1800 ../../spritz/src/spritz.py:1822
+#: ../../spritz/src/spritz.py:1798 ../../spritz/src/spritz.py:1820
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Voer een download mirror in, HTTP of FTP"
 
-#: ../../spritz/src/spritz.py:1805
+#: ../../spritz/src/spritz.py:1803
 msgid "You must enter either a HTTP or a FTP url."
 msgstr "Vul een geldige HTTP of FTP url in."
 
-#: ../../spritz/src/spritz.py:1859 ../../spritz/src/spritz.py:1946
+#: ../../spritz/src/spritz.py:1857 ../../spritz/src/spritz.py:1944
 msgid "Wrong entries, errors"
 msgstr "Verkeerde invoer, fouten"
 
-#: ../../spritz/src/spritz.py:1873 ../../spritz/src/spritz.py:1943
+#: ../../spritz/src/spritz.py:1871 ../../spritz/src/spritz.py:1941
 msgid "You should press the button"
 msgstr "Je moet nu op de knop drukken"
 
-#: ../../spritz/src/spritz.py:1873 ../../spritz/src/spritz.py:1977
+#: ../../spritz/src/spritz.py:1871 ../../spritz/src/spritz.py:1975
 msgid "Regenerate Cache"
 msgstr "Hergenereer Cache"
 
-#: ../../spritz/src/spritz.py:1873 ../../spritz/src/spritz.py:1943
-#: ../../spritz/src/spritz.py:1977
+#: ../../spritz/src/spritz.py:1871 ../../spritz/src/spritz.py:1941
+#: ../../spritz/src/spritz.py:1975
 msgid "now"
 msgstr "nu"
 
-#: ../../spritz/src/spritz.py:1895
+#: ../../spritz/src/spritz.py:1893
 msgid "No Repository Identifier"
 msgstr "Geen Repository Identifier"
 
-#: ../../spritz/src/spritz.py:1898
+#: ../../spritz/src/spritz.py:1896
 msgid "Duplicated Repository Identifier"
 msgstr "Dubbele Repository identifier"
 
-#: ../../spritz/src/spritz.py:1902
+#: ../../spritz/src/spritz.py:1900
 msgid "No download mirrors"
 msgstr "Geen download mirrors"
 
-#: ../../spritz/src/spritz.py:1904
+#: ../../spritz/src/spritz.py:1902
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr "Database URL moet beginnen met http://, ftp:// of file://"
 
-#: ../../spritz/src/spritz.py:1912
+#: ../../spritz/src/spritz.py:1910
 msgid "Repository Services Port not valid"
 msgstr "Repository Services Poort niet geldig"
 
-#: ../../spritz/src/spritz.py:1920
+#: ../../spritz/src/spritz.py:1918
 msgid "Secure Services Port not valid"
 msgstr "Beveiligde Services Poort niet geldig"
 
-#: ../../spritz/src/spritz.py:1956
+#: ../../spritz/src/spritz.py:1954
 msgid "Insert Repository"
 msgstr "Voer Repository in"
 
-#: ../../spritz/src/spritz.py:1956
+#: ../../spritz/src/spritz.py:1954
 msgid "Insert Repository identification string"
 msgstr "Voer Repository identificatie reeks in"
 
-#: ../../spritz/src/spritz.py:1962
+#: ../../spritz/src/spritz.py:1960
 msgid "This Repository identification string is malformed"
 msgstr "Ongeldige Repository invoer"
 
-#: ../../spritz/src/spritz.py:1972
+#: ../../spritz/src/spritz.py:1970
 msgid "You! Why do you want to remove the main repository ?"
 msgstr "Hey! Waarom wil je de hoofdrepository verwijderen?"
 
-#: ../../spritz/src/spritz.py:1977
+#: ../../spritz/src/spritz.py:1975
 msgid "You must now either press the"
 msgstr "Je moet een van de %s drukken"
 
-#: ../../spritz/src/spritz.py:1977
+#: ../../spritz/src/spritz.py:1975
 msgid "or the"
 msgstr "of de"
 
-#: ../../spritz/src/spritz.py:2007
+#: ../../spritz/src/spritz.py:2005
 msgid "Are you sure ?"
 msgstr "Weet u het zeker?"
 
-#: ../../spritz/src/spritz.py:2020
+#: ../../spritz/src/spritz.py:2018
 msgid "Error saving parameter"
 msgstr "Fout bij opslaan parameter"
 
-#: ../../spritz/src/spritz.py:2022
+#: ../../spritz/src/spritz.py:2020
 msgid "not saved"
 msgstr "niet opgeslagen"
 
-#: ../../spritz/src/spritz.py:2034 ../../spritz/src/spritz.py:2040
-#: ../../spritz/src/spritz.py:2046 ../../spritz/src/spritz.py:2070
-#: ../../spritz/src/spritz.py:2080 ../../spritz/src/spritz.py:2090
+#: ../../spritz/src/spritz.py:2032 ../../spritz/src/spritz.py:2038
+#: ../../spritz/src/spritz.py:2044 ../../spritz/src/spritz.py:2068
+#: ../../spritz/src/spritz.py:2078 ../../spritz/src/spritz.py:2088
 msgid "New"
 msgstr "Nieuw"
 
-#: ../../spritz/src/spritz.py:2034 ../../spritz/src/spritz.py:2040
-#: ../../spritz/src/spritz.py:2046
+#: ../../spritz/src/spritz.py:2032 ../../spritz/src/spritz.py:2038
+#: ../../spritz/src/spritz.py:2044
 msgid "Please insert a new path"
 msgstr "Voer een nieuw pad in"
 
-#: ../../spritz/src/spritz.py:2070 ../../spritz/src/spritz.py:2080
-#: ../../spritz/src/spritz.py:2090
+#: ../../spritz/src/spritz.py:2068 ../../spritz/src/spritz.py:2078
+#: ../../spritz/src/spritz.py:2088
 msgid "Please edit the selected path"
 msgstr "verander het geselecteerde pad"
 
-#: ../../spritz/src/spritz.py:2110
+#: ../../spritz/src/spritz.py:2108
 msgid "You have chosen to install this package"
 msgstr "Je hebt dit pakket gekozen voor installatie"
 
-#: ../../spritz/src/spritz.py:2112
+#: ../../spritz/src/spritz.py:2110
 msgid "Are you supa sure?"
 msgstr "Bent u héél zeker?"
 
-#: ../../spritz/src/spritz.py:2130
+#: ../../spritz/src/spritz.py:2128
 msgid "Cannot install"
 msgstr "Kan niet installeren"
 
-#: ../../spritz/src/spritz.py:2228
+#: ../../spritz/src/spritz.py:2226
 msgid "Please select at least one repository"
 msgstr "Selecteer tenminste één repository"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:2261
+#: ../../spritz/src/spritz.py:2259
 msgid "No packages in queue"
 msgstr "De wachtrij is leeg"
 
-#: ../../spritz/src/spritz.py:2308
+#: ../../spritz/src/spritz.py:2306
 msgid "Queue is too old. Cannot load."
 msgstr "De wachtrij is te oud en kon niet geladen worden."
 
-#: ../../spritz/src/spritz.py:2413
+#: ../../spritz/src/spritz.py:2411
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr ""
 "Je hebt ervoor gekozen de behandeling stop te zetten. Weet je zeker dat je "
 "dit wilt ?"
 
-#: ../../spritz/src/spritz.py:2420 ../../spritz/src/spritz.py:2671
+#: ../../spritz/src/spritz.py:2418 ../../spritz/src/spritz.py:2669
 msgid "Aborting queue tasks."
 msgstr "Beëindigen gegeven taken."
 
-#: ../../spritz/src/spritz.py:2426
+#: ../../spritz/src/spritz.py:2424
 msgid "Skipping current mirror."
 msgstr "mirror wordt overgeslagen."
 
-#: ../../spritz/src/spritz.py:2499
+#: ../../spritz/src/spritz.py:2497
 msgid "Cleaning UGC cache of"
 msgstr "Opruimen van GGI cache voor"
 
-#: ../../spritz/src/spritz.py:2500
+#: ../../spritz/src/spritz.py:2498
 msgid "UGC cache cleared"
 msgstr "GGI cache geleegd"
 
-#: ../../spritz/src/spritz.py:2509
+#: ../../spritz/src/spritz.py:2507
 msgid "UGC credentials cleared"
 msgstr "GGI gegevens geleegd"
 
-#: ../../spritz/src/spritz.py:2545
+#: ../../spritz/src/spritz.py:2543
 msgid "Package Set name"
 msgstr "Pakket Set naam"
 
-#: ../../spritz/src/spritz.py:2546
+#: ../../spritz/src/spritz.py:2544
 msgid "Package atoms"
 msgstr "Pakket atomen"
 
-#: ../../spritz/src/spritz.py:2550
+#: ../../spritz/src/spritz.py:2548
 msgid "Choose what Package Set you want to add"
 msgstr "Kies welke Pakket Set je wilt toevoegen"
 
-#: ../../spritz/src/spritz.py:2576
+#: ../../spritz/src/spritz.py:2574
 msgid "Removable Package Set"
 msgstr "Verwijderbare Pakket Set"
 
-#: ../../spritz/src/spritz.py:2580
+#: ../../spritz/src/spritz.py:2578
 msgid "Choose what Package Set you want to remove"
 msgstr "Kies welke Pakket Set je wilt verwijderen"
 
-#: ../../spritz/src/spritz.py:2601
+#: ../../spritz/src/spritz.py:2599
 msgid "No missing dependencies found."
 msgstr "Geen missende afhankelijkheden gevonden."
 
-#: ../../spritz/src/spritz.py:2635
+#: ../../spritz/src/spritz.py:2633
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 "Missende afhankelijkheden gevonden, maar geen een van hen bestaan in de "
 "repositories."
 
-#: ../../spritz/src/spritz.py:2643
+#: ../../spritz/src/spritz.py:2641
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
@@ -4638,16 +4534,16 @@ msgstr ""
 "Sommige missende afhankelijkheden komen niet overeen, anderen zullen worden "
 "toegevoegd aan de wachtrij."
 
-#: ../../spritz/src/spritz.py:2645
+#: ../../spritz/src/spritz.py:2643
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr ""
 "Alle missende afhankelijkheden zullen worden toegevoegd aan de wachtrij"
 
-#: ../../spritz/src/spritz.py:2700
+#: ../../spritz/src/spritz.py:2698
 msgid "Libraries test aborted"
 msgstr "Bibliotheken test geannuleerd"
 
-#: ../../spritz/src/spritz.py:2708
+#: ../../spritz/src/spritz.py:2706
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
@@ -4655,7 +4551,7 @@ msgstr ""
 "Sommige gebroken pakketten komen niet overeen, anderen zullen worden "
 "toegevoegd aan de wachtrij."
 
-#: ../../spritz/src/spritz.py:2710
+#: ../../spritz/src/spritz.py:2708
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Alle gebroken pakketten zullen worden toegevoegd aan de wachtrij"
 
@@ -4671,93 +4567,93 @@ msgstr "Vertaling"
 msgid "Dedicated to:"
 msgstr "Opgedragen aan:"
 
-#: ../../spritz/src/views.py:48
+#: ../../spritz/src/views.py:46
 msgid "Categories"
 msgstr "Categorieën"
 
-#: ../../spritz/src/views.py:71
+#: ../../spritz/src/views.py:69
 msgid "Selection"
 msgstr "Selectie"
 
-#: ../../spritz/src/views.py:72
+#: ../../spritz/src/views.py:70
 msgid "Rating"
 msgstr "Waarde"
 
-#: ../../spritz/src/views.py:701
+#: ../../spritz/src/views.py:699
 msgid "These are the packages that would be disabled"
 msgstr "Dit zijn de pakketten die zouden worden uitgeschakeld"
 
-#: ../../spritz/src/views.py:702
+#: ../../spritz/src/views.py:700
 msgid "Once confirmed, these packages will be considered masked."
 msgstr "Eenmaal geconfirmeerd, zullen deze pakketten gemaskeerd zijn."
 
-#: ../../spritz/src/views.py:795
+#: ../../spritz/src/views.py:793
 msgid "There are incomplete package sets, continue at your own risk"
 msgstr "Dit zijn incomplete pakket sets, ga door op je eigen risico"
 
-#: ../../spritz/src/views.py:1355
+#: ../../spritz/src/views.py:1353
 msgid "Packages To Remove"
 msgstr "Pakket Voor Verwijdering"
 
-#: ../../spritz/src/views.py:1360
+#: ../../spritz/src/views.py:1358
 msgid "Packages To Install"
 msgstr "Pakketten Voor Installatie"
 
-#: ../../spritz/src/views.py:1365
+#: ../../spritz/src/views.py:1363
 msgid "Packages To Update"
 msgstr "Pakketten Voor Update"
 
-#: ../../spritz/src/views.py:1370
+#: ../../spritz/src/views.py:1368
 msgid "Packages To Reinstall"
 msgstr "Pakketten Voor Herinstallatie"
 
-#: ../../spritz/src/views.py:1436
+#: ../../spritz/src/views.py:1434
 msgid "Proposed"
 msgstr "Voorgesteld"
 
-#: ../../spritz/src/views.py:1443
+#: ../../spritz/src/views.py:1441
 msgid "Destination"
 msgstr "Bestemming"
 
-#: ../../spritz/src/views.py:1450
+#: ../../spritz/src/views.py:1448
 msgid "Rev."
 msgstr "Rev."
 
-#: ../../spritz/src/views.py:1499
+#: ../../spritz/src/views.py:1497
 msgid "GLSA id."
 msgstr "GLSA id."
 
-#: ../../spritz/src/views.py:1507
+#: ../../spritz/src/views.py:1505
 msgid "Package key"
 msgstr "Pakket sleutel"
 
-#: ../../spritz/src/views.py:1607
+#: ../../spritz/src/views.py:1605
 msgid "No advisories"
 msgstr "Geen advisories"
 
-#: ../../spritz/src/views.py:1608
+#: ../../spritz/src/views.py:1606
 msgid "There are no items to show"
 msgstr "Er zijn geen items weer te geven"
 
-#: ../../spritz/src/views.py:1676
+#: ../../spritz/src/views.py:1674
 msgid "Filename"
 msgstr "Bestandsnaam"
 
-#: ../../spritz/src/views.py:1716
+#: ../../spritz/src/views.py:1714
 msgid "Active"
 msgstr "Actief"
 
-#: ../../spritz/src/views.py:1726 ../../spritz/src/spritz.glade.h:240
+#: ../../spritz/src/views.py:1724 ../../spritz/src/spritz.glade.h:240
 msgid "Update"
 msgstr "Update"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1734 ../../spritz/src/spritz.glade.h:191
+#: ../../spritz/src/views.py:1732 ../../spritz/src/spritz.glade.h:191
 msgid "Revision"
 msgstr "Herziening"
 
 #. Setup reponame & repofile column's
-#: ../../spritz/src/views.py:1737
+#: ../../spritz/src/views.py:1735
 msgid "Repository Identifier"
 msgstr "Repositorie Identifier"
 
@@ -4765,19 +4661,19 @@ msgstr "Repositorie Identifier"
 msgid "Recursive Package Set"
 msgstr "Recursieve Pakket Set"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:39
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:40
 msgid "Package Name"
 msgstr "Pakket Naam"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:40
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
 msgid "Version Installed"
 msgstr "Geïnstalleerde versie"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:84
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:85
 msgid "Critical Information"
 msgstr "Kritische Informatie"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:371
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:372
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to "
@@ -4787,104 +4683,104 @@ msgstr ""
 "bug. Kopieer a.u.b. de volledige text van de exceptie en mail deze naar "
 "sabayon@sabayonlinux.org. Hartelijk dank."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:57
+#: ../../entropy-notification-applet/src/etp_applet.py:56
 msgid "Updates Notification"
 msgstr "Updates Notificatie"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:204
+#: ../../entropy-notification-applet/src/etp_applet.py:216
 msgid "_Disable Notification Applet"
 msgstr "_Schakel Notificatie Applet Uit"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:204
+#: ../../entropy-notification-applet/src/etp_applet.py:216
 msgid "Disable Notification Applet"
 msgstr "Schakel Notificatie Applet Uit"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:205
+#: ../../entropy-notification-applet/src/etp_applet.py:217
 msgid "_Enable Notification Applet"
 msgstr "_Schakel Notificatie Applet In"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:205
+#: ../../entropy-notification-applet/src/etp_applet.py:217
 msgid "Enable Notification Applet"
 msgstr "Schakel Notificatie Applet In"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:206
+#: ../../entropy-notification-applet/src/etp_applet.py:218
 msgid "_Check for updates"
 msgstr "_Controleren op updates"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:206
+#: ../../entropy-notification-applet/src/etp_applet.py:218
 msgid "Check for updates"
 msgstr "Controleren op updates"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:207
+#: ../../entropy-notification-applet/src/etp_applet.py:219
 msgid "_Launch Package Manager"
 msgstr "_Start Pakketten Beheerder"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:207
+#: ../../entropy-notification-applet/src/etp_applet.py:219
 msgid "Launch Package Manager"
 msgstr "Start Pakketten Beheerder"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:208
+#: ../../entropy-notification-applet/src/etp_applet.py:220
 msgid "_Packages Website"
 msgstr "_Pakketten Website"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:208
+#: ../../entropy-notification-applet/src/etp_applet.py:220
 msgid "Use Packages web interface"
 msgstr "Gebruik Pakketten web interface"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:209
+#: ../../entropy-notification-applet/src/etp_applet.py:221
 msgid "_Sabayon Linux Website"
 msgstr "_Sabayon Linux Website"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:209
+#: ../../entropy-notification-applet/src/etp_applet.py:221
 msgid "Launch Sabayon Linux Website"
 msgstr "Ga naar Sabayon Linux Website"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:211
+#: ../../entropy-notification-applet/src/etp_applet.py:223
 msgid "_About"
 msgstr "_Over"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:211
+#: ../../entropy-notification-applet/src/etp_applet.py:223
 msgid "About..."
 msgstr "Over..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:212
+#: ../../entropy-notification-applet/src/etp_applet.py:224
 msgid "_Exit"
 msgstr "_Beeindig"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:253
+#: ../../entropy-notification-applet/src/etp_applet.py:265
 msgid "You must add yourself to this group"
 msgstr "Je moet jezelf toevoegen aan deze groep"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:256
+#: ../../entropy-notification-applet/src/etp_applet.py:268
 msgid "Please run Equo/Spritz as root to update Entropy permissions"
 msgstr "start Equo/Spritz als root om Entropy permissies bij te werken"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:371
+#: ../../entropy-notification-applet/src/etp_applet.py:383
 msgid "Updates Notification Applet Disabled"
 msgstr "Updates Notificatie Applet Uitgeschakeld"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:380
+#: ../../entropy-notification-applet/src/etp_applet.py:392
 msgid "Updates Notification Applet Enabled"
 msgstr "Updates Notificatie Applet Geactiveerd"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:475
+#: ../../entropy-notification-applet/src/etp_applet.py:487
 msgid "Checking for updates..."
 msgstr "Zoeken naar updates..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:502
+#: ../../entropy-notification-applet/src/etp_applet.py:514
 msgid "Repository Network Error"
 msgstr "Repository Netwerk fout."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:522
+#: ../../entropy-notification-applet/src/etp_applet.py:534
 msgid "No repositories specified. Cannot check for package updates."
 msgstr ""
 "Geen repositories gespecificeerd. Kan niet checken voor pakket updates."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:523
+#: ../../entropy-notification-applet/src/etp_applet.py:535
 msgid "Updates: attention"
 msgstr "Updates: aandacht"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:527
+#: ../../entropy-notification-applet/src/etp_applet.py:539
 msgid ""
 "Cannot connect to the Updates Service, you're probably not connected to the "
 "world."
@@ -4892,75 +4788,75 @@ msgstr ""
 "Kan niet met de Update Service verbinden, je bent waarschijnlijk niet "
 "verbonden met de wereld."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:528
-#: ../../entropy-notification-applet/src/etp_applet.py:553
+#: ../../entropy-notification-applet/src/etp_applet.py:540
+#: ../../entropy-notification-applet/src/etp_applet.py:565
 msgid "Updates: connection issues"
 msgstr "Updates: verbindings problemen"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:532
+#: ../../entropy-notification-applet/src/etp_applet.py:544
 msgid "Not all the repositories have been fetched for checking"
 msgstr "Niet alle repositories zijn binnengehaald voor het checken"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:533
-#: ../../entropy-notification-applet/src/etp_applet.py:538
+#: ../../entropy-notification-applet/src/etp_applet.py:545
+#: ../../entropy-notification-applet/src/etp_applet.py:550
 msgid "Updates: repository issues"
 msgstr "Updates: repository problemen"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:537
+#: ../../entropy-notification-applet/src/etp_applet.py:549
 msgid "No repositories found online"
 msgstr "Geen repositories online gevonden"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:542
+#: ../../entropy-notification-applet/src/etp_applet.py:554
 msgid "Synchronization errors. Cannot update repositories. Check logs."
 msgstr "Synchronisatie fouten. Kan repositories niet updaten. Check logs."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:543
+#: ../../entropy-notification-applet/src/etp_applet.py:555
 msgid "Updates: sync issues"
 msgstr "Updates: sync problemen"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:547
+#: ../../entropy-notification-applet/src/etp_applet.py:559
 msgid "Updates: unhandled error"
 msgstr "Updates: Onafgehandelde fout"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:562
-#: ../../entropy-notification-applet/src/etp_applet.py:563
+#: ../../entropy-notification-applet/src/etp_applet.py:574
+#: ../../entropy-notification-applet/src/etp_applet.py:575
 msgid "Updates: error"
 msgstr "Updates: fout"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:570
+#: ../../entropy-notification-applet/src/etp_applet.py:582
 msgid "Updates issue:"
 msgstr "Updates problemen:"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:582
+#: ../../entropy-notification-applet/src/etp_applet.py:594
 msgid "updates available."
 msgstr "updates beschikbaar."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:584
+#: ../../entropy-notification-applet/src/etp_applet.py:596
 msgid "Updates available"
 msgstr "Updates beschikbaar"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:593
-#: ../../entropy-notification-applet/src/etp_applet.py:595
+#: ../../entropy-notification-applet/src/etp_applet.py:605
+#: ../../entropy-notification-applet/src/etp_applet.py:607
 msgid "So far, so good. w00t!"
 msgstr "Tot zo ver, alles goed. w00t!"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:594
+#: ../../entropy-notification-applet/src/etp_applet.py:606
 msgid "Everything up-to-date"
 msgstr "Alles is bijgewerkt"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:679
+#: ../../entropy-notification-applet/src/etp_applet.py:691
 msgid "Waiting before checkin..."
 msgstr "Wacht voor checken..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:757
+#: ../../entropy-notification-applet/src/etp_applet.py:769
 msgid "Your system currently has"
 msgstr "Jouw systeem heeft op dit moment"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:760
+#: ../../entropy-notification-applet/src/etp_applet.py:772
 msgid "but the latest available version is"
 msgstr "maar de laatst beschikbare versie is"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:762
+#: ../../entropy-notification-applet/src/etp_applet.py:774
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
@@ -5960,6 +5856,86 @@ msgstr "voer uw password hier in"
 #: ../../spritz/src/spritz.glade.h:292
 msgid "type your username here"
 msgstr "voer uw gebruikersnaam hier in"
+
+#~ msgid "All fine"
+#~ msgstr "Alles is goed"
+
+#~ msgid ""
+#~ "Corrupted Entropy installed packages database. Please restore a backup."
+#~ msgstr ""
+#~ "Corrupte Entropy geïnstalleerde pakketten database. Herstel een back-up."
+
+#~ msgid "Comments"
+#~ msgstr "Commentaren"
+
+#~ msgid "BBcode Documents"
+#~ msgstr "BBcode Documenten"
+
+#~ msgid "Images/Screenshots"
+#~ msgstr "Plaatjes/Screenshots"
+
+#~ msgid "Generic Files"
+#~ msgstr "Generieke Bestanden"
+
+#~ msgid "YouTube(tm) Videos"
+#~ msgstr "YouTube(tm) Video's"
+
+#~ msgid "Comment"
+#~ msgstr "Commentaar"
+
+#~ msgid "BBcode Document"
+#~ msgstr "BBcode Document"
+
+#~ msgid "Image/Screenshot"
+#~ msgstr "Plaatje/Screenshot"
+
+#~ msgid "Generic File"
+#~ msgstr "Generiek Bestand"
+
+#~ msgid "YouTube(tm) Video"
+#~ msgstr "YouTube(tm) Video"
+
+#~ msgid "maximum responses length"
+#~ msgstr "maximale lengte van reacties"
+
+#~ msgid "Entropy got a question for you"
+#~ msgstr "Entropy heeft een vraag voor u"
+
+#~ msgid "Interrupted"
+#~ msgstr "Onderbroken"
+
+#~ msgid "Selected number"
+#~ msgstr "Geselecteerd nummer"
+
+#~ msgid "Discard all"
+#~ msgstr "Alles afwijzen"
+
+#~ msgid "Confirm"
+#~ msgstr "Bevestigen"
+
+#~ msgid "Add item"
+#~ msgstr "Item toevoegen"
+
+#~ msgid "Remove item"
+#~ msgstr "Verwijder item"
+
+#~ msgid "Show current list"
+#~ msgstr "geef huidige lijst weer"
+
+#~ msgid "Invalid action."
+#~ msgstr "Ongeldige actie."
+
+#~ msgid "String to add:"
+#~ msgstr "Invoer om toe te voegen:"
+
+#~ msgid "Invalid string."
+#~ msgstr "Ongeldige invoer."
+
+#~ msgid "Element number to remove:"
+#~ msgstr "Nummer van element om te verwijderen:"
+
+#~ msgid "Invalid element."
+#~ msgstr "Ongeldig element."
 
 #~ msgid ""
 #~ "Entropy needs a working sqlite+pysqlite or Python compiled with sqlite "
