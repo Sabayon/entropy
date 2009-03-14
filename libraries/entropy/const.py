@@ -23,49 +23,6 @@ from __future__ import with_statement
 import sys, os, stat
 from entropy.i18n import _
 
-
-# Specifications of the content of packages metadata
-'''
-data = {
-    'name': u"", # the Package Name
-    'version': u"", # the Package version
-    'description': u"", # the Package description
-    'category': u"", # the gentoo category
-    'chost': u"", # the CHOST used to compile it
-    'cflags': u"", # CFLAGS used
-    'cxxflags': u"", # CXXFLAGS used
-    'homepage': u"", # home page of the package
-    'useflags': u"", # USE flags used
-    'license': u"", # License adpoted
-    'keywords': u"", # supported ARCHs (by the SRC)
-    'branch': u"", # package branch location
-    'download': u"", # link to download the binary package
-    'digest': u"", # md5 hash of the .tbz2 package
-    'sources': u"", # link to the sources
-    'slot': u"", # this is filled if the package is slotted
-    'content': u"", # content of the package (files)
-    'mirrorlinks': u"", # =mirror://openoffice|link1|link2|link3
-    'dependencies': u"", # dependencies
-    'conflicts': u"", # blockers
-    'etpapi': u"", # Entropy API revision
-    'datecreation': u"", # mtime of the .tbz2 file
-    'size': u"", # the package size
-    'versiontag': u"", # particular version tag
-    'provide': u"", # like, cups provides dep virtual/lpr
-    'systempackage': u"", # if this is a system package, this will be != ""
-    'config_protect': u"", # list of directories that contain files that should not be overwritten
-    'config_protect_mask': u"", # list of directories that contain files that should be overwritten
-    'disksize': u"", # size on the hard disk in bytes (integer)
-    'counter': u"", # aka. COUNTER file
-    'messages': u"", # elog content from portage
-    'eclasses': u"", # eclasses used by the ebuild
-    'needed': set, # runtime libraries needed by the package
-    'trigger': bool, # this will become a bool, containing info about external trigger presence
-    'injected': bool, # if the package has been injected manually, this will be true
-    'licensedata': dict # dictionary that contains license text
-}
-'''
-
 # ETP_ARCH_CONST setup
 if os.uname()[4] == "x86_64":
     ETP_ARCH_CONST = "amd64"
@@ -92,10 +49,6 @@ etpUi = {
     'mute': False,
     'nolog': False,
     'clean': False,
-    'postinstall_triggers_disable': set(),
-    'postremove_triggers_disable': set(),
-    'preinstall_triggers_disable': set(),
-    'preremove_triggers_disable': set()
 }
 if "--debug" in sys.argv:
     etpUi['debug'] = True
