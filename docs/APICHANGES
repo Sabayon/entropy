@@ -2,6 +2,10 @@ From SVN 3112 there have been several API changes:
 
   - entropy module is now a python package
 
+  - EquoInterface (entropy.client.interfaces.Client) and ServerInterface (entropy.server.interfaces.Server) are
+    now singleton, this means that if you have to subclass them, you must overload the init_singleton method
+    instead of __init__
+
   - urlFetcher features several private class property moves (you need to rework your updateProgress)
 
   - FtpInterface features several private class property moves and switched to underscore API signatures
