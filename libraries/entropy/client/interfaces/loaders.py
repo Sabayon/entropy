@@ -29,7 +29,7 @@ class Loaders:
         from entropy.client.interfaces import Client
         from entropy.client.interfaces import Trigger
         from entropy.client.interfaces import Repository
-        from entropy.client.interfaces import Package
+        from entropy.client.interfaces.package import Package
         self.__PackageLoader = Package
         self.__RepositoryLoader = Repository
         self.__TriggerLoader = Trigger
