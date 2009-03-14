@@ -1635,7 +1635,7 @@ class LocalRepository:
 
         with self.WriteLock:
             if already_formatted:
-                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',[(idpackage,b,c,) for a,b,c in content])
+                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',[(idpackage,x,y,) for a,x,y in content])
                 return
             do_encode = [1 for x in content if type(x) is unicode]
             def my_cmap(xfile):
@@ -4888,35 +4888,8 @@ class LocalRepository:
                             tagcmp = cmp(matchTag,dbtag)
                         dbver = self.retrieveVersion(idpackage)
                         pkgcmp = self.entropyTools.compareVersions(pkgversion,dbver)
-                        if isinstance(pkgcmp,tuple):
-                            failed = pkgcmp[1]
-                            if failed == 0:
-                                failed = pkgversion
-                            else:
-                                failed = dbver
-                            # I am sorry, but either pkgversion or dbver are invalid
-                            self.updateProgress(
-                                bold("atomMatch: ")+red("%s %s %s %s %s. %s: %s") % (
-                                    _("comparison between"),
-                                    pkgversion,
-                                    _("and"),
-                                    dbver,
-                                    _("failed"),
-                                    _("Wrong syntax for"),
-                                    failed,
-                                ),
-                                importance = 1,
-                                type = "error",
-                                header = darkred(" !!! ")
-                            )
-                            mytxt = "%s: %s, cmp(): %s, %s: %s" % (
-                                _("from atom"),
-                                atom,
-                                pkgcmp,
-                                _("failed"),
-                                failed,
-                            )
-                            raise InvalidVersionString("InvalidVersionString: %s" % (mytxt, ))
+                        if pkgcmp == None:
+                            raise InvalidVersionString("InvalidVersionString: %s <-> %s" % (pkgversion,dbver,))
                         if direction == ">":
                             if pkgcmp < 0:
                                 dbpkginfo.add((idpackage,dbver))
