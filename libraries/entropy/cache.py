@@ -62,6 +62,22 @@ class EntropyCacher(Singleton):
             continue
         self.__alive = True
 
+    def is_started(self):
+        return self.__alive
+
+    def stop(self):
+        if not self.__alive: return
+        if self.__CacheBuffer and self.__alive:
+            wd = 20
+            while self.__CacheBuffer.is_filled() and wd:
+                wd -= 1
+                time.sleep(0.5)
+            self.__CacheBuffer.clear()
+        if self.__CacheWriter != None:
+            self.__CacheWriter.kill()
+            self.__CacheWriter.join()
+        self.__alive = False
+
     def sync(self, wait = False):
         if not self.__alive: return
         wd = 10
@@ -83,15 +99,3 @@ class EntropyCacher(Singleton):
             if not l_o: return
             return l_o(key)
 
-    def stop(self):
-        if not self.__alive: return
-        if self.__CacheBuffer and self.__alive:
-            wd = 20
-            while self.__CacheBuffer.is_filled() and wd:
-                wd -= 1
-                time.sleep(0.5)
-            self.__CacheBuffer.clear()
-        if self.__CacheWriter != None:
-            self.__CacheWriter.kill()
-            self.__CacheWriter.join()
-        self.__alive = False
