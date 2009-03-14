@@ -33,13 +33,13 @@ d_dir = etpConst['dumpstoragedir']
 e_gid = etpConst['entropygid']
 if e_gid == None: e_gid = 0
 
-'''
-   @description: dump object to file
-   @input: name of the object, object
-   @output: status code
-'''
 
 def dumpobj(name, object, completePath = False, ignoreExceptions = True):
+    '''
+    @description: dump object to file
+    @input: name of the object, object
+    @output: status code
+    '''
     while 1: # trap ctrl+C
         try:
             if completePath:
@@ -72,50 +72,49 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
                 raise
         break
 
-'''
-   @description: serialize object to f (file)
-   @input: object, file object
-   @output: file object, pointer to the beginning
-'''
 def serialize(myobj, f, do_seek = True):
+    '''
+    @description: serialize object to f (file)
+    @input: object, file object
+    @output: file object, pointer to the beginning
+    '''
     pickle.dump(myobj,f)
     f.flush()
     if do_seek:
         f.seek(0)
     return f
 
-'''
-   @description: unserialize file to object (file)
-   @input: file object
-   @output: object
-'''
 def unserialize(f):
+    '''
+    @description: unserialize file to object (file)
+    @input: file object
+    @output: object
+    '''
     x = pickle.load(f)
     return x
 
-'''
-   @description: unserialize pickle string to object
-   @input: string
-   @output: object
-'''
 def unserialize_string(mystring):
-    x = pickle.loads(mystring)
-    return x
+    '''
+    @description: unserialize pickle string to object
+    @input: string
+    @output: object
+    '''
+    return pickle.loads(mystring)
 
-'''
-   @description: serialize object to string
-   @input: object, file object
-   @output: file object, pointer to the beginning
-'''
 def serialize_string(myobj):
+    '''
+    @description: serialize object to string
+    @input: object, file object
+    @output: file object, pointer to the beginning
+    '''
     return pickle.dumps(myobj)
 
-'''
-   @description: load object from a file
-   @input: name of the object
-   @output: object or, if error -1
-'''
 def loadobj(name, completePath = False):
+    '''
+    @description: load object from a file
+    @input: name of the object
+    @output: object or, if error -1
+    '''
     while 1:
         if completePath:
             dmpfile = name
