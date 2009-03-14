@@ -210,7 +210,7 @@ class Calculators:
 
     def __atom_match_open_db(self, repoid, server_inst):
         if server_inst != None:
-            dbconn = server_inst.openServerDatabase(just_reading = True, repo = repoid)
+            dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
         else:
             dbconn = self.Client.open_repository(repoid)
         return dbconn
@@ -428,7 +428,7 @@ class Calculators:
 
     def __package_set_match_open_db(self, repoid, server_inst):
         if server_inst != None:
-            dbconn = server_inst.openServerDatabase(just_reading = True, repo = repoid)
+            dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
         else:
             dbconn = self.Client.open_repository(repoid)
         return dbconn

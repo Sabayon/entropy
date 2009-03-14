@@ -1009,7 +1009,7 @@ class Repository(SocketCommands):
         if repoid not in self.HostInterface.Entropy.get_available_repositories():
             return False,'repository id not available'
 
-        dbconn = self.HostInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+        dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
         idpackages = dbconn.listAllIdpackages(order_by = 'atom')
         package_data = []
         package_data = {
@@ -1031,7 +1031,7 @@ class Repository(SocketCommands):
         idpackage = myargs[0]
         repoid = myargs[1]
 
-        dbconn = self.HostInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+        dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
         package_data = dbconn.getPackageData(idpackage, trigger_unicode = True)
         dbconn.closeDB()
         return True,package_data
@@ -1240,7 +1240,7 @@ class Repository(SocketCommands):
             'data': {},
         }
 
-        dbconn = self.HostInterface.Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+        dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
 
         if search_type == "atom":
 

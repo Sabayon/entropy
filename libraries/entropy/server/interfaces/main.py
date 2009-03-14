@@ -417,17 +417,17 @@ class Server(Singleton,TextInterface):
             except SystemDatabaseError:
                 return False
 
-        dbc = self.openServerDatabase(just_reading = True, repo = repo)
+        dbc = self.open_server_repository(just_reading = True, repo = repo)
         valid = do_validate(dbc)
         self.close_server_database(dbc)
         if not valid: # check online?
-            dbc = self.openServerDatabase(read_only = False, no_upload = True, repo = repo, is_new = True)
+            dbc = self.open_server_repository(read_only = False, no_upload = True, repo = repo, is_new = True)
             valid = do_validate(dbc)
             self.close_server_database(dbc)
 
         return valid
 
-    def doServerDatabaseSyncLock(self, repo, no_upload):
+    def do_server_repository_sync_lock(self, repo, no_upload):
 
         if repo == None:
             repo = self.default_repository
@@ -495,7 +495,7 @@ class Server(Singleton,TextInterface):
             self.MirrorsService.lock_mirrors(True, repo = repo)
             self.MirrorsService.sync_databases(no_upload, repo = repo)
 
-    def openServerDatabase(
+    def open_server_repository(
             self,
             read_only = True,
             no_upload = True,
@@ -541,7 +541,7 @@ class Server(Singleton,TextInterface):
             os.makedirs(os.path.dirname(local_dbfile))
 
         if (not read_only) and (lock_remote):
-            self.doServerDatabaseSyncLock(repo, no_upload)
+            self.do_server_repository_sync_lock(repo, no_upload)
 
         conn = self.LocalRepository(
             readOnly = read_only,
@@ -620,7 +620,7 @@ class Server(Singleton,TextInterface):
         server_repos = etpConst['server_repositories'].keys()
         installed_packages = set()
         for repo in server_repos:
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
             installed_packages |= set([(x,repo) for x in dbconn.listAllIdpackages()])
 
 
@@ -632,7 +632,7 @@ class Server(Singleton,TextInterface):
             count += 1
             idpackage = pkgdata[0]
             repo = pkgdata[1]
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
             atom = dbconn.retrieveAtom(idpackage)
             if atom == None:
                 continue
@@ -671,7 +671,7 @@ class Server(Singleton,TextInterface):
             crying_atoms = {}
             for atom in deps_not_matched:
                 for repo in server_repos:
-                    dbconn = self.openServerDatabase(just_reading = True, repo = repo)
+                    dbconn = self.open_server_repository(just_reading = True, repo = repo)
                     riddep = dbconn.searchDependency(atom)
                     if riddep == -1:
                         continue
@@ -727,7 +727,7 @@ class Server(Singleton,TextInterface):
     def libraries_test(self, get_files = False, repo = None):
 
         # load db
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
         packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn, broken_symbols = False)
         if status != 0:
             return 1,None
@@ -844,7 +844,7 @@ class Server(Singleton,TextInterface):
         return not_found
 
     def depends_table_initialize(self, repo = None):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         dbconn.regenerateDependsTable()
         dbconn.taintDatabase()
         dbconn.commitChanges()
@@ -898,7 +898,7 @@ class Server(Singleton,TextInterface):
 
         # sanity check
         invalid_atoms = []
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
         for idpackage in idpackages:
             ver_tag = dbconn.retrieveVersionTag(idpackage)
             if ver_tag:
@@ -940,7 +940,7 @@ class Server(Singleton,TextInterface):
             return switched
 
         if not matches and from_repo:
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = from_repo)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = from_repo)
             matches = set( \
                 [(x,from_repo) for x in \
                     dbconn.listAllIdpackages()]
@@ -972,7 +972,7 @@ class Server(Singleton,TextInterface):
         if new_tag != None: new_tag_string = "[%s: %s]" % (darkgreen(_("new tag")),brown(new_tag),)
         for match in matches:
             repo = match[1]
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
             self.updateProgress(
                 "[%s=>%s|%s] %s " % (
                         darkgreen(repo),
@@ -992,7 +992,7 @@ class Server(Singleton,TextInterface):
                 return switched
 
         for idpackage, repo in matches:
-            dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
             match_branch = dbconn.retrieveBranch(idpackage)
             match_atom = dbconn.retrieveAtom(idpackage)
             package_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
@@ -1081,7 +1081,7 @@ class Server(Singleton,TextInterface):
             if new_tag != None:
                 data['versiontag'] = new_tag
 
-            todbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = to_repo)
+            todbconn = self.open_server_repository(read_only = False, no_upload = True, repo = to_repo)
 
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
@@ -1145,7 +1145,7 @@ class Server(Singleton,TextInterface):
         if not os.path.isdir(upload_dir):
             os.makedirs(upload_dir)
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         self.updateProgress(
             red("[repo: %s] %s: %s" % (
                         darkgreen(repo),
@@ -1165,7 +1165,7 @@ class Server(Singleton,TextInterface):
         trashing_counters = set()
         myserver_repos = etpConst['server_repositories'].keys()
         for myrepo in myserver_repos:
-            mydbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = myrepo)
+            mydbconn = self.open_server_repository(read_only = True, no_upload = True, repo = myrepo)
             mylist = mydbconn.retrieve_packages_to_remove(
                     mydata['name'],
                     mydata['category'],
@@ -1227,7 +1227,7 @@ class Server(Singleton,TextInterface):
     # this function changes the final repository package filename
     def _setup_repository_package_filename(self, idpackage, repo = None):
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
 
         downloadurl = dbconn.retrieveDownloadURL(idpackage)
         packagerev = dbconn.retrieveRevision(idpackage)
@@ -1293,7 +1293,7 @@ class Server(Singleton,TextInterface):
                 # reinit depends table
                 self.depends_table_initialize(repo)
                 if idpackages_added:
-                    dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+                    dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
                     missing_deps_taint = myQA.scan_missing_dependencies(
                         idpackages_added,
                         dbconn,
@@ -1316,7 +1316,7 @@ class Server(Singleton,TextInterface):
         self.depends_table_initialize(repo)
 
         if idpackages_added:
-            dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
             missing_deps_taint = myQA.scan_missing_dependencies(
                 idpackages_added,
                 dbconn,
@@ -1354,7 +1354,7 @@ class Server(Singleton,TextInterface):
             header = red(" @@ ")
         )
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         for idpackage,package_path in injection_data:
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
@@ -1432,7 +1432,7 @@ class Server(Singleton,TextInterface):
         if repo == None:
             repo = self.default_repository
 
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
@@ -1459,7 +1459,7 @@ class Server(Singleton,TextInterface):
 
 
     def bump_database(self, repo = None):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         dbconn.taintDatabase()
         self.close_server_database(dbconn)
 
@@ -1700,7 +1700,7 @@ class Server(Singleton,TextInterface):
             found = False
             for server_repo in server_repos:
                 installed_counters.add(spm_counter)
-                server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
+                server_dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = server_repo)
                 counter = server_dbconn.isCounterAvailable(spm_counter, branch = etpConst['branch'])
                 if counter:
                     found = True
@@ -1711,7 +1711,7 @@ class Server(Singleton,TextInterface):
         # packages to be removed from the database
         database_counters = {}
         for server_repo in server_repos:
-            server_dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = server_repo)
+            server_dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = server_repo)
             database_counters[server_repo] = server_dbconn.listAllCounters(branch = etpConst['branch'])
 
         ordered_counters = set()
@@ -1728,7 +1728,7 @@ class Server(Singleton,TextInterface):
             if counter in installed_counters:
                 continue
 
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = xrepo)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = xrepo)
 
             dorm = True
             # check if the package is in toBeAdded
@@ -1779,13 +1779,13 @@ class Server(Singleton,TextInterface):
     def is_counter_trashed(self, counter):
         server_repos = etpConst['server_repositories'].keys()
         for repo in server_repos:
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
             if dbconn.isCounterTrashed(counter):
                 return True
         return False
 
     def transform_package_into_injected(self, idpackage, repo = None):
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         counter = dbconn.getNewNegativeCounter()
         dbconn.setCounter(idpackage,counter)
         dbconn.setInjected(idpackage)
@@ -1810,7 +1810,7 @@ class Server(Singleton,TextInterface):
 
         if os.path.isfile(self.get_local_database_file(repo)):
 
-            dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo, warnings = warnings)
+            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo, warnings = warnings)
 
             if dbconn.doesTableExist("baseinfo") and dbconn.doesTableExist("extrainfo"):
                 idpackages = dbconn.listAllIdpackages()
@@ -1852,7 +1852,7 @@ class Server(Singleton,TextInterface):
 
 
         # initialize
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo, is_new = True)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo, is_new = True)
         dbconn.initializeDatabase()
 
         if not empty:
@@ -1977,7 +1977,7 @@ class Server(Singleton,TextInterface):
             myQA = self.QA()
 
             if idpackages_added:
-                dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+                dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
                 myQA.scan_missing_dependencies(
                     idpackages_added, dbconn, ask = True,
                     repo = repo, self_check = True,
@@ -1992,7 +1992,7 @@ class Server(Singleton,TextInterface):
 
     def match_packages(self, packages, repo = None):
 
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
         if ("world" in packages) or not packages:
             return dbconn.listAllIdpackages(),True
         else:
@@ -2063,7 +2063,7 @@ class Server(Singleton,TextInterface):
         )
 
         idpackages, world = self.match_packages(packages)
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
 
         if world:
             self.updateProgress(
@@ -2269,7 +2269,7 @@ class Server(Singleton,TextInterface):
         )
 
         idpackages, world = self.match_packages(packages)
-        dbconn = self.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
 
         if world:
             self.updateProgress(
@@ -2560,7 +2560,7 @@ class Server(Singleton,TextInterface):
             type = "info",
             header = darkgreen(" @@ ")
         )
-        dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo, lock_remote = False)
+        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo, lock_remote = False)
 
         already_switched = set()
         not_found = set()
@@ -2673,7 +2673,7 @@ class Server(Singleton,TextInterface):
             for setname in sets_data:
                 good = True
                 for atom in sets_data[setname]:
-                    dbconn = self.openServerDatabase(just_reading = True, repo = repo)
+                    dbconn = self.open_server_repository(just_reading = True, repo = repo)
                     match = dbconn.atomMatch(atom)
                     if match[0] == -1:
                         good = False
@@ -2688,7 +2688,22 @@ class Server(Singleton,TextInterface):
 
         if repo == None: repo = self.default_repository
         package_sets = self.get_configured_package_sets(repo)
-        if dbconn == None: dbconn = self.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        if dbconn == None: dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
         dbconn.clearPackageSets()
         if package_sets: dbconn.insertPackageSets(package_sets)
         dbconn.commitChanges()
+
+
+    """
+        XXX deprecated XXX
+    """
+
+    def openServerDatabase(self, *args, **kwargs):
+        import warning
+        warning.warn("deprecated, use open_server_repository instead")
+        return self.open_server_repository(*args, **kwargs)
+
+    def doServerDatabaseSyncLock(self, *args, **kwargs):
+        import warning
+        warning.warn("deprecated, use do_server_repository_sync_lock instead")
+        return self.do_server_repository_sync_lock(*args, **kwargs)

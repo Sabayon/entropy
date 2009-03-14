@@ -666,7 +666,7 @@ class LocalRepository:
                 )
                 # lock database
                 if self.lockRemote:
-                    self.ServiceInterface.doServerDatabaseSyncLock(self.server_repo, self.noUpload)
+                    self.ServiceInterface.do_server_repository_sync_lock(self.server_repo, self.noUpload)
                 # now run queue
                 try:
                     self.runTreeUpdatesActions(update_actions)

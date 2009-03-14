@@ -37,7 +37,7 @@ def query(myopts):
 
     rc = 0
     Entropy = Server()
-    dbconn = Entropy.openServerDatabase(just_reading = True)
+    dbconn = Entropy.open_server_repository(just_reading = True)
 
     if cmd == "search":
 

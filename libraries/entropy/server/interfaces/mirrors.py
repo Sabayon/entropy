@@ -449,7 +449,7 @@ class Server:
                 ftp.close()
                 return rc
 
-            dbconn = self.Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.Entropy.open_server_repository(read_only = True, no_upload = True, repo = repo)
             idpackage = dbconn.getIDPackageFromDownload(pkg_relative_path)
             if idpackage == -1:
                 self.Entropy.updateProgress(
@@ -856,7 +856,7 @@ class Server:
     # f_out is a file instance
     def dump_database_to_file(self, db_path, destination_path, opener, repo = None):
         f_out = opener(destination_path, "wb")
-        dbconn = self.Entropy.openServerDatabase(db_path, just_reading = True, repo = repo)
+        dbconn = self.Entropy.open_server_repository(db_path, just_reading = True, repo = repo)
         dbconn.doDatabaseExport(f_out)
         self.Entropy.close_server_database(dbconn)
         f_out.close()
@@ -1211,7 +1211,7 @@ class Server:
         return gave_up
 
     def shrink_database_and_close(self, repo = None):
-        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo, indexing = False)
+        dbconn = self.Entropy.open_server_repository(read_only = False, no_upload = True, repo = repo, indexing = False)
         dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.vacuum()
@@ -1222,7 +1222,7 @@ class Server:
 
         if repo == None:
             repo = self.Entropy.default_repository
-        dbconn = self.Entropy.openServerDatabase(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.Entropy.open_server_repository(read_only = False, no_upload = True, repo = repo)
         # grab treeupdates from other databases and inject
         server_repos = etpConst['server_repositories'].keys()
         all_actions = set()
@@ -1232,7 +1232,7 @@ class Server:
             if myrepo == etpConst['clientserverrepoid']:
                 continue
 
-            mydbc = self.Entropy.openServerDatabase(just_reading = True, repo = myrepo)
+            mydbc = self.Entropy.open_server_repository(just_reading = True, repo = myrepo)
             actions = mydbc.listAllTreeUpdatesActions(no_ids_repos = True)
             for data in actions:
                 all_actions.add(data)
@@ -2021,7 +2021,7 @@ class Server:
 
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
-        dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
+        dbconn = self.Entropy.open_server_repository(just_reading = True, repo = repo)
         db_files = dbconn.listBranchPackagesTbz2(branch, do_sort = False, full_path = True)
         db_files = set([os.path.basename(x) for x in db_files if (self.Entropy.get_branch_from_download_relative_uri(x) == branch)])
 
@@ -2552,7 +2552,7 @@ class Server:
 
 
     def collect_expiring_packages(self, branch, repo = None):
-        dbconn = self.Entropy.openServerDatabase(just_reading = True, repo = repo)
+        dbconn = self.Entropy.open_server_repository(just_reading = True, repo = repo)
         database_bins = dbconn.listBranchPackagesTbz2(branch, do_sort = False, full_path = True)
         bins_dir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
         repo_bins = set()

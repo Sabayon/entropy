@@ -474,13 +474,13 @@ class Base:
 
                 mydict['remove_data'] = {}
                 for idpackage, repoid in to_remove:
-                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.closeDB()
 
                 mydict['inject_data'] = {}
                 for idpackage, repoid in to_inject:
-                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.closeDB()
 
@@ -532,7 +532,7 @@ class Base:
                 # run remove
                 remdata = {}
                 for idpackage,repoid in to_remove:
-                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     atoms_removed.append(dbconn.retrieveAtom(idpackage))
                     dbconn.closeDB()
                     if not remdata.has_key(repoid):
@@ -586,11 +586,11 @@ class Base:
                 Entropy.dependencies_test()
 
                 for idpackage, repoid in matches_added:
-                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['added_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.closeDB()
                 for idpackage, repoid in matches_injected:
-                    dbconn = Entropy.openServerDatabase(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.closeDB()
                 return True, mydict
@@ -733,7 +733,7 @@ class Base:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 sys.stdout.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.").encode('utf-8')+"\n")
-                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.openServerDatabase(
+                dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.open_server_repository(
                     repo = repoid, do_cache = False,
                     read_only = True
                 )

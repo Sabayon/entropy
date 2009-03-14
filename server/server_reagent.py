@@ -151,7 +151,7 @@ def repositories(options):
                     red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
                 )
         if not idpackages: return 2
-        dbconn = Entropy.openServerDatabase(repo = repo, just_reading = True)
+        dbconn = Entropy.open_server_repository(repo = repo, just_reading = True)
 
         def dep_check_cb(s):
             return Entropy.entropyTools.isvalidatom(s)
@@ -184,7 +184,7 @@ def repositories(options):
                 print_info(brown(" @@ ")+blue("%s: %s" % (atom,_("no changes made"),) ))
                 continue
 
-            w_dbconn = Entropy.openServerDatabase(repo = repo, read_only = False)
+            w_dbconn = Entropy.open_server_repository(repo = repo, read_only = False)
             atom_deps += [(x,etpConst['spm']['mdepend_id'],) for x in new_mdeps]
             deps_dict = {}
             for atom_dep, dep_id in atom_deps:
@@ -266,7 +266,7 @@ def update(options):
 
             appdb = Entropy.SpmService.get_vdb_path()
             packages = []
-            dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
+            dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
 
             for item in repackageItems:
                 match = dbconn.atomMatch(item)
@@ -297,7 +297,7 @@ def update(options):
         if toBeInjected:
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be changed to injected status"),) ))
             for idpackage,repoid in toBeInjected:
-                dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if reagentRequestAsk:
@@ -306,7 +306,7 @@ def update(options):
                 rc = "Yes"
             if rc == "Yes":
                 for idpackage,repoid in toBeInjected:
-                    dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                    dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                     atom = dbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("%s: " % (_("Transforming from database"),) )+red(atom))
                     Entropy.transform_package_into_injected(idpackage, repo = repoid)
@@ -315,7 +315,7 @@ def update(options):
         if toBeRemoved:
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be removed from the database"),) ))
             for idpackage,repoid in toBeRemoved:
-                dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True, repo = repoid)
+                dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if reagentRequestAsk:
@@ -432,7 +432,7 @@ def database(options):
         to_branch = options[2]
         print_info(darkgreen(" * ")+red(_("Switching branch, be sure to have your packages in sync.")))
         print_info(darkgreen(" * ")+red("%s %s..." % (_("Collecting packages that would be marked"),to_branch,) ), back = True)
-        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
 
         pkglist = dbconn.listAllIdpackages(branch = from_branch)
         #myatoms = options[3:]
@@ -463,7 +463,7 @@ def database(options):
             print_error(brown(" * ")+red(_("Not enough parameters")))
             return 1
 
-        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
         pkglist = set()
         for atom in myopts:
             pkg = dbconn.atomMatch(atom, multiMatch = True)
@@ -500,7 +500,7 @@ def database(options):
         for opt in options[1:]:
             atoms.append(opt)
 
-        dbconn = Entropy.openServerDatabase(read_only = True, no_upload = True)
+        dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
 
         idpackages = set()
         if not atoms:
