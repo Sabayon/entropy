@@ -44,8 +44,8 @@ from entropy.const import etpConst, etpRepositories
 
 class Entropy(EquoInterface):
 
-    def __init__(self, appletInterface):
-        EquoInterface.__init__(self, noclientdb = True)
+    def init_singleton(self, appletInterface):
+        EquoInterface.init_singleton(self, noclientdb = True)
         self.connect_progress_objects(appletInterface)
         self.nocolor()
 

@@ -226,8 +226,8 @@ class QueueExecutor:
 
 class Equo(EquoInterface):
 
-    def __init__(self, *args, **kwargs):
-        EquoInterface.__init__(self, *args, **kwargs)
+    def init_singleton(self, *args, **kwargs):
+        EquoInterface.init_singleton(self, *args, **kwargs)
         self.progressLog = None
         self.output = None
         self.progress = None
