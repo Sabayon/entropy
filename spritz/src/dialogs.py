@@ -4596,6 +4596,7 @@ class SecurityAdvisoryMenu(MenuSkel):
 
 class UGCInfoMenu(MenuSkel):
 
+    import entropy.tools as entropyTools
     def __init__(self, Entropy, obj, repository, window):
 
         import subprocess
