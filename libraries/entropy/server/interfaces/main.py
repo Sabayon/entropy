@@ -2699,11 +2699,11 @@ class Server(Singleton,TextInterface):
     """
 
     def openServerDatabase(self, *args, **kwargs):
-        import warning
-        warning.warn("deprecated, use open_server_repository instead")
+        import warnings
+        warnings.warn("deprecated, use open_server_repository instead")
         return self.open_server_repository(*args, **kwargs)
 
     def doServerDatabaseSyncLock(self, *args, **kwargs):
-        import warning
-        warning.warn("deprecated, use do_server_repository_sync_lock instead")
+        import warnings
+        warnings.warn("deprecated, use do_server_repository_sync_lock instead")
         return self.do_server_repository_sync_lock(*args, **kwargs)
