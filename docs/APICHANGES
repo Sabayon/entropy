@@ -53,6 +53,11 @@ From SVN 3112 there have been several API changes:
       package_match_validator_cache => _package_match_validator_cache
       spmCache => __spm_cache
 
+   - ServerInterface (now entropy.server.interfaces.Server) API changes:
+
+      - now deprecated:
+      openServerDatabase => open_server_repository
+      doServerDatabaseSyncLock => do_server_repository_sync_lock
 
       - removed methods
       check_equo_updates
