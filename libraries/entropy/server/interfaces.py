@@ -2706,6 +2706,8 @@ class MirrorsServer:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = ServerInstance
+        from entropy.transceivers import FtpServerHandler
+        self.FtpServerHandler = FtpServerHandler
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.FtpInterface = self.Entropy.FtpInterface
@@ -3353,7 +3355,7 @@ class MirrorsServer:
         downloaded = False
         for uri in mirrors:
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-            downloader = self.FileTransceiver(
+            downloader = self.FtpServerHandler(
                 self.FtpInterface, self.Entropy, [uri],
                 [rss_path], download = True,
                 local_basedir = mytmpdir, critical_files = [rss_path], repo = repo
@@ -3395,7 +3397,7 @@ class MirrorsServer:
             header = blue(" @@ ")
         )
 
-        uploader = self.FileTransceiver(
+        uploader = self.FtpServerHandler(
             self.FtpInterface,
             self.Entropy,
             mirrors,
@@ -3654,338 +3656,6 @@ class MirrorsServer:
             data['global_make_profile'] = mytmpfile
 
         return data, critical, extra_text_files
-
-    class FileTransceiver:
-
-        import entropy.tools as entropyTools
-        def __init__(   self,
-                        ftp_interface,
-                        entropy_interface,
-                        uris,
-                        files_to_upload,
-                        download = False,
-                        remove = False,
-                        ftp_basedir = None,
-                        local_basedir = None,
-                        critical_files = [],
-                        use_handlers = False,
-                        handlers_data = {},
-                        repo = None
-            ):
-
-            self.FtpInterface = ftp_interface
-            self.Entropy = entropy_interface
-            if not isinstance(uris,list):
-                raise InvalidDataType("InvalidDataType: %s" % (_("uris must be a list instance"),))
-            if not isinstance(files_to_upload,(list,dict)):
-                raise InvalidDataType("InvalidDataType: %s" % (
-                        _("files_to_upload must be a list or dict instance"),
-                    )
-                )
-            self.uris = uris
-            if isinstance(files_to_upload,list):
-                self.myfiles = files_to_upload[:]
-            else:
-                self.myfiles = sorted([x for x in files_to_upload])
-            self.download = download
-            self.remove = remove
-            self.repo = repo
-            if self.repo == None:
-                self.repo = self.Entropy.default_repository
-            self.use_handlers = use_handlers
-            if self.remove:
-                self.download = False
-                self.use_handlers = False
-            if not ftp_basedir:
-                # default to database directory
-                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
-                self.ftp_basedir = unicode(my_path)
-            else:
-                self.ftp_basedir = unicode(ftp_basedir)
-            if not local_basedir:
-                # default to database directory
-                self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file(self.repo))
-            else:
-                self.local_basedir = unicode(local_basedir)
-            self.critical_files = critical_files
-            self.handlers_data = handlers_data.copy()
-
-        def handler_verify_upload(self, local_filepath, uri, ftp_connection, counter, maxcount, action, tries):
-
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-
-            self.Entropy.updateProgress(
-                "[%s|#%s|(%s/%s)] %s: %s" % (
-                    blue(crippled_uri),
-                    darkgreen(str(tries)),
-                    blue(str(counter)),
-                    bold(str(maxcount)),
-                    darkgreen(_("verifying upload (if supported)")),
-                    blue(os.path.basename(local_filepath)),
-                ),
-                importance = 0,
-                type = "info",
-                header = red(" @@ "),
-                back = True
-            )
-
-            checksum = self.Entropy.get_remote_package_checksum(
-                self.repo,
-                os.path.basename(local_filepath),
-                self.handlers_data['branch']
-            )
-            if checksum == None:
-                self.Entropy.updateProgress(
-                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                        blue(crippled_uri),
-                        darkgreen(str(tries)),
-                        blue(str(counter)),
-                        bold(str(maxcount)),
-                        blue(_("digest verification")),
-                        os.path.basename(local_filepath),
-                        darkred(_("not supported")),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = red(" @@ ")
-                )
-                return True
-            elif checksum == False:
-                self.Entropy.updateProgress(
-                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                        blue(crippled_uri),
-                        darkgreen(str(tries)),
-                        blue(str(counter)),
-                        bold(str(maxcount)),
-                        blue(_("digest verification")),
-                        os.path.basename(local_filepath),
-                        bold(_("file not found")),
-                    ),
-                    importance = 0,
-                    type = "warning",
-                    header = brown(" @@ ")
-                )
-                return False
-            elif len(checksum) == 32:
-                # valid? checking
-                ckres = self.entropyTools.compareMd5(local_filepath,checksum)
-                if ckres:
-                    self.Entropy.updateProgress(
-                        "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                            blue(crippled_uri),
-                            darkgreen(str(tries)),
-                            blue(str(counter)),
-                            bold(str(maxcount)),
-                            blue(_("digest verification")),
-                            os.path.basename(local_filepath),
-                            darkgreen(_("so far, so good!")),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = red(" @@ ")
-                    )
-                    return True
-                else:
-                    self.Entropy.updateProgress(
-                        "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                            blue(crippled_uri),
-                            darkgreen(str(tries)),
-                            blue(str(counter)),
-                            bold(str(maxcount)),
-                            blue(_("digest verification")),
-                            os.path.basename(local_filepath),
-                            darkred(_("invalid checksum")),
-                        ),
-                        importance = 0,
-                        type = "warning",
-                        header = brown(" @@ ")
-                    )
-                    return False
-            else:
-                self.Entropy.updateProgress(
-                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                        blue(crippled_uri),
-                        darkgreen(str(tries)),
-                        blue(str(counter)),
-                        bold(str(maxcount)),
-                        blue(_("digest verification")),
-                        os.path.basename(local_filepath),
-                        darkred(_("unknown data returned")),
-                    ),
-                    importance = 0,
-                    type = "warning",
-                    header = brown(" @@ ")
-                )
-                return True
-
-        def go(self):
-
-            broken_uris = set()
-            fine_uris = set()
-            errors = False
-            action = 'upload'
-            if self.download:
-                action = 'download'
-            elif self.remove:
-                action = 'remove'
-
-            for uri in self.uris:
-
-                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-                self.Entropy.updateProgress(
-                    "[%s|%s] %s..." % (
-                        blue(crippled_uri),
-                        brown(action),
-                        blue(_("connecting to mirror")),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-                try:
-                    ftp = self.FtpInterface(uri, self.Entropy)
-                except ConnectionError:
-                    self.entropyTools.printTraceback()
-                    return True,fine_uris,broken_uris # issues
-                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo),etpConst['branch'])
-                self.Entropy.updateProgress(
-                    "[%s|%s] %s %s..." % (
-                        blue(crippled_uri),
-                        brown(action),
-                        blue(_("changing directory to")),
-                        darkgreen(my_path),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-
-                ftp.set_cwd(self.ftp_basedir, dodir = True)
-                maxcount = len(self.myfiles)
-                counter = 0
-
-                for mypath in self.myfiles:
-
-                    ftp.set_basedir()
-                    ftp.set_cwd(self.ftp_basedir, dodir = True)
-
-                    mycwd = None
-                    if isinstance(mypath,tuple):
-                        if len(mypath) < 2: continue
-                        mycwd = mypath[0]
-                        mypath = mypath[1]
-                        ftp.set_cwd(mycwd, dodir = True)
-
-                    syncer = ftp.upload_file
-                    myargs = [mypath]
-                    if self.download:
-                        syncer = ftp.download_file
-                        myargs = [os.path.basename(mypath),self.local_basedir]
-                    elif self.remove:
-                        syncer = ftp.delete_file
-
-                    counter += 1
-                    tries = 0
-                    done = False
-                    lastrc = None
-                    while tries < 5:
-                        tries += 1
-                        self.Entropy.updateProgress(
-                            "[%s|#%s|(%s/%s)] %s: %s" % (
-                                blue(crippled_uri),
-                                darkgreen(str(tries)),
-                                blue(str(counter)),
-                                bold(str(maxcount)),
-                                blue(action+"ing"),
-                                red(os.path.basename(mypath)),
-                            ),
-                            importance = 0,
-                            type = "info",
-                            header = red(" @@ ")
-                        )
-                        rc = syncer(*myargs)
-                        if rc and self.use_handlers and not self.download:
-                            rc = self.handler_verify_upload(mypath, uri, ftp, counter, maxcount, action, tries)
-                        if rc:
-                            self.Entropy.updateProgress(
-                                "[%s|#%s|(%s/%s)] %s %s: %s" % (
-                                            blue(crippled_uri),
-                                            darkgreen(str(tries)),
-                                            blue(str(counter)),
-                                            bold(str(maxcount)),
-                                            blue(action),
-                                            _("successful"),
-                                            red(os.path.basename(mypath)),
-                                ),
-                                importance = 0,
-                                type = "info",
-                                header = darkgreen(" @@ ")
-                            )
-                            done = True
-                            break
-                        else:
-                            self.Entropy.updateProgress(
-                                "[%s|#%s|(%s/%s)] %s %s: %s" % (
-                                            blue(crippled_uri),
-                                            darkgreen(str(tries)),
-                                            blue(str(counter)),
-                                            bold(str(maxcount)),
-                                            blue(action),
-                                            brown(_("failed, retrying")),
-                                            red(os.path.basename(mypath)),
-                                    ),
-                                importance = 0,
-                                type = "warning",
-                                header = brown(" @@ ")
-                            )
-                            lastrc = rc
-                            continue
-
-                    if not done:
-
-                        self.Entropy.updateProgress(
-                            "[%s|(%s/%s)] %s %s: %s - %s: %s" % (
-                                    blue(crippled_uri),
-                                    blue(str(counter)),
-                                    bold(str(maxcount)),
-                                    blue(action),
-                                    darkred("failed, giving up"),
-                                    red(os.path.basename(mypath)),
-                                    _("error"),
-                                    lastrc,
-                            ),
-                            importance = 1,
-                            type = "error",
-                            header = darkred(" !!! ")
-                        )
-
-                        if mypath not in self.critical_files:
-                            self.Entropy.updateProgress(
-                                "[%s|(%s/%s)] %s: %s, %s..." % (
-                                    blue(crippled_uri),
-                                    blue(str(counter)),
-                                    bold(str(maxcount)),
-                                    blue(_("not critical")),
-                                    os.path.basename(mypath),
-                                    blue(_("continuing")),
-                                ),
-                                importance = 1,
-                                type = "warning",
-                                header = brown(" @@ ")
-                            )
-                            continue
-
-                        ftp.close()
-                        errors = True
-                        broken_uris.add((uri,lastrc))
-                        # next mirror
-                        break
-
-                # close connection
-                ftp.close()
-                fine_uris.add(uri)
-
-            return errors,fine_uris,broken_uris
 
     def _show_package_sets_messages(self, repo):
         self.Entropy.updateProgress(
@@ -4351,7 +4021,7 @@ class MirrorsServer:
 
             if not pretend:
                 # upload
-                uploader = self.FileTransceiver(
+                uploader = self.FtpServerHandler(
                     self.FtpInterface,
                     self.Entropy,
                     [uri],
@@ -4469,7 +4139,7 @@ class MirrorsServer:
 
             if not pretend:
                 # download
-                downloader = self.FileTransceiver(
+                downloader = self.FtpServerHandler(
                     self.FtpInterface, self.Entropy, [uri],
                     [download_data[x] for x in download_data], download = True,
                     local_basedir = mytmpdir, critical_files = critical, repo = repo
@@ -5191,16 +4861,16 @@ class MirrorsServer:
             myqueue.append(x)
 
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
-        uploader = self.FileTransceiver(    self.FtpInterface,
-                                            self.Entropy,
-                                            [uri],
-                                            myqueue,
-                                            critical_files = myqueue,
-                                            use_handlers = True,
-                                            ftp_basedir = ftp_basedir,
-                                            handlers_data = {'branch': branch },
-                                            repo = repo
-                                        )
+        uploader = self.FtpServerHandler(self.FtpInterface,
+            self.Entropy,
+            [uri],
+            myqueue,
+            critical_files = myqueue,
+            use_handlers = True,
+            ftp_basedir = ftp_basedir,
+            handlers_data = {'branch': branch },
+            repo = repo
+        )
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
             my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
@@ -5247,7 +4917,7 @@ class MirrorsServer:
 
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
-        downloader = self.FileTransceiver(
+        downloader = self.FtpServerHandler(
             self.FtpInterface,
             self.Entropy,
             [uri],
@@ -5676,7 +5346,7 @@ class MirrorsServer:
             )
 
             crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
-            destroyer = self.FileTransceiver(
+            destroyer = self.FtpServerHandler(
                 self.FtpInterface,
                 self.Entropy,
                 [uri],
