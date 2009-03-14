@@ -31,7 +31,7 @@ from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, darkblue, red, purple, darkred, print_info, print_error, print_warning
 from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, LocalRepository
-from entropy.client.interfaces import Client
+from entropy.client.interfaces.client import Client
 
 class Package:
 
@@ -1575,8 +1575,9 @@ class Package:
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
             trigger = self.Entropy.Triggers('postinstall',pkgdata, self.action)
-            trigger.prepare()
-            trigger.run()
+            do = trigger.prepare()
+            if do:
+                trigger.run()
             trigger.kill()
         del pkgdata
         return 0
@@ -1587,8 +1588,8 @@ class Package:
         if pkgdata:
 
             trigger = self.Entropy.Triggers('preinstall',pkgdata, self.action)
-            trigger.prepare()
-            if self.infoDict.get("diffremoval"):
+            do = trigger.prepare()
+            if self.infoDict.get("diffremoval") and do:
                 # diffremoval is true only when the
                 # removal is triggered by a package install
                 remdata = self.infoDict['triggers'].get('remove')
@@ -1598,7 +1599,8 @@ class Package:
                     r_trigger.triggers = [x for x in trigger.triggers if x not in r_trigger.triggers]
                     r_trigger.kill()
                 del remdata
-            trigger.run()
+            if do:
+                trigger.run()
             trigger.kill()
 
         del pkgdata
@@ -1609,9 +1611,10 @@ class Package:
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
             trigger = self.Entropy.Triggers('preremove',remdata, self.action)
-            trigger.prepare()
-            trigger.run()
-            trigger.kill()
+            do = trigger.prepare()
+            if do:
+                trigger.run()
+                trigger.kill()
         del remdata
         return 0
 
@@ -1621,8 +1624,8 @@ class Package:
         if remdata:
 
             trigger = self.Entropy.Triggers('postremove',remdata, self.action)
-            trigger.prepare()
-            if self.infoDict['diffremoval'] and (self.infoDict.get("atom") != None):
+            do = trigger.prepare()
+            if self.infoDict['diffremoval'] and (self.infoDict.get("atom") != None) and do:
                 # diffremoval is true only when the remove action is triggered by installPackages()
                 pkgdata = self.infoDict['triggers'].get('install')
                 if pkgdata:
@@ -1631,7 +1634,8 @@ class Package:
                     i_trigger.triggers = [x for x in trigger.triggers if x not in i_trigger.triggers]
                     i_trigger.kill()
                 del pkgdata
-            trigger.run()
+            if do:
+                trigger.run()
             trigger.kill()
 
         del remdata
