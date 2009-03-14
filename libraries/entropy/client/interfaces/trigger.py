@@ -23,6 +23,7 @@
 from __future__ import with_statement
 import subprocess
 import shutil
+from entropy.client.interfaces.client import Client
 from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import *
@@ -32,7 +33,6 @@ class Trigger:
     import entropy.tools as entropyTools
     def __init__(self, EquoInstance, phase, pkgdata, package_action = None):
 
-        from entropy.client.interfaces import Client
         if not isinstance(EquoInstance,Client):
             mytxt = _("A valid Entropy Instance is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
@@ -84,13 +84,8 @@ class Trigger:
     def prepare(self):
         func = getattr(self,self.phase)
         self.triggers = func()
-        remove = set()
-        for trigger in self.triggers:
-            if trigger in etpUi[self.phase+'_triggers_disable']:
-                remove.add(trigger)
-        self.triggers = [x for x in self.triggers if x not in remove]
-        del remove
         self.prepared = True
+        return len(self.triggers) > 0
 
     def run(self):
         for trigger in self.triggers:
@@ -223,7 +218,7 @@ class Trigger:
             if "ebuild_postremove" in functions:
                 # disabling gentoo postinstall since we reimplemented it
                 functions.remove("ebuild_postremove")
-            if self.package_action not in ["remove_conflict"]:
+            if self.package_action in ("remove",):
                 functions.append("openglsetup_xorg")
 
         for x in self.pkgdata['removecontent']:
