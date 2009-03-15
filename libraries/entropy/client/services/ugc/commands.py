@@ -133,7 +133,7 @@ class Base:
             data = self.Service.receive()
             return data
         except:
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
             return None
 
     def convert_stream_to_object(self, data, gzipped, repository = None, arch = None, product = None):

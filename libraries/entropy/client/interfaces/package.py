@@ -307,7 +307,7 @@ class Package:
                 )
                 return 3
         except Exception, e:
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
@@ -888,7 +888,7 @@ class Package:
                         f.close()
                         shutil.move(world_file_tmp,world_file)
             except (UnicodeDecodeError,UnicodeEncodeError), e:
-                self.entropyTools.printTraceback(f = self.Entropy.clientLog)
+                self.entropyTools.print_traceback(f = self.Entropy.clientLog)
                 mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
                 self.Entropy.updateProgress(
                     red("QA: ")+mytxt+": "+unicode(e),
@@ -1218,7 +1218,7 @@ class Package:
                     do_continue = True
 
         except Exception, e:
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
             protected = False # safely revert to false
             tofile = tofile_before_protect
             mytxt = darkred("%s: %s") % (_("Cannot check CONFIG PROTECTION. Error"),e,)

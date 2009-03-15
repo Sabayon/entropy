@@ -991,7 +991,7 @@ class Repository:
                 try:
                     self.run_config_files_updates(repo)
                 except Exception, e:
-                    self.entropyTools.printTraceback()
+                    self.entropyTools.print_traceback()
                     mytxt = "%s: %s" % (
                         blue(_("Configuration files update error, not critical, continuing")),
                         darkred(unicode(e)),
@@ -1433,7 +1433,7 @@ class Repository:
             securityConn = self.Entropy.Security()
             securityConn.fetch_advisories()
         except Exception, e:
-            self.entropyTools.printTraceback(f = self.Entropy.clientLog)
+            self.entropyTools.print_traceback(f = self.Entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
             self.Entropy.updateProgress(
                 mytxt,

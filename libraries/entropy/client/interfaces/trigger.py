@@ -58,7 +58,7 @@ class Trigger:
                 Spm = self.Entropy.Spm()
                 self.Spm = Spm
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 mytxt = darkred("%s, %s: %s, %s !") % (
                     _("Portage interface can't be loaded"),
                     _("Error"),
@@ -252,7 +252,7 @@ class Trigger:
             return self.do_trigger_call_ext_generic()
         except Exception, e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
-            tb = self.entropyTools.getTraceback()
+            tb = self.entropyTools.get_traceback()
             self.Entropy.updateProgress(tb, importance = 0, type = "error")
             self.Entropy.clientLog.write(tb)
             self.Entropy.clientLog.log(
@@ -922,7 +922,7 @@ class Trigger:
 
             except Exception, e:
                 sys.stdout = oldstdout
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -996,7 +996,7 @@ class Trigger:
                     )
             except Exception, e:
                 sys.stdout = oldstdout
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -1083,7 +1083,7 @@ class Trigger:
             except Exception, e:
                 sys.stderr = oldstderr
                 stdfile.close()
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -1171,7 +1171,7 @@ class Trigger:
             except Exception, e:
                 sys.stderr = oldstderr
                 stdfile.close()
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,

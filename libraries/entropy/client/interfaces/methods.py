@@ -451,7 +451,7 @@ class Repository:
         db_path = etpConst['etpdatabaseclientfilepath']
         if (not self.Client.noclientdb) and (not os.path.isfile(db_path)):
             conn = load_db_from_ram()
-            self.entropyTools.printTraceback(f = self.Client.clientLog)
+            self.entropyTools.print_traceback(f = self.Client.clientLog)
         else:
             conn = LocalRepository(readOnly = False, dbFile = db_path,
                 clientDatabase = True, dbname = etpConst['clientdbid'],
@@ -467,7 +467,7 @@ class Repository:
                         conn.closeDB()
                     except:
                         pass
-                    self.entropyTools.printTraceback(f = self.Client.clientLog)
+                    self.entropyTools.print_traceback(f = self.Client.clientLog)
                     conn = load_db_from_ram()
 
         if not etpConst['dbconfigprotect']:
@@ -500,7 +500,7 @@ class Repository:
             try:
                 self.clientDbconn.getPackageData(x)
             except Exception ,e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 errors = True
                 self.updateProgress(
                     darkred(_("Errors on idpackage %s, error: %s")) % (x,str(e)),
@@ -605,7 +605,7 @@ class Repository:
             self.entropyTools.compress_file(dbpath, comp_dbpath, bz2.BZ2File, compress_level)
         except:
             if not silent:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
             return False, _("Unable to compress")
 
         if not silent:
@@ -654,7 +654,7 @@ class Repository:
             self.entropyTools.uncompress_file(backup_path, db_destination, bz2.BZ2File)
         except:
             if not silent:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
             return False, _("Unable to unpack")
 
         if not silent:

@@ -627,7 +627,7 @@ class Base:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
                 return True,deps_not_matched
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -660,7 +660,7 @@ class Base:
             try:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.libraries_test()
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -701,7 +701,7 @@ class Base:
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_remote_packages([], ask = False, repo = repoid)
                 return True, data
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -739,7 +739,7 @@ class Base:
                 )
                 dbconn.closeDB()
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -790,7 +790,7 @@ class Base:
                             upload_queue, download_queue, removal_queue, \
                                 fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, etpConst['branch'], repoid)
                         except socket.error:
-                            self.entropyTools.printTraceback(f = stdout_err)
+                            self.entropyTools.print_traceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")
                             continue
 
@@ -826,7 +826,7 @@ class Base:
                 return True, repo_data
 
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -944,7 +944,7 @@ class Base:
                 return True, repo_data
 
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -993,7 +993,7 @@ class Base:
                     return False,None
                 return True,data
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -1029,7 +1029,7 @@ class Base:
                 self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.upload_notice_board(repo = repoid)
                 return True,data
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -1063,7 +1063,7 @@ class Base:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.update_notice_board(title, notice_text, link = link, repo = repoid)
                 return True,data
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")

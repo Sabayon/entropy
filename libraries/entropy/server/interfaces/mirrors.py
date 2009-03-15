@@ -97,7 +97,7 @@ class Server:
             try:
                 ftp = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return True # issues
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
             ftp.set_cwd(my_path, dodir = True)
@@ -177,7 +177,7 @@ class Server:
             try:
                 ftp = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return True # issues
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
             ftp.set_cwd(my_path, dodir = True)
@@ -228,7 +228,7 @@ class Server:
             try:
                 ftp_connection = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False # issues
             ftp_connection.set_cwd(my_path, dodir = True)
         else:
@@ -289,7 +289,7 @@ class Server:
             try:
                 ftp_connection = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False # issues
             ftp_connection.set_cwd(my_path)
         else:
@@ -410,7 +410,7 @@ class Server:
             try:
                 ftp = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False # issues
             dirpath = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),pkg_to_join_dirpath)
             ftp.set_cwd(dirpath, dodir = True)
@@ -1163,7 +1163,7 @@ class Server:
         try:
             ftp = self.FtpInterface(uri, self.Entropy)
         except ConnectionError:
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
             return True # gave up
         my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
         ftp.set_cwd(my_path, dodir = True)
@@ -1244,7 +1244,7 @@ class Server:
             dbconn.removeTreeUpdatesActions(repo)
             dbconn.insertTreeUpdatesActions(all_actions,repo)
         except Exception, e:
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
             mytxt = "%s, %s: %s. %s" % (
                 _("Troubles with treeupdates"),
                 _("error"),
@@ -2458,7 +2458,7 @@ class Server:
 
             except Exception, e:
 
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 mirrors_errors = True
                 broken_mirrors.add(uri)
                 self.Entropy.updateProgress(

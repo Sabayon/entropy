@@ -824,7 +824,7 @@ class FtpInterface:
 
             except Exception, e: # connection reset by peer
 
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (
                     _("Upload issue"),
                     e,
@@ -900,7 +900,7 @@ class FtpInterface:
 
             except Exception, e: # connection reset by peer
 
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (
                     _("Download issue"),
                     e,
@@ -1179,7 +1179,7 @@ class FtpServerHandler:
             try:
                 ftp = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return True,fine_uris,broken_uris # issues
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo),etpConst['branch'])
             self.Entropy.updateProgress(

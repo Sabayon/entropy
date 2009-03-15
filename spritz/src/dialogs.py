@@ -6013,7 +6013,7 @@ class ExceptionDialog:
     def show(self):
         import entropy.tools
         from entropy.qa import ErrorReportInterface
-        errmsg = entropy.tools.getTraceback()
+        errmsg = entropy.tools.get_traceback()
         conntest = entropy.tools.get_remote_data(etpConst['conntestlink'])
         rc, (name,mail,description) = errorMessage(
             None,

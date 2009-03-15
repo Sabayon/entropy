@@ -1278,7 +1278,7 @@ class Server(Singleton,TextInterface):
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage,destination_path))
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 self.updateProgress(
                     "[repo:%s] %s: %s" % (
                                 darkgreen(repo),

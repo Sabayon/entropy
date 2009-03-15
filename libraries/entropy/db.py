@@ -854,7 +854,7 @@ class LocalRepository:
             try:
                 self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
             except:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 mytxt = "%s: %s: %s, %s." % (
                     bold(_("WARNING")),
                     red(_("Cannot complete quickpkg for atoms")),
@@ -879,7 +879,7 @@ class LocalRepository:
                     Exception,
                     e,
                 )
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
 
         # discard cache
         self.clearCache()
@@ -1067,7 +1067,7 @@ class LocalRepository:
                 mypath = os.path.join(mydest,os.path.basename(myatom)+etpConst['packagesext'])
                 if os.path.isfile(mypath):
                     os.remove(mypath)
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 mytxt = "%s: %s: %s, %s." % (
                     bold(_("WARNING")),
                     red(_("Cannot complete quickpkg for atom")),

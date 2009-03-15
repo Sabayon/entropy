@@ -429,7 +429,7 @@ class Server(SocketHost):
                 queue_id = self.ManagerQueue['queue_order'].pop(0)
                 return self.ManagerQueue['queue'].pop(queue_id), queue_id
         except (IndexError,KeyError,):
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
         return None, None
 
     def _queue_copy_obj(self, obj):
@@ -479,7 +479,7 @@ class Server(SocketHost):
             done, result = self.SystemExecutor.execute_task(command_data)
         except Exception, e:
             if self.QueueLock.locked(): self.QueueLock.release()
-            self.entropyTools.printTraceback()
+            self.entropyTools.print_traceback()
             done = False
             result = (False, unicode(e),)
 

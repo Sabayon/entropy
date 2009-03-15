@@ -453,7 +453,7 @@ class SocketHost:
 
                     self.data_counter = None
                 except ValueError:
-                    #self.entropyTools.printTraceback()
+                    #self.entropyTools.print_traceback()
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
@@ -592,7 +592,7 @@ class SocketHost:
                         )
                     )
                     # print exception
-                    tb = self.entropyTools.getTraceback()
+                    tb = self.entropyTools.get_traceback()
                     print tb
                     self.server.processor.HostInterface.socketLog.write(tb)
                     break
@@ -738,7 +738,7 @@ class SocketHost:
                             e,
                         )
                     )
-                    tb = self.entropyTools.getTraceback()
+                    tb = self.entropyTools.get_traceback()
                     print tb
                     self.server.processor.HostInterface.socketLog.write(tb)
                     return "close"
@@ -749,7 +749,7 @@ class SocketHost:
                             e,
                         )
                     )
-                    tb = self.entropyTools.getTraceback()
+                    tb = self.entropyTools.get_traceback()
                     print tb
                     self.server.processor.HostInterface.socketLog.write(tb)
                     return "close"
@@ -817,7 +817,7 @@ class SocketHost:
                     return "close"
                 except Exception, e:
                     # write to self.HostInterface.socketLog
-                    tb = self.entropyTools.getTraceback()
+                    tb = self.entropyTools.get_traceback()
                     print tb
                     self.HostInterface.socketLog.write(tb)
                     # store error

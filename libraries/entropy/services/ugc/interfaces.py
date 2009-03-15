@@ -1766,7 +1766,7 @@ class Client:
             data = self.receive()
         except self.socket.error, e:
             if etpUi['debug']:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 import pdb
                 pdb.set_trace()
             if e[0] == 32: # broken pipe
@@ -1852,7 +1852,7 @@ class Client:
                                 header = self.output_header
                             )
                         if etpUi['debug']:
-                            self.entropyTools.printTraceback()
+                            self.entropyTools.print_traceback()
                             import pdb
                             pdb.set_trace()
                         return None

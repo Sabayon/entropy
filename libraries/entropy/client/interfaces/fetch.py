@@ -343,7 +343,7 @@ class Fetchers:
                     type = "warning",
                     header = red("   ## ")
                 )
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             # not found

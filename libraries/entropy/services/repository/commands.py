@@ -235,7 +235,7 @@ class Repository(SocketCommands):
                     trigger_unicode = True
                 )
             except:
-                tb = self.entropyTools.getTraceback()
+                tb = self.entropyTools.get_traceback()
                 print tb
                 self.HostInterface.socketLog.write(tb)
                 dbconn.closeDB()

@@ -173,7 +173,7 @@ class PortagePlugin:
             filename = etpConst['spmlogfile'],
             header = "[spm]"
         )
-        self.entropyTools.printTraceback(f = spmLog)
+        self.entropyTools.print_traceback(f = spmLog)
         spmLog.flush()
         spmLog.close()
 
@@ -962,7 +962,7 @@ class PortagePlugin:
                     deps = self.usedeps_reduce(deps)
                 deps = ' '.join(deps)
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 self.updateProgress(
                     darkred("%s: %s: %s :: %s") % (
                         _("Error calculating dependencies"),
