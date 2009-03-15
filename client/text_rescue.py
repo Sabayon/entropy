@@ -57,7 +57,7 @@ def database(options):
         return -10
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = _("You are not root")
         print_error(red(mytxt+"."))
         return 1
@@ -670,7 +670,7 @@ def updater(options):
         return -10
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = _("You are not") # you are not root
         print_error(red(mytxt)+bold("root")+red("."))
         return 1

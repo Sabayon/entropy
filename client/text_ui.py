@@ -165,7 +165,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     skipfirst = False, human = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -567,7 +567,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
 def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -610,7 +610,7 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
 def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1108,7 +1108,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 def configurePackages(packages = []):
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1188,7 +1188,7 @@ def configurePackages(packages = []):
 def removePackages(packages = [], atomsdata = [], deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False, human = False):
 
     # check if I am root
-    if (not Equo.entropyTools.isRoot()):
+    if (not Equo.entropyTools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True

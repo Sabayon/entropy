@@ -144,7 +144,7 @@ for opt in options:
         _options.append(opt)
 options = _options
 
-if not entropyTools.isRoot():
+if not entropyTools.is_root():
     print_error("you must be root in order to run "+sys.argv[0])
 
 elif (options[0] == "update"):
