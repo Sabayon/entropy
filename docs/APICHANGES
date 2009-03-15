@@ -48,7 +48,6 @@ From SVN 3112 there have been several API changes:
         entropyCompareVersions => entropy_compare_versions
         getNewerVersion => get_newer_version
         getEntropyNewerVersion => get_entropy_newer_version
-        getNewerVersionTag => get_newer_version_tag
         filterDuplicatedEntries => filter_duplicated_entries
         extractFTPHostFromUri => extract_ftp_host_from_uri
         spawnFunction => spawn_function
@@ -81,6 +80,7 @@ From SVN 3112 there have been several API changes:
         extractDuplicatedEntries
         spawnCommand
         convertUnixTimeToMtime
+        getNewerVersionTag
 
   - EquoInterface (now entropy.client.interfaces.Client) API changes:
 
