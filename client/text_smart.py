@@ -201,7 +201,7 @@ def InflateHandler(mytbz2s, savedir):
         myQA = Equo.QA()
         myQA.scan_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
-        Equo.entropyTools.aggregateEdb(tbz2file = etptbz2path, dbfile = dbpath)
+        Equo.entropyTools.aggregate_edb(tbz2file = etptbz2path, dbfile = dbpath)
         os.remove(dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Inflated package"),))+etptbz2path)
 
@@ -212,7 +212,7 @@ def DeflateHandler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflating"),))+tbz2, back = True)
-        mytbz2 = Equo.entropyTools.removeEdb(tbz2,savedir)
+        mytbz2 = Equo.entropyTools.remove_edb(tbz2,savedir)
         tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
         tbz2name = Equo.entropyTools.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(mytbz2)+"/"+tbz2name
@@ -229,7 +229,7 @@ def ExtractHandler(mytbz2s, savedir):
         if os.path.isfile(dbpath):
             os.remove(dbpath)
         # extract
-        out = Equo.entropyTools.extractEdb(tbz2,dbpath = dbpath)
+        out = Equo.entropyTools.extract_edb(tbz2,dbpath = dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracted Entropy metadata from"),))+out)
 
     return 0
@@ -311,7 +311,7 @@ def smartpackagegenerator(matchedPackages):
     tmpdbfile = dbfile+"--readingdata"
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
-        Equo.entropyTools.extractEdb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'],tmpdbfile)
+        Equo.entropyTools.extract_edb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'],tmpdbfile)
         # read db and add data to mergeDbconn
         mydbconn = Equo.open_generic_database(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
@@ -320,7 +320,7 @@ def smartpackagegenerator(matchedPackages):
             data = mydbconn.getPackageData(myidpackage)
             if len(idpackages) == 1:
                 # just a plain package that would like to become smart
-                xpakdata = Equo.entropyTools.readXpak(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'])
+                xpakdata = Equo.entropyTools.read_xpak(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'])
             else:
                 xpakdata = mydbconn.retrieveXpakMetadata(myidpackage) # already a smart package
             # add
@@ -357,7 +357,7 @@ def smartpackagegenerator(matchedPackages):
         print_error(darkred(" * ")+red("%s." % (_("Compressed file does not exist"),)))
         return 1
 
-    Equo.entropyTools.aggregateEdb(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],dbfile)
+    Equo.entropyTools.aggregate_edb(etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'],dbfile)
     print_info("\t"+etpConst['smartpackagesdir']+"/"+atoms+etpConst['packagesext'])
     shutil.rmtree(unpackdir,True)
     return 0

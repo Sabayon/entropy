@@ -1235,7 +1235,7 @@ class Trigger:
         bz2envfile = os.path.join(ebuild_path,"environment.bz2")
         if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
             import bz2
-            envfile = self.Entropy.entropyTools.unpackBzip2(bz2envfile)
+            envfile = self.Entropy.entropyTools.unpack_bzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile,"w")
             f = open(envfile,"r")
             line = f.readline()

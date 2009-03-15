@@ -102,7 +102,7 @@ def database(options):
         # ok, he/she knows it... hopefully
         # if exist, copy old database
         print_info(red(" @@ ")+blue(_("Creating backup of the previous database, if exists."))+red(" @@"))
-        newfile = Equo.entropyTools.backupClientDatabase()
+        newfile = Equo.entropyTools.backup_client_repository()
         if (newfile):
             print_info(red(" @@ ")+blue(_("Previous database copied to file"))+" "+newfile+red(" @@"))
 
@@ -141,7 +141,7 @@ def database(options):
             f = open(temptbz2,"wb")
             f.flush()
             f.close()
-            Equo.entropyTools.appendXpak(temptbz2,portagePackage)
+            Equo.entropyTools.append_xpak(temptbz2,portagePackage)
             # now extract info
             try:
                 mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
@@ -254,7 +254,7 @@ def database(options):
         # ok, he/she knows it... hopefully
         # if exist, copy old database
         print_info(red(" @@ ")+blue(_("Creating backup of the previous database, if exists.")))
-        newfile = Equo.entropyTools.backupClientDatabase()
+        newfile = Equo.entropyTools.backup_client_repository()
         if (newfile):
             print_info(red(" @@ ")+blue(_("Previous database copied to file"))+" "+newfile)
 
@@ -573,7 +573,7 @@ def database(options):
                 f = open(temptbz2,"wb")
                 f.flush()
                 f.close()
-                Equo.entropyTools.appendXpak(temptbz2,atom)
+                Equo.entropyTools.append_xpak(temptbz2,atom)
                 # now extract info
                 try:
                     mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)

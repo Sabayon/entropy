@@ -243,7 +243,7 @@ class Package:
                         f.write(xpakdata)
                         f.flush()
                         f.close()
-                        self.infoDict['xpakstatus'] = self.entropyTools.unpackXpak(
+                        self.infoDict['xpakstatus'] = self.entropyTools.unpack_xpak(
                             xpakPath,
                             self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
                         )
@@ -251,7 +251,7 @@ class Package:
                         self.infoDict['xpakstatus'] = None
                     del xpakdata
                 else:
-                    self.infoDict['xpakstatus'] = self.entropyTools.extractXpak(
+                    self.infoDict['xpakstatus'] = self.entropyTools.extract_xpak(
                         self.infoDict['pkgpath'],
                         self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
                     )

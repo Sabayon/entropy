@@ -2191,7 +2191,7 @@ class Server:
             x = itemdata[0]
             hash_file = x+etpConst['packageshashfileext']
             if not os.path.isfile(hash_file):
-                self.entropyTools.createHashFile(x)
+                self.entropyTools.create_hash_file(x)
             myqueue.append(hash_file)
             myqueue.append(x)
 

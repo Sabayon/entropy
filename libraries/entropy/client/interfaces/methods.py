@@ -372,7 +372,7 @@ class Repository:
         if os.path.isdir(db_dir):
             shutil.rmtree(db_dir)
         os.makedirs(db_dir)
-        dbfile = self.entropyTools.extractEdb(tbz2file,
+        dbfile = self.entropyTools.extract_edb(tbz2file,
             dbpath = db_dir+"/packages.db")
         if dbfile == None:
             return -1,atoms_contained
@@ -1304,7 +1304,7 @@ class Misc:
             dbconn.bumpTreeUpdatesActions(treeupdates_actions)
         dbconn.commitChanges()
         dbconn.closeDB()
-        self.entropyTools.aggregateEdb(tbz2file = package_filename, dbfile = dbpath)
+        self.entropyTools.aggregate_edb(tbz2file = package_filename, dbfile = dbpath)
         return dbpath
 
     def get_tmp_dbpath(self):

@@ -324,7 +324,7 @@ class Extractors:
             if os.path.lexists(tbz2TmpDir):
                 os.remove(tbz2TmpDir)
             os.makedirs(tbz2TmpDir)
-        self.entropyTools.extractXpak(tbz2File,tbz2TmpDir)
+        self.entropyTools.extract_xpak(tbz2File,tbz2TmpDir)
 
         data['injected'] = False
         if inject: data['injected'] = True
