@@ -658,7 +658,7 @@ class SpritzApplication(Controller):
             mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
             myurl = ' '.join(mydata[1:])
 
-            pix_tmp_path = entropy.tools.getRandomTempFile()
+            pix_tmp_path = entropy.tools.get_random_temp_file()
             fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
             rc = fetchConn.download()
             if rc in ("-1","-2","-3","-4"):
@@ -737,8 +737,8 @@ class SpritzApplication(Controller):
         self.dbBackupStore.clear()
         backed_up_dbs = self.Equo.list_backedup_client_databases()
         for mypath in backed_up_dbs:
-            mymtime = entropy.tools.getFileUnixMtime(mypath)
-            mytime = entropy.tools.convertUnixTimeToHumanTime(mymtime)
+            mymtime = entropy.tools.get_file_unix_mtime(mypath)
+            mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
             self.dbBackupStore.append( (mypath,os.path.basename(mypath),mytime,) )
 
     def on_console_click(self, widget, event):
@@ -1749,7 +1749,7 @@ class SpritzApplication(Controller):
         identifier, source, dest = self.__get_Edit_filename()
         if not identifier:
             return True
-        randomfile = entropy.tools.getRandomTempFile()+".diff"
+        randomfile = entropy.tools.get_random_temp_file()+".diff"
         diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
         os.system(diffcmd)
         self.runEditor(randomfile, delete = True)
@@ -1985,7 +1985,7 @@ class SpritzApplication(Controller):
         repostuff = selection.get_selected()
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
-            repodata = entropy.tools.getRepositorySettings(repoid)
+            repodata = entropy.tools.get_repository_settings(repoid)
             self.__loadRepodata(repodata)
             self.addrepo_ui.addRepoWin.show()
 

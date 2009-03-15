@@ -435,7 +435,7 @@ class SpritzQueue:
                     else:
                         size = abs(size)
                         bottom_text = _("Freed disk space")
-                    size = self.Entropy.entropyTools.bytesIntoHuman(size)
+                    size = self.Entropy.entropyTools.bytes_into_human(size)
                     confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                         install_todo+remove_todo,
                         top_text = _("These are the packages that would be installed/updated"),
@@ -508,7 +508,7 @@ class SpritzQueue:
                     else:
                         size = abs(size)
                         bottom_text = _("Needed space")
-                    size = self.Entropy.entropyTools.bytesIntoHuman(size)
+                    size = self.Entropy.entropyTools.bytes_into_human(size)
                     confirmDialog = self.dialogs.ConfirmationDialog(
                         self.ui.main,
                         todo,

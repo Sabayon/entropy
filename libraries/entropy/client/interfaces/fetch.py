@@ -203,7 +203,7 @@ class Fetchers:
                 )
             mytxt = " %s: %s%s%s" % (
                 blue(_("Aggregated transfer rate")),
-                bold(self.entropyTools.bytesIntoHuman(data_transfer)),
+                bold(self.entropyTools.bytes_into_human(data_transfer)),
                 darkred("/"),
                 darkblue(_("second")),
             )
@@ -435,7 +435,7 @@ class Fetchers:
                         mytxt = mirrorCountText
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
                         mytxt += red(self.entropyTools.spliturl(uri)[1])
-                        mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
+                        mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytes_into_human(data_transfer),_("second"),)
                         self.updateProgress(
                             mytxt,
                             importance = 1,

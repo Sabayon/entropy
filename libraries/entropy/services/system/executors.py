@@ -433,7 +433,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        switched = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        switched = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
 
@@ -496,7 +496,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -605,7 +605,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -639,7 +639,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -672,7 +672,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        status, result = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        status, result = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
 
@@ -713,7 +713,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -751,7 +751,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return True, 0
@@ -838,7 +838,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -956,7 +956,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -1005,7 +1005,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -1041,7 +1041,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -1075,7 +1075,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawnFunction(myfunc, write_pid_func = write_pid)
+        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata

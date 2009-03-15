@@ -321,7 +321,7 @@ class rssFeed:
         self.__feed_editor = etpConst['rss-managing-editor']
         self.__feed_copyright = "%s - (C) %s" % (
             etpConst['systemname'],
-            self.entropyTools.getYear(),
+            self.entropyTools.get_year(),
         )
 
         self.__file = filename

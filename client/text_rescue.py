@@ -629,8 +629,8 @@ def database(options):
         mydblist = []
         db_data = []
         for mydb in dblist:
-            ts = Equo.entropyTools.getFileUnixMtime(mydb)
-            mytime = Equo.entropyTools.convertUnixTimeToHumanTime(ts)
+            ts = Equo.entropyTools.get_file_unix_mtime(mydb)
+            mytime = Equo.entropyTools.convert_unix_time_to_human_time(ts)
             mydblist.append("[%s] %s" % (mytime,mydb,))
             db_data.append(mydb)
 

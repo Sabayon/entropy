@@ -568,7 +568,7 @@ class SocketHost:
                     self.fork_lock_release()
             else:
                 self.do_handle()
-            #self.entropyTools.spawnFunction(self.do_handle)
+            #self.entropyTools.spawn_function(self.do_handle)
 
         def do_handle(self):
 
@@ -950,7 +950,7 @@ class SocketHost:
                 if logged_in != None:
                     uid = logged_in
                     gid = etpConst['entropygid']
-            return self.entropyTools.spawnFunction(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
+            return self.entropyTools.spawn_function(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
 
         def _do_fork(self, f, authenticator, uid, gid, *args, **kwargs):
             authenticator.set_exc_permissions(uid,gid)
@@ -1773,7 +1773,7 @@ class SocketHost:
             self.sessions[rng]['compression'] = None
             self.sessions[rng]['stream_mode'] = False
             try:
-                self.sessions[rng]['stream_path'] = self.entropyTools.getRandomTempFile()
+                self.sessions[rng]['stream_path'] = self.entropyTools.get_random_temp_file()
             except (IOError,OSError,):
                 self.sessions[rng]['stream_path'] = ''
             self.sessions[rng]['t'] = time.time()

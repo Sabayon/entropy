@@ -336,7 +336,7 @@ def smartpackagegenerator(matchedPackages):
     # merge packages
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("unpacking content"))
-        rc = Equo.entropyTools.uncompressTarBz2(etpConst['entropyworkdir']+"/"+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
+        rc = Equo.entropyTools.uncompress_tar_bz2(etpConst['entropyworkdir']+"/"+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
         if rc != 0:
             print_error(darkred(" * ")+red("%s." % (_("Unpack failed due to unknown reasons"),)))
             return rc
@@ -458,7 +458,7 @@ def smartgenerator(atomInfo, emptydeps = False):
     os.makedirs(pkgdatadir)
     mainBinaryPath = os.path.join(etpConst['packagesbindir'],pkgbranch,pkgfilename)
     print_info(darkgreen(" * ")+red("%s " % (_("Unpacking the main package"),))+bold(str(pkgfilename)))
-    entropyTools.uncompressTarBz2(mainBinaryPath,pkgdatadir) # first unpack
+    entropyTools.uncompress_tar_bz2(mainBinaryPath,pkgdatadir) # first unpack
 
     binaryExecs = []
     for item in pkgcontent:
@@ -476,7 +476,7 @@ def smartgenerator(atomInfo, emptydeps = False):
         depatom = mydbconn.retrieveAtom(dep[0])
         print_info(darkgreen(" * ")+red("%s " % (_("Unpacking dependency package"),))+bold(depatom))
         deppath = os.path.join(etpConst['packagesbindir'],depbranch,download)
-        entropyTools.uncompressTarBz2(deppath,pkgdatadir) # first unpack
+        entropyTools.uncompress_tar_bz2(deppath,pkgdatadir) # first unpack
 
     # now create the bash script for each binaryExecs
     os.makedirs(pkgdatadir+"/wrp")

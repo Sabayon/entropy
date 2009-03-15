@@ -298,7 +298,7 @@ class urlFetcher:
         self.__datatransfer = (self.__downloadedsize-self.__startingposition) / self.__elapsed
         try:
             self.__time_remaining_secs = int(round((int(round(self.__remotesize*1024,0))-int(round(self.__downloadedsize,0)))/self.__datatransfer,0))
-            self.__time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.__time_remaining_secs)
+            self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
         except:
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
@@ -338,7 +338,7 @@ class urlFetcher:
                 bartext += " "
                 diffbarsize -= 1
             if self.__show_speed:
-                bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(self.__datatransfer),)
+                bartext += "] => %s" % (self.entropyTools.bytes_into_human(self.__datatransfer),)
                 bartext += "/%s : %s: %s" % (sec_txt,eta_txt,self.__time_remaining,)
             else:
                 bartext += "]"
@@ -536,7 +536,7 @@ class MultipleUrlFetcher:
         self.__average = average
         update_step = update_step/pdlen
         self.__time_remaining_sec = time_remaining
-        time_remaining = self.entropyTools.convertSecondsToFancyOutput(time_remaining)
+        time_remaining = self.entropyTools.convert_seconds_to_fancy_output(time_remaining)
 
         if ((average > self.__old_average+update_step) or \
             (self.__first_refreshes > 0)) and self.__show_progress:
@@ -559,7 +559,7 @@ class MultipleUrlFetcher:
                 bartext += " "
                 diffbarsize -= 1
             if self.__show_speed:
-                bartext += "] => %s" % (self.entropyTools.bytesIntoHuman(data_transfer),)
+                bartext += "] => %s" % (self.entropyTools.bytes_into_human(data_transfer),)
                 bartext += "/%s : %s: %s" % (sec_txt,eta_txt,time_remaining,)
             else:
                 bartext += "]"
@@ -969,7 +969,7 @@ class FtpInterface:
         self.__datatransfer = (self.__transfersize-self.__startingposition) / self.__elapsed
         try:
             self.__time_remaining_secs = int(round((int(round(self.__filesize*1024,0))-int(round(self.__transfersize,0)))/self.__datatransfer,0))
-            self.__time_remaining = self.entropyTools.convertSecondsToFancyOutput(self.__time_remaining_secs)
+            self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
         except:
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
@@ -993,7 +993,7 @@ class FtpInterface:
             currentText = brown("    <-> %s: " % (mytxt,)) + \
                 darkgreen(str(myUploadSize)) + "/" + red(str(self.__filesize)) + " kB " + \
                 brown("[") + str(myUploadPercentage) + brown("]") + " " + self.__time_remaining + \
-                " " + self.entropyTools.bytesIntoHuman(self.__datatransfer) + "/"+_("sec")
+                " " + self.entropyTools.bytes_into_human(self.__datatransfer) + "/"+_("sec")
             # WARN: re-enabled updateProgress, this may cause slowdowns
             # print_info(currentText, back = True)
             self.Entropy.updateProgress(currentText, back = True)

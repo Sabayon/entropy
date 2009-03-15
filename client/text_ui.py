@@ -815,7 +815,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 print_info(red(" @@ ")+mytxt)
 
             if downloadSize > 0:
-                mysize = str(Equo.entropyTools.bytesIntoHuman(downloadSize))
+                mysize = str(Equo.entropyTools.bytes_into_human(downloadSize))
             else:
                 mysize = "0b"
             mytxt = "%s: %s" % (
@@ -831,7 +831,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 deltaSize = deltaSize*-1
             mytxt = "%s: %s" % (
                 blue(mysizetxt),
-                bold(str(Equo.entropyTools.bytesIntoHuman(deltaSize))),
+                bold(str(Equo.entropyTools.bytes_into_human(deltaSize))),
             )
             print_info(red(" @@ ")+mytxt)
 
@@ -840,7 +840,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
             mytxt = "%s: %s %s" % (
                 blue(_("You need at least")),
-                blue(str(Equo.entropyTools.bytesIntoHuman(neededSize))),
+                blue(str(Equo.entropyTools.bytes_into_human(neededSize))),
                 _("of free space"),
             )
             print_info(red(" @@ ")+mytxt)
@@ -1276,7 +1276,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
             installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
             disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
-            disksize = Equo.entropyTools.bytesIntoHuman(disksize)
+            disksize = Equo.entropyTools.bytes_into_human(disksize)
             disksizeinfo = " | %s: %s" % (blue(_("Disk size")),bold(str(disksize)),)
             mytxt = " | %s: " % (_("Installed from"),)
             print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+mytxt+red(installedfrom)+disksizeinfo)
@@ -1320,7 +1320,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                         continue
                     installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
                     disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
-                    disksize = Equo.entropyTools.bytesIntoHuman(disksize)
+                    disksize = Equo.entropyTools.bytes_into_human(disksize)
                     repositoryInfo = bold("[")+darkgreen("%s:" % (_("from"),) )+brown(installedfrom)+bold("]")
                     stratomscounter = str(atomscounter)
                     while len(stratomscounter) < len(totalatoms):

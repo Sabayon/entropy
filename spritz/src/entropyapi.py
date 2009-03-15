@@ -345,7 +345,7 @@ class GuiUrlFetcher(urlFetcher):
             self.progress.set_extraLabel("%s/%s kB @ %s" % (
                                             str(round(float(self.__downloadedsize)/1024,1)),
                                             str(round(self.__remotesize,1)),
-                                            str(self.entropyTools.bytesIntoHuman(self.__datatransfer))+"/sec",
+                                            str(self.entropyTools.bytes_into_human(self.__datatransfer))+"/sec",
                                         )
             )
             self.gui_last_avg = myavg

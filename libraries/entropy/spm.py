@@ -1484,7 +1484,7 @@ class PortagePlugin:
     def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = [], fork = False):
         if fork:
             # memory leak: some versions of portage were memleaking here
-            return self.entropyTools.spawnFunction(
+            return self.entropyTools.spawn_function(
                 self._portage_doebuild, myebuild,
                 mydo, tree, cpv,
                 portage_tmpdir, licenses

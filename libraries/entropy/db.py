@@ -2288,7 +2288,7 @@ class LocalRepository:
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
 
-        mytime = str(self.entropyTools.getCurrentUnixTime())
+        mytime = str(self.entropyTools.get_current_unix_time())
         with self.WriteLock:
             myupdates = [
                 (repository,x,branch,mytime,) for x in actions \

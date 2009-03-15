@@ -879,7 +879,7 @@ class RepositoryManagerMenu(MenuSkel):
             obj['atom'],
             cleanMarkupString(obj['description']),
             _("Size"),
-            self.entropyTools.bytesIntoHuman(obj['size']),
+            self.entropyTools.bytes_into_human(obj['size']),
             _("Branch"),
             obj['branch'],
             _("Slot"),
@@ -2499,7 +2499,7 @@ class RepositoryManagerMenu(MenuSkel):
                             pkg_item = {
                                 'from': "pkg",
                                 'filename': os.path.basename(mypath),
-                                'size': self.entropyTools.bytesIntoHuman(mysize),
+                                'size': self.entropyTools.bytes_into_human(mysize),
                                 'color': color,
                                 'repoid': repoid,
                                 'run': (repoid,False,True,)
@@ -3709,7 +3709,7 @@ class PkgInfoMenu(MenuSkel):
                     _("Identifier"),
                     obj['iddoc'],
                     _("Size"),
-                    self.entropyTools.bytesIntoHuman(obj['size']),
+                    self.entropyTools.bytes_into_human(obj['size']),
                     _("Author"),
                     obj['username'],
                     obj['ts'],
@@ -4638,7 +4638,7 @@ class UGCInfoMenu(MenuSkel):
         self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (unicode(self.ugc_data['username'],'raw_unicode_escape'),))
         self.ugcinfo_ui.dateContent.set_markup("<u>%s</u>" % (self.ugc_data['ts'],))
         self.ugcinfo_ui.keywordsContent.set_markup("%s" % (unicode(', '.join(self.ugc_data['keywords']),'raw_unicode_escape'),))
-        self.ugcinfo_ui.sizeContent.set_markup("%s" % (self.entropyTools.bytesIntoHuman(self.ugc_data['size']),))
+        self.ugcinfo_ui.sizeContent.set_markup("%s" % (self.entropyTools.bytes_into_human(self.ugc_data['size']),))
 
         bold_items = [
             self.ugcinfo_ui.titleLabel,

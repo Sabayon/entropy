@@ -387,11 +387,11 @@ class EntropyPackage:
 
     def getDownSizeFmt(self):
         if self.pkgset: return 0
-        return EquoIntf.entropyTools.bytesIntoHuman(self.dbconn.retrieveSize(self.matched_id))
+        return EquoIntf.entropyTools.bytes_into_human(self.dbconn.retrieveSize(self.matched_id))
 
     def getDiskSizeFmt(self):
         if self.pkgset: return 0
-        return EquoIntf.entropyTools.bytesIntoHuman(self.dbconn.retrieveOnDiskSize(self.matched_id))
+        return EquoIntf.entropyTools.bytes_into_human(self.dbconn.retrieveOnDiskSize(self.matched_id))
 
     def getArch(self):
         return etpConst['currentarch']
@@ -402,7 +402,7 @@ class EntropyPackage:
 
     def getEpochFmt(self):
         if self.pkgset: return 0
-        return EquoIntf.entropyTools.convertUnixTimeToHumanTime(float(self.dbconn.retrieveDateCreation(self.matched_id)))
+        return EquoIntf.entropyTools.convert_unix_time_to_human_time(float(self.dbconn.retrieveDateCreation(self.matched_id)))
 
     def getRel(self):
         if self.pkgset: return etpConst['branch']

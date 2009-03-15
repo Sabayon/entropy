@@ -160,7 +160,7 @@ class SecurityInterface:
         return 0
 
     def __unpack_advisories(self):
-        rc = self.entropyTools.uncompressTarBz2(
+        rc = self.entropyTools.uncompress_tar_bz2(
             self.download_package,
             self.unpacked_package,
             catchEmpty = True

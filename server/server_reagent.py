@@ -580,8 +580,8 @@ def database(options):
         mydblist = []
         db_data = []
         for mydb in dblist:
-            ts = Entropy.entropyTools.getFileUnixMtime(mydb)
-            mytime = Entropy.entropyTools.convertUnixTimeToHumanTime(ts)
+            ts = Entropy.entropyTools.get_file_unix_mtime(mydb)
+            mytime = Entropy.entropyTools.convert_unix_time_to_human_time(ts)
             mydblist.append("[%s] %s" % (mytime,mydb,))
             db_data.append(mydb)
 

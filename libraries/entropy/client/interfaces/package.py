@@ -186,8 +186,8 @@ class Package:
             while 1:
                 unpack_tries -= 1
                 try:
-                    rc = self.entropyTools.spawnFunction(
-                        self.entropyTools.uncompressTarBz2,
+                    rc = self.entropyTools.spawn_function(
+                        self.entropyTools.uncompress_tar_bz2,
                         self.infoDict['pkgpath'],
                         self.infoDict['imagedir'],
                         catchEmpty = True
@@ -198,7 +198,7 @@ class Package:
                 except (UnicodeEncodeError,UnicodeDecodeError,):
                     # this will make devs to actually catch the right exception and prepare a fix
                     self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Raising Unicode Error for "+self.infoDict['pkgpath'])
-                    rc = self.entropyTools.uncompressTarBz2(
+                    rc = self.entropyTools.uncompress_tar_bz2(
                         self.infoDict['pkgpath'],self.infoDict['imagedir'],
                         catchEmpty = True
                     )
@@ -919,7 +919,7 @@ class Package:
             formattedContent = True)
 
         # update datecreation
-        ctime = self.entropyTools.getCurrentUnixTime()
+        ctime = self.entropyTools.get_current_unix_time()
         self.Entropy.clientDbconn.setDateCreation(idpackage, str(ctime))
 
         # add idpk to the installedtable
@@ -1299,7 +1299,7 @@ class Package:
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
                 mytxt += red(self.entropyTools.spliturl(url)[1])
-                mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytesIntoHuman(data_transfer),_("second"),)
+                mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytes_into_human(data_transfer),_("second"),)
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 1,

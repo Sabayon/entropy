@@ -57,7 +57,7 @@ class Server:
         )
         mytxt = _("mirror")
         for mirror in self.Entropy.get_remote_mirrors(repo):
-            mirror = self.entropyTools.hideFTPpassword(mirror)
+            mirror = self.entropyTools.hide_ftp_password(mirror)
             self.Entropy.updateProgress(
                 blue("%s: %s") % (mytxt,darkgreen(mirror),),
                 importance = 0,
@@ -673,7 +673,7 @@ class Server:
         if repo == None: repo = self.Entropy.default_repository
         mirrors = self.Entropy.get_remote_mirrors(repo)
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        mytmpdir = self.entropyTools.getRandomTempFile()
+        mytmpdir = self.entropyTools.get_random_temp_file()
         os.makedirs(mytmpdir)
 
         self.Entropy.updateProgress(
@@ -979,7 +979,7 @@ class Server:
             extra_text_files.append(myfile)
 
         make_profile = etpConst['spm']['global_make_profile']
-        mytmpdir = os.path.dirname(self.Entropy.entropyTools.getRandomTempFile())
+        mytmpdir = os.path.dirname(self.Entropy.entropyTools.get_random_temp_file())
         mytmpfile = os.path.join(mytmpdir,etpConst['spm']['global_make_profile_link_name'])
         extra_text_files.append(mytmpfile)
         if os.path.islink(make_profile):
@@ -1439,7 +1439,7 @@ class Server:
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
             download_data, critical, text_files = self.get_files_to_sync(cmethod, download = True, repo = repo)
-            mytmpdir = self.entropyTools.getRandomTempFile()
+            mytmpdir = self.entropyTools.get_random_temp_file()
             os.makedirs(mytmpdir)
 
             self.Entropy.updateProgress(
@@ -1760,7 +1760,7 @@ class Server:
         # show stats
         for itemdata in upload:
             package = darkgreen(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
+            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1774,7 +1774,7 @@ class Server:
             )
         for itemdata in download:
             package = darkred(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
+            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1788,7 +1788,7 @@ class Server:
             )
         for itemdata in copy:
             package = darkblue(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
+            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1802,7 +1802,7 @@ class Server:
             )
         for itemdata in removal:
             package = brown(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytesIntoHuman(itemdata[1]))
+            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1846,7 +1846,7 @@ class Server:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                 darkred(_("Total removal size")),
-                darkred(self.entropyTools.bytesIntoHuman(metainfo['removal'])),
+                darkred(self.entropyTools.bytes_into_human(metainfo['removal'])),
             ),
             importance = 0,
             type = "info",
@@ -1856,7 +1856,7 @@ class Server:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                 blue(_("Total upload size")),
-                blue(self.entropyTools.bytesIntoHuman(metainfo['upload'])),
+                blue(self.entropyTools.bytes_into_human(metainfo['upload'])),
             ),
             importance = 0,
             type = "info",
@@ -1865,7 +1865,7 @@ class Server:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                 brown(_("Total download size")),
-                brown(self.entropyTools.bytesIntoHuman(metainfo['download'])),
+                brown(self.entropyTools.bytes_into_human(metainfo['download'])),
             ),
             importance = 0,
             type = "info",
@@ -2117,7 +2117,7 @@ class Server:
                         brown(branch),
                         blue(_("removing package+hash")),
                         darkgreen(remove_filename),
-                        blue(self.entropyTools.bytesIntoHuman(itemdata[1])),
+                        blue(self.entropyTools.bytes_into_human(itemdata[1])),
                 ),
                 importance = 0,
                 type = "info",
@@ -2533,7 +2533,7 @@ class Server:
         pkg_path += etpConst['packagesexpirationfileext']
         if not os.path.isfile(pkg_path):
             return False
-        mtime = self.entropyTools.getFileUnixMtime(pkg_path)
+        mtime = self.entropyTools.get_file_unix_mtime(pkg_path)
         delta = int(etpConst['packagesexpirationdays'])*24*3600
         currmtime = time.time()
         file_delta = currmtime - mtime

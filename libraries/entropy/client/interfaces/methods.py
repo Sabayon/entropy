@@ -325,7 +325,7 @@ class Repository:
         # update etpRepositoriesOrder
         etpRepositoriesOrder.remove(repoid)
         etpRepositoriesOrder.insert(toidx,repoid)
-        self.entropyTools.writeOrderedRepositoriesEntries()
+        self.entropyTools.write_ordered_repositories_entries()
         self.Client.reload_constants()
         self.Client.repository_move_clear_cache(repoid)
         self.validate_repositories()
@@ -1038,7 +1038,7 @@ class Misc:
     def get_text_license(self, license_name, repoid):
         dbconn = self.Client.open_repository(repoid)
         text = dbconn.retrieveLicenseText(license_name)
-        tempfile = self.entropyTools.getRandomTempFile()
+        tempfile = self.entropyTools.get_random_temp_file()
         f = open(tempfile,"w")
         f.write(text)
         f.flush()

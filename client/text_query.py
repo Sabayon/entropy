@@ -464,7 +464,7 @@ def searchOrphans(Equo = None):
 
     # start to list all files on the system:
     dirs = Equo.SystemSettings['system_dirs']
-    filepath = Equo.entropyTools.getRandomTempFile()
+    filepath = Equo.entropyTools.get_random_temp_file()
     if os.path.isfile(filepath):
         os.remove(filepath)
     tdbconn = Equo.open_generic_database(filepath)
@@ -555,7 +555,7 @@ def searchOrphans(Equo = None):
             print myfile
         myfile = tdbconn.cursor.fetchone()
 
-    humansize = Equo.entropyTools.bytesIntoHuman(sizecount)
+    humansize = Equo.entropyTools.bytes_into_human(sizecount)
     if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("%s: " % (_("Total wasted space"),) )+bold(humansize))
         f.flush()
@@ -991,8 +991,8 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False, strictOutput = Fal
         mydate = dbconn.retrieveDateCreation(idpackage)
         pkgcreatedate = "N/A"
         if mydate:
-            pkgcreatedate = Equo.entropyTools.convertUnixTimeToHumanTime(float(mydate))
-        pkgsize = Equo.entropyTools.bytesIntoHuman(pkgsize)
+            pkgcreatedate = Equo.entropyTools.convert_unix_time_to_human_time(float(mydate))
+        pkgsize = Equo.entropyTools.bytes_into_human(pkgsize)
         pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
         pkgconflicts = dbconn.retrieveConflicts(idpackage)
 

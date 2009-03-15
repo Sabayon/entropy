@@ -168,7 +168,7 @@ class Extractors:
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
 
-            self.entropyTools.uncompressTarBz2(package_path, extractPath = mytempdir, catchEmpty = True)
+            self.entropyTools.uncompress_tar_bz2(package_path, extractPath = mytempdir, catchEmpty = True)
             for currentdir, subdirs, files in os.walk(mytempdir):
                 pkg_content[currentdir[len(mytempdir):]] = "dir"
                 for item in files:
@@ -224,7 +224,7 @@ class Extractors:
                 if len(foundfiles) > 1:
                     # get the latest
                     mtimes = []
-                    for item in foundfiles: mtimes.append((self.entropyTools.getFileUnixMtime(os.path.join(log_dir,item)),item))
+                    for item in foundfiles: mtimes.append((self.entropyTools.get_file_unix_mtime(os.path.join(log_dir,item)),item))
                     mtimes = sorted(mtimes)
                     elogfile = mtimes[-1][1]
                 messages = self.entropyTools.extract_elog(os.path.join(log_dir,elogfile))
@@ -316,7 +316,7 @@ class Extractors:
         data['name'] = pkgname
         data['version'] = pkgver
         data['digest'] = self.entropyTools.md5sum(tbz2File)
-        data['datecreation'] = str(self.entropyTools.getFileUnixMtime(tbz2File))
+        data['datecreation'] = str(self.entropyTools.get_file_unix_mtime(tbz2File))
         data['size'] = str(self.entropyTools.get_file_size(tbz2File))
 
         tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"

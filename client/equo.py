@@ -63,7 +63,7 @@ etpExitMessages = {
 
 myopts = [
     None,
-    (0," ~ "+etpConst['systemname']+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.getYear(),) ),
+    (0," ~ "+etpConst['systemname']+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
     None,
     (0,_('Basic Options'),0,None),
     None,

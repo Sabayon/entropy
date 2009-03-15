@@ -557,7 +557,7 @@ def showDocument(mydict, repository, pkgkey):
     )
     print_info("\t%s: %s" % (
             blue(_("Size")),
-            Equo.entropyTools.bytesIntoHuman(mydict['size']),
+            Equo.entropyTools.bytes_into_human(mydict['size']),
         )
     )
     if mydict.has_key('store_url'):
