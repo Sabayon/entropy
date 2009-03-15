@@ -2164,7 +2164,7 @@ class SpritzApplication(Controller):
             rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
         except:
             if self.do_debug:
-                entropy.tools.printTraceback()
+                entropy.tools.print_traceback()
                 import pdb; pdb.set_trace()
             else:
                 raise
@@ -2267,7 +2267,7 @@ class SpritzApplication(Controller):
             rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
         except:
             if self.do_debug:
-                entropy.tools.printTraceback()
+                entropy.tools.print_traceback()
                 import pdb; pdb.set_trace()
             else: raise
         self.resetQueueProgressBars()

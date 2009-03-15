@@ -358,7 +358,7 @@ def update(options):
             try:
                 Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
             except OSError:
-                Entropy.entropyTools.printTraceback()
+                Entropy.entropyTools.print_traceback()
                 print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))
 
     tbz2files = os.listdir(Entropy.get_local_store_directory())

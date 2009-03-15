@@ -954,7 +954,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if not logged:
                     return False, _("Login failed. Please retry.")
             except Exception, e:
-                self.entropyTools.printTraceback()
+                self.entropyTools.print_traceback()
                 return False, "%s: %s" % (_("Connection Error"),e,)
             srv.close_session(session)
             srv.disconnect()
@@ -995,7 +995,7 @@ class RepositoryManagerMenu(MenuSkel):
         return None, None
 
     def service_status_message(self, e):
-        self.entropyTools.printTraceback()
+        self.entropyTools.print_traceback()
         self.TaskQueue.append((okDialog, [self.sm_ui.repositoryManager, unicode(e)], {'title': _("Communication error")},))
 
     def get_available_repositories(self):

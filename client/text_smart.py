@@ -141,7 +141,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
         Spm = Equo.Spm()
         del Spm
     except Exception, e:
-        Equo.entropyTools.printTraceback()
+        Equo.entropyTools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
         return 1

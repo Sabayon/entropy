@@ -38,7 +38,7 @@ def test_spm():
         Spm = Equo.Spm()
         return Spm
     except Exception, e:
-        Equo.entropyTools.printTraceback()
+        Equo.entropyTools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
         return None
@@ -146,7 +146,7 @@ def database(options):
             try:
                 mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
             except Exception, e:
-                Equo.entropyTools.printTraceback()
+                Equo.entropyTools.print_traceback()
                 Equo.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -188,7 +188,7 @@ def database(options):
             try:
                 Equo.clientDbconn.atomMatch(atom)
             except Exception, e:
-                Equo.entropyTools.printTraceback()
+                Equo.entropyTools.print_traceback()
                 Equo.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
