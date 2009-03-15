@@ -190,9 +190,9 @@ def InflateHandler(mytbz2s, savedir):
         shutil.move(etptbz2path,final_tbz2path)
         etptbz2path = final_tbz2path
         # create temp database
-        dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.getRandomNumber())
+        dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.get_random_number())
         while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.getRandomNumber())
+            dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.get_random_number())
         # create
         mydbconn = Equo.open_generic_database(dbpath)
         mydbconn.initializeDatabase()
@@ -295,9 +295,9 @@ def smartpackagegenerator(matchedPackages):
         return rc[0]
 
     # create unpack dir and unpack all packages
-    unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.getRandomNumber())
+    unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.get_random_number())
     while os.path.isdir(unpackdir):
-        unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.getRandomNumber())
+        unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.get_random_number())
     if os.path.isdir(unpackdir):
         shutil.rmtree(unpackdir)
     os.makedirs(unpackdir)

@@ -2476,7 +2476,7 @@ class Server:
                     header = darkred(" !!! ")
                 )
 
-                exc_txt = self.Entropy.entropyTools.printException(returndata = True)
+                exc_txt = self.Entropy.entropyTools.print_exception(returndata = True)
                 for line in exc_txt:
                     self.Entropy.updateProgress(
                         unicode(line),

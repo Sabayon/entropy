@@ -294,7 +294,7 @@ def database(options):
             print_error(mytxt)
             return
         # spawn process
-        rnd_num = Equo.entropyTools.getRandomNumber()
+        rnd_num = Equo.entropyTools.get_random_number()
         tmpfile = os.path.join(etpConst['packagestmpdir'],"%s" % (rnd_num,))
         if os.path.isfile(tmpfile):
             os.remove(tmpfile)

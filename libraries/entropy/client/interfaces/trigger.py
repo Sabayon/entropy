@@ -429,7 +429,7 @@ class Trigger:
 
         tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
         while 1:
-            triggerfile = "%s%s" % (tg_pfx,self.Entropy.entropyTools.getRandomNumber(),)
+            triggerfile = "%s%s" % (tg_pfx,self.Entropy.entropyTools.get_random_number(),)
             if not os.path.isfile(triggerfile): break
 
         triggerdir = os.path.dirname(triggerfile)
@@ -820,9 +820,9 @@ class Trigger:
                         os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
                             os.remove(etpConst['systemroot']+"/usr/src/linux")
                     if os.path.isdir(etpConst['systemroot']+"/usr/src/linux"):
-                        mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.getRandomNumber())
+                        mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.get_random_number())
                         while os.path.isdir(mydir):
-                            mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.getRandomNumber())
+                            mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.get_random_number())
                         shutil.move(etpConst['systemroot']+"/usr/src/linux",mydir)
                     try:
                         os.symlink(todir,etpConst['systemroot']+"/usr/src/linux")

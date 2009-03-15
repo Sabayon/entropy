@@ -694,7 +694,7 @@ except IOError, e:
         raise
 except OSError, e:
     if e.errno == 28:
-        entropyTools.printException()
+        entropyTools.print_exception()
         print_error(darkred(_("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-(")))
         raise SystemExit(5)
     else:
@@ -714,7 +714,7 @@ except:
     print_error(darkred(_("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --")))
     print_error(darkgreen(_("Now I am showing you what happened. Don't panic, I'm here to help you.")))
 
-    entropyTools.printException()
+    entropyTools.print_exception()
 
     import traceback
     from entropy.qa import ErrorReportInterface
@@ -723,7 +723,7 @@ except:
         ferror = open("/tmp/equoerror.txt","w")
         traceback.print_exc(file = ferror)
         ferror.write("\nRevision: "+etpConst['entropyversion']+"\n\n")
-        exception_data = entropyTools.printException(True)
+        exception_data = entropyTools.print_exception(True)
         ferror.write("\n")
         ferror.flush()
         ferror.close()

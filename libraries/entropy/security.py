@@ -79,7 +79,7 @@ class SecurityInterface:
                             "rlt": "<" # <~
         }
 
-        self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.entropyTools.getRandomNumber()))
+        self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.entropyTools.get_random_number()))
         self.security_url = etpConst['securityurl']
         self.unpacked_package = os.path.join(self.unpackdir,"glsa_package")
         self.security_url_checksum = etpConst['securityurl']+etpConst['packageshashfileext']

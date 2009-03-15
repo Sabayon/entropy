@@ -1868,9 +1868,9 @@ class LocalRepository:
     def contentDiff(self, idpackage, dbconn, dbconn_idpackage):
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
-        randomtable = "cdiff%s" % (self.entropyTools.getRandomNumber(),)
+        randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
         while self.doesTableExist(randomtable):
-            randomtable = "cdiff%s" % (self.entropyTools.getRandomNumber(),)
+            randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
         self.cursor.execute('CREATE TEMPORARY TABLE %s ( file VARCHAR )' % (randomtable,))
 
         try:

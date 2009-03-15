@@ -327,7 +327,7 @@ class SocketHost:
                             max_conn_per_ip_barrier,
                         )
                     )
-                    rnd_num = self.entropyTools.getRandomNumber()
+                    rnd_num = self.entropyTools.get_random_number()
                     time.sleep(times[abs(hash(rnd_num))%len(times)])
 
             return True

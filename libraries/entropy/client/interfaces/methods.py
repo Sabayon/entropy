@@ -819,7 +819,7 @@ class Misc:
         # check if another instance is running
         etpConst['applicationlock'] = False
         const_setupEntropyPid(just_read = True)
-        locked = self.entropyTools.applicationLockCheck(option = None, gentle = True, silent = True)
+        locked = self.entropyTools.application_lock_check(option = None, gentle = True, silent = True)
         if locked:
             if not silent:
                 self.updateProgress(
@@ -1308,9 +1308,9 @@ class Misc:
         return dbpath
 
     def get_tmp_dbpath(self):
-        dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.getRandomNumber())
+        dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.get_random_number())
         while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.getRandomNumber())
+            dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.get_random_number())
         return dbpath
 
     def quickpkg(self, atomstring, savedir = None):

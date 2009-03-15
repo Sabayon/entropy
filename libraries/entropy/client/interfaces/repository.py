@@ -1078,7 +1078,7 @@ class Repository:
                 if os.path.lexists(system_make_conf):
                     shutil.move(
                         system_make_conf,
-                        "%s.backup_%s" % (system_make_conf,self.entropyTools.getRandomNumber(),)
+                        "%s.backup_%s" % (system_make_conf,self.entropyTools.get_random_number(),)
                     )
                 shutil.copy2(repo_make_conf,system_make_conf)
 
