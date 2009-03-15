@@ -37,6 +37,12 @@ try:
         _LOCALE = _LOCALE.split('_')[0]
         _LOCALE = _LOCALE.lower()
 
-except:
-    def _(s):
-        return s
+except (ImportError,OSError,):
+    def _(raw_string):
+        """
+        Fallback in case gettext is not available.
+
+        @param raw_string raw untranslated string
+        @return raw_string untranslated string
+        """
+        return raw_string
