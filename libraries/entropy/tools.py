@@ -31,13 +31,13 @@ import threading
 import time
 import shutil
 import tarfile
+import subprocess
 from entropy.misc import TimeScheduled, ParallelTask as parallelTask, Lifo as lifobuffer
 from entropy.output import *
 from entropy.const import *
 from entropy.exceptions import *
 
-
-def isRoot():
+def is_root():
     return not etpConst['uid']
 
 def is_user_in_entropy_group(uid = None):
@@ -71,20 +71,18 @@ def is_user_in_entropy_group(uid = None):
 def kill_threads():
     const_kill_threads()
 
-
-
-def printTraceback(f = None):
+def print_traceback(f = None):
     import traceback
     traceback.print_exc(file = f)
 
-def getTraceback():
+def get_traceback():
     import traceback
     from cStringIO import StringIO
     buf = StringIO()
     traceback.print_exc(file = buf)
     return buf.getvalue()
 
-def printException(returndata = False):
+def print_exception(returndata = False):
     import traceback
     if not returndata: traceback.print_exc()
     data = []
@@ -348,7 +346,7 @@ def movefile(src, dest, src_basedir = None):
         if stat.S_ISREG(sstat[stat.ST_MODE]):
             try: # For safety copy then move it over.
                 while 1:
-                    tmp_dest = "%s#entropy_new_%s" % (dest,getRandomNumber(),)
+                    tmp_dest = "%s#entropy_new_%s" % (dest,get_random_number(),)
                     if not os.path.lexists(tmp_dest): break
                 shutil.copyfile(src,tmp_dest)
                 os.rename(tmp_dest,dest)
@@ -405,7 +403,7 @@ def ebeep(count = 5):
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
         mycount -= 1
 
-def applicationLockCheck(option = None, gentle = False, silent = False):
+def application_lock_check(option = None, gentle = False, silent = False):
     if etpConst['applicationlock']:
         if not silent:
             print_error(red("Another instance of Equo is running. Action: ")+bold(str(option))+red(" denied."))
@@ -416,7 +414,7 @@ def applicationLockCheck(option = None, gentle = False, silent = False):
             return True
     return False
 
-def getRandomNumber():
+def get_random_number():
     try:
         return abs(hash(os.urandom(2)))%99999
     except NotImplementedError:
@@ -490,68 +488,6 @@ def getfd(filespec, readOnly = 0):
     if (readOnly):
         flags = os.O_RDONLY
     return os.open(filespec, flags)
-
-def execWithRedirect(argv, stdin = 0, stdout = 1, stderr = 2, root = '/', newPgrp = 0, ignoreTermSigs = 0):
-
-    import signal
-
-    childpid = os.fork()
-    etpSys['killpids'].add(childpid)
-    if (not childpid):
-        if (root and root != '/'):
-            os.chroot (root)
-            os.chdir("/")
-
-        if ignoreTermSigs:
-            signal.signal(signal.SIGTSTP, signal.SIG_IGN)
-            signal.signal(signal.SIGINT, signal.SIG_IGN)
-
-        stdin = getfd(stdin)
-        if stdout == stderr:
-            stdout = getfd(stdout)
-            stderr = stdout
-        else:
-            stdout = getfd(stdout)
-            stderr = getfd(stderr)
-
-        if stdin != 0:
-            os.dup2(stdin, 0)
-            os.close(stdin)
-        if stdout != 1:
-            os.dup2(stdout, 1)
-            if stdout != stderr:
-                os.close(stdout)
-        if stderr != 2:
-            os.dup2(stderr, 2)
-            os.close(stderr)
-
-        try:
-            os.execvp(argv[0], argv)
-        except OSError:
-            # let the caller deal with the exit code of 1.
-            pass
-
-        os._exit(1)
-
-    if newPgrp:
-        os.setpgid(childpid, childpid)
-        oldPgrp = os.tcgetpgrp(0)
-        os.tcsetpgrp(0, childpid)
-
-    status = -1
-    try:
-        (pid, status) = os.waitpid(childpid, 0)
-    except OSError, (errno, msg):
-        print __name__, "waitpid:", msg
-    except KeyboardInterrupt:
-        return None
-
-    if newPgrp:
-        os.tcsetpgrp(0, oldPgrp)
-
-    if childpid in etpSys['killpids']:
-        etpSys['killpids'].remove(childpid)
-    return status
 
 def uncompress_file(file_path, destination_path, opener):
     f_out = open(destination_path,"wb")
@@ -649,7 +585,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
     return True
 
-def unpackGzip(gzipfilepath):
+def unpack_gzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
     item = open(filepath,"wb")
@@ -663,7 +599,7 @@ def unpackGzip(gzipfilepath):
     item.close()
     return filepath
 
-def unpackBzip2(bzip2filepath):
+def unpack_bzip2(bzip2filepath):
     import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
     item = open(filepath,"wb")
@@ -677,9 +613,9 @@ def unpackBzip2(bzip2filepath):
     item.close()
     return filepath
 
-def backupClientDatabase():
+def backup_client_repository():
     if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-        rnd = getRandomNumber()
+        rnd = get_random_number()
         source = etpConst['etpdatabaseclientfilepath']
         dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
         shutil.copy2(source,dest)
@@ -690,20 +626,20 @@ def backupClientDatabase():
         return dest
     return ""
 
-def extractXpak(tbz2file,tmpdir = None):
+def extract_xpak(tbz2file,tmpdir = None):
     # extract xpak content
-    xpakpath = suckXpak(tbz2file, etpConst['packagestmpdir'])
-    return unpackXpak(xpakpath,tmpdir)
+    xpakpath = suck_xpak(tbz2file, etpConst['packagestmpdir'])
+    return unpack_xpak(xpakpath,tmpdir)
 
-def readXpak(tbz2file):
-    xpakpath = suckXpak(tbz2file, etpConst['entropyunpackdir'])
+def read_xpak(tbz2file):
+    xpakpath = suck_xpak(tbz2file, etpConst['entropyunpackdir'])
     f = open(xpakpath,"rb")
     data = f.read()
     f.close()
     os.remove(xpakpath)
     return data
 
-def unpackXpak(xpakfile, tmpdir = None):
+def unpack_xpak(xpakfile, tmpdir = None):
     try:
         import entropy.xpak as xpak
         if tmpdir is None:
@@ -722,8 +658,7 @@ def unpackXpak(xpakfile, tmpdir = None):
         return None
     return tmpdir
 
-
-def suckXpak(tbz2file, outputpath):
+def suck_xpak(tbz2file, outputpath):
 
     xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
     old = open(tbz2file,"rb")
@@ -777,7 +712,7 @@ def suckXpak(tbz2file, outputpath):
         pass
     return xpakpath
 
-def appendXpak(tbz2file, atom):
+def append_xpak(tbz2file, atom):
     import entropy.xpak as xpak
     from entropy.spm import Spm
     SpmIntf = Spm(None)
@@ -788,7 +723,7 @@ def appendXpak(tbz2file, atom):
         tbz2.recompose(dbdir)
     return tbz2file
 
-def aggregateEdb(tbz2file,dbfile):
+def aggregate_edb(tbz2file,dbfile):
     f = open(tbz2file,"abw")
     f.write(etpConst['databasestarttag'])
     g = open(dbfile,"rb")
@@ -800,7 +735,7 @@ def aggregateEdb(tbz2file,dbfile):
     f.flush()
     f.close()
 
-def extractEdb(tbz2file, dbpath = None):
+def extract_edb(tbz2file, dbpath = None):
     old = open(tbz2file,"rb")
     if not dbpath:
         dbpath = tbz2file[:-5]+".db"
@@ -840,7 +775,7 @@ def extractEdb(tbz2file, dbpath = None):
     old.close()
     return dbpath
 
-def removeEdb(tbz2file, savedir):
+def remove_edb(tbz2file, savedir):
     old = open(tbz2file,"rb")
     new = open(savedir+"/"+os.path.basename(tbz2file),"wb")
 
@@ -874,7 +809,7 @@ def removeEdb(tbz2file, savedir):
     return savedir+"/"+os.path.basename(tbz2file)
 
 # This function creates the .md5 file related to the given package file
-def createHashFile(tbz2filepath):
+def create_hash_file(tbz2filepath):
     md5hash = md5sum(tbz2filepath)
     hashfile = tbz2filepath+etpConst['packageshashfileext']
     f = open(hashfile,"w")
@@ -884,7 +819,7 @@ def createHashFile(tbz2filepath):
     f.close()
     return hashfile
 
-def compareMd5(filepath,checksum):
+def compare_md5(filepath,checksum):
     checksum = str(checksum)
     result = md5sum(filepath)
     result = str(result)
@@ -899,7 +834,7 @@ def md5string(string):
     return m.hexdigest()
 
 # used to properly sort /usr/portage/profiles/updates files
-def sortUpdateFiles(update_list):
+def sort_update_files(update_list):
     sort_dict = {}
     # sort per year
     for item in update_list:
@@ -920,7 +855,7 @@ def sortUpdateFiles(update_list):
     return new_list
 
 # used by equo, this function retrieves the new safe Gentoo-aware file path
-def allocateMaskedFile(file, fromfile):
+def allocate_masked_file(file, fromfile):
 
     # check if file and tofile are equal
     if os.path.isfile(file) and os.path.isfile(fromfile):
@@ -937,9 +872,12 @@ def allocateMaskedFile(file, fromfile):
         counter += 1
         txtcounter = str(counter)
         oldtxtcounter = str(counter-1)
-        for x in range(4-len(txtcounter)):
+        txtcounter_len = 4-len(txtcounter)
+        cnt = 0
+        while cnt < txtcounter_len:
             txtcounter = "0"+txtcounter
             oldtxtcounter = "0"+oldtxtcounter
+            cnt += 1
         newfile = os.path.dirname(file)+"/"+"._cfg"+txtcounter+"_"+os.path.basename(file)
         if counter > 0:
             previousfile = os.path.dirname(file)+"/"+"._cfg"+oldtxtcounter+"_"+os.path.basename(file)
@@ -967,7 +905,7 @@ def allocateMaskedFile(file, fromfile):
 
     return newfile, True
 
-def extractElog(file):
+def extract_elog(file):
 
     logline = False
     logoutput = []
@@ -1445,7 +1383,7 @@ def remove_tag(mydep):
     return mydep[:colon]
 
 def remove_entropy_revision(mydep):
-    dep = removePackageOperators(mydep)
+    dep = remove_package_operators(mydep)
     operators = mydep[:-len(dep)]
     colon = dep.rfind("~")
     if colon == -1:
@@ -1453,7 +1391,7 @@ def remove_entropy_revision(mydep):
     return operators+dep[:colon]
 
 def dep_get_entropy_revision(mydep):
-    #dep = removePackageOperators(mydep)
+    #dep = remove_package_operators(mydep)
     colon = mydep.rfind("~")
     if colon != -1:
         myrev = mydep[colon+1:]
@@ -1504,29 +1442,21 @@ def dep_gettag(dep):
         return rslt
     return None
 
-
-def removePackageOperators(atom):
-
-    if not atom:
-        return atom
-
+def remove_package_operators(atom):
     try:
-        if atom[0] in [">","<"]:
-            atom = atom[1:]
-        if atom[0] == "=":
-            atom = atom[1:]
-        if atom[0] == "~":
-            atom = atom[1:]
+        while atom:
+            if atom[0] in ('>','<','=','~',):
+                atom = atom[1:]
+                continue
+            break
     except IndexError:
         pass
-
     return atom
 
 # Version compare function taken from portage_versions.py
 # portage_versions.py -- core Portage functionality
 # Copyright 1998-2006 Gentoo Foundation
-
-def compareVersions(ver1, ver2):
+def compare_versions(ver1, ver2):
 
     if ver1 == ver2:
         return 0
@@ -1539,14 +1469,16 @@ def compareVersions(ver1, ver2):
         match2 = ver_regexp.match(ver2)
 
     # checking that the versions are valid
+    invalid = False
     if not match1:
-        return None,0
+        invalid = True
     elif not match1.groups():
-        return None,0
+        invalid = True
     elif not match2:
-        return None,1
+        invalid = True
     elif not match2.groups():
-        return None,1
+        invalid = True
+    if invalid: return None
 
     # building lists of the version parts before the suffix
     # first part is simple
@@ -1608,10 +1540,14 @@ def compareVersions(ver1, ver2):
         if s1[1] != s2[1]:
             # it's possible that the s(1|2)[1] == ''
             # in such a case, fudge it.
-            try:			r1 = int(s1[1])
-            except ValueError:	r1 = 0
-            try:			r2 = int(s2[1])
-            except ValueError:	r2 = 0
+            try:
+                r1 = int(s1[1])
+            except ValueError:
+                r1 = 0
+            try:
+                r2 = int(s2[1])
+            except ValueError:
+                r2 = 0
             return r1 - r2
 
     # the suffix part is equal to, so finally check the revision
@@ -1625,26 +1561,24 @@ def compareVersions(ver1, ver2):
         r2 = 0
     return r1 - r2
 
-'''
-   @description: compare two lists composed by [version,tag,revision] and [version,tag,revision]
-   			if listA > listB --> positive number
-			if listA == listB --> 0
-			if listA < listB --> negative number	
-   @input package: listA[version,tag,rev] and listB[version,tag,rev]
-   @output: integer number
-'''
-def entropyCompareVersions(listA,listB):
-    if len(listA) != 3 or len(listB) != 3:
-        raise InvalidDataType("InvalidDataType: listA or listB are not properly formatted.")
+def entropy_compare_versions(listA,listB):
+    '''
+    @description: compare two lists composed by [version,tag,revision] and [version,tag,revision]
+        if listA > listB --> positive number
+        if listA == listB --> 0
+        if listA < listB --> negative number	
+    @input package: listA[version,tag,rev] and listB[version,tag,rev]
+    @output: integer number
+    '''
 
     # if both are tagged, check tag first
     rc = 0
     if listA[1] and listB[1]:
         rc = cmp(listA[1],listB[1])
     if rc == 0:
-        rc = compareVersions(listA[0],listB[0])
+        rc = compare_versions(listA[0],listB[0])
 
-    if (rc == 0):
+    if rc == 0:
         # check tag
         if listA[1] > listB[1]:
             return 1
@@ -1660,12 +1594,20 @@ def entropyCompareVersions(listA,listB):
                 return 0
     return rc
 
-'''
-   @description: reorder a version list
-   @input versionlist: a list
-   @output: the ordered list
-'''
-def getNewerVersion(versions):
+def g_n_w_cmp(a,b):
+    '''
+    @description: reorder a version list
+    @input versionlist: a list
+    @output: the ordered list
+    '''
+    rc = compare_versions(a,b)
+    if rc < 0: return -1
+    elif rc > 0: return 1
+    else: return 0
+def get_newer_version(versions):
+    return sorted(versions,g_n_w_cmp,reverse = True)
+
+def get_newer_version_stable(versions):
 
     if len(versions) == 1:
         return versions
@@ -1681,25 +1623,36 @@ def getNewerVersion(versions):
                 pkgB = versionlist[x+1]
             except:
                 pkgB = "0"
-            result = compareVersions(pkgA,pkgB)
-            #print pkgA + "<->" +pkgB +" = " + str(result)
+            result = compare_versions(pkgA,pkgB)
             if result < 0:
-                # swap positions
                 versionlist[x] = pkgB
                 versionlist[x+1] = pkgA
                 change = True
-        if (not change):
+        if not change:
             rc = True
 
     return versionlist
 
 
-'''
-    descendent order
-    versions = [(version,tag,revision),(version,tag,revision)]
-'''
-def getEntropyNewerVersion(versions):
+def g_e_n_w_cmp(a,b):
+    '''
+    @description: reorder a version list
+    @input versionlist: a list
+    @output: the ordered list
+    '''
+    rc = entropy_compare_versions(a,b)
+    if rc < 0: return -1
+    elif rc > 0: return 1
+    else: return 0
 
+def get_entropy_newer_version(versions):
+    return sorted(versions,g_e_n_w_cmp,reverse = True)
+
+def get_entropy_newer_version_stable(versions):
+    '''
+        descendent order
+        versions = [(version,tag,revision),(version,tag,revision)]
+    '''
     if len(versions) == 1:
         return versions
 
@@ -1715,27 +1668,24 @@ def getEntropyNewerVersion(versions):
                 pkgB = myversions[x+1]
             except:
                 pkgB = ("0","",0)
-            result = entropyCompareVersions(pkgA,pkgB)
-            #print pkgA + "<->" +pkgB +" = " + str(result)
+            result = entropy_compare_versions(pkgA,pkgB)
             if result < 0:
-                # swap positions
                 myversions[x] = pkgB
                 myversions[x+1] = pkgA
                 change = True
-        if (not change):
+        if not change:
             rc = True
 
     return myversions
 
-'''
-   @description: reorder a list of strings converted into ascii
-   @input versionlist: a string list
-   @output: the ordered string list
-'''
-def getNewerVersionTag(InputVersionlist):
-    versionlist = InputVersionlist[:]
-    versionlist.reverse()
-    return versionlist
+
+def get_newer_version_tag(versions):
+    '''
+    @description: reorder a list of strings converted into ascii
+    @input versionlist: a string list
+    @output: the ordered string list
+    '''
+    return sorted(versions, reverse = True)
 
 def isnumber(x):
     try:
@@ -1776,7 +1726,7 @@ def istext(s):
 # this functions removes duplicates without breaking the list order
 # nameslist: a list that contains duplicated names
 # @returns filtered list
-def filterDuplicatedEntries(alist):
+def filter_duplicated_entries(alist):
     mydata = {}
     return [mydata.setdefault(e,e) for e in alist if e not in mydata]
 
@@ -1833,27 +1783,7 @@ def unescape_list(*args):
         arg_lst.append(unescape(x))
     return tuple(arg_lst)
 
-# this function returns a list of duplicated entries found in the input list
-def extractDuplicatedEntries(inputlist):
-    mycache = {}
-    newlist = set()
-    for x in inputlist:
-        z = mycache.get(x)
-        if z:
-            newlist.add(x)
-            continue
-        mycache[x] = 1
-    return newlist
-
-
-# Tool to run commands
-def spawnCommand(command, redirect = None):
-    if redirect is not None:
-        command += " "+redirect
-    rc = os.system(command)
-    return rc
-
-def extractFTPHostFromUri(uri):
+def extract_ftp_host_from_uri(uri):
     myuri = spliturl(uri)[1]
     # remove username:pass@
     myuri = myuri.split("@")[len(myuri.split("@"))-1]
@@ -1865,12 +1795,9 @@ def spliturl(url):
 
 # tar.bz2 compress function...
 def compressTarBz2(storepath,pathtocompress):
+    return subprocess.call("cd \""+pathtocompress+"\" && tar cjf \""+storepath+"\" .", "&> /dev/null", shell = True)
 
-    cmd = "tar cjf "+storepath+" ."
-    rc = spawnCommand("cd "+pathtocompress+" && "+cmd, "&> /dev/null")
-    return rc
-
-def spawnFunction(f, *args, **kwds):
+def spawn_function(f, *args, **kwds):
 
     uid = kwds.get('spf_uid')
     if uid != None: kwds.pop('spf_uid')
@@ -1921,7 +1848,7 @@ def spawnFunction(f, *args, **kwds):
         os._exit(0)
 
 # tar* uncompress function...
-def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
+def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
 
     if extractPath == None:
         extractPath = os.path.dirname(filepath)
@@ -1978,7 +1905,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
         return 0
     return -1
 
-def bytesIntoHuman(bytes):
+def bytes_into_human(bytes):
     size = str(round(float(bytes)/1024,1))
     if bytes < 1024:
         size = str(round(float(bytes)))+"b"
@@ -1989,20 +1916,13 @@ def bytesIntoHuman(bytes):
         size += "MB"
     return size
 
-# hide password from full ftp URI
-def hideFTPpassword(uri):
+def hide_ftp_password(uri):
     ftppassword = uri.split("@")[:-1]
-    if len(ftppassword) > 1:
-        ftppassword = '@'.join(ftppassword)
-        ftppassword = ftppassword.split(":")[-1]
-        if (ftppassword == ""):
-            return uri
-    else:
-        ftppassword = ftppassword[0]
-        ftppassword = ftppassword.split(":")[-1]
-        if (ftppassword == ""):
-            return uri
-
+    if not ftppassword: return uri
+    ftppassword = '@'.join(ftppassword)
+    ftppassword = ftppassword.split(":")[-1]
+    if not ftppassword:
+        return uri
     newuri = uri.replace(ftppassword,"xxxxxxxx")
     return newuri
 
@@ -2041,18 +1961,18 @@ def extract_ftp_data(ftpuri):
 
     return ftpuser, ftppassword, ftpport, ftpdir
 
-def getFileUnixMtime(path):
+def get_file_unix_mtime(path):
     return os.path.getmtime(path)
 
-def getRandomTempFile():
+def get_random_temp_file():
     if not os.path.isdir(etpConst['packagestmpdir']):
         os.makedirs(etpConst['packagestmpdir'])
-    path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(getRandomNumber()))
+    path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(get_random_number()))
     while os.path.lexists(path):
-        path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(getRandomNumber()))
+        path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(get_random_number()))
     return path
 
-def getFileTimeStamp(path):
+def get_file_timestamp(path):
     from datetime import datetime
     # used in this way for convenience
     unixtime = os.path.getmtime(path)
@@ -2065,27 +1985,18 @@ def getFileTimeStamp(path):
             outputtime += char
     return outputtime
 
-def convertUnixTimeToMtime(unixtime):
-    from datetime import datetime
-    humantime = str(datetime.fromtimestamp(unixtime))
-    outputtime = ""
-    for char in humantime:
-        if char != "-" and char != " " and char != ":":
-            outputtime += char
-    return outputtime
-
-def convertUnixTimeToHumanTime(unixtime):
+def convert_unix_time_to_human_time(unixtime):
     from datetime import datetime
     humantime = str(datetime.fromtimestamp(unixtime))
     return humantime
 
-def getCurrentUnixTime():
+def get_current_unix_time():
     return time.time()
 
-def getYear():
+def get_year():
     return time.strftime("%Y")
 
-def convertSecondsToFancyOutput(seconds):
+def convert_seconds_to_fancy_output(seconds):
 
     mysecs = seconds
     myminutes = 0
@@ -2115,70 +2026,24 @@ def convertSecondsToFancyOutput(seconds):
     output.reverse()
     return ':'.join(output)
 
-
-
-# get a list, returns a sorted list
-def alphaSorter(seq):
-    def stripter(s, goodchrs):
-        badchrs = set(s)
-        for d in goodchrs:
-            if d in badchrs:
-                badchrs.remove(d)
-        badchrs = ''.join(badchrs)
-        return s.strip(badchrs)
-
-    def chr_index(value, sortorder):
-        result = []
-        for d in stripter(value, order):
-            dindex = sortorder.find(d)
-            if dindex == -1:
-                dindex = len(sortorder)+ord(d)
-            result.append(dindex)
-        return result
-
-    order = ( '0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz' )
-    deco = [(chr_index(a, order), a) for a in seq]
-    deco.sort()
-    return list(x[1] for x in deco)
-
 # Temporary files cleaner
 def cleanup(toCleanDirs = []):
 
-    if (not toCleanDirs):
+    if not toCleanDirs:
         toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
     counter = 0
 
     for xdir in toCleanDirs:
         print_info(red(" * ")+"Cleaning "+darkgreen(xdir)+" directory...", back = True)
-	if os.path.isdir(xdir):
-	    dircontent = os.listdir(xdir)
-	    if dircontent != []:
-	        for data in dircontent:
-		    spawnCommand("rm -rf "+xdir+"/"+data)
-		    counter += 1
+        if os.path.isdir(xdir):
+            dircontent = os.listdir(xdir)
+            if dircontent != []:
+                for data in dircontent:
+                    subprocess.call(["rm","-rf",os.path.join(xdir,data)])
+                    counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
     return 0
-
-def mountProc():
-    # check if it's already mounted
-    procfiles = os.listdir("/proc")
-    if len(procfiles) > 2:
-	return True
-    else:
-	spawnCommand("mount -t proc proc /proc", "&> /dev/null")
-	return True
-
-def umountProc():
-    # check if it's already mounted
-    procfiles = os.listdir("/proc")
-    if len(procfiles) > 2:
-        spawnCommand("umount /proc", " &> /dev/null")
-        spawnCommand("umount /proc", " &> /dev/null")
-        spawnCommand("umount /proc", " &> /dev/null")
-        return True
-    else:
-        return True
 
 def flatten(l, ltypes=(list, tuple)):
   i = 0
@@ -2201,7 +2066,7 @@ def read_repositories_conf():
         f.close()
     return content
 
-def getRepositorySettings(repoid):
+def get_repository_settings(repoid):
     try:
         repodata = etpRepositories[repoid].copy()
     except KeyError:
@@ -2210,7 +2075,7 @@ def getRepositorySettings(repoid):
         repodata = etpRepositoriesExcluded[repoid].copy()
     return repodata
 
-def writeOrderedRepositoriesEntries():
+def write_ordered_repositories_entries():
     #repoOrder = [x for x in etpRepositoriesOrder if not x.endswith(".tbz2")]
     content = read_repositories_conf()
     content = [x.strip() for x in content]
@@ -2222,10 +2087,10 @@ def writeOrderedRepositoriesEntries():
             repoidline = x.split("|")[1]
             if repoid == repoidline:
                 content.append(x)
-    _saveRepositoriesContent(content)
+    _save_repositories_content(content)
 
 # etpRepositories and etpRepositoriesOrder must be already configured, see where this function is used
-def saveRepositorySettings(repodata, remove = False, disable = False, enable = False):
+def save_repository_settings(repodata, remove = False, disable = False, enable = False):
 
     if repodata['repoid'].endswith(".tbz2"):
         return
@@ -2260,13 +2125,13 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
         if not disable and not enable: # so it's a add
 
             line = "repository|%s|%s|%s|%s#%s#%s,%s" % (   repodata['repoid'],
-                                                    repodata['description'],
-                                                    ' '.join(repodata['plain_packages']),
-                                                    repodata['plain_database'],
-                                                    repodata['dbcformat'],
-                                                    repodata['service_port'],
-                                                    repodata['ssl_service_port'],
-                                                )
+                repodata['description'],
+                ' '.join(repodata['plain_packages']),
+                repodata['plain_database'],
+                repodata['dbcformat'],
+                repodata['service_port'],
+                repodata['ssl_service_port'],
+            )
 
             # seek in repolines_data for a disabled entry and remove
             to_remove = set()
@@ -2291,9 +2156,9 @@ def saveRepositorySettings(repodata, remove = False, disable = False, enable = F
             line = repolines_data[cc]['line']
             content.append(line)
 
-    _saveRepositoriesContent(content)
+    _save_repositories_content(content)
 
-def _saveRepositoriesContent(content):
+def _save_repositories_content(content):
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):
             os.remove(etpConst['repositoriesconf']+".old")
@@ -2304,7 +2169,7 @@ def _saveRepositoriesContent(content):
     f.flush()
     f.close()
 
-def writeParameterToFile(config_file, name, data):
+def write_parameter_to_file(config_file, name, data):
 
     # check write perms
     if not os.access(os.path.dirname(config_file),os.W_OK):
@@ -2346,22 +2211,17 @@ def writeParameterToFile(config_file, name, data):
     shutil.move(config_file_tmp,config_file)
     return True
 
-def writeNewBranch(branch):
-    return writeParameterToFile(etpConst['repositoriesconf'],"branch",branch)
+def write_new_branch(branch):
+    return write_parameter_to_file(etpConst['repositoriesconf'],"branch",branch)
 
-
-def isEntropyTbz2(tbz2file):
+def is_entropy_package_file(tbz2file):
     if not os.path.exists(tbz2file):
         return False
     return tarfile.is_tarfile(tbz2file)
 
-
-
 def is_valid_string(string):
-    mystring = str(string)
-    for char in mystring:
-        if ord(char) not in range(32,127):
-            return False
+    invalid = [ord(x) for x in string if ord(x) not in xrange(32,127)]
+    if invalid: return False
     return True
 
 def is_valid_path(path):
@@ -2592,7 +2452,7 @@ def extract_packages_from_set_file(filepath):
     f.close()
     return items
 
-def collectLinkerPaths():
+def collect_linker_paths():
 
     ldpaths = []
     try:
@@ -2615,7 +2475,7 @@ def collectLinkerPaths():
 
     return ldpaths
 
-def collectPaths():
+def collect_paths():
     path = set()
     paths = os.getenv("PATH")
     if paths != None:
@@ -2623,7 +2483,7 @@ def collectPaths():
         path |= paths
     return path
 
-def listToUtf8(mylist):
+def list_to_utf8(mylist):
     mynewlist = []
     for item in mylist:
         try:
@@ -2634,3 +2494,263 @@ def listToUtf8(mylist):
             except:
                 raise
     return mynewlist
+
+
+"""
+    XXX deprecated XXX
+"""
+
+def isRoot(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use is_root instead")
+    return is_root(*args, **kwargs)
+
+def printTraceback(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use print_traceback instead")
+    return print_traceback(*args, **kwargs)
+
+def getTraceback(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_traceback instead")
+    return get_traceback(*args, **kwargs)
+
+def printException(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use print_exception instead")
+    return print_exception(*args, **kwargs)
+
+def applicationLockCheck(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use application_lock_check instead")
+    return application_lock_check(*args, **kwargs)
+
+def getRandomNumber(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_random_number instead")
+    return get_random_number(*args, **kwargs)
+
+def extractXpak(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use extract_xpak instead")
+    return extract_xpak(*args, **kwargs)
+
+def readXpak(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use read_xpak instead")
+    return read_xpak(*args, **kwargs)
+
+def backupClientDatabase(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use backup_client_repository instead")
+    return backup_client_repository(*args, **kwargs)
+
+def unpackBzip2(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use unpack_bzip2 instead")
+    return unpack_bzip2(*args, **kwargs)
+
+def unpackGzip(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use unpack_gzip instead")
+    return unpack_gzip(*args, **kwargs)
+
+def unpackXpak(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use unpack_xpak instead")
+    return unpack_xpak(*args, **kwargs)
+
+def suckXpak(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use suck_xpak instead")
+    return suck_xpak(*args, **kwargs)
+
+def appendXpak(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use append_xpak instead")
+    return append_xpak(*args, **kwargs)
+
+def aggregateEdb(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use aggregate_edb instead")
+    return aggregate_edb(*args, **kwargs)
+
+def extractEdb(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use extract_edb instead")
+    return extract_edb(*args, **kwargs)
+
+def removeEdb(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use remove_edb instead")
+    return remove_edb(*args, **kwargs)
+
+def createHashFile(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use create_hash_file instead")
+    return create_hash_file(*args, **kwargs)
+
+def compareMd5(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use compare_md5 instead")
+    return compare_md5(*args, **kwargs)
+
+def sortUpdateFiles(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use sort_update_files instead")
+    return sort_update_files(*args, **kwargs)
+
+def allocateMaskedFile(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use allocate_masked_file instead")
+    return allocate_masked_file(*args, **kwargs)
+
+def extractElog(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use extract_elog instead")
+    return extract_elog(*args, **kwargs)
+
+def removePackageOperators(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use remove_pacakge_operators instead")
+    return remove_package_operators(*args, **kwargs)
+
+def compareVersions(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use compare_versions instead")
+    return compare_versions(*args, **kwargs)
+
+def entropyCompareVersions(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use entropy_compare_versions instead")
+    return entropy_compare_versions(*args, **kwargs)
+
+def getNewerVersion(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_newer_version instead")
+    return get_newer_version(*args, **kwargs)
+
+def getEntropyNewerVersion(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_entropy_newer_version instead")
+    return get_entropy_newer_version(*args, **kwargs)
+
+def getNewerVersionTag(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_newer_version_tag instead")
+    return get_newer_version_tag(*args, **kwargs)
+
+def filterDuplicatedEntries(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use filter_duplicated_entries instead")
+    return filter_duplicated_entries(*args, **kwargs)
+
+def extractFTPHostFromUri(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use extract_ftp_host_from_uri instead")
+    return extract_ftp_host_from_uri(*args, **kwargs)
+
+def spawnFunction(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use spawn_function instead")
+    return spawn_function(*args, **kwargs)
+
+def uncompressTarBz2(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use uncompress_tar_bz2 instead")
+    return uncompress_tar_bz2(*args, **kwargs)
+
+def bytesIntoHuman(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use bytes_into_human instead")
+    return bytes_into_human(*args, **kwargs)
+
+def hideFTPpassword(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use hide_ftp_password instead")
+    return hide_ftp_password(*args, **kwargs)
+
+def getFileUnixMtime(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_file_unix_mtime instead")
+    return get_file_unix_mtime(*args, **kwargs)
+
+def getRandomTempFile(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_random_temp_file instead")
+    return get_random_temp_file(*args, **kwargs)
+
+def getFileTimeStamp(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_file_timestamp instead")
+    return get_file_timestamp(*args, **kwargs)
+
+def convertUnixTimeToHumanTime(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use convert_unix_time_to_human_time instead")
+    return convert_unix_time_to_human_time(*args, **kwargs)
+
+def getCurrentUnixTime(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_current_unix_time instead")
+    return get_current_unix_time(*args, **kwargs)
+
+def getYear(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_year instead")
+    return get_year(*args, **kwargs)
+
+def convertSecondsToFancyOutput(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use convert_seconds_to_fancy_output instead")
+    return convert_seconds_to_fancy_output(*args, **kwargs)
+
+def getRepositorySettings(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use get_repository_settings instead")
+    return get_repository_settings(*args, **kwargs)
+
+def writeOrderedRepositoriesEntries(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use write_ordered_repositories_entries instead")
+    return write_ordered_repositories_entries(*args, **kwargs)
+
+def saveRepositorySettings(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use save_repository_settings instead")
+    return save_repository_settings(*args, **kwargs)
+
+def _saveRepositoriesContent(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use _save_repositories_content instead")
+    return _save_repositories_content(*args, **kwargs)
+
+def writeParameterToFile(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use write_parameter_to_file instead")
+    return write_parameter_to_file(*args, **kwargs)
+
+def writeNewBranch(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use write_new_branch instead")
+    return write_new_branch(*args, **kwargs)
+
+def isEntropyTbz2(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use is_entropy_package_file instead")
+    return is_entropy_package_file(*args, **kwargs)
+
+def collectLinkerPaths(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use collect_linker_paths instead")
+    return collect_linker_paths(*args, **kwargs)
+
+def collectPaths(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use collect_paths instead")
+    return collect_paths(*args, **kwargs)
+
+def listToUtf8(*args, **kwargs):
+    import warnings
+    warnings.warn("deprecated, use list_to_utf8 instead")
+    return list_to_utf8(*args, **kwargs)
