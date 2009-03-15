@@ -296,7 +296,7 @@ class QAInterface:
                 break
             return found_path
 
-        mypaths = self.entropyTools.collectLinkerPaths()
+        mypaths = self.entropyTools.collect_linker_paths()
         found_path = do_resolve(mypaths)
 
         if not found_path:
@@ -310,7 +310,7 @@ class QAInterface:
         rdepends = {}
         rdepends_plain = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
-        ldpaths = set(self.entropyTools.collectLinkerPaths())
+        ldpaths = set(self.entropyTools.collect_linker_paths())
         deps_content = set()
         dependencies = self._get_deep_dependency_list(dbconn, idpackage, atoms = True)
         scope_cache = set()

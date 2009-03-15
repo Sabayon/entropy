@@ -100,7 +100,7 @@ def package(options):
             elif opt.endswith(".tbz2") and \
                 os.path.isabs(opt) and \
                 os.access(opt,os.R_OK) and \
-                Equo.entropyTools.isEntropyTbz2(opt):
+                Equo.entropyTools.is_entropy_package_file(opt):
                     mytbz2paths.append(opt)
             elif opt.endswith(".tbz2"):
                 continue

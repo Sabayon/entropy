@@ -951,7 +951,7 @@ class SpritzApplication(Controller):
             return saveParameter(config_file, name, writedata)
 
         def saveParameter(config_file, name, data):
-            return entropy.tools.writeParameterToFile(config_file,name,data)
+            return entropy.tools.write_parameter_to_file(config_file,name,data)
 
         self.Preferences = {
             etpConst['entropyconf']: [

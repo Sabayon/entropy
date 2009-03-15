@@ -122,7 +122,7 @@ class Trigger:
                 functions.append("openglsetup")
 
         # load linker paths
-        ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
+        ldpaths = self.Entropy.entropyTools.collect_linker_paths()
         for x in self.pkgdata['content']:
 
             if (x.startswith("/etc/conf.d") or \
@@ -179,7 +179,7 @@ class Trigger:
         functions = []
 
         # load linker paths
-        ldpaths = self.Entropy.entropyTools.collectLinkerPaths()
+        ldpaths = self.Entropy.entropyTools.collect_linker_paths()
 
         for x in self.pkgdata['removecontent']:
             if x.startswith('/boot/kernel-') and ("removebootablekernel" not in functions):
@@ -744,7 +744,7 @@ class Trigger:
         if os.path.isfile("/etc/fstab"):
             f = open("/etc/fstab","r")
             fstab = f.readlines()
-            fstab = self.Entropy.entropyTools.listToUtf8(fstab)
+            fstab = self.Entropy.entropyTools.list_to_utf8(fstab)
             f.close()
             for line in fstab:
                 fsline = line.split()
@@ -1305,7 +1305,7 @@ class Trigger:
             if os.path.isfile(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb'):
                 f = open(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb',"r")
                 moduledb = f.readlines()
-                moduledb = self.Entropy.entropyTools.listToUtf8(moduledb)
+                moduledb = self.Entropy.entropyTools.list_to_utf8(moduledb)
                 f.close()
                 avail = [x for x in moduledb if x.strip() == item]
                 if (not avail):

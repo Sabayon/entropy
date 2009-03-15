@@ -2869,7 +2869,7 @@ class LocalRepository:
         cache = self.fetchSearchCache(needed,'resolveNeeded')
         if cache != None: return cache
 
-        ldpaths = self.entropyTools.collectLinkerPaths()
+        ldpaths = self.entropyTools.collect_linker_paths()
         mypaths = [os.path.join(x,needed) for x in ldpaths]
 
         query = """

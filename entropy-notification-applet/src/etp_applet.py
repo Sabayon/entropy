@@ -112,7 +112,7 @@ class GuiUrlFetcher(urlFetcher):
         message = "Fetching data %s/%s kB @ %s" % (
                                         str(round(float(self.__downloadedsize)/1024,1)),
                                         str(round(self.__remotesize,1)),
-                                        str(entropyTools.bytesIntoHuman(self.__datatransfer))+"/sec",
+                                        str(entropyTools.bytes_into_human(self.__datatransfer))+"/sec",
                                     )
         self.progress(message)
 

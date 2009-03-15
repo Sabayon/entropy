@@ -286,7 +286,7 @@ class Repository:
             etpRepositories[repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
             self.Client.repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
-            self.entropyTools.saveRepositorySettings(repodata)
+            self.entropyTools.save_repository_settings(repodata)
             self.Client.reload_constants()
         self.validate_repositories()
 
@@ -314,9 +314,9 @@ class Repository:
             repodata = {}
             repodata['repoid'] = repoid
             if disable:
-                self.entropyTools.saveRepositorySettings(repodata, disable = True)
+                self.entropyTools.save_repository_settings(repodata, disable = True)
             else:
-                self.entropyTools.saveRepositorySettings(repodata, remove = True)
+                self.entropyTools.save_repository_settings(repodata, remove = True)
             self.Client.reload_constants()
 
         self.validate_repositories()
@@ -335,7 +335,7 @@ class Repository:
         # save new etpRepositories to file
         repodata = {}
         repodata['repoid'] = repoid
-        self.entropyTools.saveRepositorySettings(repodata, enable = True)
+        self.entropyTools.save_repository_settings(repodata, enable = True)
         self.Client.reload_constants()
         self.validate_repositories()
 
@@ -359,7 +359,7 @@ class Repository:
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
-            self.entropyTools.saveRepositorySettings(repodata, disable = True)
+            self.entropyTools.save_repository_settings(repodata, disable = True)
             self.Client.reload_constants()
         self.validate_repositories()
 
@@ -1073,8 +1073,8 @@ class Misc:
             )
             return {},set(),-1
 
-        ldpaths = set(self.entropyTools.collectLinkerPaths())
-        ldpaths |= self.entropyTools.collectPaths()
+        ldpaths = set(self.entropyTools.collect_linker_paths())
+        ldpaths |= self.entropyTools.collect_paths()
         # speed up when /usr/lib is a /usr/lib64 symlink
         if "/usr/lib64" in ldpaths and "/usr/lib" in ldpaths:
             if os.path.realpath("/usr/lib64") == "/usr/lib":
@@ -1224,7 +1224,7 @@ class Misc:
         if pretend: return 0
         if branch != etpConst['branch']:
             # update configuration
-            self.entropyTools.writeNewBranch(branch)
+            self.entropyTools.write_new_branch(branch)
             # reset treeupdatesactions
             self.Client.clientDbconn.resetTreeupdatesDigests()
             # clean cache
