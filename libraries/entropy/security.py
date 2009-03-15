@@ -154,7 +154,7 @@ class SecurityInterface:
             self.advisories_changed = False
         else:
             self.advisories_changed = True
-        md5res = self.entropyTools.compareMd5(self.download_package,checksum)
+        md5res = self.entropyTools.compare_md5(self.download_package,checksum)
         if not md5res:
             return 3
         return 0

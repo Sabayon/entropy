@@ -2427,7 +2427,7 @@ class Server(Singleton,TextInterface):
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
             pkgpath = os.path.join(self.get_local_packages_directory(repo),orig_branch,pkgfile)
-            result = self.entropyTools.compareMd5(pkgpath,storedmd5)
+            result = self.entropyTools.compare_md5(pkgpath,storedmd5)
             if result:
                 fine.add(idpackage)
             else:

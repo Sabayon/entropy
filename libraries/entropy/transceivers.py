@@ -1102,7 +1102,7 @@ class FtpServerHandler:
             return False
         elif len(checksum) == 32:
             # valid? checking
-            ckres = self.entropyTools.compareMd5(local_filepath,checksum)
+            ckres = self.entropyTools.compare_md5(local_filepath,checksum)
             if ckres:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (

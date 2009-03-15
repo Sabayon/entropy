@@ -1183,7 +1183,7 @@ class Package:
                 if tofile not in etpConst['configprotectskip']:
                     prot_status = True
                     if do_allocation_check:
-                        tofile, prot_status = self.entropyTools.allocateMaskedFile(tofile, fromfile)
+                        tofile, prot_status = self.entropyTools.allocate_masked_file(tofile, fromfile)
                     if not prot_status:
                         protected = False
                     else:

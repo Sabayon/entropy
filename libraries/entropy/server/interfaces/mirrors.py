@@ -484,7 +484,7 @@ class Server:
             )
 
             pkg_path = os.path.join(download_path,pkgfile)
-            md5check = self.entropyTools.compareMd5(pkg_path,storedmd5)
+            md5check = self.entropyTools.compare_md5(pkg_path,storedmd5)
             if md5check:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|#%s] %s: %s %s" % (

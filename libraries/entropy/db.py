@@ -630,7 +630,7 @@ class LocalRepository:
 
             spm = self.ServiceInterface.SpmService
             updates_dir = etpConst['systemroot']+spm.get_spm_setting("PORTDIR")+"/profiles/updates"
-            update_files = self.entropyTools.sortUpdateFiles(os.listdir(updates_dir))
+            update_files = self.entropyTools.sort_update_files(os.listdir(updates_dir))
             update_files = [os.path.join(updates_dir,x) for x in update_files]
             # now load actions from files
             update_actions = []
@@ -2822,7 +2822,7 @@ class LocalRepository:
     # You must provide the full atom to this function
     # WARNING: this function does not support branches
     def isPackageAvailable(self, pkgatom):
-        pkgatom = self.entropyTools.removePackageOperators(pkgatom)
+        pkgatom = self.entropyTools.remove_package_operators(pkgatom)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
         result = self.cursor.fetchone()
         if result: return result[0]

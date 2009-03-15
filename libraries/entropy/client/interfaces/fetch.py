@@ -47,7 +47,7 @@ class Fetchers:
                 return 0
             else:
                 # check digest
-                md5res = self.entropyTools.compareMd5(etpConst['entropyworkdir']+"/"+filepath,checksum)
+                md5res = self.entropyTools.compare_md5(etpConst['entropyworkdir']+"/"+filepath,checksum)
                 if (md5res):
                     return 0
                 else:

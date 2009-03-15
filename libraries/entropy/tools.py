@@ -2612,7 +2612,7 @@ def extractElog(*args, **kwargs):
 
 def removePackageOperators(*args, **kwargs):
     import warnings
-    warnings.warn("deprecated, use remove_pacakge_operators instead")
+    warnings.warn("deprecated, use remove_package_operators instead")
     return remove_package_operators(*args, **kwargs)
 
 def compareVersions(*args, **kwargs):

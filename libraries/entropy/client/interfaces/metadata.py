@@ -227,7 +227,7 @@ class Extractors:
                     for item in foundfiles: mtimes.append((self.entropyTools.getFileUnixMtime(os.path.join(log_dir,item)),item))
                     mtimes = sorted(mtimes)
                     elogfile = mtimes[-1][1]
-                messages = self.entropyTools.extractElog(os.path.join(log_dir,elogfile))
+                messages = self.entropyTools.extract_elog(os.path.join(log_dir,elogfile))
                 for message in messages:
                     message = message.replace("emerge","install")
                     pkg_messages.append(message)

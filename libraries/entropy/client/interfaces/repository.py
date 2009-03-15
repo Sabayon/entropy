@@ -311,7 +311,7 @@ class Repository:
             mytxt = _("self.dbformat_eapi must be in (1,2)")
             raise InvalidData('InvalidData: %s' % (mytxt,))
 
-        rc = self.entropyTools.compareMd5(etpRepositories[repo]['dbpath']+"/"+dbfile,md5hash)
+        rc = self.entropyTools.compare_md5(etpRepositories[repo]['dbpath']+"/"+dbfile,md5hash)
         return rc
 
     # @returns -1 if the file is not available
