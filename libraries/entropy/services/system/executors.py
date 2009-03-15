@@ -781,7 +781,7 @@ class Base:
 
                     for uri in Entropy.get_remote_mirrors(repoid):
 
-                        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
                         repo_data[repoid][crippled_uri] = {}
                         repo_data[repoid][crippled_uri]['packages'] = {}
@@ -820,7 +820,7 @@ class Base:
                             'current_revision': current_revision,
                             'remote_revision': remote_revision,
                             'download_latest': download_latest,
-                            'upload_queue': [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1],) for x in upload_queue]
+                            'upload_queue': [(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1],) for x in upload_queue]
                         }
 
                 return True, repo_data
@@ -860,7 +860,7 @@ class Base:
                 header = " * "
             )
             for myuri, myrev in rdb_status:
-                Entropy.updateProgress("\t %s:\t %s" % (_("Host"),self.entropyTools.extractFTPHostFromUri(myuri),))
+                Entropy.updateProgress("\t %s:\t %s" % (_("Host"),self.entropyTools.extract_ftp_host_from_uri(myuri),))
                 Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"),myrev,))
             local_revision = Entropy.get_local_database_revision(repoid)
             Entropy.updateProgress("\t  * %s: %s" % (_("Database local revision currently at"),local_revision,))
@@ -871,7 +871,7 @@ class Base:
             remote_status = Entropy.MirrorsService.get_remote_databases_status(repoid)
             Entropy.updateProgress(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:
-                Entropy.updateProgress("\t %s:\t%s" % (_("Host"),Entropy.entropyTools.extractFTPHostFromUri(myuri),))
+                Entropy.updateProgress("\t %s:\t%s" % (_("Host"),Entropy.entropyTools.extract_ftp_host_from_uri(myuri),))
                 Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"),myrev,) )
 
             return errors, fine_uris, broken_uris

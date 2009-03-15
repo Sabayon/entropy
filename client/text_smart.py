@@ -96,7 +96,7 @@ def QuickpkgHandler(mypackages, savedir = None):
             packages.append(match)
         else:
             if not etpUi['quiet']: print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = Equo.entropyTools.filterDuplicatedEntries(packages)
+    packages = Equo.entropyTools.filter_duplicated_entries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
@@ -247,7 +247,7 @@ def smartPackagesHandler(mypackages):
             packages.append(match)
         else:
             print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = Equo.entropyTools.filterDuplicatedEntries(packages)
+    packages = Equo.entropyTools.filter_duplicated_entries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2

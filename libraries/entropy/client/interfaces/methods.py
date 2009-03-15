@@ -1454,7 +1454,7 @@ class Match:
         installed_idpackage = results[0][0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
         installedVer, installedTag, installedRev = self.Client.clientDbconn.getVersioningData(installed_idpackage)
-        pkgcmp = self.entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
+        pkgcmp = self.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
         if pkgcmp == 0:
             return 0
         elif pkgcmp > 0:

@@ -332,7 +332,7 @@ def database(options):
                 db[2] = red(_("Locked"))
             else:
                 db[2] = green(_("Unlocked"))
-            print_info(bold("\t"+Entropy.entropyTools.extractFTPHostFromUri(db[0])+": ")+red("[")+brown("%s: " % (_("DATABASE"),) )+db[1]+red("] [")+brown("%s: " % (_("DOWNLOAD"),) )+db[2]+red("]"))
+            print_info(bold("\t"+Entropy.entropyTools.extract_ftp_host_from_uri(db[0])+": ")+red("[")+brown("%s: " % (_("DATABASE"),) )+db[1]+red("] [")+brown("%s: " % (_("DOWNLOAD"),) )+db[2]+red("]"))
         return 0
 
     elif cmd == "sync":
@@ -370,7 +370,7 @@ def sync_remote_databases(noUpload = False, justStats = False):
     remoteDbsStatus = Entropy.MirrorsService.get_remote_databases_status()
     print_info(green(" * ")+red("%s:" % (_("Remote Entropy Database Repository Status"),) ))
     for dbstat in remoteDbsStatus:
-        print_info(green("\t %s:\t" % (_("Host"),) )+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
+        print_info(green("\t %s:\t" % (_("Host"),) )+bold(Entropy.entropyTools.extract_ftp_host_from_uri(dbstat[0])))
         print_info(red("\t  * %s: " % (_("Database revision"),) )+blue(str(dbstat[1])))
 
     local_revision = Entropy.get_local_database_revision()
@@ -384,7 +384,7 @@ def sync_remote_databases(noUpload = False, justStats = False):
     remote_status = Entropy.MirrorsService.get_remote_databases_status()
     print_info(darkgreen(" * ")+red("%s:" % (_("Remote Entropy Database Repository Status"),) ))
     for dbstat in remote_status:
-        print_info(darkgreen("\t %s:\t" % (_("Host"),) )+bold(Entropy.entropyTools.extractFTPHostFromUri(dbstat[0])))
+        print_info(darkgreen("\t %s:\t" % (_("Host"),) )+bold(Entropy.entropyTools.extract_ftp_host_from_uri(dbstat[0])))
         print_info(red("\t  * %s: " % (_("Database revision"),) )+blue(str(dbstat[1])))
 
     return errors, fine_uris, broken_uris

@@ -125,7 +125,7 @@ class Calculators:
                 version_duplicates.add(version)
             versions.add(version)
 
-        newerVersion = self.entropyTools.getNewerVersion(list(versions))[0]
+        newerVersion = self.entropyTools.get_newer_version(list(versions))[0]
         # if no duplicates are found or newer version is not in duplicates we're done
         if (not version_duplicates) or (newerVersion not in version_duplicates):
             reponame = versionInformation.get(newerVersion)
@@ -509,7 +509,7 @@ class Calculators:
         intf_error = self.dbapi2.InterfaceError
         cdb_getversioning = self.Client.clientDbconn.getVersioningData
         #cdb_retrieveneededraw = self.clientDbconn.retrieveNeededRaw
-        etp_cmp = self.entropyTools.entropyCompareVersions
+        etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
         #do_needed_check = False
 

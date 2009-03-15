@@ -594,7 +594,7 @@ class FtpInterface:
         self.__ftpuri = ftpuri
         self.__speed_updater = None
         self.__currentdir = '.'
-        self.__ftphost = self.entropyTools.extractFTPHostFromUri(self.__ftpuri)
+        self.__ftphost = self.entropyTools.extract_ftp_host_from_uri(self.__ftpuri)
         self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = self.entropyTools.extract_ftp_data(ftpuri)
 
         count = 10
@@ -1046,7 +1046,7 @@ class FtpServerHandler:
 
     def handler_verify_upload(self, local_filepath, uri, counter, maxcount, tries):
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
         self.Entropy.updateProgress(
             "[%s|#%s|(%s/%s)] %s: %s" % (
@@ -1165,7 +1165,7 @@ class FtpServerHandler:
 
         for uri in self.uris:
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             self.Entropy.updateProgress(
                 "[%s|%s] %s..." % (
                     blue(crippled_uri),

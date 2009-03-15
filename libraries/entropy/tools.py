@@ -1679,14 +1679,6 @@ def get_entropy_newer_version_stable(versions):
     return myversions
 
 
-def get_newer_version_tag(versions):
-    '''
-    @description: reorder a list of strings converted into ascii
-    @input versionlist: a string list
-    @output: the ordered string list
-    '''
-    return sorted(versions, reverse = True)
-
 def isnumber(x):
     try:
         t = int(x)
@@ -2634,11 +2626,6 @@ def getEntropyNewerVersion(*args, **kwargs):
     import warnings
     warnings.warn("deprecated, use get_entropy_newer_version instead")
     return get_entropy_newer_version(*args, **kwargs)
-
-def getNewerVersionTag(*args, **kwargs):
-    import warnings
-    warnings.warn("deprecated, use get_newer_version_tag instead")
-    return get_newer_version_tag(*args, **kwargs)
 
 def filterDuplicatedEntries(*args, **kwargs):
     import warnings

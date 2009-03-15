@@ -4713,7 +4713,7 @@ class LocalRepository:
             info_tuple = (x[1],self.retrieveVersionTag(x[0]),self.retrieveRevision(x[0]))
             versions.add(info_tuple)
             pkgdata[info_tuple] = x[0]
-        newer = self.entropyTools.getEntropyNewerVersion(list(versions))[0]
+        newer = self.entropyTools.get_entropy_newer_version(list(versions))[0]
         x = pkgdata[newer]
         if extendedResults:
             x = (x,0,newer[0],newer[1],newer[2])
@@ -4887,7 +4887,7 @@ class LocalRepository:
                             dbtag = self.retrieveVersionTag(idpackage)
                             tagcmp = cmp(matchTag,dbtag)
                         dbver = self.retrieveVersion(idpackage)
-                        pkgcmp = self.entropyTools.compareVersions(pkgversion,dbver)
+                        pkgcmp = self.entropyTools.compare_versions(pkgversion,dbver)
                         if pkgcmp == None:
                             raise InvalidVersionString("InvalidVersionString: %s <-> %s" % (pkgversion,dbver,))
                         if direction == ">":

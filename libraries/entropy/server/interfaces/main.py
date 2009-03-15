@@ -454,7 +454,7 @@ class Server(Singleton,TextInterface):
             for uri in self.get_remote_mirrors(repo):
                 given_up = self.MirrorsService.mirror_lock_check(uri, repo = repo)
                 if given_up:
-                    crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                    crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
                     mytxt = "%s:" % (_("Mirrors status table"),)
                     self.updateProgress(
                         darkgreen(mytxt),
@@ -471,7 +471,7 @@ class Server(Singleton,TextInterface):
                         if (db[2]):
                             db[2] = red(_("Locked"))
 
-                        crippled_uri = self.entropyTools.extractFTPHostFromUri(db[0])
+                        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(db[0])
                         self.updateProgress(
                             "%s: [%s: %s] [%s: %s]" % (
                                 bold(crippled_uri),
@@ -2101,7 +2101,7 @@ class Server(Singleton,TextInterface):
 
         for uri in self.get_remote_mirrors(repo):
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
                         darkgreen(repo),

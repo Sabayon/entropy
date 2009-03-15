@@ -77,7 +77,7 @@ class Server:
         issues = False
         for uri in mirrors:
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
             lock_text = _("unlocking")
             if lock: lock_text = _("locking")
@@ -157,7 +157,7 @@ class Server:
         issues = False
         for uri in mirrors:
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
             lock_text = _("unlocking")
             if lock: lock_text = _("locking")
@@ -237,7 +237,7 @@ class Server:
                 ftp_connection.set_basedir()
                 ftp_connection.set_cwd(my_path, dodir = True)
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         lock_string = ''
         if dblock:
             self.create_local_database_lockfile(repo)
@@ -298,7 +298,7 @@ class Server:
                 ftp_connection.set_basedir()
                 ftp_connection.set_cwd(my_path)
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
         if dblock:
             dbfile = etpConst['etpdatabaselockfile']
@@ -383,7 +383,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
         tries = 0
         while tries < 5:
@@ -553,7 +553,7 @@ class Server:
                 my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
                 ftp.set_cwd(my_path, dodir = True)
             except ftp.ftplib.error_perm:
-                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s !" % (
                             brown(repo),
@@ -586,7 +586,7 @@ class Server:
                     if dled: break
                     dlcount -= 1
 
-                crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+                crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
                 try:
                     f = open(revision_localtmppath,"r")
                     revision = int(f.readline().strip())
@@ -689,7 +689,7 @@ class Server:
 
         downloaded = False
         for uri in mirrors:
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             downloader = self.FtpServerHandler(
                 self.FtpInterface, self.Entropy, [uri],
                 [rss_path], download = True,
@@ -743,7 +743,7 @@ class Server:
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
             m_broken_uris = sorted(list(m_broken_uris))
-            m_broken_uris = [self.entropyTools.extractFTPHostFromUri(x) for x in m_broken_uris]
+            m_broken_uris = [self.entropyTools.extract_ftp_host_from_uri(x) for x in m_broken_uris]
             self.Entropy.updateProgress(
                 "[repo:%s] %s %s" % (
                         brown(repo),
@@ -1159,7 +1159,7 @@ class Server:
             repo = self.Entropy.default_repository
 
         gave_up = False
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         try:
             ftp = self.FtpInterface(uri, self.Entropy)
         except ConnectionError:
@@ -1291,7 +1291,7 @@ class Server:
                     )
                 )
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             upload_data, critical, text_files = self.get_files_to_sync(cmethod, repo = repo)
 
@@ -1366,8 +1366,8 @@ class Server:
                 )
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
-                    #my_fine_uris = sorted([self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris])
-                    my_broken_uris = sorted([(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris])
+                    #my_fine_uris = sorted([self.entropyTools.extract_ftp_host_from_uri(x) for x in m_fine_uris])
+                    my_broken_uris = sorted([(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1]) for x in m_broken_uris])
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
                             repo,
@@ -1435,7 +1435,7 @@ class Server:
                     )
                 )
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
             download_data, critical, text_files = self.get_files_to_sync(cmethod, download = True, repo = repo)
@@ -1481,8 +1481,8 @@ class Server:
                 )
                 errors, m_fine_uris, m_broken_uris = downloader.go()
                 if errors:
-                    #my_fine_uris = sorted([self.entropyTools.extractFTPHostFromUri(x) for x in m_fine_uris])
-                    my_broken_uris = sorted([(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris])
+                    #my_fine_uris = sorted([self.entropyTools.extract_ftp_host_from_uri(x) for x in m_fine_uris])
+                    my_broken_uris = sorted([(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1]) for x in m_broken_uris])
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
                             brown(repo),
@@ -1905,7 +1905,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         upload_files, upload_packages = self.calculate_local_upload_files(branch, repo)
         local_files, local_packages = self.calculate_local_package_files(branch, repo)
         self._show_local_sync_stats(upload_files, local_files)
@@ -2185,7 +2185,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         myqueue = []
         for itemdata in upload_queue:
             x = itemdata[0]
@@ -2208,7 +2208,7 @@ class Server:
         )
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
-            my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+            my_broken_uris = [(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1]) for x in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[branch:%s] %s: %s, %s: %s" % (
@@ -2242,7 +2242,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         myqueue = []
         for itemdata in download_queue:
             x = itemdata[0]
@@ -2267,7 +2267,7 @@ class Server:
         )
         errors, m_fine_uris, m_broken_uris = downloader.go()
         if errors:
-            my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+            my_broken_uris = [(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1]) for x in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
@@ -2326,7 +2326,7 @@ class Server:
 
         for uri in self.Entropy.get_remote_mirrors(repo):
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             mirror_errors = False
 
             self.Entropy.updateProgress(
@@ -2680,7 +2680,7 @@ class Server:
                 header = blue(" @@ ")
             )
 
-            crippled_uri = self.entropyTools.extractFTPHostFromUri(uri)
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             destroyer = self.FtpServerHandler(
                 self.FtpInterface,
                 self.Entropy,
@@ -2693,7 +2693,7 @@ class Server:
             )
             errors, m_fine_uris, m_broken_uris = destroyer.go()
             if errors:
-                my_broken_uris = [(self.entropyTools.extractFTPHostFromUri(x[0]),x[1]) for x in m_broken_uris]
+                my_broken_uris = [(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1]) for x in m_broken_uris]
                 reason = my_broken_uris[0][1]
                 self.Entropy.updateProgress(
                     "[branch:%s] %s: %s, %s: %s" % (

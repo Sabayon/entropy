@@ -472,7 +472,7 @@ def _showPackageInfo(foundAtoms, deps):
                 installedVer = "0"
             if installedRev == "NoRev":
                 installedRev = 0
-            pkgcmp = Equo.entropyTools.entropyCompareVersions(
+            pkgcmp = Equo.entropyTools.entropy_compare_versions(
                 (pkgver,pkgtag,pkgrev,),
                 (installedVer,installedTag,installedRev,)
             )
@@ -727,7 +727,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     flags = darkred(" [")
                 else:
                     flags = " ["
-                pkgcmp = Equo.entropyTools.entropyCompareVersions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
+                pkgcmp = Equo.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
                 if (pkgcmp == 0):
                     pkgsToReinstall += 1
                     flags += red("R")

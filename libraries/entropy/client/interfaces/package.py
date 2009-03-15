@@ -2031,7 +2031,7 @@ class Package:
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
             installedVer, installedTag, installedRev = self.Entropy.clientDbconn.getVersioningData(self.infoDict['removeidpackage'])
-            pkgcmp = self.entropyTools.entropyCompareVersions(
+            pkgcmp = self.entropyTools.entropy_compare_versions(
                 (self.infoDict['version'], self.infoDict['versiontag'], self.infoDict['revision'],),
                 (installedVer, installedTag, installedRev,)
             )
