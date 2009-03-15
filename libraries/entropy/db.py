@@ -369,7 +369,6 @@ class Schema:
 
         """
 
-
 class LocalRepository:
 
     import entropy.tools as entropyTools
@@ -4645,7 +4644,7 @@ class LocalRepository:
         ### END FILTERING
 
         if foundIDs:
-            dbpkginfo = self.__handle_found_ids_match(foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, atom, pkgversion)
+            dbpkginfo = self.__handle_found_ids_match(foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, pkgversion)
 
         if not dbpkginfo:
             if extendedResults:
@@ -4824,7 +4823,7 @@ class LocalRepository:
         return foundIDs
 
 
-    def __handle_found_ids_match(self, foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, atom, pkgversion):
+    def __handle_found_ids_match(self, foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, pkgversion):
 
         dbpkginfo = set()
         # now we have to handle direction
