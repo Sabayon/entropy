@@ -1596,12 +1596,12 @@ class Match:
 
     def unmask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
-        m_file = self.SystemSettings.etpSettingFiles['unmask']
+        m_file = self.SystemSettings.get_setting_files_data()['unmask']
         return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
 
     def mask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
-        m_file = self.SystemSettings.etpSettingFiles['mask']
+        m_file = self.SystemSettings.get_setting_files_data()['mask']
         return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
 
     def _mask_unmask_match_generic(self, keyword, m_file, dry_run = False):
@@ -1633,7 +1633,8 @@ class Match:
         return True
 
     def clear_match_mask(self, match, dry_run = False):
-        masking_list = [self.SystemSettings.etpSettingFiles['mask'],self.SystemSettings.etpSettingFiles['unmask']]
+        setting_data = self.SystemSettings.get_setting_files_data()
+        masking_list = [setting_data['mask'],setting_data['unmask']]
         return self._clear_match_generic(match, masking_list = masking_list, dry_run = dry_run)
 
     def _clear_match_generic(self, match, masking_list = [], dry_run = False):
