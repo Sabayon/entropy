@@ -4888,7 +4888,9 @@ class LocalRepository:
                         dbver = self.retrieveVersion(idpackage)
                         pkgcmp = self.entropyTools.compare_versions(pkgversion,dbver)
                         if pkgcmp == None:
-                            raise InvalidVersionString("InvalidVersionString: %s <-> %s" % (pkgversion,dbver,))
+                            import warnings
+                            warnings.warn("XXX WARNING, invalid version string stored in %s: %s <-> %s" % (self.dbname,pkgversion,dbver,))
+                            continue
                         if direction == ">":
                             if pkgcmp < 0:
                                 dbpkginfo.add((idpackage,dbver))
