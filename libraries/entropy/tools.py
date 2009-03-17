@@ -1470,15 +1470,18 @@ def compare_versions(ver1, ver2):
 
     # checking that the versions are valid
     invalid = False
+    invalid_rc = 0
     if not match1:
         invalid = True
     elif not match1.groups():
         invalid = True
     elif not match2:
+        invalid_rc = 1
         invalid = True
     elif not match2.groups():
+        invalid_rc = 1
         invalid = True
-    if invalid: return None
+    if invalid: return invalid_rc
 
     # building lists of the version parts before the suffix
     # first part is simple
