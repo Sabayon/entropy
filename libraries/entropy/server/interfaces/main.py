@@ -25,7 +25,7 @@ import os
 import shutil
 from entropy.core import Singleton
 from entropy.exceptions import *
-from entropy.const import etpConst, etpSys, const_setup_perms, const_createWorkingDirectories, const_readServerSettings
+from entropy.const import etpConst, etpSys, const_setup_perms, const_create_working_dirs, const_read_srv_settings
 from entropy.output import TextInterface, purple, red, darkgreen, bold, brown, blue, darkred, darkblue
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 
@@ -211,7 +211,7 @@ class Server(Singleton,TextInterface):
         if not self.community_repo:
             etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file(repo)
             etpConst['clientdbid'] = etpConst['serverdbid']
-        const_createWorkingDirectories()
+        const_create_working_dirs()
 
     def close_server_databases(self):
         if hasattr(self,'serverDbCache'):
@@ -399,7 +399,7 @@ class Server(Singleton,TextInterface):
         shutil.move(tmpfile,etpConst['serverconf'])
         if status:
             self.close_server_databases()
-            const_readServerSettings()
+            const_read_srv_settings()
             self.setup_services()
             self.show_interface_status()
         return status

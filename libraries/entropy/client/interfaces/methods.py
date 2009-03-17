@@ -818,7 +818,7 @@ class Misc:
     def application_lock_check(self, silent = False):
         # check if another instance is running
         etpConst['applicationlock'] = False
-        const_setupEntropyPid(just_read = True)
+        const_setup_entropy_pid(just_read = True)
         locked = self.entropyTools.application_lock_check(option = None, gentle = True, silent = True)
         if locked:
             if not silent:
@@ -888,7 +888,7 @@ class Misc:
             raise InvalidData("InvalidData: %s" % (t,))
 
     def set_priority(self, low = 0):
-        return const_setNiceLevel(low)
+        return const_set_nice_level(low)
 
     def reload_repositories_config(self, repositories = None):
         if repositories == None:

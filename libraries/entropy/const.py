@@ -107,26 +107,26 @@ def initConfig_entropyConstants(rootdir):
         backed_up_settings = {}
 
     const_defaultSettings(rootdir)
-    const_readEntropyRelease()
-    const_createWorkingDirectories()
-    const_setupEntropyPid()
-    const_readEntropySettings()
-    const_readRepositoriesSettings()
-    const_readSocketSettings()
-    const_configureLockPaths()
+    const_read_entropy_release()
+    const_create_working_dirs()
+    const_setup_entropy_pid()
+    const_read_entropy_settings()
+    const_read_repo_settings()
+    const_read_socket_settings()
+    const_configure_lock_paths()
     initConfig_clientConstants()
     # server stuff
-    const_readServerSettings()
+    const_read_srv_settings()
 
     # reflow back settings
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
-    const_setupWithEnvironment()
+    const_setup_environment()
 
     sys.excepthook = const_HandleException
 
 def initConfig_clientConstants():
-    const_readEquoSettings()
+    const_read_equo_settings()
 
 def const_defaultSettings(rootdir):
 
@@ -570,7 +570,7 @@ def const_defaultSettings(rootdir):
 
     etpConst.update(myConst)
 
-def const_setNiceLevel(low = 0):
+def const_set_nice_level(low = 0):
     default_nice = etpConst['default_nice']
     current_nice = etpConst['current_nice']
     delta = current_nice - default_nice
@@ -580,7 +580,7 @@ def const_setNiceLevel(low = 0):
         pass
     return current_nice
 
-def const_extractClientRepositoryParameters(repostring):
+def const_extract_client_repo_params(repostring):
 
     reponame = repostring.split("|")[1].strip()
     repodesc = repostring.split("|")[2].strip()
@@ -658,21 +658,29 @@ def const_extractClientRepositoryParameters(repostring):
     return reponame, mydata
 
 
-def const_readRepositoriesSettings():
+def const_read_repo_settings():
 
     etpRepositories.clear()
     etpRepositoriesExcluded.clear()
     del etpRepositoriesOrder[:]
     if os.path.isfile(etpConst['repositoriesconf']):
         f = open(etpConst['repositoriesconf'],"r")
-        repositoriesconf = f.readlines()
+        repositoriesconf = [x.strip() for x in f.readlines()]
         f.close()
 
         # setup product and branch first
         for line in repositoriesconf:
-            if (line.strip().find("product|") != -1) and (not line.strip().startswith("#")) and (len(line.strip().split("|")) == 2):
+
+            if (line.find("product|") != -1) and \
+                (not line.startswith("#")) and  \
+                (len(line.split("|")) == 2):
+
                 etpConst['product'] = line.strip().split("|")[1]
-            elif (line.find("branch|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+
+            elif (line.find("branch|") != -1) and \
+                (not line.startswith("#")) and \
+                (len(line.split("|")) == 2):
+
                 branch = line.split("|")[1].strip()
                 etpConst['branch'] = branch
                 if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
@@ -682,9 +690,9 @@ def const_readRepositoriesSettings():
 
         for line in repositoriesconf:
 
-            line = line.strip()
             # populate etpRepositories
-            if (line.find("repository|") != -1) and (len(line.split("|")) == 5):
+            if (line.find("repository|") != -1) and \
+                (len(line.split("|")) == 5):
 
                 excluded = False
                 myRepodata = etpRepositories
@@ -695,25 +703,36 @@ def const_readRepositoriesSettings():
                     myRepodata = etpRepositoriesExcluded
                     line = line[1:]
 
-                reponame, repodata = const_extractClientRepositoryParameters(line)
+                reponame, repodata = const_extract_client_repo_params(line)
                 if myRepodata.has_key(reponame):
-                    myRepodata[reponame]['plain_packages'].extend(repodata['plain_packages'])
-                    myRepodata[reponame]['packages'].extend(repodata['packages'])
-                    if (not myRepodata[reponame]['plain_database']) and repodata['plain_database']:
+
+                    myRepodata[reponame]['plain_packages'].extend(
+                        repodata['plain_packages'])
+                    myRepodata[reponame]['packages'].extend(
+                        repodata['packages'])
+
+                    if (not myRepodata[reponame]['plain_database']) and \
+                        repodata['plain_database']:
+
                         myRepodata[reponame]['plain_database'] = repodata['plain_database']
                         myRepodata[reponame]['database'] = repodata['database']
                         myRepodata[reponame]['dbrevision'] = repodata['dbrevision']
                         myRepodata[reponame]['dbcformat'] = repodata['dbcformat']
                 else:
+
                     myRepodata[reponame] = repodata.copy()
                     if not excluded:
                         etpRepositoriesOrder.append(reponame)
 
-            elif (line.find("officialrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+            elif (line.find("officialrepositoryid|") != -1) and \
+                (not line.startswith("#")) and (len(line.split("|")) == 2):
+
                 officialreponame = line.split("|")[1]
                 etpConst['officialrepositoryid'] = officialreponame
 
-            elif (line.find("downloadspeedlimit|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+            elif (line.find("downloadspeedlimit|") != -1) and \
+                (not line.startswith("#")) and (len(line.split("|")) == 2):
+
                 try:
                     myval = int(line.split("|")[1])
                     if myval > 0:
@@ -723,14 +742,17 @@ def const_readRepositoriesSettings():
                 except (ValueError, IndexError,):
                     etpConst['downloadspeedlimit'] = None
 
-            elif (line.find("securityurl|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+            elif (line.find("securityurl|") != -1) and \
+                (not line.startswith("#")) and (len(line.split("|")) == 2):
+
                 try:
                     url = line.split("|")[1]
                     etpConst['securityurl'] = url
-                except:
+                except (IndexError, ValueError, TypeError,):
                     pass
 
-def const_readSocketSettings():
+def const_read_socket_settings():
+
     if os.path.isfile(etpConst['socketconf']):
         f = open(etpConst['socketconf'],"r")
         socketconf = f.readlines()
@@ -791,7 +813,8 @@ def const_readSocketSettings():
                 for y in x:
                     etpConst['socket_service']['ip_blacklist'].add(y)
 
-def const_readEntropySettings():
+def const_read_entropy_settings():
+
     # entropy section
     if os.path.isfile(etpConst['entropyconf']):
         const_secure_config_file(etpConst['entropyconf'])
@@ -831,11 +854,12 @@ def const_readEntropySettings():
                 try:
                     mylevel = int(mylevel)
                     if (mylevel >= -19) and (mylevel <= 19):
-                        const_setNiceLevel(mylevel)
+                        const_set_nice_level(mylevel)
                 except (ValueError,):
                     pass
 
-def const_readEntropyRelease():
+def const_read_entropy_release():
+
     # handle Entropy Version
     ETP_REVISION_FILE = "../libraries/revision"
     if not os.path.isfile(ETP_REVISION_FILE):
@@ -845,53 +869,74 @@ def const_readEntropyRelease():
         myrev = f.readline().strip()
         etpConst['entropyversion'] = myrev
 
-def const_readEquoSettings():
-    # equo section
-    if (os.path.isfile(etpConst['equoconf'])):
-        f = open(etpConst['equoconf'],"r")
-        equoconf = f.readlines()
-        f.close()
-        for line in equoconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except:
-                    pass
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['equologlevel'] = loglevel
+def const_read_equo_settings():
 
-            elif line.startswith("filesbackup|") and (len(line.split("|")) == 2):
-                compatopt = line.split("|")[1].strip()
-                if compatopt.lower() in ("disable", "disabled", "false", "0", "no",):
-                    etpConst['filesbackup'] = False
+    if not os.path.isfile(etpConst['equoconf']):
+        return
 
-            elif line.startswith("ignore-spm-downgrades|") and (len(line.split("|")) == 2):
-                compatopt = line.split("|")[1].strip()
-                if compatopt.lower() in ("enable", "enabled", "true", "1", "yes"):
-                    etpConst['spm']['ignore-spm-downgrades'] = True
+    equo_f = open(etpConst['equoconf'],"r")
+    equoconf = equo_f.readlines()
+    equo_f.close()
+    for line in equoconf:
 
-            elif line.startswith("collisionprotect|") and (len(line.split("|")) == 2):
-                collopt = line.split("|")[1].strip()
-                if collopt.lower() in ("0", "1", "2",):
-                    etpConst['collisionprotect'] = int(collopt)
+        if line.startswith("loglevel|") and \
+            (len(line.split("loglevel|")) == 2):
 
-            elif line.startswith("configprotect|") and (len(line.split("|")) == 2):
-                configprotect = line.split("|")[1].strip()
-                for x in configprotect.split():
-                    etpConst['configprotect'].append(unicode(x,'raw_unicode_escape'))
+            loglevel = line.split("loglevel|")[1]
+            try:
+                loglevel = int(loglevel)
+            except (ValueError,):
+                pass
+            if (loglevel > -1) and (loglevel < 3):
+                etpConst['equologlevel'] = loglevel
 
-            elif line.startswith("configprotectmask|") and (len(line.split("|")) == 2):
-                configprotect = line.split("|")[1].strip()
-                for x in configprotect.split():
-                    etpConst['configprotectmask'].append(unicode(x,'raw_unicode_escape'))
+        elif line.startswith("filesbackup|") and \
+            (len(line.split("|")) == 2):
 
-            elif line.startswith("configprotectskip|") and (len(line.split("|")) == 2):
-                configprotect = line.split("|")[1].strip()
-                for x in configprotect.split():
-                    etpConst['configprotectskip'].append(etpConst['systemroot']+unicode(x,'raw_unicode_escape'))
+            compatopt = line.split("|")[1].strip()
+            if compatopt.lower() in ("disable", "disabled", 
+                "false", "0", "no",):
+                etpConst['filesbackup'] = False
 
-def const_setupEntropyPid(just_read = False):
+        elif line.startswith("ignore-spm-downgrades|") and \
+            (len(line.split("|")) == 2):
+
+            compatopt = line.split("|")[1].strip()
+            if compatopt.lower() in ("enable", "enabled", "true", "1", "yes"):
+                etpConst['spm']['ignore-spm-downgrades'] = True
+
+        elif line.startswith("collisionprotect|") and \
+            (len(line.split("|")) == 2):
+
+            collopt = line.split("|")[1].strip()
+            if collopt.lower() in ("0", "1", "2",):
+                etpConst['collisionprotect'] = int(collopt)
+
+        elif line.startswith("configprotect|") and \
+            (len(line.split("|")) == 2):
+
+            configprotect = line.split("|")[1].strip()
+            for myprot in configprotect.split():
+                etpConst['configprotect'].append(
+                    unicode(myprot,'raw_unicode_escape'))
+
+        elif line.startswith("configprotectmask|") and \
+            (len(line.split("|")) == 2):
+
+            configprotect = line.split("|")[1].strip()
+            for myprot in configprotect.split():
+                etpConst['configprotectmask'].append(
+                    unicode(myprot,'raw_unicode_escape'))
+
+        elif line.startswith("configprotectskip|") and \
+        (len(line.split("|")) == 2):
+            configprotect = line.split("|")[1].strip()
+            for myprot in configprotect.split():
+                etpConst['configprotectskip'].append(
+                    etpConst['systemroot']+unicode(myprot,'raw_unicode_escape'))
+
+
+def const_setup_entropy_pid(just_read = False):
 
     if ("--no-pid-handling" in sys.argv) and (not just_read):
         return
@@ -905,12 +950,13 @@ def const_setupEntropyPid(just_read = False):
         f.close()
         if foundPid != str(pid):
             # is foundPid still running ?
-            if os.path.isdir("%s/proc/%s" % (etpConst['systemroot'], foundPid,)) and foundPid:
+            pid_path = "%s/proc/%s" % (etpConst['systemroot'], foundPid,)
+            if os.path.isdir(pid_path) and foundPid:
                 etpConst['applicationlock'] = True
             elif not just_read:
                 # if root, write new pid
                 #if etpConst['uid'] == 0:
-                if os.access(etpConst['pidfile'],os.W_OK):
+                if os.access(etpConst['pidfile'], os.W_OK):
                     try:
                         f = open(etpConst['pidfile'],"w")
                         f.write(str(pid))
@@ -964,7 +1010,7 @@ def const_chmod_entropy_pid():
         mygid = 0
     const_setup_file(etpConst['pidfile'], mygid, 0664)
 
-def const_createWorkingDirectories():
+def const_create_working_dirs():
 
     # handle pid file
     piddir = os.path.dirname(etpConst['pidfile'])
@@ -1040,13 +1086,14 @@ def const_createWorkingDirectories():
             # aufs/unionfs will start to leak otherwise
             const_setup_perms(etpConst['etpdatabaseclientdir'], gid)
 
-def const_configureLockPaths():
+def const_configure_lock_paths():
     etpConst['locks'] = {
-        'using_resources': os.path.join(etpConst['etpdatabaseclientdir'],'.using_resources'),
+        'using_resources': os.path.join(etpConst['etpdatabaseclientdir'],
+            '.using_resources'),
     }
 
 
-def const_readServerSettings():
+def const_read_srv_settings():
 
     if not os.access(etpConst['serverconf'], os.R_OK):
         return
@@ -1080,7 +1127,7 @@ def const_readServerSettings():
                 continue
 
         elif line.startswith("repository|") and (len(line.split("|")) in [5, 6]):
-            repoid, repodata = const_extractServerRepositoryParameters(line)
+            repoid, repodata = const_extract_srv_repo_params(line)
             if repoid in etpConst['server_repositories']:
                 # just update mirrors
                 etpConst['server_repositories'][repoid]['mirrors'].extend(repodata['mirrors'])
@@ -1128,9 +1175,9 @@ def const_readServerSettings():
             except (ValueError, IndexError,):
                 continue
 
-    const_configureServerRepoPaths()
+    const_configure_server_repo_paths()
 
-def const_extractServerRepositoryParameters(repostring):
+def const_extract_srv_repo_params(repostring):
 
     mydata = {}
     repoid = repostring.split("|")[1].strip()
@@ -1173,7 +1220,7 @@ def const_extractServerRepositoryParameters(repostring):
 
     return repoid, mydata
 
-def const_configureServerRepoPaths():
+def const_configure_server_repo_paths():
 
     for repoid in etpConst['server_repositories']:
         etpConst['server_repositories'][repoid]['packages_dir'] = \
@@ -1218,7 +1265,7 @@ def const_configureServerRepoPaths():
                         )+"/"
 
 
-def const_setupWithEnvironment():
+def const_setup_environment():
 
     shell_repoid = os.getenv('ETP_REPO')
     if shell_repoid:
