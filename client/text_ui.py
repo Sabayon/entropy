@@ -566,12 +566,6 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
 
 def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
 
-    # check if I am root
-    if (not Equo.entropyTools.is_root()):
-        mytxt = "%s %s %s" % (_("Running with"),bold("--pretend"),red("..."),)
-        print_warning(mytxt)
-        etpUi['pretend'] = True
-
     foundAtoms = _scanPackages(packages, tbz2)
     # are there packages in foundAtoms?
     if not foundAtoms:
