@@ -18,16 +18,16 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
+# pylint ok
 
 from __future__ import with_statement
 import sys, os, stat
 from entropy.i18n import _
 
 # ETP_ARCH_CONST setup
+ETP_ARCH_CONST = "x86"
 if os.uname()[4] == "x86_64":
     ETP_ARCH_CONST = "amd64"
-else:
-    ETP_ARCH_CONST = "x86"
 
 etpSys = {
     'archs': ["x86", "amd64"],
@@ -95,7 +95,17 @@ etpRepositoriesExcluded = {}
 etpRepositoriesOrder = []
 etpConst = {}
 
-def initConfig_entropyConstants(rootdir):
+def initconfig_entropy_constants(rootdir):
+
+    """
+    Main constants configurators, this is the only function that you should
+    call from the outside, everytime you want. it will reset all the variables
+    excluding those backed up previously.
+
+    @param rootdir current root directory, if any, or ""
+    @type rootdir str
+    @return None
+    """
 
     if rootdir and not os.path.isdir(rootdir):
         raise AttributeError("FileNotFound: not a valid chroot.")
@@ -106,7 +116,7 @@ def initConfig_entropyConstants(rootdir):
     else:
         backed_up_settings = {}
 
-    const_defaultSettings(rootdir)
+    const_default_settings(rootdir)
     const_read_entropy_release()
     const_create_working_dirs()
     const_setup_entropy_pid()
@@ -114,7 +124,7 @@ def initConfig_entropyConstants(rootdir):
     const_read_repo_settings()
     const_read_socket_settings()
     const_configure_lock_paths()
-    initConfig_clientConstants()
+    initconfig_client_constants()
     # server stuff
     const_read_srv_settings()
 
@@ -123,44 +133,77 @@ def initConfig_entropyConstants(rootdir):
     etpConst['backed_up'] = backed_up_settings.copy()
     const_setup_environment()
 
-    sys.excepthook = const_HandleException
+    if sys.excepthook == sys.__excepthook__:
+        sys.excepthook = const_handle_exception
 
-def initConfig_clientConstants():
+def initConfig_entropyConstants(rootdir):
+    """
+    @deprecated
+    Please use initconfig_entropy_constants
+    """
+    import warnings
+    warnings.warn("deprecated please use initconfig_entropy_constants")
+    return initconfig_entropy_constants(rootdir)
+
+def initconfig_client_constants():
+    """
+    Initialize all the Entropy Client-only constants.
+
+    @return None
+    """
     const_read_equo_settings()
 
-def const_defaultSettings(rootdir):
+def initConfig_ClientConstants():
+    """
+    @deprecated
+    Please use initconfig_client_constants
+    """
+    import warnings
+    warnings.warn("deprecated please use initconfig_client_constants")
+    return initconfig_client_constants()
 
-    ETP_DIR = rootdir+"/var/lib/entropy"
-    ETP_TMPDIR = "/tmp"
-    ETP_REPODIR = "/packages/"+ETP_ARCH_CONST
-    ETP_PORTDIR = rootdir+"/usr/portage"
-    ETP_DISTFILESDIR = "/distfiles"
-    ETP_DBDIR = "/database/"+ETP_ARCH_CONST
-    ETP_DBFILE = "packages.db"
-    ETP_DBCLIENTFILE = "equo.db"
-    ETP_CLIENT_REPO_DIR = "/client"
-    ETP_TRIGGERSDIR = "/triggers/"+ETP_ARCH_CONST
-    ETP_SMARTAPPSDIR = "/smartapps/"+ETP_ARCH_CONST
-    ETP_SMARTPACKAGESDIR = "/smartpackages/"+ETP_ARCH_CONST
-    ETP_CACHESDIR = "/caches/"
-    ETP_SECURITYDIR = "/glsa/"
-    ETP_SETSDIRNAME = "sets"
-    ETP_SETSDIR = "/%s/" % (ETP_SETSDIRNAME,)
-    ETP_LOG_DIR = ETP_DIR+"/"+"logs"
-    ETP_CONF_DIR = rootdir+"/etc/entropy"
-    ETP_CONF_PACKAGES_DIR = ETP_CONF_DIR+"/packages"
-    ETP_UGC_CONF_DIR = ETP_CONF_DIR+"/ugc"
-    ETP_SYSLOG_DIR = rootdir+"/var/log/entropy/"
-    ETP_VAR_DIR = rootdir+"/var/tmp/entropy"
-    edbCOUNTER = rootdir+"/var/cache/edb/counter"
+def const_default_settings(rootdir):
+
+    """
+    Initialization of all the Entropy base settings.
+
+    @param rootdir current root directory, if any, or ""
+    @type rootdir str
+    @return None
+    """
+
+    default_etp_dir = rootdir+"/var/lib/entropy"
+    default_etp_tmpdir = "/tmp"
+    default_etp_repodir = "/packages/"+ETP_ARCH_CONST
+    default_etp_portdir = rootdir+"/usr/portage"
+    default_etp_distfilesdir = "/distfiles"
+    default_etp_dbdir = "/database/"+ETP_ARCH_CONST
+    default_etp_dbfile = "packages.db"
+    default_etp_dbclientfile = "equo.db"
+    default_etp_client_repodir = "/client"
+    default_etp_triggersdir = "/triggers/"+ETP_ARCH_CONST
+    default_etp_smartappsdir = "/smartapps/"+ETP_ARCH_CONST
+    default_etp_smartpackagesdir = "/smartpackages/"+ETP_ARCH_CONST
+    default_etp_cachesdir = "/caches/"
+    default_etp_securitydir = "/glsa/"
+    default_etp_setsdirname = "sets"
+    default_etp_setsdir = "/%s/" % (default_etp_setsdirname,)
+    default_etp_logdir = default_etp_dir+"/"+"logs"
+    default_etp_confdir = rootdir+"/etc/entropy"
+    default_etp_packagesdir = default_etp_confdir+"/packages"
+    default_etp_ugc_confdir = default_etp_confdir+"/ugc"
+    default_etp_syslogdir = rootdir+"/var/log/entropy/"
+    default_etp_vardir = rootdir+"/var/tmp/entropy"
+    edb_counter = rootdir+"/var/cache/edb/counter"
+
     cmdline = []
     cmdline_file = "/proc/cmdline"
     if os.access(cmdline_file, os.R_OK) and os.path.isfile(cmdline_file):
-        with open(cmdline_file, "r") as f:
-            cmdline = f.readline().strip().split()
+        with open(cmdline_file, "r") as cmdline_f:
+            cmdline = cmdline_f.readline().strip().split()
 
     etpConst.clear()
-    myConst = {
+    my_const = {
         'server_repositories': {},
         'community': {
             'mode': False,
@@ -170,48 +213,48 @@ def const_defaultSettings(rootdir):
         # entropy default installation directory
         'installdir': '/usr/lib/entropy',
         # etpConst['packagestmpdir'] --> temp directory
-        'packagestmpdir': ETP_DIR+ETP_TMPDIR,
+        'packagestmpdir': default_etp_dir+default_etp_tmpdir,
         # etpConst['packagesbindir'] --> repository
         # where the packages will be stored
         # by clients: to query if a package has been already downloaded
         # by servers or rsync mirrors: to store already
         #   uploaded packages to the main rsync server
-        'packagesbindir': ETP_DIR+ETP_REPODIR,
+        'packagesbindir': default_etp_dir+default_etp_repodir,
         # etpConst['smartappsdir'] location where smart apps files are places
-        'smartappsdir': ETP_DIR+ETP_SMARTAPPSDIR,
+        'smartappsdir': default_etp_dir+default_etp_smartappsdir,
         # etpConst['smartpackagesdir'] location where
         # smart packages files are places
-        'smartpackagesdir': ETP_DIR+ETP_SMARTPACKAGESDIR,
+        'smartpackagesdir': default_etp_dir+default_etp_smartpackagesdir,
         # etpConst['triggersdir'] location where external triggers are placed
-        'triggersdir': ETP_DIR+ETP_TRIGGERSDIR,
+        'triggersdir': default_etp_dir+default_etp_triggersdir,
         # directory where is stored our local portage tree
-        'portagetreedir': ETP_PORTDIR,
+        'portagetreedir': default_etp_portdir,
         # directory where our sources are downloaded
-        'distfilesdir': ETP_PORTDIR+ETP_DISTFILESDIR,
+        'distfilesdir': default_etp_portdir+default_etp_distfilesdir,
         # directory where entropy stores its configuration
-        'confdir': ETP_CONF_DIR,
+        'confdir': default_etp_confdir,
         # same as above + /packages
-        'confpackagesdir': ETP_CONF_PACKAGES_DIR,
+        'confpackagesdir': default_etp_packagesdir,
         # system package sets dir
-        'confsetsdir': ETP_CONF_PACKAGES_DIR+ETP_SETSDIR,
+        'confsetsdir': default_etp_packagesdir+default_etp_setsdir,
         # just the dirname
-        'confsetsdirname': ETP_SETSDIRNAME,
+        'confsetsdirname': default_etp_setsdirname,
         # entropy.conf file
-        'entropyconf': ETP_CONF_DIR+"/entropy.conf",
+        'entropyconf': default_etp_confdir+"/entropy.conf",
         # repositories.conf file
-        'repositoriesconf': ETP_CONF_DIR+"/repositories.conf",
+        'repositoriesconf': default_etp_confdir+"/repositories.conf",
         # server.conf file (generic server side settings)
-        'serverconf': ETP_CONF_DIR+"/server.conf",
+        'serverconf': default_etp_confdir+"/server.conf",
         # equo.conf file
-        'equoconf': ETP_CONF_DIR+"/equo.conf",
+        'equoconf': default_etp_confdir+"/equo.conf",
         # socket.conf file
-        'socketconf': ETP_CONF_DIR+"/socket.conf",
+        'socketconf': default_etp_confdir+"/socket.conf",
         # user by client interfaces
         'packagesrelativepath': "packages/"+ETP_ARCH_CONST+"/",
 
-        'entropyworkdir': ETP_DIR, # Entropy workdir
+        'entropyworkdir': default_etp_dir, # Entropy workdir
         # Entropy unpack directory
-        'entropyunpackdir': ETP_VAR_DIR,
+        'entropyunpackdir': default_etp_vardir,
         # Entropy packages image directory
         'entropyimagerelativepath': "image",
         # Gentoo xpak temp directory path
@@ -221,49 +264,52 @@ def const_defaultSettings(rootdir):
         # Gentoo xpak metadata file name
         'entropyxpakfilename': "metadata.xpak",
 
-        'etpdatabaseconflictingtaggedfile': ETP_DBFILE+".conflicting_tagged",
+        'etpdatabaseconflictingtaggedfile': default_etp_dbfile + \
+            ".conflicting_tagged",
         # file containing a list of packages that are strictly
         # required by the repository, thus forced
-        'etpdatabasesytemmaskfile': ETP_DBFILE+".system_mask",
-        'etpdatabasemaskfile': ETP_DBFILE+".mask",
-        'etpdatabaseupdatefile': ETP_DBFILE+".repo_updates",
-        'etpdatabaselicwhitelistfile': ETP_DBFILE+".lic_whitelist",
+        'etpdatabasesytemmaskfile': default_etp_dbfile+".system_mask",
+        'etpdatabasemaskfile': default_etp_dbfile+".mask",
+        'etpdatabaseupdatefile': default_etp_dbfile+".repo_updates",
+        'etpdatabaselicwhitelistfile': default_etp_dbfile+".lic_whitelist",
         # the local/remote database revision file
-        'etpdatabaserevisionfile': ETP_DBFILE+".revision",
+        'etpdatabaserevisionfile': default_etp_dbfile+".revision",
         # missing dependencies black list file
-        'etpdatabasemissingdepsblfile': ETP_DBFILE+".missing_deps_blacklist",
+        'etpdatabasemissingdepsblfile': default_etp_dbfile + \
+            ".missing_deps_blacklist",
         # compressed file that contains all the "meta"
         # files in a repository dir
-        'etpdatabasemetafilesfile': ETP_DBFILE+".meta",
+        'etpdatabasemetafilesfile': default_etp_dbfile+".meta",
         # file that contains a list of the "meta"
         # files not available in the repository
-        'etpdatabasemetafilesnotfound': ETP_DBFILE+".meta_notfound",
-        'etpdatabasehashfile': ETP_DBFILE+".md5", # its checksum
-        'etpdatabasedumphashfilebz2': ETP_DBFILE+".dump.bz2.md5",
-        'etpdatabasedumphashfilegzip': ETP_DBFILE+".dump.gz.md5",
+        'etpdatabasemetafilesnotfound': default_etp_dbfile+".meta_notfound",
+        'etpdatabasehashfile': default_etp_dbfile+".md5", # its checksum
+        'etpdatabasedumphashfilebz2': default_etp_dbfile+".dump.bz2.md5",
+        'etpdatabasedumphashfilegzip': default_etp_dbfile+".dump.gz.md5",
         # the remote database lock file
-        'etpdatabaselockfile': ETP_DBFILE+".lock",
+        'etpdatabaselockfile': default_etp_dbfile+".lock",
         # the remote database lock file
-        'etpdatabaseeapi3lockfile': ETP_DBFILE+".eapi3_lock",
+        'etpdatabaseeapi3lockfile': default_etp_dbfile+".eapi3_lock",
         # the remote database download lock file
-        'etpdatabasedownloadlockfile': ETP_DBFILE+".download.lock",
+        'etpdatabasedownloadlockfile': default_etp_dbfile+".download.lock",
         'etpdatabasecacertfile': "ca.cert",
         'etpdatabaseservercertfile': "server.cert",
         # when this file exists, the database is not synced
         # anymore with the online one
-        'etpdatabasetaintfile': ETP_DBFILE+".tainted",
-        # Entropy sqlite database file ETP_DIR+ETP_DBDIR+"/packages.db"
-        'etpdatabasefile': ETP_DBFILE,
+        'etpdatabasetaintfile': default_etp_dbfile+".tainted",
+        # Entropy sqlite database file default_etp_dir + \
+        #    default_etp_dbdir+"/packages.db"
+        'etpdatabasefile': default_etp_dbfile,
         # Entropy sqlite database file (gzipped)
-        'etpdatabasefilegzip': ETP_DBFILE+".gz",
+        'etpdatabasefilegzip': default_etp_dbfile+".gz",
         # Entropy sqlite database file (bzipped2)
-        'etpdatabasefilebzip2': ETP_DBFILE+".bz2",
+        'etpdatabasefilebzip2': default_etp_dbfile+".bz2",
         # Entropy sqlite database dump file (bzipped2)
-        'etpdatabasedumpbzip2': ETP_DBFILE+".dump.bz2",
+        'etpdatabasedumpbzip2': default_etp_dbfile+".dump.bz2",
         # Entropy sqlite database dump file (gzipped)
-        'etpdatabasedumpgzip': ETP_DBFILE+".dump.gz",
+        'etpdatabasedumpgzip': default_etp_dbfile+".dump.gz",
         # Entropy sqlite database dump file
-        'etpdatabasedump': ETP_DBFILE+".dump",
+        'etpdatabasedump': default_etp_dbfile+".dump",
         # Entropy default compressed database format
         'etpdatabasefileformat': "bz2",
         # Entropy compressed databases format support
@@ -324,18 +370,20 @@ def const_defaultSettings(rootdir):
         'equologlevel': 1,
         'spmloglevel': 1,
         # Log dir where ebuilds store their stuff
-        'logdir': ETP_LOG_DIR ,
+        'logdir': default_etp_logdir ,
 
-        'syslogdir': ETP_SYSLOG_DIR, # Entropy system tools log directory
-        'entropylogfile': ETP_SYSLOG_DIR+"entropy.log",
-        'equologfile': ETP_SYSLOG_DIR+"equo.log",
-        'spmlogfile': ETP_SYSLOG_DIR+"spm.log",
-        'socketlogfile': ETP_SYSLOG_DIR+"socket.log",
+        'syslogdir': default_etp_syslogdir, # Entropy system tools log directory
+        'entropylogfile': default_etp_syslogdir+"entropy.log",
+        'equologfile': default_etp_syslogdir+"equo.log",
+        'spmlogfile': default_etp_syslogdir+"spm.log",
+        'socketlogfile': default_etp_syslogdir+"socket.log",
 
-        'etpdatabaseclientdir': ETP_DIR+ETP_CLIENT_REPO_DIR+ETP_DBDIR,
+        'etpdatabaseclientdir': default_etp_dir + default_etp_client_repodir + \
+            default_etp_dbdir,
         # path to equo.db - client side database file
-        'etpdatabaseclientfilepath': ETP_DIR + ETP_CLIENT_REPO_DIR + \
-            ETP_DBDIR + "/" + ETP_DBCLIENTFILE,
+        'etpdatabaseclientfilepath': default_etp_dir + \
+            default_etp_client_repodir + default_etp_dbdir + "/" + \
+            default_etp_dbclientfile,
         # prefix of the name of self.dbname in
         # entropy.db.LocalRepository class for the repositories
         'dbnamerepoprefix': "repo_",
@@ -358,7 +406,7 @@ def const_defaultSettings(rootdir):
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]),
         # Gentoo compatibility (/var/db/pkg + Portage availability)
         'gentoo-compat': True,
-        'edbcounter': edbCOUNTER,
+        'edbcounter': edb_counter,
         'libtest_blacklist': [],
         'libtest_files_blacklist': [],
         # our official repository name
@@ -368,7 +416,7 @@ def const_defaultSettings(rootdir):
         'conntestlink': "http://www.sabayonlinux.org",
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|",
-        'pidfile': ETP_DIR+"/entropy.pid",
+        'pidfile': default_etp_dir+"/entropy.pid",
         'applicationlock': False,
         # option to keep a backup of config files after
         # being overwritten by equo conf update
@@ -396,7 +444,7 @@ def const_defaultSettings(rootdir):
         'systemname': "Sabayon Linux",
         # Product identificator (standard, professional...)
         'product': "standard",
-        'errorstatus': ETP_CONF_DIR+"/code",
+        'errorstatus': default_etp_confdir+"/code",
         'systemroot': rootdir, # default system root
         'uid': os.getuid(), # current running UID
         'entropygid': None,
@@ -470,9 +518,9 @@ def const_defaultSettings(rootdir):
 
         # data storage directory, useful to speed up
         # entropy client across multiple issued commands
-        'dumpstoragedir': ETP_DIR+ETP_CACHESDIR,
+        'dumpstoragedir': default_etp_dir+default_etp_cachesdir,
         # where GLSAs are stored
-        'securitydir': ETP_DIR+ETP_SECURITYDIR,
+        'securitydir': default_etp_dir+default_etp_securitydir,
         'securityurl': "http://community.sabayonlinux.org/security"
             "/security-advisories.tar.bz2",
 
@@ -481,7 +529,7 @@ def const_defaultSettings(rootdir):
         },
         'safemodereasons': {
             0: _("All fine"),
-            1: _("Corrupted Entropy client repository. Please restore a backup."),
+            1: _("Corrupted Client Repository. Please restore a backup."),
         },
 
         'misc_counters': {
@@ -512,10 +560,10 @@ def const_defaultSettings(rootdir):
             'max_connections_per_host_barrier': 8,
             'disabled_cmds': set(),
             'ip_blacklist': set(),
-            'ssl_key': ETP_CONF_DIR+"/socket_server.key",
-            'ssl_cert': ETP_CONF_DIR+"/socket_server.crt",
-            'ssl_ca_cert': ETP_CONF_DIR+"/socket_server.CA.crt",
-            'ssl_ca_pkey': ETP_CONF_DIR+"/socket_server.CA.key",
+            'ssl_key': default_etp_confdir+"/socket_server.key",
+            'ssl_cert': default_etp_confdir+"/socket_server.crt",
+            'ssl_ca_cert': default_etp_confdir+"/socket_server.CA.crt",
+            'ssl_ca_pkey': default_etp_confdir+"/socket_server.CA.key",
             'answers': {
                 'ok': chr(0)+"OK"+chr(0), # command run
                 'er': chr(0)+"ER"+chr(1), # execution error
@@ -548,7 +596,7 @@ def const_defaultSettings(rootdir):
             4: _('Generic File'),
             5: _('YouTube(tm) Video'),
         },
-        'ugc_accessfile': ETP_UGC_CONF_DIR+"/access.xml",
+        'ugc_accessfile': default_etp_ugc_confdir+"/access.xml",
         'ugc_voterange': range(1, 6),
 
         # handler settings
@@ -564,23 +612,41 @@ def const_defaultSettings(rootdir):
 
     # set current nice level
     try:
-        myConst['current_nice'] = os.nice(0)
+        my_const['current_nice'] = os.nice(0)
     except OSError:
         pass
 
-    etpConst.update(myConst)
+    etpConst.update(my_const)
 
-def const_set_nice_level(low = 0):
+def const_set_nice_level(nice_level = 0):
+    """
+    Change current process scheduler "nice" level.
+
+    @param nice_level new valid nice level
+    @type nice_level int
+    @return current_nice new nice level
+    """
     default_nice = etpConst['default_nice']
     current_nice = etpConst['current_nice']
     delta = current_nice - default_nice
     try:
-        etpConst['current_nice'] = os.nice(delta*-1+low)
+        etpConst['current_nice'] = os.nice(delta*-1+nice_level)
     except OSError:
         pass
     return current_nice
 
-def const_extract_client_repo_params(repostring):
+def const_extract_cli_repo_params(repostring):
+
+    """
+    Extract repository information from the provided repository string,
+    usually contained in the repository settings file, repositories.conf.
+
+    @param repostring basestring
+    @type repostring valid repository string
+    @return tuple composed by
+        reponame => repository identifier (string),
+        mydata => extracted repository information (dict)
+    """
 
     reponame = repostring.split("|")[1].strip()
     repodesc = repostring.split("|")[2].strip()
@@ -607,7 +673,7 @@ def const_extract_client_repo_params(repostring):
         if dbformat in etpConst['etpdatabasesupportedcformats']:
             try:
                 dbformat = repodatabase[dbformatcolon+1:]
-            except:
+            except (IndexError, ValueError, TypeError,):
                 pass
         repodatabase = repodatabase[:dbformatcolon]
 
@@ -618,27 +684,34 @@ def const_extract_client_repo_params(repostring):
     mydata['description'] = repodesc
     mydata['packages'] = []
     mydata['plain_packages'] = []
+
     mydata['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + reponame + \
         "/" + etpConst['product'] + "/" + etpConst['currentarch'] + \
             "/" + etpConst['branch']
+
     mydata['dbcformat'] = dbformat
     if not dbformat in etpConst['etpdatabasesupportedcformats']:
         mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
+
     mydata['plain_database'] = repodatabase
+
     mydata['database'] = repodatabase + "/" + etpConst['product'] + "/" + \
         reponame + "/database/" + etpConst['currentarch'] + \
         "/" + etpConst['branch']
+
     mydata['notice_board'] = mydata['database'] + "/" + \
         etpConst['rss-notice-board']
+
     mydata['local_notice_board'] = mydata['dbpath'] + "/" + \
         etpConst['rss-notice-board']
+
     mydata['dbrevision'] = "0"
     dbrevision_file = os.path.join(mydata['dbpath'],
         etpConst['etpdatabaserevisionfile'])
     if os.path.isfile(dbrevision_file) and os.access(dbrevision_file, os.R_OK):
-        f = open(dbrevision_file, "r")
-        mydata['dbrevision'] = f.readline().strip()
-        f.close()
+        with open(dbrevision_file, "r") as dbrev_f:
+            mydata['dbrevision'] = dbrev_f.readline().strip()
+
     # initialize CONFIG_PROTECT
     # will be filled the first time the db will be opened
     mydata['configprotect'] = None
@@ -646,6 +719,7 @@ def const_extract_client_repo_params(repostring):
     repopackages = [x.strip() for x in repopackages.split() if x.strip()]
     repopackages = [x for x in repopackages if (x.startswith('http://') or \
         x.startswith('ftp://') or x.startswith('file://'))]
+
     for repo_package in repopackages:
         try:
             repo_package = str(repo_package)
@@ -660,222 +734,326 @@ def const_extract_client_repo_params(repostring):
 
 def const_read_repo_settings():
 
+    """
+    Setup Entropy Client repository settings reading them from
+    the relative config file specified in etpConst['repositoriesconf']
+
+    @return None
+    """
+
     etpRepositories.clear()
     etpRepositoriesExcluded.clear()
     del etpRepositoriesOrder[:]
-    if os.path.isfile(etpConst['repositoriesconf']):
-        f = open(etpConst['repositoriesconf'],"r")
-        repositoriesconf = [x.strip() for x in f.readlines()]
-        f.close()
 
-        # setup product and branch first
-        for line in repositoriesconf:
+    repo_conf = etpConst['repositoriesconf']
+    if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
+        return
 
-            if (line.find("product|") != -1) and \
-                (not line.startswith("#")) and  \
-                (len(line.split("|")) == 2):
+    repo_f = open(repo_conf,"r")
+    repositoriesconf = [x.strip() for x in repo_f.readlines() if x.strip()]
+    repo_f.close()
 
-                etpConst['product'] = line.strip().split("|")[1]
+    # setup product and branch first
+    for line in repositoriesconf:
 
-            elif (line.find("branch|") != -1) and \
-                (not line.startswith("#")) and \
-                (len(line.split("|")) == 2):
+        if (line.find("product|") != -1) and \
+            (not line.startswith("#")) and  \
+            (len(line.split("|")) == 2):
 
-                branch = line.split("|")[1].strip()
-                etpConst['branch'] = branch
-                if not os.path.isdir(etpConst['packagesbindir']+"/"+branch):
-                    if etpConst['uid'] == 0:
-                        # check if we have a broken symlink
-                        os.makedirs(etpConst['packagesbindir']+"/"+branch)
+            etpConst['product'] = line.strip().split("|")[1]
 
-        for line in repositoriesconf:
+        elif (line.find("branch|") != -1) and \
+            (not line.startswith("#")) and \
+            (len(line.split("|")) == 2):
 
-            # populate etpRepositories
-            if (line.find("repository|") != -1) and \
-                (len(line.split("|")) == 5):
+            branch = line.split("|")[1].strip()
+            etpConst['branch'] = branch
+            if not os.path.isdir(etpConst['packagesbindir']+"/"+branch) and \
+                (etpConst['uid'] == 0):
 
-                excluded = False
-                myRepodata = etpRepositories
-                if line.startswith("##"):
-                    continue
-                elif line.startswith("#"):
-                    excluded = True
-                    myRepodata = etpRepositoriesExcluded
-                    line = line[1:]
+                # check if we have a broken symlink
+                os.makedirs(etpConst['packagesbindir']+"/"+branch)
 
-                reponame, repodata = const_extract_client_repo_params(line)
-                if myRepodata.has_key(reponame):
+    for line in repositoriesconf:
 
-                    myRepodata[reponame]['plain_packages'].extend(
-                        repodata['plain_packages'])
-                    myRepodata[reponame]['packages'].extend(
-                        repodata['packages'])
+        # populate etpRepositories
+        if (line.find("repository|") != -1) and \
+            (len(line.split("|")) == 5):
 
-                    if (not myRepodata[reponame]['plain_database']) and \
-                        repodata['plain_database']:
+            excluded = False
+            my_repodata = etpRepositories
+            if line.startswith("##"):
+                continue
+            elif line.startswith("#"):
+                excluded = True
+                my_repodata = etpRepositoriesExcluded
+                line = line[1:]
 
-                        myRepodata[reponame]['plain_database'] = repodata['plain_database']
-                        myRepodata[reponame]['database'] = repodata['database']
-                        myRepodata[reponame]['dbrevision'] = repodata['dbrevision']
-                        myRepodata[reponame]['dbcformat'] = repodata['dbcformat']
+            reponame, repodata = const_extract_cli_repo_params(line)
+            if my_repodata.has_key(reponame):
+
+                my_repodata[reponame]['plain_packages'].extend(
+                    repodata['plain_packages'])
+                my_repodata[reponame]['packages'].extend(
+                    repodata['packages'])
+
+                if (not my_repodata[reponame]['plain_database']) and \
+                    repodata['plain_database']:
+
+                    my_repodata[reponame]['plain_database'] = \
+                        repodata['plain_database']
+                    my_repodata[reponame]['database'] = \
+                        repodata['database']
+                    my_repodata[reponame]['dbrevision'] = \
+                        repodata['dbrevision']
+                    my_repodata[reponame]['dbcformat'] = \
+                        repodata['dbcformat']
+            else:
+
+                my_repodata[reponame] = repodata.copy()
+                if not excluded:
+                    etpRepositoriesOrder.append(reponame)
+
+        elif (line.find("officialrepositoryid|") != -1) and \
+            (not line.startswith("#")) and (len(line.split("|")) == 2):
+
+            officialreponame = line.split("|")[1]
+            etpConst['officialrepositoryid'] = officialreponame
+
+        elif (line.find("downloadspeedlimit|") != -1) and \
+            (not line.startswith("#")) and (len(line.split("|")) == 2):
+
+            try:
+                myval = int(line.split("|")[1])
+                if myval > 0:
+                    etpConst['downloadspeedlimit'] = myval
                 else:
-
-                    myRepodata[reponame] = repodata.copy()
-                    if not excluded:
-                        etpRepositoriesOrder.append(reponame)
-
-            elif (line.find("officialrepositoryid|") != -1) and \
-                (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-                officialreponame = line.split("|")[1]
-                etpConst['officialrepositoryid'] = officialreponame
-
-            elif (line.find("downloadspeedlimit|") != -1) and \
-                (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-                try:
-                    myval = int(line.split("|")[1])
-                    if myval > 0:
-                        etpConst['downloadspeedlimit'] = myval
-                    else:
-                        etpConst['downloadspeedlimit'] = None
-                except (ValueError, IndexError,):
                     etpConst['downloadspeedlimit'] = None
+            except (ValueError, IndexError,):
+                etpConst['downloadspeedlimit'] = None
 
-            elif (line.find("securityurl|") != -1) and \
-                (not line.startswith("#")) and (len(line.split("|")) == 2):
+        elif (line.find("securityurl|") != -1) and \
+            (not line.startswith("#")) and (len(line.split("|")) == 2):
 
-                try:
-                    url = line.split("|")[1]
-                    etpConst['securityurl'] = url
-                except (IndexError, ValueError, TypeError,):
-                    pass
+            try:
+                url = line.split("|")[1]
+                etpConst['securityurl'] = url
+            except (IndexError, ValueError, TypeError,):
+                continue
 
 def const_read_socket_settings():
 
-    if os.path.isfile(etpConst['socketconf']):
-        f = open(etpConst['socketconf'],"r")
-        socketconf = f.readlines()
-        f.close()
-        for line in socketconf:
-            if line.startswith("listen|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                if x:
-                    etpConst['socket_service']['hostname'] = x
-            elif line.startswith("listen-port|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['port'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("listen-timeout|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['timeout'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("listen-threads|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['threads'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("session-ttl|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['session_ttl'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("max-connections|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['max_connections'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("ssl-port|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip()
-                try:
-                    x = int(x)
-                    etpConst['socket_service']['ssl_port'] = x
-                except ValueError:
-                    pass
-            elif line.startswith("disabled-commands|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip().split()
-                for y in x:
-                    etpConst['socket_service']['disabled_cmds'].add(y)
-            elif line.startswith("ip-blacklist|") and (len(line.split("|")) > 1):
-                x = line.split("|")[1].strip().split()
-                for y in x:
-                    etpConst['socket_service']['ip_blacklist'].add(y)
+    """
+    Setup Entropy TCP socket based Server settings reading them from
+    the relative config file specified in etpConst['socketconf']
+
+    @return None
+    """
+
+    sock_conf = etpConst['socketconf']
+    if not (os.path.isfile(sock_conf) and \
+        os.access(sock_conf,os.R_OK)):
+        return
+
+    socket_f = open(sock_conf,"r")
+    socketconf = [x.strip() for x in socket_f.readlines()  if \
+        x.strip() and not x.strip().startswith("#")]
+    socket_f.close()
+
+    for line in socketconf:
+
+        if line.startswith("listen|") and (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            if item:
+                etpConst['socket_service']['hostname'] = item
+
+        elif line.startswith("listen-port|") and \
+            (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            try:
+                item = int(item)
+                etpConst['socket_service']['port'] = item
+            except ValueError:
+                pass
+
+        elif line.startswith("listen-timeout|") and \
+            (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            try:
+                item = int(item)
+                etpConst['socket_service']['timeout'] = item
+            except ValueError:
+                pass
+
+        elif line.startswith("listen-threads|") and \
+            (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            try:
+                item = int(item)
+                etpConst['socket_service']['threads'] = item
+            except ValueError:
+                pass
+
+        elif line.startswith("session-ttl|") and \
+            (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            try:
+                item = int(item)
+                etpConst['socket_service']['session_ttl'] = item
+            except ValueError:
+                pass
+
+        elif line.startswith("max-connections|") and \
+            (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            try:
+                item = int(item)
+                etpConst['socket_service']['max_connections'] = item
+            except ValueError:
+                pass
+
+        elif line.startswith("ssl-port|") and \
+            (len(line.split("|")) > 1):
+
+            item = line.split("|")[1].strip()
+            try:
+                item = int(item)
+                etpConst['socket_service']['ssl_port'] = item
+            except ValueError:
+                pass
+
+        elif line.startswith("disabled-commands|") and \
+            (len(line.split("|")) > 1):
+
+            disabled_cmds = line.split("|")[1].strip().split()
+            for disabled_cmd in disabled_cmds:
+                etpConst['socket_service']['disabled_cmds'].add(disabled_cmd)
+
+        elif line.startswith("ip-blacklist|") and \
+            (len(line.split("|")) > 1):
+
+            ips_blacklist = line.split("|")[1].strip().split()
+            for ip_blacklist in ips_blacklist:
+                etpConst['socket_service']['ip_blacklist'].add(ip_blacklist)
 
 def const_read_entropy_settings():
 
-    # entropy section
-    if os.path.isfile(etpConst['entropyconf']):
-        const_secure_config_file(etpConst['entropyconf'])
-        f = open(etpConst['entropyconf'],"r")
-        entropyconf = f.readlines()
-        f.close()
-        for line in entropyconf:
-            if line.startswith("loglevel|") and (len(line.split("loglevel|")) == 2):
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except ValueError:
-                    pass
-                if (loglevel > -1) and (loglevel < 3):
-                    etpConst['entropyloglevel'] = loglevel
+    """
+    Setup Entropy settings by reading them from the relative
+    config file specified in etpConst['entropyconf']
 
-            elif line.startswith("ftp-proxy|") and (len(line.split("|")) == 2):
-                ftpproxy = line.split("|")[1].strip().split()
-                if ftpproxy:
-                    etpConst['proxy']['ftp'] = ftpproxy[-1]
-            elif line.startswith("http-proxy|") and (len(line.split("|")) == 2):
-                httpproxy = line.split("|")[1].strip().split()
-                if httpproxy:
-                    etpConst['proxy']['http'] = httpproxy[-1]
-            elif line.startswith("proxy-username|") and (len(line.split("|")) == 2):
-                httpproxy = line.split("|")[1].strip().split()
-                if httpproxy:
-                    etpConst['proxy']['username'] = httpproxy[-1]
-            elif line.startswith("proxy-password|") and (len(line.split("|")) == 2):
-                httpproxy = line.split("|")[1].strip().split()
-                if httpproxy:
-                    etpConst['proxy']['password'] = httpproxy[-1]
-            elif line.startswith("system-name|") and (len(line.split("|")) == 2):
-                etpConst['systemname'] = line.split("|")[1].strip()
-            elif line.startswith("nice-level|") and (len(line.split("|")) == 2):
-                mylevel = line.split("|")[1].strip()
-                try:
-                    mylevel = int(mylevel)
-                    if (mylevel >= -19) and (mylevel <= 19):
-                        const_set_nice_level(mylevel)
-                except (ValueError,):
-                    pass
+    @return None
+    """
+
+    etp_conf = etpConst['entropyconf']
+    if not os.path.isfile(etp_conf) and \
+        os.access(etp_conf,os.R_OK):
+        return
+
+    const_secure_config_file(etp_conf)
+    entropy_f = open(etp_conf,"r")
+    entropyconf = [x.strip() for x in entropy_f.readlines()  if \
+        x.strip() and not x.strip().startswith("#")]
+    entropy_f.close()
+
+    for line in entropyconf:
+
+        if line.startswith("loglevel|") and \
+            (len(line.split("loglevel|")) == 2):
+
+            loglevel = line.split("loglevel|")[1]
+            try:
+                loglevel = int(loglevel)
+            except ValueError:
+                pass
+            if (loglevel > -1) and (loglevel < 3):
+                etpConst['entropyloglevel'] = loglevel
+
+        elif line.startswith("ftp-proxy|") and \
+            (len(line.split("|")) == 2):
+
+            ftpproxy = line.split("|")[1].strip().split()
+            if ftpproxy:
+                etpConst['proxy']['ftp'] = ftpproxy[-1]
+
+        elif line.startswith("http-proxy|") and \
+            (len(line.split("|")) == 2):
+
+            httpproxy = line.split("|")[1].strip().split()
+            if httpproxy:
+                etpConst['proxy']['http'] = httpproxy[-1]
+
+        elif line.startswith("proxy-username|") and \
+            (len(line.split("|")) == 2):
+
+            httpproxy = line.split("|")[1].strip().split()
+            if httpproxy:
+                etpConst['proxy']['username'] = httpproxy[-1]
+
+        elif line.startswith("proxy-password|") and \
+            (len(line.split("|")) == 2):
+
+            httpproxy = line.split("|")[1].strip().split()
+            if httpproxy:
+                etpConst['proxy']['password'] = httpproxy[-1]
+
+        elif line.startswith("system-name|") and \
+            (len(line.split("|")) == 2):
+
+            etpConst['systemname'] = line.split("|")[1].strip()
+
+        elif line.startswith("nice-level|") and \
+            (len(line.split("|")) == 2):
+
+            mylevel = line.split("|")[1].strip()
+            try:
+                mylevel = int(mylevel)
+                if (mylevel >= -19) and (mylevel <= 19):
+                    const_set_nice_level(mylevel)
+            except (ValueError,):
+                pass
 
 def const_read_entropy_release():
+    """
+    Read Entropy release file content and fill etpConst['entropyversion']
 
+    @return None
+    """
     # handle Entropy Version
-    ETP_REVISION_FILE = "../libraries/revision"
-    if not os.path.isfile(ETP_REVISION_FILE):
-        ETP_REVISION_FILE = os.path.join(etpConst['installdir'],'libraries/revision')
-    if os.path.isfile(ETP_REVISION_FILE):
-        f = open(ETP_REVISION_FILE, "r")
-        myrev = f.readline().strip()
-        etpConst['entropyversion'] = myrev
+    revision_file = "../libraries/revision"
+    if not os.path.isfile(revision_file):
+        revision_file = os.path.join(etpConst['installdir'],
+            'libraries/revision')
+    if os.path.isfile(revision_file) and \
+        os.access(revision_file,os.R_OK):
+
+        with open(revision_file, "r") as rev_f:
+            myrev = rev_f.readline().strip()
+            etpConst['entropyversion'] = myrev
 
 def const_read_equo_settings():
 
-    if not os.path.isfile(etpConst['equoconf']):
+    """
+    XXX: will be probably moved away from here in future.
+    Setup Equo settings reading them from equo config file
+    specified in etpConst['equoconf'], by default (equo.conf)
+
+    @return None
+    """
+
+    equo_conf = etpConst['equoconf']
+    if not (os.path.isfile(equo_conf) and os.access(equo_conf, os.R_OK)):
         return
 
-    equo_f = open(etpConst['equoconf'],"r")
-    equoconf = equo_f.readlines()
+    equo_f = open(equo_conf,"r")
+    equoconf = [x.strip() for x in equo_f.readlines() if \
+        x.strip() and not x.strip().startswith("#")]
     equo_f.close()
     for line in equoconf:
 
@@ -938,32 +1116,50 @@ def const_read_equo_settings():
 
 def const_setup_entropy_pid(just_read = False):
 
+    """
+    Setup Entropy pid file, if possible and if UID = 0 (root).
+    If the application is run with --no-pid-handling argument,
+    this function will have no effect. If just_read is specified,
+    this function will only try to read the current pid string in
+    the Entropy pid file (etpConst['pidfile']). If any other entropy
+    istance is currently owning the contained pid, etpConst['applicationlock']
+    becomes True.
+
+    @param just_read only read the current pid file, if any and if possible
+    @type just_read bool
+
+    @return None
+    """
+
     if ("--no-pid-handling" in sys.argv) and (not just_read):
         return
 
     # PID creation
     pid = os.getpid()
-    if os.path.isfile(etpConst['pidfile']):
+    pid_file = etpConst['pidfile']
+    if os.path.isfile(pid_file) and os.access(pid_file, os.R_OK):
 
-        f = open(etpConst['pidfile'],"r")
-        foundPid = str(f.readline().strip())
-        f.close()
-        if foundPid != str(pid):
-            # is foundPid still running ?
-            pid_path = "%s/proc/%s" % (etpConst['systemroot'], foundPid,)
-            if os.path.isdir(pid_path) and foundPid:
+        try:
+            with open(pid_file,"r") as pid_f:
+                found_pid = str(pid_f.readline().strip())
+        except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
+            found_pid = "0000" # which is always invalid
+
+        if found_pid != str(pid):
+            # is found_pid still running ?
+            pid_path = "%s/proc/%s" % (etpConst['systemroot'], found_pid,)
+            if os.path.isdir(pid_path) and found_pid:
                 etpConst['applicationlock'] = True
             elif not just_read:
                 # if root, write new pid
                 #if etpConst['uid'] == 0:
-                if os.access(etpConst['pidfile'], os.W_OK):
+                if os.access(pid_file, os.W_OK):
                     try:
-                        f = open(etpConst['pidfile'],"w")
-                        f.write(str(pid))
-                        f.flush()
-                        f.close()
-                    except IOError, e:
-                        if e.errno == 30: # readonly filesystem
+                        with open(pid_file,"w") as pid_f:
+                            pid_f.write(str(pid))
+                            pid_f.flush()
+                    except IOError, err:
+                        if err.errno == 30: # readonly filesystem
                             pass
                         else:
                             raise
@@ -973,20 +1169,20 @@ def const_setup_entropy_pid(just_read = False):
                         pass
 
     elif not just_read:
+
         #if etpConst['uid'] == 0:
-        if os.access(os.path.dirname(etpConst['pidfile']), os.W_OK):
+        if os.access(os.path.dirname(pid_file), os.W_OK):
 
-            if os.path.exists(etpConst['pidfile']):
-                if os.path.islink(etpConst['pidfile']):
-                    os.remove(etpConst['pidfile'])
-                elif os.path.isdir(etpConst['pidfile']):
+            if os.path.exists(pid_file):
+                if os.path.islink(pid_file):
+                    os.remove(pid_file)
+                elif os.path.isdir(pid_file):
                     import shutil
-                    shutil.rmtree(etpConst['pidfile'])
+                    shutil.rmtree(pid_file)
 
-            f = open(etpConst['pidfile'],"w")
-            f.write(str(pid))
-            f.flush()
-            f.close()
+            with open(pid_file,"w") as pid_fw:
+                pid_fw.write(str(pid))
+                pid_fw.flush()
 
             try:
                 const_chmod_entropy_pid()
@@ -994,6 +1190,13 @@ def const_setup_entropy_pid(just_read = False):
                 pass
 
 def const_secure_config_file(config_file):
+    """
+    Setup entropy file needing strict permissions, no world readable.
+
+    @param config_file valid config file path
+    @type config_file basestring
+    @return None
+    """
     try:
         mygid = const_get_entropy_gid()
     except KeyError:
@@ -1004,6 +1207,11 @@ def const_secure_config_file(config_file):
         pass
 
 def const_chmod_entropy_pid():
+    """
+    Setup entropy pid file permissions, if possible.
+
+    @return None
+    """
     try:
         mygid = const_get_entropy_gid()
     except KeyError:
@@ -1011,6 +1219,12 @@ def const_chmod_entropy_pid():
     const_setup_file(etpConst['pidfile'], mygid, 0664)
 
 def const_create_working_dirs():
+
+    """
+    Setup Entropy directory structure, as much automagically as possible.
+
+    @return None
+    """
 
     # handle pid file
     piddir = os.path.dirname(etpConst['pidfile'])
@@ -1032,34 +1246,29 @@ def const_create_working_dirs():
                 pass
 
     # Create paths
-    for x in etpConst:
-        if (type(etpConst[x]) is basestring):
+    for key in etpConst:
+        if (type(etpConst[key]) is basestring):
 
-            if not etpConst[x] or \
-            etpConst[x].endswith(".conf") or \
-            not os.path.isabs(etpConst[x]) or \
-            etpConst[x].endswith(".cfg") or \
-            etpConst[x].endswith(".tmp") or \
-            etpConst[x].find(".db") != -1 or \
-            etpConst[x].find(".log") != -1 or \
-            os.path.isdir(etpConst[x]) or \
-            not x.endswith("dir"):
-                    continue
+            if not etpConst[key] or \
+            etpConst[key].endswith(".conf") or \
+            not os.path.isabs(etpConst[key]) or \
+            etpConst[key].endswith(".cfg") or \
+            etpConst[key].endswith(".tmp") or \
+            etpConst[key].find(".db") != -1 or \
+            etpConst[key].find(".log") != -1 or \
+            os.path.isdir(etpConst[key]) or \
+            not key.endswith("dir"):
+                continue
 
             # allow users to create dirs in custom paths,
             # so don't fail here even if we don't have permissions
             try:
-                os.makedirs(etpConst[x])
-            except OSError:
+                os.makedirs(etpConst[key])
+            except (OSError, IOError,):
                 pass
 
     if gid:
         etpConst['entropygid'] = gid
-        '''
-        change permissions of:
-            /var/lib/entropy
-            /var/tmp/entropy
-        '''
         if not os.path.isdir(etpConst['entropyworkdir']):
             try:
                 os.makedirs(etpConst['entropyworkdir'])
@@ -1087,6 +1296,11 @@ def const_create_working_dirs():
             const_setup_perms(etpConst['etpdatabaseclientdir'], gid)
 
 def const_configure_lock_paths():
+    """
+    Setup Entropy lock file paths.
+
+    @return None
+    """
     etpConst['locks'] = {
         'using_resources': os.path.join(etpConst['etpdatabaseclientdir'],
             '.using_resources'),
@@ -1095,18 +1309,26 @@ def const_configure_lock_paths():
 
 def const_read_srv_settings():
 
+    """
+    Setup Entropy Server settings reading them from
+    the relative config. file (server.conf) specified in
+    etpConst['serverconf']
+
+    @return None
+    """
+
     if not os.access(etpConst['serverconf'], os.R_OK):
         return
 
     etpConst['server_repositories'].clear()
 
-    f = open(etpConst['serverconf'],"r")
-    serverconf = [x.strip() for x in f.readlines()]
-    f.close()
+    with open(etpConst['serverconf'],"r") as server_f:
+        serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
 
     for line in serverconf:
 
         if line.startswith("branches|") and (len(line.split("branches|")) == 2):
+
             branches = line.split("branches|")[1]
             etpConst['branches'] = []
             for branch in branches.split():
@@ -1115,10 +1337,14 @@ def const_read_srv_settings():
                 etpConst['branches'].append(etpConst['branch'])
             etpConst['branches'] = sorted(etpConst['branches'])
 
-        elif (line.find("officialserverrepositoryid|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+        elif (line.find("officialserverrepositoryid|") != -1) and \
+            (not line.startswith("#")) and (len(line.split("|")) == 2):
+
             etpConst['officialserverrepositoryid'] = line.split("|")[1].strip()
 
-        elif (line.find("expiration-days|") != -1) and (not line.startswith("#")) and (len(line.split("|")) == 2):
+        elif (line.find("expiration-days|") != -1) and \
+            (not line.startswith("#")) and (len(line.split("|")) == 2):
+
             mydays = line.split("|")[1].strip()
             try:
                 mydays = int(mydays)
@@ -1126,59 +1352,87 @@ def const_read_srv_settings():
             except ValueError:
                 continue
 
-        elif line.startswith("repository|") and (len(line.split("|")) in [5, 6]):
+        elif line.startswith("repository|") and \
+            (len(line.split("|")) in [5, 6]):
+
             repoid, repodata = const_extract_srv_repo_params(line)
             if repoid in etpConst['server_repositories']:
                 # just update mirrors
-                etpConst['server_repositories'][repoid]['mirrors'].extend(repodata['mirrors'])
+                etpConst['server_repositories'][repoid]['mirrors'].extend(
+                    repodata['mirrors'])
             else:
                 etpConst['server_repositories'][repoid] = repodata.copy()
 
-        elif line.startswith("database-format|") and (len(line.split("database-format|")) == 2):
+        elif line.startswith("database-format|") and \
+            (len(line.split("database-format|")) == 2):
+
             fmt = line.split("database-format|")[1]
             if fmt in etpConst['etpdatabasesupportedcformats']:
                 etpConst['etpdatabasefileformat'] = fmt
 
-        elif line.startswith("rss-feed|") and (len(line.split("rss-feed|")) == 2):
+        elif line.startswith("rss-feed|") and \
+            (len(line.split("rss-feed|")) == 2):
+
             feed = line.split("rss-feed|")[1]
             if feed in ("enable", "enabled", "true", "1"):
                 etpConst['rss-feed'] = True
             elif feed in ("disable", "disabled", "false", "0", "no",):
                 etpConst['rss-feed'] = False
 
-        elif line.startswith("rss-name|") and (len(line.split("rss-name|")) == 2):
+        elif line.startswith("rss-name|") and \
+            (len(line.split("rss-name|")) == 2):
+
             feedname = line.split("rss-name|")[1].strip()
             etpConst['rss-name'] = feedname
 
-        elif line.startswith("rss-base-url|") and (len(line.split("rss-base-url|")) == 2):
+        elif line.startswith("rss-base-url|") and \
+            (len(line.split("rss-base-url|")) == 2):
+
             etpConst['rss-base-url'] = line.split("rss-base-url|")[1].strip()
             if not etpConst['rss-base-url'][-1] == "/":
                 etpConst['rss-base-url'] += "/"
 
-        elif line.startswith("rss-website-url|") and (len(line.split("rss-website-url|")) == 2):
-            etpConst['rss-website-url'] = line.split("rss-website-url|")[1].strip()
+        elif line.startswith("rss-website-url|") and \
+            (len(line.split("rss-website-url|")) == 2):
 
-        elif line.startswith("managing-editor|") and (len(line.split("managing-editor|")) == 2):
-            etpConst['rss-managing-editor'] = line.split("managing-editor|")[1].strip()
+            etpConst['rss-website-url'] = \
+                line.split("rss-website-url|")[1].strip()
 
-        elif line.startswith("max-rss-entries|") and (len(line.split("max-rss-entries|")) == 2):
+        elif line.startswith("managing-editor|") and \
+            (len(line.split("managing-editor|")) == 2):
+
+            etpConst['rss-managing-editor'] = \
+                line.split("managing-editor|")[1].strip()
+
+        elif line.startswith("max-rss-entries|") and \
+            (len(line.split("max-rss-entries|")) == 2):
+
             try:
                 entries = int(line.split("max-rss-entries|")[1].strip())
                 etpConst['rss-max-entries'] = entries
             except (ValueError, IndexError,):
                 continue
 
-        elif line.startswith("max-rss-light-entries|") and (len(line.split("max-rss-light-entries|")) == 2):
+        elif line.startswith("max-rss-light-entries|") and \
+            (len(line.split("max-rss-light-entries|")) == 2):
+
             try:
                 entries = int(line.split("max-rss-light-entries|")[1].strip())
                 etpConst['rss-light-max-entries'] = entries
             except (ValueError, IndexError,):
                 continue
 
-    const_configure_server_repo_paths()
+    const_config_server_repo_paths()
 
 def const_extract_srv_repo_params(repostring):
+    """
+    Analyze a server repository string (usually contained in server.conf),
+    extracting all the parameters.
 
+    @param repostring repository string
+    @type repostring basestring
+    @return None
+    """
     mydata = {}
     repoid = repostring.split("|")[1].strip()
     repodesc = repostring.split("|")[2].strip()
@@ -1212,7 +1466,8 @@ def const_extract_srv_repo_params(repostring):
     mydata['service_port'] = eapi3_port
     mydata['ssl_service_port'] = eapi3_ssl_port
     if repohandlers:
-        repohandlers = os.path.join(repohandlers, etpConst['product'], repoid, "handlers")
+        repohandlers = os.path.join(repohandlers, etpConst['product'],
+            repoid, "handlers")
         mydata['handler'] = repohandlers
     uris = repouris.split()
     for uri in uris:
@@ -1220,8 +1475,12 @@ def const_extract_srv_repo_params(repostring):
 
     return repoid, mydata
 
-def const_configure_server_repo_paths():
+def const_config_server_repo_paths():
+    """
+    Configure Entropy Server repository paths.
 
+    @return None
+    """
     for repoid in etpConst['server_repositories']:
         etpConst['server_repositories'][repoid]['packages_dir'] = \
             os.path.join(   etpConst['entropyworkdir'],
@@ -1266,7 +1525,11 @@ def const_configure_server_repo_paths():
 
 
 def const_setup_environment():
+    """
+    Read environment variables and updates entropy settings.
 
+    @return None
+    """
     shell_repoid = os.getenv('ETP_REPO')
     if shell_repoid:
         etpConst['officialserverrepositoryid'] = shell_repoid
@@ -1281,6 +1544,15 @@ def const_setup_environment():
 
 
 def const_setup_perms(mydir, gid):
+    """
+    Setup permissions and group id (GID) to a directory, recursively.
+
+    @param mydir valid file path
+    @type mydir basestring
+    @param gid valid group id (GID)
+    @type gid int
+    @return None
+    """
     if gid == None:
         return
     for currentdir, subdirs, files in os.walk(mydir):
@@ -1301,85 +1573,151 @@ def const_setup_perms(mydir, gid):
                 pass
 
 def const_setup_file(myfile, gid, chmod):
+    """
+    Setup file permissions and group id (GID).
+
+    @param myfile valid file path
+    @type myfile basestring
+    @param gid valid group id (GID)
+    @type gid int
+    @param chmod permissions
+    @type chmod integer representing an octal
+    @return None
+    """
     cur_gid = os.stat(myfile)[stat.ST_GID]
     if cur_gid != gid:
         os.chown(myfile, -1, gid)
         const_set_chmod(myfile, chmod)
 
 # you need to convert to int
-def const_get_chmod(item):
-    st = os.stat(item)[stat.ST_MODE]
-    return oct(st & 0777)
+def const_get_chmod(myfile):
+    """
+    This function get the current permissions of the specified
+    file. If you want to use the returning value with const_set_chmod
+    you need to convert it back to int.
+
+    @param myfile valid file path
+    @type myfile basestring
+    @return octal representing permissions
+    """
+    myst = os.stat(myfile)[stat.ST_MODE]
+    return oct(myst & 0777)
 
 def const_set_chmod(myfile, chmod):
+    """
+    This function sets specified permissions to a file.
+    If they differ from the current ones.
+
+    @param myfile valid file path
+    @type myfile basestring
+    @param chmod permissions
+    @type chmod integer representing an octal
+    @return None
+    """
     cur_mod = const_get_chmod(myfile)
     if cur_mod != oct(chmod):
         os.chmod(myfile, chmod)
 
 def const_get_entropy_gid():
+    """
+    This function tries to retrieve the "entropy" user group
+    GID.
+
+    @return None or KeyError exception
+    """
     group_file = etpConst['systemroot']+'/etc/group'
     if not os.path.isfile(group_file):
         raise KeyError
-    f = open(group_file, "r")
-    for line in f.readlines():
-        if line.startswith('%s:' % (etpConst['sysgroup'],)):
-            try:
-                gid = int(line.split(":")[2])
-            except ValueError:
-                raise KeyError
-            return gid
+
+    with open(group_file,"r") as group_f:
+        for line in group_f.readlines():
+            if line.startswith('%s:' % (etpConst['sysgroup'],)):
+                try:
+                    gid = int(line.split(":")[2])
+                except ValueError:
+                    raise KeyError
+                return gid
     raise KeyError
 
 def const_add_entropy_group():
+    """
+    This function looks for an "entropy" user group.
+    If not available, it tries to create one.
+
+    @return None
+    """
     group_file = etpConst['systemroot']+'/etc/group'
     if not os.path.isfile(group_file):
         raise KeyError
     ids = set()
-    f = open(group_file, "r")
-    for line in f.readlines():
-        if line and line.split(":"):
-            try:
-                myid = int(line.split(":")[2])
-            except ValueError:
-                pass
-            ids.add(myid)
-    if ids:
-        # starting from 1000, get the first free
-        new_id = 1000
-        while 1:
-            new_id += 1
-            if new_id not in ids: break
-    else:
-        new_id = 10000
 
-    f.close()
-    f = open(group_file, "aw")
-    f.seek(0, 2)
-    app_line = "entropy:x:%s:\n" % (new_id,)
-    f.write(app_line)
-    f.flush()
-    f.close()
+    with open(group_file,"r") as group_f:
+        for line in group_f.readlines():
+            if line and line.split(":"):
+                try:
+                    myid = int(line.split(":")[2])
+                except ValueError:
+                    pass
+                ids.add(myid)
+        if ids:
+            # starting from 1000, get the first free
+            new_id = 1000
+            while 1:
+                new_id += 1
+                if new_id not in ids:
+                    break
+        else:
+            new_id = 10000
+
+    with open(group_file,"aw") as group_fw:
+        group_fw.seek(0, 2)
+        app_line = "entropy:x:%s:\n" % (new_id,)
+        group_fw.write(app_line)
+        group_fw.flush()
 
 def const_islive():
+    """
+    Live environments (Operating System running off a CD/DVD)
+    must feature the "cdroot" parameter in kernel /proc/cmdline
+
+    @return bool stating if we are running Live or not
+    """
     if "cdroot" in etpConst['cmdline']:
         return True
     return False
 
 def const_kill_threads():
+    """
+    Entropy threads killer. Even if Python threads cannot
+    be stopped or killed, TimeScheduled ones can, exporting
+    the kill() method.
+
+    @return None
+    """
     import threading
     threads = threading.enumerate()
-    for t in threads:
-        if not hasattr(t,'kill'):
+    for running_t in threads:
+        if not hasattr(running_t,'kill'):
             continue
-        t.kill()
-        t.join()
+        running_t.kill()
+        running_t.join()
 
-def const_HandleException(etype, value, tb):
+def const_handle_exception(etype, value, t_back):
+    """
+    Our default Python exception handler. It kills
+    all the threads generated by Entropy before
+    raising exceptions. Overloads sys.excepthook
+
+    @param etype exception type
+    @param value exception value
+    @param t_back traceback object?
+    @return sys.__excepthook__
+    """
     try:
         const_kill_threads()
     except ImportError:
         pass
-    return sys.__excepthook__(etype, value, tb)
+    return sys.__excepthook__(etype, value, t_back)
 
 # load config
-initConfig_entropyConstants(etpSys['rootdir'])
+initconfig_entropy_constants(etpSys['rootdir'])

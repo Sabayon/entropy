@@ -1283,7 +1283,7 @@ class SpritzApplication(Controller):
             if repoConn.newEquo:
                 self.progress.set_extraLabel(_('sys-apps/entropy needs to be updated as soon as possible.'))
 
-        initConfig_entropyConstants(etpSys['rootdir'])
+        initconfig_entropy_constants(etpSys['rootdir'])
 
         self.disable_ugc = False
         return not repoConn.syncErrors
@@ -2019,7 +2019,7 @@ class SpritzApplication(Controller):
                             _("An issue occured while saving a preference"),
                             "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
                         )
-        initConfig_entropyConstants(etpConst['systemroot'])
+        initconfig_entropy_constants(etpConst['systemroot'])
         # re-read configprotect
         self.Equo.SystemSettings.clear()
         self.Equo.reload_repositories_config()

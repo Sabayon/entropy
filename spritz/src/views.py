@@ -1687,10 +1687,10 @@ class EntropyRepoView:
             if state:
                 self.store.set_value(myiter,1, not state)
                 self.Equo.disable_repository(repoid)
-                initConfig_entropyConstants(etpSys['rootdir'])
+                initconfig_entropy_constants(etpSys['rootdir'])
             else:
                 self.Equo.enable_repository(repoid)
-                initConfig_entropyConstants(etpSys['rootdir'])
+                initconfig_entropy_constants(etpSys['rootdir'])
             self.Spritz.resetSpritzCacheStatus()
             self.Spritz.addPackages(back_to_page = "repos")
             self.store.set_value(myiter,0, not state)
