@@ -745,7 +745,12 @@ class FtpInterface:
         return False
 
     def delete_file(self,file):
-        rc = self.__ftpconn.delete(file)
+        try:
+            rc = self.__ftpconn.delete(file)
+        except self.ftplib.error_perm, e:
+            if e[0][:3] == '550':
+                return True
+            return False # not found
         if rc.startswith("250"):
             return True
         return False
