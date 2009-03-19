@@ -132,6 +132,7 @@ class Schema:
             DROP TABLE IF EXISTS categoriesdescription;
             DROP TABLE IF EXISTS packagesets;
             DROP TABLE IF EXISTS packagechangelogs;
+            DROP TABLE IF EXISTS automergefiles;
         """
 
     def get_init(self):
@@ -367,6 +368,12 @@ class Schema:
                 PRIMARY KEY (category, name)
             );
 
+            CREATE TABLE automergefiles (
+                idpackage INTEGER,
+                configfile VARCHAR,
+                md5 VARCHAR
+            );
+
         """
 
 class LocalRepository:
@@ -475,6 +482,11 @@ class LocalRepository:
             return
 
         if self.clientDatabase:
+            if self.dbname == etpConst['clientdbid']:
+                try:
+                    self.doCleanups()
+                except self.dbapi2.Error:
+                    pass
             self.commitChanges()
             self.cursor.close()
             self.connection.close()
@@ -506,7 +518,7 @@ class LocalRepository:
 
         try:
             self.connection.commit()
-        except:
+        except self.dbapi2.Error:
             pass
 
         if not self.clientDatabase:
@@ -1202,7 +1214,6 @@ class LocalRepository:
     def addPackage(self, etpData, revision = -1, idpackage = None, do_remove = True, do_commit = True, formatted_content = False):
 
         self.checkReadOnly()
-        self.live_cache.clear()
 
         if revision == -1:
             try:
@@ -1313,8 +1324,10 @@ class LocalRepository:
         self.insertMirrors(etpData['mirrorlinks'])
         # package ChangeLog
         if etpData.get('changelog'):
-            try: self.insertChangelog(etpData['category'], etpData['name'], etpData['changelog'])
-            except (UnicodeEncodeError, UnicodeDecodeError,): pass
+            try:
+                self.insertChangelog(etpData['category'], etpData['name'], etpData['changelog'])
+            except (UnicodeEncodeError, UnicodeDecodeError,):
+                pass
 
         # not depending on other tables == no select done
         self.insertContent(idpackage, etpData['content'], already_formatted = formatted_content)
@@ -1339,7 +1352,7 @@ class LocalRepository:
         if etpData.get('systempackage'):
             self.setSystemPackage(idpackage, do_commit = False)
 
-        self.clearCache()
+        self.clearCache() # we do live_cache.clear() here too
         if do_commit:
             self.commitChanges()
 
@@ -1408,7 +1421,8 @@ class LocalRepository:
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
 
         self.checkReadOnly()
-        self.live_cache.clear()
+        # clear caches
+        self.clearCache()
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
@@ -1442,14 +1456,18 @@ class LocalRepository:
                 DELETE FROM installedtable WHERE idpackage = %d;
             """ % r_tup)
 
+        # not yet possible to add these calls above
+        try:
+            self.removeAutomergefiles(idpackage)
+        except self.dbapi2.OperationalError:
+            pass
+
         # Remove from dependstable if exists
         self.removePackageFromDependsTable(idpackage)
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
             self.doCleanups()
-            # clear caches
-            self.clearCache()
 
         if do_commit:
             self.commitChanges()
@@ -1634,7 +1652,7 @@ class LocalRepository:
 
         with self.WriteLock:
             if already_formatted:
-                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',[(idpackage,x,y,) for a,x,y in content])
+                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',((idpackage,x,y,) for a,x,y in content))
                 return
             do_encode = [1 for x in content if type(x) is unicode]
             def my_cmap(xfile):
@@ -1642,6 +1660,15 @@ class LocalRepository:
                 if do_encode: xfile = xfile.encode('raw_unicode_escape')
                 return (idpackage,xfile,contenttype,)
             self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap,content))
+
+    def insertAutomergefiles(self, idpackage, automerge_data):
+        with self.WriteLock:
+            self.cursor.executemany('INSERT INTO automergefiles VALUES (?,?,?)',
+                ((idpackage,x,y,) for x,y in automerge_data))
+
+    def removeAutomergefiles(self, idpackage):
+        with self.WriteLock:
+            self.cursor.execute('DELETE FROM automergefiles WHERE idpackage = (?)', (idpackage,))
 
     def insertChangelog(self, category, name, changelog_txt):
         with self.WriteLock:
@@ -2203,6 +2230,7 @@ class LocalRepository:
         return set(item)
 
     def clearCache(self, depends = False):
+
         self.live_cache.clear()
         def do_clear(name):
             dump_path = os.path.join(etpConst['dumpstoragedir'],name)
@@ -2603,6 +2631,15 @@ class LocalRepository:
                 source_data[source].add(source)
 
         return source_data
+
+    def retrieveAutomergefiles(self, idpackage, get_dict = False):
+        # like portage does
+        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.cursor.execute('SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)', (idpackage,))
+        data = self.cursor.fetchall()
+        if get_dict:
+            data = dict(((x,y,) for x,y in data))
+        return data
 
     def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False, order_by = ''):
 
@@ -3517,6 +3554,9 @@ class LocalRepository:
         if not self.doesTableExist('packagechangelogs'):
             self.createPackagechangelogsTable()
 
+        if not self.doesTableExist('automergefiles'):
+            self.createAutomergefilesTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -3908,6 +3948,7 @@ class LocalRepository:
         self.createCategoriesIndex()
         self.createCompileFlagsIndex()
         self.createPackagesetsIndex()
+        self.createAutomergefilesIndex()
 
     def createPackagesetsIndex(self):
         if self.indexing:
@@ -3915,6 +3956,21 @@ class LocalRepository:
                 try:
                     self.cursor.execute('CREATE INDEX IF NOT EXISTS packagesetsindex ON packagesets ( setname )')
                     self.commitChanges()
+                except self.dbapi2.OperationalError:
+                    pass
+
+    def createAutomergefilesIndex(self):
+        if self.indexing:
+            with self.WriteLock:
+                try:
+                    self.cursor.execute("""
+                        CREATE INDEX IF NOT EXISTS automergefiles_idpackage 
+                        ON automergefiles ( idpackage )
+                    """)
+                    self.cursor.execute("""
+                        CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
+                        ON automergefiles ( configfile, md5 )
+                    """)
                 except self.dbapi2.OperationalError:
                     pass
 
@@ -3927,19 +3983,16 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed ( idpackage );
                     CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( elfclass );
                 """)
-                self.commitChanges()
 
     def createMessagesIndex(self):
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
-                self.commitChanges()
 
     def createCompileFlagsIndex(self):
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS flagsindex ON flags ( chost,cflags,cxxflags )')
-                self.commitChanges()
 
     def createUseflagsIndex(self):
         if self.indexing:
@@ -3949,7 +4002,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag );
                     CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname );
                 """)
-                self.commitChanges()
 
     def createContentIndex(self):
         if self.indexing:
@@ -3958,13 +4010,11 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage );
                     CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );
                 """)
-                self.commitChanges()
 
     def createConfigProtectReferenceIndex(self):
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
-                self.commitChanges()
 
     def createBaseinfoIndex(self):
         if self.indexing:
@@ -3975,7 +4025,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch );
                     CREATE INDEX IF NOT EXISTS baseindex_idcategory ON baseinfo ( idcategory );
                 """)
-                self.commitChanges()
 
     def createLicensedataIndex(self):
         if self.indexing:
@@ -3983,19 +4032,16 @@ class LocalRepository:
                 return
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
-                self.commitChanges()
 
     def createLicensesIndex(self):
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
-                self.commitChanges()
 
     def createCategoriesIndex(self):
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS categoriesindex_category ON categories ( category )')
-                self.commitChanges()
 
     def createKeywordsIndex(self):
         if self.indexing:
@@ -4005,7 +4051,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage );
                     CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword ON keywords ( idkeyword );
                 """)
-                self.commitChanges()
 
     def createDependenciesIndex(self):
         if self.indexing:
@@ -4015,7 +4060,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency );
                     CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency );
                 """)
-                self.commitChanges()
 
     def createCountersIndex(self):
         if self.indexing:
@@ -4024,7 +4068,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage );
                     CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter );
                 """)
-                self.commitChanges()
 
     def createSourcesIndex(self):
         if self.indexing:
@@ -4034,7 +4077,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource );
                     CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source ON sourcesreference ( source );
                 """)
-                self.commitChanges()
 
     def createProvideIndex(self):
         if self.indexing:
@@ -4043,7 +4085,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage );
                     CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom );
                 """)
-                self.commitChanges()
 
     def createConflictsIndex(self):
         if self.indexing:
@@ -4052,14 +4093,12 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage );
                     CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict );
                 """)
-                self.commitChanges()
 
     def createExtrainfoIndex(self):
         if self.indexing:
             with self.WriteLock:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex ON extrainfo ( idpackage )')
-                self.commitChanges()
 
     def createEclassesIndex(self):
         if self.indexing:
@@ -4069,7 +4108,6 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass );
                     CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname ON eclassesreference ( classname );
                 """)
-                self.commitChanges()
 
     def regenerateCountersTable(self, vdb_path, output = False):
         self.createCountersTable()
@@ -4153,6 +4191,10 @@ class LocalRepository:
     def createPackagechangelogsTable(self):
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE packagechangelogs ( category VARCHAR, name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));')
+
+    def createAutomergefilesTable(self):
+        with self.WriteLock:
+            self.cursor.execute('CREATE TABLE automergefiles ( idpackage INTEGER, configfile VARCHAR, md5 VARCHAR );')
 
     def createPackagesetsTable(self):
         with self.WriteLock:

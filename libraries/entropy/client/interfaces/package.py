@@ -339,6 +339,7 @@ class Package:
 
         self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: %s" % (self.infoDict['removeatom'],))
 
+        protected_removable_config_files = {}
         # remove from database
         if self.infoDict['removeidpackage'] != -1:
             mytxt = "%s: " % (_("Removing from Entropy"),)
@@ -348,6 +349,9 @@ class Package:
                 type = "info",
                 header = red("   ## ")
             )
+            protected_removable_config_files = self.Entropy.clientDbconn.retrieveAutomergefiles(
+                self.infoDict['removeidpackage'], get_dict = True
+            )
             self.__remove_package_from_database()
 
         # Handle gentoo database
@@ -355,12 +359,11 @@ class Package:
             gentooAtom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
             self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
             self.__remove_package_from_gentoo_database(gentooAtom)
-            del gentooAtom
 
-        self.__remove_content_from_system()
+        self.__remove_content_from_system(protected_removable_config_files)
         return 0
 
-    def __remove_content_from_system(self):
+    def __remove_content_from_system(self, protected_removable_config_files):
 
         # load CONFIG_PROTECT and its mask
         # client database at this point has been surely opened,
@@ -373,12 +376,13 @@ class Package:
         # remove files from system
         directories = set()
         for item in self.infoDict['removecontent']:
+            sys_root_item = sys_root+item
             # collision check
             if col_protect > 0:
 
-                if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(sys_root+item):
+                if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(sys_root_item):
                     # in this way we filter out directories
-                    mytxt = red(_("Collision found during removal of")) + " " + sys_root+item + " - "
+                    mytxt = red(_("Collision found during removal of")) + " " + sys_root_item + " - "
                     mytxt += red(_("cannot overwrite"))
                     self.Entropy.updateProgress(
                         mytxt,
@@ -389,28 +393,56 @@ class Package:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "Collision found during remove of "+sys_root+item+" - cannot overwrite"
+                        "Collision found during remove of "+sys_root_item+" - cannot overwrite"
                     )
                     continue
 
             protected = False
             if (not self.infoDict['removeconfig']) and (not self.infoDict['diffremoval']):
-                protected_item_test = sys_root+item
+
+                protected_item_test = sys_root_item
                 if isinstance(protected_item_test,unicode):
                     protected_item_test = protected_item_test.encode('utf-8')
-                protected, x, do_continue = self._handle_config_protect(protect, mask, None, protected_item_test, do_allocation_check = False)
+
+                in_mask, protected, x, do_continue = self._handle_config_protect(
+                    protect, mask, None, protected_item_test,
+                    do_allocation_check = False, do_quiet = True)
+
                 if do_continue: protected = True
+
+                # when files have not been modified by the user
+                # and they are inside a config protect directory
+                # we could even remove them directly
+                if in_mask:
+
+                    oldprot_md5 = protected_removable_config_files.get(item)
+                    if oldprot_md5 and os.path.exists(protected_item_test) and \
+                        os.access(protected_item_test, os.R_OK):
+
+                        in_system_md5 = self.entropyTools.md5sum(protected_item_test)
+                        if oldprot_md5 == in_system_md5:
+                            mytxt = "%s: %s" % (
+                                darkgreen(_("Removing config file, never modified")),
+                                blue(item),)
+                            self.Entropy.updateProgress(
+                                mytxt,
+                                importance = 1,
+                                type = "info",
+                                header = red("   ## ")
+                            )
+                            protected = False
+                            do_continue = False
 
             if protected:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_VERBOSE,
-                    "[remove] Protecting config file: "+sys_root+item
+                    "[remove] Protecting config file: "+sys_root_item
                 )
                 mytxt = "[%s] %s: %s" % (
                     red(_("remove")),
                     brown(_("Protecting config file")),
-                    sys_root+item,
+                    sys_root_item,
                 )
                 self.Entropy.updateProgress(
                     mytxt,
@@ -420,7 +452,7 @@ class Package:
                 )
             else:
                 try:
-                    os.lstat(sys_root+item)
+                    os.lstat(sys_root_item)
                 except OSError:
                     continue # skip file, does not exist
                 except UnicodeEncodeError:
@@ -433,19 +465,19 @@ class Package:
                     )
                     continue # file has a really bad encoding
 
-                if os.path.isdir(sys_root+item) and os.path.islink(sys_root+item):
+                if os.path.isdir(sys_root_item) and os.path.islink(sys_root_item):
                     # S_ISDIR returns False for directory symlinks, so using os.path.isdir
                     # valid directory symlink
-                    directories.add((sys_root+item,"link"))
-                elif os.path.isdir(sys_root+item):
+                    directories.add((sys_root_item,"link"))
+                elif os.path.isdir(sys_root_item):
                     # plain directory
-                    directories.add((sys_root+item,"dir"))
+                    directories.add((sys_root_item,"dir"))
                 else: # files, symlinks or not
                     # just a file or symlink or broken directory symlink (remove now)
                     try:
-                        os.remove(sys_root+item)
+                        os.remove(sys_root_item)
                         # add its parent directory
-                        dirfile = os.path.dirname(sys_root+item)
+                        dirfile = os.path.dirname(sys_root_item)
                         if os.path.isdir(dirfile) and os.path.islink(dirfile):
                             directories.add((dirfile,"link"))
                         elif os.path.isdir(dirfile):
@@ -454,7 +486,7 @@ class Package:
                         pass
 
         # now handle directories
-        directories = sorted(list(directories), reverse = True)
+        directories = sorted(directories, reverse = True)
         while 1:
             taint = False
             for directory, dirtype in directories:
@@ -683,11 +715,18 @@ class Package:
             "Installing package: %s" % (self.infoDict['atom'],)
         )
 
+        already_protected_config_files = {}
+        if self.infoDict['removeidpackage'] != -1:
+            already_protected_config_files = self.Entropy.clientDbconn.retrieveAutomergefiles(
+                self.infoDict['removeidpackage'], get_dict = True
+            )
+
         # copy files over - install
         # use fork? (in this case all the changed structures need to be pushed back)
-        rc = self.__move_image_to_system()
+        rc = self.__move_image_to_system(already_protected_config_files)
         if rc != 0:
             return rc
+        del already_protected_config_files
 
         # inject into database
         mytxt = "%s: %s" % (blue(_("Updating database")),red(self.infoDict['atom']),)
@@ -700,7 +739,7 @@ class Package:
         newidpackage = self._install_package_into_database()
 
         # remove old files and gentoo stuff
-        if (self.infoDict['removeidpackage'] != -1):
+        if self.infoDict['removeidpackage'] != -1:
             # doing a diff removal
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -925,9 +964,16 @@ class Package:
 
         # add idpk to the installedtable
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpackage)
-        self.Entropy.clientDbconn.addPackageToInstalledTable(idpackage,self.infoDict['repository'])
+        self.Entropy.clientDbconn.addPackageToInstalledTable(idpackage, 
+            self.infoDict['repository'])
 
-        # clear depends table, this will make clientdb dependstable to be regenerated during the next request (retrieveDepends)
+        automerge_data = self.infoDict.get('configprotect_data')
+        if automerge_data:
+            self.Entropy.clientDbconn.insertAutomergefiles(idpackage,
+                automerge_data)
+
+        # clear depends table, this will make clientdb dependstable to be
+        # regenerated during the next request (retrieveDepends)
         self.Entropy.clientDbconn.clearDependsTable()
         return idpackage
 
@@ -981,7 +1027,7 @@ class Package:
                 shutil.copystat(path,topath)
 
 
-    def __move_image_to_system(self):
+    def __move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
         protect = etpRepositories[self.infoDict['repository']]['configprotect']
@@ -1060,7 +1106,53 @@ class Package:
                     if not myrc:
                         continue
 
-                protected, tofile, do_continue = self._handle_config_protect(protect, mask, fromfile, tofile)
+                prot_old_tofile = tofile[len(sys_root):]
+                pre_tofile = tofile[:]
+                in_mask, protected, tofile, do_continue = self._handle_config_protect(
+                    protect, mask, fromfile, tofile)
+
+                # collect new config automerge data
+                if in_mask and os.path.exists(fromfile):
+                    try:
+                        prot_md5 = self.entropyTools.md5sum(fromfile)
+                        self.infoDict['configprotect_data'].append(
+                            (prot_old_tofile,prot_md5,))
+                    except (IOError,):
+                        pass
+
+                # check if it's really necessary to protect file
+                if protected:
+
+                    try:
+
+                        # second task
+                        oldprot_md5 = already_protected_config_files.get(
+                            prot_old_tofile)
+
+                        if oldprot_md5 and os.path.exists(pre_tofile) and \
+                            os.access(pre_tofile, os.R_OK):
+
+                            in_system_md5 = self.entropyTools.md5sum(pre_tofile)
+                            if oldprot_md5 == in_system_md5:
+                                # we can merge it, files, even if
+                                # contains changes have not been modified
+                                # by the user
+                                mytxt = "%s: %s" % (
+                                    darkgreen(_("Automerging config file, never modified")),
+                                    blue(pre_tofile),)
+                                self.Entropy.updateProgress(
+                                    mytxt,
+                                    importance = 1,
+                                    type = "info",
+                                    header = red("   ## ")
+                                )
+                                protected = False
+                                do_continue = False
+                                tofile = pre_tofile
+
+                    except (IOError,):
+                        pass
+
                 if do_continue:
                     continue
 
@@ -1141,24 +1233,29 @@ class Package:
 
         return 0
 
-    def _handle_config_protect(self, protect, mask, fromfile, tofile, do_allocation_check = True):
+    def _handle_config_protect(self, protect, mask, fromfile, tofile,
+        do_allocation_check = True, do_quiet = False):
 
         protected = False
         tofile_before_protect = tofile
         do_continue = False
+        in_mask = False
 
         try:
             encoded_protect = [x.encode('raw_unicode_escape') for x in protect]
             if tofile in encoded_protect:
                 protected = True
+                in_mask = True
             elif os.path.dirname(tofile) in encoded_protect:
                 protected = True
+                in_mask = True
             else:
                 tofile_testdir = os.path.dirname(tofile)
                 old_tofile_testdir = None
                 while tofile_testdir != old_tofile_testdir:
                     if tofile_testdir in encoded_protect:
                         protected = True
+                        in_mask = True
                         break
                     old_tofile_testdir = tofile_testdir
                     tofile_testdir = os.path.dirname(tofile_testdir)
@@ -1167,8 +1264,10 @@ class Package:
                 newmask = [x.encode('raw_unicode_escape') for x in mask]
                 if tofile in newmask:
                     protected = False
+                    in_mask = False
                 elif os.path.dirname(tofile) in newmask:
                     protected = False
+                    in_mask = False
 
             if not os.path.lexists(tofile):
                 protected = False # file doesn't exist
@@ -1176,6 +1275,7 @@ class Package:
             # check if it's a text file
             if (protected) and os.path.isfile(tofile):
                 protected = self.entropyTools.istextfile(tofile)
+                in_mask = protected
             else:
                 protected = False # it's not a file
 
@@ -1190,32 +1290,35 @@ class Package:
                     else:
                         oldtofile = tofile
                         if oldtofile.find("._cfg") != -1:
-                            oldtofile = os.path.dirname(oldtofile)+"/"+os.path.basename(oldtofile)[10:]
+                            oldtofile = os.path.join(os.path.dirname(oldtofile),
+                                os.path.basename(oldtofile)[10:])
+                        if not do_quiet:
+                            self.Entropy.clientLog.log(
+                                ETP_LOGPRI_INFO,
+                                ETP_LOGLEVEL_NORMAL,
+                                "Protecting config file: %s" % (oldtofile,)
+                            )
+                            mytxt = red("%s: %s") % (_("Protecting config file"),oldtofile,)
+                            self.Entropy.updateProgress(
+                                mytxt,
+                                importance = 1,
+                                type = "warning",
+                                header = darkred("   ## ")
+                            )
+                else:
+                    if not do_quiet:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
                             ETP_LOGLEVEL_NORMAL,
-                            "Protecting config file: %s" % (oldtofile,)
+                            "Skipping config file installation/removal, as stated in equo.conf: %s" % (tofile,)
                         )
-                        mytxt = red("%s: %s") % (_("Protecting config file"),oldtofile,)
+                        mytxt = "%s: %s" % (_("Skipping file installation/removal"),tofile,)
                         self.Entropy.updateProgress(
                             mytxt,
                             importance = 1,
                             type = "warning",
                             header = darkred("   ## ")
                         )
-                else:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "Skipping config file installation/removal, as stated in equo.conf: %s" % (tofile,)
-                    )
-                    mytxt = "%s: %s" % (_("Skipping file installation/removal"),tofile,)
-                    self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred("   ## ")
-                    )
                     do_continue = True
 
         except Exception, e:
@@ -1230,7 +1333,7 @@ class Package:
                 header = darkred("   ## ")
             )
 
-        return protected, tofile, do_continue
+        return in_mask, protected, tofile, do_continue
 
 
     def _handle_install_collision_protect(self, tofile, todbfile):
@@ -1909,6 +2012,7 @@ class Package:
             self.infoDict['remove_installed_vanished'] = True
             return 0
 
+        self.infoDict['configprotect_data'] = []
         self.infoDict['triggers'] = {}
         self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
         self.infoDict['slot'] = self.Entropy.clientDbconn.retrieveSlot(idpackage)
@@ -1953,7 +2057,7 @@ class Package:
         if self.metaopts.has_key('fetch_abort_function'):
             self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
 
-        # get package atom
+        self.infoDict['configprotect_data'] = []
         dbconn = self.Entropy.open_repository(repository)
         self.infoDict['triggers'] = {}
         self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
