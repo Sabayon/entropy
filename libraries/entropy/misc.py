@@ -102,6 +102,7 @@ class TimeScheduled(threading.Thread):
 
         if not self.__accurate:
 
+            if float == None: return True
             mydelay = float(self.__delay)
             t_frac = 0.3
             while mydelay > 0.0:
