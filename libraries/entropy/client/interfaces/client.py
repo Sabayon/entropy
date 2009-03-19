@@ -33,9 +33,8 @@ from entropy.client.interfaces.fetch import Fetchers
 from entropy.client.interfaces.metadata import Extractors
 from entropy.const import etpConst, etpCache
 
-class Client(Singleton,TextInterface,Loaders,Cache,
-        Calculators,CRepository,Misc,
-        Match,Fetchers,Extractors):
+class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
+        CRepository, Misc, Match, Fetchers, Extractors):
 
     def init_singleton(self, indexing = True, noclientdb = 0,
             xcache = True, user_xcache = False, repo_validation = True,
@@ -97,14 +96,7 @@ class Client(Singleton,TextInterface,Loaders,Cache,
             self.UGC = ugcClient(self)
 
         # class init
-        Loaders.__init__(self, self)
-        Cache.__init__(self, self)
-        Calculators.__init__(self, self)
-        CRepository.__init__(self, self)
-        Misc.__init__(self, self)
-        Match.__init__(self, self)
-        Fetchers.__init__(self, self)
-        Extractors.__init__(self, self)
+        Loaders.__init__(self)
 
         if noclientdb in (False,0):
             self.noclientdb = False
@@ -129,8 +121,10 @@ class Client(Singleton,TextInterface,Loaders,Cache,
             do_validate_repo_cache = True
 
         if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
-            try: self.purge_cache(False)
-            except: pass
+            try:
+                self.purge_cache(False)
+            except:
+                pass
 
         if self.openclientdb:
             self.open_client_repository()

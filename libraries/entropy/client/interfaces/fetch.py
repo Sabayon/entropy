@@ -28,18 +28,6 @@ from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, d
 
 class Fetchers:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.entropyTools = self.Client.entropyTools
-        self.updateProgress = self.Client.updateProgress
-        self.SystemSettings = self.Client.SystemSettings
-        self.Cacher = self.Client.Cacher
-        self.MirrorStatus = self.Client.MirrorStatus
-
     def check_needed_package_download(self, filepath, checksum = None):
         # is the file available
         if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath):
@@ -84,9 +72,9 @@ class Fetchers:
             if cksum != None: checksum_map[count] = cksum
 
         # load class
-        fetchConn = self.Client.MultipleUrlFetcher(url_path_list, resume = resume,
+        fetchConn = self.MultipleUrlFetcher(url_path_list, resume = resume,
             abort_check_func = fetch_file_abort_function, OutputInterface = self,
-            urlFetcherClass = self.Client.urlFetcher, checksum = checksum)
+            urlFetcherClass = self.urlFetcher, checksum = checksum)
         try:
             data = fetchConn.download()
         except KeyboardInterrupt:
@@ -320,9 +308,9 @@ class Fetchers:
             os.makedirs(filepath_dir,0755)
 
         # load class
-        fetchConn = self.Client.urlFetcher(url, filepath, resume = resume,
+        fetchConn = self.urlFetcher(url, filepath, resume = resume,
             abort_check_func = fetch_file_abort_function, OutputInterface = self)
-        fetchConn.progress = self.Client.progress
+        fetchConn.progress = self.progress
 
         # start to download
         data_transfer = 0

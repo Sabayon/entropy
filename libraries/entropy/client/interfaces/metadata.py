@@ -29,16 +29,6 @@ from entropy.output import red, bold, brown
 
 class Extractors:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.entropyTools = self.Client.entropyTools
-        self.updateProgress = self.Client.updateProgress
-        self.SystemSettings = self.Client.SystemSettings
-
     def _extract_pkg_metadata_generate_extraction_dict(self):
         data = {
             'chost': {
@@ -405,7 +395,7 @@ class Extractors:
             data['trigger'] = f.read()
             f.close()
 
-        Spm = self.Client.Spm()
+        Spm = self.Spm()
 
         # Get Spm ChangeLog
         pkgatom = "%s/%s-%s" % (data['category'],data['name'],data['version'],)

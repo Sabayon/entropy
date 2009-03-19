@@ -351,7 +351,7 @@ class Package:
             self.__remove_package_from_database()
 
         # Handle gentoo database
-        if (etpConst['gentoo-compat']):
+        if etpConst['gentoo-compat']:
             gentooAtom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
             self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
             self.__remove_package_from_gentoo_database(gentooAtom)
@@ -550,9 +550,10 @@ class Package:
         except OSError: pass
         return 0
 
-    def __remove_package_from_database(self):
+    def __remove_package_from_database(self, do_commit = False, do_cleanup = False):
         self.error_on_not_prepared()
-        self.Entropy.clientDbconn.removePackage(self.infoDict['removeidpackage'])
+        self.Entropy.clientDbconn.removePackage(self.infoDict['removeidpackage'],
+            do_commit = do_commit, do_cleanup = do_cleanup)
         return 0
 
     def __clear_cache(self):

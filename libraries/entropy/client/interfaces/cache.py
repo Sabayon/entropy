@@ -27,17 +27,6 @@ from entropy.output import red, darkred, darkgreen
 
 class Cache:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.Cacher = self.Client.Cacher
-        self.updateProgress = self.Client.updateProgress
-        self.FileUpdates = self.Client.FileUpdates
-        self.entropyTools = self.Client.entropyTools
-
     def validate_repositories_cache(self):
         # is the list of repos changed?
         cached = self.Cacher.pop(etpCache['repolist'])
@@ -93,11 +82,11 @@ class Cache:
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
         try:
-            update, remove, fine = self.Client.calculate_world_updates()
+            update, remove, fine = self.calculate_world_updates()
             del fine, remove
             if do_install_queue:
-                self.Client.get_install_queue(update, False, False)
-            self.Client.calculate_available_packages()
+                self.get_install_queue(update, False, False)
+            self.calculate_available_packages()
         except:
             pass
 
@@ -115,7 +104,7 @@ class Cache:
                 skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
             for key in etpCache:
                 if showProgress:
-                    self.Client.updateProgress(
+                    self.updateProgress(
                         darkred(_("Cleaning %s => dumps...")) % (etpCache[key],),
                         importance = 1,
                         type = "warning",
@@ -156,19 +145,19 @@ class Cache:
                 pass
 
     def update_ugc_cache(self, repository):
-        if not self.Client.UGC.is_repository_eapi3_aware(repository):
+        if not self.UGC.is_repository_eapi3_aware(repository):
             return None
         status = True
 
-        votes_dict, err_msg = self.Client.UGC.get_all_votes(repository)
+        votes_dict, err_msg = self.UGC.get_all_votes(repository)
         if isinstance(votes_dict,dict):
-            self.Client.UGC.UGCCache.save_vote_cache(repository, votes_dict)
+            self.UGC.UGCCache.save_vote_cache(repository, votes_dict)
         else:
             status = False
 
-        downloads_dict, err_msg = self.Client.UGC.get_all_downloads(repository)
+        downloads_dict, err_msg = self.UGC.get_all_downloads(repository)
         if isinstance(downloads_dict,dict):
-            self.Client.UGC.UGCCache.save_downloads_cache(repository, downloads_dict)
+            self.UGC.UGCCache.save_downloads_cache(repository, downloads_dict)
         else:
             status = False
         return status
@@ -178,7 +167,7 @@ class Cache:
         self.clear_dump_cache(etpCache['world_update'])
         self.clear_dump_cache(etpCache['check_package_update'])
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
-        self.clear_dump_cache(self.Client.atomMatchCacheKey)
+        self.clear_dump_cache(self.atomMatchCacheKey)
         self.clear_dump_cache(etpCache['dep_tree'])
         if repoid != None:
             self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],repoid,))
@@ -188,18 +177,18 @@ class Cache:
         # client digest not needed, cache is kept updated
         return str(hash("%s%s%s" % (
             self.all_repositories_checksum(),
-            branch,self.Client.validRepositories,)))
+            branch,self.validRepositories,)))
 
     def all_repositories_checksum(self):
         sum_hashes = ''
-        for repo in self.Client.validRepositories:
+        for repo in self.validRepositories:
             try:
-                dbconn = self.Client.open_repository(repo)
+                dbconn = self.open_repository(repo)
             except (RepositoryError):
                 continue # repo not available
             try:
                 sum_hashes += dbconn.database_checksum()
-            except self.Client.dbapi2.OperationalError:
+            except self.dbapi2.OperationalError:
                 pass
         return sum_hashes
 
@@ -208,7 +197,7 @@ class Cache:
         return self.Cacher.pop("%s%s" % (etpCache['world_available'],myhash))
 
     def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
-        if self.Client.xcache:
+        if self.xcache:
             if db_digest == None: db_digest = self.all_repositories_checksum()
             c_hash = "%s%s" % (etpCache['world_update'],
                 self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades),)
@@ -221,6 +210,6 @@ class Cache:
 
     def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
         return str(hash("%s|%s|%s|%s|%s|%s" % ( 
-            db_digest,empty_deps,self.Client.validRepositories,
+            db_digest,empty_deps,self.validRepositories,
             etpRepositoriesOrder, branch, ignore_spm_downgrades,
         )))

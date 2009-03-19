@@ -34,34 +34,23 @@ from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
 class Repository:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.MirrorStatus = self.Client.MirrorStatus
-        self.updateProgress = self.Client.updateProgress
-        self.SystemSettings = self.Client.SystemSettings
-        self.entropyTools = self.Client.entropyTools
-
-        self.__repo_error_messages_cache = set()
-        self.__repodb_cache = {}
-        self._memory_db_instances = {}
+    __repo_error_messages_cache = set()
+    __repodb_cache = {}
+    _memory_db_instances = {}
 
     def validate_repositories(self):
         self.MirrorStatus.clear()
         self.__repo_error_messages_cache.clear()
-        self.Client._package_match_validator_cache.clear()
+        self._package_match_validator_cache.clear()
         # valid repositories
-        del self.Client.validRepositories[:]
+        del self.validRepositories[:]
         for repoid in etpRepositoriesOrder:
             # open database
             try:
                 dbc = self.open_repository(repoid)
                 dbc.listConfigProtectDirectories()
                 dbc.validateDatabase()
-                self.Client.validRepositories.append(repoid)
+                self.validRepositories.append(repoid)
             except RepositoryError:
                 t = _("Repository") + " " + repoid + " " + _("is not available") + ". " + _("Cannot validate")
                 t2 = _("Please update your repositories now in order to remove this message!")
@@ -77,7 +66,7 @@ class Repository:
                     type = "warning"
                 )
                 continue # repo not available
-            except (self.Client.dbapi2.OperationalError,self.Client.dbapi2.DatabaseError,SystemDatabaseError,):
+            except (self.dbapi2.OperationalError,self.dbapi2.DatabaseError,SystemDatabaseError,):
                 t = _("Repository") + " " + repoid + " " + _("is corrupted") + ". " + _("Cannot validate")
                 self.updateProgress(
                                     darkred(t),
@@ -89,7 +78,7 @@ class Repository:
         self.close_all_repositories(mask_clear = False)
 
     def init_generic_memory_repository(self, repoid, description, package_mirrors = []):
-        dbc = self.Client.open_memory_database(dbname = repoid)
+        dbc = self.open_memory_database(dbname = repoid)
         self._memory_db_instances[repoid] = dbc
 
         # add to etpRepositories
@@ -112,8 +101,8 @@ class Repository:
     def open_repository(self, repoid):
         t_ident = 1 # thread.get_ident() disabled for now
         if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],t_ident,)):
-            dbconn = self.load_repository_database(repoid, xcache = self.Client.xcache,
-                indexing = self.Client.indexing)
+            dbconn = self.load_repository_database(repoid, xcache = self.xcache,
+                indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
             except:
@@ -172,26 +161,26 @@ class Repository:
             (not repoid.endswith(etpConst['packagesext'])):
                 updated = False
                 try:
-                    updated = conn.clientUpdatePackagesData(self.Client.clientDbconn)
-                except (self.Client.dbapi2.OperationalError, self.Client.dbapi2.DatabaseError):
+                    updated = conn.clientUpdatePackagesData(self.clientDbconn)
+                except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
                     pass
                 if updated:
-                    self.Client.clear_dump_cache(etpCache['world_update'])
-                    self.Client.clear_dump_cache(etpCache['world'])
-                    self.Client.clear_dump_cache(etpCache['install'])
-                    self.Client.clear_dump_cache(etpCache['remove'])
-                    self.Client.calculate_world_updates(use_cache = False)
+                    self.clear_dump_cache(etpCache['world_update'])
+                    self.clear_dump_cache(etpCache['world'])
+                    self.clear_dump_cache(etpCache['install'])
+                    self.clear_dump_cache(etpCache['remove'])
+                    self.calculate_world_updates(use_cache = False)
         return conn
 
     def setup_repository_config(self, repoid, dbconn):
 
         try:
             etpRepositories[repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
-        except (self.Client.dbapi2.OperationalError, self.Client.dbapi2.DatabaseError):
+        except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
             etpRepositories[repoid]['configprotect'] = []
         try:
             etpRepositories[repoid]['configprotectmask'] = dbconn.listConfigProtectDirectories(mask = True)
-        except (self.Client.dbapi2.OperationalError, self.Client.dbapi2.DatabaseError):
+        except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
             etpRepositories[repoid]['configprotectmask'] = []
 
         etpRepositories[repoid]['configprotect'] = [etpConst['systemroot']+x for \
@@ -284,10 +273,10 @@ class Repository:
                 repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
             etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
             etpRepositories[repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
-            self.Client.repository_move_clear_cache(repodata['repoid'])
+            self.repository_move_clear_cache(repodata['repoid'])
             # save new etpRepositories to file
             self.entropyTools.save_repository_settings(repodata)
-            self.Client.reload_constants()
+            self.reload_constants()
         self.validate_repositories()
 
     def remove_repository(self, repoid, disable = False):
@@ -309,7 +298,7 @@ class Repository:
             if repoid in etpRepositoriesOrder:
                 etpRepositoriesOrder.remove(repoid)
 
-            self.Client.repository_move_clear_cache(repoid)
+            self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
@@ -317,7 +306,7 @@ class Repository:
                 self.entropyTools.save_repository_settings(repodata, disable = True)
             else:
                 self.entropyTools.save_repository_settings(repodata, remove = True)
-            self.Client.reload_constants()
+            self.reload_constants()
 
         self.validate_repositories()
 
@@ -326,17 +315,17 @@ class Repository:
         etpRepositoriesOrder.remove(repoid)
         etpRepositoriesOrder.insert(toidx,repoid)
         self.entropyTools.write_ordered_repositories_entries()
-        self.Client.reload_constants()
-        self.Client.repository_move_clear_cache(repoid)
+        self.reload_constants()
+        self.repository_move_clear_cache(repoid)
         self.validate_repositories()
 
     def enable_repository(self, repoid):
-        self.Client.repository_move_clear_cache(repoid)
+        self.repository_move_clear_cache(repoid)
         # save new etpRepositories to file
         repodata = {}
         repodata['repoid'] = repoid
         self.entropyTools.save_repository_settings(repodata, enable = True)
-        self.Client.reload_constants()
+        self.reload_constants()
         self.validate_repositories()
 
     def disable_repository(self, repoid):
@@ -355,12 +344,12 @@ class Repository:
                 pass
             # it's not vital to reset etpRepositoriesOrder counters
 
-            self.Client.repository_move_clear_cache(repoid)
+            self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file
             repodata = {}
             repodata['repoid'] = repoid
             self.entropyTools.save_repository_settings(repodata, disable = True)
-            self.Client.reload_constants()
+            self.reload_constants()
         self.validate_repositories()
 
     # every tbz2 file that would be installed must pass from here
@@ -386,12 +375,12 @@ class Repository:
         repodata['pkgpath'] = os.path.realpath(tbz2file) # extra info added
         repodata['smartpackage'] = False # extra info added
 
-        mydbconn = self.Client.open_generic_database(dbfile)
+        mydbconn = self.open_generic_database(dbfile)
         # read all idpackages
         try:
             myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
-        except (AttributeError, self.Client.dbapi2.DatabaseError, \
-            self.Client.dbapi2.IntegrityError, self.Client.dbapi2.OperationalError,):
+        except (AttributeError, self.dbapi2.DatabaseError, \
+            self.dbapi2.IntegrityError, self.dbapi2.OperationalError,):
                 return -2,atoms_contained
         if len(myidpackages) > 1:
             repodata[basefile]['smartpackage'] = True
@@ -403,7 +392,7 @@ class Repository:
 
         self.add_repository(repodata)
         self.validate_repositories()
-        if basefile not in self.Client.validRepositories:
+        if basefile not in self.validRepositories:
             self.remove_repository(basefile)
             return -4,atoms_contained
         mydbconn.closeDB()
@@ -411,7 +400,7 @@ class Repository:
         return 0,atoms_contained
 
     def reopen_client_repository(self):
-        self.clientDbconn.closeDB()
+        selfDbconn.closeDB()
         self.open_client_repository()
 
     def __client_repo_setup_const(self, conn):
@@ -433,7 +422,7 @@ class Repository:
     def open_client_repository(self):
 
         def load_db_from_ram():
-            self.Client.safe_mode = etpConst['safemodeerrors']['clientdb']
+            self.safe_mode = etpConst['safemodeerrors']['clientdb']
             mytxt = "%s, %s" % (_("System database not found or corrupted"),
                 _("running in safe mode using empty database from RAM"),)
             self.updateProgress(
@@ -449,17 +438,17 @@ class Repository:
         if not os.path.isdir(db_dir): os.makedirs(db_dir)
 
         db_path = etpConst['etpdatabaseclientfilepath']
-        if (not self.Client.noclientdb) and (not os.path.isfile(db_path)):
+        if (not self.noclientdb) and (not os.path.isfile(db_path)):
             conn = load_db_from_ram()
-            self.entropyTools.print_traceback(f = self.Client.clientLog)
+            self.entropyTools.print_traceback(f = self.clientLog)
         else:
             conn = LocalRepository(readOnly = False, dbFile = db_path,
                 clientDatabase = True, dbname = etpConst['clientdbid'],
-                xcache = self.Client.xcache, indexing = self.Client.indexing,
+                xcache = self.xcache, indexing = self.indexing,
                 OutputInterface = self, ServiceInterface = self
             )
             # validate database
-            if not self.Client.noclientdb:
+            if not self.noclientdb:
                 try:
                     conn.validateDatabase()
                 except SystemDatabaseError:
@@ -467,14 +456,14 @@ class Repository:
                         conn.closeDB()
                     except:
                         pass
-                    self.entropyTools.print_traceback(f = self.Client.clientLog)
+                    self.entropyTools.print_traceback(f = self.clientLog)
                     conn = load_db_from_ram()
 
         if not etpConst['dbconfigprotect']:
             self.__client_repo_setup_const(conn)
 
-        self.Client.clientDbconn = conn
-        return self.Client.clientDbconn
+        self.clientDbconn = conn
+        return self.clientDbconn
 
     def client_repository_sanity_check(self):
         self.updateProgress(
@@ -482,7 +471,7 @@ class Repository:
             importance = 2,
             type = "warning"
         )
-        idpkgs = self.clientDbconn.listAllIdpackages()
+        idpkgs = selfDbconn.listAllIdpackages()
         length = len(idpkgs)
         count = 0
         errors = False
@@ -498,7 +487,7 @@ class Repository:
                                     percent = True
                                 )
             try:
-                self.clientDbconn.getPackageData(x)
+                selfDbconn.getPackageData(x)
             except Exception ,e:
                 self.entropyTools.print_traceback()
                 errors = True
@@ -528,11 +517,11 @@ class Repository:
     def open_generic_database(self, dbfile, dbname = None, xcache = None,
             readOnly = False, indexing_override = None, skipChecks = False):
         if xcache == None:
-            xcache = self.Client.xcache
+            xcache = self.xcache
         if indexing_override != None:
             indexing = indexing_override
         else:
-            indexing = self.Client.indexing
+            indexing = self.indexing
         if dbname == None:
             dbname = etpConst['genericdbid']
         return LocalRepository(
@@ -667,7 +656,7 @@ class Repository:
                 header = blue(" @@ "),
                 back = True
             )
-        self.Client.purge_cache()
+        self.purge_cache()
         return True, _("All fine")
 
     def list_backedup_client_databases(self, client_dbdir = None):
@@ -705,7 +694,7 @@ class Repository:
     def clientDatabaseSanityCheck(self):
         import warnings
         warnings.warn("deprecated, use client_repository_sanity_check instead")
-        return self.client_repository_sanity_check()
+        return self_repository_sanity_check()
 
     def openClientDatabase(self):
         import warnings
@@ -755,19 +744,9 @@ class Repository:
 
 class Misc:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.entropyTools = self.Client.entropyTools
-        self.updateProgress = self.Client.updateProgress
-        self.SystemSettings = self.Client.SystemSettings
-
     def reload_constants(self):
-        initConfig_entropyConstants(etpSys['rootdir'])
-        initConfig_clientConstants()
+        initconfig_entropy_constants(etpSys['rootdir'])
+        initconfig_client_constants()
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
@@ -892,28 +871,28 @@ class Misc:
 
     def reload_repositories_config(self, repositories = None):
         if repositories == None:
-            repositories = self.Client.validRepositories
+            repositories = self.validRepositories
         for repoid in repositories:
-            dbconn = self.Client.open_repository(repoid)
-            self.Client.setup_repository_config(repoid, dbconn)
+            dbconn = self.open_repository(repoid)
+            self.setup_repository_config(repoid, dbconn)
 
     def switch_chroot(self, chroot = ""):
         # clean caches
-        self.Client.purge_cache()
-        self.Client.close_all_repositories()
+        self.purge_cache()
+        self.close_all_repositories()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
         self.reload_constants()
-        self.Client.validate_repositories()
-        self.Client.reopen_client_repository()
+        self.validate_repositories()
+        self.reopen_client_repository()
         if chroot:
-            try: self.Client.clientDbconn.resetTreeupdatesDigests()
+            try: self.clientDbconn.resetTreeupdatesDigests()
             except: pass
         # I don't think it's safe to keep them open
         # isn't it?
-        self.Client.closeAllSecurity()
-        self.Client.closeAllQA()
+        self.closeAllSecurity()
+        self.closeAllQA()
 
     def get_file_viewer(self):
         viewer = None
@@ -958,7 +937,7 @@ class Misc:
 
         if set_name.startswith(etpConst['packagesetprefix']):
             raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
-        set_match, rc = self.Client.package_set_match(set_name)
+        set_match, rc = self.package_set_match(set_name)
         if rc: return -1,_("Name already taken")
 
         _ensure_package_sets_dir()
@@ -988,7 +967,7 @@ class Misc:
         if set_name.startswith(etpConst['packagesetprefix']):
             raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
 
-        set_match, rc = self.Client.package_set_match(set_name)
+        set_match, rc = self.package_set_match(set_name)
         if not rc: return -1,_("Already removed")
         set_id, set_x, set_y = set_match
 
@@ -1011,8 +990,8 @@ class Misc:
         return db_download_uri.split("/")[2]
 
     def unused_packages_test(self, dbconn = None):
-        if dbconn == None: dbconn = self.Client.clientDbconn
-        return [x for x in dbconn.retrieveUnusedIdpackages() if self.Client.validate_package_removal(x)]
+        if dbconn == None: dbconn = self.clientDbconn
+        return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]
 
     def get_licenses_to_accept(self, install_queue):
         if not install_queue:
@@ -1020,14 +999,14 @@ class Misc:
         licenses = {}
         for match in install_queue:
             repoid = match[1]
-            dbconn = self.Client.open_repository(repoid)
+            dbconn = self.open_repository(repoid)
             wl = self.SystemSettings['repos_license_whitelist'].get(repoid)
             if not wl:
                 continue
             keys = dbconn.retrieveLicensedataKeys(match[0])
             for key in keys:
                 if key not in wl:
-                    found = self.Client.clientDbconn.isLicenseAccepted(key)
+                    found = self.clientDbconn.isLicenseAccepted(key)
                     if found:
                         continue
                     if not licenses.has_key(key):
@@ -1036,7 +1015,7 @@ class Misc:
         return licenses
 
     def get_text_license(self, license_name, repoid):
-        dbconn = self.Client.open_repository(repoid)
+        dbconn = self.open_repository(repoid)
         text = dbconn.retrieveLicenseText(license_name)
         tempfile = self.entropyTools.get_random_temp_file()
         f = open(tempfile,"w")
@@ -1048,7 +1027,7 @@ class Misc:
     def libraries_test(self, dbconn = None, broken_symbols = False, task_bombing_func = None):
 
         if dbconn == None:
-            dbconn = self.Client.clientDbconn
+            dbconn = self.clientDbconn
 
         self.updateProgress(
             blue(_("Libraries test")),
@@ -1138,7 +1117,7 @@ class Misc:
             header = red(" @@ ")
         )
 
-        myQA = self.Client.QA()
+        myQA = self.QA()
 
         plain_brokenexecs = set()
         total = len(executables)
@@ -1202,14 +1181,14 @@ class Misc:
             )
             matched = set()
             for brokenlib in plain_brokenexecs:
-                idpackages = self.Client.clientDbconn.searchBelongs(brokenlib)
+                idpackages = self.clientDbconn.searchBelongs(brokenlib)
                 for idpackage in idpackages:
-                    key, slot = self.Client.clientDbconn.retrieveKeySlot(idpackage)
-                    mymatch = self.Client.atom_match(key, matchSlot = slot)
+                    key, slot = self.clientDbconn.retrieveKeySlot(idpackage)
+                    mymatch = self.atom_match(key, matchSlot = slot)
                     if mymatch[0] == -1:
                         matched.add(brokenlib)
                         continue
-                    cmpstat = self.Client.get_package_action(mymatch)
+                    cmpstat = self.get_package_action(mymatch)
                     if cmpstat == 0:
                         continue
                     if not packagesMatched.has_key(brokenlib):
@@ -1226,16 +1205,16 @@ class Misc:
             # update configuration
             self.entropyTools.write_new_branch(branch)
             # reset treeupdatesactions
-            self.Client.clientDbconn.resetTreeupdatesDigests()
+            self.clientDbconn.resetTreeupdatesDigests()
             # clean cache
-            self.Client.purge_cache(showProgress = False)
+            self.purge_cache(showProgress = False)
             # reopen Client Database, this will make treeupdates to be re-read
-            self.Client.close_all_repositories()
+            self.close_all_repositories()
             etpConst['branch'] = branch
-            self.Client.reload_constants()
+            self.reload_constants()
             etpConst['branch'] = branch
-            self.Client.validate_repositories()
-            self.Client.reopen_client_repository()
+            self.validate_repositories()
+            self.reopen_client_repository()
         return 0
 
     def get_meant_packages(self, search_term, from_installed = False, valid_repos = []):
@@ -1244,15 +1223,15 @@ class Misc:
         atom_srch = False
         if "/" in search_term: atom_srch = True
 
-        if not valid_repos: valid_repos = self.Client.validRepositories
+        if not valid_repos: valid_repos = self.validRepositories
         if from_installed: valid_repos = [1]
         for repo in valid_repos:
             if isinstance(repo,basestring):
-                dbconn = self.Client.open_repository(repo)
+                dbconn = self.open_repository(repo)
             elif isinstance(repo,LocalRepository):
                 dbconn = repo
             elif hasattr(self,'clientDbconn'):
-                dbconn = self.Client.clientDbconn
+                dbconn = self.clientDbconn
             else:
                 continue
             pkg_data.extend([(x,repo,) for x in dbconn.searchSimilarPackages(search_term, atom = atom_srch)])
@@ -1261,16 +1240,16 @@ class Misc:
 
     def list_repo_categories(self):
         categories = set()
-        for repo in self.Client.validRepositories:
-            dbconn = self.Client.open_repository(repo)
+        for repo in self.validRepositories:
+            dbconn = self.open_repository(repo)
             catsdata = dbconn.listAllCategories()
             categories.update(set([x[1] for x in catsdata]))
         return categories
 
     def list_repo_packages_in_category(self, category):
         pkg_matches = []
-        for repo in self.Client.validRepositories:
-            dbconn = self.Client.open_repository(repo)
+        for repo in self.validRepositories:
+            dbconn = self.open_repository(repo)
             catsdata = dbconn.searchPackagesByCategory(category, branch = etpConst['branch'])
             pkg_matches.extend([(x[1],repo,) for x in catsdata if (x[1],repo,) not in pkg_matches])
         return pkg_matches
@@ -1278,26 +1257,26 @@ class Misc:
     def get_category_description_data(self, category):
 
         data = {}
-        for repo in self.Client.validRepositories:
+        for repo in self.validRepositories:
             try:
-                dbconn = self.Client.open_repository(repo)
+                dbconn = self.open_repository(repo)
             except RepositoryError:
                 continue
             try:
                 data = dbconn.retrieveCategoryDescription(category)
-            except (self.Client.dbapi2.OperationalError, self.Client.dbapi2.IntegrityError,):
+            except (self.dbapi2.OperationalError, self.dbapi2.IntegrityError,):
                 continue
             if data: break
 
         return data
 
     def list_installed_packages_in_category(self, category):
-        pkg_matches = set([x[1] for x in self.Client.clientDbconn.searchPackagesByCategory(category)])
+        pkg_matches = set([x[1] for x in self.clientDbconn.searchPackagesByCategory(category)])
         return pkg_matches
 
     def inject_entropy_database_into_package(self, package_filename, data, treeupdates_actions = None):
         dbpath = self.get_tmp_dbpath()
-        dbconn = self.Client.open_generic_database(dbpath)
+        dbconn = self.open_generic_database(dbpath)
         dbconn.initializeDatabase()
         dbconn.addPackage(data, revision = data['revision'])
         if treeupdates_actions != None:
@@ -1319,11 +1298,11 @@ class Misc:
             if not os.path.isdir(etpConst['packagestmpdir']):
                 os.makedirs(etpConst['packagestmpdir'])
         # match package
-        match = self.Client.clientDbconn.atomMatch(atomstring)
+        match = self.clientDbconn.atomMatch(atomstring)
         if match[0] == -1:
             return -1,None,None
-        atom = self.Client.clientDbconn.atomMatch(match[0])
-        pkgdata = self.Client.clientDbconn.getPackageData(match[0])
+        atom = self.clientDbconn.atomMatch(match[0])
+        pkgdata = self.clientDbconn.getPackageData(match[0])
         resultfile = self.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             return -1,atom,None
@@ -1395,7 +1374,7 @@ class Misc:
         # appending xpak metadata
         if etpConst['gentoo-compat']:
             import entropy.xpak as xpak
-            Spm = self.Client.Spm()
+            Spm = self.Spm()
 
             gentoo_name = self.entropyTools.remove_tag(pkgname)
             gentoo_name = self.entropyTools.remove_entropy_revision(gentoo_name)
@@ -1426,17 +1405,6 @@ class Misc:
 
 class Match:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.entropyTools = self.Client.entropyTools
-        self.updateProgress = self.Client.updateProgress
-        self.SystemSettings = self.Client.SystemSettings
-        self.Cacher = self.Client.Cacher
-
     def get_package_action(self, match):
         """
             @input: matched atom (idpackage,repoid)
@@ -1446,14 +1414,14 @@ class Match:
                     reinstall: int(0)
                     downgrade: int(-1)
         """
-        dbconn = self.Client.open_repository(match[1])
+        dbconn = self.open_repository(match[1])
         pkgkey, pkgslot = dbconn.retrieveKeySlot(match[0])
-        results = self.Client.clientDbconn.searchKeySlot(pkgkey, pkgslot)
+        results = self.clientDbconn.searchKeySlot(pkgkey, pkgslot)
         if not results: return 1
 
         installed_idpackage = results[0][0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
-        installedVer, installedTag, installedRev = self.Client.clientDbconn.getVersioningData(installed_idpackage)
+        installedVer, installedTag, installedRev = self.clientDbconn.getVersioningData(installed_idpackage)
         pkgcmp = self.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
         if pkgcmp == 0:
             return 0
@@ -1463,7 +1431,7 @@ class Match:
 
     def get_masked_package_reason(self, match):
         idpackage, repoid = match
-        dbconn = self.Client.open_repository(repoid)
+        dbconn = self.open_repository(repoid)
         idpackage, idreason = dbconn.idpackageValidator(idpackage)
         masked = False
         if idpackage == -1: masked = True
@@ -1471,22 +1439,22 @@ class Match:
 
     def get_match_conflicts(self, match):
         m_id, m_repo = match
-        dbconn = self.Client.open_repository(m_repo)
+        dbconn = self.open_repository(m_repo)
         conflicts = dbconn.retrieveConflicts(m_id)
         found_conflicts = set()
         for conflict in conflicts:
-            my_m_id, my_m_rc = self.Client.clientDbconn.atomMatch(conflict)
+            my_m_id, my_m_rc = self.clientDbconn.atomMatch(conflict)
             if my_m_id != -1:
                 # check if the package shares the same slot
                 match_data = dbconn.retrieveKeySlot(m_id)
-                installed_match_data = self.Client.clientDbconn.retrieveKeySlot(my_m_id)
+                installed_match_data = self.clientDbconn.retrieveKeySlot(my_m_id)
                 if match_data != installed_match_data:
                     found_conflicts.add(my_m_id)
         return found_conflicts
 
     def is_match_masked(self, match, live_check = True):
         m_id, m_repo = match
-        dbconn = self.Client.open_repository(m_repo)
+        dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1:
             return False
@@ -1495,8 +1463,8 @@ class Match:
     def is_match_masked_by_user(self, match, live_check = True):
         # (query_status,masked?,)
         m_id, m_repo = match
-        if m_repo not in self.Client.validRepositories: return False
-        dbconn = self.Client.open_repository(m_repo)
+        if m_repo not in self.validRepositories: return False
+        dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1: return False #,False
         myr = self.SystemSettings['pkg_masking_reference']
@@ -1508,8 +1476,8 @@ class Match:
     def is_match_unmasked_by_user(self, match, live_check = True):
         # (query_status,unmasked?,)
         m_id, m_repo = match
-        if m_repo not in self.Client.validRepositories: return False
-        dbconn = self.Client.open_repository(m_repo)
+        if m_repo not in self.validRepositories: return False
+        dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage == -1: return False #,False
         myr = self.SystemSettings['pkg_masking_reference']
@@ -1557,40 +1525,40 @@ class Match:
 
         # clear atomMatch cache anyway
         if clean_all_cache and not dry_run:
-            self.Client.clear_dump_cache(etpCache['world_available'])
-            self.Client.clear_dump_cache(etpCache['world_update'])
+            self.clear_dump_cache(etpCache['world_available'])
+            self.clear_dump_cache(etpCache['world_update'])
 
-        self.Client.clear_dump_cache(etpCache['check_package_update'])
-        self.Client.clear_dump_cache(etpCache['filter_satisfied_deps'])
-        self.Client.clear_dump_cache(self.Client.atomMatchCacheKey)
-        self.Client.clear_dump_cache(etpCache['dep_tree'])
-        self.Client.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],match[1],))
-        self.Client.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],etpConst['dbnamerepoprefix'],match[1],))
+        self.clear_dump_cache(etpCache['check_package_update'])
+        self.clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self.clear_dump_cache(self.atomMatchCacheKey)
+        self.clear_dump_cache(etpCache['dep_tree'])
+        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],match[1],))
+        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],etpConst['dbnamerepoprefix'],match[1],))
 
-        self.Client._package_match_validator_cache.clear()
+        self._package_match_validator_cache.clear()
         return done
 
     def unmask_match_by_atom(self, match, dry_run = False):
         m_id, m_repo = match
-        dbconn = self.Client.open_repository(m_repo)
+        dbconn = self.open_repository(m_repo)
         atom = dbconn.retrieveAtom(m_id)
         return self.unmask_match_generic(match, atom, dry_run = dry_run)
 
     def unmask_match_by_keyslot(self, match, dry_run = False):
         m_id, m_repo = match
-        dbconn = self.Client.open_repository(m_repo)
+        dbconn = self.open_repository(m_repo)
         keyslot = "%s:%s" % dbconn.retrieveKeySlot(m_id)
         return self.unmask_match_generic(match, keyslot, dry_run = dry_run)
 
     def mask_match_by_atom(self, match, dry_run = False):
         m_id, m_repo = match
-        dbconn = self.Client.open_repository(m_repo)
+        dbconn = self.open_repository(m_repo)
         atom = dbconn.retrieveAtom(m_id)
         return self.mask_match_generic(match, atom, dry_run = dry_run)
 
     def mask_match_by_keyslot(self, match, dry_run = False):
         m_id, m_repo = match
-        dbconn = self.Client.open_repository(m_repo)
+        dbconn = self.open_repository(m_repo)
         keyslot = "%s:%s" % dbconn.retrieveKeySlot(m_id)
         return self.mask_match_generic(match, keyslot, dry_run = dry_run)
 
@@ -1659,7 +1627,7 @@ class Match:
                     newf.write("\n")
                     line = f.readline()
                     continue
-                mymatch = self.Client.atom_match(line, packagesFilter = False)
+                mymatch = self.atom_match(line, packagesFilter = False)
                 if mymatch == match:
                     line = f.readline()
                     continue

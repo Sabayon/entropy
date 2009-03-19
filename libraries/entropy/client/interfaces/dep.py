@@ -28,23 +28,10 @@ from entropy.output import bold, darkgreen, darkred, blue, red
 
 class Calculators:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.Cacher = self.Client.Cacher
-        self.updateProgress = self.Client.updateProgress
-        self.entropyTools = self.Client.entropyTools
-        self.dumpTools = self.Client.dumpTools
-        self.SystemSettings = self.Client.SystemSettings
-        self.dbapi2 = self.Client.dbapi2
-
     def dependencies_test(self, dbconn = None):
 
         if dbconn == None:
-            dbconn = self.Client.clientDbconn
+            dbconn = self.clientDbconn
         # get all the installed packages
         installedPackages = dbconn.listAllIdpackages()
 
@@ -54,15 +41,17 @@ class Calculators:
         count = 0
         for xidpackage in installedPackages:
             count += 1
-            atom = dbconn.retrieveAtom(xidpackage)
-            self.updateProgress(
-                darkgreen(_("Checking %s") % (bold(atom),)),
-                importance = 0,
-                type = "info",
-                back = True,
-                count = (count,length),
-                header = darkred(" @@ ")
-            )
+
+            if (count%150 == 0) or (count == length) or (count == 1):
+                atom = dbconn.retrieveAtom(xidpackage)
+                self.updateProgress(
+                    darkgreen(_("Checking %s") % (bold(atom),)),
+                    importance = 0,
+                    type = "info",
+                    back = True,
+                    count = (count,length),
+                    header = darkred(" @@ ")
+                )
 
             xdeps = dbconn.retrieveDependencies(xidpackage)
             needed_deps = set()
@@ -78,8 +67,8 @@ class Calculators:
     def find_belonging_dependency(self, matched_atoms):
         crying_atoms = set()
         for atom in matched_atoms:
-            for repo in self.Client.validRepositories:
-                rdbconn = self.Client.open_repository(repo)
+            for repo in self.validRepositories:
+                rdbconn = self.open_repository(repo)
                 riddep = rdbconn.searchDependency(atom)
                 if riddep != -1:
                     ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
@@ -212,7 +201,7 @@ class Calculators:
         if server_inst != None:
             dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
         else:
-            dbconn = self.Client.open_repository(repoid)
+            dbconn = self.open_repository(repoid)
         return dbconn
 
     def atom_match(self, atom, caseSensitive = True, matchSlot = None,
@@ -240,15 +229,15 @@ class Calculators:
 
         c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             atom,k_ms,k_mt,hash(packagesFilter),
-            hash(frozenset(self.Client.validRepositories)),
+            hash(frozenset(self.validRepositories)),
             hash(frozenset(etpRepositories)),
             hash(multiMatch),hash(multiRepo),hash(caseSensitive),
             k_mr,hash(extendedResults),
             u_hash, m_hash
         )
-        c_hash = "%s%s" % (self.Client.atomMatchCacheKey,hash(c_hash),)
+        c_hash = "%s%s" % (self.atomMatchCacheKey,hash(c_hash),)
 
-        if self.Client.xcache and useCache:
+        if self.xcache and useCache:
             cached = self.Cacher.pop(c_hash)
             if cached != None:
                 try:
@@ -264,7 +253,7 @@ class Calculators:
                 raise IncorrectParameter("IncorrectParameter: %s" % (t,))
             valid_repos = server_repos[:]
         else:
-            valid_repos = self.Client.validRepositories
+            valid_repos = self.validRepositories
         if matchRepo and (type(matchRepo) in (list,tuple,set)):
             valid_repos = list(matchRepo)
 
@@ -363,7 +352,7 @@ class Calculators:
                     else:
                         dbpkginfo = (set([(x,dbpkginfo[1]) for x in query_data]),0)
 
-        if self.Client.xcache and useCache:
+        if self.xcache and useCache:
             self.Cacher.push(c_hash,dbpkginfo)
 
         return dbpkginfo
@@ -430,7 +419,7 @@ class Calculators:
         if server_inst != None:
             dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
         else:
-            dbconn = self.Client.open_repository(repoid)
+            dbconn = self.open_repository(repoid)
         return dbconn
 
     def package_set_match(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
@@ -447,7 +436,7 @@ class Calculators:
                 raise IncorrectParameter("IncorrectParameter: %s" % (t,))
             valid_repos = server_repos[:]
         else:
-            valid_repos = self.Client.validRepositories
+            valid_repos = self.validRepositories
 
         if matchRepo and (type(matchRepo) in (list,tuple,set)):
             valid_repos = list(matchRepo)
@@ -492,9 +481,9 @@ class Calculators:
 
     def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = None):
 
-        if self.Client.xcache:
+        if self.xcache:
             c_data = sorted(dependencies)
-            client_checksum = self.Client.clientDbconn.database_checksum()
+            client_checksum = self.clientDbconn.database_checksum()
             c_hash = hash("%s|%s|%s" % (c_data,deep_deps,client_checksum,))
             c_hash = "%s%s" % (etpCache['filter_satisfied_deps'],c_hash,)
             cached = self.dumpTools.loadobj(c_hash)
@@ -503,12 +492,12 @@ class Calculators:
         if not isinstance(depcache,dict):
             depcache = {}
 
-        cdb_am = self.Client.clientDbconn.atomMatch
+        cdb_am = self.clientDbconn.atomMatch
         am = self.atom_match
-        open_repo = self.Client.open_repository
+        open_repo = self.open_repository
         intf_error = self.dbapi2.InterfaceError
-        cdb_getversioning = self.Client.clientDbconn.getVersioningData
-        #cdb_retrieveneededraw = self.clientDbconn.retrieveNeededRaw
+        cdb_getversioning = self.clientDbconn.getVersioningData
+        #cdb_retrieveneededraw = selfDbconn.retrieveNeededRaw
         etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
         #do_needed_check = False
@@ -585,7 +574,7 @@ class Calculators:
         unsatisfied = map(fm_dep,dependencies)
         unsatisfied = set([x for x in unsatisfied if x != 0])
 
-        if self.Client.xcache:
+        if self.xcache:
             self.Cacher.push(c_hash,unsatisfied)
 
         return unsatisfied
@@ -602,7 +591,7 @@ class Calculators:
 
         match_id, match_repo = match
 
-        mydbconn = self.Client.open_repository(match_repo)
+        mydbconn = self.open_repository(match_repo)
         myatom = mydbconn.retrieveAtom(match_id)
         idpackage, idreason = mydbconn.idpackageValidator(match_id)
         if idpackage == -1:
@@ -620,7 +609,7 @@ class Calculators:
         for mydep in mydeps: mybuffer.push(mydep)
         mydep = mybuffer.pop()
 
-        open_db = self.Client.open_repository
+        open_db = self.open_repository
         am = self.atom_match
         while mydep:
 
@@ -681,7 +670,7 @@ class Calculators:
         if not isinstance(keyslotcache,set):
             keyslotcache = set()
 
-        mydbconn = self.Client.open_repository(matched_atom[1])
+        mydbconn = self.open_repository(matched_atom[1])
         myatom = mydbconn.retrieveAtom(matched_atom[0])
 
         # caches
@@ -696,9 +685,9 @@ class Calculators:
             deptree.add((1,matched_atom))
 
         virgin = True
-        open_repo = self.Client.open_repository
+        open_repo = self.open_repository
         atom_match = self.atom_match
-        cdb_atom_match = self.Client.clientDbconn.atomMatch
+        cdb_atom_match = self.clientDbconn.atomMatch
         lookup_conflict_replacement = self._lookup_conflict_replacement
         lookup_library_breakages = self._lookup_library_breakages
         lookup_inverse_dependencies = self._lookup_inverse_dependencies
@@ -844,7 +833,7 @@ class Calculators:
                 continue
             if mymatch not in mydata:
                 # check if not found
-                myaction = self.Client.get_package_action(mymatch)
+                myaction = self.get_package_action(mymatch)
                 # only if the package is not installed
                 if myaction == 1: mydata.append(mymatch)
             cached_items.add(mymatch)
@@ -854,26 +843,26 @@ class Calculators:
         if self.entropyTools.isjustname(conflict_atom):
             return None
         conflict_match = self.atom_match(conflict_atom)
-        mykey, myslot = self.Client.clientDbconn.retrieveKeySlot(client_idpackage)
+        mykey, myslot = self.clientDbconn.retrieveKeySlot(client_idpackage)
         new_match = self.atom_match(mykey, matchSlot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
             return None
-        action = self.Client.get_package_action(new_match)
+        action = self.get_package_action(new_match)
         if (action == 0) and (not deep_deps):
             return None
         return "%s:%s" % (mykey,myslot,)
 
     def _lookup_inverse_dependencies(self, match, clientmatch):
 
-        cmpstat = self.Client.get_package_action(match)
+        cmpstat = self.get_package_action(match)
         if cmpstat == 0: return set()
 
         keyslots = set()
-        mydepends = self.Client.clientDbconn.retrieveDepends(clientmatch[0])
+        mydepends = self.clientDbconn.retrieveDepends(clientmatch[0])
         am = self.atom_match
-        cdb_rdeps = self.Client.clientDbconn.retrieveDependencies
-        cdb_rks = self.Client.clientDbconn.retrieveKeySlot
-        gpa = self.Client.get_package_action
+        cdb_rdeps = self.clientDbconn.retrieveDependencies
+        cdb_rks = self.clientDbconn.retrieveKeySlot
+        gpa = self.get_package_action
         keyslots_cache = set()
         match_cache = {}
 
@@ -907,7 +896,7 @@ class Calculators:
 
     def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage, client_idpackage):
         repo_needed = match_db.retrieveNeeded(match_idpackage, extended = True, format = True)
-        client_needed = self.Client.clientDbconn.retrieveNeeded(client_idpackage, extended = True, format = True)
+        client_needed = self.clientDbconn.retrieveNeeded(client_idpackage, extended = True, format = True)
         repo_split = [x.split(".so")[0] for x in repo_needed]
         client_split = [x.split(".so")[0] for x in client_needed]
         client_side = [x for x in client_needed if (x not in repo_needed) and (x.split(".so")[0] in repo_split)]
@@ -920,7 +909,7 @@ class Calculators:
         # clientmatch[0] will differ.
         c_hash = "%s|%s|%s" % (hash(tuple(match)),hash(deep_deps),hash(tuple(clientmatch)),)
         c_hash = "%s%s" % (etpCache['library_breakage'],hash(c_hash),)
-        if self.Client.xcache:
+        if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
@@ -929,18 +918,18 @@ class Calculators:
         # these can be pulled in after
         client_atoms = set()
 
-        matchdb = self.Client.open_repository(match[1])
+        matchdb = self.open_repository(match[1])
         reponeeded, client_side, repo_side = self.__get_lib_breaks_client_and_repo_side(matchdb,
             match[0], clientmatch[0])
 
         # all the packages in client_side should be pulled in and updated
         client_idpackages = set()
-        for needed in client_side: client_idpackages |= self.Client.clientDbconn.searchNeeded(needed)
+        for needed in client_side: client_idpackages |= self.clientDbconn.searchNeeded(needed)
 
         client_keyslots = set()
         def mymf(idpackage):
             if idpackage == clientmatch[0]: return 0
-            return self.Client.clientDbconn.retrieveKeySlot(idpackage)
+            return self.clientDbconn.retrieveKeySlot(idpackage)
         client_keyslots = set([x for x in map(mymf,client_idpackages) if x != 0])
 
         # all the packages in repo_side should be pulled in too
@@ -963,7 +952,7 @@ class Calculators:
         found_matches = set()
         for needed in repodata:
             for myrepo in matched_repos:
-                mydbc = self.Client.open_repository(myrepo)
+                mydbc = self.open_repository(myrepo)
                 solved_needed = mydbc.resolveNeeded(needed, elfclass = repodata[needed])
                 found = False
                 for idpackage,myfile in solved_needed:
@@ -977,10 +966,10 @@ class Calculators:
 
         for idpackage,repo in found_matches:
             if not deep_deps:
-                cmpstat = self.Client.get_package_action((idpackage,repo))
+                cmpstat = self.get_package_action((idpackage,repo))
                 if cmpstat == 0:
                     continue
-            mydbc = self.Client.open_repository(repo)
+            mydbc = self.open_repository(repo)
             repo_atoms.add(mydbc.retrieveAtom(idpackage))
 
         for key, slot in client_keyslots:
@@ -988,15 +977,15 @@ class Calculators:
             if idpackage == -1:
                 continue
             if not deep_deps:
-                cmpstat = self.Client.get_package_action((idpackage, repo))
+                cmpstat = self.get_package_action((idpackage, repo))
                 if cmpstat == 0:
                     continue
-            mydbc = self.Client.open_repository(repo)
+            mydbc = self.open_repository(repo)
             client_atoms.add(mydbc.retrieveAtom(idpackage))
 
         client_atoms |= repo_atoms
 
-        if self.Client.xcache:
+        if self.xcache:
             self.Cacher.push(c_hash,client_atoms)
 
         return client_atoms
@@ -1006,9 +995,9 @@ class Calculators:
 
         c_hash = "%s%s" % (etpCache['dep_tree'],hash("%s|%s|%s|%s" % (
             hash(frozenset(sorted(matched_atoms))),hash(empty_deps),
-            hash(deep_deps),self.Client.clientDbconn.database_checksum(),
+            hash(deep_deps),self.clientDbconn.database_checksum(),
         )),)
-        if self.Client.xcache:
+        if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
@@ -1065,7 +1054,7 @@ class Calculators:
         if error_generated != 0:
             return error_tree,error_generated
 
-        if self.Client.xcache:
+        if self.xcache:
             self.Cacher.push(c_hash,(deptree,0))
 
         return deptree,0
@@ -1073,9 +1062,9 @@ class Calculators:
     def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
         remove_depends = set()
         for d_idpackage in depends:
-            mydeps = self.Client.clientDbconn.retrieveDependencies(d_idpackage)
+            mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
             for mydep in mydeps:
-                matches, rslt = self.Client.clientDbconn.atomMatch(mydep, multiMatch = True)
+                matches, rslt = self.clientDbconn.atomMatch(mydep, multiMatch = True)
                 if rslt == 1: continue
                 if idpackage in matches and len(matches) > 1:
                     # are all in depends?
@@ -1090,7 +1079,7 @@ class Calculators:
     def generate_depends_tree(self, idpackages, deep = False):
 
         c_hash = "%s%s" % (etpCache['depends_tree'],hash("%s|%s" % (hash(tuple(sorted(idpackages))),hash(deep),),),)
-        if self.Client.xcache:
+        if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
@@ -1103,7 +1092,7 @@ class Calculators:
         monotree = set(idpackages) # monodimensional tree
 
         # check if dependstable is sane before beginning
-        self.Client.clientDbconn.retrieveDepends(idpackages[0])
+        self.clientDbconn.retrieveDepends(idpackages[0])
         count = 0
 
         rem_dep_text = _("Calculating removable depends of")
@@ -1113,7 +1102,7 @@ class Calculators:
             for idpackage in treelevel:
 
                 count += 1
-                p_atom = self.Client.clientDbconn.retrieveAtom(idpackage)
+                p_atom = self.clientDbconn.retrieveAtom(idpackage)
                 self.updateProgress(
                     blue(rem_dep_text + " %s" % (red(p_atom),)),
                     importance = 0,
@@ -1122,17 +1111,17 @@ class Calculators:
                     header = '|/-\\'[count%4]+" "
                 )
 
-                systempkg = not self.Client.validate_package_removal(idpackage)
+                systempkg = not self.validate_package_removal(idpackage)
                 if (idpackage in dependscache) or systempkg:
                     if idpackage in treeview:
                         treeview.remove(idpackage)
                     continue
 
                 # obtain its depends
-                depends = self.Client.clientDbconn.retrieveDepends(idpackage)
+                depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
                 depends = set([x for x in depends if x not in monotree])
-                depends = set([x for x in depends if self.Client.validate_package_removal(x)])
+                depends = set([x for x in depends if self.validate_package_removal(x)])
                 if depends:
                     depends = self._filter_depends_multimatched_atoms(idpackage, depends, monotree)
                 if depends: # something depends on idpackage
@@ -1142,17 +1131,17 @@ class Calculators:
                 elif deep: # if deep, grab its dependencies and check
 
                     mydeps = set()
-                    for x in self.Client.clientDbconn.retrieveDependencies(idpackage):
-                        match = self.Client.clientDbconn.atomMatch(x)
+                    for x in self.clientDbconn.retrieveDependencies(idpackage):
+                        match = self.clientDbconn.atomMatch(x)
                         if match[0] != -1:
                             mydeps.add(match[0])
 
                     # now filter them
                     mydeps = [x for x in mydeps if x not in monotree and not \
-                        (self.Client.clientDbconn.isSystemPackage(x) or \
-                            self.Client.is_installed_idpackage_in_system_mask(x) )]
+                        (self.clientDbconn.isSystemPackage(x) or \
+                            self.is_installed_idpackage_in_system_mask(x) )]
                     for x in mydeps:
-                        mydepends = self.Client.clientDbconn.retrieveDepends(x)
+                        mydepends = self.clientDbconn.retrieveDepends(x)
                         mydepends -= set([y for y in mydepends if y not in monotree])
                         if not mydepends:
                             tree[treedepth].add(x)
@@ -1176,28 +1165,28 @@ class Calculators:
                 tree[x] -= tree[count]
                 x += 1
 
-        if self.Client.xcache:
+        if self.xcache:
             self.Cacher.push(c_hash,(tree,0))
         return tree,0 # treeview is used to show deps while tree is used to run the dependency code.
 
     def calculate_available_packages(self, use_cache = True):
 
-        c_hash = self.Client.get_available_packages_chash(etpConst['branch'])
+        c_hash = self.get_available_packages_chash(etpConst['branch'])
 
-        if use_cache and self.Client.xcache:
-            cached = self.Client.get_available_packages_cache(myhash = c_hash)
+        if use_cache and self.xcache:
+            cached = self.get_available_packages_cache(myhash = c_hash)
             if cached != None:
                 return cached
 
         available = []
-        self.Client.setTotalCycles(len(self.Client.validRepositories))
+        self.setTotalCycles(len(self.validRepositories))
         avail_dep_text = _("Calculating available packages for")
-        for repo in self.Client.validRepositories:
+        for repo in self.validRepositories:
             try:
-                dbconn = self.Client.open_repository(repo)
+                dbconn = self.open_repository(repo)
                 dbconn.validateDatabase()
             except (RepositoryError,SystemDatabaseError):
-                self.Client.cycleDone()
+                self.cycleDone()
                 continue
             idpackages = [  x for x in dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom') \
                             if dbconn.idpackageValidator(x)[0] != -1  ]
@@ -1223,16 +1212,16 @@ class Calculators:
                 # get key + slot
                 try:
                     key, slot = dbconn.retrieveKeySlot(idpackage)
-                    matches = self.Client.clientDbconn.searchKeySlot(key, slot)
+                    matches = self.clientDbconn.searchKeySlot(key, slot)
                 except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
-                    self.Client.cycleDone()
+                    self.cycleDone()
                     do_break = True
                     continue
                 if not matches: myavailable.append((idpackage,repo))
             available += myavailable[:]
-            self.Client.cycleDone()
+            self.cycleDone()
 
-        if self.Client.xcache:
+        if self.xcache:
             self.Cacher.push("%s%s" % (etpCache['world_available'],c_hash),available)
         return available
 
@@ -1244,9 +1233,9 @@ class Calculators:
             use_cache = True
         ):
 
-        db_digest = self.Client.all_repositories_checksum()
-        if use_cache and self.Client.xcache:
-            cached = self.Client.get_world_update_cache(empty_deps = empty_deps,
+        db_digest = self.all_repositories_checksum()
+        if use_cache and self.xcache:
+            cached = self.get_world_update_cache(empty_deps = empty_deps,
                 branch = branch, db_digest = db_digest, ignore_spm_downgrades = ignore_spm_downgrades)
             if cached != None: return cached
 
@@ -1255,7 +1244,7 @@ class Calculators:
         fine = []
 
         # get all the installed packages
-        idpackages = self.Client.clientDbconn.listAllIdpackages(order_by = 'atom')
+        idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
         maxlen = len(idpackages)
         count = 0
         mytxt = _("Calculating world packages")
@@ -1274,7 +1263,7 @@ class Calculators:
                     footer = " ::"
                 )
 
-            mystrictdata = self.Client.clientDbconn.getStrictData(idpackage)
+            mystrictdata = self.clientDbconn.getStrictData(idpackage)
             # check against broken entries, or removed during iteration
             if mystrictdata == None:
                 continue
@@ -1346,12 +1335,12 @@ class Calculators:
                 # look for packages that would match key with any slot (for eg: gcc, kernel updates)
                 matchresults = self.atom_match(mystrictdata[0], matchBranches = (branch,))
                 if matchresults[0] != -1:
-                    m_action = self.Client.get_package_action(matchresults)
+                    m_action = self.get_package_action(matchresults)
                     if m_action > 0 and (matchresults not in update):
                         update.append(matchresults)
 
-        if self.Client.xcache:
-            c_hash = self.Client.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
+        if self.xcache:
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
             data = {
                 'r': (update, remove, fine,),
                 'empty_deps': empty_deps,
@@ -1363,19 +1352,19 @@ class Calculators:
     def check_package_update(self, atom, deep = False):
 
         c_hash = "%s%s" % (etpCache['check_package_update'],hash("%s%s" % (atom,hash(deep),)),)
-        if self.Client.xcache:
+        if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None:
                 return cached
 
         found = False
-        match = self.Client.clientDbconn.atomMatch(atom)
+        match = self.clientDbconn.atomMatch(atom)
         matched = None
         if match[0] != -1:
-            myatom = self.Client.clientDbconn.retrieveAtom(match[0])
+            myatom = self.clientDbconn.retrieveAtom(match[0])
             mytag = self.entropyTools.dep_gettag(myatom)
             myatom = self.entropyTools.remove_tag(myatom)
-            myrev = self.Client.clientDbconn.retrieveRevision(match[0])
+            myrev = self.clientDbconn.retrieveRevision(match[0])
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag != None:
                 pkg_match += "#%s" % (mytag,)
@@ -1386,7 +1375,7 @@ class Calculators:
             matched = self.atom_match(pkg_match)
         del match
 
-        if self.Client.xcache:
+        if self.xcache:
             self.Cacher.push(c_hash,(found,matched))
 
         return found, matched
@@ -1413,10 +1402,10 @@ class Calculators:
 
     def validate_package_removal(self, idpackage):
 
-        pkgatom = self.Client.clientDbconn.retrieveAtom(idpackage)
+        pkgatom = self.clientDbconn.retrieveAtom(idpackage)
         pkgkey = self.entropyTools.dep_getkey(pkgatom)
 
-        if self.Client.is_installed_idpackage_in_system_mask(idpackage):
+        if self.is_installed_idpackage_in_system_mask(idpackage):
             idpackages = self.SystemSettings['repos_system_mask_installed_keys'].get(pkgkey)
             if not idpackages: return False
             if len(idpackages) > 1:
@@ -1424,10 +1413,10 @@ class Calculators:
             return False # sorry!
 
         # did we store the bastard in the db?
-        system_pkg = self.Client.clientDbconn.isSystemPackage(idpackage)
+        system_pkg = self.clientDbconn.isSystemPackage(idpackage)
         if not system_pkg: return True
         # check if the package is slotted and exist more than one installed first
-        sysresults = self.Client.clientDbconn.atomMatch(pkgkey, multiMatch = True)
+        sysresults = self.clientDbconn.atomMatch(pkgkey, multiMatch = True)
         if sysresults[1] == 0:
             if len(sysresults[0]) < 2: return False
             return True
@@ -1460,12 +1449,12 @@ class Calculators:
         if install and removal:
             myremmatch = {}
             for x in removal:
-                atom = self.Client.clientDbconn.retrieveAtom(x)
+                atom = self.clientDbconn.retrieveAtom(x)
                 # XXX check if users removed idpackage while this whole instance is running
                 if atom == None: continue
-                myremmatch[(self.entropyTools.dep_getkey(atom),self.Client.clientDbconn.retrieveSlot(x),)] = x
+                myremmatch[(self.entropyTools.dep_getkey(atom),self.clientDbconn.retrieveSlot(x),)] = x
             for pkg_id, pkg_repo in install:
-                dbconn = self.Client.open_repository(pkg_repo)
+                dbconn = self.open_repository(pkg_repo)
                 testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(pkg_id)),dbconn.retrieveSlot(pkg_id))
                 removal.discard(myremmatch.get(testtuple))
 

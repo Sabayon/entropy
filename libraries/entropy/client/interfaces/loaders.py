@@ -25,21 +25,17 @@ from entropy.exceptions import *
 
 class Loaders:
 
-    def __init__(self, ClientInterface):
-        from entropy.client.interfaces import Client
-        from entropy.client.interfaces import Trigger
-        from entropy.client.interfaces import Repository
+    __QA_cache = {}
+    __security_cache = {}
+    __spm_cache = {}
+    def __init__(self):
+        from entropy.client.interfaces.client import Client
+        from entropy.client.interfaces.trigger import Trigger
+        from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
         self.__PackageLoader = Package
         self.__RepositoryLoader = Repository
         self.__TriggerLoader = Trigger
-        if not isinstance(ClientInterface,Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Client = ClientInterface
-        self.__QA_cache = {}
-        self.__security_cache = {}
-        self.__spm_cache = {}
 
     def closeAllQA(self):
         self.__QA_cache.clear()
@@ -49,12 +45,12 @@ class Loaders:
 
     def Security(self):
         chroot = etpConst['systemroot']
-        cached = self.Client.__security_cache.get(chroot)
+        cached = self.__security_cache.get(chroot)
         if cached != None:
             return cached
         from entropy.security import SecurityInterface
         cached = SecurityInterface(self)
-        self.Client.__security_cache[chroot] = cached
+        self.__security_cache[chroot] = cached
         return cached
 
     def QA(self):
