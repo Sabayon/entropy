@@ -628,22 +628,23 @@ class Server(Singleton,TextInterface):
         length = str((len(installed_packages)))
         count = 0
         mytxt = _("Checking")
+
         for pkgdata in installed_packages:
             count += 1
             idpackage = pkgdata[0]
             repo = pkgdata[1]
             dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
-            atom = dbconn.retrieveAtom(idpackage)
-            if atom == None:
-                continue
-            self.updateProgress(
-                darkgreen(mytxt)+" "+bold(atom),
-                importance = 0,
-                type = "info",
-                back = True,
-                count = (count,length),
-                header = darkred(" @@  ")
-            )
+
+            if (count%150 == 0) or (count == length) or (count == 1):
+                atom = dbconn.retrieveAtom(idpackage)
+                self.updateProgress(
+                    darkgreen(mytxt)+" "+bold(atom),
+                    importance = 0,
+                    type = "info",
+                    back = True,
+                    count = (count,length),
+                    header = darkred(" @@  ")
+                )
 
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
