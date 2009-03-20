@@ -1,5 +1,5 @@
 #!/usr/bin/python
-'''
+"""
     # DESCRIPTION:
     # load/save a data to file by dumping its structure
 
@@ -18,7 +18,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
+"""
+# pylint ok
 
 from __future__ import with_statement
 import os
@@ -28,24 +29,30 @@ try:
 except ImportError:
     import pickle
 
-d_ext = etpConst['cachedumpext']
-d_dir = etpConst['dumpstoragedir']
-e_gid = etpConst['entropygid']
-if e_gid == None: e_gid = 0
+D_EXT = etpConst['cachedumpext']
+D_DIR = etpConst['dumpstoragedir']
+E_GID = etpConst['entropygid']
+if E_GID == None:
+    E_GID = 0
 
 
-def dumpobj(name, object, completePath = False, ignoreExceptions = True):
-    '''
-    @description: dump object to file
-    @input: name of the object, object
-    @output: status code
-    '''
+def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
+    """
+    Dump object to file
+
+    @param name -- name of the object
+    @param my_object -- object to dump
+    @param complete_path -- name is a complete path
+    @param ignore_exceptions -- ignore exceptions
+
+    @return None
+    """
     while 1: # trap ctrl+C
         try:
-            if completePath:
+            if complete_path:
                 dmpfile = name
             else:
-                dump_path = os.path.join(d_dir,name)
+                dump_path = os.path.join(D_DIR, name)
                 dump_dir = os.path.dirname(dump_path)
                 #dump_name = os.path.basename(dump_path)
                 my_dump_dir = dump_dir
@@ -56,96 +63,128 @@ def dumpobj(name, object, completePath = False, ignoreExceptions = True):
                 if d_paths:
                     d_paths = sorted(d_paths)
                     for d_path in d_paths:
-                        os.mkdir(d_path,0775)
-                        const_setup_perms(d_path,e_gid)
+                        os.mkdir(d_path, 0775)
+                        const_setup_perms(d_path, E_GID)
 
-                dmpfile = dump_path+d_ext
-            with open(dmpfile,"wb") as f:
-                pickle.dump(object,f)
-                f.flush()
-            const_setup_file(dmpfile, e_gid, 0664)
+                dmpfile = dump_path+D_EXT
+            with open(dmpfile,"wb") as dmp_f:
+                pickle.dump(my_object, dmp_f)
+                dmp_f.flush()
+            const_setup_file(dmpfile, E_GID, 0664)
         except RuntimeError:
-            try: os.remove(dmpfile)
-            except OSError: pass
-        except (EOFError,IOError,OSError):
-            if not ignoreExceptions:
+            try:
+                os.remove(dmpfile)
+            except OSError:
+                pass
+        except (EOFError, IOError, OSError):
+            if not ignore_exceptions:
                 raise
         break
 
-def serialize(myobj, f, do_seek = True):
-    '''
-    @description: serialize object to f (file)
-    @input: object, file object
-    @output: file object, pointer to the beginning
-    '''
-    pickle.dump(myobj,f)
-    f.flush()
-    if do_seek:
-        f.seek(0)
-    return f
+def serialize(myobj, ser_f, do_seek = True):
+    """
+    Serialize object to ser_f (file)
 
-def unserialize(f):
-    '''
-    @description: unserialize file to object (file)
-    @input: file object
-    @output: object
-    '''
-    x = pickle.load(f)
-    return x
+    @param myobj -- object to serialize
+    @type myobj -- any picklable object
+    @param ser_f -- file handle to write to
+    @type ser_f -- file object
+    @param do_seek -- move the file cursor to the beginning
+    @type do_seek -- bool
+    @return file object where data is stored to
+    """
+    pickle.dump(myobj, ser_f)
+    ser_f.flush()
+    if do_seek:
+        ser_f.seek(0)
+    return ser_f
+
+def unserialize(serial_f):
+    """
+    Unserialize file to object (file)
+
+    @param serial_f -- file object to read the stream to
+    @type serial_f -- file object
+    @return object reconstructed
+    """
+    return pickle.load(serial_f)
 
 def unserialize_string(mystring):
-    '''
-    @description: unserialize pickle string to object
-    @input: string
-    @output: object
-    '''
+    """
+    Unserialize pickle string to object
+
+    @param mystring -- data stream in string form to reconstruct
+    @type mystring -- basestring
+    @return reconstructed object
+    """
     return pickle.loads(mystring)
 
 def serialize_string(myobj):
-    '''
-    @description: serialize object to string
-    @input: object, file object
-    @output: file object, pointer to the beginning
-    '''
+    """
+    Serialize object to string
+
+    @param myobj -- object to serialize
+    @type myobj -- any picklable object
+    @return serialized string
+    """
     return pickle.dumps(myobj)
 
-def loadobj(name, completePath = False):
-    '''
-    @description: load object from a file
-    @input: name of the object
-    @output: object or, if error -1
-    '''
+def loadobj(name, complete_path = False):
+    """
+    Load object from a file
+    @param name -- name of the object to load
+    @type name -- basestring
+    @param complete_path -- name is a complete serialized
+        object file path to load
+    @type complete_path -- basestring
+    @return object or None
+    """
     while 1:
-        if completePath:
+        if complete_path:
             dmpfile = name
         else:
-            dump_path = os.path.join(d_dir,name)
+            dump_path = os.path.join(D_DIR, name)
             #dump_dir = os.path.dirname(dump_path)
             #dump_name = os.path.basename(dump_path)
-            dmpfile = dump_path+d_ext
-        if os.path.isfile(dmpfile) and os.access(dmpfile,os.R_OK):
+            dmpfile = dump_path+D_EXT
+        if os.path.isfile(dmpfile) and os.access(dmpfile, os.R_OK):
             try:
-                with open(dmpfile,"rb") as f:
-                    x = None
+                with open(dmpfile,"rb") as dmp_f:
+                    obj = None
                     try:
-                        x = pickle.load(f)
-                    except (ValueError,EOFError,IOError,OSError,pickle.UnpicklingError):
+                        obj = pickle.load(dmp_f)
+                    except (ValueError, EOFError, IOError,
+                        OSError, pickle.UnpicklingError):
                         pass
-                    return x
-            except (IOError,OSError,):
+                    return obj
+            except (IOError, OSError,):
                 pass
         break
 
 def getobjmtime(name):
+    """
+    Get dumped object mtime
+
+    @param name -- object name
+    @type name -- basestring
+    @return mtime -- integer
+    """
     mtime = 0
-    dump_path = os.path.join(d_dir,name+d_ext)
-    if os.path.isfile(dump_path) and os.access(dump_path,os.R_OK):
+    dump_path = os.path.join(D_DIR, name+D_EXT)
+    if os.path.isfile(dump_path) and os.access(dump_path, os.R_OK):
         mtime = os.path.getmtime(dump_path)
     return int(mtime)
 
 def removeobj(name):
-    filepath = d_dir+"/"+name+d_ext
-    if os.path.isfile(filepath) and os.access(filepath,os.W_OK):
+    """
+    Remove cached object through its object name
+
+    @param name -- object name
+    @type name -- basestring
+    @return bool -- removed or not
+    """
+    filepath = D_DIR+"/"+name+D_EXT
+    if os.path.isfile(filepath) and os.access(filepath, os.W_OK):
         os.remove(filepath)
         return True
     return False

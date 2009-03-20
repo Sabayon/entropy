@@ -40,11 +40,11 @@ def save_settings(settings):
     try:
         if not os.path.isdir(os.path.dirname(SETTINGS_FILE)):
             os.makedirs(os.path.dirname(SETTINGS_FILE))
-        dumpTools.dumpobj(SETTINGS_FILE, settings, completePath = True)
+        dumpTools.dumpobj(SETTINGS_FILE, settings, complete_path = True)
     except:
         pass
 
-settings = dumpTools.loadobj(SETTINGS_FILE, completePath = True)
+settings = dumpTools.loadobj(SETTINGS_FILE, complete_path = True)
 if settings == None:
     settings = {}
 

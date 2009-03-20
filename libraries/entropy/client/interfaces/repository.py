@@ -663,7 +663,7 @@ class Repository:
                         self.dumpTools.dumpobj(
                             "%s%s" % (etpCache['eapi3_fetch'],idpackage,),
                             pkgdata[idpackage],
-                            ignoreExceptions = False
+                            ignore_exceptions = False
                         )
                 except (IOError,EOFError,OSError,), e:
                     mytxt = "%s: %s: %s." % ( blue(_("Local status")), darkred("Error storing data"), e,)

@@ -2290,7 +2290,7 @@ class SpritzApplication(Controller):
         if fn:
 
             try:
-                pkgdata = self.Equo.dumpTools.loadobj(fn,completePath = True)
+                pkgdata = self.Equo.dumpTools.loadobj(fn, complete_path = True)
             except:
                 return
 

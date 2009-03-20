@@ -611,7 +611,7 @@ class Package:
             for cache_file in wc_cache_files:
 
                 try:
-                    data = self.Entropy.dumpTools.loadobj(cache_file, completePath = True)
+                    data = self.Entropy.dumpTools.loadobj(cache_file, complete_path = True)
                     (update, remove, fine) = data['r']
                     empty_deps = data['empty_deps']
                 except:
@@ -627,7 +627,7 @@ class Package:
                         self.Entropy.dumpTools.dumpobj(
                             cache_file,
                             {'r':(update, remove, fine),'empty_deps': empty_deps},
-                            completePath = True
+                            complete_path = True
                         )
                 else:
                     key, slot = self.Entropy.clientDbconn.retrieveKeySlot(self.infoDict['removeidpackage'])
@@ -648,7 +648,7 @@ class Package:
                         self.Entropy.dumpTools.dumpobj(
                             cache_file,
                             {'r':(update, remove, fine),'empty_deps': empty_deps},
-                            completePath = True
+                            complete_path = True
                         )
 
         elif (not self.Entropy.xcache) or (self.action in ("install",)):
