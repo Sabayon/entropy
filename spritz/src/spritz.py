@@ -1954,7 +1954,7 @@ class SpritzApplication(Controller):
         text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                repoid, repodata = const_extractClientRepositoryParameters(text)
+                repoid, repodata = const_extract_client_repo_params(text)
                 self.__loadRepodata(repodata)
             else:
                 okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
