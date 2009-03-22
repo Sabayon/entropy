@@ -47,7 +47,7 @@ class Singleton(object):
         it = cls.__dict__.get("__it__")
         if it != None:
             try:
-                ck_dst = getattr(it,'is_destroyed')
+                ck_dst = it.is_destroyed
                 if not callable(ck_dst): raise AttributeError
                 destroyed = ck_dst()
             except AttributeError:
@@ -4196,12 +4196,22 @@ class EquoInterface(Singleton,TextInterface):
 
     def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
 
+        def do_stfu_rm(xpath):
+            try:
+                os.remove(xpath)
+            except OSError:
+                pass
+
         filename = os.path.basename(url)
         if not filepath:
             filepath = os.path.join(etpConst['packagesbindir'],branch,filename)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir):
             os.makedirs(filepath_dir,0755)
+
+        existed_before = False
+        if os.path.isfile(filepath) and os.path.exists(filepath):
+            existed_before = True
 
         # load class
         fetchConn = self.urlFetcher(url, filepath, resume = resume,
@@ -4216,6 +4226,8 @@ class EquoInterface(Singleton,TextInterface):
             data_transfer = fetchConn.get_transfer_rate()
             resumed = fetchConn.is_resumed()
         except KeyboardInterrupt:
+            if not existed_before:
+                do_stfu_rm(filepath)
             return -100, data_transfer, resumed
         except NameError:
             raise
@@ -4228,6 +4240,8 @@ class EquoInterface(Singleton,TextInterface):
                     header = red("   ## ")
                 )
                 self.entropyTools.printTraceback()
+            if not existed_before:
+                do_stfu_rm(filepath)
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             # not found
@@ -4237,12 +4251,12 @@ class EquoInterface(Singleton,TextInterface):
             return -4, data_transfer, resumed
 
         del fetchConn
-        if digest:
-            if fetchChecksum != digest:
-                # not properly downloaded
-                return -2, data_transfer, resumed
-            else:
-                return 0, data_transfer, resumed
+        if digest and (fetchChecksum != digest):
+            # not properly downloaded
+            if not existed_before:
+                do_stfu_rm(filepath)
+            return -2, data_transfer, resumed
+
         return 0, data_transfer, resumed
 
 
@@ -4328,7 +4342,7 @@ class EquoInterface(Singleton,TextInterface):
                         )
 
                         return 0
-                    elif resumed and rc not in (-3,-4,-100,):
+                    elif resumed and (rc not in (-3,-4,-100,)):
                         do_resume = False
                         continue
                     else:
@@ -7609,7 +7623,7 @@ class RepoInterface:
                 os.remove(repo_dbpath+"/"+etpConst[dbfilenameid])
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
-        elif self.dbformat_eapi == 2:
+        elif self.dbformat_eapi in (2,3,):
             if os.path.isfile(repo_dbpath+"/"+cmethod[4]):
                 os.remove(repo_dbpath+"/"+cmethod[4])
             if os.path.isfile(repo_dbpath+"/"+etpConst[cmethod[3]]):
@@ -7617,7 +7631,7 @@ class RepoInterface:
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
         else:
-            mytxt = _("self.dbformat_eapi must be in (1,2)")
+            mytxt = _("self.dbformat_eapi must be in (1,2,3,)")
             raise exceptionTools.InvalidData('InvalidData: %s' % (mytxt,))
 
     def __unpack_downloaded_database(self, repo, cmethod):
@@ -8545,7 +8559,7 @@ class RepoInterface:
         current_profile_link = ''
         if os.path.islink(system_make_profile) and os.access(system_make_profile,os.R_OK):
             current_profile_link = os.readlink(system_make_profile)
-        if repo_profile_link_data != current_profile_link:
+        if (repo_profile_link_data != current_profile_link) and repo_profile_link_data:
             self.Entropy.updateProgress(
                 "%s: %s %s. %s." % (
                     red(system_make_profile), blue("link"),

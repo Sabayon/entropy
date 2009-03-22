@@ -475,7 +475,8 @@ def initConfig_entropyConstants(rootdir):
     etpConst['backed_up'] = backed_up_settings.copy()
     const_setupWithEnvironment()
 
-    sys.excepthook = const_HandleException
+    if sys.excepthook == sys.__excepthook__:
+        sys.excepthook = const_HandleException
 
 def initConfig_clientConstants():
     const_readEquoSettings()
