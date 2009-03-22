@@ -251,7 +251,7 @@ class Repository:
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
         else:
-            mytxt = _("self.dbformat_eapi must be in (1,2)")
+            mytxt = _("self.dbformat_eapi must be in (1,2,3,)")
             raise InvalidData('InvalidData: %s' % (mytxt,))
 
     def __unpack_downloaded_database(self, repo, cmethod):

@@ -497,7 +497,6 @@ class Calculators:
         open_repo = self.open_repository
         intf_error = self.dbapi2.InterfaceError
         cdb_getversioning = self.clientDbconn.getVersioningData
-        #cdb_retrieveneededraw = selfDbconn.retrieveNeededRaw
         etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
         #do_needed_check = False

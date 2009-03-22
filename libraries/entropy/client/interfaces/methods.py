@@ -400,7 +400,7 @@ class Repository:
         return 0,atoms_contained
 
     def reopen_client_repository(self):
-        selfDbconn.closeDB()
+        self.clientDbconn.closeDB()
         self.open_client_repository()
 
     def __client_repo_setup_const(self, conn):
@@ -471,7 +471,7 @@ class Repository:
             importance = 2,
             type = "warning"
         )
-        idpkgs = selfDbconn.listAllIdpackages()
+        idpkgs = self.clientDbconn.listAllIdpackages()
         length = len(idpkgs)
         count = 0
         errors = False
@@ -487,7 +487,7 @@ class Repository:
                                     percent = True
                                 )
             try:
-                selfDbconn.getPackageData(x)
+                self.clientDbconn.getPackageData(x)
             except Exception ,e:
                 self.entropyTools.print_traceback()
                 errors = True
