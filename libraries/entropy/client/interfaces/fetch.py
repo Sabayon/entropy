@@ -300,12 +300,22 @@ class Fetchers:
 
     def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
 
+        def do_stfu_rm(xpath):
+            try:
+                os.remove(xpath)
+            except OSError:
+                pass
+
         filename = os.path.basename(url)
         if not filepath:
             filepath = os.path.join(etpConst['packagesbindir'],branch,filename)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir):
             os.makedirs(filepath_dir,0755)
+
+        existed_before = False
+        if os.path.isfile(filepath) and os.path.exists(filepath):
+            existed_before = True
 
         # load class
         fetchConn = self.urlFetcher(url, filepath, resume = resume,
@@ -320,6 +330,8 @@ class Fetchers:
             data_transfer = fetchConn.get_transfer_rate()
             resumed = fetchConn.is_resumed()
         except KeyboardInterrupt:
+            if not existed_before:
+                do_stfu_rm(filepath)
             return -100, data_transfer, resumed
         except NameError:
             raise
@@ -332,6 +344,8 @@ class Fetchers:
                     header = red("   ## ")
                 )
                 self.entropyTools.print_traceback()
+            if not existed_before:
+                do_stfu_rm(filepath)
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             # not found
@@ -341,12 +355,13 @@ class Fetchers:
             return -4, data_transfer, resumed
 
         del fetchConn
-        if digest:
-            if fetchChecksum != digest:
-                # not properly downloaded
-                return -2, data_transfer, resumed
-            else:
-                return 0, data_transfer, resumed
+
+        if digest and (fetchChecksum != digest):
+            # not properly downloaded
+            if not existed_before:
+                do_stfu_rm(filepath)
+            return -2, data_transfer, resumed
+
         return 0, data_transfer, resumed
 
 
@@ -432,7 +447,7 @@ class Fetchers:
                         )
 
                         return 0
-                    elif resumed and rc not in (-3,-4,-100,):
+                    elif resumed and (rc not in (-3,-4,-100,)):
                         do_resume = False
                         continue
                     else:

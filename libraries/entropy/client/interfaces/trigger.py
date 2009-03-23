@@ -212,7 +212,10 @@ class Trigger:
             # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
 
         # opengl configuration
-        if (self.pkgdata['category'] == "x11-drivers") and (self.pkgdata['name'].startswith("nvidia-") or self.pkgdata['name'].startswith("ati-")):
+        if (self.pkgdata['category'] == "x11-drivers") and \
+            (self.pkgdata['name'].startswith("nvidia-") or \
+                self.pkgdata['name'].startswith("ati-")):
+
             if "ebuild_preremove" in functions:
                 functions.remove("ebuild_preremove")
             if "ebuild_postremove" in functions:

@@ -1159,17 +1159,25 @@ class Repository:
                     os.environ[var] = myval
 
     def _config_updates_make_profile(self, repo):
-        url, repo_make_profile = self._construct_paths("profile.link", repo, None)
+        url, repo_make_profile = self._construct_paths("profile.link",
+            repo, None)
         system_make_profile = etpConst['spm']['global_make_profile']
-        if not (os.path.isfile(repo_make_profile) and os.access(repo_make_profile,os.R_OK)):
+        if not (os.path.isfile(repo_make_profile) and \
+            os.access(repo_make_profile,os.R_OK)):
             return
+
         f = open(repo_make_profile,"r")
         repo_profile_link_data = f.readline().strip()
         f.close()
         current_profile_link = ''
-        if os.path.islink(system_make_profile) and os.access(system_make_profile,os.R_OK):
+        if os.path.islink(system_make_profile) and \
+            os.access(system_make_profile,os.R_OK):
+
             current_profile_link = os.readlink(system_make_profile)
-        if repo_profile_link_data != current_profile_link:
+
+        if (repo_profile_link_data != current_profile_link) and \
+            repo_profile_link_data:
+
             self.Entropy.updateProgress(
                 "%s: %s %s. %s." % (
                     red(system_make_profile), blue("link"),
