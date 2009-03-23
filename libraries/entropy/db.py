@@ -26,19 +26,20 @@ import shutil
 import subprocess
 from entropy.const import etpConst, etpCache
 from entropy.exceptions import *
-from entropy.output import brown, bold, red, blue, darkred, darkgreen, TextInterface
+from entropy.output import brown, bold, red, blue, darkred, darkgreen, \
+    TextInterface
 from entropy.cache import EntropyCacher
 from entropy.core import Singleton
 
 try: # try with sqlite3 from python 2.5 - default one
     from sqlite3 import dbapi2
-except ImportError: # fallback to embedded pysqlite
+except ImportError: # fallback to pysqlite
     try:
         from pysqlite2 import dbapi2
     except ImportError, e:
         raise SystemError(
             "%s. %s: %s" % (
-                _("Entropy needs a working sqlite3+pysqlite or Python compiled with sqlite3 support"),
+                _("Entropy needs Python compiled with sqlite3 support"),
                 _("Error"),
                 e,
             )
