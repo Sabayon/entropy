@@ -443,12 +443,13 @@ class LocalRepository:
 
         if not self.skipChecks:
             if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
-                if self.entropyTools.islive():
-                    # check where's the file
-                    if etpConst['systemroot']:
-                        self.databaseStructureUpdates()
-                else:
-                    self.databaseStructureUpdates()
+                #if self.entropyTools.islive():
+                #    # check where's the file
+                #    if etpConst['systemroot']:
+                #        self.databaseStructureUpdates()
+                #else:
+                #    self.databaseStructureUpdates()
+                self.databaseStructureUpdates()
 
 
         # now we can set this to False
