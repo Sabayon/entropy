@@ -443,13 +443,12 @@ class LocalRepository:
 
         if not self.skipChecks:
             if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
-                #if self.entropyTools.islive():
-                #    # check where's the file
-                #    if etpConst['systemroot']:
-                #        self.databaseStructureUpdates()
-                #else:
-                #    self.databaseStructureUpdates()
-                self.databaseStructureUpdates()
+                if self.entropyTools.islive():
+                    # check where's the file
+                    if etpConst['systemroot']:
+                        self.databaseStructureUpdates()
+                else:
+                    self.databaseStructureUpdates()
 
 
         # now we can set this to False
@@ -2635,6 +2634,8 @@ class LocalRepository:
         return source_data
 
     def retrieveAutomergefiles(self, idpackage, get_dict = False):
+        if not self.doesTableExist('automergefiles'):
+            self.createAutomergefilesTable()
         # like portage does
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         self.cursor.execute('SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)', (idpackage,))
