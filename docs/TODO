@@ -2,7 +2,8 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  - server-side timestamp creation on each upload
+  - server-side deptest should only complain about the default repo
+  - server-side timestamp creation on each upload (inside DB dir)
   - Improve packages injection speed
   - SHA512 instead of MD5
   - Move entropy client settings in etpConst to SystemSettings
