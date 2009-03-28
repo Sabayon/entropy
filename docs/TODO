@@ -2,9 +2,17 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+  - fix double download on entropy.client.interfaces.Client (downloading from)
+  - reagent spm pkgset-update
+  - complete pylint
+  - text_query => remove idreturn
+  - equo unusedpackages: add package size and order per it
+  - track down packages installed as dependency and packages installed as user request
+      in this way we could auto-removed unused deps
   - server-side deptest should only complain about the default repo
   - server-side timestamp creation on each upload (inside DB dir)
   - Improve packages injection speed
+
   - SHA512 instead of MD5
   - Move entropy client settings in etpConst to SystemSettings
   - Pylint roundup
