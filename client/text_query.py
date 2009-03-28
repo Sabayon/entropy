@@ -469,6 +469,11 @@ def searchOrphans(Equo = None):
         os.remove(filepath)
     tdbconn = Equo.open_generic_database(filepath)
     tdbconn.initializeDatabase()
+    tdbconn.dropAllIndexes()
+    lib64_str = "/usr/lib64"
+    lib64_len = len(lib64_str)
+
+    count = 0
     for xdir in dirs:
         try:
             wd = os.walk(xdir)
@@ -477,7 +482,7 @@ def searchOrphans(Equo = None):
         for currentdir,subdirs,files in wd:
             foundFiles = {}
             for filename in files:
-                # filter python compiled objects?
+                # failter python compiled objects?
                 if filename.endswith(".pyo") or filename.endswith(".pyc") or filename == '.keep':
                     continue
                 filename = os.path.join(currentdir,filename)
@@ -486,8 +491,12 @@ def searchOrphans(Equo = None):
                         continue
                 mask = [x for x in Equo.SystemSettings['system_dirs_mask'] if filename.startswith(x)]
                 if not mask:
-                    if not etpUi['quiet']:
-                        print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),))+bold(unicode(filename[:50],'raw_unicode_escape')+"..."), back = True)
+                    count += 1
+                    if not etpUi['quiet'] and ((count == 0) or (count % 500 == 0)):
+                        count = 0
+                        print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),)) + \
+                            bold(unicode(filename[:50],'raw_unicode_escape')+"..."),
+                            back = True)
                     foundFiles[filename] = "obj"
             if foundFiles:
                 tdbconn.insertContent(1,foundFiles)
@@ -503,25 +512,30 @@ def searchOrphans(Equo = None):
         print_info(red(" @@ ")+blue("%s: " % (_("Number of files collected on the filesystem"),) )+bold(str(totalfiles)))
         print_info(red(" @@ ")+blue("%s..." % (_("Now looking into Installed Packages database"),) ))
 
-    # list all idpackages
+
     idpackages = clientDbconn.listAllIdpackages()
-    # create content list
     length = str(len(idpackages))
     count = 0
+
+    def gen_cont(idpackage):
+        for x in clientDbconn.retrieveContent(idpackage):
+            if x.startswith(lib64_str):
+                x = "/usr/lib%s" % (x[lib64_len:],)
+            yield (x,)
+
     for idpackage in idpackages:
+
         if not etpUi['quiet']:
             count += 1
             atom = clientDbconn.retrieveAtom(idpackage)
             txt = "["+str(count)+"/"+length+"] "
-            print_info(red(" @@ ")+blue("%s: " % (_("Intersecting with content of the package"),) )+txt+bold(str(atom)), back = True)
-        content = set()
-        for x in clientDbconn.retrieveContent(idpackage):
-            if x.startswith("/usr/lib64"):
-                x = "/usr/lib"+x[len("/usr/lib64"):]
-            content.add(x)
+            print_info(red(" @@ ") + blue("%s: " % (
+                _("Intersecting with content of the package"),) ) + txt + \
+                bold(str(atom)), back = True)
+
         # remove from foundFiles
-        for item in content:
-            tdbconn.cursor.execute('delete from content where file = (?)', (item,))
+        tdbconn.cursor.executemany('delete from content where file = (?)',
+            gen_cont(idpackage))
 
     # FIXME BAD BAD BAD
     tdbconn.commitChanges()
