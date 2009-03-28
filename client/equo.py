@@ -205,6 +205,7 @@ myopts = [
     None,
     (1,'database',1,_('handles installed packages database')),
         (2,'check',2,_('check System Database for errors')),
+        (2,'vacuum',2,_('remove System Database internal indexes to save space')),
         (2,'generate',1,'generate installed packages database using Portage database (Portage needed)'),
         (2,'resurrect',1,_('generate installed packages database using files on the system [last hope]')),
         (2,'depends',2,_('regenerate depends caching table')),

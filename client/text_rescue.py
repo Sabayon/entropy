@@ -658,6 +658,18 @@ def database(options):
             return 0
         return 1
 
+    elif (options[0] == "vacuum"):
+
+        if Equo.clientDbconn != None:
+            print_info(red(" @@ ")+"%s..." % (blue(_("Vacuum cleaning System Database")),), back = True)
+            Equo.clientDbconn.dropAllIndexes()
+            Equo.clientDbconn.vacuum()
+            Equo.clientDbconn.commitChanges()
+            print_info(red(" @@ ")+"%s." % (brown(_("Vacuum cleaned System Database")),))
+            return 0
+        print_warning(darkred(" !!! ")+blue("%s." % (_("No System Databases found"),)))
+        return 1
+
     else:
         return -10
 
