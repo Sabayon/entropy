@@ -382,9 +382,10 @@ class LocalRepository:
     import entropy.tools as entropyTools
     import entropy.dump as dumpTools
     import threading
-    def __init__(self, readOnly = False, noUpload = False, dbFile = None, clientDatabase = False,
-        xcache = False, dbname = etpConst['serverdbid'], indexing = True, OutputInterface = None,
-        ServiceInterface = None, skipChecks = False, useBranch = None, lockRemote = True):
+    def __init__(self, readOnly = False, noUpload = False, dbFile = None,
+        clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'],
+        indexing = True, OutputInterface = None, ServiceInterface = None,
+        skipChecks = False, useBranch = None, lockRemote = True):
 
         self.dbMatchCacheKey = etpCache['dbMatch']
         self.dbSearchCacheKey = etpCache['dbSearch']
@@ -399,7 +400,8 @@ class LocalRepository:
             OutputInterface = TextInterface()
 
         if dbFile == None:
-            raise IncorrectParameter("IncorrectParameter: %s" % (_("valid database path needed"),) )
+            raise IncorrectParameter("IncorrectParameter: %s" % (
+                _("valid database path needed"),) )
 
         self.Cacher = EntropyCacher()
         self.WriteLock = self.threading.Lock()
@@ -433,23 +435,25 @@ class LocalRepository:
 
         if not self.skipChecks:
             # no caching for non root and server connections
-            if (self.dbname.startswith(etpConst['serverdbid'])) or (not self.entropyTools.is_user_in_entropy_group()):
+            if (self.dbname.startswith(etpConst['serverdbid'])) or \
+                (not self.entropyTools.is_user_in_entropy_group()):
                 self.xcache = False
         self.live_cache = {}
 
         # create connection
-        self.connection = self.dbapi2.connect(dbFile,timeout=300.0, check_same_thread = False)
+        self.connection = self.dbapi2.connect(dbFile,timeout=300.0,
+            check_same_thread = False)
         self.cursor = self.connection.cursor()
 
         if not self.skipChecks:
-            if os.access(self.dbFile,os.W_OK) and self.doesTableExist('baseinfo') and self.doesTableExist('extrainfo'):
-                if self.entropyTools.islive():
-                    # check where's the file
-                    if etpConst['systemroot']:
-                        self.databaseStructureUpdates()
+            if os.access(self.dbFile,os.W_OK) and \
+                self.doesTableExist('baseinfo') and \
+                self.doesTableExist('extrainfo'):
+
+                if self.entropyTools.islive() and etpConst['systemroot']:
+                    self.databaseStructureUpdates()
                 else:
                     self.databaseStructureUpdates()
-
 
         # now we can set this to False
         self.dbclosed = False
@@ -466,7 +470,8 @@ class LocalRepository:
             self.closeDB()
 
     def create_dbstatus_data(self):
-        taint_file = self.ServiceInterface.get_local_database_taint_file(self.server_repo)
+        taint_file = self.ServiceInterface.get_local_database_taint_file(
+            self.server_repo)
         if os.path.isfile(taint_file):
             dbs = Status()
             dbs.set_tainted(self.dbFile)
@@ -495,17 +500,18 @@ class LocalRepository:
 
         if not Status().is_tainted(self.dbFile):
             # we can unlock it, no changes were made
-            self.ServiceInterface.MirrorsService.lock_mirrors(False, repo = self.server_repo)
+            self.ServiceInterface.MirrorsService.lock_mirrors(False,
+                repo = self.server_repo)
         else:
+            u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
             self.updateProgress(
-                darkgreen(_("Mirrors have not been unlocked. Remember to sync them.")),
+                darkgreen(u_msg),
                 importance = 1,
                 type = "info",
                 header = brown(" * ")
             )
 
         self.commitChanges()
-        #self.vacuum()
         self.cursor.close()
         self.connection.close()
 
@@ -525,8 +531,10 @@ class LocalRepository:
         if not self.clientDatabase:
             self.taintDatabase()
             dbs = Status()
-            if (dbs.is_tainted(self.dbFile)) and (not dbs.is_bumped(self.dbFile)):
-                # bump revision, setting DatabaseBump causes the session to just bump once
+            if (dbs.is_tainted(self.dbFile)) and \
+                (not dbs.is_bumped(self.dbFile)):
+                # bump revision, setting DatabaseBump causes
+                # the session to just bump once
                 dbs.set_bumped(self.dbFile)
                 self.revisionBump()
 
@@ -535,7 +543,8 @@ class LocalRepository:
         if self.clientDatabase:
             return
         # taint the database status
-        taint_file = self.ServiceInterface.get_local_database_taint_file(repo = self.server_repo)
+        taint_file = self.ServiceInterface.get_local_database_taint_file(
+            repo = self.server_repo)
         f = open(taint_file,"w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
@@ -543,16 +552,19 @@ class LocalRepository:
         Status().set_tainted(self.dbFile)
 
     def untaintDatabase(self):
-        if (self.clientDatabase): # if it's equo to open it, this should be avoided
+        # if it's equo to open it, this should be avoided
+        if self.clientDatabase:
             return
         Status().unset_tainted(self.dbFile)
         # untaint the database status
-        taint_file = self.ServiceInterface.get_local_database_taint_file(repo = self.server_repo)
+        taint_file = self.ServiceInterface.get_local_database_taint_file(
+            repo = self.server_repo)
         if os.path.isfile(taint_file):
             os.remove(taint_file)
 
     def revisionBump(self):
-        revision_file = self.ServiceInterface.get_local_database_revision_file(repo = self.server_repo)
+        revision_file = self.ServiceInterface.get_local_database_revision_file(
+            repo = self.server_repo)
         if not os.path.isfile(revision_file):
             revision = 1
         else:
@@ -566,7 +578,8 @@ class LocalRepository:
         f.close()
 
     def isDatabaseTainted(self):
-        taint_file = self.ServiceInterface.get_local_database_taint_file(repo = self.server_repo)
+        taint_file = self.ServiceInterface.get_local_database_taint_file(
+            repo = self.server_repo)
         if os.path.isfile(taint_file):
             return True
         return False
