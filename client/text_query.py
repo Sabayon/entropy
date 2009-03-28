@@ -643,12 +643,12 @@ def searchRemoval(atoms, idreturn = False, deep = False, Equo = None):
 
 
 
-def searchInstalled(idreturn = False, Equo = None, dbconn = None):
+def searchInstalled(Equo = None, dbconn = None):
 
     if Equo == None:
         Equo = EquoInterface()
 
-    if (not idreturn) and (not etpUi['quiet']):
+    if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Installed Search"),)))
 
     if dbconn:
@@ -656,29 +656,29 @@ def searchInstalled(idreturn = False, Equo = None, dbconn = None):
     else:
         clientDbconn = Equo.clientDbconn
 
-    installedPackages = clientDbconn.listAllPackages()
-    installedPackages.sort()
-    if not idreturn:
-        if (not etpUi['quiet']):
-            print_info(red(" @@ ")+blue("%s:" % (_("These are the installed packages"),) ))
-        for package in installedPackages:
-            if (not etpUi['verbose']):
-                atom = Equo.entropyTools.dep_getkey(package[0])
-            else:
-                atom = package[0]
-            branchinfo = ""
-            if (etpUi['verbose']):
-                branchinfo = darkgreen(" [")+red(package[2])+darkgreen("]")
-            if (not etpUi['quiet']):
-                print_info(red("  #")+blue(str(package[1]))+branchinfo+" "+atom)
-            else:
-                print atom
-        return 0
-    else:
-        idpackages = set()
-        for x in installedPackages:
-            idpackages.add(x[1])
-        return list(idpackages)
+    installedPackages = clientDbconn.listAllPackages(order_by = "atom")
+
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue("%s:" % (
+            _("These are the installed packages"),) ))
+
+    for atom, idpackage, branch in installedPackages:
+        if (not etpUi['verbose']):
+            atom = Equo.entropyTools.dep_getkey(xatom)
+        branchinfo = ""
+        sizeinfo = ""
+        if etpUi['verbose']:
+            branchinfo = darkgreen(" [")+red(branch)+darkgreen("] ")
+            mysize = clientDbconn.retrieveOnDiskSize(idpackage)
+            mysize = Equo.entropyTools.bytes_into_human(mysize)
+            sizeinfo = brown(" [")+pruple(mysize)+brown("]")
+        if not etpUi['quiet']:
+            print_info(red("  # ") + blue(str(idpackage)) + sizeinfo + \
+                branchinfo + " " + atom)
+        else:
+            print atom
+
+    return 0
 
 
 def searchPackage(packages, idreturn = False, Equo = None):
