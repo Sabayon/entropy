@@ -53,6 +53,7 @@ class urlFetcher:
         self.__disallow_redirect = disallow_redirect
         self.__speedlimit = speed_limit # kbytes/sec
         self.__existed_before = False
+        self.localfile = None
 
         # important to have this here too
         self.__datatransfer = 0
@@ -103,6 +104,16 @@ class urlFetcher:
         self._setup_proxy()
 
     def __setup_resume_support(self):
+
+        # if client uses this instance more than
+        # once, make sure we close previously opened
+        # files.
+        if isinstance(self.localfile, file):
+            try:
+                self.localfile.flush()
+                self.localfile.close()
+            except (IOError, OSError,):
+                pass
 
         # resume support
         if os.path.isfile(self.__path_to_save) and \
