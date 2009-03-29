@@ -2829,33 +2829,45 @@ class LocalRepository:
             flags = ("N/A","N/A","N/A")
         return flags
 
-    def retrieveDepends(self, idpackage, atoms = False, key_slot = False):
+    def retrieveDepends(self, idpackage, atoms = False, key_slot = False,
+        exclude_deptypes = None):
 
-        # XXX: never remove this, otherwise equo.db (client database) dependstable will be always broken (trust me)
+        # XXX: never remove this, otherwise equo.db
+        # (client database) dependstable will be always broken (trust me)
         # sanity check on the table
         if not self.isDependsTableSane(): # is empty, need generation
             self.regenerateDependsTable(output = False)
+
+        excluded_deptypes_query = ""
+        if exclude_deptypes != None:
+            for dep_type in exclude_deptypes:
+                excluded_deptypes_query += " AND dependencies.type != %s" % (
+                    dep_type,)
 
         if atoms:
             self.cursor.execute("""
             SELECT baseinfo.atom FROM dependstable,dependencies,baseinfo 
             WHERE dependstable.idpackage = (?) AND 
             dependstable.iddependency = dependencies.iddependency AND 
-            baseinfo.idpackage = dependencies.idpackage""", (idpackage,))
+            baseinfo.idpackage = dependencies.idpackage %s""" % (
+                excluded_deptypes_query,), (idpackage,))
             result = self.fetchall2set(self.cursor.fetchall())
         elif key_slot:
             self.cursor.execute("""
-            SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories,dependstable,dependencies 
+            SELECT categories.category || "/" || baseinfo.name,baseinfo.slot 
+            FROM baseinfo,categories,dependstable,dependencies 
             WHERE dependstable.idpackage = (?) AND 
             dependstable.iddependency = dependencies.iddependency AND 
             baseinfo.idpackage = dependencies.idpackage AND 
-            categories.idcategory = baseinfo.idcategory""", (idpackage,))
+            categories.idcategory = baseinfo.idcategory %s""" % (
+                excluded_deptypes_query,), (idpackage,))
             result = self.cursor.fetchall()
         else:
             self.cursor.execute("""
             SELECT dependencies.idpackage FROM dependstable,dependencies 
             WHERE dependstable.idpackage = (?) AND 
-            dependstable.iddependency = dependencies.iddependency""", (idpackage,))
+            dependstable.iddependency = dependencies.iddependency %s""" % (
+                excluded_deptypes_query,), (idpackage,))
             result = self.fetchall2set(self.cursor.fetchall())
 
         return result
@@ -3219,7 +3231,7 @@ class LocalRepository:
         search_elements = 'atom,idpackage,branch'
         if just_id: search_elements = 'idpackage'
 
-        if (sensitive):
+        if sensitive:
             self.cursor.execute("""
             SELECT %s FROM baseinfo WHERE atom LIKE (?) %s %s %s %s""" %  (
                 search_elements,slotstring,tagstring,branchstring,order_by_string,),
