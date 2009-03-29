@@ -1077,7 +1077,8 @@ class Calculators:
 
     def generate_depends_tree(self, idpackages, deep = False):
 
-        c_hash = "%s%s" % (etpCache['depends_tree'],hash("%s|%s" % (hash(tuple(sorted(idpackages))),hash(deep),),),)
+        c_hash = "%s%s" % (etpCache['depends_tree'],hash("%s|%s" % (
+            hash(tuple(sorted(idpackages))),hash(deep),),),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
@@ -1086,7 +1087,8 @@ class Calculators:
         treeview = set(idpackages)
         treelevel = set(idpackages)
         tree = {}
-        treedepth = 0 # I start from level 1 because level 0 is idpackages itself
+        # I start from level 1 because level 0 is idpackages itself
+        treedepth = 0
         tree[treedepth] = set(idpackages)
         monotree = set(idpackages) # monodimensional tree
 
@@ -1120,9 +1122,11 @@ class Calculators:
                 depends = self.clientDbconn.retrieveDepends(idpackage)
                 # filter already satisfied ones
                 depends = set([x for x in depends if x not in monotree])
-                depends = set([x for x in depends if self.validate_package_removal(x)])
+                depends = set([x for x in depends if \
+                    self.validate_package_removal(x)])
                 if depends:
-                    depends = self._filter_depends_multimatched_atoms(idpackage, depends, monotree)
+                    depends = self._filter_depends_multimatched_atoms(
+                        idpackage, depends, monotree)
                 if depends: # something depends on idpackage
                     tree[treedepth] |= depends
                     monotree |= depends
@@ -1141,7 +1145,8 @@ class Calculators:
                             self.is_installed_idpackage_in_system_mask(x) )]
                     for x in mydeps:
                         mydepends = self.clientDbconn.retrieveDepends(x)
-                        mydepends -= set([y for y in mydepends if y not in monotree])
+                        mydepends -= set([y for y in mydepends if y \
+                            not in monotree])
                         if not mydepends:
                             tree[treedepth].add(x)
                             monotree.add(x)
@@ -1166,7 +1171,9 @@ class Calculators:
 
         if self.xcache:
             self.Cacher.push(c_hash,(tree,0))
-        return tree,0 # treeview is used to show deps while tree is used to run the dependency code.
+        # treeview is used to show deps while
+        # tree is used to run the dependency code.
+        return tree,0
 
     def calculate_available_packages(self, use_cache = True):
 
