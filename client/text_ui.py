@@ -120,30 +120,38 @@ def package(options):
     elif (options[0] == "source"):
 
         if myopts or mytbz2paths:
-            status, rc = downloadSources(myopts, deps = equoRequestDeps, deepdeps = equoRequestDeep, tbz2 = mytbz2paths)
+            status, rc = downloadSources(myopts, deps = equoRequestDeps,
+                deepdeps = equoRequestDeep, tbz2 = mytbz2paths)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
 
     elif (options[0] == "install"):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
-            status, rc = installPackages(myopts, deps = equoRequestDeps, emptydeps = equoRequestEmptyDeps,
+            status, rc = installPackages(myopts, deps = equoRequestDeps,
+                emptydeps = equoRequestEmptyDeps,
                 onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep,
-                configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths, resume = equoRequestResume,
-                skipfirst = equoRequestSkipfirst, dochecksum = equoRequestChecksum,
+                configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths,
+                resume = equoRequestResume, skipfirst = equoRequestSkipfirst,
+                dochecksum = equoRequestChecksum,
                 multifetch = equoRequestMultifetch)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
 
     elif (options[0] == "world"):
-        status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch, replay = (equoRequestReplay or equoRequestEmptyDeps),
-            upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume, skipfirst = equoRequestSkipfirst,
-            human = True, dochecksum = equoRequestChecksum, multifetch = equoRequestMultifetch)
+        status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch,
+            replay = (equoRequestReplay or equoRequestEmptyDeps),
+            upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume,
+            skipfirst = equoRequestSkipfirst, human = True,
+            dochecksum = equoRequestChecksum,
+            multifetch = equoRequestMultifetch)
 
     elif (options[0] == "remove"):
         if myopts or equoRequestResume:
-            status, rc = removePackages(myopts, deps = equoRequestDeps, deep = equoRequestDeep, configFiles = equoRequestConfigFiles, resume = equoRequestResume)
+            status, rc = removePackages(myopts, deps = equoRequestDeps,
+            deep = equoRequestDeep, configFiles = equoRequestConfigFiles,
+            resume = equoRequestResume)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
@@ -1447,16 +1455,21 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
 def unusedPackagesTest():
     if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue("%s ..." % (_("Running unused packages test, pay attention, there are false positives"),) ))
+        print_info(red(" @@ ")+blue("%s ..." % (
+            _("Running unused packages test, pay attention, there are false positives"),) ))
+
     unused = Equo.unused_packages_test()
-    atoms = [Equo.clientDbconn.retrieveAtom(x) for x in unused]
+    data = [(x,Equo.clientDbconn.retrieveAtom(x),) for x in unused]
+
     if etpUi['quiet']:
-        print '\n'.join(atoms)
-        #print
-        #print "%s: %s" % (darkgreen(_("Atom string")),' '.join(atoms),)
+        print_generic('\n'.join([x[1] for x in data]))
     else:
-        for atom in atoms:
-            print_info("  # %s" % (blue(atom),))
+        for idpackage,atom in data:
+            disk_size = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+            disk_size = Equo.entropyTools.bytes_into_human(disk_size)
+            print_info("# %s%s%s %s" % (
+                blue("["), brown(disk_size), blue("]"), darkgreen(atom),))
+
     return 0,0
 
 def dependenciesTest():
