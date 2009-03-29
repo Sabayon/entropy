@@ -1158,7 +1158,9 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 for conflict in pkgconflicts:
                     print_info(darkred("       ## \t\t\t") + brown(conflict))
 
-    print_info(darkgreen("       %s:\t\t" % (_("Homepage"),) ) + red(pkghome))
+    home_txt = darkgreen("       %s:\t\t" % (_("Homepage"),) )
+    _my_formatted_print(pkghome, home_txt, "\t\t\t\t", color = brown,
+        min_chars = 15)
 
     if not strictOutput:
 
