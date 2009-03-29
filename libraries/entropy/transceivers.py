@@ -308,8 +308,9 @@ class urlFetcher:
 
     def __close(self, errored):
         try:
-            self.localfile.flush()
-            self.localfile.close()
+            if isinstance(self.localfile, file):
+                self.localfile.flush()
+                self.localfile.close()
         except IOError:
             pass
         if (not self.__existed_before) and errored:
