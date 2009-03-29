@@ -33,17 +33,18 @@ class Calculators:
         if dbconn == None:
             dbconn = self.clientDbconn
         # get all the installed packages
-        installedPackages = dbconn.listAllIdpackages()
+        installed_packages = dbconn.listAllIdpackages()
 
+        pdepend_id = etpConst['spm']['pdepend_id']
         deps_not_matched = set()
         # now look
-        length = len(installedPackages)
+        length = len(installed_packages)
         count = 0
-        for xidpackage in installedPackages:
+        for idpackage in installed_packages:
             count += 1
 
             if (count%150 == 0) or (count == length) or (count == 1):
-                atom = dbconn.retrieveAtom(xidpackage)
+                atom = dbconn.retrieveAtom(idpackage)
                 self.updateProgress(
                     darkgreen(_("Checking %s") % (bold(atom),)),
                     importance = 0,
@@ -53,14 +54,10 @@ class Calculators:
                     header = darkred(" @@ ")
                 )
 
-            xdeps = dbconn.retrieveDependencies(xidpackage)
-            needed_deps = set()
-            for xdep in xdeps:
-                xmatch = dbconn.atomMatch(xdep)
-                if xmatch[0] == -1:
-                    needed_deps.add(xdep)
-
-            deps_not_matched |= needed_deps
+            xdeps = dbconn.retrieveDependencies(idpackage,
+                exclude_deptypes = (pdepend_id,))
+            needed_deps = [(x,dbconn.atomMatch(x),) for x in xdeps]
+            deps_not_matched |= set([x for x,(y,z,) in needed_deps if y == -1])
 
         return deps_not_matched
 
@@ -1092,11 +1089,13 @@ class Calculators:
         tree[treedepth] = set(idpackages)
         monotree = set(idpackages) # monodimensional tree
 
+        # post-dependencies won't be pulled in
+        pdepend_id = etpConst['spm']['pdepend_id']
         # check if dependstable is sane before beginning
         self.clientDbconn.retrieveDepends(idpackages[0])
         count = 0
 
-        rem_dep_text = _("Calculating removable depends of")
+        rem_dep_text = _("Calculating inverse dependencies for")
         while 1:
             treedepth += 1
             tree[treedepth] = set()
@@ -1118,8 +1117,9 @@ class Calculators:
                         treeview.remove(idpackage)
                     continue
 
-                # obtain its depends
-                depends = self.clientDbconn.retrieveDepends(idpackage)
+                # obtain its inverse deps
+                depends = self.clientDbconn.retrieveDepends(idpackage,
+                    exclude_deptypes = (pdepend_id,))
                 # filter already satisfied ones
                 depends = set([x for x in depends if x not in monotree])
                 depends = set([x for x in depends if \
