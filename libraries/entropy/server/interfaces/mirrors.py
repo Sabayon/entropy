@@ -1629,7 +1629,7 @@ class Server:
 
         if upload_queue and not no_upload:
 
-            deps_not_found = self.Entropy.dependencies_test()
+            deps_not_found = self.Entropy.dependencies_test(repo = repo)
             if deps_not_found and not self.Entropy.community_repo:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
