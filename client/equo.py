@@ -157,6 +157,7 @@ myopts = [
     None,
     (1,'unusedpackages',2,_('look for unused packages (pay attention)')),
     (2,'--quiet',2,_('show less details (useful for scripting)')),
+    (2,'--sortbysize',1,_('sort packages by disk size')),
     None,
     (1,'libtest',2,_('look for missing libraries')),
     (2,'--listfiles',1,_('print broken files to stdout')),
@@ -460,6 +461,7 @@ try:
         do_moo()
 
     elif options[0] in ["install","remove","config","world","deptest","unusedpackages","libtest","source"]:
+
         import text_ui
         rc = text_ui.package(options)
         text_ui.Equo.destroy()

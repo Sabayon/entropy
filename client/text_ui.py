@@ -49,6 +49,7 @@ def package(options):
     equoRequestUpgradeTo = None
     equoRequestListfiles = False
     equoRequestChecksum = True
+    equoRequestSortSize = False
     equoRequestMultifetch = 1
     rc = 0
     _myopts = []
@@ -75,6 +76,8 @@ def package(options):
             equoRequestUpgrade = True
         elif (opt == "--resume"):
             equoRequestResume = True
+        elif (opt == "--sortbysize"):
+            equoRequestSortSize = True
         elif (opt == "--multifetch"):
             equoRequestMultifetch = 3
         elif (opt.startswith("--multifetch=")):
@@ -112,7 +115,7 @@ def package(options):
         rc, garbage = dependenciesTest()
 
     elif (options[0] == "unusedpackages"):
-        rc, garbage = unusedPackagesTest()
+        rc, garbage = unusedPackagesTest(do_size_sort = equoRequestSortSize)
 
     elif (options[0] == "libtest"):
         rc, garbage = librariesTest(listfiles = equoRequestListfiles)
@@ -1453,19 +1456,24 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
     print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
     return 0,0
 
-def unusedPackagesTest():
+def unusedPackagesTest(do_size_sort = False):
     if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("%s ..." % (
             _("Running unused packages test, pay attention, there are false positives"),) ))
 
     unused = Equo.unused_packages_test()
-    data = [(x,Equo.clientDbconn.retrieveAtom(x),) for x in unused]
+    data = [(Equo.clientDbconn.retrieveOnDiskSize(x), x, \
+        Equo.clientDbconn.retrieveAtom(x),) for x in unused]
+
+    if do_size_sort:
+        def mycmp(item_a,item_b):
+            return cmp(item_a[0],item_b[0])
+        data = sorted(data, mycmp)
 
     if etpUi['quiet']:
-        print_generic('\n'.join([x[1] for x in data]))
+        print_generic('\n'.join([x[2] for x in data]))
     else:
-        for idpackage,atom in data:
-            disk_size = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+        for disk_size, idpackage, atom in data:
             disk_size = Equo.entropyTools.bytes_into_human(disk_size)
             print_info("# %s%s%s %s" % (
                 blue("["), brown(disk_size), blue("]"), darkgreen(atom),))
