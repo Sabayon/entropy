@@ -2,7 +2,6 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  - fix double download on entropy.client.interfaces.Client (downloading from)
   - reagent spm pkgset-update
   - track down packages installed as dependency and packages installed as user request
       in this way we could auto-removed unused deps
