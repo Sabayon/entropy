@@ -2563,7 +2563,8 @@ class LocalRepository:
     def retrieveManualDependencies(self, idpackage, extended = False):
         return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['mdepend_id'])
 
-    def retrieveDependencies(self, idpackage, extended = False, deptype = None):
+    def retrieveDependencies(self, idpackage, extended = False, deptype = None,
+        exclude_deptypes = None):
 
         searchdata = [idpackage]
 
@@ -2572,17 +2573,27 @@ class LocalRepository:
             depstring = ' and dependencies.type = (?)'
             searchdata.append(deptype)
 
+        excluded_deptypes_query = ""
+        if exclude_deptypes != None:
+            for dep_type in exclude_deptypes:
+                excluded_deptypes_query += " AND dependencies.type != %s" % (
+                    dep_type,)
+
         if extended:
             self.cursor.execute("""
-            SELECT dependenciesreference.dependency,dependencies.type FROM dependencies,dependenciesreference 
+            SELECT dependenciesreference.dependency,dependencies.type 
+            FROM dependencies,dependenciesreference 
             WHERE dependencies.idpackage = (?) AND 
-            dependencies.iddependency = dependenciesreference.iddependency"""+depstring, searchdata)
+            dependencies.iddependency = dependenciesreference.iddependency %s %s""" % (
+                depstring,excluded_deptypes_query,), searchdata)
             deps = self.cursor.fetchall()
         else:
             self.cursor.execute("""
-            SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
+            SELECT dependenciesreference.dependency 
+            FROM dependencies,dependenciesreference 
             WHERE dependencies.idpackage = (?) AND 
-            dependencies.iddependency = dependenciesreference.iddependency"""+depstring, searchdata)
+            dependencies.iddependency = dependenciesreference.iddependency %s %s""" % (
+                depstring,excluded_deptypes_query,), searchdata)
             deps = self.fetchall2set(self.cursor.fetchall())
 
         return deps
