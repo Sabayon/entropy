@@ -51,59 +51,59 @@ def query(options):
         return -10
 
     if myopts[0] == "installed":
-        rc_status = searchInstalledPackages(myopts[1:])
+        rc_status = search_installed_packages(myopts[1:])
 
     elif myopts[0] == "belongs":
-        rc_status = searchBelongs(myopts[1:])
+        rc_status = search_belongs(myopts[1:])
 
     elif myopts[0] == "changelog":
-        rc_status = searchChangeLog(myopts[1:])
+        rc_status = search_changelog(myopts[1:])
 
     elif myopts[0] == "depends":
-        rc_status = searchDepends(myopts[1:])
+        rc_status = search_inverse_dependencies(myopts[1:])
 
     elif myopts[0] == "files":
-        rc_status = searchFiles(myopts[1:])
+        rc_status = search_files(myopts[1:])
 
     elif myopts[0] == "needed":
-        rc_status = searchNeeded(myopts[1:])
+        rc_status = search_needed_libraries(myopts[1:])
 
     elif myopts[0] == "required":
-        rc_status = searchRequired(myopts[1:])
+        rc_status = search_required_libraries(myopts[1:])
 
     elif myopts[0] == "removal":
-        rc_status = searchRemoval(myopts[1:], deep = do_deep)
+        rc_status = search_removal_dependencies(myopts[1:], deep = do_deep)
 
     elif myopts[0] == "tags":
-        rc_status = searchTaggedPackages(myopts[1:])
+        rc_status = search_tagged_packages(myopts[1:])
 
     elif myopts[0] == "sets":
-        rc_status = searchPackageSets(myopts[1:])
+        rc_status = search_package_sets(myopts[1:])
 
     elif myopts[0] == "license":
-        rc_status = searchLicenses(myopts[1:])
+        rc_status = search_licenses(myopts[1:])
 
     elif myopts[0] == "slot":
         if (len(myopts) > 1):
-            rc_status = searchSlottedPackages(myopts[1:])
+            rc_status = search_slotted_packages(myopts[1:])
 
     elif myopts[0] == "orphans":
-        rc_status = searchOrphans()
+        rc_status = search_orphaned_files()
 
     elif myopts[0] == "list":
         mylistopts = options[1:]
         if len(mylistopts) > 0:
             if mylistopts[0] == "installed":
-                rc_status = searchInstalled()
+                rc_status = list_installed_packages()
     elif myopts[0] == "description":
-        rc_status = searchDescription(myopts[1:])
+        rc_status = search_description(myopts[1:])
     else:
         rc_status = -10
 
     return rc_status
 
 
-def searchInstalledPackages(packages, idreturn = False, dbconn = None,
+def search_installed_packages(packages, idreturn = False, dbconn = None,
     Equo = None):
 
     if Equo == None:
@@ -132,7 +132,7 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None,
             continue
 
         for idpackage in idpackages:
-            printPackageInfo(idpackage, clientDbconn, clientSearch = True,
+            print_package_info(idpackage, clientDbconn, clientSearch = True,
                 Equo = Equo, extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -146,7 +146,7 @@ def searchInstalledPackages(packages, idreturn = False, dbconn = None,
     return 0
 
 
-def searchBelongs(files, idreturn = False, dbconn = None, Equo = None):
+def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -187,7 +187,7 @@ def searchBelongs(files, idreturn = False, dbconn = None, Equo = None):
                 if etpUi['quiet']:
                     print_generic(clientDbconn.retrieveAtom(idpackage))
                 else:
-                    printPackageInfo(idpackage, clientDbconn,
+                    print_package_info(idpackage, clientDbconn,
                         clientSearch = True, Equo = Equo,
                         extended = etpUi['verbose'])
             if not etpUi['quiet']:
@@ -200,7 +200,7 @@ def searchBelongs(files, idreturn = False, dbconn = None, Equo = None):
     return 0
 
 
-def searchChangeLog(atoms, dbconn = None, Equo = None):
+def search_changelog(atoms, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -236,14 +236,14 @@ def searchChangeLog(atoms, dbconn = None, Equo = None):
     return 0
 
 
-def searchDepends(atoms, dbconn = None, Equo = None):
+def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
-            darkgreen("%s..." % (_("Reverse Dependencies Search"),) ))
+            darkgreen("%s..." % (_("Inverse Dependencies Search"),) ))
 
     match_repo = True
     if not hasattr(Equo,'atom_match'):
@@ -281,7 +281,7 @@ def searchDepends(atoms, dbconn = None, Equo = None):
 
             searchResults = dbconn.retrieveDepends(result[0])
             for idpackage in searchResults:
-                printPackageInfo(idpackage, dbconn, clientSearch = True,
+                print_package_info(idpackage, dbconn, clientSearch = True,
                     strictOutput = etpUi['quiet'], Equo = Equo,
                     extended = etpUi['verbose'])
 
@@ -311,7 +311,7 @@ def searchDepends(atoms, dbconn = None, Equo = None):
 
     return 0
 
-def searchNeeded(atoms, dbconn = None, Equo = None):
+def search_needed_libraries(atoms, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -320,7 +320,6 @@ def searchNeeded(atoms, dbconn = None, Equo = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Needed Search"),) ))
 
-    pkg_data = set()
     clientDbconn = dbconn
     if not dbconn:
         clientDbconn = Equo.clientDbconn
@@ -344,7 +343,7 @@ def searchNeeded(atoms, dbconn = None, Equo = None):
 
     return 0
 
-def searchRequired(libraries, dbconn = None, Equo = None):
+def search_required_libraries(libraries, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -367,7 +366,7 @@ def searchRequired(libraries, dbconn = None, Equo = None):
                 print_generic(clientDbconn.retrieveAtom(result))
                 continue
 
-            printPackageInfo(result, clientDbconn, clientSearch = True,
+            print_package_info(result, clientDbconn, clientSearch = True,
                 strictOutput = True, Equo = Equo,
                 extended = etpUi['verbose'])
 
@@ -378,7 +377,7 @@ def searchRequired(libraries, dbconn = None, Equo = None):
 
     return 0
 
-def searchEclass(eclasses, dbconn = None, Equo = None):
+def search_eclass(eclasses, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -401,7 +400,7 @@ def searchEclass(eclasses, dbconn = None, Equo = None):
                 print_generic(myatom)
                 continue
 
-            printPackageInfo(idpackage, clientDbconn, clientSearch = True,
+            print_package_info(idpackage, clientDbconn, clientSearch = True,
                 Equo = Equo, extended = etpUi['verbose'],
                 strictOutput = not etpUi['verbose'])
 
@@ -411,7 +410,7 @@ def searchEclass(eclasses, dbconn = None, Equo = None):
 
     return 0
 
-def searchFiles(atoms, dbconn = None, Equo = None):
+def search_files(atoms, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -420,10 +419,10 @@ def searchFiles(atoms, dbconn = None, Equo = None):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
     if not dbconn:
-        results = searchInstalledPackages(atoms, idreturn = True)
+        results = search_installed_packages(atoms, idreturn = True)
         clientDbconn = Equo.clientDbconn
     else:
-        results = searchInstalledPackages(atoms, idreturn = True,
+        results = search_installed_packages(atoms, idreturn = True,
         dbconn = dbconn, Equo = Equo)
         clientDbconn = dbconn
 
@@ -450,7 +449,7 @@ def searchFiles(atoms, dbconn = None, Equo = None):
 
 
 
-def searchOrphans(Equo = None):
+def search_orphaned_files(Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -571,7 +570,7 @@ def searchOrphans(Equo = None):
     tdbconn.cursor.execute('select file from content order by file desc')
     if not etpUi['quiet']:
         fname = "/tmp/equo-orphans.txt"
-        f = open(fname,"w")
+        f_out = open(fname,"w")
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 
@@ -590,7 +589,7 @@ def searchOrphans(Equo = None):
         sizecount += mysize
 
         if not etpUi['quiet']:
-            f.write(myfile+"\n")
+            f_out.write(myfile+"\n")
         else:
             print_generic(myfile)
 
@@ -600,8 +599,8 @@ def searchOrphans(Equo = None):
     if not etpUi['quiet']:
         print_info(red(" @@ ") + \
             blue("%s: " % (_("Total wasted space"),) ) + bold(humansize))
-        f.flush()
-        f.close()
+        f_out.flush()
+        f_out.close()
     else:
         print_generic(humansize)
 
@@ -612,7 +611,7 @@ def searchOrphans(Equo = None):
     return 0
 
 
-def searchRemoval(atoms, deep = False, Equo = None):
+def search_removal_dependencies(atoms, deep = False, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -674,7 +673,7 @@ def searchRemoval(atoms, deep = False, Equo = None):
 
 
 
-def searchInstalled(Equo = None, dbconn = None):
+def list_installed_packages(Equo = None, dbconn = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -712,7 +711,7 @@ def searchInstalled(Equo = None, dbconn = None):
     return 0
 
 
-def searchPackage(packages, Equo = None):
+def search_package(packages, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -722,14 +721,14 @@ def searchPackage(packages, Equo = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
     # search inside each available database
-    repoNumber = 0
+    repo_number = 0
     found = False
     for repo in Equo.validRepositories:
         foundPackages[repo] = {}
-        repoNumber += 1
+        repo_number += 1
 
         if not etpUi['quiet']:
-            print_info(blue("  #" + str(repoNumber)) + \
+            print_info(blue("  #" + str(repo_number)) + \
                 bold(" " + etpRepositories[repo]['description']))
 
         dbconn = Equo.open_repository(repo)
@@ -751,7 +750,7 @@ def searchPackage(packages, Equo = None):
                     foundPackages[repo][package] = result
                     found = True
                     for pkg in foundPackages[repo][package]:
-                        printPackageInfo(pkg[1], dbconn, Equo = Equo,
+                        print_package_info(pkg[1], dbconn, Equo = Equo,
                         extended = etpUi['verbose'])
 
                     if not etpUi['quiet']:
@@ -770,7 +769,7 @@ def searchPackage(packages, Equo = None):
 
     return 0
 
-def matchPackage(packages, multiMatch = False, multiRepo = False,
+def match_package(packages, multiMatch = False, multiRepo = False,
     showRepo = False, showDesc = False, Equo = None):
 
     if Equo == None:
@@ -800,7 +799,7 @@ def matchPackage(packages, multiMatch = False, multiRepo = False,
 
             for match in matches:
                 dbconn = Equo.open_repository(match[1])
-                printPackageInfo(match[0], dbconn, showRepoOnQuiet = showRepo,
+                print_package_info(match[0], dbconn, showRepoOnQuiet = showRepo,
                     showDescOnQuiet = showDesc, Equo = Equo,
                     extended = etpUi['verbose'])
                 found = True
@@ -816,7 +815,7 @@ def matchPackage(packages, multiMatch = False, multiRepo = False,
 
     return 0
 
-def searchSlottedPackages(slots, dbconn = None, Equo = None):
+def search_slotted_packages(slots, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -830,12 +829,12 @@ def searchSlottedPackages(slots, dbconn = None, Equo = None):
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Slot Search"),) ))
 
     # search inside each available database
-    repoNumber = 0
+    repo_number = 0
     for repo in Equo.validRepositories:
-        repoNumber += 1
+        repo_number += 1
 
         if not etpUi['quiet']:
-            print_info(blue("  #"+str(repoNumber)) + \
+            print_info(blue("  #"+str(repo_number)) + \
                 bold(" " + etpRepositories[repo]['description']))
 
         if dbclose:
@@ -846,7 +845,7 @@ def searchSlottedPackages(slots, dbconn = None, Equo = None):
             results = dbconn.searchSlottedPackages(slot, atoms = True)
             for result in results:
                 found = True
-                printPackageInfo(result[1], dbconn, Equo = Equo,
+                print_package_info(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -860,7 +859,7 @@ def searchSlottedPackages(slots, dbconn = None, Equo = None):
 
     return 0
 
-def searchPackageSets(items, Equo = None):
+def search_package_sets(items, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -896,7 +895,7 @@ def searchPackageSets(items, Equo = None):
 
     return 0
 
-def searchTaggedPackages(tags, dbconn = None, Equo = None):
+def search_tagged_packages(tags, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -909,12 +908,12 @@ def searchTaggedPackages(tags, dbconn = None, Equo = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),)))
 
-    repoNumber = 0
+    repo_number = 0
     for repo in Equo.validRepositories:
-        repoNumber += 1
+        repo_number += 1
 
         if not etpUi['quiet']:
-            print_info(blue("  #" + str(repoNumber)) + \
+            print_info(blue("  #" + str(repo_number)) + \
                 bold(" " + etpRepositories[repo]['description']))
 
         if dbclose:
@@ -924,7 +923,7 @@ def searchTaggedPackages(tags, dbconn = None, Equo = None):
             results = dbconn.searchTaggedPackages(tag, atoms = True)
             found = True
             for result in results:
-                printPackageInfo(result[1], dbconn, Equo = Equo,
+                print_package_info(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -939,7 +938,7 @@ def searchTaggedPackages(tags, dbconn = None, Equo = None):
 
     return 0
 
-def searchLicenses(licenses, dbconn = None, Equo = None):
+def search_licenses(licenses, dbconn = None, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -954,12 +953,12 @@ def searchLicenses(licenses, dbconn = None, Equo = None):
             darkgreen("%s..." % (_("License Search"),)))
 
     # search inside each available database
-    repoNumber = 0
+    repo_number = 0
     for repo in Equo.validRepositories:
-        repoNumber += 1
+        repo_number += 1
 
         if not etpUi['quiet']:
-            print_info(blue("  #" + str(repoNumber)) + \
+            print_info(blue("  #" + str(repo_number)) + \
                 bold(" " + etpRepositories[repo]['description']))
 
         if dbclose:
@@ -972,7 +971,7 @@ def searchLicenses(licenses, dbconn = None, Equo = None):
                 continue
             found = True
             for result in results:
-                printPackageInfo(result[1], dbconn, Equo = Equo,
+                print_package_info(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -987,7 +986,7 @@ def searchLicenses(licenses, dbconn = None, Equo = None):
 
     return 0
 
-def searchDescription(descriptions, Equo = None):
+def search_description(descriptions, Equo = None):
 
     if Equo == None:
         Equo = EquoInterface()
@@ -1006,7 +1005,7 @@ def searchDescription(descriptions, Equo = None):
                 bold(" " + etpRepositories[repo]['description']))
 
         dbconn = Equo.open_repository(repo)
-        descdata = searchDescriptions(descriptions, dbconn, Equo = Equo)
+        descdata = search_descriptions(descriptions, dbconn, Equo = Equo)
         if descdata:
             found = True
 
@@ -1015,7 +1014,7 @@ def searchDescription(descriptions, Equo = None):
 
     return 0
 
-def searchDescriptions(descriptions, dbconn, Equo = None):
+def search_descriptions(descriptions, dbconn, Equo = None):
 
     mydescdata = {}
     for desc in descriptions:
@@ -1029,7 +1028,7 @@ def searchDescriptions(descriptions, dbconn, Equo = None):
             if (etpUi['quiet']):
                 print_generic(dbconn.retrieveAtom(idpackage))
             else:
-                printPackageInfo(idpackage, dbconn, Equo = Equo,
+                print_package_info(idpackage, dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
         if not etpUi['quiet']:
@@ -1040,7 +1039,7 @@ def searchDescriptions(descriptions, dbconn, Equo = None):
 
     return mydescdata
 
-def printPackageInfo(idpackage, dbconn, clientSearch = False,
+def print_package_info(idpackage, dbconn, clientSearch = False,
     strictOutput = False, extended = False, Equo = None,
     showRepoOnQuiet = False, showDescOnQuiet = False):
 
@@ -1059,43 +1058,15 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False,
         print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
         return
 
-    if not strictOutput:
-        pkgname = dbconn.retrieveName(idpackage)
-        pkgcat = dbconn.retrieveCategory(idpackage)
-        pkglic = dbconn.retrieveLicense(idpackage)
-        pkgsize = dbconn.retrieveSize(idpackage)
-        pkgbin = dbconn.retrieveDownloadURL(idpackage)
-        pkgflags = dbconn.retrieveCompileFlags(idpackage)
-        pkgkeywords = dbconn.retrieveKeywords(idpackage)
-        pkgdigest = dbconn.retrieveDigest(idpackage)
-        mydate = dbconn.retrieveDateCreation(idpackage)
-        pkgcreatedate = "N/A"
-        if mydate:
-            pkgcreatedate = Equo.entropyTools.convert_unix_time_to_human_time(
-                float(mydate))
-        pkgsize = Equo.entropyTools.bytes_into_human(pkgsize)
-        pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
-        pkgconflicts = dbconn.retrieveConflicts(idpackage)
-
     pkghome = dbconn.retrieveHomepage(idpackage)
     pkgslot = dbconn.retrieveSlot(idpackage)
     pkgver = dbconn.retrieveVersion(idpackage)
     pkgtag = dbconn.retrieveVersionTag(idpackage)
     pkgrev = dbconn.retrieveRevision(idpackage)
     pkgdesc = dbconn.retrieveDescription(idpackage)
-    pkguseflags = dbconn.retrieveUseflags(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
-    if (not pkgtag):
+    if not pkgtag:
         pkgtag = "NoTag"
-
-    pkgmasked = False
-    masking_reason = ''
-    # check if it's masked
-    idpackage_masked, idmasking_reason = dbconn.idpackageValidator(idpackage)
-    if idpackage_masked == -1:
-        pkgmasked = True
-        masking_reason = ", %s" % (
-            Equo.SystemSettings['pkg_masking_reasons'].get(idmasking_reason),)
 
     if not clientSearch:
 
@@ -1120,12 +1091,26 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False,
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
         "\t\t" + blue("branch: ") + bold(pkgbranch))
     if not strictOutput and extended:
+        pkgname = dbconn.retrieveName(idpackage)
+        pkgcat = dbconn.retrieveCategory(idpackage)
         print_info(darkgreen("       %s:\t\t" % (_("Category"),) ) + \
             blue(pkgcat))
         print_info(darkgreen("       %s:\t\t\t" % (_("Name"),) ) + \
             blue(pkgname))
 
     if extended:
+
+        pkgmasked = False
+        masking_reason = ''
+        # check if it's masked
+        idpackage_masked, idmasking_reason = dbconn.idpackageValidator(
+            idpackage)
+        if idpackage_masked == -1:
+            pkgmasked = True
+            masking_reason = ", %s" % (
+                Equo.SystemSettings['pkg_masking_reasons'].get(
+                    idmasking_reason),)
+
         print_info(darkgreen("       %s:\t\t" % (_("Masked"),) ) + \
             blue(str(pkgmasked)) + masking_reason)
 
@@ -1144,40 +1129,52 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False,
             blue(str(pkgslot)))
 
         if extended:
+            pkgsize = dbconn.retrieveSize(idpackage)
+            pkgsize = Equo.entropyTools.bytes_into_human(pkgsize)
+
             print_info(darkgreen("       %s:\t\t\t" % (_("Size"),) ) + \
                 blue(str(pkgsize)))
+
+            pkgbin = dbconn.retrieveDownloadURL(idpackage)
             print_info(darkgreen("       %s:\t\t" % (_("Download"),) ) + \
                 brown(str(pkgbin)))
+
+            pkgdigest = dbconn.retrieveDigest(idpackage)
             print_info(darkgreen("       %s:\t\t" % (_("Checksum"),) ) + \
                 brown(str(pkgdigest)))
 
-        if pkgdeps and extended:
-            print_info(darkred("       ##") + \
-                darkgreen(" %s:" % (_("Dependencies"),) ))
-            for pdep, p_id in pkgdeps:
-                print_info(darkred("       ## \t\t\t") + blue(" [") + \
-                    unicode(p_id)+blue("] ") + brown(pdep))
+            pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
+            pkgconflicts = dbconn.retrieveConflicts(idpackage)
+            if pkgdeps:
+                print_info(darkred("       ##") + \
+                    darkgreen(" %s:" % (_("Dependencies"),) ))
+                for pdep, p_id in pkgdeps:
+                    print_info(darkred("       ## \t\t\t") + blue(" [") + \
+                        unicode(p_id)+blue("] ") + brown(pdep))
 
-        if pkgconflicts and extended:
-            print_info(darkred("       ##") + \
-                darkgreen(" %s:" % (_("Conflicts"),) ))
-            for conflict in pkgconflicts:
-                print_info(darkred("       ## \t\t\t") + brown(conflict))
+            if pkgconflicts:
+                print_info(darkred("       ##") + \
+                    darkgreen(" %s:" % (_("Conflicts"),) ))
+                for conflict in pkgconflicts:
+                    print_info(darkred("       ## \t\t\t") + brown(conflict))
 
     print_info(darkgreen("       %s:\t\t" % (_("Homepage"),) ) + red(pkghome))
 
     if not strictOutput:
-        # print description
+
         desc_txt = darkgreen("       %s:\t\t" % (_("Description"),) )
         _my_formatted_print(pkgdesc, desc_txt, "\t\t\t\t")
-        # print use flags
+
         if extended:
+            pkguseflags = dbconn.retrieveUseflags(idpackage)
             use_txt = darkgreen("       %s:\t\t" % (_("USE flags"),) )
             _my_formatted_print(pkguseflags, use_txt, "\t\t\t\t", color = red)
 
     if not strictOutput:
 
         if extended:
+
+            pkgflags = dbconn.retrieveCompileFlags(idpackage)
             print_info(darkgreen("       %s:\t\t" % (_("CHOST"),) ) + \
                 blue(pkgflags[0]))
             print_info(darkgreen("       %s:\t\t" % (_("CFLAGS"),) ) + \
@@ -1205,11 +1202,19 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False,
             print_info(darkgreen("       %s:\t" % (_("Compiled with"),) ) + \
                 blue(pkgflags[1]))
 
+            pkgkeywords = dbconn.retrieveKeywords(idpackage)
             print_info(darkgreen("       %s:\t\t" % (_("Keywords"),) ) + \
                 red(' '.join(pkgkeywords)))
+
+            mydate = dbconn.retrieveDateCreation(idpackage)
+            pkgcreatedate = "N/A"
+            if mydate:
+                pkgcreatedate = Equo.entropyTools.convert_unix_time_to_human_time(
+                    float(mydate))
             print_info(darkgreen("       %s:\t\t" % (_("Created"),) ) + \
                 pkgcreatedate)
 
+        pkglic = dbconn.retrieveLicense(idpackage)
         print_info(darkgreen("       %s:\t\t" % (_("License"),) ) + \
             red(pkglic))
 

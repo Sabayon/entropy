@@ -715,7 +715,7 @@ def pythonUpdater():
         old_pdir = os.path.join("/usr/lib/",mydir)
         print_info(brown(" @@ ")+blue("Scanning: %s" % (red(old_pdir),)))
         old_pdir = old_pdir.replace("/usr/lib","/usr/lib*")
-        idpackages |= text_query.searchBelongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
+        idpackages |= text_query.search_belongs(files = [old_pdir], idreturn = True, dbconn = Equo.clientDbconn)
 
     if not idpackages:
         mytxt = blue("%s: %s") % (

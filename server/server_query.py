@@ -47,43 +47,46 @@ def query(myopts):
             results = dbconn.searchPackages(mykeyword)
             for result in results:
                 count += 1
-                text_query.printPackageInfo(    result[1],
-                                                dbconn,
-                                                clientSearch = True,
-                                                extended = True,
-                                                Equo = Entropy
-                                            )
+                text_query.print_package_info(
+                    result[1],
+                    dbconn,
+                    clientSearch = True,
+                    extended = True,
+                    Equo = Entropy
+                )
 
         if not count:
             print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
         rc = 0
 
     elif cmd == "tags":
-        searchTaggedPackages(myopts, dbconn, Entropy)
+        search_tagged_packages(myopts, dbconn, Entropy)
     elif cmd == "sets":
-        text_query.searchPackageSets(myopts, Equo = Entropy)
+        text_query.search_package_sets(myopts, Equo = Entropy)
     elif cmd == "files":
-        text_query.searchFiles(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_files(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "belongs":
-        text_query.searchBelongs(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_belongs(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "description":
-        text_query.searchDescriptions(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_descriptions(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "needed":
-        text_query.searchNeeded(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_needed_libraries(myopts, dbconn = dbconn,
+            Equo = Entropy)
     elif cmd == "depends":
-        text_query.searchDepends(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_inverse_dependencies(myopts, dbconn = dbconn,
+            Equo = Entropy)
     elif cmd == "eclass":
-        text_query.searchEclass(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_eclass(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "list":
-        text_query.searchInstalled(dbconn = dbconn, Equo = Entropy)
+        text_query.search_installed_packages(dbconn = dbconn, Equo = Entropy)
     elif cmd == "changelog":
-        text_query.searchChangeLog(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
 
     del Entropy
     return rc
 
 
-def searchTaggedPackages(tags, dbconn, entropy):
+def search_tagged_packages(tags, dbconn, entropy):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),) ))
@@ -95,7 +98,7 @@ def searchTaggedPackages(tags, dbconn, entropy):
             if etpUi['quiet']:
                 print dbconn.retrieveAtom(result[1])
             else:
-                text_query.printPackageInfo(result[1], dbconn, Equo = entropy)
+                text_query.print_package_info(result[1], dbconn, Equo = entropy)
         if not etpUi['quiet']:
             print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+tag))
             print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))

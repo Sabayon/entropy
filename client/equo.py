@@ -494,7 +494,7 @@ try:
         rc = -10
         if len(options) > 1:
             import text_query
-            rc = text_query.searchPackage(options[1:])
+            rc = text_query.search_package(options[1:])
         else:
             rc = -10
 
@@ -519,7 +519,7 @@ try:
         if len(myoptions) > 1:
             import text_query
             # repoMatch can be made using @repository  
-            rc = text_query.matchPackage(myoptions[1:],
+            rc = text_query.match_package(myoptions[1:],
                                             multiMatch = multiMatch,
                                             multiRepo = multiRepo,
                                             showRepo = showRepo,
