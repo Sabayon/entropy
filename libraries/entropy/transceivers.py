@@ -52,6 +52,7 @@ class urlFetcher:
         self.__thread_stop_func = thread_stop_func
         self.__disallow_redirect = disallow_redirect
         self.__speedlimit = speed_limit # kbytes/sec
+        self.__existed_before = False
 
         # important to have this here too
         self.__datatransfer = 0
@@ -95,22 +96,29 @@ class urlFetcher:
         self.__elapsed = 0.0
         self.__updatestep = 0.2
         self.__transferpollingtime = float(1)/4
+        self.__existed_before = False
+        if os.path.lexists(self.__path_to_save):
+            self.__existed_before = True
         self.__setup_resume_support()
         self._setup_proxy()
 
     def __setup_resume_support(self):
+
         # resume support
-        if os.path.isfile(self.__path_to_save) and os.access(self.__path_to_save,os.W_OK) and self.__resume:
+        if os.path.isfile(self.__path_to_save) and \
+            os.access(self.__path_to_save,os.W_OK) and self.__resume:
+
             self.localfile = open(self.__path_to_save,"awb")
             self.localfile.seek(0,2)
             self.__startingposition = int(self.localfile.tell())
             self.__resumed = True
-        else:
-            if os.path.lexists(self.__path_to_save) and not self.entropyTools.is_valid_path(self.__path_to_save):
-                try:
-                    os.remove(self.__path_to_save)
-                except OSError: # I won't stop you here
-                    pass
+
+        elif os.path.lexists(self.__path_to_save) and not \
+            self.entropyTools.is_valid_path(self.__path_to_save):
+            try:
+                os.remove(self.__path_to_save)
+            except OSError: # I won't stop you here
+                pass
             self.localfile = open(self.__path_to_save,"wb")
 
     def _setup_proxy(self):
@@ -130,7 +138,8 @@ class urlFetcher:
 
     def __encode_url(self, url):
         import urllib
-        url = os.path.join(os.path.dirname(url),urllib.quote(os.path.basename(url)))
+        url = os.path.join(os.path.dirname(url),
+            urllib.quote(os.path.basename(url)))
         return url
 
     def set_id(self, th_id):
@@ -159,7 +168,7 @@ class urlFetcher:
             try:
                 self.__remotefile = urllib2.urlopen(req)
             except KeyboardInterrupt:
-                self.__close()
+                self.__close(True)
                 raise
             except urllib2.HTTPError, e:
                 if (e.code == 405) and not u_agent_error:
@@ -167,20 +176,21 @@ class urlFetcher:
                     req = self.__url
                     u_agent_error = True
                     continue
-                self.__close()
+                self.__close(True)
                 self.__status = "-3"
                 return self.__status
             except:
-                self.__close()
+                self.__close(True)
                 self.__status = "-3"
                 return self.__status
             break
 
         try:
-            self.__remotesize = int(self.__remotefile.headers.get("content-length"))
+            self.__remotesize = int(self.__remotefile.headers.get(
+                "content-length"))
             self.__remotefile.close()
         except KeyboardInterrupt:
-            self.__close()
+            self.__close(True)
             raise
         except:
             pass
@@ -188,38 +198,44 @@ class urlFetcher:
         # handle user stupidity
         try:
             request = self.__url
-            if ((self.__startingposition > 0) and (self.__remotesize > 0)) and (self.__startingposition < self.__remotesize):
+            if ((self.__startingposition > 0) and (self.__remotesize > 0)) \
+                and (self.__startingposition < self.__remotesize):
+
                 try:
                     request = urllib2.Request(
                         self.__url,
                         headers = {
-                            "Range" : "bytes=" + str(self.__startingposition) + "-" + str(self.__remotesize)
+                            "Range" : "bytes=" + \
+                                str(self.__startingposition) + "-" + \
+                                str(self.__remotesize)
                         }
                     )
                 except KeyboardInterrupt:
-                    self.__close()
+                    self.__close(True)
                     raise
                 except:
                     pass
             elif (self.__startingposition == self.__remotesize):
-                self.__close()
+                self.__close(True)
                 return self.__prepare_return()
             else:
                 self.localfile = open(self.__path_to_save,"wb")
             self.__remotefile = urllib2.urlopen(request)
         except KeyboardInterrupt:
-            self.__close()
+            self.__close(True)
             raise
         except:
-            self.__close()
+            self.__close(True)
             self.__status = "-3"
             return self.__status
 
         if self.__remotesize > 0:
             self.__remotesize = float(int(self.__remotesize))/1024
 
-        if self.__disallow_redirect and (self.__url != self.__remotefile.geturl()):
-            self.__close()
+        if self.__disallow_redirect and \
+            (self.__url != self.__remotefile.geturl()):
+
+            self.__close(True)
             self.__status = "-3"
             return self.__status
 
@@ -232,15 +248,15 @@ class urlFetcher:
                 if self.__thread_stop_func != None:
                     self.__thread_stop_func()
             except KeyboardInterrupt:
-                self.__close()
+                self.__close(True)
                 raise
             except self.socket.timeout:
-                self.__close()
+                self.__close(True)
                 self.__status = "-4"
                 return self.__status
             except:
                 # python 2.4 timeouts go here
-                self.__close()
+                self.__close(True)
                 self.__status = "-3"
                 return self.__status
             self.__commit(rsx)
@@ -260,7 +276,7 @@ class urlFetcher:
                         self.__oldaverage = self.__average
 
         # kill thread
-        self.__close()
+        self.__close(False)
         return self.__prepare_return()
 
 
@@ -279,12 +295,17 @@ class urlFetcher:
         kbytecount = float(self.__downloadedsize)/1024
         self.__average = int((kbytecount/self.__remotesize)*100)
 
-    def __close(self):
+    def __close(self, errored):
         try:
             self.localfile.flush()
             self.localfile.close()
-        except:
+        except IOError:
             pass
+        if (not self.__existed_before) and errored:
+            try:
+                os.remove(self.__path_to_save)
+            except OSError:
+                pass
         try:
             self.__remotefile.close()
         except:
@@ -295,9 +316,14 @@ class urlFetcher:
     def __update_speed(self):
         self.__elapsed += self.__transferpollingtime
         # we have the diff size
-        self.__datatransfer = (self.__downloadedsize-self.__startingposition) / self.__elapsed
+        x_delta = self.__downloadedsize - self.__startingposition
+        self.__datatransfer = x_delta / self.__elapsed
         try:
-            self.__time_remaining_secs = int(round((int(round(self.__remotesize*1024,0))-int(round(self.__downloadedsize,0)))/self.__datatransfer,0))
+            rounded_remote = int(round(self.__remotesize*1024,0))
+            rounded_downloaded = int(round(self.__downloadedsize,0))
+            x_delta = rounded_remote - rounded_downloaded
+            tx_round = int(round(x_delta/self.__datatransfer,0))
+            self.__time_remaining_secs = tx_round
             self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
         except:
             self.__time_remaining = "(%s)" % (_("infinite"),)
