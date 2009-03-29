@@ -20,25 +20,26 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
-from entropy.const import *
-from entropy.output import darkgreen, darkred, red, blue, darkblue, green, \
-    brown, purple, bold, print_info, print_error, print_warning, print_generic
+import os
+from entropy.const import etpRepositories, etpUi
+from entropy.output import darkgreen, darkred, red, blue, \
+    brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
 
 
 def query(options):
 
-    rc = 0
+    rc_status = 0
 
     if not options:
         return -10
 
-    equoRequestDeep = False
+    do_deep = False
     myopts = []
     for opt in options:
         if (opt == "--deep"):
-            equoRequestDeep = True
+            do_deep = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
@@ -50,56 +51,56 @@ def query(options):
         return -10
 
     if myopts[0] == "installed":
-        rc = searchInstalledPackages(myopts[1:])
+        rc_status = searchInstalledPackages(myopts[1:])
 
     elif myopts[0] == "belongs":
-        rc = searchBelongs(myopts[1:])
+        rc_status = searchBelongs(myopts[1:])
 
     elif myopts[0] == "changelog":
-        rc = searchChangeLog(myopts[1:])
+        rc_status = searchChangeLog(myopts[1:])
 
     elif myopts[0] == "depends":
-        rc = searchDepends(myopts[1:])
+        rc_status = searchDepends(myopts[1:])
 
     elif myopts[0] == "files":
-        rc = searchFiles(myopts[1:])
+        rc_status = searchFiles(myopts[1:])
 
     elif myopts[0] == "needed":
-        rc = searchNeeded(myopts[1:])
+        rc_status = searchNeeded(myopts[1:])
 
     elif myopts[0] == "required":
-        rc = searchRequired(myopts[1:])
+        rc_status = searchRequired(myopts[1:])
 
     elif myopts[0] == "removal":
-        rc = searchRemoval(myopts[1:],deep = equoRequestDeep)
+        rc_status = searchRemoval(myopts[1:], deep = do_deep)
 
     elif myopts[0] == "tags":
-        rc = searchTaggedPackages(myopts[1:])
+        rc_status = searchTaggedPackages(myopts[1:])
 
     elif myopts[0] == "sets":
-        rc = searchPackageSets(myopts[1:])
+        rc_status = searchPackageSets(myopts[1:])
 
     elif myopts[0] == "license":
-        rc = searchLicenses(myopts[1:])
+        rc_status = searchLicenses(myopts[1:])
 
     elif myopts[0] == "slot":
         if (len(myopts) > 1):
-            rc = searchSlottedPackages(myopts[1:])
+            rc_status = searchSlottedPackages(myopts[1:])
 
     elif myopts[0] == "orphans":
-        rc = searchOrphans()
+        rc_status = searchOrphans()
 
     elif myopts[0] == "list":
         mylistopts = options[1:]
         if len(mylistopts) > 0:
             if mylistopts[0] == "installed":
-                rc = searchInstalled()
+                rc_status = searchInstalled()
     elif myopts[0] == "description":
-        rc = searchDescription(myopts[1:])
+        rc_status = searchDescription(myopts[1:])
     else:
-        rc = -10
+        rc_status = -10
 
-    return rc
+    return rc_status
 
 
 def searchInstalledPackages(packages, idreturn = False, dbconn = None,
@@ -212,12 +213,12 @@ def searchChangeLog(atoms, dbconn = None, Equo = None):
         if dbconn != None:
             idpackage, rc = dbconn.atomMatch(atom)
             if rc != 0:
-                print_info(darkred("%s: %s" % (_("No match for"),bold(atom),)))
+                print_info(darkred("%s: %s" % (_("No match for"), bold(atom),)))
                 continue
         else:
             idpackage, r_id = Equo.atom_match(atom)
             if idpackage == -1:
-                print_info(darkred("%s: %s" % (_("No match for"),bold(atom),)))
+                print_info(darkred("%s: %s" % (_("No match for"), bold(atom),)))
                 continue
             dbconn = Equo.open_repository(r_id)
 
@@ -477,7 +478,7 @@ def searchOrphans(Equo = None):
             wd = os.walk(xdir)
         except RuntimeError: # maximum recursion?
             continue
-        for currentdir,subdirs,files in wd:
+        for currentdir, subdirs, files in wd:
             foundFiles = {}
             for filename in files:
 
@@ -487,7 +488,7 @@ def searchOrphans(Equo = None):
                     filename == '.keep':
                     continue
 
-                filename = os.path.join(currentdir,filename)
+                filename = os.path.join(currentdir, filename)
                 if filename.endswith(".ph") and \
                     (filename.startswith("/usr/lib/perl") or \
                     filename.startswith("/usr/lib64/perl")):
@@ -506,7 +507,7 @@ def searchOrphans(Equo = None):
                 foundFiles[filename] = "obj"
 
             if foundFiles:
-                tdbconn.insertContent(1,foundFiles)
+                tdbconn.insertContent(1, foundFiles)
 
     tdbconn.commitChanges()
     tdbconn.cursor.execute('select count(file) from content')
@@ -533,10 +534,10 @@ def searchOrphans(Equo = None):
         "CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );")
 
     def gen_cont(idpackage):
-        for x in clientDbconn.retrieveContent(idpackage):
-            if x.startswith(lib64_str):
-                x = "/usr/lib%s" % (x[lib64_len:],)
-            yield (x,)
+        for path in clientDbconn.retrieveContent(idpackage):
+            if path.startswith(lib64_str):
+                path = "/usr/lib%s" % (path[lib64_len:],)
+            yield (path,)
 
     for idpackage in idpackages:
 
@@ -627,7 +628,7 @@ def searchRemoval(atoms, deep = False, Equo = None):
 
     if not found_atoms:
         print_error(red("%s." % (_("No packages found"),) ))
-        return 127,-1
+        return 127
 
     removal_queue = []
     if not etpUi['quiet']:
@@ -637,9 +638,9 @@ def searchRemoval(atoms, deep = False, Equo = None):
     treelength = len(treeview[0])
     if treelength > 1:
         treeview = treeview[0]
-        for x in range(treelength)[::-1]:
-            for y in treeview[x]:
-                removal_queue.append(y)
+        for dep_el in range(treelength)[::-1]:
+            for dep_sub_el in treeview[dep_el]:
+                removal_queue.append(dep_sub_el)
 
     if removal_queue:
         if not etpUi['quiet']:
@@ -845,7 +846,7 @@ def searchSlottedPackages(slots, dbconn = None, Equo = None):
             results = dbconn.searchSlottedPackages(slot, atoms = True)
             for result in results:
                 found = True
-                printPackageInfo(result[1],dbconn, Equo = Equo,
+                printPackageInfo(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -923,7 +924,7 @@ def searchTaggedPackages(tags, dbconn = None, Equo = None):
             results = dbconn.searchTaggedPackages(tag, atoms = True)
             found = True
             for result in results:
-                printPackageInfo(result[1],dbconn, Equo = Equo,
+                printPackageInfo(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -971,7 +972,7 @@ def searchLicenses(licenses, dbconn = None, Equo = None):
                 continue
             found = True
             for result in results:
-                printPackageInfo(result[1],dbconn, Equo = Equo,
+                printPackageInfo(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -1055,7 +1056,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False,
             repoinfo = "[%s] " % (dbconn.dbname,)
         if showDescOnQuiet:
             desc = ' %s' % (dbconn.retrieveDescription(idpackage),)
-        print_generic("%s%s%s" % (repoinfo,pkgatom,desc,))
+        print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
         return
 
     if not strictOutput:
@@ -1189,7 +1190,7 @@ def printPackageInfo(idpackage, dbconn, clientSearch = False,
             etpapi = dbconn.retrieveApi(idpackage)
 
             eclass_txt = "       %s:\t" % (_("Portage eclasses"),)
-            _my_formatted_print(eclasses,darkgreen(eclass_txt), "\t\t\t\t",
+            _my_formatted_print(eclasses, darkgreen(eclass_txt), "\t\t\t\t",
                 color = red)
 
             if sources:
@@ -1224,15 +1225,16 @@ def _my_formatted_print(data, header, reset_columns, min_chars = 25,
 
     fcount = 0
     desc_text = header
-    for x in mydata:
-        fcount += len(x)
+    for item in mydata:
+        fcount += len(item)
         if color:
-            desc_text += color(x)+" "
+            desc_text += color(item)+" "
         else:
-            desc_text += x+" "
+            desc_text += item+" "
         if fcount > min_chars:
             fcount = 0
             print_info(desc_text)
             desc_text = reset_columns
 
-    if fcount > 0: print_info(desc_text)
+    if fcount > 0:
+        print_info(desc_text)
