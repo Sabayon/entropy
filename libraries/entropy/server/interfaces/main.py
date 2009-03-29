@@ -615,13 +615,19 @@ class Server(Singleton,TextInterface):
 
         return conn
 
-    def deps_tester(self):
+    def deps_tester(self, default_repo = None):
 
         server_repos = etpConst['server_repositories'].keys()
         installed_packages = set()
+        # if a default repository is passed, we will just test against it
+        if default_repo:
+            server_repos = [default_repo]
+
         for repo in server_repos:
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
-            installed_packages |= set([(x,repo) for x in dbconn.listAllIdpackages()])
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = repo)
+            installed_packages |= set([(x,repo) for x in \
+                dbconn.listAllIdpackages()])
 
 
         deps_not_satisfied = set()
@@ -629,11 +635,10 @@ class Server(Singleton,TextInterface):
         count = 0
         mytxt = _("Checking")
 
-        for pkgdata in installed_packages:
+        for idpackage, repo in installed_packages:
             count += 1
-            idpackage = pkgdata[0]
-            repo = pkgdata[1]
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = repo)
 
             if (count%150 == 0) or (count == length) or (count == 1):
                 atom = dbconn.retrieveAtom(idpackage)
@@ -654,7 +659,7 @@ class Server(Singleton,TextInterface):
 
         return deps_not_satisfied
 
-    def dependencies_test(self):
+    def dependencies_test(self, repo = None):
 
         mytxt = "%s %s" % (blue(_("Running dependencies test")),red("..."))
         self.updateProgress(
@@ -665,7 +670,7 @@ class Server(Singleton,TextInterface):
         )
 
         server_repos = etpConst['server_repositories'].keys()
-        deps_not_matched = self.deps_tester()
+        deps_not_matched = self.deps_tester(repo)
 
         if deps_not_matched:
 
