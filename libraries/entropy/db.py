@@ -88,8 +88,6 @@ class Schema:
             DROP TABLE IF EXISTS baseinfo;
             DROP TABLE IF EXISTS extrainfo;
             DROP TABLE IF EXISTS content;
-            DROP TABLE IF EXISTS contentreference;
-            DROP TABLE IF EXISTS contenttypes;
             DROP TABLE IF EXISTS dependencies;
             DROP TABLE IF EXISTS dependenciesreference;
             DROP TABLE IF EXISTS provide;
