@@ -50,6 +50,7 @@ def package(options):
     equoRequestListfiles = False
     equoRequestChecksum = True
     equoRequestSortSize = False
+    equoRequestSaveHere = False
     equoRequestMultifetch = 1
     rc = 0
     _myopts = []
@@ -78,6 +79,8 @@ def package(options):
             equoRequestResume = True
         elif (opt == "--sortbysize"):
             equoRequestSortSize = True
+        elif (opt == "--savehere"):
+            equoRequestSaveHere = True
         elif (opt == "--multifetch"):
             equoRequestMultifetch = 3
         elif (opt.startswith("--multifetch=")):
@@ -124,7 +127,8 @@ def package(options):
 
         if myopts or mytbz2paths:
             status, rc = downloadSources(myopts, deps = equoRequestDeps,
-                deepdeps = equoRequestDeep, tbz2 = mytbz2paths)
+                deepdeps = equoRequestDeep, tbz2 = mytbz2paths,
+                savecwd = equoRequestSaveHere)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
@@ -575,7 +579,8 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
 
     return False, runQueue
 
-def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
+def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
+    savecwd = False):
 
     foundAtoms = _scanPackages(packages, tbz2)
     # are there packages in foundAtoms?
@@ -594,11 +599,16 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = []):
 
     totalqueue = str(len(runQueue))
     fetchqueue = 0
+    metaopts = {}
+    if savecwd:
+        metaopts['fetch_path'] = os.getcwd()
+
     for packageInfo in runQueue:
         fetchqueue += 1
 
         Package = Equo.Package()
-        Package.prepare(packageInfo,"source")
+
+        Package.prepare(packageInfo,"source", metaopts)
 
         xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
         print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))

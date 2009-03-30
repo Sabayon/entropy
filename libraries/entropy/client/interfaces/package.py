@@ -1368,7 +1368,12 @@ class Package:
             # first fine wins
             for url in down_data[key]:
                 file_name = os.path.basename(url)
-                dest_file = os.path.join(self.infoDict['unpackdir'],file_name)
+                if self.infoDict.get('fetch_path'):
+                    dest_file = os.path.join(self.infoDict['fetch_path'],
+                        file_name)
+                else:
+                    dest_file = os.path.join(self.infoDict['unpackdir'],
+                        file_name)
                 rc = self._fetch_source(url, dest_file)
                 if rc == 0:
                     d_cache.add(key_name)
@@ -2199,6 +2204,14 @@ class Package:
 
         if self.metaopts.has_key('dochecksum'):
             dochecksum = self.metaopts.get('dochecksum')
+
+        # fetch_path is the path where data should be downloaded
+        # at the moment is implemented only for sources = True
+        if self.metaopts.has_key('fetch_path'):
+            fetch_path = self.metaopts.get('fetch_path')
+            if self.entropyTools.is_valid_path(fetch_path):
+                self.infoDict['fetch_path'] = fetch_path
+
         self.infoDict['repository'] = repository
         self.infoDict['idpackage'] = idpackage
         dbconn = self.Entropy.open_repository(repository)

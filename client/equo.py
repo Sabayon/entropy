@@ -137,6 +137,7 @@ myopts = [
     (1,'source',2,_('download atoms source code')),
     (2,'--ask',2,_('ask before making any changes')),
     (2,'--pretend',1,_('just show what would be done')),
+    (2,'--savehere',1,_('save sources in current working directory')),
     None,
     (1,'remove',2,_('remove one or more packages')),
     (2,'--ask',2,_('ask before making any changes')),
