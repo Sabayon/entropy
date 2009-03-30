@@ -1434,18 +1434,18 @@ class LocalRepository:
 
         mydict = {}
         try:
-            mydict[rssAtom]['description'] = self.retrieveDescription(idpackage)
+            mydict['description'] = self.retrieveDescription(idpackage)
         except TypeError:
-            mydict[rssAtom]['description'] = "N/A"
+            mydict['description'] = "N/A"
         try:
-            mydict[rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+            mydict['homepage'] = self.retrieveHomepage(idpackage)
         except TypeError:
-            mydict[rssAtom]['homepage'] = ""
+            mydict['homepage'] = ""
 
         self.dumpTools.dumpobj(etpConst['rss-dump-name'],
             self.ServiceInterface.rssMessages)
 
-        self.ServiceInterface.rssMessages['removed'].update(mydict)
+        self.ServiceInterface.rssMessages['removed'][rssAtom] = mydict
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True,
         do_rss = True):
