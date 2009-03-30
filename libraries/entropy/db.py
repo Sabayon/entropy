@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+E# -*- coding: utf-8 -*-
 '''
     # DESCRIPTION:
     # Entropy Object Oriented Interface
@@ -82,57 +82,6 @@ class Status(Singleton):
 
 
 class Schema:
-
-    def get_destroy_all(self):
-        return """
-            DROP TABLE IF EXISTS baseinfo;
-            DROP TABLE IF EXISTS extrainfo;
-            DROP TABLE IF EXISTS content;
-            DROP TABLE IF EXISTS dependencies;
-            DROP TABLE IF EXISTS dependenciesreference;
-            DROP TABLE IF EXISTS provide;
-            DROP TABLE IF EXISTS conflicts;
-            DROP TABLE IF EXISTS neededlibs;
-            DROP TABLE IF EXISTS libraries;
-            DROP TABLE IF EXISTS mirrorlinks;
-            DROP TABLE IF EXISTS sources;
-            DROP TABLE IF EXISTS sourcesreference;
-            DROP TABLE IF EXISTS useflags;
-            DROP TABLE IF EXISTS useflagsreference;
-            DROP TABLE IF EXISTS keywords;
-            DROP TABLE IF EXISTS binkeywords;
-            DROP TABLE IF EXISTS keywordsreference;
-            DROP TABLE IF EXISTS categories;
-            DROP TABLE IF EXISTS licenses;
-            DROP TABLE IF EXISTS flags;
-            DROP TABLE IF EXISTS systempackages;
-            DROP TABLE IF EXISTS configprotect;
-            DROP TABLE IF EXISTS configprotectmask;
-            DROP TABLE IF EXISTS configprotectreference;
-            DROP TABLE IF EXISTS installedtable;
-            DROP TABLE IF EXISTS dependstable;
-            DROP TABLE IF EXISTS sizes;
-            DROP TABLE IF EXISTS messages;
-            DROP TABLE IF EXISTS counters;
-            DROP TABLE IF EXISTS eclasses;
-            DROP TABLE IF EXISTS eclassesreference;
-            DROP TABLE IF EXISTS needed;
-            DROP TABLE IF EXISTS neededreference;
-            DROP TABLE IF EXISTS triggers;
-            DROP TABLE IF EXISTS countersdata;
-            DROP TABLE IF EXISTS injected;
-            DROP TABLE IF EXISTS treeupdates;
-            DROP TABLE IF EXISTS treeupdatesactions;
-            DROP TABLE IF EXISTS library_breakages;
-            DROP TABLE IF EXISTS licensedata;
-            DROP TABLE IF EXISTS licenses_accepted;
-            DROP TABLE IF EXISTS trashedcounters;
-            DROP TABLE IF EXISTS entropy_misc_counters;
-            DROP TABLE IF EXISTS categoriesdescription;
-            DROP TABLE IF EXISTS packagesets;
-            DROP TABLE IF EXISTS packagechangelogs;
-            DROP TABLE IF EXISTS automergefiles;
-        """
 
     def get_init(self):
         return """
@@ -586,7 +535,8 @@ class LocalRepository:
     def initializeDatabase(self):
         self.checkReadOnly()
         my = Schema()
-        self.cursor.executescript(my.get_destroy_all())
+        for table in self.listAllTables():
+            self.cursor.execute("DROP TABLE %s" % (table,))
         self.cursor.executescript(my.get_init())
         self.databaseStructureUpdates()
         # set cache size
