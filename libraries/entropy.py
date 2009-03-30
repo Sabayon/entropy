@@ -80,6 +80,7 @@ class urlFetcher:
         self.thread_stop_func = thread_stop_func
         self.disallow_redirect = disallow_redirect
         self.speedlimit = speed_limit # kbytes/sec
+        self.__existed_before = False
 
         # important to have this here too
         self.datatransfer = 0
@@ -154,6 +155,9 @@ class urlFetcher:
         self.elapsed = 0.0
         self.updatestep = 0.2
         self.transferpollingtime = float(1)/4
+        self.__existed_before = False
+        if os.path.lexists(self.path_to_save):
+            self.__existed_before = True
         self.__setup_resume_support()
         self._setup_proxy()
 
@@ -183,7 +187,7 @@ class urlFetcher:
             try:
                 self.remotefile = urllib2.urlopen(req)
             except KeyboardInterrupt:
-                self.__close()
+                self.__close(True)
                 raise
             except urllib2.HTTPError, e:
                 if (e.code == 405) and not u_agent_error:
@@ -191,11 +195,11 @@ class urlFetcher:
                     req = self.url
                     u_agent_error = True
                     continue
-                self.__close()
+                self.__close(True)
                 self.status = "-3"
                 return self.status
             except:
-                self.__close()
+                self.__close(True)
                 self.status = "-3"
                 return self.status
             break
@@ -204,7 +208,7 @@ class urlFetcher:
             self.remotesize = int(self.remotefile.headers.get("content-length"))
             self.remotefile.close()
         except KeyboardInterrupt:
-            self.__close()
+            self.__close(True)
             raise
         except:
             pass
@@ -221,21 +225,21 @@ class urlFetcher:
                         }
                     )
                 except KeyboardInterrupt:
-                    self.__close()
+                    self.__close(True)
                     raise
                 except:
                     pass
             elif (self.startingposition == self.remotesize):
-                self.__close()
+                self.__close(False)
                 return self.__prepare_return()
             else:
                 self.localfile = open(self.path_to_save,"wb")
             self.remotefile = urllib2.urlopen(request)
         except KeyboardInterrupt:
-            self.__close()
+            self.__close(True)
             raise
         except:
-            self.__close()
+            self.__close(True)
             self.status = "-3"
             return self.status
 
@@ -243,7 +247,7 @@ class urlFetcher:
             self.remotesize = float(int(self.remotesize))/1024
 
         if self.disallow_redirect and (self.url != self.remotefile.geturl()):
-            self.__close()
+            self.__close(True)
             self.status = "-3"
             return self.status
 
@@ -256,19 +260,19 @@ class urlFetcher:
                 if self.thread_stop_func != None:
                     self.thread_stop_func()
             except KeyboardInterrupt:
-                self.__close()
+                self.__close(True)
                 raise
             except self.socket.timeout:
                 if etpUi['debug']:
                     self.entropyTools.printTraceback()
-                self.__close()
+                self.__close(True)
                 self.status = "-4"
                 return self.status
             except:
                 if etpUi['debug']:
                     self.entropyTools.printTraceback()
                 # python 2.4 timeouts go here
-                self.__close()
+                self.__close(True)
                 self.status = "-3"
                 return self.status
             self.__commit(rsx)
@@ -288,7 +292,7 @@ class urlFetcher:
                         self.oldaverage = self.average
 
         # kill thread
-        self.__close()
+        self.__close(False)
         return self.__prepare_return()
 
 
@@ -307,12 +311,17 @@ class urlFetcher:
         kbytecount = float(self.downloadedsize)/1024
         self.average = int((kbytecount/self.remotesize)*100)
 
-    def __close(self):
+    def __close(self, errored):
         try:
             self.localfile.flush()
             self.localfile.close()
         except:
             pass
+        if (not self.__existed_before) and errored:
+            try:
+                os.remove(self.path_to_save)
+            except OSError:
+                pass
         try:
             self.remotefile.close()
         except:
