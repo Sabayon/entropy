@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
     # DESCRIPTION:
     # Entropy Object Oriented Interface
 
@@ -18,43 +18,45 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
+"""
+# pylink ok - doc
 from __future__ import with_statement
 import os
+import sys
 import time
 import urllib2
 import threading
-from entropy.const import *
+from entropy.const import etpConst, etpUi
 
 class Lifo:
 
     def __init__(self):
-        self.counter = -1
-        self.buf = {}
-        self.L = threading.Lock()
+        self.__counter = -1
+        self.__buf = {}
+        self.__lock = threading.Lock()
 
-    def push(self,item):
-        with self.L:
-            self.counter += 1
-            self.buf[self.counter] = item
+    def push(self, item):
+        with self.__lock:
+            self.__counter += 1
+            self.__buf[self.__counter] = item
 
     def clear(self):
-        with self.L:
-            self.counter = -1
-            self.buf.clear()
+        with self.__lock:
+            self.__counter = -1
+            self.__buf.clear()
 
     def is_filled(self):
-        if self.counter == -1:
+        if self.__counter == -1:
             return False
         return True
 
     def pop(self):
-        with self.L:
-            if self.counter == -1:
+        with self.__lock:
+            if self.__counter == -1:
                 return None
-            self.counter -= 1
+            self.__counter -= 1
             try:
-                return self.buf.pop(self.counter+1)
+                return self.__buf.pop(self.__counter+1)
             except KeyError:
                 pass
 
@@ -72,15 +74,16 @@ class TimeScheduled(threading.Thread):
         # time.sleep() is done
         self.__accurate = False
         self.__delay_before = False
+        self.__alive = 0
 
     def set_delay(self, delay):
         self.__delay = delay
 
-    def set_delay_before(self, do):
-        self.__delay_before = bool(do)
+    def set_delay_before(self, bool_do):
+        self.__delay_before = bool(bool_do)
 
-    def set_accuracy(self, do):
-        self.__accurate = bool(do)
+    def set_accuracy(self, bool_do):
+        self.__accurate = bool(bool_do)
 
     def run(self):
         self.__alive = 1
@@ -88,21 +91,25 @@ class TimeScheduled(threading.Thread):
 
             if self.__delay_before:
                 do_break = self.__do_delay()
-                if do_break: break
+                if do_break:
+                    break
 
-            if self.__f == None: break
-            self.__f(*self.__args,**self.__kwargs)
+            if self.__f == None:
+                break
+            self.__f(*self.__args, **self.__kwargs)
 
             if not self.__delay_before:
                 do_break = self.__do_delay()
-                if do_break: break
+                if do_break:
+                    break
 
 
     def __do_delay(self):
 
         if not self.__accurate:
 
-            if float == None: return True
+            if float == None:
+                return True
             mydelay = float(self.__delay)
             t_frac = 0.3
             while mydelay > 0.0:
@@ -115,7 +122,8 @@ class TimeScheduled(threading.Thread):
 
         else:
 
-            if time == None: return True # shut down?
+            if time == None:
+                return True # shut down?
             time.sleep(self.__delay)
 
         return False
@@ -133,7 +141,7 @@ class ParallelTask(threading.Thread):
         self.__rc = None
 
     def run(self):
-        self.__rc = self.__function(*self.__args,**self.__kwargs)
+        self.__rc = self.__function(*self.__args, **self.__kwargs)
 
     def get_function(self):
         return self.__function
@@ -166,30 +174,33 @@ class EmailSender:
         self.default_sender = self.smtp_send
         self.mimetypes = mimetypes
         self.encoders = encoders
-        self.Message = Message
+        self.message = Message
 
     def smtp_send(self, sender, destinations, message):
-        s = self.smtplib.SMTP(self.smtphost,self.smtpport)
+        s_srv = self.smtplib.SMTP(self.smtphost, self.smtpport)
         if self.smtpuser and self.smtppassword:
-            s.login(self.smtpuser,self.smtppassword)
-        s.sendmail(sender, destinations, message)
-        s.quit()
+            s_srv.login(self.smtpuser, self.smtppassword)
+        s_srv.sendmail(sender, destinations, message)
+        s_srv.quit()
 
-    def send_text_email(self, sender_email, destination_emails, subject, content):
+    def send_text_email(self, sender_email, destination_emails, subject,
+        content):
 
         # Create a text/plain message
-        if isinstance(content,unicode):
+        if isinstance(content, unicode):
             content = content.encode('utf-8')
-        if isinstance(subject,unicode):
+        if isinstance(subject, unicode):
             subject = subject.encode('utf-8')
 
         msg = self.text(content)
         msg['Subject'] = subject
         msg['From'] = sender_email
         msg['To'] = ', '.join(destination_emails)
-        return self.default_sender(sender_email, destination_emails, msg.as_string())
+        return self.default_sender(sender_email, destination_emails,
+            msg.as_string())
 
-    def send_mime_email(self, sender_email, destination_emails, subject, content, files):
+    def send_mime_email(self, sender_email, destination_emails, subject,
+            content, files):
 
         outer = self.multipart()
         outer['Subject'] = subject
@@ -202,7 +213,7 @@ class EmailSender:
 
         # attach files
         for myfile in files:
-            if not (os.path.isfile(myfile) and os.access(myfile,os.R_OK)):
+            if not (os.path.isfile(myfile) and os.access(myfile, os.R_OK)):
                 continue
 
             ctype, encoding = self.mimetypes.guess_type(myfile)
@@ -211,21 +222,22 @@ class EmailSender:
             maintype, subtype = ctype.split('/', 1)
 
             if maintype == 'image':
-                fp = open(myfile, 'rb')
-                msg = self.image(fp.read(), _subtype = subtype)
-                fp.close()
+                img_f = open(myfile, 'rb')
+                msg = self.image(img_f.read(), _subtype = subtype)
+                img_f.close()
             elif maintype == 'audio':
-                fp = open(myfile, 'rb')
-                msg = self.audio(fp.read(), _subtype = subtype)
-                fp.close()
+                audio_f = open(myfile, 'rb')
+                msg = self.audio(audio_f.read(), _subtype = subtype)
+                audio_f.close()
             else:
-                fp = open(myfile, 'rb')
+                gen_f = open(myfile, 'rb')
                 msg = self.mimefile(maintype, subtype)
-                msg.set_payload(fp.read())
-                fp.close()
+                msg.set_payload(gen_f.read())
+                gen_f.close()
                 self.encoders.encode_base64(msg)
 
-            msg.add_header('Content-Disposition', 'attachment', filename = os.path.basename(myfile))
+            msg.add_header('Content-Disposition', 'attachment',
+                filename = os.path.basename(myfile))
             outer.attach(msg)
 
         composed = outer.as_string()
@@ -248,9 +260,10 @@ class EntropyGeoIP:
         """
 
         import GeoIP
-        self.__GeoIP = GeoIP
+        self.__geoip = GeoIP
         # http://www.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
-        if not (os.path.isfile(geoip_dbfile) and os.access(geoip_dbfile,os.R_OK)):
+        if not (os.path.isfile(geoip_dbfile) and \
+            os.access(geoip_dbfile, os.R_OK)):
             raise AttributeError(
                 "expecting a valid filepath for geoip_dbfile, got: %s" % (
                     repr(geoip_dbfile),
@@ -259,26 +272,27 @@ class EntropyGeoIP:
         self.__geoip_dbfile = geoip_dbfile
 
     def __get_geo_ip_generic(self):
-        return self.__GeoIP.new(self.__GeoIP.GEOIP_MEMORY_CACHE)
+        return self.__geoip.new(self.__geoip.GEOIP_MEMORY_CACHE)
 
     def __get_geo_ip_open(self):
-        return self.__GeoIP.open(self.__geoip_dbfile, self.__GeoIP.GEOIP_STANDARD)
+        return self.__geoip.open(self.__geoip_dbfile,
+            self.__geoip.GEOIP_STANDARD)
 
     def get_geoip_country_name_from_ip(self, ip_address):
         """
         @return: string or None
         @param1: ip address string
         """
-        gi = self.__get_geo_ip_generic()
-        return gi.country_name_by_addr(ip_address)
+        gi_a = self.__get_geo_ip_generic()
+        return gi_a.country_name_by_addr(ip_address)
 
     def get_geoip_country_code_from_ip(self, ip_address):
         """
         @return: string or None
         @param1: ip address string
         """
-        gi = self.__get_geo_ip_generic()
-        return gi.country_code_by_addr(ip_address)
+        gi_a = self.__get_geo_ip_generic()
+        return gi_a.country_code_by_addr(ip_address)
 
     def get_geoip_record_from_ip(self, ip_address):
         """
@@ -298,20 +312,21 @@ class EntropyGeoIP:
                 'country_name': 'Italy'
             }
         """
-        go = self.__get_geo_ip_open()
-        return go.record_by_addr(ip_address)
+        go_a = self.__get_geo_ip_open()
+        return go_a.record_by_addr(ip_address)
 
     def get_geoip_record_from_hostname(self, hostname):
         """
         @return: dict() or None
         @param1: hostname
         """
-        go = self.__get_geo_ip_open()
-        return go.record_by_name(hostname)
+        go_a = self.__get_geo_ip_open()
+        return go_a.record_by_name(hostname)
 
 
 class rssFeed:
 
+    # this is a relative import to avoid circular deps
     import tools as entropyTools
     def __init__(self, filename, title, description, maxentries = 100):
 
@@ -347,29 +362,36 @@ class rssFeed:
             self.__cright = self.__feed_copyright
             self.__editor = self.__feed_editor
             self.__link = etpConst['rss-website-url']
-            f = open(self.__file,"w")
-            f.write('')
-            f.close()
+            rss_f = open(self.__file, "w")
+            rss_f.write('')
+            rss_f.flush()
+            rss_f.close()
         else:
             self.__rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
             self.__channel = self.__rssdoc.getElementsByTagName("channel")[0]
-            self.__title = self.__channel.getElementsByTagName("title")[0].firstChild.data.strip()
-            self.__link = self.__channel.getElementsByTagName("link")[0].firstChild.data.strip()
-            description = self.__channel.getElementsByTagName("description")[0].firstChild
-            if hasattr(description,"data"):
+            title_obj = self.__channel.getElementsByTagName("title")[0]
+            self.__title = title_obj.firstChild.data.strip()
+            link_obj = self.__channel.getElementsByTagName("link")[0]
+            self.__link = link_obj.firstChild.data.strip()
+            desc_obj = self.__channel.getElementsByTagName("description")[0]
+            description = desc_obj.firstChild
+            if hasattr(description, "data"):
                 self.__description = description.data.strip()
             else:
                 self.__description = ''
             try:
-                self.__language = self.__channel.getElementsByTagName("language")[0].firstChild.data.strip()
+                lang_obj = self.__channel.getElementsByTagName("language")[0]
+                self.__language = lang_obj.firstChild.data.strip()
             except IndexError:
                 self.__language = 'en'
             try:
-                self.__cright = self.__channel.getElementsByTagName("copyright")[0].firstChild.data.strip()
+                cright_obj = self.__channel.getElementsByTagName("copyright")[0]
+                self.__cright = cright_obj.firstChild.data.strip()
             except IndexError:
                 self.__cright = ''
             try:
-                self.__editor = self.__channel.getElementsByTagName("managingEditor")[0].firstChild.data.strip()
+                e_obj = self.__channel.getElementsByTagName("managingEditor")[0]
+                self.__editor = e_obj.firstChild.data.strip()
             except IndexError:
                 self.__editor = ''
             entries = self.__channel.getElementsByTagName("item")
@@ -382,22 +404,33 @@ class rssFeed:
                     break
                 mycounter -= 1
                 self.__items[mycounter] = {}
-                self.__items[mycounter]['title'] = item.getElementsByTagName("title")[0].firstChild.data.strip()
-                description = item.getElementsByTagName("description")[0].firstChild
+                title_obj = item.getElementsByTagName("title")[0]
+                self.__items[mycounter]['title'] = \
+                    title_obj.firstChild.data.strip()
+                desc_obj = item.getElementsByTagName("description")[0]
+                description = desc_obj.firstChild
                 if description:
-                    self.__items[mycounter]['description'] = description.data.strip()
+                    self.__items[mycounter]['description'] = \
+                        description.data.strip()
                 else:
                     self.__items[mycounter]['description'] = ""
+
                 link = item.getElementsByTagName("link")[0].firstChild
                 if link:
                     self.__items[mycounter]['link'] = link.data.strip()
                 else:
                     self.__items[mycounter]['link'] = ""
-                self.__items[mycounter]['guid'] = item.getElementsByTagName("guid")[0].firstChild.data.strip()
-                self.__items[mycounter]['pubDate'] = item.getElementsByTagName("pubDate")[0].firstChild.data.strip()
+
+                guid_obj = item.getElementsByTagName("guid")[0]
+                self.__items[mycounter]['guid'] = \
+                    guid_obj.firstChild.data.strip()
+                pub_date_obj = item.getElementsByTagName("pubDate")[0]
+                self.__items[mycounter]['pubDate'] = \
+                    pub_date_obj.firstChild.data.strip()
                 dcs = item.getElementsByTagName("dc:creator")
                 if dcs:
-                    self.__items[mycounter]['dc:creator'] = dcs[0].firstChild.data.strip()
+                    self.__items[mycounter]['dc:creator'] = \
+                        dcs[0].firstChild.data.strip()
 
     def addItem(self, title, link = '', description = '', pubDate = ''):
         self.__itemscounter += 1
@@ -406,20 +439,22 @@ class rssFeed:
         if pubDate:
             self.__items[self.__itemscounter]['pubDate'] = pubDate
         else:
-            self.__items[self.__itemscounter]['pubDate'] = time.strftime("%a, %d %b %Y %X +0000")
+            self.__items[self.__itemscounter]['pubDate'] = \
+                time.strftime("%a, %d %b %Y %X +0000")
         self.__items[self.__itemscounter]['description'] = description
         self.__items[self.__itemscounter]['link'] = link
         if link:
             self.__items[self.__itemscounter]['guid'] = link
         else:
             myguid = etpConst['systemname'].lower()
-            myguid = myguid.replace(" ","")
-            self.__items[self.__itemscounter]['guid'] = myguid+"~"+description+str(self.__itemscounter)
+            myguid = myguid.replace(" ", "")
+            self.__items[self.__itemscounter]['guid'] = myguid+"~" + \
+                description + str(self.__itemscounter)
         return self.__itemscounter
 
-    def removeEntry(self, id):
-        if id in self.__items:
-            del self.__items[id]
+    def removeEntry(self, key):
+        if key in self.__items:
+            del self.__items[key]
             self.__itemscounter -= 1
         return self.__itemscounter
 
@@ -440,8 +475,8 @@ class rssFeed:
         doc = self.minidom.Document()
 
         rss = doc.createElement("rss")
-        rss.setAttribute("version","2.0")
-        rss.setAttribute("xmlns:atom","http://www.w3.org/2005/Atom")
+        rss.setAttribute("version", "2.0")
+        rss.setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom")
 
         channel = doc.createElement("channel")
 
@@ -471,13 +506,14 @@ class rssFeed:
         cright.appendChild(cr_text)
         channel.appendChild(cright)
         # managingEditor
-        managingEditor = doc.createElement("managingEditor")
+        managing_editor = doc.createElement("managingEditor")
         ed_text = doc.createTextNode(unicode(self.__editor))
-        managingEditor.appendChild(ed_text)
-        channel.appendChild(managingEditor)
+        managing_editor.appendChild(ed_text)
+        channel.appendChild(managing_editor)
 
         keys = self.__items.keys()
-        if reverse: keys.reverse()
+        if reverse:
+            keys.reverse()
         for key in keys:
 
             # sanity check, you never know
@@ -485,7 +521,7 @@ class rssFeed:
                 self.removeEntry(key)
                 continue
             k_error = False
-            for item in ['title','link','guid','description','pubDate']:
+            for item in ('title', 'link', 'guid', 'description', 'pubDate',):
                 if not self.__items[key].has_key(item):
                     k_error = True
                     break
@@ -497,28 +533,33 @@ class rssFeed:
             item = doc.createElement("item")
             # title
             item_title = doc.createElement("title")
-            item_title_text = doc.createTextNode(unicode(self.__items[key]['title']))
+            item_title_text = doc.createTextNode(
+                unicode(self.__items[key]['title']))
             item_title.appendChild(item_title_text)
             item.appendChild(item_title)
             # link
             item_link = doc.createElement("link")
-            item_link_text = doc.createTextNode(unicode(self.__items[key]['link']))
+            item_link_text = doc.createTextNode(
+                unicode(self.__items[key]['link']))
             item_link.appendChild(item_link_text)
             item.appendChild(item_link)
             # guid
             item_guid = doc.createElement("guid")
-            item_guid.setAttribute("isPermaLink","true")
-            item_guid_text = doc.createTextNode(unicode(self.__items[key]['guid']))
+            item_guid.setAttribute("isPermaLink", "true")
+            item_guid_text = doc.createTextNode(
+                unicode(self.__items[key]['guid']))
             item_guid.appendChild(item_guid_text)
             item.appendChild(item_guid)
             # description
             item_desc = doc.createElement("description")
-            item_desc_text = doc.createTextNode(unicode(self.__items[key]['description']))
+            item_desc_text = doc.createTextNode(
+                unicode(self.__items[key]['description']))
             item_desc.appendChild(item_desc_text)
             item.appendChild(item_desc)
             # pubdate
             item_date = doc.createElement("pubDate")
-            item_date_text = doc.createTextNode(unicode(self.__items[key]['pubDate']))
+            item_date_text = doc.createTextNode(
+                unicode(self.__items[key]['pubDate']))
             item_date.appendChild(item_date_text)
             item.appendChild(item_date)
 
@@ -528,10 +569,10 @@ class rssFeed:
         # add channel to rss
         rss.appendChild(channel)
         doc.appendChild(rss)
-        f = open(self.__file,"w")
-        f.writelines(doc.toprettyxml(indent="    ").encode('utf-8'))
-        f.flush()
-        f.close()
+        rss_f = open(self.__file, "w")
+        rss_f.writelines(doc.toprettyxml(indent="    ").encode('utf-8'))
+        rss_f.flush()
+        rss_f.close()
 
 class LogFile:
 
@@ -539,7 +580,7 @@ class LogFile:
         self.handler = self.default_handler
         self.level = level
         self.header = header
-        self.logFile = None
+        self.__logfile = None
         self.open(filename)
         self.__filename = filename
 
@@ -548,23 +589,23 @@ class LogFile:
 
     def close(self):
         try:
-            self.logFile.close()
-        except (IOError,OSError,):
+            self.__logfile.close()
+        except (IOError, OSError,):
             pass
 
     def get_fpath(self):
         return self.__filename
 
     def flush(self):
-        self.logFile.flush()
+        self.__logfile.flush()
 
     def fileno(self):
-        return self.getFile()
+        return self.__get_file()
 
     def isatty(self):
         return False
 
-    def read(self, a):
+    def read(self, *args):
         return ''
 
     def readline(self):
@@ -573,54 +614,56 @@ class LogFile:
     def readlines(self):
         return []
 
-    def seek(self, a):
-        return self.logFile.seek(a)
+    def seek(self, offset):
+        return self.__logfile.seek(offset)
 
     def tell(self):
-        return self.logFile.tell()
+        return self.__logfile.tell()
 
     def truncate(self):
-        return self.logFile.truncate()
+        return self.__logfile.truncate()
 
-    def open (self, file = None):
-        if isinstance(file,basestring):
-            if os.access(file,os.W_OK) and os.path.isfile(file):
-                self.logFile = open(file, "aw")
+    def open(self, file_path = None):
+
+        if isinstance(file_path, basestring):
+            if os.access(file_path, os.W_OK) and os.path.isfile(file_path):
+                self.__logfile = open(file_path, "aw")
             else:
-                self.logFile = open("/dev/null", "aw")
-        elif hasattr(file,'write'):
-            self.logFile = file
+                self.__logfile = open("/dev/null", "aw")
+        elif hasattr(file_path, 'write'):
+            self.__logfile = file_path
         else:
-            self.logFile = sys.stderr
+            self.__logfile = sys.stderr
 
-    def getFile (self):
-        return self.logFile.fileno()
+    def __get_file(self):
+        return self.__logfile.fileno()
 
     def __call__(self, format, *args):
         self.handler (format % args)
 
     def default_handler (self, mystr):
         try:
-            self.logFile.write ("* %s\n" % (mystr))
+            self.__logfile.write ("* %s\n" % (mystr))
         except UnicodeEncodeError:
-            self.logFile.write ("* %s\n" % (mystr.encode('utf-8'),))
-        self.logFile.flush()
+            self.__logfile.write ("* %s\n" % (mystr.encode('utf-8'),))
+        self.__logfile.flush()
 
     def set_loglevel(self, level):
         self.level = level
 
     def log(self, messagetype, level, message):
         if self.level >= level and not etpUi['nolog']:
-            self.handler("%s %s %s %s" % (self.getTimeDateHeader(),messagetype,self.header,message,))
+            self.handler("%s %s %s %s" % (self.__get_header(),
+                messagetype, self.header, message,))
 
-    def write(self, s):
-        self.handler(s)
+    def write(self, line):
+        self.handler(line)
 
     def writelines(self, lst):
-        for s in lst:
-            self.write(s)
+        for line in lst:
+            self.write(line)
 
-    def getTimeDateHeader(self):
+    def __get_header(self):
         return time.strftime('[%H:%M:%S %d/%m/%Y %Z]')
 
 class Callable:
@@ -628,7 +671,11 @@ class Callable:
         self.__call__ = anycallable
 
 class MultipartPostHandler(urllib2.BaseHandler):
+
     handler_order = urllib2.HTTPHandler.handler_order - 10 # needs to run first
+
+    def __init__(self):
+        pass
 
     def http_request(self, request):
 
@@ -640,55 +687,55 @@ class MultipartPostHandler(urllib2.BaseHandler):
             v_files = []
             v_vars = []
             try:
-                 for(key, value) in data.items():
-                     if type(value) == file:
-                         v_files.append((key, value))
-                     else:
-                         v_vars.append((key, value))
+                for (key, value) in data.items():
+                    if type(value) == file:
+                        v_files.append((key, value))
+                    else:
+                        v_vars.append((key, value))
             except TypeError:
-                raise TypeError, "not a valid non-string sequence or mapping object"
+                raise TypeError, "not a valid non-string sequence" \
+                        " or mapping object"
 
             if len(v_files) == 0:
                 data = urllib.urlencode(v_vars, doseq)
             else:
                 boundary, data = self.multipart_encode(v_vars, v_files)
-
                 contenttype = 'multipart/form-data; boundary=%s' % boundary
-                '''
-                if (request.has_header('Content-Type')
-                   and request.get_header('Content-Type').find('multipart/form-data') != 0):
-                    print "Replacing %s with %s" % (request.get_header('content-type'), 'multipart/form-data')
-                '''
                 request.add_unredirected_header('Content-Type', contenttype)
+
             request.add_data(data)
         return request
 
-    def multipart_encode(vars, files, boundary = None, buf = None):
+    def multipart_encode(self, myvars, files, boundary = None, buf = None):
 
         from cStringIO import StringIO
         import mimetools, mimetypes
+        #import stat
 
         if boundary is None:
             boundary = mimetools.choose_boundary()
         if buf is None:
             buf = StringIO()
-        for(key, value) in vars:
+        for(key, value) in myvars:
             buf.write('--%s\r\n' % boundary)
             buf.write('Content-Disposition: form-data; name="%s"' % key)
             buf.write('\r\n\r\n' + value + '\r\n')
-        for(key, fd) in files:
-            file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-            filename = fd.name.split('/')[-1]
-            contenttype = mimetypes.guess_type(filename)[0] or 'application/octet-stream'
+        for(key, fdesc) in files:
+            #file_size = os.fstat(fdesc.fileno())[stat.ST_SIZE]
+            filename = fdesc.name.split('/')[-1]
+            contenttype = mimetypes.guess_type(filename)[0] or \
+                'application/octet-stream'
             buf.write('--%s\r\n' % boundary)
-            buf.write('Content-Disposition: form-data; name="%s"; filename="%s"\r\n' % (key, filename))
+            buf.write('Content-Disposition: form-data; name="%s"; ' \
+                'filename="%s"\r\n' % (key, filename))
             buf.write('Content-Type: %s\r\n' % contenttype)
             # buffer += 'Content-Length: %s\r\n' % file_size
-            fd.seek(0)
-            buf.write('\r\n' + fd.read() + '\r\n')
+            fdesc.seek(0)
+            buf.write('\r\n' + fdesc.read() + '\r\n')
         buf.write('--' + boundary + '--\r\n\r\n')
         buf = buf.getvalue()
         return boundary, buf
+
     multipart_encode = Callable(multipart_encode)
 
     https_request = http_request
