@@ -25,7 +25,9 @@ import os
 import shutil
 import subprocess
 from entropy.const import etpConst, etpCache
-from entropy.exceptions import *
+from entropy.exceptions import IncorrectParameter, InvalidAtom, \
+    SystemDatabaseError, OperationNotPermitted
+from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
@@ -576,10 +578,12 @@ class LocalRepository:
 
                 spm = self.ServiceInterface.SpmService
                 # grab portdir
-                updates_dir = etpConst['systemroot']+spm.get_spm_setting("PORTDIR")+"/profiles/updates"
+                updates_dir = etpConst['systemroot'] + \
+                    spm.get_spm_setting("PORTDIR") + "/profiles/updates"
                 if os.path.isdir(updates_dir):
                     # get checksum
-                    mdigest = self.entropyTools.md5sum_directory(updates_dir, get_obj = True)
+                    mdigest = self.entropyTools.md5sum_directory(updates_dir,
+                        get_obj = True)
                     # also checksum etpConst['etpdatabaseupdatefile']
                     if os.path.isfile(repo_updates_file):
                         f = open(repo_updates_file)
@@ -602,8 +606,10 @@ class LocalRepository:
             self.clearTreeupdatesEntries(self.server_repo)
 
             spm = self.ServiceInterface.SpmService
-            updates_dir = etpConst['systemroot']+spm.get_spm_setting("PORTDIR")+"/profiles/updates"
-            update_files = self.entropyTools.sort_update_files(os.listdir(updates_dir))
+            updates_dir = etpConst['systemroot'] + \
+                spm.get_spm_setting("PORTDIR") + "/profiles/updates"
+            update_files = self.entropyTools.sort_update_files(
+                os.listdir(updates_dir))
             update_files = [os.path.join(updates_dir,x) for x in update_files]
             # now load actions from files
             update_actions = []
@@ -619,7 +625,8 @@ class LocalRepository:
                 f = open(repo_updates_file,"r")
                 mycontent = f.readlines()
                 f.close()
-                lines = [x.strip() for x in mycontent if x.strip() and not x.strip().startswith("#")]
+                lines = [x.strip() for x in mycontent if x.strip() and \
+                    not x.strip().startswith("#")]
                 update_actions.extend(lines)
             # now filter the required actions
             update_actions = self.filterTreeUpdatesActions(update_actions)
@@ -639,7 +646,8 @@ class LocalRepository:
                 )
                 # lock database
                 if self.lockRemote:
-                    self.ServiceInterface.do_server_repository_sync_lock(self.server_repo, self.noUpload)
+                    self.ServiceInterface.do_server_repository_sync_lock(
+                        self.server_repo, self.noUpload)
                 # now run queue
                 try:
                     self.runTreeUpdatesActions(update_actions)
@@ -649,10 +657,12 @@ class LocalRepository:
                     raise
 
                 # store new actions
-                self.addRepositoryUpdatesActions(self.server_repo, update_actions, self.db_branch)
+                self.addRepositoryUpdatesActions(
+                    self.server_repo, update_actions, self.db_branch)
 
             # store new digest into database
-            self.setRepositoryUpdatesDigest(self.server_repo, portage_dirs_digest)
+            self.setRepositoryUpdatesDigest(
+                self.server_repo, portage_dirs_digest)
             self.commitChanges()
 
     def clientUpdatePackagesData(self, clientDbconn, force = False):
@@ -675,7 +685,8 @@ class LocalRepository:
         # check stored value in client database
         client_digest = "0"
         if not doRescan:
-            client_digest = clientDbconn.retrieveRepositoryUpdatesDigest(repository)
+            client_digest = clientDbconn.retrieveRepositoryUpdatesDigest(
+                repository)
 
         if doRescan or (str(stored_digest) != str(client_digest)) or force:
 
@@ -685,7 +696,8 @@ class LocalRepository:
             # load updates
             update_actions = self.retrieveTreeUpdatesActions(repository)
             # now filter the required actions
-            update_actions = clientDbconn.filterTreeUpdatesActions(update_actions)
+            update_actions = clientDbconn.filterTreeUpdatesActions(
+                update_actions)
 
             if update_actions:
 
@@ -707,7 +719,8 @@ class LocalRepository:
             # store new digest into database
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
             # store new actions
-            clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'], update_actions, etpConst['branch'])
+            clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'],
+                update_actions, etpConst['branch'])
             clientDbconn.commitChanges()
             # clear client cache
             clientDbconn.clearCache()
@@ -731,7 +744,8 @@ class LocalRepository:
                 to_slot = doaction[3]
                 atom_key = self.entropyTools.dep_getkey(atom)
                 category = atom_key.split("/")[0]
-                matches = self.atomMatch(atom, matchSlot = from_slot, multiMatch = True)
+                matches = self.atomMatch(atom, matchSlot = from_slot,
+                    multiMatch = True)
                 found = False
                 if matches[1] == 0:
                     # found atoms, check category
@@ -739,7 +753,8 @@ class LocalRepository:
                         myslot = self.retrieveSlot(idpackage)
                         mycategory = self.retrieveCategory(idpackage)
                         if mycategory == category:
-                            if  (myslot != to_slot) and (action not in new_actions):
+                            if  (myslot != to_slot) and \
+                            (action not in new_actions):
                                 new_actions.append(action)
                                 found = True
                                 break
@@ -747,8 +762,10 @@ class LocalRepository:
                         continue
                 # if we get here it means found == False
                 # search into dependencies
-                dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
-                dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) and self.entropyTools.dep_getkey(x) == atom_key]
+                dep_atoms = self.searchDependency(atom_key, like = True,
+                    multi = True, strings = True)
+                dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) \
+                    and self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
 
@@ -761,7 +778,8 @@ class LocalRepository:
                 if matches[1] == 0:
                     for idpackage in matches[0]:
                         mycategory = self.retrieveCategory(idpackage)
-                        if (mycategory == category) and (action not in new_actions):
+                        if (mycategory == category) and (action \
+                            not in new_actions):
                             new_actions.append(action)
                             found = True
                             break
@@ -769,8 +787,10 @@ class LocalRepository:
                         continue
                 # if we get here it means found == False
                 # search into dependencies
-                dep_atoms = self.searchDependency(atom_key, like = True, multi = True, strings = True)
-                dep_atoms = [x for x in dep_atoms if self.entropyTools.dep_getkey(x) == atom_key]
+                dep_atoms = self.searchDependency(atom_key, like = True,
+                    multi = True, strings = True)
+                dep_atoms = [x for x in dep_atoms if \
+                    self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
         return new_actions
@@ -818,9 +838,11 @@ class LocalRepository:
             )
             if command[0] == "move":
                 spm_moves.add(action)
-                quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:], quickpkg_atoms)
+                quickpkg_atoms |= self.runTreeUpdatesMoveAction(command[1:],
+                    quickpkg_atoms)
             elif command[0] == "slotmove":
-                quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:], quickpkg_atoms)
+                quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:],
+                    quickpkg_atoms)
 
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
@@ -871,7 +893,7 @@ class LocalRepository:
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(key_from, multiMatch = True)
-        iddependencies_idpackages = set()
+        iddependencies = set()
 
         if matches[1] == 0:
 
@@ -902,8 +924,8 @@ class LocalRepository:
                             bold(_("INJECT")),
                             blue(str(new_atom)),
                             red(_("has been injected")),
-                            red(_("You need to quickpkg it manually to update the embedded database")),
-                            red(_("Repository database will be updated anyway")),
+                            red(_("quickpkg manually to update embedded db")),
+                            red(_("Repository database updated anyway")),
                         )
                         self.updateProgress(
                             mytxt,
@@ -917,14 +939,16 @@ class LocalRepository:
             # update string
             mydep = self.retrieveDependencyFromIddependency(iddep)
             mydep_key = self.entropyTools.dep_getkey(mydep)
-            if mydep_key != key_from: # avoid changing wrong atoms -> dev-python/qscintilla-python would
-                continue              # become x11-libs/qscintilla if we don't do this check
+            # avoid changing wrong atoms -> dev-python/qscintilla-python would
+            # become x11-libs/qscintilla if we don't do this check
+            if mydep_key != key_from:
+                continue
             mydep = mydep.replace(key_from,key_to)
             # now update
             # dependstable on server is always re-generated
             self.setDependency(iddep, mydep)
             # we have to repackage also package owning this iddep
-            iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
+            iddependencies |= self.searchIdpackageFromIddependency(iddep)
 
         self.commitChanges()
         quickpkg_queue = list(quickpkg_queue)
@@ -933,7 +957,7 @@ class LocalRepository:
             myatom = myatom.replace(key_from,key_to)
             quickpkg_queue[x] = myatom
         quickpkg_queue = set(quickpkg_queue)
-        for idpackage_owner in iddependencies_idpackages:
+        for idpackage_owner in iddependencies:
             myatom = self.retrieveAtom(idpackage_owner)
             myatom = myatom.replace(key_from,key_to)
             quickpkg_queue.add(myatom)
@@ -942,9 +966,12 @@ class LocalRepository:
 
     # -- slotmove action:
     # 1) move package slot
-    # 2) update all the dependencies in dependenciesreference owning same matched atom + slot
+    # 2) update all the dependencies in dependenciesreference owning
+    #    same matched atom + slot
     # 3) run fixpackages which will update /var/db/pkg files
-    # 4) automatically run quickpkg() to build the new binary and tainted binaries owning tainted iddependency and taint database
+    # 4) automatically run quickpkg() to build the new
+    #    binary and tainted binaries owning tainted iddependency
+    #    and taint database
     def runTreeUpdatesSlotmoveAction(self, slotmove_command, quickpkg_queue):
 
         atom = slotmove_command[0]
@@ -952,7 +979,7 @@ class LocalRepository:
         slot_from = slotmove_command[1]
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
-        iddependencies_idpackages = set()
+        iddependencies = set()
 
         if matches[1] == 0:
 
@@ -976,8 +1003,8 @@ class LocalRepository:
                             bold(_("INJECT")),
                             blue(str(atom)),
                             red(_("has been injected")),
-                            red(_("You need to quickpkg it manually to update the embedded database")),
-                            red(_("Repository database will be updated anyway")),
+                            red(_("quickpkg manually to update embedded db")),
+                            red(_("Repository database updated anyway")),
                         )
                         self.updateProgress(
                             mytxt,
@@ -1004,10 +1031,10 @@ class LocalRepository:
                 # dependstable on server is always re-generated
                 self.setDependency(iddep, mydep)
                 # we have to repackage also package owning this iddep
-                iddependencies_idpackages |= self.searchIdpackageFromIddependency(iddep)
+                iddependencies |= self.searchIdpackageFromIddependency(iddep)
 
         self.commitChanges()
-        for idpackage_owner in iddependencies_idpackages:
+        for idpackage_owner in iddependencies:
             myatom = self.retrieveAtom(idpackage_owner)
             quickpkg_queue.add(myatom)
         return quickpkg_queue
@@ -1032,12 +1059,14 @@ class LocalRepository:
                 type = "warning",
                 header = blue("  # ")
             )
-            mydest = self.ServiceInterface.get_local_store_directory(repo = self.server_repo)
+            mydest = self.ServiceInterface.get_local_store_directory(
+                repo = self.server_repo)
             try:
                 mypath = self.ServiceInterface.quickpkg(myatom,mydest)
             except:
                 # remove broken bin before raising
-                mypath = os.path.join(mydest,os.path.basename(myatom)+etpConst['packagesext'])
+                mypath = os.path.join(mydest,
+                    os.path.basename(myatom)+etpConst['packagesext'])
                 if os.path.isfile(mypath):
                     os.remove(mypath)
                 self.entropyTools.print_traceback()
@@ -1056,7 +1085,8 @@ class LocalRepository:
                 continue
             package_paths.add(mypath)
         packages_data = [(x,False) for x in package_paths]
-        idpackages = self.ServiceInterface.add_packages_to_repository(packages_data, repo = self.server_repo)
+        idpackages = self.ServiceInterface.add_packages_to_repository(
+            packages_data, repo = self.server_repo)
 
         if not idpackages:
 
@@ -1091,13 +1121,15 @@ class LocalRepository:
             vdb_path = spm.get_vdb_path()
             pkg_path = os.path.join(vdb_path,key.split("/")[0])
             try:
-                mydirs = [os.path.join(pkg_path,x) for x in os.listdir(pkg_path) if x.startswith(name)]
+                mydirs = [os.path.join(pkg_path,x) for x in \
+                    os.listdir(pkg_path) if x.startswith(name)]
             except OSError: # no dir, no party!
                 continue
             mydirs = [x for x in mydirs if os.path.isdir(x)]
             # now move these dirs
             for mydir in mydirs:
-                to_path = os.path.join(etpConst['packagestmpdir'],os.path.basename(mydir))
+                to_path = os.path.join(etpConst['packagestmpdir'],
+                    os.path.basename(mydir))
                 mytxt = "%s: %s '%s' %s '%s'" % (
                     bold(_("SPM")),
                     red(_("Moving old entry")),
@@ -1120,18 +1152,23 @@ class LocalRepository:
                 shutil.move(mydir,to_path)
 
 
-    def handlePackage(self, etpData, forcedRevision = -1, formattedContent = False):
+    def handlePackage(self, etpData, forcedRevision = -1,
+        formattedContent = False):
 
         self.checkReadOnly()
 
         if self.clientDatabase:
-            return self.addPackage(etpData, revision = forcedRevision, formatted_content = formattedContent)
+            return self.addPackage(etpData, revision = forcedRevision,
+                formatted_content = formattedContent)
 
         # build atom string, server side
-        pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
+        pkgatom = self.entropyTools.create_package_atom_string(
+            etpData['category'], etpData['name'], etpData['version'],
+            etpData['versiontag'])
         foundid = self.isPackageAvailable(pkgatom)
         if foundid < 0: # same atom doesn't exist in any branch
-            return self.addPackage(etpData, revision = forcedRevision, formatted_content = formattedContent)
+            return self.addPackage(etpData, revision = forcedRevision,
+                formatted_content = formattedContent)
 
         idpackage = self.getIDPackage(pkgatom)
         curRevision = forcedRevision
@@ -1140,13 +1177,15 @@ class LocalRepository:
             if idpackage != -1:
                 curRevision = self.retrieveRevision(idpackage)
 
-        if idpackage != -1: # remove old package atom, we do it here because othersie
+        # remove old package atom, we do it here because othersie
+        if idpackage != -1:
             # injected packages wouldn't be removed by addPackages
             self.removePackage(idpackage)
             if forcedRevision == -1: curRevision += 1
 
         # add the new one
-        return self.addPackage(etpData, revision = curRevision, formatted_content = formattedContent)
+        return self.addPackage(etpData, revision = curRevision,
+            formatted_content = formattedContent)
 
     def retrieve_packages_to_remove(self, name, category, slot, injected):
         removelist = set()
@@ -1159,7 +1198,8 @@ class LocalRepository:
 
         if not injected:
             # read: if package has been injected, we'll skip
-            # the removal of packages in the same slot, usually used server side btw
+            # the removal of packages in the same slot,
+            # usually used server side btw
             for oldpkg in searchsimilar:
                 # get the package slot
                 idpackage = oldpkg[1]
@@ -1173,7 +1213,8 @@ class LocalRepository:
 
         return removelist
 
-    def addPackage(self, etpData, revision = -1, idpackage = None, do_remove = True, do_commit = True, formatted_content = False):
+    def addPackage(self, etpData, revision = -1, idpackage = None,
+        do_remove = True, do_commit = True, formatted_content = False):
 
         self.checkReadOnly()
 
@@ -1209,13 +1250,18 @@ class LocalRepository:
         if licid == -1: licid = self.addLicense(etpData['license'])
 
         idprotect = self.isProtectAvailable(etpData['config_protect'])
-        if idprotect == -1: idprotect = self.addProtect(etpData['config_protect'])
+        if idprotect == -1: idprotect = self.addProtect(
+            etpData['config_protect'])
 
-        idprotect_mask = self.isProtectAvailable(etpData['config_protect_mask'])
-        if idprotect_mask == -1: idprotect_mask = self.addProtect(etpData['config_protect_mask'])
+        idprotect_mask = self.isProtectAvailable(
+            etpData['config_protect_mask'])
+        if idprotect_mask == -1: idprotect_mask = self.addProtect(
+            etpData['config_protect_mask'])
 
-        idflags = self.areCompileFlagsAvailable(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
-        if idflags == -1: idflags = self.addCompileFlags(etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+        idflags = self.areCompileFlagsAvailable(
+            etpData['chost'],etpData['cflags'],etpData['cxxflags'])
+        if idflags == -1: idflags = self.addCompileFlags(
+            etpData['chost'],etpData['cflags'],etpData['cxxflags'])
 
 
         trigger = 0
@@ -1223,7 +1269,9 @@ class LocalRepository:
             trigger = 1
 
         # baseinfo
-        pkgatom = self.entropyTools.create_package_atom_string(etpData['category'], etpData['name'], etpData['version'], etpData['versiontag'])
+        pkgatom = self.entropyTools.create_package_atom_string(
+            etpData['category'], etpData['name'], etpData['version'],
+            etpData['versiontag'])
 
         mybaseinfo_data = [
             pkgatom,
@@ -1243,7 +1291,8 @@ class LocalRepository:
         if isinstance(idpackage,int):
             manual_deps |= self.retrieveManualDependencies(idpackage)
             # does it exist?
-            self.removePackage(idpackage, do_cleanup = False, do_commit = False, do_rss = False)
+            self.removePackage(idpackage, do_cleanup = False,
+                do_commit = False, do_rss = False)
             myidpackage_string = '?'
             mybaseinfo_data.insert(0,idpackage)
         else:
@@ -1256,7 +1305,9 @@ class LocalRepository:
 
         with self.WriteLock:
 
-            self.cursor.execute('INSERT into baseinfo VALUES ('+myidpackage_string+',?,?,?,?,?,?,?,?,?,?,?)', mybaseinfo_data)
+            self.cursor.execute("""
+            INSERT into baseinfo VALUES (%s,?,?,?,?,?,?,?,?,?,?,?)""" % (
+                myidpackage_string,), mybaseinfo_data)
             if idpackage == None:
                 idpackage = self.cursor.lastrowid
 
@@ -1287,12 +1338,14 @@ class LocalRepository:
         # package ChangeLog
         if etpData.get('changelog'):
             try:
-                self.insertChangelog(etpData['category'], etpData['name'], etpData['changelog'])
+                self.insertChangelog(etpData['category'], etpData['name'],
+                    etpData['changelog'])
             except (UnicodeEncodeError, UnicodeDecodeError,):
                 pass
 
         # not depending on other tables == no select done
-        self.insertContent(idpackage, etpData['content'], already_formatted = formatted_content)
+        self.insertContent(idpackage, etpData['content'],
+            already_formatted = formatted_content)
         etpData['counter'] = int(etpData['counter']) # cast to integer
         etpData['counter'] = self.insertPortageCounter(
                                 idpackage,
@@ -1321,7 +1374,8 @@ class LocalRepository:
         ### RSS Atom support
         ### dictionary will be elaborated by activator
         if etpConst['rss-feed'] and not self.clientDatabase:
-            self._write_rss_for_added_package(pkgatom, revision, etpData['description'], etpData['homepage'])
+            self._write_rss_for_added_package(pkgatom, revision,
+                etpData['description'], etpData['homepage'])
 
         # Update category description
         if not self.clientDatabase:
@@ -1336,7 +1390,9 @@ class LocalRepository:
 
         return idpackage, revision, etpData
 
-    def _write_rss_for_added_package(self, pkgatom, revision, description, homepage):
+    def _write_rss_for_added_package(self, pkgatom, revision, description,
+        homepage):
+
         rssAtom = pkgatom+"~"+str(revision)
         rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
         if rssObj: self.ServiceInterface.rssMessages = rssObj.copy()
@@ -1348,14 +1404,20 @@ class LocalRepository:
             self.ServiceInterface.rssMessages['removed'] = {}
         if rssAtom in self.ServiceInterface.rssMessages['removed']:
             del self.ServiceInterface.rssMessages['removed'][rssAtom]
+
         self.ServiceInterface.rssMessages['added'][rssAtom] = {}
-        self.ServiceInterface.rssMessages['added'][rssAtom]['description'] = description
-        self.ServiceInterface.rssMessages['added'][rssAtom]['homepage'] = homepage
+        self.ServiceInterface.rssMessages['added'][rssAtom]['description'] = \
+            description
+        self.ServiceInterface.rssMessages['added'][rssAtom]['homepage'] = \
+            homepage
         self.ServiceInterface.rssMessages['light'][rssAtom] = {}
-        self.ServiceInterface.rssMessages['light'][rssAtom]['description'] = description
-        self.dumpTools.dumpobj(etpConst['rss-dump-name'],self.ServiceInterface.rssMessages)
+        self.ServiceInterface.rssMessages['light'][rssAtom]['description'] = \
+            description
+        self.dumpTools.dumpobj(etpConst['rss-dump-name'],
+            self.ServiceInterface.rssMessages)
 
     def _write_rss_for_removed_package(self, idpackage):
+
         rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
         if rssObj: self.ServiceInterface.rssMessages = rssObj.copy()
         rssAtom = self.retrieveAtom(idpackage)
@@ -1369,18 +1431,24 @@ class LocalRepository:
             self.ServiceInterface.rssMessages['removed'] = {}
         if rssAtom in self.ServiceInterface.rssMessages['added']:
             del self.ServiceInterface.rssMessages['added'][rssAtom]
-        self.ServiceInterface.rssMessages['removed'][rssAtom] = {}
-        try:
-            self.ServiceInterface.rssMessages['removed'][rssAtom]['description'] = self.retrieveDescription(idpackage)
-        except:
-            self.ServiceInterface.rssMessages['removed'][rssAtom]['description'] = "N/A"
-        try:
-            self.ServiceInterface.rssMessages['removed'][rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
-        except:
-            self.ServiceInterface.rssMessages['removed'][rssAtom]['homepage'] = ""
-        self.dumpTools.dumpobj(etpConst['rss-dump-name'],self.ServiceInterface.rssMessages)
 
-    def removePackage(self, idpackage, do_cleanup = True, do_commit = True, do_rss = True):
+        mydict = {}
+        try:
+            mydict[rssAtom]['description'] = self.retrieveDescription(idpackage)
+        except TypeError:
+            mydict[rssAtom]['description'] = "N/A"
+        try:
+            mydict[rssAtom]['homepage'] = self.retrieveHomepage(idpackage)
+        except TypeError:
+            mydict[rssAtom]['homepage'] = ""
+
+        self.dumpTools.dumpobj(etpConst['rss-dump-name'],
+            self.ServiceInterface.rssMessages)
+
+        self.ServiceInterface.rssMessages['removed'].update(mydict)
+
+    def removePackage(self, idpackage, do_cleanup = True, do_commit = True,
+        do_rss = True):
 
         self.checkReadOnly()
         # clear caches
@@ -1436,27 +1504,37 @@ class LocalRepository:
 
     def removeMirrorEntries(self,mirrorname):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM mirrorlinks WHERE mirrorname = (?)',(mirrorname,))
+            self.cursor.execute("""
+            DELETE FROM mirrorlinks WHERE mirrorname = (?)
+            """,(mirrorname,))
 
     def addMirrors(self, mirrorname, mirrorlist):
         with self.WriteLock:
             data = [(mirrorname,x,) for x in mirrorlist]
-            self.cursor.executemany('INSERT into mirrorlinks VALUES (?,?)', data)
+            self.cursor.executemany("""
+            INSERT into mirrorlinks VALUES (?,?)
+            """, data)
 
     def addCategory(self,category):
         with self.WriteLock:
-            self.cursor.execute('INSERT into categories VALUES (NULL,?)', (category,))
+            self.cursor.execute("""
+            INSERT into categories VALUES (NULL,?)
+            """, (category,))
             return self.cursor.lastrowid
 
     def addProtect(self,protect):
         with self.WriteLock:
-            self.cursor.execute('INSERT into configprotectreference VALUES (NULL,?)', (protect,))
+            self.cursor.execute("""
+            INSERT into configprotectreference VALUES (NULL,?)
+            """, (protect,))
             return self.cursor.lastrowid
 
 
     def addSource(self,source):
         with self.WriteLock:
-            self.cursor.execute('INSERT into sourcesreference VALUES (NULL,?)', (source,))
+            self.cursor.execute("""
+            INSERT into sourcesreference VALUES (NULL,?)
+            """, (source,))
             return self.cursor.lastrowid
 
     def addDependency(self,dependency):
