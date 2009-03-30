@@ -3768,6 +3768,11 @@ class LocalRepository:
         )
         # remember to close the file
 
+    def listAllTables(self):
+        self.cursor.execute("""
+        SELECT name FROM SQLITE_MASTER WHERE type = "table"
+        """)
+        return self.fetchall2list(self.cursor.fetchall())
 
     def doesTableExist(self, table):
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table",table))
