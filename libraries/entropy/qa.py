@@ -24,6 +24,7 @@ import os
 from entropy.const import etpConst
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
 from entropy.exceptions import *
+from entropy.i18n import _
 
 class QAInterface:
 

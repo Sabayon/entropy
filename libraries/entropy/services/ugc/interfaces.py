@@ -29,6 +29,7 @@ from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, const_set_chmod, const_setup_file
 from entropy.output import brown, bold, blue
+from entropy.i18n import _
 
 class Server(RemoteDatabase):
 

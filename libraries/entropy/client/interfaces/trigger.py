@@ -27,6 +27,7 @@ from entropy.client.interfaces.client import Client
 from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import *
+from entropy.i18n import _
 
 class Trigger:
 

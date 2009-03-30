@@ -23,6 +23,7 @@ from __future__ import with_statement
 import time
 import os
 import random
+import subprocess
 from entropy.services.interfaces import SocketHost
 from entropy.const import etpConst, const_setup_perms
 from entropy.output import TextInterface

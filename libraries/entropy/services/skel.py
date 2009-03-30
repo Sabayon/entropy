@@ -21,6 +21,7 @@
 '''
 
 from entropy.exceptions import *
+from entropy.i18n import _
 
 class SocketCommands:
 

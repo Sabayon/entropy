@@ -25,6 +25,7 @@ import shutil
 from entropy.const import etpConst, etpUi
 from entropy.exceptions import *
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, bold
+from entropy.i18n import _
 
 class Spm:
 
@@ -121,12 +122,8 @@ class PortagePlugin:
             self.EAPI = portage_const.EAPI
         self.portage_const = portage_const
 
-        try:
-            from portage.versions import best
-            self.portage_best = best
-        except ImportError:
-            from portage_versions import best
-            self.portage_best = best
+        from portage.versions import best
+        self.portage_best = best
 
         try:
             import portage.util as portage_util

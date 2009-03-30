@@ -25,9 +25,12 @@ import os
 import shutil
 from entropy.core import Singleton
 from entropy.exceptions import *
-from entropy.const import etpConst, etpSys, const_setup_perms, const_create_working_dirs, const_read_srv_settings
-from entropy.output import TextInterface, purple, red, darkgreen, bold, brown, blue, darkred, darkblue
+from entropy.const import etpConst, etpSys, const_setup_perms, \
+    const_create_working_dirs, const_read_srv_settings
+from entropy.output import TextInterface, purple, red, darkgreen, \
+    bold, brown, blue, darkred, darkblue
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
+from entropy.i18n import _
 
 class Server(Singleton,TextInterface):
 
@@ -177,8 +180,10 @@ class Server(Singleton,TextInterface):
 
     def setup_services(self):
         self.setup_entropy_settings()
-        if hasattr(self,'ClientService'):
-            self.ClientService.destroy()
+        cs_name = 'ClientService'
+        if hasattr(self,cs_name):
+            obj = getattr(self,cs_name)
+            obj.destroy()
         from entropy.client.interfaces import Client
         self.ClientService = Client(
             indexing = self.indexing,

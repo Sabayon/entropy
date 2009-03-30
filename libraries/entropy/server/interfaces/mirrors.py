@@ -25,8 +25,10 @@ import os
 import shutil
 import time
 from entropy.exceptions import *
-from entropy.output import TextInterface, purple, green, red, darkgreen, bold, brown, blue, darkred, darkblue
+from entropy.output import TextInterface, purple, green, red, darkgreen, bold, \
+    brown, blue, darkred, darkblue
 from entropy.const import etpConst, etpSys
+from entropy.i18n import _
 
 class Server:
 

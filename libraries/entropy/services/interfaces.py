@@ -24,9 +24,11 @@ from __future__ import with_statement
 import os
 import shutil
 import time
-from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO
+from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
+    const_setup_perms
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
+from entropy.i18n import _
 
 class SocketHost:
 
@@ -211,6 +213,10 @@ class SocketHost:
             self.SSL = self.HostInterface.SSL
             self.real_sock = None
             self.ssl_authorized_clients_only = authorized_clients_only
+            # declare undeclared attributes
+            self.address_family = None
+            self.socket_type = None
+            self.RequestHandlerClass = RequestHandlerClass
 
             if self.SSL:
                 self.SocketServer.BaseServer.__init__(self, server_address, RequestHandlerClass)
@@ -245,7 +251,6 @@ class SocketHost:
         def make_ssl_connection_alive(self):
             self.real_sock = self.socket_mod.socket(self.address_family, self.socket_type)
             self.socket = self.ConnWrapper(self.SSL['m'].Connection(self.context, self.real_sock))
-
             self.server_bind()
             self.server_activate()
 
@@ -387,7 +392,13 @@ class SocketHost:
         timed_out = False
 
         def __init__(self, request, client_address, server):
-            self.SocketServer.BaseRequestHandler.__init__(self, request, client_address, server)
+
+            # pre-init attribues
+            self.server = None
+            self.request = None
+            self.client_address = None
+            self.SocketServer.BaseRequestHandler.__init__(self, request,
+                client_address, server)
 
         def data_receiver(self):
 
@@ -395,7 +406,8 @@ class SocketHost:
                 return True
             self.timed_out = True
             try:
-                ready_to_read, ready_to_write, in_error = self.select.select([self.request], [], [], self.default_timeout)
+                ready_to_read, ready_to_write, in_error = self.select.select(
+                    [self.request], [], [], self.default_timeout)
             except KeyboardInterrupt:
                 self.timed_out = True
                 return True
@@ -740,7 +752,7 @@ class SocketHost:
                     )
                     tb = self.entropyTools.get_traceback()
                     print tb
-                    self.server.processor.HostInterface.socketLog.write(tb)
+                    self.HostInterface.socketLog.write(tb)
                     return "close"
                 except Exception, e:
                     self.HostInterface.updateProgress(
@@ -751,7 +763,7 @@ class SocketHost:
                     )
                     tb = self.entropyTools.get_traceback()
                     print tb
-                    self.server.processor.HostInterface.socketLog.write(tb)
+                    self.HostInterface.socketLog.write(tb)
                     return "close"
 
             p_args = args

@@ -24,6 +24,7 @@ import os
 from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import red, darkred, darkgreen
+from entropy.i18n import _
 
 class Cache:
 

@@ -24,6 +24,7 @@ import time
 from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled
+from entropy.i18n import _
 
 class Client:
 

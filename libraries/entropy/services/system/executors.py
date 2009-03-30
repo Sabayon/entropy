@@ -25,7 +25,7 @@ import sys
 import subprocess
 from entropy.const import etpConst
 from entropy.output import blue, red
-
+from entropy.i18n import _
 
 class Base:
 

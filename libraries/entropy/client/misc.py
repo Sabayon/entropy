@@ -28,6 +28,7 @@ from entropy.exceptions import *
 from entropy.const import etpConst, etpCache
 from entropy.output import darkred, darkgreen, red, brown, blue
 from entropy.tools import getstatusoutput
+from entropy.i18n import _
 
 class FileUpdates:
 

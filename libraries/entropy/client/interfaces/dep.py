@@ -24,7 +24,7 @@ from entropy.misc import Lifo
 from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import bold, darkgreen, darkred, blue, red
-
+from entropy.i18n import _
 
 class Calculators:
 

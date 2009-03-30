@@ -27,6 +27,7 @@ import random
 from entropy.services.skel import Authenticator, RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst
+from entropy.i18n import _
 
 class phpBB3Auth(Authenticator,RemoteDatabase):
 

@@ -26,6 +26,7 @@ from entropy.services.interfaces import SocketHost
 from entropy.output import TextInterface, blue, brown
 from entropy.const import etpConst, etpCache
 from entropy.misc import TimeScheduled
+from entropy.i18n import _
 
 class Server(SocketHost):
 
