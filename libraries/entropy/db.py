@@ -1,4 +1,4 @@
-E# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 '''
     # DESCRIPTION:
     # Entropy Object Oriented Interface
