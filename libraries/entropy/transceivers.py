@@ -227,7 +227,8 @@ class urlFetcher:
                 except:
                     pass
             elif (self.__startingposition == self.__remotesize):
-                self.__close(True)
+                # all fine then!
+                self.__close(False)
                 return self.__prepare_return()
             else:
                 self.localfile = open(self.__path_to_save,"wb")
