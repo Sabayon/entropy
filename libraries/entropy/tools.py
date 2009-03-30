@@ -458,8 +458,7 @@ def md5sum_directory(directory, get_obj = False):
     if not myfiles:
         if get_obj:
             return m
-        else:
-            return "0" # no files means 0
+        return "0" # no files means 0
 
     for currentdir,subdirs,files in os.walk(directory):
         for myfile in files:
@@ -472,8 +471,7 @@ def md5sum_directory(directory, get_obj = False):
             readfile.close()
     if get_obj:
         return m
-    else:
-        return m.hexdigest()
+    return m.hexdigest()
 
 # kindly stolen from Anaconda
 # Copyright 1999-2008 Red Hat, Inc. <iutil.py>
