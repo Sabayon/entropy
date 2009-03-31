@@ -603,12 +603,12 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
     if savecwd:
         metaopts['fetch_path'] = os.getcwd()
 
-    for packageInfo in runQueue:
+    for match in runQueue:
         fetchqueue += 1
 
         Package = Equo.Package()
 
-        Package.prepare(packageInfo,"source", metaopts)
+        Package.prepare(match,"source", metaopts)
 
         xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
         print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
@@ -639,12 +639,15 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 pass
         etpSys['dirstoclean'].clear()
 
+    explicit_user_packages = set()
+
     if not resume:
 
-        if (atomsdata):
+        if atomsdata:
             foundAtoms = atomsdata
         else:
             foundAtoms = _scanPackages(packages, tbz2)
+            explicit_user_packages |= set(foundAtoms)
 
         # are there packages in foundAtoms?
         if (not foundAtoms):
@@ -888,7 +891,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             # store resume information
             if not tbz2: # .tbz2 install resume not supported
                 resume_cache = {}
-                #resume_cache['removalQueue'] = removalQueue[:]
+                resume_cache['user_packages'] = explicit_user_packages
                 resume_cache['runQueue'] = runQueue[:]
                 resume_cache['onlyfetch'] = onlyfetch
                 resume_cache['emptydeps'] = emptydeps
@@ -909,13 +912,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         else:
 
             try:
-                #removalQueue = resume_cache['removalQueue'][:]
+                explicit_user_packages = resume_cache['user_packages']
                 runQueue = resume_cache['runQueue'][:]
                 onlyfetch = resume_cache['onlyfetch']
                 emptydeps = resume_cache['emptydeps']
                 deepdeps = resume_cache['deepdeps']
                 print_warning(red("%s..." % (_("Resuming previous operations"),) ))
-            except:
+            except (KeyError, TypeError, AttributeError,):
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
                     Equo.dumpTools.dumpobj(etpCache['install'],{})
@@ -1035,13 +1038,13 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 del metaopts
                 del Package
         else:
-            for packageInfo in runQueue:
+            for match in runQueue:
                 fetchqueue += 1
 
                 metaopts = {}
                 metaopts['dochecksum'] = dochecksum
                 Package = Equo.Package()
-                Package.prepare(packageInfo,"fetch", metaopts)
+                Package.prepare(match,"fetch", metaopts)
                 myrepo = Package.infoDict['repository']
                 if not mykeys.has_key(myrepo):
                     mykeys[myrepo] = set()
@@ -1075,13 +1078,19 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         print_info(red(" @@ ")+blue("%s." % (_("Download completed"),) ))
         return 0,0
 
-    for packageInfo in runQueue:
+    for match in runQueue:
         currentqueue += 1
 
         metaopts = {}
         metaopts['removeconfig'] = configFiles
+
+        if match in explicit_user_packages:
+            metaopts['install_source'] = etpConst['install_sources']['user']
+        else:
+            metaopts['install_source'] = etpConst['install_sources']['automatic_dependency']
+
         Package = Equo.Package()
-        Package.prepare(packageInfo,"install", metaopts)
+        Package.prepare(match,"install", metaopts)
 
         xterm_header = "Equo ("+_("install")+") :: "+str(currentqueue)+" of "+totalqueue+" ::"
         print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
@@ -1100,7 +1109,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
         # update resume cache
         if not tbz2: # tbz2 caching not supported
-            resume_cache['runQueue'].remove(packageInfo)
+            resume_cache['runQueue'].remove(match)
             try:
                 Equo.dumpTools.dumpobj(etpCache['install'],resume_cache)
             except (IOError,OSError):
@@ -1111,6 +1120,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         del Package
 
 
+    del explicit_user_packages
     print_info(red(" @@ ")+blue("%s." % (_("Installation completed"),) ))
     try:
         # clear resume information
