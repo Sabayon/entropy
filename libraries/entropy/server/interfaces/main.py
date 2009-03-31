@@ -1519,6 +1519,11 @@ class Server(Singleton,TextInterface):
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaserevisionfile'])
 
+    def get_local_database_timestamp_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasetimestampfile'])
+
     def get_local_database_ca_cert_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
@@ -1671,6 +1676,11 @@ class Server(Singleton,TextInterface):
 
     def get_branch_from_download_relative_uri(self, mypath):
         return self.ClientService.get_branch_from_download_relative_uri(mypath)
+
+    def get_current_timestamp(self):
+        from datetime import datetime
+        import time
+        return "%s" % (datetime.fromtimestamp(time.time()),)
 
     def package_set_list(self, *args, **kwargs):
         repos = etpConst['server_repositories'].keys()

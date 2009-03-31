@@ -894,6 +894,12 @@ class Server:
         extra_text_files.append(data['database_revision_file'])
         critical.append(data['database_revision_file'])
 
+        database_ts_file = self.Entropy.get_local_database_timestamp_file(repo)
+        if os.path.isfile(database_ts_file) or download:
+            data['database_timestamp_file'] = database_ts_file
+            if not download:
+                critical.append(database_ts_file)
+
         database_package_mask_file = self.Entropy.get_local_database_mask_file(repo)
         extra_text_files.append(database_package_mask_file)
         if os.path.isfile(database_package_mask_file) or download:
@@ -1220,6 +1226,16 @@ class Server:
         dbconn.commitChanges()
         self.Entropy.close_server_database(dbconn)
 
+    def update_repository_timestamp(self, repo = None):
+        if repo == None:
+            repo = self.Entropy.default_repository
+        ts_file = self.Entropy.get_local_database_timestamp_file(repo)
+        current_ts = self.Entropy.get_current_timestamp()
+        ts_f = open(ts_file,"w")
+        ts_f.write(current_ts)
+        ts_f.flush()
+        ts_f.close()
+
     def sync_database_treeupdates(self, repo = None):
 
         if repo == None:
@@ -1295,7 +1311,11 @@ class Server:
 
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
-            upload_data, critical, text_files = self.get_files_to_sync(cmethod, repo = repo)
+            # create/update timestamp file
+            self.update_repository_timestamp(repo)
+
+            upload_data, critical, text_files = self.get_files_to_sync(cmethod,
+                repo = repo)
 
             if lock_check:
                 given_up = self.mirror_lock_check(uri, repo = repo)

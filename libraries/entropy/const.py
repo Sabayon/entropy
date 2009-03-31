@@ -264,6 +264,7 @@ def const_default_settings(rootdir):
         # Gentoo xpak metadata file name
         'entropyxpakfilename': "metadata.xpak",
 
+        'etpdatabasetimestampfile': default_etp_dbfile+".timestamp",
         'etpdatabaseconflictingtaggedfile': default_etp_dbfile + \
             ".conflicting_tagged",
         # file containing a list of packages that are strictly
@@ -310,6 +311,7 @@ def const_default_settings(rootdir):
         'etpdatabasedumpgzip': default_etp_dbfile+".dump.gz",
         # Entropy sqlite database dump file
         'etpdatabasedump': default_etp_dbfile+".dump",
+
         # Entropy default compressed database format
         'etpdatabasefileformat': "bz2",
         # Entropy compressed databases format support
