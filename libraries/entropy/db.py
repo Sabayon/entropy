@@ -3559,7 +3559,8 @@ class LocalRepository:
     def listAllCategories(self, order_by = ''):
         order_by_string = ''
         if order_by: order_by_string = ' order by %s' % (order_by,)
-        self.cursor.execute('SELECT idcategory,category FROM categories %s' % (order_by_string,))
+        self.cursor.execute('SELECT idcategory,category FROM categories %s' % (
+            order_by_string,))
         return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
@@ -3568,7 +3569,8 @@ class LocalRepository:
         self.cursor.execute("""
         SELECT DISTINCT(protect) FROM configprotectreference 
         WHERE idprotect >= 1 AND 
-        idprotect <= (SELECT max(idprotect) FROM configprotect%s) ORDER BY protect""" % (mask_t,))
+        idprotect <= (SELECT max(idprotect) FROM configprotect%s) 
+        ORDER BY protect""" % (mask_t,))
         results = self.fetchall2set(self.cursor.fetchall())
         dirs = set()
         for mystr in results:
@@ -3580,12 +3582,15 @@ class LocalRepository:
         key, slot = self.retrieveKeySlot(idpackage)
 
         # if there are entries already, remove idpackage directly
-        my_idpackage, result = self.atomMatch(key, matchSlot = slot, matchBranches = (tobranch,))
+        my_idpackage, result = self.atomMatch(key, matchSlot = slot,
+            matchBranches = (tobranch,))
         if my_idpackage != -1: return False
 
         # otherwise, update the old one (set the new branch)
         with self.WriteLock:
-            self.cursor.execute('UPDATE baseinfo SET branch = (?) WHERE idpackage = (?)', (tobranch, idpackage,))
+            self.cursor.execute("""
+            UPDATE baseinfo SET branch = (?) 
+            WHERE idpackage = (?)""", (tobranch, idpackage,))
             self.commitChanges()
             self.clearCache()
         return True
@@ -3598,7 +3603,8 @@ class LocalRepository:
         if not self.doesTableExist("licensedata"):
             self.createLicensedataTable()
 
-        if not self.doesTableExist("licenses_accepted") and (self.dbname == etpConst['clientdbid']):
+        if not self.doesTableExist("licenses_accepted") and \
+            (self.dbname == etpConst['clientdbid']):
             self.createLicensesAcceptedTable()
 
         if not self.doesTableExist("trashedcounters"):
@@ -3607,7 +3613,8 @@ class LocalRepository:
         if not self.doesTableExist("counters"):
             self.createCountersTable()
 
-        if not self.doesTableExist("installedtable") and (self.dbname == etpConst['clientdbid']):
+        if not self.doesTableExist("installedtable") and \
+            (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
         if not self.doesTableExist("categoriesdescription"):
