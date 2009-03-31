@@ -675,6 +675,11 @@ class EntropyPackageView:
         if status != 0:
             for obj in objs:
                 obj.queued = q_cache.get(obj.matched_atom)
+        else:
+            # disable user selection
+            for obj in objs:
+                obj.selected_by_user = False
+
         self.view.queue_draw()
 
         return status
@@ -690,6 +695,10 @@ class EntropyPackageView:
         if status != 0:
             for obj in objs:
                 obj.queued = q_cache.get(obj.matched_atom)
+        else:
+            # enable user selection
+            for obj in objs:
+                obj.selected_by_user = True
 
         return status
 

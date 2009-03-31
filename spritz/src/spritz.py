@@ -1460,6 +1460,7 @@ class SpritzApplication(Controller):
             self.setPage('output')
             queue = pkgs['i']+pkgs['u']+pkgs['rr']
             install_queue = [x.matched_atom for x in queue]
+            selected_by_user = set([x.matched_atom for x in queue if x.selected_by_user])
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
 
@@ -1474,7 +1475,12 @@ class SpritzApplication(Controller):
                 self.my_inst_abort = False
                 def run_tha_bstrd():
                     try:
-                        e,i = controller.run(install_queue[:], removal_queue[:], do_purge_cache, fetch_only = fetch_only, download_sources = download_sources)
+                        import pdb; pdb.set_trace() 
+                        e, i = controller.run(install_queue[:],
+                            removal_queue[:], do_purge_cache,
+                            fetch_only = fetch_only,
+                            download_sources = download_sources,
+                            selected_by_user = selected_by_user)
                     except QueueError:
                         self.my_inst_abort = True
                         e,i = 1,None

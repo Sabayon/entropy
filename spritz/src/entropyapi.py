@@ -57,7 +57,11 @@ class QueueExecutor:
         else:
             return 0,licenses
 
-    def run(self, install_queue, removal_queue, do_purge_cache = [], fetch_only = False, download_sources = False):
+    def run(self, install_queue, removal_queue, do_purge_cache = [],
+        fetch_only = False, download_sources = False, selected_by_user = None):
+
+        if selected_by_user == None:
+            selected_by_user = set()
 
         # unmask packages
         for match in self.Spritz.etpbase.unmaskingPackages:
@@ -200,6 +204,13 @@ class QueueExecutor:
             metaopts = {}
             metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
             metaopts['removeconfig'] = False
+
+            if packageInfo in selected_by_user:
+                metaopts['install_source'] = etpConst['install_sources']['user']
+            else:
+                metaopts['install_source'] = \
+                    etpConst['install_sources']['automatic_dependency']
+
             Package = self.Entropy.Package()
             Package.prepare(packageInfo,"install", metaopts)
 

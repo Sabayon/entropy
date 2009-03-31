@@ -38,6 +38,7 @@ class DummyEntropyPackage:
         self.dbconn = None
         self.masked = None
         self.pkgset = False
+        self.selected_by_user = False
         self.dummy_type = dummy_type
         self.onlyname = onlyname
         self.set_names = set()
@@ -64,6 +65,7 @@ class EntropyPackage:
         self.voted = 0
         self.color = SpritzConf.color_normal
         self.remote = remote
+        self.selected_by_user = False
         self.set_names = set()
         self.set_matches = set()
         self.set_installed_matches = set()
