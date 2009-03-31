@@ -1075,7 +1075,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         t.start()
 
     if onlyfetch:
-        print_info(red(" @@ ")+blue("%s." % (_("Download completed"),) ))
+        print_info(red(" @@ ")+blue("%s." % (_("Download complete"),) ))
         return 0,0
 
     for match in runQueue:
@@ -1121,7 +1121,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
 
     del explicit_user_packages
-    print_info(red(" @@ ")+blue("%s." % (_("Installation completed"),) ))
+    print_info(red(" @@ ")+blue("%s." % (_("Installation complete"),) ))
     try:
         # clear resume information
         Equo.dumpTools.dumpobj(etpCache['install'],{})
