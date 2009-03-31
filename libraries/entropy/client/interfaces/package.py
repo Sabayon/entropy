@@ -964,8 +964,8 @@ class Package:
 
         # add idpk to the installedtable
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpackage)
-        self.Entropy.clientDbconn.addPackageToInstalledTable(idpackage, 
-            self.infoDict['repository'])
+        self.Entropy.clientDbconn.addPackageToInstalledTable(idpackage,
+            self.infoDict['repository'], self.infoDict['install_source'])
 
         automerge_data = self.infoDict.get('configprotect_data')
         if automerge_data:
@@ -2061,6 +2061,12 @@ class Package:
         # fetch abort function
         if self.metaopts.has_key('fetch_abort_function'):
             self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+
+        install_source = etpConst['install_sources']['unknown']
+        meta_inst_source = self.metaopts.get('install_source', install_source)
+        if meta_inst_source in etpConst['install_sources'].values():
+            install_source = meta_inst_source
+        self.infoDict['install_source'] = install_source
 
         self.infoDict['configprotect_data'] = []
         dbconn = self.Entropy.open_repository(repository)

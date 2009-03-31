@@ -577,6 +577,12 @@ def const_default_settings(rootdir):
             },
         },
 
+        'install_sources': {
+            'unknown': 0,
+            'user': 1,
+            'automatic_dependency': 2,
+        },
+
         'ugc_doctypes': {
             'comments': 1,
             'bbcode_doc': 2,

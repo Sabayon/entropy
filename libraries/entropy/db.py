@@ -4284,6 +4284,9 @@ class LocalRepository:
     def createInstalledTableSource(self):
         with self.WriteLock:
             self.cursor.execute('ALTER TABLE installedtable ADD source INTEGER;')
+            self.cursor.execute("""
+            UPDATE installedtable SET source = (?)
+            """, (etpConst['install_sources']['unknown'],))
 
     def createPackagechangelogsTable(self):
         with self.WriteLock:
