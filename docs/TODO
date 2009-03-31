@@ -3,8 +3,6 @@ TODO list
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   - reagent spm pkgset-update
-  - track down packages installed as dependency and packages installed as user request
-      in this way we could auto-removed unused deps
 
   - SHA512 instead of MD5
   - Improve packages injection speed
