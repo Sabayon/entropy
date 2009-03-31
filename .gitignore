@@ -42,4 +42,14 @@ libraries/entropy/tools.pyc
 libraries/entropy/transceivers.pyc
 libraries/entropy/xpak.pyc
 libraries/outputTools.pyc
-
+client/text_configuration.pyc
+spritz/src/dialogs.pyc
+spritz/src/entropyapi.pyc
+spritz/src/etpgui/__init__.pyc
+spritz/src/etpgui/packages.pyc
+spritz/src/etpgui/widgets.pyc
+spritz/src/filters.pyc
+spritz/src/misc.pyc
+spritz/src/packages.pyc
+spritz/src/spritz_setup.pyc
+spritz/src/views.pyc
