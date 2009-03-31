@@ -222,7 +222,8 @@ class Schema:
 
             CREATE TABLE installedtable (
                 idpackage INTEGER PRIMARY KEY,
-                repositoryname VARCHAR
+                repositoryname VARCHAR,
+                source INTEGER
             );
 
             CREATE TABLE sizes (
@@ -3617,6 +3618,11 @@ class LocalRepository:
             (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
+        if self.dbname == etpConst['clientdbid']:
+            if not self.doesColumnInTableExist("installedtable",
+                "source"):
+                self.createInstalledTableSource()
+
         if not self.doesTableExist("categoriesdescription"):
             self.createCategoriesdescriptionTable()
 
@@ -3903,24 +3909,33 @@ class LocalRepository:
 ##   Client Database API / but also used by server part
 #
 
-    def addPackageToInstalledTable(self, idpackage, repositoryName):
+    def updateInstalledTableSource(self, idpackage, source):
         with self.WriteLock:
-            self.cursor.execute('INSERT into installedtable VALUES (?,?)', (idpackage, repositoryName,))
-            self.commitChanges()
+            self.cursor.execute("""
+            UPDATE installedtable SET source = (?) WHERE idpackage = (?)
+            """, (source, idpackage,))
+
+    def addPackageToInstalledTable(self, idpackage, repoid, source = 0):
+        with self.WriteLock:
+            self.cursor.execute('INSERT into installedtable VALUES (?,?,?)',
+                (idpackage, repoid, source,))
+            # self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
-        result = 'Not available'
         with self.WriteLock:
             try:
-                self.cursor.execute('SELECT repositoryname FROM installedtable WHERE idpackage = (?)', (idpackage,))
-                return self.cursor.fetchone()[0] # it's ok because it's inside try/except
-            except:
-                pass
-        return result
+                self.cursor.execute("""
+                SELECT repositoryname FROM installedtable 
+                WHERE idpackage = (?)""", (idpackage,))
+                return self.cursor.fetchone()[0]
+            except (self.dbapi2.OperationalError,TypeError,):
+                return 'Not available'
 
     def removePackageFromInstalledTable(self, idpackage):
         with self.WriteLock:
-            self.cursor.execute('DELETE FROM installedtable WHERE idpackage = (?)', (idpackage,))
+            self.cursor.execute("""
+            DELETE FROM installedtable
+            WHERE idpackage = (?)""", (idpackage,))
 
     def removePackageFromDependsTable(self, idpackage):
         with self.WriteLock:
@@ -4265,6 +4280,10 @@ class LocalRepository:
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
+
+    def createInstalledTableSource(self):
+        with self.WriteLock:
+            self.cursor.execute('ALTER TABLE installedtable ADD source INTEGER;')
 
     def createPackagechangelogsTable(self):
         with self.WriteLock:
