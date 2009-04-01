@@ -240,19 +240,27 @@ def update(options):
     reagentRequestSeekStore = False
     reagentRequestRepackage = False
     reagentRequestAsk = True
+    reagentRequestOnlyAtoms = False
     repackageItems = []
+    onlyAtoms = []
     _options = []
     for opt in options:
-        if opt.startswith("--seekstore"):
+        if opt == "--seekstore":
             reagentRequestSeekStore = True
-        elif opt.startswith("--repackage"):
+        elif opt == "--repackage":
             reagentRequestRepackage = True
-        elif opt.startswith("--noask"):
+        elif opt == "--atoms":
+            reagentRequestOnlyAtoms = True
+        elif opt == "--noask":
             reagentRequestAsk = False
         else:
-            if (reagentRequestRepackage) and (not opt.startswith("--")):
+            if reagentRequestRepackage and (not opt.startswith("--")):
                 if not opt in repackageItems:
                     repackageItems.append(opt)
+                continue
+            elif reagentRequestOnlyAtoms and (not opt.startswith("--")):
+                if not opt in onlyAtoms:
+                    onlyAtoms.append(opt)
                 continue
             _options.append(opt)
     options = _options
@@ -290,6 +298,20 @@ def update(options):
         print_info(brown(" * ")+red("%s..." % (_("Scanning database for differences"),) ))
         myadded, toBeRemoved, toBeInjected = Entropy.scan_package_changes()
         toBeAdded |= myadded
+
+        if onlyAtoms:
+            toBeRemoved.clear()
+            toBeInjected.clear()
+            tba = dict(((x[0],x,) for x in toBeAdded))
+            tb_added_new = set()
+            for myatom in onlyAtoms:
+                if myatom in tba:
+                    tb_added_new.add(tba.get(myatom))
+                    continue
+                inst_myatom = Entropy.SpmService.get_installed_atom(myatom)
+                if inst_myatom in tba:
+                    tb_added_new.add(tba.get(inst_myatom))
+            toBeAdded = tb_added_new
 
         if not (len(toBeRemoved)+len(toBeAdded)+len(toBeInjected)):
             print_info(brown(" * ")+red("%s." % (_("Zarro thinggz totoo"),) ))
@@ -620,11 +642,19 @@ def spm(options):
     opts = []
     do_list = False
     do_rebuild = False
+    do_dbsync = False
+    do_dbupdate = False
     for opt in options:
         if opt == "--list":
             do_list = True
-        if opt == "--rebuild":
+        elif opt == "--rebuild":
             do_rebuild = True
+        elif opt == "--dbsync":
+            do_dbsync = True
+        elif opt == "--dbupdate":
+            do_dbupdate = True
+        elif opt.startswith("--"):
+            continue
         else:
             opts.append(opt)
     options = opts[:]
@@ -641,7 +671,8 @@ def spm(options):
         if options[0] == "categories":
             return spm_compile_categories(options[1:])
         elif options[0] == "pkgset":
-            return spm_compile_pkgset(options[1:], do_rebuild = do_rebuild)
+            return spm_compile_pkgset(options[1:], do_rebuild = do_rebuild,
+                do_dbupdate = do_dbupdate, do_dbsync = do_dbsync)
 
     elif action == "orphans":
 
@@ -660,7 +691,8 @@ def spm_compile_categories(options):
         os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
     return 0
 
-def spm_compile_pkgset(pkgsets, do_rebuild = False):
+def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
+    do_dbsync = False):
 
     if not pkgsets:
         print_error(bold(" !!! ")+darkred("%s." % (
@@ -685,6 +717,8 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False):
     if etpUi['pretend']:
         extra_args.append(etpConst['spm']['pretend_cmd'])
 
+    done_atoms = set()
+
     # expand package sets
     for pkgset in pkgsets:
 
@@ -696,11 +730,43 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False):
             set_atoms = [x for x in set_atoms if not \
                 Entropy.SpmService.get_installed_atom(x)]
         set_atoms = ["="+x for x in set_atoms]
+        if not set_atoms:
+            continue
 
         args = [etpConst['spm']['exec']]
         args.extend(extra_args)
         args.extend(set_atoms)
         rc = subprocess.call(args)
+        if rc != 0:
+            return rc
+        done_atoms |= set(set_atoms)
+
+    if not done_atoms:
+        print_warning(red(" @@ ")+blue("%s." % (
+            _("Nothing to do"),) ))
+        return 0
+
+    # compilation went fine, now push into entropy
+    if do_dbsync:
+        do_dbupdate = True
+
+    if do_dbupdate:
+        dbopts = []
+        if not etpUi['ask']:
+            dbopts.append("--noask")
+        dbopts.append("--atoms")
+        dbopts.extend(sorted(done_atoms))
+        rc = update(dbopts)
+        Entropy.close_server_databases()
+        if rc != 0:
+            return rc
+
+    if do_dbsync:
+        import server_activator
+        actopts = []
+        if not etpUi['ask']:
+            actopts.append("--noask")
+        rc = server_activator.sync(actopts)
         if rc != 0:
             return rc
 

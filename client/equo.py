@@ -229,6 +229,7 @@ myopts = [
                 (4,'--seekstore',2,_('analyze the Entropy Store directory directly')),
                 (4,'--repackage <atoms>',1,_('repackage the specified atoms')),
                 (4,'--noask',3,_('do not ask anything except critical things')),
+                (4,'--atoms <atoms>',1,_('manage only the specified atoms')),
             (3,'inject <packages>',1,_('add binary packages to repository w/o affecting scopes (multipackages)')),
                 (4,'--branch=<branch>',1,_('choose on what branch operating')),
         (2,'mirrors',2,_('community repositories mirrors management functions')),
@@ -307,6 +308,8 @@ myopts = [
                 (4,'pkgset',2,_('compile packages in provided package set names')),
                     (5,'--list',1,_('just list packages')),
                     (5,'--rebuild',1,_('rebuild everything')),
+                    (5,'--dbupdate',1,_('run database update if all went fine')),
+                    (5,'--dbsync',1,_('run mirror sync if all went fine')),
             (3,'orphans',2,_('scan orphaned packages on SPM')),
 
         None,
