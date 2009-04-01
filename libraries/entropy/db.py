@@ -1201,9 +1201,8 @@ class LocalRepository:
             # read: if package has been injected, we'll skip
             # the removal of packages in the same slot,
             # usually used server side btw
-            for oldpkg in searchsimilar:
+            for atom, idpackage in searchsimilar:
                 # get the package slot
-                idpackage = oldpkg[1]
                 myslot = self.retrieveSlot(idpackage)
                 # we merely ignore packages with
                 # negative counters, since they're the injected ones
@@ -1238,9 +1237,8 @@ class LocalRepository:
             )
             for r_idpackage in removelist:
                 manual_deps |= self.retrieveManualDependencies(r_idpackage)
-                self.removePackage(r_idpackage)
-
-        ### create new ids
+                self.removePackage(r_idpackage, do_cleanup = False,
+                    do_commit = False)
 
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(etpData['category'])
@@ -1274,19 +1272,9 @@ class LocalRepository:
             etpData['category'], etpData['name'], etpData['version'],
             etpData['versiontag'])
 
-        mybaseinfo_data = [
-            pkgatom,
-            catid,
-            etpData['name'],
-            etpData['version'],
-            etpData['versiontag'],
-            revision,
-            etpData['branch'],
-            etpData['slot'],
-            licid,
-            etpData['etpapi'],
-            trigger
-        ]
+        mybaseinfo_data = (pkgatom, catid, etpData['name'], etpData['version'],
+            etpData['versiontag'], revision, etpData['branch'], etpData['slot'],
+            licid, etpData['etpapi'], trigger,)
 
         myidpackage_string = 'NULL'
         if isinstance(idpackage, int):
@@ -1295,7 +1283,7 @@ class LocalRepository:
             self.removePackage(idpackage, do_cleanup = False,
                 do_commit = False, do_rss = False)
             myidpackage_string = '?'
-            mybaseinfo_data.insert(0, idpackage)
+            mybaseinfo_data = (idpackage,)+mybaseinfo_data
         else:
             idpackage = None
 
