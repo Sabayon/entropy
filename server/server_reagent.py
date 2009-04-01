@@ -20,6 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 
+import subprocess
 from entropy.const import *
 from entropy.output import *
 from entropy.server.interfaces import Server
@@ -618,9 +619,12 @@ def spm(options):
 
     opts = []
     do_list = False
+    do_rebuild = False
     for opt in options:
         if opt == "--list":
             do_list = True
+        if opt == "--rebuild":
+            do_rebuild = True
         else:
             opts.append(opt)
     options = opts[:]
@@ -632,18 +636,72 @@ def spm(options):
 
         options = options[1:]
         if not options:
-            return 0
-        categories = list(set(options[1:]))
-        categories.sort()
-        packages = Entropy.SpmService.get_available_packages(categories)
-        packages = list(packages)
-        packages.sort()
-        if do_list:
-            print ' '.join(["="+x for x in packages])
-        else:
-            os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
+            return 1
+
+        if options[0] == "categories":
+            return spm_compile_categories(options[1:])
+        elif options[0] == "pkgset":
+            return spm_compile_pkgset(options[1:], do_rebuild = do_rebuild)
 
     elif action == "orphans":
 
         not_found = Entropy.orphaned_spm_packages_test()
         return 0
+
+
+def spm_compile_categories(options):
+
+    categories = sorted(set(options))
+    packages = Entropy.SpmService.get_available_packages(categories)
+    packages = sorted(packages)
+    if do_list:
+        print ' '.join(["="+x for x in packages])
+    else:
+        os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
+    return 0
+
+def spm_compile_pkgset(pkgsets, do_rebuild = False):
+
+    if not pkgsets:
+        print_error(bold(" !!! ")+darkred("%s." % (
+            _("No package sets found"),) ))
+        return 1
+
+    # filter available sets
+    avail_sets = Entropy.SpmService.get_sets(False)
+    avail_pkgsets = dict(((x,avail_sets.get(x),) for x in pkgsets \
+        if x in avail_sets))
+    for pkgset in pkgsets:
+        if pkgset not in avail_sets:
+            print_error(bold(" !!! ")+darkred("%s: %s" % (
+                _("package set not found"),pkgset,) ))
+            return 1
+
+    extra_args = []
+    if etpUi['ask']:
+        extra_args.append(etpConst['spm']['ask_cmd'])
+    if etpUi['verbose']:
+        extra_args.append(etpConst['spm']['verbose_cmd'])
+    if etpUi['pretend']:
+        extra_args.append(etpConst['spm']['pretend_cmd'])
+
+    # expand package sets
+    for pkgset in pkgsets:
+
+        set_pkgs = [str(x) for x in Entropy.SpmService.get_set_atoms(pkgset)]
+        set_atoms = [Entropy.SpmService.get_best_atom(x) for x in set_pkgs]
+        set_atoms = [x for x in set_atoms if x != None]
+
+        if not do_rebuild:
+            set_atoms = [x for x in set_atoms if not \
+                Entropy.SpmService.get_installed_atom(x)]
+        set_atoms = ["="+x for x in set_atoms]
+
+        args = [etpConst['spm']['exec']]
+        args.extend(extra_args)
+        args.extend(set_atoms)
+        rc = subprocess.call(args)
+        if rc != 0:
+            return rc
+
+    return 0

@@ -304,6 +304,9 @@ myopts = [
             (3,'compile',2,_('compilation function')),
                 (4,'categories',1,_('compile packages belonging to the provided categories')),
                     (5,'--list',1,_('just list packages')),
+                (4,'pkgset',2,_('compile packages in provided package set names')),
+                    (5,'--list',1,_('just list packages')),
+                    (5,'--rebuild',1,_('rebuild everything')),
             (3,'orphans',2,_('scan orphaned packages on SPM')),
 
         None,
