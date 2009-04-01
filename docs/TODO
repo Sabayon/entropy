@@ -3,7 +3,6 @@ TODO list
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   - SHA512 instead of MD5
-  - Improve packages injection speed
   - Move entropy client settings in etpConst to SystemSettings
   - LZMA future support
   - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
