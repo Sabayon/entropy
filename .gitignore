@@ -1,3 +1,4 @@
+server/*.pyc
 client/text_cache.pyc
 client/text_query.pyc
 client/text_repositories.pyc
