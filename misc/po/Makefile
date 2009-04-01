@@ -62,10 +62,10 @@ install:	all
 	    l=`basename $$n .po`; \
 	    mo=$$l.mo; \
 	    if [ ! -f $$mo ]; then continue; fi; \
-	    $(INSTALL) -m 755 -d $(PREFIX)/$(INSTALLNLSDIR)/$$l; \
-	    $(INSTALL) -m 755 -d $(PREFIX)/$(INSTALLNLSDIR)/$$l/LC_MESSAGES; \
+	    $(INSTALL) -m 755 -d /$(PREFIX)/$(INSTALLNLSDIR)/$$l; \
+	    $(INSTALL) -m 755 -d /$(PREFIX)/$(INSTALLNLSDIR)/$$l/LC_MESSAGES; \
 	    $(INSTALL) -m 644 $$mo \
-		$(PREFIX)/$(INSTALLNLSDIR)/$$l/LC_MESSAGES/$(NLSPACKAGE).mo; \
+		/$(PREFIX)/$(INSTALLNLSDIR)/$$l/LC_MESSAGES/$(NLSPACKAGE).mo; \
 	done
 
 %.mo: %.po
