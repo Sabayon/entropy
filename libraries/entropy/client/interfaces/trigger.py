@@ -715,11 +715,12 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            self.trigger_configure_boot_grub(kernel,initramfs)
+            self.trigger_configure_boot_grub(kernel, initramfs)
 
     # FIXME: this only supports grub (no lilo support)
     def trigger_removebootablekernel(self):
-        kernels = [x for x in self.pkgdata['content'] if x.startswith("/boot/kernel-")]
+        kernels = [x for x in self.pkgdata['content'] if \
+            x.startswith("/boot/kernel-")]
         for kernel in kernels:
             initramfs = "/boot/initramfs-"+kernel[13:]
             if initramfs not in self.pkgdata['content']:
@@ -1280,9 +1281,11 @@ class Trigger:
             if etpUi['quiet']:
                 redirect = " &> /dev/null"
             if etpConst['systemroot']:
-                subprocess.call("echo '/usr/bin/gcc-config %s' | chroot %s %s" % (profile,etpConst['systemroot'],redirect,), shell = True)
+                subprocess.call("echo '/usr/bin/gcc-config %s' | chroot %s %s" % (
+                    profile, etpConst['systemroot'], redirect,), shell = True)
             else:
-                subprocess.call('/usr/bin/gcc-config %s %s' % (profile,redirect,), shell = True)
+                subprocess.call('/usr/bin/gcc-config %s %s' % (
+                    profile, redirect,), shell = True)
         return 0
 
     '''
@@ -1329,24 +1332,29 @@ class Trigger:
                 myroot = "/"
             else:
                 myroot = etpConst['systemroot']+"/"
-            subprocess.call('/sbin/depmod -a -b %s -r %s &> /dev/null' % (myroot,name,), shell = True)
+            subprocess.call('/sbin/depmod -a -b %s -r %s &> /dev/null' % (
+                myroot, name,), shell = True)
         return 0
 
     def __get_entropy_kernel_grub_line(self, kernel):
-        return "title="+etpConst['systemname']+" ("+os.path.basename(kernel)+")\n"
+        return "title=%s (%s)\n" % (etpConst['systemname'],
+            os.path.basename(kernel),)
 
     '''
     @description: append kernel entry to grub.conf
     @output: returns int() as exit status
     '''
-    def trigger_configure_boot_grub(self, kernel,initramfs):
+    def trigger_configure_boot_grub(self, kernel, initramfs):
 
         if not os.path.isdir(etpConst['systemroot']+"/boot/grub"):
             os.makedirs(etpConst['systemroot']+"/boot/grub")
+
         if os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
+
             # open in append
             grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","aw")
-            shutil.copy2(etpConst['systemroot']+"/boot/grub/grub.conf",etpConst['systemroot']+"/boot/grub/grub.conf.old.add")
+            shutil.copy2(etpConst['systemroot']+"/boot/grub/grub.conf",
+                etpConst['systemroot']+"/boot/grub/grub.conf.old.add")
             # get boot dev
             boot_dev = self.trigger_get_grub_boot_dev()
             # test if entry has been already added
@@ -1354,57 +1362,61 @@ class Trigger:
             content = grubtest.readlines()
             content = [unicode(x,'raw_unicode_escape') for x in content]
             for line in content:
+
                 if line.find(self.__get_entropy_kernel_grub_line(kernel)) != -1:
                     grubtest.close()
                     return
+
                 # also check if we have the same kernel listed
-                if (line.find("kernel") != 1) and (line.find(os.path.basename(kernel)) != -1) and not line.strip().startswith("#"):
+                if (line.find("kernel") != 1) and \
+                    (line.find(os.path.basename(kernel)) != -1) and not \
+                    line.strip().startswith("#"):
+
                     grubtest.close()
                     return
         else:
+
             # create
             boot_dev = "(hd0,0)"
             grub = open(etpConst['systemroot']+"/boot/grub/grub.conf","w")
-            # write header - guess (hd0,0)... since it is weird having a running system without a bootloader, at least, grub.
-            grub_header = '''
-default=0
-timeout=10
-            '''
-            grub.write(grub_header)
-        cmdline = ' '
-        if os.path.isfile("/proc/cmdline"):
-            f = open("/proc/cmdline","r")
-            cmdline = " "+f.readline().strip()
-            params = cmdline.split()
-            if "dolvm" not in params: # support new kernels >= 2.6.23
-                cmdline += " dolvm "
-            f.close()
+            # write header - guess (hd0,0)... since it is weird
+            # having a running system without a bootloader, at least, grub.
+            grub.write("default=0\ntimeout=10\n")
+
         grub.write(self.__get_entropy_kernel_grub_line(kernel))
         grub.write("\troot "+boot_dev+"\n")
-        grub.write("\tkernel "+kernel+cmdline+"\n")
+        grub.write("\tkernel "+kernel+"\n")
         if initramfs:
             grub.write("\tinitrd "+initramfs+"\n")
+        grub.write("\tsavedefault\n")
         grub.write("\n")
         grub.flush()
         grub.close()
 
     def trigger_remove_boot_grub(self, kernel,initramfs):
-        if os.path.isdir(etpConst['systemroot']+"/boot/grub") and os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
-            shutil.copy2(etpConst['systemroot']+"/boot/grub/grub.conf",etpConst['systemroot']+"/boot/grub/grub.conf.old.remove")
+
+        if os.path.isdir(etpConst['systemroot']+"/boot/grub") and \
+            os.path.isfile(etpConst['systemroot']+"/boot/grub/grub.conf"):
+
+            shutil.copy2(etpConst['systemroot']+"/boot/grub/grub.conf",
+                etpConst['systemroot']+"/boot/grub/grub.conf.old.remove")
             f = open(etpConst['systemroot']+"/boot/grub/grub.conf","r")
             grub_conf = f.readlines()
             f.close()
+
             content = [unicode(x,'raw_unicode_escape') for x in grub_conf]
             try:
-                kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),unicode(initramfs,'raw_unicode_escape'))
+                kernel, initramfs = (unicode(kernel,'raw_unicode_escape'),
+                    unicode(initramfs,'raw_unicode_escape'),)
             except TypeError:
                 pass
-            #kernelname = os.path.basename(kernel)
+
             new_conf = []
             skip = False
             for line in content:
 
-                if (line.find(self.__get_entropy_kernel_grub_line(kernel)) != -1):
+                kernel_grub_line = self.__get_entropy_kernel_grub_line(kernel)
+                if (line.find(kernel_grub_line) != -1):
                     skip = True
                     continue
 
@@ -1420,12 +1432,15 @@ timeout=10
                     f.write(line)
                 except UnicodeEncodeError:
                     f.write(line.encode('utf-8'))
+
             f.flush()
             f.close()
 
     def trigger_get_grub_boot_dev(self):
+
         if etpConst['systemroot']:
             return "(hd0,0)"
+
         import re
         df_avail = subprocess.call("which df &> /dev/null", shell = True)
         if df_avail != 0:
