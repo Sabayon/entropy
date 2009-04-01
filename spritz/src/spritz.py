@@ -1475,7 +1475,6 @@ class SpritzApplication(Controller):
                 self.my_inst_abort = False
                 def run_tha_bstrd():
                     try:
-                        import pdb; pdb.set_trace() 
                         e, i = controller.run(install_queue[:],
                             removal_queue[:], do_purge_cache,
                             fetch_only = fetch_only,
