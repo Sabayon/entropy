@@ -190,6 +190,15 @@ myopts = [
         (2,'--verbose',1,_('show more details')),
         (2,'--quiet',2,_('print results in a scriptable way')),
     None,
+
+]
+
+myopts_ext_info = [
+    (0,_('!!! Use --verbose to get full help output'),0,None),
+    None,
+]
+
+myopts_extended = [
     (0,_('Extended Options'),0,None),
     None,
     (1,'smart',2,_('handles extended functionalities')),
@@ -386,6 +395,10 @@ options = _options
 # print help
 if (not options) or ("--help" in options):
     print_menu(myopts)
+    if etpUi['verbose']:
+        print_menu(myopts_extended)
+    else:
+        print_menu(myopts_ext_info)
     if not options:
         print_error("not enough parameters")
     raise SystemExit(1)
