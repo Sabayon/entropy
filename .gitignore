@@ -53,3 +53,7 @@ spritz/src/misc.pyc
 spritz/src/packages.pyc
 spritz/src/spritz_setup.pyc
 spritz/src/views.pyc
+libraries/entropy/server/__init__.pyc
+libraries/entropy/server/interfaces/__init__.pyc
+libraries/entropy/server/interfaces/main.pyc
+libraries/entropy/server/interfaces/mirrors.pyc
