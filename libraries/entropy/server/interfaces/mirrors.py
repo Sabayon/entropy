@@ -1179,13 +1179,12 @@ class Server:
         lock_file = self.get_database_lockfile(repo)
         if not os.path.isfile(lock_file) and ftp.is_file_available(os.path.basename(lock_file)):
             self.Entropy.updateProgress(
-                red("[repo:%s|%s|%s] %s, %s" % (
-                    repo,
-                    crippled_uri,
-                    _("locking"),
-                    _("mirror already locked"),
-                    _("waiting up to 2 minutes before giving up"),
-                )
+                "[repo:%s|%s|%s] %s, %s" % (
+                    brown(str(repo)),
+                    darkgreen(crippled_uri),
+                    red(_("locking")),
+                    darkblue(_("mirror already locked")),
+                    blue(_("waiting up to 2 minutes before giving up")),
                 ),
                 importance = 1,
                 type = "warning",
