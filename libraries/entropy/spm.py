@@ -1416,6 +1416,10 @@ class PortagePlugin:
             for pkg_set in builtin_pkg_sets: mysets.pop(pkg_set)
         return mysets
 
+    def get_set_atoms(self, pkgset_obj):
+        config = self.get_set_config()
+        if config == None: return []
+        return config.getSetAtoms(pkgset_obj).copy()
 
     def get_sets_expanded(self, builtin_sets = True):
         config = self.get_set_config()
