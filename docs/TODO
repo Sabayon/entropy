@@ -2,8 +2,6 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  - reagent spm compile pkgset
-  - check savedefault grub/trigger
   - equo: --verbose shows extended options?
   - SHA512 instead of MD5
   - Improve packages injection speed
