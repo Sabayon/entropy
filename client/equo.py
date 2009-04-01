@@ -250,6 +250,7 @@ myopts = [
             (3,'db-lock-status',2,_('show current lock status')),
             (3,'tidy',3,_('remove binary packages not in repositories and expired')),
 
+        None,
 
         (2,'database',1,_('community repositories database functions')),
             (3,'--initialize',2,_('(re)initialize the current repository database')),
@@ -268,6 +269,8 @@ myopts = [
             (3,'backup',2,_('backup current repository database')),
             (3,'restore',2,_('restore a previously backed-up repository database')),
 
+        None,
+
         (2,'repo',2,_('manage a repository')),
             (3,'enable <repo>',3,_('enable the specified repository')),
             (3,'disable <repo>',3,_('disable the specified repository')),
@@ -278,9 +281,11 @@ myopts = [
             (3,'copy <from> <to> [atoms]',1,_('copy packages from a repository to another')),
             (3,'default <repo_id>',2,_('set the default repository')),
 
+        None,
+
         (2,'query',2,_('do some searches into community repository databases')),
             (3,'belongs',3,_('show from what package the provided files belong')),
-            (3,'changelog',1,_('show packages changelog')),
+            (3,'changelog',2,_('show packages changelog')),
             (3,'depends',3,_('show what packages depend on the provided atoms')),
             (3,'description',2,_('search packages by description')),
             (3,'eclass',3,_('search packages using the provided eclasses')),
@@ -293,10 +298,22 @@ myopts = [
             (3,'--verbose',2,_('show more details')),
             (3,'--quiet',3,_('print results in a scriptable way')),
 
+        None,
+
+        (2,'spm',2,_('source package manager functions')),
+            (3,'compile',2,_('compilation function')),
+                (4,'categories',1,_('compile packages belonging to the provided categories')),
+                    (5,'--list',1,_('just list packages')),
+            (3,'orphans',2,_('scan orphaned packages on SPM')),
+
+        None,
+
         (2,'notice',2,_('notice board handling functions')),
             (3,'add',3,_('add a news item to the notice board')),
             (3,'remove',3,_('remove a news item from the notice board')),
             (3,'read',3,_('read the current notice board')),
+
+        None,
 
         (2,'deptest',2,_('look for unsatisfied dependencies across community repositories')),
         (2,'depends',2,_('regenerate the depends table')),
@@ -622,6 +639,16 @@ try:
                     rc = 1
                 else:
                     rc = server_query.query(myopts[1:])
+
+            elif myopts[0] == "spm":
+                    try:
+                        import server_reagent
+                    except ImportError:
+                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        rc = 1
+                    else:
+                        rc = server_reagent.spm(myopts[1:])
+                        server_reagent.Entropy.close_server_databases()
 
             elif myopts[0] == "deptest":
                 try:
