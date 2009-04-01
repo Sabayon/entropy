@@ -118,12 +118,12 @@ if not entropyTools.is_root():
     raise SystemExit(2)
 elif (options[0] == "sync"):
     import server_activator
-    server_activator.sync(options[1:])
-    raise SystemExit(0)
+    rc = server_activator.sync(options[1:])
+    raise SystemExit(rc)
 elif (options[0] == "tidy"):
     import server_activator
-    server_activator.sync(options[1:], justTidy = True)
-    raise SystemExit(0)
+    rc = server_activator.sync(options[1:], justTidy = True)
+    raise SystemExit(rc)
 elif (options[0] == "database"):
     import server_activator
     server_activator.database(options[1:])

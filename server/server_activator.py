@@ -39,7 +39,7 @@ def sync(options, justTidy = False):
             sync_all = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
-            return
+            return 1
         else:
             myopts.append(opt)
     options = myopts
@@ -88,6 +88,8 @@ def sync(options, justTidy = False):
 
     if old_default != Entropy.default_repository:
         Entropy.switch_default_repository(old_default)
+
+    return 0
 
 
 def packages(options):
