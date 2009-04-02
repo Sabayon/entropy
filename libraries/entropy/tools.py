@@ -1947,7 +1947,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
                     ugdata_valid = True
 
                 try:
-                    if ugdata_valid:
+                    if ugdata_valid: # FIXME: will be removed in 2011
                         # get uid/gid
                         # if not found, returns -1 that won't change anything
                         uid, gid = get_uid_from_user(uname), \
