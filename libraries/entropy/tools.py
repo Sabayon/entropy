@@ -80,6 +80,18 @@ def get_gid_from_group(groupname):
     except (KeyError, IndexError,):
         return -1
 
+def get_user_from_uid(uid):
+    try:
+        return pwd.getpwuid(uid)[0]
+    except KeyError:
+        return None
+
+def get_group_from_gid(gid):
+    try:
+        grp.getgrgid(gid)[0]
+    except (KeyError, IndexError,):
+        return -1
+
 def kill_threads():
     const_kill_threads()
 
