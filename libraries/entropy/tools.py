@@ -32,6 +32,8 @@ import time
 import shutil
 import tarfile
 import subprocess
+import grp
+import pwd
 from entropy.misc import TimeScheduled, ParallelTask as parallelTask, Lifo as lifobuffer
 from entropy.output import *
 from entropy.const import *
@@ -41,8 +43,6 @@ def is_root():
     return not etpConst['uid']
 
 def is_user_in_entropy_group(uid = None):
-
-    import grp,pwd
 
     if uid == None:
         uid = os.getuid()
@@ -67,6 +67,18 @@ def is_user_in_entropy_group(uid = None):
             return False
 
     return True
+
+def get_uid_from_user(username):
+    try:
+        return pwd.getpwnam(username)[2]
+    except (KeyError, IndexError,):
+        return -1
+
+def get_gid_from_group(groupname):
+    try:
+        grp.getgrnam(groupname)[2]
+    except (KeyError, IndexError,):
+        return -1
 
 def kill_threads():
     const_kill_threads()
@@ -571,10 +583,28 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
             epath = os.path.join(dest_path, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
+
+                # this is mandatory on uid/gid that don't exist
+                # and in this strict order !!
+                uname = tarinfo.uname
+                gname = tarinfo.gname
+                ugdata_valid = False
                 try:
-                    os.chown(epath, tarinfo.uid, tarinfo.gid)
+                    int(gname)
+                    int(uname)
+                except ValueError:
+                    ugdata_valid = True
+
+                try:
+                    if ugdata_valid:
+                        # get uid/gid
+                        # if not found, returns -1 that won't change anything
+                        uid, gid = get_uid_from_user(uname), \
+                            get_gid_from_group(gname)
+                        os.lchown(epath, uid, gid)
                 except OSError:
                     pass
+
                 tar.utime(tarinfo, epath)
                 tar.chmod(tarinfo, epath)
             except tarfile.ExtractError:
@@ -1892,12 +1922,28 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
             epath = os.path.join(encoded_path, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
+
                 # this is mandatory on uid/gid that don't exist
                 # and in this strict order !!
+                uname = tarinfo.uname
+                gname = tarinfo.gname
+                ugdata_valid = False
                 try:
-                    os.chown(epath, tarinfo.uid, tarinfo.gid)
+                    int(gname)
+                    int(uname)
+                except ValueError:
+                    ugdata_valid = True
+
+                try:
+                    if ugdata_valid:
+                        # get uid/gid
+                        # if not found, returns -1 that won't change anything
+                        uid, gid = get_uid_from_user(uname), \
+                            get_gid_from_group(gname)
+                        os.lchown(epath, uid, gid)
                 except OSError:
                     pass
+
                 tar.utime(tarinfo, epath)
                 tar.chmod(tarinfo, epath)
             except tarfile.ExtractError:
