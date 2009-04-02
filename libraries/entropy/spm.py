@@ -516,18 +516,6 @@ class PortagePlugin:
                 lpath = os.path.realpath(lpath)
             tarinfo = tar.gettarinfo(lpath, arcname)
 
-            uid = tarinfo.uid
-            gid = tarinfo.gid
-            user = self.entropyTools.get_user_from_uid(uid)
-            group = self.entropyTools.get_group_from_gid(gid)
-            if user == None:
-                user = str(uid)
-            if group == None:
-                group = str(gid)
-
-            tarinfo.uname = id_strings.setdefault(tarinfo.uid, user)
-            tarinfo.gname = id_strings.setdefault(tarinfo.gid, group)
-
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
                 f = open(path)
