@@ -32956,7 +32956,7 @@ class EntropyDatabaseInterface:
             )
             for r_idpackage in removelist:
                 manual_deps |= self.retrieveManualDependencies(r_idpackage)
-                self.removePackage(r_idpackage)
+                self.removePackage(r_idpackage, do_cleanup = False, do_commit = False)
 
         ### create new ids
 
