@@ -546,33 +546,41 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
         return False
 
     try:
+
+        dest_path = dest_path.encode('utf-8')
         def mymf(tarinfo):
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
-                try: os.makedirs(os.path.join(dest_path.encode('utf-8'), tarinfo.name), 0777)
-                except EnvironmentError: pass
+                try:
+                    os.makedirs(os.path.join(dest_path, tarinfo.name), 0777)
+                except EnvironmentError:
+                    pass
                 return tarinfo
-            tar.extract(tarinfo, dest_path.encode('utf-8'))
+            tar.extract(tarinfo, dest_path)
             del tar.members[:]
-            return 0
+            return tarinfo
 
         def mycmp(a,b):
-            return cmp(a.name,b.name)
+            return cmp(a.name, b.name)
 
-        directories = sorted([x for x in map(mymf,tar) if type(x) != int], mycmp, reverse = True)
+        directories = sorted(map(mymf, tar), mycmp, reverse = True)
 
         # Set correct owner, mtime and filemode on directories.
         def mymf2(tarinfo):
             epath = os.path.join(dest_path, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
+                try:
+                    os.chown(epath, tarinfo.uid, tarinfo.gid)
+                except OSError:
+                    pass
                 tar.utime(tarinfo, epath)
                 tar.chmod(tarinfo, epath)
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     return False
-        done = map(mymf2,directories)
+        done = map(mymf2, directories)
         del done
 
     except EOFError:
@@ -1859,33 +1867,43 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
 
     try:
 
+        encoded_path = extractPath.encode('utf-8')
         def mymf(tarinfo):
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
-                try: os.makedirs(os.path.join(extractPath.encode('utf-8'), tarinfo.name), 0777)
-                except EnvironmentError: pass
+                try:
+                    os.makedirs(os.path.join(encoded_path, tarinfo.name), 0777)
+                except EnvironmentError:
+                    pass
                 return tarinfo
-            tar.extract(tarinfo, extractPath.encode('utf-8'))
+
+            tar.extract(tarinfo, encoded_path)
             del tar.members[:]
-            return 0
+            return tarinfo
 
         def mycmp(a,b):
             return cmp(a.name,b.name)
 
-        directories = sorted([x for x in map(mymf,tar) if type(x) != int], mycmp, reverse = True)
+        entries = sorted(map(mymf, tar), mycmp, reverse = True)
 
         # Set correct owner, mtime and filemode on directories.
         def mymf2(tarinfo):
-            epath = os.path.join(extractPath, tarinfo.name)
+            epath = os.path.join(encoded_path, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
+                # this is mandatory on uid/gid that don't exist
+                # and in this strict order !!
+                try:
+                    os.chown(epath, tarinfo.uid, tarinfo.gid)
+                except OSError:
+                    pass
                 tar.utime(tarinfo, epath)
                 tar.chmod(tarinfo, epath)
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     raise
-        done = map(mymf2,directories)
+        done = map(mymf2, entries)
         del done
 
     except EOFError:
