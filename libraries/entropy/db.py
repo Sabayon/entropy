@@ -4341,7 +4341,9 @@ class LocalRepository:
         up = self.updateProgress
         for iddep, atom in depends:
             count += 1
-            if output:
+            if output and ((count == 0) or (count % 150 == 0) or \
+                (count == total)):
+
                 up( red("Resolving %s") % (atom,), importance = 0,
                     type = "info", back = True, count = (count, total)
                 )
