@@ -32,15 +32,27 @@ import threading
 import time
 import commands
 import shutil
+import grp
+import pwd
 
 def isRoot():
     if (etpConst['uid'] == 0):
         return True
     return False
 
-def is_user_in_entropy_group(uid = None):
+def get_uid_from_user(username):
+    try:
+        return pwd.getpwnam(username)[2]
+    except (KeyError, IndexError,):
+        return -1
 
-    import grp,pwd
+def get_gid_from_group(groupname):
+    try:
+        return grp.getgrnam(groupname)[2]
+    except (KeyError, IndexError,):
+        return -1
+
+def is_user_in_entropy_group(uid = None):
 
     if uid == None:
         uid = os.getuid()
@@ -1926,29 +1938,49 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
 
     try:
 
+        extractPath = extractPath.encode('utf-8')
         def mymf(tarinfo):
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
-                try: os.makedirs(os.path.join(extractPath.encode('utf-8'), tarinfo.name), 0777)
+                try: os.makedirs(os.path.join(extractPath, tarinfo.name), 0777)
                 except EnvironmentError: pass
                 return tarinfo
-            tar.extract(tarinfo, extractPath.encode('utf-8'))
+            tar.extract(tarinfo, extractPath)
             del tar.members[:]
-            return 0
+            return tarinfo
 
         def mycmp(a,b):
             return cmp(a.name,b.name)
 
-        directories = sorted([x for x in map(mymf,tar) if type(x) != int], mycmp, reverse = True)
+        directories = sorted(map(mymf,tar), mycmp, reverse = True)
 
         # Set correct owner, mtime and filemode on directories.
         def mymf2(tarinfo):
+
             epath = os.path.join(extractPath, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
+
+                uname = tarinfo.uname
+                gname = tarinfo.gname
+                ugdata_valid = False
+                try:
+                    int(gname)
+                    int(uname)
+                except ValueError:
+                    ugdata_valid = True
+
+                try:
+                    if ugdata_valid:
+                        uid, gid = get_uid_from_user(uname), get_gid_from_group(gname)
+                    os.lchown(epath, uid, gid)
+                except OSError:
+                    pass
+
                 tar.utime(tarinfo, epath)
                 tar.chmod(tarinfo, epath)
+
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     raise
