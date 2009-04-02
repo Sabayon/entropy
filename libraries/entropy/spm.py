@@ -527,7 +527,6 @@ class PortagePlugin:
 
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, user)
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, group)
-            print "uname, gname", tarinfo.uname, tarinfo.gname
 
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
