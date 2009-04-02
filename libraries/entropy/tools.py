@@ -76,7 +76,7 @@ def get_uid_from_user(username):
 
 def get_gid_from_group(groupname):
     try:
-        grp.getgrnam(groupname)[2]
+        return grp.getgrnam(groupname)[2]
     except (KeyError, IndexError,):
         return -1
 
@@ -88,7 +88,7 @@ def get_user_from_uid(uid):
 
 def get_group_from_gid(gid):
     try:
-        grp.getgrgid(gid)[0]
+        return grp.getgrgid(gid)[0]
     except (KeyError, IndexError,):
         return -1
 
