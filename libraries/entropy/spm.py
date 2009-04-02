@@ -499,7 +499,6 @@ class PortagePlugin:
         tar = tarfile.open(dirpath,"w:bz2")
 
         contents = dblnk.getcontents()
-        id_strings = {}
         paths = sorted(contents.keys())
 
         for path in paths:

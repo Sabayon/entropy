@@ -1333,7 +1333,6 @@ class Misc:
         if not fake:
 
             contents = sorted([x for x in pkgdata['content']])
-            id_strings = {}
 
             # collect files
             for path in contents:
