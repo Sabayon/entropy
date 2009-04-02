@@ -1974,7 +1974,7 @@ def uncompressTarBz2(filepath, extractPath = None, catchEmpty = False):
                 try:
                     if ugdata_valid:
                         uid, gid = get_uid_from_user(uname), get_gid_from_group(gname)
-                    os.lchown(epath, uid, gid)
+                        os.lchown(epath, uid, gid)
                 except OSError:
                     pass
 
