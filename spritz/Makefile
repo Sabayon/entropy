@@ -1,12 +1,11 @@
 SUBDIRS = src src/etpgui 
 PYFILES = $(wildcard *.py)
 PKGNAME = spritz
-VERSION=$(shell awk '/Version:/ { print $$2 }' ${PKGNAME}.spec)
-PYTHON=python
-SRCDIR=src
-MISCDIR=misc
-PIXDIR=gfx
-ALLDIRS=src src/etpgui gfx misc tools
+PYTHON = python2
+SRCDIR = src
+MISCDIR = misc
+PIXDIR = gfx
+ALLDIRS = src src/etpgui gfx misc
 
 all: subdirs
 	
@@ -18,7 +17,7 @@ clean:
 	for d in $(SUBDIRS); do make -C $$d clean ; done
 
 install:
-	mkdir -p $(DESTDIR)/usr/lib/entropy/spritz
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/spritz
 	mkdir -p $(DESTDIR)/usr/share/pixmaps/spritz/packages
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/mimelnk/application
@@ -28,7 +27,7 @@ install:
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
-	install -m644 COPYING $(DESTDIR)/usr/lib/entropy/spritz/.
+	install -m644 COPYING $(DESTDIR)/$(LIBDIR)/entropy/spritz/.
 	install -m755 $(MISCDIR)/entropy-repo-manager $(DESTDIR)/usr/bin/.
 	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/bin/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/spritz/.
@@ -38,7 +37,7 @@ install:
 	install -m644 $(MISCDIR)/entropy-mimetypes.xml $(DESTDIR)/usr/share/mime/packages/.
 	chmod +x $(DESTDIR)/usr/bin/spritz
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.
-	for d in $(SUBDIRS); do make DESTDIR=`cd $(DESTDIR); pwd` -C $$d install; [ $$? = 0 ] || exit 1; done
+	for d in $(SUBDIRS); do make DESTDIR=`cd $(DESTDIR); pwd` LIBDIR=$(LIBDIR) -C $$d install; [ $$? = 0 ] || exit 1; done
 
 
 FORCE:
