@@ -36,6 +36,7 @@ from entropy.client.interfaces.client import Client
 class Package:
 
     import entropy.tools as entropyTools
+    import entropy.dump as dumpTools
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance,Client):
@@ -195,9 +196,9 @@ class Package:
                 except EOFError:
                     self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"EOFError on "+self.infoDict['pkgpath'])
                     rc = 1
-                except (UnicodeEncodeError,UnicodeDecodeError,):
+                except (UnicodeEncodeError, UnicodeDecodeError, self.dumpTools.pickle.PicklingError,):
                     # this will make devs to actually catch the right exception and prepare a fix
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Raising Unicode Error for "+self.infoDict['pkgpath'])
+                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Raising Unicode/Pickling Error for "+self.infoDict['pkgpath'])
                     rc = self.entropyTools.uncompress_tar_bz2(
                         self.infoDict['pkgpath'],self.infoDict['imagedir'],
                         catchEmpty = True
