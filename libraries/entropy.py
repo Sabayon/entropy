@@ -4440,7 +4440,6 @@ class EquoInterface(Singleton,TextInterface):
         if not fake:
 
             contents = sorted([x for x in pkgdata['content']])
-            id_strings = {}
 
             # collect files
             for path in contents:
@@ -4463,8 +4462,6 @@ class EquoInterface(Singleton,TextInterface):
                     path = os.path.realpath(path)
 
                 tarinfo = tar.gettarinfo(path, arcname)
-                tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
-                tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 
                 if stat.S_ISREG(exist.st_mode):
                     tarinfo.type = tarfile.REGTYPE
@@ -13342,7 +13339,6 @@ class PortageInterface:
         tar = tarfile.open(dirpath,"w:bz2")
 
         contents = dblnk.getcontents()
-        id_strings = {}
         paths = sorted(contents.keys())
 
         for path in paths:
@@ -13358,8 +13354,6 @@ class PortageInterface:
                 os.path.isdir(lpath):
                 lpath = os.path.realpath(lpath)
             tarinfo = tar.gettarinfo(lpath, arcname)
-            tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
-            tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
 
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.type = tarfile.REGTYPE
