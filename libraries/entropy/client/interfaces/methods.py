@@ -402,6 +402,8 @@ class Repository:
     def reopen_client_repository(self):
         self.clientDbconn.closeDB()
         self.open_client_repository()
+        # make sure settings are in sync
+        self.SystemSettings.clear()
 
     def __client_repo_setup_const(self, conn):
         if conn.doesTableExist('configprotect') and conn.doesTableExist('configprotectreference'):
