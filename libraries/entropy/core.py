@@ -149,6 +149,7 @@ class SystemSettings(Singleton):
             mytxt = _("A valid Client/Server interface instance is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = entropy_instance
+        self.__scan() # do this again to re-fill settings
 
     def __setup_const(self):
 
