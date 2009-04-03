@@ -779,7 +779,6 @@ def const_read_repo_settings():
             if not os.path.isdir(etpConst['packagesbindir']+"/"+branch) and \
                 (etpConst['uid'] == 0):
 
-                # check if we have a broken symlink
                 os.makedirs(etpConst['packagesbindir']+"/"+branch)
 
     for line in repositoriesconf:
