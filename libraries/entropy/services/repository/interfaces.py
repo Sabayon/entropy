@@ -37,6 +37,10 @@ class Server(SocketHost):
     import entropy.tools as entropyTools
     import entropy.dump as dumpTools
     def __init__(self, repositories, do_ssl = False, stdout_logging = True, **kwargs):
+
+        # instantiate critical constants
+        etpConst['socket_service']['max_connections'] = 5000
+
         from entropy.services.repository.commands import Repository
         self.RepositoryCommands = Repository
         from entropy.db import dbapi2
@@ -50,7 +54,12 @@ class Server(SocketHost):
             'db_trashed': set(),
             'dbs_not_available': set(),
         }
-        etpConst['socket_service']['max_connections'] = 5000
+
+        # setup System Settings
+        from entropy.core import SystemSettings
+        self.SystemSettings = SystemSettings(self.Entropy)
+        self.SystemSettings['socket_service']['max_connections'] = 5000
+
         etpConst['socketloglevel'] = 1
         if not kwargs.has_key('external_cmd_classes'):
             kwargs['external_cmd_classes'] = []
