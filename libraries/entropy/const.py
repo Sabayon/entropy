@@ -122,7 +122,6 @@ def initconfig_entropy_constants(rootdir):
     const_setup_entropy_pid()
     const_read_entropy_settings()
     const_read_repo_settings()
-    const_read_socket_settings()
     const_configure_lock_paths()
     initconfig_client_constants()
     # server stuff
@@ -547,7 +546,9 @@ def const_default_settings(rootdir):
         'genericdbid': "generic",
         'systemreleasefile': "/etc/sabayon-release",
 
-        'socket_service': {
+        # these are constants, for real settings
+        # look ad SystemSettings class
+        'socket_service': { # here are the constants
             'hostname': "localhost",
             'port': 1026,
             'ssl_port': 1027, # above + 1
@@ -847,107 +848,6 @@ def const_read_repo_settings():
                 etpConst['securityurl'] = url
             except (IndexError, ValueError, TypeError,):
                 continue
-
-def const_read_socket_settings():
-
-    """
-    Setup Entropy TCP socket based Server settings reading them from
-    the relative config file specified in etpConst['socketconf']
-
-    @return None
-    """
-
-    sock_conf = etpConst['socketconf']
-    if not (os.path.isfile(sock_conf) and \
-        os.access(sock_conf,os.R_OK)):
-        return
-
-    socket_f = open(sock_conf,"r")
-    socketconf = [x.strip() for x in socket_f.readlines()  if \
-        x.strip() and not x.strip().startswith("#")]
-    socket_f.close()
-
-    for line in socketconf:
-
-        if line.startswith("listen|") and (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            if item:
-                etpConst['socket_service']['hostname'] = item
-
-        elif line.startswith("listen-port|") and \
-            (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            try:
-                item = int(item)
-                etpConst['socket_service']['port'] = item
-            except ValueError:
-                pass
-
-        elif line.startswith("listen-timeout|") and \
-            (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            try:
-                item = int(item)
-                etpConst['socket_service']['timeout'] = item
-            except ValueError:
-                pass
-
-        elif line.startswith("listen-threads|") and \
-            (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            try:
-                item = int(item)
-                etpConst['socket_service']['threads'] = item
-            except ValueError:
-                pass
-
-        elif line.startswith("session-ttl|") and \
-            (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            try:
-                item = int(item)
-                etpConst['socket_service']['session_ttl'] = item
-            except ValueError:
-                pass
-
-        elif line.startswith("max-connections|") and \
-            (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            try:
-                item = int(item)
-                etpConst['socket_service']['max_connections'] = item
-            except ValueError:
-                pass
-
-        elif line.startswith("ssl-port|") and \
-            (len(line.split("|")) > 1):
-
-            item = line.split("|")[1].strip()
-            try:
-                item = int(item)
-                etpConst['socket_service']['ssl_port'] = item
-            except ValueError:
-                pass
-
-        elif line.startswith("disabled-commands|") and \
-            (len(line.split("|")) > 1):
-
-            disabled_cmds = line.split("|")[1].strip().split()
-            for disabled_cmd in disabled_cmds:
-                etpConst['socket_service']['disabled_cmds'].add(disabled_cmd)
-
-        elif line.startswith("ip-blacklist|") and \
-            (len(line.split("|")) > 1):
-
-            ips_blacklist = line.split("|")[1].strip().split()
-            for ip_blacklist in ips_blacklist:
-                etpConst['socket_service']['ip_blacklist'].add(ip_blacklist)
 
 def const_read_entropy_settings():
 
