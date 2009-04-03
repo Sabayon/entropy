@@ -58,6 +58,10 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         self.noclientdb = False
         self.openclientdb = True
 
+        from entropy.core import SystemSettings
+        # setup package settings (masking and other stuff)
+        self.SystemSettings = SystemSettings()
+
         # modules import
         import entropy.dump as dumpTools
         import entropy.tools as entropyTools
@@ -86,9 +90,13 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         # mirror status interface
         self.MirrorStatus = StatusInterface()
 
-        from entropy.core import SystemSettings
-        # setup package settings (masking and other stuff)
-        self.SystemSettings = SystemSettings(self)
+        if noclientdb in (False,0):
+            self.noclientdb = False
+        elif noclientdb in (True,1):
+            self.noclientdb = True
+        elif noclientdb == 2:
+            self.noclientdb = True
+            self.openclientdb = False
 
         # load User Generated Content Interface
         if load_ugc:
@@ -98,13 +106,6 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         # class init
         Loaders.__init__(self)
 
-        if noclientdb in (False,0):
-            self.noclientdb = False
-        elif noclientdb in (True,1):
-            self.noclientdb = True
-        elif noclientdb == 2:
-            self.noclientdb = True
-            self.openclientdb = False
         self.xcache = xcache
         shell_xcache = os.getenv("ETP_NOCACHE")
         if shell_xcache:
@@ -128,6 +129,9 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
 
         if self.openclientdb:
             self.open_client_repository()
+
+        # Make sure we connect Entropy AFTER client db init
+        self.SystemSettings.connect_entropy(self)
 
         # needs to be started here otherwise repository cache will be
         # always dropped
