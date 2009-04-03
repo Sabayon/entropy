@@ -771,7 +771,8 @@ class Server:
 
     def update_notice_board(self, title, notice_text, link = None, repo = None):
 
-        rss_title = "%s Notice Board" % (etpConst['systemname'],)
+        sys_settings = self.Entropy.SystemSettings
+        rss_title = "%s Notice Board" % (sys_settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
         if not link: link = etpConst['rss-website-url']
@@ -794,8 +795,9 @@ class Server:
 
     def remove_from_notice_board(self, identifier, repo = None):
 
+        sys_settings = self.Entropy.SystemSettings
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        rss_title = "%s Notice Board" % (etpConst['systemname'],)
+        rss_title = "%s Notice Board" % (sys_settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         if not (os.path.isfile(rss_path) and os.access(rss_path,os.R_OK)):
             return 0
@@ -806,14 +808,17 @@ class Server:
 
     def update_rss_feed(self, repo = None):
 
+        sys_settings = self.Entropy.SystemSettings
         #db_dir = self.Entropy.get_local_database_dir(repo)
         rss_path = self.Entropy.get_local_database_rss_file(repo)
         rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
         rss_dump_name = etpConst['rss-dump-name']
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
-        rss_title = "%s Online Repository Status" % (etpConst['systemname'],)
-        rss_description = "Keep you updated on what's going on in the %s Repository." % (etpConst['systemname'],)
+        rss_title = "%s Online Repository Status" % (
+            sys_settings['system']['name'],)
+        rss_description = "Keep you updated on what's going on in the %s Repository." % (
+            sys_settings['system']['name'],)
         Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = etpConst['rss-max-entries'])
         # load dump
         db_actions = self.Cacher.pop(rss_dump_name)
@@ -827,7 +832,12 @@ class Server:
             commitmessage = ''
             if self.Entropy.rssMessages['commitmessage']:
                 commitmessage = ' :: '+self.Entropy.rssMessages['commitmessage']
-            title = ": "+etpConst['systemname']+" "+etpConst['product'][0].upper()+etpConst['product'][1:]+" "+etpConst['branch']+" :: Revision: "+revision+commitmessage
+
+            title = ": " + sys_settings['system']['name'] + " " + \
+                etpConst['product'][0].upper() + etpConst['product'][1:] + \
+                " " + etpConst['branch'] + " :: Revision: " + revision + \
+                commitmessage
+
             link = etpConst['rss-base-url']
             # create description
             added_items = db_actions.get("added")

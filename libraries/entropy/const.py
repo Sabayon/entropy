@@ -120,7 +120,6 @@ def initconfig_entropy_constants(rootdir):
     const_read_entropy_release()
     const_create_working_dirs()
     const_setup_entropy_pid()
-    const_read_entropy_settings()
     const_read_repo_settings()
     const_configure_lock_paths()
     initconfig_client_constants()
@@ -356,13 +355,13 @@ def const_default_settings(rootdir):
         # by equo inside triggerTools
         'triggername': "trigger",
         'trigger_sh_interpreter': "/usr/sbin/entropy.sh",
+        # proxy configuration constants, used system wide
         'proxy': {
             'ftp': None,
             'http': None,
             'username': None,
             'password': None
-        }, # proxy configuration information, used system wide
-
+        },
         # Entropy log level (default: 1 - see entropy.conf for more info)
         'entropyloglevel': 1,
         # Entropy Socket Interface log level
@@ -848,83 +847,6 @@ def const_read_repo_settings():
                 etpConst['securityurl'] = url
             except (IndexError, ValueError, TypeError,):
                 continue
-
-def const_read_entropy_settings():
-
-    """
-    Setup Entropy settings by reading them from the relative
-    config file specified in etpConst['entropyconf']
-
-    @return None
-    """
-
-    etp_conf = etpConst['entropyconf']
-    if not os.path.isfile(etp_conf) and \
-        os.access(etp_conf,os.R_OK):
-        return
-
-    const_secure_config_file(etp_conf)
-    entropy_f = open(etp_conf,"r")
-    entropyconf = [x.strip() for x in entropy_f.readlines()  if \
-        x.strip() and not x.strip().startswith("#")]
-    entropy_f.close()
-
-    for line in entropyconf:
-
-        if line.startswith("loglevel|") and \
-            (len(line.split("loglevel|")) == 2):
-
-            loglevel = line.split("loglevel|")[1]
-            try:
-                loglevel = int(loglevel)
-            except ValueError:
-                pass
-            if (loglevel > -1) and (loglevel < 3):
-                etpConst['entropyloglevel'] = loglevel
-
-        elif line.startswith("ftp-proxy|") and \
-            (len(line.split("|")) == 2):
-
-            ftpproxy = line.split("|")[1].strip().split()
-            if ftpproxy:
-                etpConst['proxy']['ftp'] = ftpproxy[-1]
-
-        elif line.startswith("http-proxy|") and \
-            (len(line.split("|")) == 2):
-
-            httpproxy = line.split("|")[1].strip().split()
-            if httpproxy:
-                etpConst['proxy']['http'] = httpproxy[-1]
-
-        elif line.startswith("proxy-username|") and \
-            (len(line.split("|")) == 2):
-
-            httpproxy = line.split("|")[1].strip().split()
-            if httpproxy:
-                etpConst['proxy']['username'] = httpproxy[-1]
-
-        elif line.startswith("proxy-password|") and \
-            (len(line.split("|")) == 2):
-
-            httpproxy = line.split("|")[1].strip().split()
-            if httpproxy:
-                etpConst['proxy']['password'] = httpproxy[-1]
-
-        elif line.startswith("system-name|") and \
-            (len(line.split("|")) == 2):
-
-            etpConst['systemname'] = line.split("|")[1].strip()
-
-        elif line.startswith("nice-level|") and \
-            (len(line.split("|")) == 2):
-
-            mylevel = line.split("|")[1].strip()
-            try:
-                mylevel = int(mylevel)
-                if (mylevel >= -19) and (mylevel <= 19):
-                    const_set_nice_level(mylevel)
-            except (ValueError,):
-                pass
 
 def const_read_entropy_release():
     """

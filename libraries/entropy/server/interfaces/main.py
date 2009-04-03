@@ -31,6 +31,7 @@ from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred, darkblue
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
+from entropy.core import SystemSettings
 
 class Server(Singleton,TextInterface):
 
@@ -42,8 +43,9 @@ class Server(Singleton,TextInterface):
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
         from entropy.misc import LogFile
+        sys_settings = SystemSettings()
         self.serverLog = LogFile(
-            level = etpConst['entropyloglevel'],
+            level = sys_settings['system']['log_level'],
             filename = etpConst['entropylogfile'],
             header = "[server]"
         )
@@ -2046,16 +2048,16 @@ class Server(Singleton,TextInterface):
         request = os.path.join(url,etpConst['handlers']['md5sum'])
         request += filename+"&branch="+branch
 
-        # now pray the server
+        proxy_settings = self.SystemSettings['system']['proxy']
         try:
             mydict = {}
-            if etpConst['proxy']['ftp']:
-                mydict['ftp'] = etpConst['proxy']['ftp']
-            if etpConst['proxy']['http']:
-                mydict['http'] = etpConst['proxy']['http']
+            if proxy_settings['ftp']:
+                mydict['ftp'] = proxy_settings['ftp']
+            if proxy_settings['http']:
+                mydict['http'] = proxy_settings['http']
             if mydict:
-                mydict['username'] = etpConst['proxy']['username']
-                mydict['password'] = etpConst['proxy']['password']
+                mydict['username'] = proxy_settings['username']
+                mydict['password'] = proxy_settings['password']
                 self.entropyTools.add_proxy_opener(urllib2, mydict)
             else:
                 # unset

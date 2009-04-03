@@ -1307,6 +1307,8 @@ class SocketHost:
 
         def docmd_hello(self, transmitter):
             from entropy.tools import getstatusoutput
+            from entropy.core import SystemSettings
+            sys_settings = SystemSettings()
             uname = os.uname()
             kern_string = uname[2]
             running_host = uname[1]
@@ -1315,7 +1317,7 @@ class SocketHost:
             text = "Entropy Server %s, connections: %s ~ running on: %s ~ host: %s ~ arch: %s, kernel: %s, stats: %s\n" % (
                     etpConst['entropyversion'],
                     self.HostInterface.connections,
-                    etpConst['systemname'],
+                    sys_settings['system']['name'],
                     running_host,
                     running_arch,
                     kern_string,

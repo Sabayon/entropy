@@ -16,7 +16,8 @@ import gtk
 import gtkhtml2
 from entropy.const import etpConst
 from entropy.i18n import _
-
+from entropy.core import SystemSettings
+SysSettings = SystemSettings()
 
 class rhnGladeWindow:
     def __init__(self, filename, window_name):
@@ -81,7 +82,7 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
             sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
             sw.set_border_width(2)
             sw.add(html_view)
-            
+
             tab_label = gtk.Label(_("Critical Information"))
             tab_label.show()
 
@@ -139,11 +140,11 @@ class rhnRegistrationPromptDialog(rhnGladeWindow):
 
     def set_transient(self, papa):
         self.window.set_transient_for(papa.window)
-        
+
     def on_rhnreg(self, button):
         self.parent.launch_rhnreg()
         self.close_dialog()
-        
+
     def close_dialog(self, *rest):
         self.window.destroy()
         self.parent.rhnreg_dialog_closed()
@@ -152,11 +153,14 @@ class rhnRegistrationPromptDialog(rhnGladeWindow):
         self.close_dialog()
 
 class rhnAppletAboutWindow:
+
     def __init__(self, parent):
-        self.window = gnome.ui.About("%s Updates Applet" % (etpConst['systemname'],),
-                                     etpConst['entropyversion'], "Copyright (C) 2008, Sabayon Linux",
-                                     "Sabayon Linux. What else?",
-                                     [ "Sabayon Linux Team", "devel@sabayonlinux.org" ])
+        self.window = gnome.ui.About("%s Updates Applet" % (
+                SysSettings['system']['name'],
+            ),
+            etpConst['entropyversion'], "Copyright (C) 2009, Sabayon Linux",
+            "Sabayon Linux. What else?",
+            [ "Sabayon Linux Team", "devel@sabayonlinux.org" ])
         self.window.connect("destroy", self.on_close)
         self.parent = parent
         self.window.show()

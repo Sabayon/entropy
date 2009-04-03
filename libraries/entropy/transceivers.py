@@ -24,11 +24,12 @@ import os
 import urllib2
 import time
 from entropy.const import etpConst
-from entropy.output import TextInterface, darkblue, darkred, purple, blue, brown, darkgreen, red, bold
+from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
+    brown, darkgreen, red, bold
 from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
-
+from entropy.core import SystemSettings
 
 class urlFetcher:
 
@@ -38,6 +39,7 @@ class urlFetcher:
             thread_stop_func = None, speed_limit = etpConst['downloadspeedlimit'],
             OutputInterface = None):
 
+        self.__system_settings = SystemSettings()
         self.progress = None
         import entropy.tools as entropyTools
         import socket
@@ -135,13 +137,14 @@ class urlFetcher:
     def _setup_proxy(self):
         # setup proxy, doing here because config is dynamic
         mydict = {}
-        if etpConst['proxy']['ftp']:
-            mydict['ftp'] = etpConst['proxy']['ftp']
-        if etpConst['proxy']['http']:
-            mydict['http'] = etpConst['proxy']['http']
+        proxy_data = self.__system_settings['system']['proxy']
+        if proxy_data['ftp']:
+            mydict['ftp'] = proxy_data['ftp']
+        if proxy_data['http']:
+            mydict['http'] = proxy_data['http']
         if mydict:
-            mydict['username'] = etpConst['proxy']['username']
-            mydict['password'] = etpConst['proxy']['password']
+            mydict['username'] = proxy_data['username']
+            mydict['password'] = proxy_data['password']
             self.entropyTools.add_proxy_opener(urllib2, mydict)
         else:
             # unset

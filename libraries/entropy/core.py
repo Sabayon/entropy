@@ -24,7 +24,7 @@
 import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, const_setup_perms, etpRepositories, \
-    etpRepositoriesOrder
+    etpRepositoriesOrder, const_secure_config_file, const_set_nice_level
 from entropy.i18n import _
 
 class Singleton(object):
@@ -180,6 +180,7 @@ class SystemSettings(Singleton):
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
             'socket_service': etpConst['socketconf'],
+            'system': etpConst['entropyconf'],
         })
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
@@ -873,6 +874,84 @@ class SystemSettings(Singleton):
                     data['ip_blacklist'].add(ip_blacklist)
 
         return data
+
+    def system_parser(self):
+
+        data = {}
+        data['proxy'] = etpConst['proxy'].copy()
+        data['name'] = etpConst['systemname']
+        data['log_level'] = etpConst['entropyloglevel']
+
+        etp_conf = self.__setting_files['system']
+        if not os.path.isfile(etp_conf) and \
+            os.access(etp_conf,os.R_OK):
+            return
+
+        const_secure_config_file(etp_conf)
+        entropy_f = open(etp_conf,"r")
+        entropyconf = [x.strip() for x in entropy_f.readlines()  if \
+            x.strip() and not x.strip().startswith("#")]
+        entropy_f.close()
+
+        for line in entropyconf:
+
+            if line.startswith("loglevel|") and \
+                (len(line.split("loglevel|")) == 2):
+
+                loglevel = line.split("loglevel|")[1]
+                try:
+                    loglevel = int(loglevel)
+                except ValueError:
+                    pass
+                if (loglevel > -1) and (loglevel < 3):
+                    data['log_level'] = loglevel
+
+            elif line.startswith("ftp-proxy|") and \
+                (len(line.split("|")) == 2):
+
+                ftpproxy = line.split("|")[1].strip().split()
+                if ftpproxy:
+                    data['proxy']['ftp'] = ftpproxy[-1]
+
+            elif line.startswith("http-proxy|") and \
+                (len(line.split("|")) == 2):
+
+                httpproxy = line.split("|")[1].strip().split()
+                if httpproxy:
+                    data['proxy']['http'] = httpproxy[-1]
+
+            elif line.startswith("proxy-username|") and \
+                (len(line.split("|")) == 2):
+
+                httpproxy = line.split("|")[1].strip().split()
+                if httpproxy:
+                    data['proxy']['username'] = httpproxy[-1]
+
+            elif line.startswith("proxy-password|") and \
+                (len(line.split("|")) == 2):
+
+                httpproxy = line.split("|")[1].strip().split()
+                if httpproxy:
+                    data['proxy']['password'] = httpproxy[-1]
+
+            elif line.startswith("system-name|") and \
+                (len(line.split("|")) == 2):
+
+                data['name'] = line.split("|")[1].strip()
+
+            elif line.startswith("nice-level|") and \
+                (len(line.split("|")) == 2):
+
+                mylevel = line.split("|")[1].strip()
+                try:
+                    mylevel = int(mylevel)
+                    if (mylevel >= -19) and (mylevel <= 19):
+                        const_set_nice_level(mylevel)
+                except (ValueError,):
+                    pass
+
+        return data
+
 
     def __generic_parser(self, filepath):
         """

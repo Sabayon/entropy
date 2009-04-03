@@ -30,6 +30,8 @@ from entropy.exceptions import *
 from entropy.const import *
 from entropy.output import *
 import entropy.tools as entropyTools
+from entropy.core import SystemSettings
+SysSettings = SystemSettings()
 try:
     from entropy.i18n import _
 except ImportError:
@@ -63,7 +65,7 @@ etpExitMessages = {
 
 myopts = [
     None,
-    (0," ~ "+etpConst['systemname']+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
+    (0," ~ %s ~ " % (SysSettings['system']['name'],) ,1,'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
     None,
     (0,_('Basic Options'),0,None),
     None,

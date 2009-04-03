@@ -445,20 +445,23 @@ class ErrorReportInterface:
     import entropy.tools as entropyTools
     def __init__(self, post_url = etpConst['handlers']['errorsend']):
         from entropy.misc import MultipartPostHandler
+        from entropy.core import SystemSettings
         import urllib2
         self.url = post_url
         self.opener = urllib2.build_opener(MultipartPostHandler)
         self.generated = False
         self.params = {}
 
+        sys_settings = SystemSettings()
+        proxy_settings = sys_settings['system']['proxy']
         mydict = {}
-        if etpConst['proxy']['ftp']:
-            mydict['ftp'] = etpConst['proxy']['ftp']
-        if etpConst['proxy']['http']:
-            mydict['http'] = etpConst['proxy']['http']
+        if proxy_settings['ftp']:
+            mydict['ftp'] = proxy_settings['ftp']
+        if proxy_settings['http']:
+            mydict['http'] = proxy_settings['http']
         if mydict:
-            mydict['username'] = etpConst['proxy']['username']
-            mydict['password'] = etpConst['proxy']['password']
+            mydict['username'] = proxy_settings['username']
+            mydict['password'] = proxy_settings['password']
             self.entropyTools.add_proxy_opener(urllib2,mydict)
         else:
             # unset

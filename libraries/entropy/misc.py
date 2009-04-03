@@ -27,6 +27,7 @@ import time
 import urllib2
 import threading
 from entropy.const import etpConst, etpUi
+from entropy.core import SystemSettings
 
 class Lifo:
 
@@ -330,13 +331,14 @@ class rssFeed:
     import tools as entropyTools
     def __init__(self, filename, title, description, maxentries = 100):
 
+        self.__system_settings = SystemSettings()
         self.__feed_title = title
         self.__feed_title = self.__feed_title.strip()
         self.__feed_description = description
         self.__feed_language = "en-EN"
         self.__feed_editor = etpConst['rss-managing-editor']
         self.__feed_copyright = "%s - (C) %s" % (
-            etpConst['systemname'],
+            self.__system_settings['system']['name'],
             self.entropyTools.get_year(),
         )
 
@@ -446,7 +448,7 @@ class rssFeed:
         if link:
             self.__items[self.__itemscounter]['guid'] = link
         else:
-            myguid = etpConst['systemname'].lower()
+            myguid = self.__system_settings['system']['name'].lower()
             myguid = myguid.replace(" ", "")
             self.__items[self.__itemscounter]['guid'] = myguid+"~" + \
                 description + str(self.__itemscounter)

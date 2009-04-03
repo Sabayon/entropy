@@ -32,10 +32,12 @@ from entropy.i18n import _
 import entropy.tools as entropyTools
 from entropy.output import *
 from entropy.const import *
+from entropy.core import SystemSettings
+SysSettings = SystemSettings()
 
 myopts = [
     None,
-    (0," ~ "+etpConst['systemname']+" ~ "+sys.argv[0]+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
+    (0," ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ",1,'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
     None,
     (0,_('Basic Options'),0,None),
     None,

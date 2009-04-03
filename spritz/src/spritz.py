@@ -957,7 +957,7 @@ class SpritzApplication(Controller):
             etpConst['entropyconf']: [
                 (
                     'ftp-proxy',
-                    etpConst['proxy']['ftp'],
+                    self.Equo.SystemSettings['system']['proxy']['ftp'],
                     basestring,
                     fillSetting,
                     saveSetting,
@@ -966,7 +966,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'http-proxy',
-                    etpConst['proxy']['http'],
+                    self.Equo.SystemSettings['system']['proxy']['http'],
                     basestring,
                     fillSetting,
                     saveSetting,
@@ -975,7 +975,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'proxy-username',
-                    etpConst['proxy']['username'],
+                    self.Equo.SystemSettings['system']['proxy']['username'],
                     basestring,
                     fillSetting,
                     saveSetting,
@@ -984,7 +984,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'proxy-password',
-                    etpConst['proxy']['password'],
+                    self.Equo.SystemSettings['system']['proxy']['password'],
                     basestring,
                     fillSetting,
                     saveSetting,

@@ -1337,8 +1337,8 @@ class Trigger:
         return 0
 
     def __get_entropy_kernel_grub_line(self, kernel):
-        return "title=%s (%s)\n" % (etpConst['systemname'],
-            os.path.basename(kernel),)
+        sys_name = self.Entropy.SystemSettings['system']['name']
+        return "title=%s (%s)\n" % (sys_name, os.path.basename(kernel),)
 
     '''
     @description: append kernel entry to grub.conf

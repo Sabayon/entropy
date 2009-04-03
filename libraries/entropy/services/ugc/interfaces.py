@@ -186,7 +186,9 @@ class Server(RemoteDatabase):
         self.initialize_tables()
         self.initialize_doctypes()
         self.setup_store_path(store_path)
-        self.system_name = etpConst['systemname']
+        from entropy.core import SystemSettings
+        self.__system_settings = SystemSettings()
+        self.system_name = self.__system_settings['system']['name']
         from datetime import datetime
         self.datetime = datetime
         try:
