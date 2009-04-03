@@ -1423,26 +1423,36 @@ class SocketHost:
         )
 
         # settings
+        from entropy.core import SystemSettings
+        import copy
+        """
+        SystemSettings is a singleton, and we just need to read
+        socket configuration. we don't want to mess other instances
+        so we pay attention to not use it more than what is needed.
+        """
+        sys_settings = SystemSettings()
+        self.__socket_settings = copy.deepcopy(sys_settings['socket_service'])
+
         self.SessionsLock = self.threading.Lock()
         self.fork_requests = True # used by the command processor
-        self.fork_request_timeout_seconds = etpConst['socket_service']['forked_requests_timeout']
+        self.fork_request_timeout_seconds = self.__socket_settings['forked_requests_timeout']
         self.stdout_logging = True
-        self.timeout = etpConst['socket_service']['timeout']
-        self.hostname = etpConst['socket_service']['hostname']
-        self.session_ttl = etpConst['socket_service']['session_ttl']
+        self.timeout = self.__socket_settings['timeout']
+        self.hostname = self.__socket_settings['hostname']
+        self.session_ttl = self.__socket_settings['session_ttl']
         if self.hostname == "*": self.hostname = ''
-        self.port = etpConst['socket_service']['port']
-        self.threads = etpConst['socket_service']['threads'] # maximum number of allowed sessions
-        self.max_connections = etpConst['socket_service']['max_connections']
-        self.max_connections_per_host = etpConst['socket_service']['max_connections_per_host']
-        self.max_connections_per_host_barrier = etpConst['socket_service']['max_connections_per_host_barrier']
-        self.max_command_length = etpConst['socket_service']['max_command_length']
-        self.disabled_commands = etpConst['socket_service']['disabled_cmds']
-        self.ip_blacklist = etpConst['socket_service']['ip_blacklist']
+        self.port = self.__socket_settings['port']
+        self.threads = self.__socket_settings['threads'] # maximum number of allowed sessions
+        self.max_connections = self.__socket_settings['max_connections']
+        self.max_connections_per_host = self.__socket_settings['max_connections_per_host']
+        self.max_connections_per_host_barrier = self.__socket_settings['max_connections_per_host_barrier']
+        self.max_command_length = self.__socket_settings['max_command_length']
+        self.disabled_commands = self.__socket_settings['disabled_cmds']
+        self.ip_blacklist = self.__socket_settings['ip_blacklist']
+        self.answers = self.__socket_settings['answers']
         self.connections = 0
         self.per_host_connections = {}
         self.sessions = {}
-        self.answers = etpConst['socket_service']['answers']
         self.__output = None
         self.SSL = {}
         self.SSL_exceptions = {}
@@ -1512,12 +1522,12 @@ class SocketHost:
         self.SSL_exceptions['SysCallError'] = SSL.SysCallError
         self.SSL['m'] = SSL
         self.SSL['crypto'] = crypto
-        self.SSL['key'] = etpConst['socket_service']['ssl_key']
-        self.SSL['cert'] = etpConst['socket_service']['ssl_cert']
-        self.SSL['ca_cert'] = etpConst['socket_service']['ssl_ca_cert']
-        self.SSL['ca_pkey'] = etpConst['socket_service']['ssl_ca_pkey']
+        self.SSL['key'] = self.__socket_settings['ssl_key']
+        self.SSL['cert'] = self.__socket_settings['ssl_cert']
+        self.SSL['ca_cert'] = self.__socket_settings['ssl_ca_cert']
+        self.SSL['ca_pkey'] = self.__socket_settings['ssl_ca_pkey']
         # change port
-        self.port = etpConst['socket_service']['ssl_port']
+        self.port = self.__socket_settings['ssl_port']
         self.SSL['not_before'] = 0
         self.SSL['not_after'] = 60*60*24*365*5 # 5 years
         self.SSL['serial'] = 0
