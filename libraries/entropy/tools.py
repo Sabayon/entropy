@@ -34,7 +34,6 @@ import tarfile
 import subprocess
 import grp
 import pwd
-from entropy.misc import TimeScheduled, ParallelTask as parallelTask, Lifo as lifobuffer
 from entropy.output import *
 from entropy.const import *
 from entropy.exceptions import *
