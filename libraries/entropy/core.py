@@ -74,7 +74,7 @@ class SystemSettings(Singleton):
     """
 
     import entropy.tools as entropyTools
-    def init_singleton(self, entropy_client_instance):
+    def init_singleton(self, entropy_client_instance = None):
 
         """
         Replaces __init__ because SystemSettings is a Singleton.
@@ -87,13 +87,14 @@ class SystemSettings(Singleton):
 
         self.__data = {}
         self.__is_destroyed = False
-        from entropy.client.interfaces import Client
-        if not isinstance(entropy_client_instance, Client):
-            mytxt = _("A valid Client interface instance is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        if entropy_client_instance != None:
+            from entropy.client.interfaces import Client
+            if not isinstance(entropy_client_instance, Client):
+                mytxt = _("A valid Client interface instance is needed")
+                raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = entropy_client_instance
 
-        self.__settings = {}
+        self.__setting_files = {}
         self.__mtime_files = {}
         self.__persistent_settings = {
             'pkg_masking_reasons': {
@@ -147,10 +148,10 @@ class SystemSettings(Singleton):
         @return None
         """
 
-        self.__settings.clear()
+        self.__setting_files.clear()
         self.__mtime_files.clear()
 
-        self.__settings.update({
+        self.__setting_files.update({
              # keywording configuration files
             'keywords': etpConst['confpackagesdir']+"/package.keywords",
              # unmasking configuration files
@@ -167,15 +168,16 @@ class SystemSettings(Singleton):
             'conflicting_tagged_packages': {},
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
+            'socket_service': etpConst['socketconf'],
         })
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
         trunk_fsdirs_conf = "../conf/fsdirs.conf"
         trunk_fsdirsmask_conf = "../conf/fsdirsmask.conf"
         if os.path.isfile(trunk_fsdirs_conf):
-            self.__settings['system_dirs'] = trunk_fsdirs_conf
+            self.__setting_files['system_dirs'] = trunk_fsdirs_conf
         if os.path.isfile(trunk_fsdirsmask_conf):
-            self.__settings['system_dirs_mask'] = trunk_fsdirsmask_conf
+            self.__setting_files['system_dirs_mask'] = trunk_fsdirsmask_conf
 
         dmp_dir = etpConst['dumpstoragedir']
         self.__mtime_files.update({
@@ -216,8 +218,8 @@ class SystemSettings(Singleton):
         # match installed packages of system_mask
         mask_installed = []
         mask_installed_keys = {}
-        if self.Entropy.clientDbconn != None:
-            while 1:
+        if self.Entropy != None:
+            while (self.Entropy.clientDbconn != None):
                 try:
                     self.Entropy.clientDbconn.validateDatabase()
                 except SystemDatabaseError:
@@ -435,20 +437,20 @@ class SystemSettings(Singleton):
             if os.path.isfile(ct_path) and os.access(ct_path, os.R_OK):
                 confl_tagged[repoid] = ct_path
 
-            self.__settings['repos_mask'].update(repos_mask_setting)
+            self.__setting_files['repos_mask'].update(repos_mask_setting)
             self.__mtime_files['repos_mask'].update(repos_mask_mtime)
 
-            self.__settings['repos_license_whitelist'].update(
+            self.__setting_files['repos_license_whitelist'].update(
                 repos_lic_wl_setting)
             self.__mtime_files['repos_license_whitelist'].update(
                 repos_lic_wl_mtime)
 
-            self.__settings['repos_system_mask'].update(
+            self.__setting_files['repos_system_mask'].update(
                 repos_sm_mask_setting)
             self.__mtime_files['repos_system_mask'].update(
                 repos_sm_mask_mtime)
 
-            self.__settings['conflicting_tagged_packages'].update(
+            self.__setting_files['conflicting_tagged_packages'].update(
                 confl_tagged)
 
     def __setup_package_sets_vars(self):
@@ -474,7 +476,7 @@ class SystemSettings(Singleton):
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     continue
                 pkg_set_data[set_file] = os.path.join(sets_dir, set_file)
-        self.__settings['system_package_sets'].update(pkg_set_data)
+        self.__setting_files['system_package_sets'].update(pkg_set_data)
 
     def __parse(self):
         """
@@ -489,7 +491,7 @@ class SystemSettings(Singleton):
         self.__setup_package_sets_vars()
 
         data = {}
-        for item in self.__settings:
+        for item in self.__setting_files:
             myattr = '%s_parser' % (item,)
             if not hasattr(self, myattr):
                 continue
@@ -502,9 +504,9 @@ class SystemSettings(Singleton):
         Return a copy of the internal *files* dictionary.
         This dict contains config file paths and their identifiers.
 
-        @return dict __settings
+        @return dict __setting_files
         """
-        return self.__settings.copy()
+        return self.__setting_files.copy()
 
     def get_mtime_files_data(self):
         """
@@ -530,10 +532,10 @@ class SystemSettings(Singleton):
                 'repositories': {},
         }
 
-        self.__validate_entropy_cache(self.__settings['keywords'],
+        self.__validate_entropy_cache(self.__setting_files['keywords'],
             self.__mtime_files['keywords_mtime'])
         content = [x.split() for x in \
-            self.__generic_parser(self.__settings['keywords']) \
+            self.__generic_parser(self.__setting_files['keywords']) \
             if len(x.split()) < 4]
         for keywordinfo in content:
             # skip wrong lines
@@ -597,9 +599,9 @@ class SystemSettings(Singleton):
 
         @return list parsed data
         """
-        self.__validate_entropy_cache(self.__settings['unmask'],
+        self.__validate_entropy_cache(self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
-        return self.__generic_parser(self.__settings['unmask'])
+        return self.__generic_parser(self.__setting_files['unmask'])
 
     def mask_parser(self):
         """
@@ -610,9 +612,9 @@ class SystemSettings(Singleton):
 
         @return list parsed data
         """
-        self.__validate_entropy_cache(self.__settings['mask'],
+        self.__validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
-        return self.__generic_parser(self.__settings['mask'])
+        return self.__generic_parser(self.__setting_files['mask'])
 
     def system_mask_parser(self):
         """
@@ -624,9 +626,9 @@ class SystemSettings(Singleton):
 
         @return list parsed data
         """
-        self.__validate_entropy_cache(self.__settings['system_mask'],
+        self.__validate_entropy_cache(self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
-        return self.__generic_parser(self.__settings['system_mask'])
+        return self.__generic_parser(self.__setting_files['system_mask'])
 
     def license_mask_parser(self):
         """
@@ -636,9 +638,9 @@ class SystemSettings(Singleton):
 
         @return list parsed data
         """
-        self.__validate_entropy_cache(self.__settings['license_mask'],
+        self.__validate_entropy_cache(self.__setting_files['license_mask'],
             self.__mtime_files['license_mask_mtime'])
-        return self.__generic_parser(self.__settings['license_mask'])
+        return self.__generic_parser(self.__setting_files['license_mask'])
 
     def repos_license_whitelist_parser(self):
         """
@@ -648,13 +650,13 @@ class SystemSettings(Singleton):
         @return dict parsed data
         """
         data = {}
-        for repoid in self.__settings['repos_license_whitelist']:
+        for repoid in self.__setting_files['repos_license_whitelist']:
             self.__validate_entropy_cache(
-                self.__settings['repos_license_whitelist'][repoid],
+                self.__setting_files['repos_license_whitelist'][repoid],
                 self.__mtime_files['repos_license_whitelist'][repoid],
                 repoid = repoid)
             data[repoid] = self.__generic_parser(
-                self.__settings['repos_license_whitelist'][repoid])
+                self.__setting_files['repos_license_whitelist'][repoid])
         return data
 
     def repos_mask_parser(self):
@@ -665,12 +667,12 @@ class SystemSettings(Singleton):
         @return dict parsed data
         """
         data = {}
-        for repoid in self.__settings['repos_mask']:
+        for repoid in self.__setting_files['repos_mask']:
             self.__validate_entropy_cache(
-                self.__settings['repos_mask'][repoid],
+                self.__setting_files['repos_mask'][repoid],
                 self.__mtime_files['repos_mask'][repoid], repoid = repoid)
             data[repoid] = self.__generic_parser(
-                self.__settings['repos_mask'][repoid])
+                self.__setting_files['repos_mask'][repoid])
             # why ? line = line.split()[0] in the previous one?
         return data
 
@@ -685,13 +687,13 @@ class SystemSettings(Singleton):
         @return dict parsed data
         """
         data = []
-        for repoid in self.__settings['repos_system_mask']:
+        for repoid in self.__setting_files['repos_system_mask']:
             self.__validate_entropy_cache(
-                self.__settings['repos_system_mask'][repoid],
+                self.__setting_files['repos_system_mask'][repoid],
                 self.__mtime_files['repos_system_mask'][repoid],
                 repoid = repoid)
             data += [x for x in self.__generic_parser(
-                self.__settings['repos_system_mask'][repoid]) if x \
+                self.__setting_files['repos_system_mask'][repoid]) if x \
                     not in data]
             # why ? line = line.split()[0] in the previous one?
         return data
@@ -704,8 +706,8 @@ class SystemSettings(Singleton):
         @return dict parsed data
         """
         data = {}
-        for set_name in self.__settings['system_package_sets']:
-            set_filepath = self.__settings['system_package_sets'][set_name]
+        for set_name in self.__setting_files['system_package_sets']:
+            set_filepath = self.__setting_files['system_package_sets'][set_name]
             set_elements = self.entropyTools.extract_packages_from_set_file(
                 set_filepath)
             if set_elements:
@@ -718,7 +720,7 @@ class SystemSettings(Singleton):
 
         @return list parsed data
         """
-        return self.__generic_parser(self.__settings['system_dirs'])
+        return self.__generic_parser(self.__setting_files['system_dirs'])
 
     def system_dirs_mask_parser(self):
         """
@@ -727,7 +729,7 @@ class SystemSettings(Singleton):
 
         @return list parsed data
         """
-        return self.__generic_parser(self.__settings['system_dirs_mask'])
+        return self.__generic_parser(self.__setting_files['system_dirs_mask'])
 
     def conflicting_tagged_packages_parser(self):
         """
@@ -740,9 +742,9 @@ class SystemSettings(Singleton):
         data = {}
         # keep priority order
         repoids = [x for x in etpRepositoriesOrder if x in \
-            self.__settings['conflicting_tagged_packages']]
+            self.__setting_files['conflicting_tagged_packages']]
         for repoid in repoids:
-            filepath = self.__settings['conflicting_tagged_packages'].get(
+            filepath = self.__setting_files['conflicting_tagged_packages'].get(
                 repoid)
             if os.path.isfile(filepath) and os.access(filepath, os.R_OK):
                 confl_f = open(filepath,"r")
@@ -754,6 +756,111 @@ class SystemSettings(Singleton):
                     if len(mydata) < 2:
                         continue
                     data[mydata[0]] = mydata[1:]
+        return data
+
+    def socket_service_parser(self):
+        """
+        Parses socket service configuration file.
+        This file contains information about Entropy remote service ports
+        and SSL.
+
+        @return dict data
+        """
+
+        data = etpConst['socket_service'].copy()
+
+        sock_conf = self.__setting_files['socket_service']
+        if not (os.path.isfile(sock_conf) and \
+            os.access(sock_conf,os.R_OK)):
+            return data
+
+        socket_f = open(sock_conf,"r")
+        socketconf = [x.strip() for x in socket_f.readlines()  if \
+            x.strip() and not x.strip().startswith("#")]
+        socket_f.close()
+
+        for line in socketconf:
+
+            if line.startswith("listen|") and (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                if item:
+                    data['hostname'] = item
+
+            elif line.startswith("listen-port|") and \
+                (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                try:
+                    item = int(item)
+                    data['port'] = item
+                except ValueError:
+                    pass
+
+            elif line.startswith("listen-timeout|") and \
+                (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                try:
+                    item = int(item)
+                    data['timeout'] = item
+                except ValueError:
+                    pass
+
+            elif line.startswith("listen-threads|") and \
+                (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                try:
+                    item = int(item)
+                    data['threads'] = item
+                except ValueError:
+                    pass
+
+            elif line.startswith("session-ttl|") and \
+                (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                try:
+                    item = int(item)
+                    data['session_ttl'] = item
+                except ValueError:
+                    pass
+
+            elif line.startswith("max-connections|") and \
+                (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                try:
+                    item = int(item)
+                    data['max_connections'] = item
+                except ValueError:
+                    pass
+
+            elif line.startswith("ssl-port|") and \
+                (len(line.split("|")) > 1):
+
+                item = line.split("|")[1].strip()
+                try:
+                    item = int(item)
+                    data['ssl_port'] = item
+                except ValueError:
+                    pass
+
+            elif line.startswith("disabled-commands|") and \
+                (len(line.split("|")) > 1):
+
+                disabled_cmds = line.split("|")[1].strip().split()
+                for disabled_cmd in disabled_cmds:
+                    data['disabled_cmds'].add(disabled_cmd)
+
+            elif line.startswith("ip-blacklist|") and \
+                (len(line.split("|")) > 1):
+
+                ips_blacklist = line.split("|")[1].strip().split()
+                for ip_blacklist in ips_blacklist:
+                    data['ip_blacklist'].add(ip_blacklist)
+
         return data
 
     def __generic_parser(self, filepath):
@@ -787,11 +894,12 @@ class SystemSettings(Singleton):
         @return None
         """
         if os.path.isdir(etpConst['dumpstoragedir']):
-            if repoid:
+            if repoid and (self.Entropy != None):
                 self.Entropy.repository_move_clear_cache(repoid)
                 return
-            for repoid in etpRepositoriesOrder:
-                self.Entropy.repository_move_clear_cache(repoid)
+            if self.Entropy != None:
+                for repoid in etpRepositoriesOrder:
+                    self.Entropy.repository_move_clear_cache(repoid)
         else:
             os.makedirs(etpConst['dumpstoragedir'])
 
