@@ -74,25 +74,17 @@ class SystemSettings(Singleton):
     """
 
     import entropy.tools as entropyTools
-    def init_singleton(self, entropy_client_instance = None):
+    def init_singleton(self):
 
         """
         Replaces __init__ because SystemSettings is a Singleton.
         see Singleton API reference for more information.
 
-        @param entropy_client_instance entropy.client.interfaces.Client
-            instance
-        @type entropy_client_instance class instance
         """
 
         self.__data = {}
         self.__is_destroyed = False
-        if entropy_client_instance != None:
-            from entropy.client.interfaces import Client
-            if not isinstance(entropy_client_instance, Client):
-                mytxt = _("A valid Client interface instance is needed")
-                raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Entropy = entropy_client_instance
+        self.Entropy = None
 
         self.__setting_files = {}
         self.__mtime_files = {}
@@ -139,6 +131,24 @@ class SystemSettings(Singleton):
         @return None
         """
         self.__is_destroyed = True
+
+    def connect_entropy(self, entropy_instance):
+        """
+        Connect an Entropy (client/server) instance to
+        this Singleton. Be warned, it could be very dangerous
+        if you don't know what you are doing.
+
+        Valid instances are:
+            entropy.client.interfaces.Client
+            entropy.server.interfaces.Server
+        """
+
+        from entropy.client.interfaces import Client
+        from entropy.server.interfaces import Server
+        if not isinstance(entropy_instance,(Client,Server,)):
+            mytxt = _("A valid Client/Server interface instance is needed")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        self.Entropy = entropy_instance
 
     def __setup_const(self):
 
