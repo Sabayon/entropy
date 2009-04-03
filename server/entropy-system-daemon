@@ -20,14 +20,14 @@ if "--port" in sys.argv:
     except (IndexError, ValueError,):
         pass
 
-from entropyConstants import *
-import entropyTools
+from entropy.const import *
+etpConst['community']['mode'] = True
+etpConst['socket_service']['session_ttl'] = 300
+import entropy.tools as entropyTools
 from entropy.services.system.interfaces import Server as SystemManagerServerInterface
 from entropy.services.system.executors import Base as SystemManagerExecutorServerRepositoryInterface
 from entropy.services.system.commands import Repository as SystemManagerRepositoryCommands
 from entropy.server.interfaces import Server as ServerInterface
-etpConst['community']['mode'] = True
-etpConst['socket_service']['session_ttl'] = 300
 
 def run_srv(s):
     try:
