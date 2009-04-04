@@ -29,6 +29,7 @@ from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
+from entropy.output import blue, red, darkgreen
 
 class SocketHost:
 
