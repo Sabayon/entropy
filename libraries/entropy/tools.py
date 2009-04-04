@@ -34,6 +34,7 @@ import tarfile
 import subprocess
 import grp
 import pwd
+import hashlib
 from entropy.output import *
 from entropy.const import *
 from entropy.exceptions import *
@@ -465,8 +466,17 @@ def countdown(secs=5, what="Counting...", back = False):
             time.sleep(1)
 
 def md5sum(filepath):
-    import hashlib
     m = hashlib.md5()
+    readfile = open(filepath)
+    block = readfile.read(1024)
+    while block:
+        m.update(block)
+        block = readfile.read(1024)
+    readfile.close()
+    return m.hexdigest()
+
+def sha512(filepath):
+    m = hashlib.sha512()
     readfile = open(filepath)
     block = readfile.read(1024)
     while block:
@@ -479,7 +489,6 @@ def md5sum_directory(directory, get_obj = False):
     if not os.path.isdir(directory):
         raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
-    import hashlib
     m = hashlib.md5()
     if not myfiles:
         if get_obj:
@@ -869,6 +878,16 @@ def create_hash_file(tbz2filepath):
     f.close()
     return hashfile
 
+def create_sha512_file(filepath):
+    sha512hash = sha512(filepath)
+    hashfile = filepath+etpConst['packagessha512fileext']
+    f = open(hashfile,"w")
+    tbz2name = os.path.basename(filepath)
+    f.write(sha512hash+"  "+filepath+"\n")
+    f.flush()
+    f.close()
+    return hashfile
+
 def compare_md5(filepath,checksum):
     checksum = str(checksum)
     result = md5sum(filepath)
@@ -877,8 +896,15 @@ def compare_md5(filepath,checksum):
         return True
     return False
 
+def compare_sha512(filepath, checksum):
+    checksum = str(checksum)
+    result = sha512(filepath)
+    result = str(result)
+    if checksum == result:
+        return True
+    return False
+
 def md5string(string):
-    import hashlib
     m = hashlib.md5()
     m.update(string)
     return m.hexdigest()
