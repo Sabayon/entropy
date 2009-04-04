@@ -347,6 +347,7 @@ def const_default_settings(rootdir):
         # Extension of the file that contains the checksum
         # of its releated package file
         'packageshashfileext': ".md5",
+        'packagessha512fileext': ".sha512",
         # Extension of the file that "contains" expiration mtime
         'packagesexpirationfileext': ".expired",
         # number of days after a package will be removed from mirrors
