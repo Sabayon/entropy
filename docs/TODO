@@ -5,20 +5,21 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.80:
   - SHA512 instead of MD5
   - Move entropy client settings in etpConst to SystemSettings
+  - avoid calling portage hooks when not needed?
 
   0.90+:
-  - LZMA future support
-  - avoid calling portage hooks when not needed?
+  - Updates daemon + shrink notification applet? (dev-python/dbus-python)
+  - Entropy repository daemon facilities (init script, config, etc)
   - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
     - Add all button doesn't effectively add all the packages to the queue or
     - when calculating the queue some packages are excluded for unknown reasons
   - Unit Test module
   - Move Trigger.trigger_configure_boot_grub & friends to ebuild (reduce size of Trigger)
-  - Updates daemon + shrink notification applet? (dev-python/dbus-python)
+    -> next kernel 2.6.30
   - Documentation + Pylint (NLnet Milestone 7)
   - System Package Set representing what's inside a stock distribution
     - Connect Smart applications to it to filter out common deps and eventually make it usable
       - Implement Smart applications in Spritz too
     - Implement entropy:// URI handler
   - use expiration as a base to have and handle multiple packages in repo?
-  - Entropy repository daemon facilities (init script, config, etc)
+  - LZMA future support
