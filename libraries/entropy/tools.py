@@ -868,12 +868,12 @@ def remove_edb(tbz2file, savedir):
     return savedir+"/"+os.path.basename(tbz2file)
 
 # This function creates the .md5 file related to the given package file
-def create_hash_file(tbz2filepath):
-    md5hash = md5sum(tbz2filepath)
-    hashfile = tbz2filepath+etpConst['packagesmd5fileext']
+def create_md5_file(filepath):
+    md5hash = md5sum(filepath)
+    hashfile = filepath+etpConst['packagesmd5fileext']
     f = open(hashfile,"w")
-    tbz2name = os.path.basename(tbz2filepath)
-    f.write(md5hash+"  "+tbz2name+"\n")
+    name = os.path.basename(filepath)
+    f.write(md5hash+"  "+name+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -2684,8 +2684,8 @@ def removeEdb(*args, **kwargs):
 
 def createHashFile(*args, **kwargs):
     import warnings
-    warnings.warn("deprecated, use create_hash_file instead")
-    return create_hash_file(*args, **kwargs)
+    warnings.warn("deprecated, use create_md5_file instead")
+    return create_md5_file(*args, **kwargs)
 
 def compareMd5(*args, **kwargs):
     import warnings

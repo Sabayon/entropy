@@ -1387,7 +1387,7 @@ class Server(Singleton,TextInterface):
             digest = self.entropyTools.md5sum(package_path)
             # update digest
             dbconn.setDigest(idpackage,digest)
-            self.entropyTools.create_hash_file(package_path)
+            self.entropyTools.create_md5_file(package_path)
             # remove garbage
             os.remove(dbpath)
             self.updateProgress(

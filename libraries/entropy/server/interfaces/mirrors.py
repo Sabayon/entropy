@@ -2222,7 +2222,7 @@ class Server:
             x = itemdata[0]
             hash_file = x+etpConst['packagesmd5fileext']
             if not os.path.isfile(hash_file):
-                self.entropyTools.create_hash_file(x)
+                self.entropyTools.create_md5_file(x)
             myqueue.append(hash_file)
             myqueue.append(x)
 

@@ -38,7 +38,7 @@ From SVN 3112 there have been several API changes:
         aggregateEdb => aggregate_edb
         extractEdb => extract_edb
         removeEdb => remove_edb
-        createHashFile => create_hash_file
+        createHashFile => create_md5_file
         compareMd5 => compare_md5
         sortUpdateFiles => sort_update_files
         allocateMaskedFile => allocate_masked_file
