@@ -1732,7 +1732,7 @@ class Server:
         upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),branch)
 
         for package in os.listdir(upload_dir):
-            if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
+            if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packagesmd5fileext']):
                 upload_packages.add(package)
                 if package.endswith(etpConst['packagesext']):
                     upload_files += 1
@@ -1748,7 +1748,7 @@ class Server:
             os.makedirs(packages_dir)
 
         for package in os.listdir(packages_dir):
-            if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packageshashfileext']):
+            if package.endswith(etpConst['packagesext']) or package.endswith(etpConst['packagesmd5fileext']):
                 local_packages.add(package)
                 if package.endswith(etpConst['packagesext']):
                     local_files += 1
@@ -2140,7 +2140,7 @@ class Server:
 
             remove_filename = itemdata[0]
             remove_filepath = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,remove_filename)
-            remove_filepath_hash = remove_filepath+etpConst['packageshashfileext']
+            remove_filepath_hash = remove_filepath+etpConst['packagesmd5fileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
                         brown(repo),
@@ -2181,9 +2181,9 @@ class Server:
         for itemdata in copy_queue:
 
             from_file = itemdata[0]
-            from_file_hash = from_file+etpConst['packageshashfileext']
+            from_file_hash = from_file+etpConst['packagesmd5fileext']
             to_file = os.path.join(self.Entropy.get_local_packages_directory(repo),branch,os.path.basename(from_file))
-            to_file_hash = to_file+etpConst['packageshashfileext']
+            to_file_hash = to_file+etpConst['packagesmd5fileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s" % (
@@ -2220,7 +2220,7 @@ class Server:
         myqueue = []
         for itemdata in upload_queue:
             x = itemdata[0]
-            hash_file = x+etpConst['packageshashfileext']
+            hash_file = x+etpConst['packagesmd5fileext']
             if not os.path.isfile(hash_file):
                 self.entropyTools.create_hash_file(x)
             myqueue.append(hash_file)
@@ -2277,7 +2277,7 @@ class Server:
         myqueue = []
         for itemdata in download_queue:
             x = itemdata[0]
-            hash_file = x+etpConst['packageshashfileext']
+            hash_file = x+etpConst['packagesmd5fileext']
             myqueue.append(x)
             myqueue.append(hash_file)
 
@@ -2696,7 +2696,7 @@ class Server:
 
         myqueue = []
         for package in removal:
-            myqueue.append(package+etpConst['packageshashfileext'])
+            myqueue.append(package+etpConst['packagesmd5fileext'])
             myqueue.append(package)
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
         for uri in self.Entropy.get_remote_mirrors(repo):
@@ -2754,7 +2754,7 @@ class Server:
             branch_data['removed'] = set()
             for package in removal:
                 package_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package)
-                package_path_hash = package_path+etpConst['packageshashfileext']
+                package_path_hash = package_path+etpConst['packagesmd5fileext']
                 package_path_expired = package_path+etpConst['packagesexpirationfileext']
                 for myfile in [package_path_hash,package_path,package_path_expired]:
                     if os.path.isfile(myfile):

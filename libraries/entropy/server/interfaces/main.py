@@ -1055,7 +1055,7 @@ class Server(Singleton,TextInterface):
 
             copy_data = [
                             (from_file,to_file,),
-                            (from_file+etpConst['packageshashfileext'],to_file+etpConst['packageshashfileext'],),
+                            (from_file+etpConst['packagesmd5fileext'],to_file+etpConst['packagesmd5fileext'],),
                             (from_file+etpConst['packagesexpirationfileext'],to_file+etpConst['packagesexpirationfileext'],)
                         ]
 

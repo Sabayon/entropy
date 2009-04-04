@@ -870,7 +870,7 @@ def remove_edb(tbz2file, savedir):
 # This function creates the .md5 file related to the given package file
 def create_hash_file(tbz2filepath):
     md5hash = md5sum(tbz2filepath)
-    hashfile = tbz2filepath+etpConst['packageshashfileext']
+    hashfile = tbz2filepath+etpConst['packagesmd5fileext']
     f = open(hashfile,"w")
     tbz2name = os.path.basename(tbz2filepath)
     f.write(md5hash+"  "+tbz2name+"\n")

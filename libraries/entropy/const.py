@@ -346,7 +346,7 @@ def const_default_settings(rootdir):
         'packagesext': ".tbz2",
         # Extension of the file that contains the checksum
         # of its releated package file
-        'packageshashfileext': ".md5",
+        'packagesmd5fileext': ".md5",
         'packagessha512fileext': ".sha512",
         # Extension of the file that "contains" expiration mtime
         'packagesexpirationfileext': ".expired",

@@ -82,13 +82,13 @@ class SecurityInterface:
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.entropyTools.get_random_number()))
         self.security_url = etpConst['securityurl']
         self.unpacked_package = os.path.join(self.unpackdir,"glsa_package")
-        self.security_url_checksum = etpConst['securityurl']+etpConst['packageshashfileext']
+        self.security_url_checksum = etpConst['securityurl']+etpConst['packagesmd5fileext']
         self.download_package = os.path.join(self.unpackdir,os.path.basename(etpConst['securityurl']))
-        self.download_package_checksum = self.download_package+etpConst['packageshashfileext']
-        self.old_download_package_checksum = os.path.join(etpConst['dumpstoragedir'],os.path.basename(etpConst['securityurl']))+etpConst['packageshashfileext']
+        self.download_package_checksum = self.download_package+etpConst['packagesmd5fileext']
+        self.old_download_package_checksum = os.path.join(etpConst['dumpstoragedir'],os.path.basename(etpConst['securityurl']))+etpConst['packagesmd5fileext']
 
         self.security_package = os.path.join(etpConst['securitydir'],os.path.basename(etpConst['securityurl']))
-        self.security_package_checksum = self.security_package+etpConst['packageshashfileext']
+        self.security_package_checksum = self.security_package+etpConst['packagesmd5fileext']
 
         try:
             if os.path.isfile(etpConst['securitydir']) or os.path.islink(etpConst['securitydir']):
