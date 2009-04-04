@@ -7,6 +7,7 @@
 #
 # $Id: rhn_applet_dialogs.py,v 1.30 2003/10/14 17:41:34 veillard Exp $
 
+import os
 import gnome
 import gnome.ui
 import gobject
