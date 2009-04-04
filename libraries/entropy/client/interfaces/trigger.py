@@ -277,7 +277,11 @@ class Trigger:
             )
             return 0
 
+    import entropy.tools as entropyTools
     class EntropyShSandbox:
+
+        def __init__(self, Entropy):
+            self.Entropy = Entropy
 
         def __env_setup(self, stage, pkgdata):
 
@@ -306,11 +310,11 @@ class Trigger:
             if isinstance(per,unicode):
                 per = per.encode('utf-8')
 
-            etp_branch = pgkdata.get('branch')
+            etp_branch = pkgdata.get('branch')
             if isinstance(etp_branch,unicode):
                 etp_branch = etp_branch.encode('utf-8')
 
-            slot = pgkdata.get('slot')
+            slot = pkgdata.get('slot')
             if isinstance(slot,unicode):
                 slot = slot.encode('utf-8')
 
@@ -328,7 +332,8 @@ class Trigger:
             if isinstance(p,unicode):
                 p = p.encode('utf-8')
 
-            chost, cflags, cxxflags = pkgdata.get('chost'), pkgdata.get('cflags'), pkgdata.get('cxxflags')
+            chost, cflags, cxxflags = pkgdata.get('chost'), \
+                pkgdata.get('cflags'), pkgdata.get('cxxflags')
 
             chost = pkgdata.get('etpapi')
             if isinstance(chost,unicode):
@@ -413,6 +418,9 @@ class Trigger:
 
     class EntropyPySandbox:
 
+        def __init__(self, Entropy):
+            self.Entropy = Entropy
+
         def run(self, stage, pkgdata, trigger_file):
             my_ext_status = 1
             if os.path.isfile(trigger_file):
@@ -463,9 +471,9 @@ class Trigger:
         entropy_sh = etpConst['trigger_sh_interpreter']
         if interpreter == "#!%s" % (entropy_sh,):
             os.chmod(triggerfile,0775)
-            my = self.EntropyShSandbox()
+            my = self.EntropyShSandbox(self.Entropy)
         else:
-            my = self.EntropyPySandbox()
+            my = self.EntropyPySandbox(self.Entropy)
         return my.run(self.phase, self.pkgdata, triggerfile)
 
 
