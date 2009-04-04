@@ -222,12 +222,58 @@ def colorize(color_key, text):
     global havecolor
     if havecolor:
         return codes[color_key] + text + codes["reset"]
-    else:
-        return text
+    return text
 
-compat_functions_colors = ["bold","white","teal","turquoise","darkteal",
-        "fuscia","fuchsia","purple","blue","darkblue","green","darkgreen","yellow",
-        "brown","darkyellow","red","darkred"]
+def bold(text):
+    return colorize("bold", text)
+
+def white(text):
+    return colorize("white", text)
+
+def teal(text):
+    return colorize("teal", text)
+
+def turquoise(text):
+    return colorize("turquoise", text)
+
+def darkteal(text):
+    return colorize("darkteal", text)
+
+def fuscia(text):
+    return colorize("fuscia", text)
+
+def fuchsia(text):
+    return colorize("fuchsia", text)
+
+def purple(text):
+    return colorize("purple", text)
+
+def blue(text):
+    return colorize("blue", text)
+
+def darkblue(text):
+    return colorize("darkblue", text)
+
+def green(text):
+    return colorize("green", text)
+
+def darkgreen(text):
+    return colorize("darkgreen", text)
+
+def yellow(text):
+    return colorize("yellow", text)
+
+def brown(text):
+    return colorize("brown", text)
+
+def darkyellow(text):
+    return colorize("darkyellow", text)
+
+def red(text):
+    return colorize("red", text)
+
+def darkred(text):
+    return colorize("darkred", text)
 
 def create_color_func(color_key):
     def derived_func(*args):
@@ -235,9 +281,6 @@ def create_color_func(color_key):
         newargs.insert(0, color_key)
         return colorize(*newargs)
     return derived_func
-
-for c in compat_functions_colors:
-    setattr(sys.modules[__name__], c, create_color_func(c))
 
 def enlightenatom(atom):
     out = atom.split("/")
