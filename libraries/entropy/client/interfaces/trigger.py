@@ -277,11 +277,12 @@ class Trigger:
             )
             return 0
 
-    import entropy.tools as entropyTools
     class EntropyShSandbox:
 
         def __init__(self, Entropy):
             self.Entropy = Entropy
+            import entropy.tools as entropyTools
+            self.entropyTools = entropyTools
 
         def __env_setup(self, stage, pkgdata):
 
