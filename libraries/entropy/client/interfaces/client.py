@@ -68,7 +68,7 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         self.dumpTools = dumpTools
         self.entropyTools = entropyTools
         from entropy.misc import LogFile
-        self.clientLog = LogFile(level = etpConst['equologlevel'],
+        self.clientLog = LogFile(level = self.SystemSettings['system']['log_level'],
             filename = etpConst['equologfile'], header = "[client]")
 
         self.MultipleUrlFetcher = multiple_url_fetcher

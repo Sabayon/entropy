@@ -181,6 +181,7 @@ class SystemSettings(Singleton):
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
+            'client': etpConst['clientconf'],
         })
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
@@ -888,7 +889,7 @@ class SystemSettings(Singleton):
         etp_conf = self.__setting_files['system']
         if not os.path.isfile(etp_conf) and \
             os.access(etp_conf,os.R_OK):
-            return
+            return data
 
         const_secure_config_file(etp_conf)
         entropy_f = open(etp_conf,"r")
@@ -955,6 +956,75 @@ class SystemSettings(Singleton):
                         const_set_nice_level(mylevel)
                 except (ValueError,):
                     continue
+
+        return data
+
+    def client_parser(self):
+
+        data = {
+            'filesbackup': etpConst['filesbackup'],
+            'ignore_spm_downgrades': etpConst['spm']['ignore-spm-downgrades'],
+            'collisionprotect': etpConst['collisionprotect'],
+            'configprotect': etpConst['configprotect'][:],
+            'configprotectmask': etpConst['configprotectmask'][:],
+            'configprotectskip': etpConst['configprotectskip'][:],
+        }
+
+        cli_conf = etpConst['clientconf']
+        if not (os.path.isfile(cli_conf) and os.access(cli_conf, os.R_OK)):
+            return data
+
+        client_f = open(cli_conf,"r")
+        clientconf = [x.strip() for x in client_f.readlines() if \
+            x.strip() and not x.strip().startswith("#")]
+        client_f.close()
+        for line in clientconf:
+
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
+            if line.startswith("filesbackup|") and (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("disable", "disabled","false", "0", "no",):
+                    data['filesbackup'] = False
+
+            elif line.startswith("ignore-spm-downgrades|") and \
+                (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("enable", "enabled", "true", "1", "yes"):
+                    data['ignore_spm_downgrades'] = True
+
+            elif line.startswith("collisionprotect|") and (split_line_len == 2):
+
+                collopt = split_line[1].strip()
+                if collopt.lower() in ("0", "1", "2",):
+                    data['collisionprotect'] = int(collopt)
+
+            elif line.startswith("configprotect|") and (split_line_len == 2):
+
+                configprotect = split_line[1].strip()
+                for myprot in configprotect.split():
+                    data['configprotect'].append(
+                        unicode(myprot,'raw_unicode_escape'))
+
+            elif line.startswith("configprotectmask|") and \
+                (split_line_len == 2):
+
+                configprotect = split_line[1].strip()
+                for myprot in configprotect.split():
+                    data['configprotectmask'].append(
+                        unicode(myprot,'raw_unicode_escape'))
+
+            elif line.startswith("configprotectskip|") and \
+                (split_line_len == 2):
+
+                configprotect = split_line[1].strip()
+                for myprot in configprotect.split():
+                    data['configprotectskip'].append(
+                        etpConst['systemroot']+unicode(myprot,
+                            'raw_unicode_escape'))
 
         return data
 

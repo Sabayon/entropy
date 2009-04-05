@@ -1004,7 +1004,7 @@ class SpritzApplication(Controller):
             etpConst['clientconf']: [
                 (
                     'collisionprotect',
-                    etpConst['collisionprotect'],
+                    self.Equo.SystemSettings['client']['collisionprotect'],
                     int,
                     fillSetting,
                     saveSetting,
@@ -1013,7 +1013,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'configprotect',
-                    etpConst['configprotect'],
+                    self.Equo.SystemSettings['client']['configprotect'],
                     list,
                     fillSettingView,
                     saveSettingView,
@@ -1022,7 +1022,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'configprotectmask',
-                    etpConst['configprotectmask'],
+                    self.Equo.SystemSettings['client']['configprotectmask'],
                     list,
                     fillSettingView,
                     saveSettingView,
@@ -1031,7 +1031,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'configprotectskip',
-                    etpConst['configprotectskip'],
+                    self.Equo.SystemSettings['client']['configprotectskip'],
                     list,
                     fillSettingView,
                     saveSettingView,
@@ -1040,7 +1040,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'filesbackup',
-                    etpConst['filesbackup'],
+                    self.Equo.SystemSettings['client']['filesbackup'],
                     bool,
                     fillSetting,
                     saveSetting,

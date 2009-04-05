@@ -349,8 +349,6 @@ def const_default_settings(rootdir):
         'entropyloglevel': 1,
         # Entropy Socket Interface log level
         'socketloglevel': 2,
-        # Equo log level (default: 1 - see client.conf for more info)
-        'equologlevel': 1,
         'spmloglevel': 1,
         # Log dir where ebuilds store their stuff
         'logdir': default_etp_logdir ,

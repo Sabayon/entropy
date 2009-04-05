@@ -1235,9 +1235,13 @@ class Calculators:
             self,
             empty_deps = False,
             branch = etpConst['branch'],
-            ignore_spm_downgrades = etpConst['spm']['ignore-spm-downgrades'],
+            ignore_spm_downgrades = None,
             use_cache = True
         ):
+
+        if ignore_spm_downgrades == None:
+            client_sys_settings = self.SystemSettings['client']
+            ignore_spm_downgrades = client_sys_settings['ignore_spm_downgrades']
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:

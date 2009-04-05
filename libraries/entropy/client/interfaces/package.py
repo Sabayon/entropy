@@ -372,7 +372,7 @@ class Package:
         protect = etpConst['dbconfigprotect']
         mask = etpConst['dbconfigprotectmask']
         sys_root = etpConst['systemroot']
-        col_protect = etpConst['collisionprotect']
+        col_protect = self.Entropy.SystemSettings['client']['collisionprotect']
 
         # remove files from system
         directories = set()
@@ -1034,7 +1034,7 @@ class Package:
         protect = etpRepositories[self.infoDict['repository']]['configprotect']
         mask = etpRepositories[self.infoDict['repository']]['configprotectmask']
         sys_root = etpConst['systemroot']
-        col_protect = etpConst['collisionprotect']
+        col_protect = self.Entropy.SystemSettings['client']['collisionprotect']
         items_installed = set()
 
         # setup imageDir properly
@@ -1282,7 +1282,8 @@ class Package:
 
             # request new tofile then
             if protected:
-                if tofile not in etpConst['configprotectskip']:
+                client_settings = self.Entropy.SystemSettings['client']
+                if tofile not in client_settings['configprotectskip']:
                     prot_status = True
                     if do_allocation_check:
                         tofile, prot_status = self.entropyTools.allocate_masked_file(tofile, fromfile)

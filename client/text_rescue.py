@@ -774,11 +774,13 @@ def getinfo(dict = False):
     info['Architecture'] = osinfo[4]
     info['Entropy version'] = etpConst['entropyversion']
 
+    from entropy.core import SystemSettings
+    SysSettings = SystemSettings()
     # variables
-    info['User protected directories'] = etpConst['configprotect']
-    info['Collision Protection'] = etpConst['collisionprotect']
+    info['User protected directories'] = SysSettings['client']['configprotect']
+    info['Collision Protection'] = SysSettings['client']['collisionprotect']
     info['Gentoo Compatibility'] = etpConst['gentoo-compat']
-    info['Equo Log Level'] = etpConst['equologlevel']
+    info['Entropy Log Level'] = SysSettings['system']['log_level']
     info['Current branch'] = etpConst['branch']
     info['Entropy configuration directory'] = etpConst['confdir']
     info['Entropy work directory'] = etpConst['entropyworkdir']

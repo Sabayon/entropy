@@ -188,11 +188,14 @@ class Repository:
         etpRepositories[repoid]['configprotectmask'] = [etpConst['systemroot']+x for \
             x in etpRepositories[repoid]['configprotectmask']]
 
+        conf_protect = self.SystemSettings['client']['configprotect']
+        conf_protect_mask = self.SystemSettings['client']['configprotectmask']
+
         etpRepositories[repoid]['configprotect'] += [etpConst['systemroot']+x for \
-            x in etpConst['configprotect'] if etpConst['systemroot']+x not \
+            x in conf_protect if etpConst['systemroot']+x not \
                 in etpRepositories[repoid]['configprotect']]
         etpRepositories[repoid]['configprotectmask'] += [etpConst['systemroot']+x for \
-            x in etpConst['configprotectmask'] if etpConst['systemroot']+x not \
+            x in conf_protect_mask if etpConst['systemroot']+x not \
                 in etpRepositories[repoid]['configprotectmask']]
 
     def get_repository_revision(self, reponame):
@@ -414,11 +417,14 @@ class Repository:
         etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
         etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
 
+        conf_protect = self.SystemSettings['client']['configprotect']
+        conf_protect_mask = self.SystemSettings['client']['configprotectmask']
+
         etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for \
-            x in etpConst['configprotect'] if etpConst['systemroot']+x not \
+            x in conf_protect if etpConst['systemroot']+x not \
                 in etpConst['dbconfigprotect']]
         etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for \
-            x in etpConst['configprotectmask'] if etpConst['systemroot']+x not \
+            x in conf_protect_mask if etpConst['systemroot']+x not \
                 in etpConst['dbconfigprotectmask']]
 
     def open_client_repository(self):

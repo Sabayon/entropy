@@ -642,7 +642,7 @@ class Trigger:
                 header = red("   ## ")
             )
             quietstring = ''
-            if etpUi['quiet']: quietstring = " &>/dev/null"
+            if etpUi['quiet']: quietstring = " &> /dev/null"
             if etpConst['systemroot']:
                 subprocess.call('echo "eselect opengl set --use-old %s" | chroot %s %s' % (opengl,etpConst['systemroot'],quietstring,), shell = True)
             else:
@@ -675,7 +675,7 @@ class Trigger:
                 header = red("   ## ")
             )
             quietstring = ''
-            if etpUi['quiet']: quietstring = " &>/dev/null"
+            if etpUi['quiet']: quietstring = "&> /dev/null"
             if etpConst['systemroot']:
                 subprocess.call('echo "eselect opengl set xorg-x11" | chroot %s %s' % (etpConst['systemroot'],quietstring,), shell = True)
             else:

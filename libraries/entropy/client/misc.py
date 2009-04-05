@@ -44,24 +44,24 @@ class FileUpdates:
     def merge_file(self, key):
         self.scanfs(dcache = True)
         self.do_backup(key)
-        if os.access(etpConst['systemroot'] + self.scandata[key]['source'], os.R_OK):
-            shutil.move(
-                etpConst['systemroot'] + self.scandata[key]['source'],
-                etpConst['systemroot'] + self.scandata[key]['destination']
-            )
+        source_file = etpConst['systemroot'] + self.scandata[key]['source']
+        dest_file = etpConst['systemroot'] + self.scandata[key]['destination']
+        if os.access(source_file, os.R_OK):
+            shutil.move(source_file, dest_file)
         self.remove_from_cache(key)
 
     def remove_file(self, key):
         self.scanfs(dcache = True)
-        try:
-            os.remove(etpConst['systemroot'] + self.scandata[key]['source'])
-        except OSError:
-            pass
+        source_file = etpConst['systemroot'] + self.scandata[key]['source']
+        if os.access(source_file, os.F_OK) and os.access(source_file, os.W_OK):
+            os.remove(source_file)
         self.remove_from_cache(key)
 
     def do_backup(self, key):
         self.scanfs(dcache = True)
-        if etpConst['filesbackup'] and os.path.isfile(etpConst['systemroot']+self.scandata[key]['destination']):
+        files_backup = self.Entropy.SystemSettings['client']['filesbackup']
+        dest_file = etpConst['systemroot'] + self.scandata[key]['destination']
+        if files_backup and os.path.isfile(dest_file):
             bcount = 0
             backupfile = etpConst['systemroot'] + \
                 os.path.dirname(self.scandata[key]['destination']) + \
@@ -74,14 +74,10 @@ class FileUpdates:
                 "/._equo_backup." + unicode(bcount) + "_" + \
                 os.path.basename(self.scandata[key]['destination'])
             try:
-                shutil.copy2(etpConst['systemroot'] + self.scandata[key]['destination'],backupfile)
+                shutil.copy2(dest_file, backupfile)
             except IOError:
                 pass
 
-    '''
-    @description: scan for files that need to be merged
-    @output: dictionary using filename as key
-    '''
     def scanfs(self, dcache = True, quiet = False):
 
         if dcache:
@@ -206,10 +202,6 @@ class FileUpdates:
         except (KeyError,EOFError,IOError,):
             raise CacheCorruptionError("CacheCorruptionError")
 
-    '''
-    @description: prints information about config files that should be updated
-    @attention: please be sure that filepath is properly formatted before using this function
-    '''
     def add_to_cache(self, filepath, quiet = False):
         self.scanfs(dcache = True, quiet = quiet)
         keys = self.scandata.keys()
