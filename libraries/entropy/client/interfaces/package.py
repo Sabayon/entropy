@@ -1311,7 +1311,7 @@ class Package:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
                             ETP_LOGLEVEL_NORMAL,
-                            "Skipping config file installation/removal, as stated in equo.conf: %s" % (tofile,)
+                            "Skipping config file installation/removal, as stated in client.conf: %s" % (tofile,)
                         )
                         mytxt = "%s: %s" % (_("Skipping file installation/removal"),tofile,)
                         self.Entropy.updateProgress(

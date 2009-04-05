@@ -367,7 +367,7 @@ def const_default_settings(rootdir):
         'entropyloglevel': 1,
         # Entropy Socket Interface log level
         'socketloglevel': 2,
-        # Equo log level (default: 1 - see equo.conf for more info)
+        # Equo log level (default: 1 - see client.conf for more info)
         'equologlevel': 1,
         'spmloglevel': 1,
         # Log dir where ebuilds store their stuff
@@ -422,7 +422,7 @@ def const_default_settings(rootdir):
         # option to keep a backup of config files after
         # being overwritten by equo conf update
         'filesbackup': True,
-        # collision protection option, read equo.conf for more info
+        # collision protection option, see client.conf for more info
         'collisionprotect': 1,
         # list of user specified CONFIG_PROTECT directories
         # (see Gentoo manual to understand the meaining of this parameter)
@@ -872,7 +872,7 @@ def const_read_equo_settings():
     """
     XXX: will be probably moved away from here in future.
     Setup Equo settings reading them from equo config file
-    specified in etpConst['equoconf'], by default (equo.conf)
+    specified in etpConst['equoconf'], by default (client.conf)
 
     @return None
     """
