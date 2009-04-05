@@ -244,7 +244,7 @@ def const_default_settings(rootdir):
         # server.conf file (generic server side settings)
         'serverconf': default_etp_confdir+"/server.conf",
         # client.conf file (generic entropy client side settings)
-        'equoconf': default_etp_confdir+"/client.conf",
+        'clientconf': default_etp_confdir+"/client.conf",
         # socket.conf file
         'socketconf': default_etp_confdir+"/socket.conf",
         # user by client interfaces
@@ -872,12 +872,12 @@ def const_read_equo_settings():
     """
     XXX: will be probably moved away from here in future.
     Setup Equo settings reading them from equo config file
-    specified in etpConst['equoconf'], by default (client.conf)
+    specified in etpConst['clientconf'], by default (client.conf)
 
     @return None
     """
 
-    equo_conf = etpConst['equoconf']
+    equo_conf = etpConst['clientconf']
     if not (os.path.isfile(equo_conf) and os.access(equo_conf, os.R_OK)):
         return
 

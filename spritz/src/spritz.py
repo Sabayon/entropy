@@ -1001,7 +1001,7 @@ class SpritzApplication(Controller):
                     self.ui.niceSpinSelect.get_value_as_int,
                 )
             ],
-            etpConst['equoconf']: [
+            etpConst['clientconf']: [
                 (
                     'collisionprotect',
                     etpConst['collisionprotect'],
