@@ -793,83 +793,86 @@ class SystemSettings(Singleton):
 
         for line in socketconf:
 
-            if line.startswith("listen|") and (len(line.split("|")) > 1):
+            split_line = line.split("|")
+            split_line_len = len(split_line)
 
-                item = line.split("|")[1].strip()
+            if line.startswith("listen|") and (split_line_len > 1):
+
+                item = split_line[1].strip()
                 if item:
                     data['hostname'] = item
 
             elif line.startswith("listen-port|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                item = line.split("|")[1].strip()
+                item = split_line[1].strip()
                 try:
                     item = int(item)
                     data['port'] = item
                 except ValueError:
-                    pass
+                    continue
 
             elif line.startswith("listen-timeout|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                item = line.split("|")[1].strip()
+                item = split_line[1].strip()
                 try:
                     item = int(item)
                     data['timeout'] = item
                 except ValueError:
-                    pass
+                    continue
 
             elif line.startswith("listen-threads|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                item = line.split("|")[1].strip()
+                item = split_line[1].strip()
                 try:
                     item = int(item)
                     data['threads'] = item
                 except ValueError:
-                    pass
+                    continue
 
             elif line.startswith("session-ttl|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                item = line.split("|")[1].strip()
+                item = split_line[1].strip()
                 try:
                     item = int(item)
                     data['session_ttl'] = item
                 except ValueError:
-                    pass
+                    continue
 
             elif line.startswith("max-connections|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                item = line.split("|")[1].strip()
+                item = split_line[1].strip()
                 try:
                     item = int(item)
                     data['max_connections'] = item
                 except ValueError:
-                    pass
+                    continue
 
             elif line.startswith("ssl-port|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                item = line.split("|")[1].strip()
+                item = split_line[1].strip()
                 try:
                     item = int(item)
                     data['ssl_port'] = item
                 except ValueError:
-                    pass
+                    continue
 
             elif line.startswith("disabled-commands|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                disabled_cmds = line.split("|")[1].strip().split()
+                disabled_cmds = split_line[1].strip().split()
                 for disabled_cmd in disabled_cmds:
                     data['disabled_cmds'].add(disabled_cmd)
 
             elif line.startswith("ip-blacklist|") and \
-                (len(line.split("|")) > 1):
+                (split_line_len > 1):
 
-                ips_blacklist = line.split("|")[1].strip().split()
+                ips_blacklist = split_line[1].strip().split()
                 for ip_blacklist in ips_blacklist:
                     data['ip_blacklist'].add(ip_blacklist)
 
@@ -895,6 +898,9 @@ class SystemSettings(Singleton):
 
         for line in entropyconf:
 
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
             if line.startswith("loglevel|") and \
                 (len(line.split("loglevel|")) == 2):
 
@@ -907,48 +913,48 @@ class SystemSettings(Singleton):
                     data['log_level'] = loglevel
 
             elif line.startswith("ftp-proxy|") and \
-                (len(line.split("|")) == 2):
+                (split_line_len == 2):
 
-                ftpproxy = line.split("|")[1].strip().split()
+                ftpproxy = split_line[1].strip().split()
                 if ftpproxy:
                     data['proxy']['ftp'] = ftpproxy[-1]
 
             elif line.startswith("http-proxy|") and \
-                (len(line.split("|")) == 2):
+                (split_line_len == 2):
 
-                httpproxy = line.split("|")[1].strip().split()
+                httpproxy = split_line[1].strip().split()
                 if httpproxy:
                     data['proxy']['http'] = httpproxy[-1]
 
             elif line.startswith("proxy-username|") and \
-                (len(line.split("|")) == 2):
+                (split_line_len == 2):
 
-                httpproxy = line.split("|")[1].strip().split()
+                httpproxy = split_line[1].strip().split()
                 if httpproxy:
                     data['proxy']['username'] = httpproxy[-1]
 
             elif line.startswith("proxy-password|") and \
-                (len(line.split("|")) == 2):
+                (split_line_len == 2):
 
-                httpproxy = line.split("|")[1].strip().split()
+                httpproxy = split_line[1].strip().split()
                 if httpproxy:
                     data['proxy']['password'] = httpproxy[-1]
 
             elif line.startswith("system-name|") and \
-                (len(line.split("|")) == 2):
+                (split_line_len == 2):
 
-                data['name'] = line.split("|")[1].strip()
+                data['name'] = split_line[1].strip()
 
             elif line.startswith("nice-level|") and \
-                (len(line.split("|")) == 2):
+                (split_line_len == 2):
 
-                mylevel = line.split("|")[1].strip()
+                mylevel = split_line[1].strip()
                 try:
                     mylevel = int(mylevel)
                     if (mylevel >= -19) and (mylevel <= 19):
                         const_set_nice_level(mylevel)
                 except (ValueError,):
-                    pass
+                    continue
 
         return data
 
