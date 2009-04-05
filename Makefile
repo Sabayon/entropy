@@ -53,7 +53,7 @@ equo-install:
 
 	# copying portage bashrc
 	install -m 644 conf/bashrc.entropy $(DESTDIR)/etc/portage/bashrc.entropy
-	install -m 644 conf/equo.conf $(DESTDIR)/etc/entropy/
+	install -m 644 conf/client.conf $(DESTDIR)/etc/entropy/
 
 	install -m 644 client/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 644 client/entropy-system-test-client $(DESTDIR)/$(LIBDIR)/entropy/client/

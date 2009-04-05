@@ -243,8 +243,8 @@ def const_default_settings(rootdir):
         'repositoriesconf': default_etp_confdir+"/repositories.conf",
         # server.conf file (generic server side settings)
         'serverconf': default_etp_confdir+"/server.conf",
-        # equo.conf file
-        'equoconf': default_etp_confdir+"/equo.conf",
+        # client.conf file (generic entropy client side settings)
+        'equoconf': default_etp_confdir+"/client.conf",
         # socket.conf file
         'socketconf': default_etp_confdir+"/socket.conf",
         # user by client interfaces
