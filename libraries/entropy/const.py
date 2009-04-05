@@ -122,7 +122,6 @@ def initconfig_entropy_constants(rootdir):
     const_setup_entropy_pid()
     const_read_repo_settings()
     const_configure_lock_paths()
-    initconfig_client_constants()
     # server stuff
     const_read_srv_settings()
 
@@ -142,23 +141,6 @@ def initConfig_entropyConstants(rootdir):
     import warnings
     warnings.warn("deprecated please use initconfig_entropy_constants")
     return initconfig_entropy_constants(rootdir)
-
-def initconfig_client_constants():
-    """
-    Initialize all the Entropy Client-only constants.
-
-    @return None
-    """
-    const_read_equo_settings()
-
-def initConfig_ClientConstants():
-    """
-    @deprecated
-    Please use initconfig_client_constants
-    """
-    import warnings
-    warnings.warn("deprecated please use initconfig_client_constants")
-    return initconfig_client_constants()
 
 def const_default_settings(rootdir):
 

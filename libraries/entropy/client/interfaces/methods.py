@@ -748,7 +748,6 @@ class Misc:
 
     def reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
-        initconfig_client_constants()
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
