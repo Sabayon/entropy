@@ -156,8 +156,8 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         if hasattr(self,'Cacher'):
             self.Cacher.stop()
         if hasattr(self,'SystemSettings'):
-            if hasattr(self.SystemSettings,'destroy'):
-                self.SystemSettings.destroy()
+            if hasattr(self.SystemSettings,'disconnect_entropy'):
+                self.SystemSettings.disconnect_entropy()
 
         self.close_all_repositories(mask_clear = False)
         self.closeAllSecurity()
