@@ -669,7 +669,7 @@ def spm(options):
             return 1
 
         if options[0] == "categories":
-            return spm_compile_categories(options[1:])
+            return spm_compile_categories(options[1:], do_list = do_list)
         elif options[0] == "pkgset":
             return spm_compile_pkgset(options[1:], do_rebuild = do_rebuild,
                 do_dbupdate = do_dbupdate, do_dbsync = do_dbsync)
@@ -680,7 +680,7 @@ def spm(options):
         return 0
 
 
-def spm_compile_categories(options):
+def spm_compile_categories(options, do_list = False):
 
     categories = sorted(set(options))
     packages = Entropy.SpmService.get_available_packages(categories)
@@ -688,7 +688,10 @@ def spm_compile_categories(options):
     if do_list:
         print ' '.join(["="+x for x in packages])
     else:
-        os.system(etpConst['spm']['exec']+" "+etpConst['spm']['ask_cmd']+" "+etpConst['spm']['verbose_cmd']+" "+" ".join(["="+x for x in packages]))
+        args = [etpConst['spm']['exec'], etpConst['spm']['ask_cmd'],
+            etpConst['spm']['verbose_cmd']]
+        args.extend(["="+x for x in packages])
+        return subprocess.call(args)
     return 0
 
 def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
