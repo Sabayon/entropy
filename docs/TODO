@@ -3,7 +3,7 @@ TODO list
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.80:
-  - SHA512 instead of MD5
+  - SHA512 instead of MD5 (add preliminary support)
   - avoid calling portage hooks when not needed?
 
   0.90+:
