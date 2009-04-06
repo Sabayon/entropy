@@ -2616,7 +2616,7 @@ class Server:
 
         branch_data['errors'] = False
 
-        if etpConst['branch'] != etpConst['branches'][-1]:
+        if etpConst['branch'] != self.Entropy.SystemSettings['server']['branches'][-1]:
             self.Entropy.updateProgress(
                 "[branch:%s] %s" % (
                     brown(etpConst['branch']),

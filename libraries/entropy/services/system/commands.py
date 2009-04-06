@@ -980,7 +980,7 @@ class Repository(SocketCommands):
             data['available'].pop(etpConst['clientserverrepoid'])
         data['community_mode'] = self.HostInterface.Entropy.community_repo
         data['current'] = self.HostInterface.Entropy.default_repository
-        data['branches'] = etpConst['branches']
+        data['branches'] = self.HostInterface.Entropy.SystemSettings['server']['branches']
         data['branch'] = etpConst['branch']
         return True, data
 
