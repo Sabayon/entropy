@@ -1558,7 +1558,7 @@ class Server(Singleton,TextInterface):
     def get_local_database_rss_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-name'])
+        return os.path.join(self.get_local_database_dir(repo, branch),self.SystemSettings['server']['rss']['name'])
 
     def get_local_database_rsslight_file(self, repo = None, branch = None):
         if repo == None:

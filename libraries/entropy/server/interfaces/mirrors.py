@@ -776,7 +776,7 @@ class Server:
         rss_title = "%s Notice Board" % (sys_settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        if not link: link = etpConst['rss-website-url']
+        if not link: link = sys_settings['server']['rss']['website_url']
 
         self.download_notice_board(repo)
         Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = 20)
@@ -820,7 +820,7 @@ class Server:
             sys_settings['system']['name'],)
         rss_description = "Keep you updated on what's going on in the %s Repository." % (
             sys_settings['system']['name'],)
-        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = etpConst['rss-max-entries'])
+        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = sys_settings['server']['rss']['max_entries'])
         # load dump
         db_actions = self.Cacher.pop(rss_dump_name)
         if db_actions:
@@ -839,7 +839,7 @@ class Server:
                 " " + etpConst['branch'] + " :: Revision: " + revision + \
                 commitmessage
 
-            link = etpConst['rss-base-url']
+            link = sys_settings['server']['rss']['base_url']
             # create description
             added_items = db_actions.get("added")
             if added_items:
@@ -854,7 +854,7 @@ class Server:
                     Rss.addItem(title = "Removed"+title, link = link, description = description)
             light_items = db_actions.get('light')
             if light_items:
-                rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = etpConst['rss-light-max-entries'])
+                rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = sys_settings['server']['rss']['light_max_entries'])
                 for atom in light_items:
                     mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
                     description = light_items[atom]['description']
@@ -1303,7 +1303,7 @@ class Server:
         myt = type(bz2)
         del myt
 
-        if etpConst['rss-feed']:
+        if self.Entropy.SystemSettings['server']['rss']['enabled']:
             self.update_rss_feed(repo = repo)
 
         upload_errors = False

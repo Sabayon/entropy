@@ -925,7 +925,7 @@ class Base:
 
                     if (not mirrors_errors) and repository_data[repoid]['db']:
 
-                        if mirrors_tainted and etpConst['rss-feed']:
+                        if mirrors_tainted and Entropy.SystemSettings['server']['rss']['enabled']:
                             commit_msg = repository_data[repoid]['commit_msg']
                             if not commit_msg: commit_msg = "Autodriven update"
                             Entropy.rssMessages['commitmessage'] = commit_msg

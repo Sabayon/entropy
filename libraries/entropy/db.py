@@ -31,7 +31,7 @@ from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
-from entropy.core import Singleton
+from entropy.core import Singleton, SystemSettings
 
 try: # try with sqlite3 from python 2.5 - default one
     from sqlite3 import dbapi2
@@ -337,6 +337,7 @@ class LocalRepository:
         indexing = True, OutputInterface = None, ServiceInterface = None,
         skipChecks = False, useBranch = None, lockRemote = True):
 
+        self.SystemSettings = SystemSettings()
         self.dbMatchCacheKey = etpCache['dbMatch']
         self.dbSearchCacheKey = etpCache['dbSearch']
         self.dbname = dbname
@@ -1362,7 +1363,9 @@ class LocalRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if etpConst['rss-feed'] and not self.clientDatabase:
+        if self.SystemSettings['server']['rss']['enabled'] and \
+            not self.clientDatabase:
+
             self._write_rss_for_added_package(pkgatom, revision,
                 etpData['description'], etpData['homepage'])
 
@@ -1445,7 +1448,9 @@ class LocalRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if etpConst['rss-feed'] and (not self.clientDatabase) and do_rss:
+        if self.SystemSettings['server']['rss']['enabled'] and \
+            (not self.clientDatabase) and do_rss:
+
             # store addPackage action
             self._write_rss_for_removed_package(idpackage)
 
@@ -4397,49 +4402,49 @@ class LocalRepository:
         return cached_obj
 
     def _idpackageValidator_live(self, idpackage, reponame):
-        if (idpackage, reponame) in self.ServiceInterface.SystemSettings['live_packagemasking']['mask_matches']:
+        if (idpackage, reponame) in self.SystemSettings['live_packagemasking']['mask_matches']:
             # do not cache this
-            return -1, self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_live_mask']
-        elif (idpackage, reponame) in self.ServiceInterface.SystemSettings['live_packagemasking']['unmask_matches']:
-            return idpackage, self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_live_unmask']
+            return -1, self.SystemSettings['pkg_masking_reference']['user_live_mask']
+        elif (idpackage, reponame) in self.SystemSettings['live_packagemasking']['unmask_matches']:
+            return idpackage, self.SystemSettings['pkg_masking_reference']['user_live_unmask']
 
     def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
         # check if user package.mask needs it masked
 
         mykw = "%smask_ids" % (reponame,)
-        user_package_mask_ids = self.ServiceInterface.SystemSettings.get(mykw)
+        user_package_mask_ids = self.SystemSettings.get(mykw)
         if not isinstance(user_package_mask_ids, set):
             user_package_mask_ids = set()
-            for atom in self.ServiceInterface.SystemSettings['mask']:
+            for atom in self.SystemSettings['mask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                 if r != 0: continue
                 user_package_mask_ids |= set(matches)
-            self.ServiceInterface.SystemSettings[mykw] = user_package_mask_ids
+            self.SystemSettings[mykw] = user_package_mask_ids
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_package_mask']
+            myr = self.SystemSettings['pkg_masking_reference']['user_package_mask']
             self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
             return -1, myr
 
     def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
-        # see if we can unmask by just lookin into user package.unmask stuff -> self.ServiceInterface.SystemSettings['unmask']
+        # see if we can unmask by just lookin into user package.unmask stuff -> self.SystemSettings['unmask']
         mykw = "%sunmask_ids" % (reponame,)
-        user_package_unmask_ids = self.ServiceInterface.SystemSettings.get(mykw)
+        user_package_unmask_ids = self.SystemSettings.get(mykw)
         if not isinstance(user_package_unmask_ids, set):
             user_package_unmask_ids = set()
-            for atom in self.ServiceInterface.SystemSettings['unmask']:
+            for atom in self.SystemSettings['unmask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                 if r != 0: continue
                 user_package_unmask_ids |= set(matches)
-            self.ServiceInterface.SystemSettings[mykw] = user_package_unmask_ids
+            self.SystemSettings[mykw] = user_package_unmask_ids
         if idpackage in user_package_unmask_ids:
-            myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_package_unmask']
+            myr = self.SystemSettings['pkg_masking_reference']['user_package_unmask']
             self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
             return idpackage, myr
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
         # check if repository packages.db.mask needs it masked
-        repos_mask = self.ServiceInterface.SystemSettings['repos_mask']
+        repos_mask = self.SystemSettings['repos_mask']
         repomask = repos_mask.get(reponame)
         if isinstance(repomask, set):
             # first, seek into generic masking, all branches
@@ -4453,18 +4458,18 @@ class LocalRepository:
                     repomask_ids |= set(matches)
                 repos_mask[mask_repo_id] = repomask_ids
             if idpackage in repomask_ids:
-                myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['repository_packages_db_mask']
+                myr = self.SystemSettings['pkg_masking_reference']['repository_packages_db_mask']
                 self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
                 return -1, myr
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
-        if self.ServiceInterface.SystemSettings['license_mask']:
+        if self.SystemSettings['license_mask']:
             mylicenses = self.retrieveLicense(idpackage)
             mylicenses = mylicenses.strip().split()
-            lic_mask = self.ServiceInterface.SystemSettings['license_mask']
+            lic_mask = self.SystemSettings['license_mask']
             for mylicense in mylicenses:
                 if mylicense not in lic_mask: continue
-                myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_license_mask']
+                myr = self.SystemSettings['pkg_masking_reference']['user_license_mask']
                 self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
                 return -1, myr
 
@@ -4477,45 +4482,45 @@ class LocalRepository:
         # (universal keywords have been merged from package.mask)
         for key in etpConst['keywords']:
             if key not in mykeywords: continue
-            myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['system_keyword']
+            myr = self.SystemSettings['pkg_masking_reference']['system_keyword']
             self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
             return idpackage, myr
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
-        # we need to seek self.ServiceInterface.SystemSettings['keywords']
+        # we need to seek self.SystemSettings['keywords']
         # seek in repository first
-        if reponame in self.ServiceInterface.SystemSettings['keywords']['repositories']:
-            for keyword in self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame]:
+        if reponame in self.SystemSettings['keywords']['repositories']:
+            for keyword in self.SystemSettings['keywords']['repositories'][reponame]:
                 if keyword not in mykeywords: continue
-                keyword_data = self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame].get(keyword)
+                keyword_data = self.SystemSettings['keywords']['repositories'][reponame].get(keyword)
                 if not keyword_data: continue
                 if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                    myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_repo_package_keywords_all']
+                    myr = self.SystemSettings['pkg_masking_reference']['user_repo_package_keywords_all']
                     self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
                     return idpackage, myr
                 kwd_key = "%s_ids" % (keyword,)
-                keyword_data_ids = self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame].get(kwd_key)
+                keyword_data_ids = self.SystemSettings['keywords']['repositories'][reponame].get(kwd_key)
                 if not isinstance(keyword_data_ids, set):
                     keyword_data_ids = set()
                     for atom in keyword_data:
                         matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                         if r != 0: continue
                         keyword_data_ids |= matches
-                    self.ServiceInterface.SystemSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
+                    self.SystemSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
                 if idpackage in keyword_data_ids:
-                    myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_repo_package_keywords']
+                    myr = self.SystemSettings['pkg_masking_reference']['user_repo_package_keywords']
                     self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
                     return idpackage, myr
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
-        for keyword in self.ServiceInterface.SystemSettings['keywords']['packages']:
+        for keyword in self.SystemSettings['keywords']['packages']:
             # first of all check if keyword is in mykeywords
             if keyword not in mykeywords: continue
-            keyword_data = self.ServiceInterface.SystemSettings['keywords']['packages'].get(keyword)
+            keyword_data = self.SystemSettings['keywords']['packages'].get(keyword)
             if not keyword_data: continue
             kwd_key = "%s_ids" % (keyword,)
-            keyword_data_ids = self.ServiceInterface.SystemSettings['keywords']['packages'].get(reponame+kwd_key)
+            keyword_data_ids = self.SystemSettings['keywords']['packages'].get(reponame+kwd_key)
             if not isinstance(keyword_data_ids, set):
                 keyword_data_ids = set()
                 for atom in keyword_data:
@@ -4523,10 +4528,10 @@ class LocalRepository:
                     matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
                     if r != 0: continue
                     keyword_data_ids |= matches
-                self.ServiceInterface.SystemSettings['keywords']['packages'][reponame+kwd_key] = keyword_data_ids
+                self.SystemSettings['keywords']['packages'][reponame+kwd_key] = keyword_data_ids
             if idpackage in keyword_data_ids:
                 # valid!
-                myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['user_package_keywords']
+                myr = self.SystemSettings['pkg_masking_reference']['user_package_keywords']
                 self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
                 return idpackage, myr
 
@@ -4574,7 +4579,7 @@ class LocalRepository:
         if data: return data
 
         # holy crap, can't validate
-        myr = self.ServiceInterface.SystemSettings['pkg_masking_reference']['completely_masked']
+        myr = self.SystemSettings['pkg_masking_reference']['completely_masked']
         self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
         return -1, myr
 
