@@ -313,8 +313,6 @@ class SystemSettings(Singleton):
         for plugin_id in sorted(self.__plugins):
             self.__plugins[plugin_id].parse(self)
 
-        print self.__data.get('repos_system_mask_installed_keys')
-
         # merge persistent settings back
         self.__data.update(self.__persistent_settings)
         # restore backed-up settings
