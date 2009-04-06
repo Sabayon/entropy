@@ -122,8 +122,6 @@ def initconfig_entropy_constants(rootdir):
     const_setup_entropy_pid()
     const_read_repo_settings()
     const_configure_lock_paths()
-    # server stuff
-    const_read_srv_settings()
 
     # reflow back settings
     etpConst.update(backed_up_settings)
@@ -1041,123 +1039,6 @@ def const_configure_lock_paths():
     }
 
 
-def const_read_srv_settings():
-
-    """
-    Setup Entropy Server settings reading them from
-    the relative config. file (server.conf) specified in
-    etpConst['serverconf']
-
-    @return None
-    """
-
-    if not os.access(etpConst['serverconf'], os.R_OK):
-        return
-
-    etpConst['server_repositories'].clear()
-
-    with open(etpConst['serverconf'],"r") as server_f:
-        serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
-
-    for line in serverconf:
-
-        if line.startswith("branches|") and (len(line.split("branches|")) == 2):
-
-            branches = line.split("branches|")[1]
-            etpConst['branches'] = []
-            for branch in branches.split():
-                etpConst['branches'].append(branch)
-            if etpConst['branch'] not in etpConst['branches']:
-                etpConst['branches'].append(etpConst['branch'])
-            etpConst['branches'] = sorted(etpConst['branches'])
-
-        elif (line.find("officialserverrepositoryid|") != -1) and \
-            (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-            etpConst['officialserverrepositoryid'] = line.split("|")[1].strip()
-
-        elif (line.find("expiration-days|") != -1) and \
-            (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-            mydays = line.split("|")[1].strip()
-            try:
-                mydays = int(mydays)
-                etpConst['packagesexpirationdays'] = mydays
-            except ValueError:
-                continue
-
-        elif line.startswith("repository|") and \
-            (len(line.split("|")) in [5, 6]):
-
-            repoid, repodata = const_extract_srv_repo_params(line)
-            if repoid in etpConst['server_repositories']:
-                # just update mirrors
-                etpConst['server_repositories'][repoid]['mirrors'].extend(
-                    repodata['mirrors'])
-            else:
-                etpConst['server_repositories'][repoid] = repodata.copy()
-
-        elif line.startswith("database-format|") and \
-            (len(line.split("database-format|")) == 2):
-
-            fmt = line.split("database-format|")[1]
-            if fmt in etpConst['etpdatabasesupportedcformats']:
-                etpConst['etpdatabasefileformat'] = fmt
-
-        elif line.startswith("rss-feed|") and \
-            (len(line.split("rss-feed|")) == 2):
-
-            feed = line.split("rss-feed|")[1]
-            if feed in ("enable", "enabled", "true", "1"):
-                etpConst['rss-feed'] = True
-            elif feed in ("disable", "disabled", "false", "0", "no",):
-                etpConst['rss-feed'] = False
-
-        elif line.startswith("rss-name|") and \
-            (len(line.split("rss-name|")) == 2):
-
-            feedname = line.split("rss-name|")[1].strip()
-            etpConst['rss-name'] = feedname
-
-        elif line.startswith("rss-base-url|") and \
-            (len(line.split("rss-base-url|")) == 2):
-
-            etpConst['rss-base-url'] = line.split("rss-base-url|")[1].strip()
-            if not etpConst['rss-base-url'][-1] == "/":
-                etpConst['rss-base-url'] += "/"
-
-        elif line.startswith("rss-website-url|") and \
-            (len(line.split("rss-website-url|")) == 2):
-
-            etpConst['rss-website-url'] = \
-                line.split("rss-website-url|")[1].strip()
-
-        elif line.startswith("managing-editor|") and \
-            (len(line.split("managing-editor|")) == 2):
-
-            etpConst['rss-managing-editor'] = \
-                line.split("managing-editor|")[1].strip()
-
-        elif line.startswith("max-rss-entries|") and \
-            (len(line.split("max-rss-entries|")) == 2):
-
-            try:
-                entries = int(line.split("max-rss-entries|")[1].strip())
-                etpConst['rss-max-entries'] = entries
-            except (ValueError, IndexError,):
-                continue
-
-        elif line.startswith("max-rss-light-entries|") and \
-            (len(line.split("max-rss-light-entries|")) == 2):
-
-            try:
-                entries = int(line.split("max-rss-light-entries|")[1].strip())
-                etpConst['rss-light-max-entries'] = entries
-            except (ValueError, IndexError,):
-                continue
-
-    const_config_server_repo_paths()
-
 def const_extract_srv_repo_params(repostring):
     """
     Analyze a server repository string (usually contained in server.conf),
@@ -1208,55 +1089,6 @@ def const_extract_srv_repo_params(repostring):
         mydata['mirrors'].append(uri)
 
     return repoid, mydata
-
-def const_config_server_repo_paths():
-    """
-    Configure Entropy Server repository paths.
-
-    @return None
-    """
-    for repoid in etpConst['server_repositories']:
-        etpConst['server_repositories'][repoid]['packages_dir'] = \
-            os.path.join(   etpConst['entropyworkdir'],
-                            "server",
-                            repoid,
-                            "packages",
-                            etpSys['arch']
-                        )
-        etpConst['server_repositories'][repoid]['store_dir'] = \
-            os.path.join(   etpConst['entropyworkdir'],
-                            "server",
-                            repoid,
-                            "store",
-                            etpSys['arch']
-                        )
-        etpConst['server_repositories'][repoid]['upload_dir'] = \
-            os.path.join(   etpConst['entropyworkdir'],
-                            "server",
-                            repoid,
-                            "upload",
-                            etpSys['arch']
-                        )
-        etpConst['server_repositories'][repoid]['database_dir'] = \
-            os.path.join(   etpConst['entropyworkdir'],
-                            "server",
-                            repoid,
-                            "database",
-                            etpSys['arch']
-                        )
-        etpConst['server_repositories'][repoid]['packages_relative_path'] = \
-            os.path.join(   etpConst['product'],
-                            repoid,
-                            "packages",
-                            etpSys['arch']
-                        )+"/"
-        etpConst['server_repositories'][repoid]['database_relative_path'] = \
-            os.path.join(   etpConst['product'],
-                            repoid,
-                            "database",
-                            etpSys['arch']
-                        )+"/"
-
 
 def const_setup_environment():
     """

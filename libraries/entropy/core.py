@@ -182,6 +182,7 @@ class SystemSettings(Singleton):
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
             'client': etpConst['clientconf'],
+            'server': etpConst['serverconf'],
         })
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
@@ -224,7 +225,7 @@ class SystemSettings(Singleton):
                 'live_packagemasking': {
                     'unmask_matches': set(),
                     'mask_matches': set(),
-                }
+                },
             }
         )
 
@@ -881,6 +882,12 @@ class SystemSettings(Singleton):
 
     def system_parser(self):
 
+        """
+        Parses Entropy system configuration file.
+
+        @return dict data
+        """
+
         data = {}
         data['proxy'] = etpConst['proxy'].copy()
         data['name'] = etpConst['systemname']
@@ -961,6 +968,12 @@ class SystemSettings(Singleton):
 
     def client_parser(self):
 
+        """
+        Parses Entropy client system configuration file.
+
+        @return dict data
+        """
+
         data = {
             'filesbackup': etpConst['filesbackup'],
             'ignore_spm_downgrades': etpConst['spm']['ignore-spm-downgrades'],
@@ -1025,6 +1038,172 @@ class SystemSettings(Singleton):
                     data['configprotectskip'].append(
                         etpConst['systemroot']+unicode(myprot,
                             'raw_unicode_escape'))
+
+        return data
+
+    def server_parser(self):
+
+        """
+        Parses Entropy server system configuration file.
+
+        @return dict data
+        """
+
+        data = {
+            'repositories': etpConst['server_repositories'].copy(),
+            'branches': etpConst['branches'][:],
+            'default_repository_id': etpConst['officialserverrepositoryid'],
+            'packages_expiration_days': etpConst['packagesexpirationdays'],
+            'database_file_format': etpConst['etpdatabasefileformat'],
+            'rss': {
+                'enabled': etpConst['rss-feed'],
+                'name': etpConst['rss-name'],
+                'base_url': etpConst['rss-base-url'],
+                'website_url': etpConst['rss-website-url'],
+                'editor': etpConst['rss-managing-editor'],
+                'max_entries': etpConst['rss-max-entries'],
+                'light_max_entries': etpConst['rss-light-max-entries'],
+            },
+        }
+
+        if not os.access(etpConst['serverconf'], os.R_OK):
+            return data
+
+        with open(etpConst['serverconf'],"r") as server_f:
+            serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
+
+        for line in serverconf:
+
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
+            if line.startswith("branches|") and (split_line_len == 2):
+
+                branches = split_line[1]
+                data['branches'] = []
+                for branch in branches.split():
+                    data['branches'].append(branch)
+                if etpConst['branch'] not in data['branches']:
+                    data['branches'].append(etpConst['branch'])
+                data['branches'] = sorted(data['branches'])
+
+            elif (line.find("officialserverrepositoryid|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                data['default_repository_id'] = split_line[1].strip()
+
+            elif (line.find("expiration-days|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                mydays = split_line[1].strip()
+                try:
+                    mydays = int(mydays)
+                    data['packages_expiration_days'] = mydays
+                except ValueError:
+                    continue
+
+            elif line.startswith("repository|") and (split_line_len in [5, 6]):
+
+                repoid, repodata = const_extract_srv_repo_params(line)
+                if repoid in data['repositories']:
+                    # just update mirrors
+                    data['repositories'][repoid]['mirrors'].extend(
+                        repodata['mirrors'])
+                else:
+                    data['repositories'][repoid] = repodata.copy()
+
+            elif line.startswith("database-format|") and (split_line_len == 2):
+
+                fmt = split_line[1]
+                if fmt in etpConst['etpdatabasesupportedcformats']:
+                    data['database_file_format'] = fmt
+
+            elif line.startswith("rss-feed|") and (split_line_len == 2):
+
+                feed = split_line[1]
+                if feed in ("enable", "enabled", "true", "1"):
+                    data['rss']['enabled'] = True
+                elif feed in ("disable", "disabled", "false", "0", "no",):
+                    data['rss']['enabled'] = False
+
+            elif line.startswith("rss-name|") and (split_line_len == 2):
+
+                feedname = line.split("rss-name|")[1].strip()
+                data['rss']['name'] = feedname
+
+            elif line.startswith("rss-base-url|") and (split_line_len == 2):
+
+                data['rss']['base_url'] = line.split("rss-base-url|")[1].strip()
+                if not data['rss']['base_url'][-1] == "/":
+                    data['rss']['base_url'] += "/"
+
+            elif line.startswith("rss-website-url|") and (split_line_len == 2):
+
+                data['rss']['website_url'] = split_line[1].strip()
+
+            elif line.startswith("managing-editor|") and (split_line_len == 2):
+
+                data['rss']['editor'] = split_line[1].strip()
+
+            elif line.startswith("max-rss-entries|") and (split_line_len == 2):
+
+                try:
+                    entries = int(split_line[1].strip())
+                    data['rss']['max_entries'] = entries
+                except (ValueError, IndexError,):
+                    continue
+
+            elif line.startswith("max-rss-light-entries|") and \
+                (split_line_len == 2):
+
+                try:
+                    entries = int(split_line[1].strip())
+                    data['rss']['light_max_entries'] = entries
+                except (ValueError, IndexError,):
+                    continue
+
+        # now setup paths properly
+        for repoid in data['repositories']:
+            data['repositories'][repoid]['packages_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "packages",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['store_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "store",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['upload_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "upload",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['database_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "database",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['packages_relative_path'] = \
+                os.path.join(   etpConst['product'],
+                                repoid,
+                                "packages",
+                                etpSys['arch']
+                            )+"/"
+            data['repositories'][repoid]['database_relative_path'] = \
+                os.path.join(   etpConst['product'],
+                                repoid,
+                                "database",
+                                etpSys['arch']
+                            )+"/"
 
         return data
 

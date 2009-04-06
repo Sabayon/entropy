@@ -26,7 +26,7 @@ import shutil
 from entropy.core import Singleton
 from entropy.exceptions import *
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, const_read_srv_settings
+    const_create_working_dirs
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred, darkblue
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
@@ -406,7 +406,7 @@ class Server(Singleton,TextInterface):
         shutil.move(tmpfile,etpConst['serverconf'])
         if status:
             self.close_server_databases()
-            const_read_srv_settings()
+            self.SystemSettings.clear()
             self.setup_services()
             self.show_interface_status()
         return status
