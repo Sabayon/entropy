@@ -1032,8 +1032,8 @@ class Package:
     def __move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
-        protect = etpRepositories[self.infoDict['repository']]['configprotect']
-        mask = etpRepositories[self.infoDict['repository']]['configprotectmask']
+        protect = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['configprotect']
+        mask = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['configprotectmask']
         sys_root = etpConst['systemroot']
         col_protect = self.Entropy.SystemSettings['client']['collisionprotect']
         items_installed = set()
@@ -2126,8 +2126,8 @@ class Package:
                 self.infoDict.clear()
                 self.prepared = False
                 return -1
-            self.infoDict['smartpackage'] = etpRepositories[self.infoDict['repository']]['smartpackage']
-            self.infoDict['pkgpath'] = etpRepositories[self.infoDict['repository']]['pkgpath']
+            self.infoDict['smartpackage'] = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['smartpackage']
+            self.infoDict['pkgpath'] = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['pkgpath']
         else:
             self.infoDict['pkgpath'] = etpConst['entropyworkdir']+"/"+self.infoDict['download']
         self.infoDict['unpackdir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']

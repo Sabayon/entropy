@@ -227,7 +227,7 @@ class Calculators:
         c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             atom,k_ms,k_mt,hash(packagesFilter),
             hash(frozenset(self.validRepositories)),
-            hash(frozenset(etpRepositories)),
+            hash(frozenset(self.SystemSettings['repositories']['available'])),
             hash(multiMatch),hash(multiRepo),hash(caseSensitive),
             k_mr,hash(extendedResults),
             u_hash, m_hash

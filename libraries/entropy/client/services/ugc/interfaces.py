@@ -24,7 +24,7 @@ from __future__ import with_statement
 import os
 from entropy.core import Singleton
 from entropy.exceptions import *
-from entropy.const import etpConst, etpCache, etpRepositories, const_setup_file, const_setup_perms
+from entropy.const import etpConst, etpCache, const_setup_file, const_setup_perms
 from entropy.i18n import _
 
 class Client:
@@ -49,13 +49,13 @@ class Client:
         self.TxLocks = {}
 
     def connect_to_service(self, repository, timeout = None):
-        if repository not in etpRepositories:
+        if repository not in self.Entropy.SystemSettings['repositories']['available']:
             raise RepositoryError("RepositoryError: %s" % (_('repository is not available'),))
 
         try:
-            url = etpRepositories[repository]['plain_database'].split("/")[2]
-            port = etpRepositories[repository]['service_port']
-            if self.ssl_connection: port = etpRepositories[repository]['ssl_service_port']
+            url = self.Entropy.SystemSettings['repositories']['available'][repository]['plain_database'].split("/")[2]
+            port = self.Entropy.SystemSettings['repositories']['available'][repository]['service_port']
+            if self.ssl_connection: port = self.Entropy.SystemSettings['repositories']['available'][repository]['ssl_service_port']
         except (IndexError,KeyError,):
             raise RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 

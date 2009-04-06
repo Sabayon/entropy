@@ -81,7 +81,7 @@ class Repository:
         dbc = self.open_memory_database(dbname = repoid)
         self._memory_db_instances[repoid] = dbc
 
-        # add to etpRepositories
+        # add to self.SystemSettings['repositories']['available']
         repodata = {
             'repoid': repoid,
             'in_memory': True,
@@ -118,7 +118,7 @@ class Repository:
             if repoid.endswith(etpConst['packagesext']):
                 xcache = False
 
-        if repoid not in etpRepositories:
+        if repoid not in self.SystemSettings['repositories']['available']:
             t = _("bad repository id specified")
             if repoid not in self.__repo_error_messages_cache:
                 self.updateProgress(
@@ -129,7 +129,7 @@ class Repository:
                 self.__repo_error_messages_cache.add(repoid)
             raise RepositoryError("RepositoryError: %s" % (t,))
 
-        dbfile = etpRepositories[repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
+        dbfile = self.SystemSettings['repositories']['available'][repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
         if not os.path.isfile(dbfile):
             t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
             if repoid not in self.__repo_error_messages_cache:
@@ -152,8 +152,8 @@ class Repository:
             ServiceInterface = self
         )
         # initialize CONFIG_PROTECT
-        if (etpRepositories[repoid]['configprotect'] == None) or \
-            (etpRepositories[repoid]['configprotectmask'] == None):
+        if (self.SystemSettings['repositories']['available'][repoid]['configprotect'] == None) or \
+            (self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] == None):
                 self.setup_repository_config(repoid, conn)
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
@@ -175,31 +175,31 @@ class Repository:
     def setup_repository_config(self, repoid, dbconn):
 
         try:
-            etpRepositories[repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
+            self.SystemSettings['repositories']['available'][repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
         except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
-            etpRepositories[repoid]['configprotect'] = []
+            self.SystemSettings['repositories']['available'][repoid]['configprotect'] = []
         try:
-            etpRepositories[repoid]['configprotectmask'] = dbconn.listConfigProtectDirectories(mask = True)
+            self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = dbconn.listConfigProtectDirectories(mask = True)
         except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
-            etpRepositories[repoid]['configprotectmask'] = []
+            self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = []
 
-        etpRepositories[repoid]['configprotect'] = [etpConst['systemroot']+x for \
-            x in etpRepositories[repoid]['configprotect']]
-        etpRepositories[repoid]['configprotectmask'] = [etpConst['systemroot']+x for \
-            x in etpRepositories[repoid]['configprotectmask']]
+        self.SystemSettings['repositories']['available'][repoid]['configprotect'] = [etpConst['systemroot']+x for \
+            x in self.SystemSettings['repositories']['available'][repoid]['configprotect']]
+        self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = [etpConst['systemroot']+x for \
+            x in self.SystemSettings['repositories']['available'][repoid]['configprotectmask']]
 
         conf_protect = self.SystemSettings['client']['configprotect']
         conf_protect_mask = self.SystemSettings['client']['configprotectmask']
 
-        etpRepositories[repoid]['configprotect'] += [etpConst['systemroot']+x for \
+        self.SystemSettings['repositories']['available'][repoid]['configprotect'] += [etpConst['systemroot']+x for \
             x in conf_protect if etpConst['systemroot']+x not \
-                in etpRepositories[repoid]['configprotect']]
-        etpRepositories[repoid]['configprotectmask'] += [etpConst['systemroot']+x for \
+                in self.SystemSettings['repositories']['available'][repoid]['configprotect']]
+        self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] += [etpConst['systemroot']+x for \
             x in conf_protect_mask if etpConst['systemroot']+x not \
-                in etpRepositories[repoid]['configprotectmask']]
+                in self.SystemSettings['repositories']['available'][repoid]['configprotectmask']]
 
     def get_repository_revision(self, reponame):
-        fname = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
+        fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
         revision = -1
         if os.path.isfile(fname) and os.access(fname,os.R_OK):
             with open(fname,"r") as f:
@@ -211,12 +211,12 @@ class Repository:
 
     def update_repository_revision(self, reponame):
         r = self.get_repository_revision(reponame)
-        etpRepositories[reponame]['dbrevision'] = "0"
+        self.SystemSettings['repositories']['available'][reponame]['dbrevision'] = "0"
         if r != -1:
-            etpRepositories[reponame]['dbrevision'] = str(r)
+            self.SystemSettings['repositories']['available'][reponame]['dbrevision'] = str(r)
 
     def get_repository_db_file_checksum(self, reponame):
-        fname = etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile']
+        fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile']
         mhash = "-1"
         if os.path.isfile(fname) and os.access(fname,os.R_OK):
             with open(fname,"r") as f:
@@ -229,45 +229,45 @@ class Repository:
     def add_repository(self, repodata):
         product = self.SystemSettings['repositories']['product']
         branch = self.SystemSettings['repositories']['branch']
-        # update etpRepositories
+        # update self.SystemSettings['repositories']['available']
         try:
-            etpRepositories[repodata['repoid']] = {}
-            etpRepositories[repodata['repoid']]['description'] = repodata['description']
-            etpRepositories[repodata['repoid']]['configprotect'] = None
-            etpRepositories[repodata['repoid']]['configprotectmask'] = None
+            self.SystemSettings['repositories']['available'][repodata['repoid']] = {}
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['description'] = repodata['description']
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['configprotect'] = None
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['configprotectmask'] = None
         except KeyError:
             t = _("repodata dictionary is corrupted")
             raise InvalidData("InvalidData: %s" % (t,))
 
         if repodata['repoid'].endswith(etpConst['packagesext']) or repodata.get('in_memory'): # dynamic repository
             try:
-                # no need # etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
-                etpRepositories[repodata['repoid']]['packages'] = repodata['packages'][:]
+                # no need # self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
+                self.SystemSettings['repositories']['available'][repodata['repoid']]['packages'] = repodata['packages'][:]
                 smart_package = repodata.get('smartpackage')
-                if smart_package != None: etpRepositories[repodata['repoid']]['smartpackage'] = smart_package
-                etpRepositories[repodata['repoid']]['dbpath'] = repodata.get('dbpath')
-                etpRepositories[repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
+                if smart_package != None: self.SystemSettings['repositories']['available'][repodata['repoid']]['smartpackage'] = smart_package
+                self.SystemSettings['repositories']['available'][repodata['repoid']]['dbpath'] = repodata.get('dbpath')
+                self.SystemSettings['repositories']['available'][repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
             except KeyError:
                 raise InvalidData("InvalidData: repodata dictionary is corrupted")
             # put at top priority, shift others
             self.SystemSettings['repositories']['order'].insert(0, repodata['repoid'])
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
-            etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
-            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+product for x in repodata['plain_packages']]
-            etpRepositories[repodata['repoid']]['plain_database'] = repodata['plain_database']
-            etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + \
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['packages'] = [x+"/"+product for x in repodata['plain_packages']]
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_database'] = repodata['plain_database']
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['database'] = repodata['plain_database'] + \
                 "/" + product + "/database/" + etpConst['currentarch'] + "/" + branch
             if not repodata['dbcformat'] in etpConst['etpdatabasesupportedcformats']:
                 repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
-            etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
-            etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + \
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbcformat'] = repodata['dbcformat']
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + \
                 "/" + repodata['repoid'] + "/" + product + "/" + etpConst['currentarch']  + "/" + branch
             # set dbrevision
             myrev = self.get_repository_revision(repodata['repoid'])
             if myrev == -1:
                 myrev = 0
-            etpRepositories[repodata['repoid']]['dbrevision'] = str(myrev)
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbrevision'] = str(myrev)
             if repodata.has_key("position"):
                 self.SystemSettings['repositories']['order'].insert(
                     repodata['position'], repodata['repoid'])
@@ -278,10 +278,10 @@ class Repository:
                 repodata['service_port'] = int(etpConst['socket_service']['port'])
             if not repodata.has_key("ssl_service_port"):
                 repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
-            etpRepositories[repodata['repoid']]['service_port'] = repodata['service_port']
-            etpRepositories[repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['service_port'] = repodata['service_port']
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
             self.repository_move_clear_cache(repodata['repoid'])
-            # save new etpRepositories to file
+            # save new self.SystemSettings['repositories']['available'] to file
             self.entropyTools.save_repository_settings(repodata)
             self.reload_constants()
         self.validate_repositories()
@@ -292,8 +292,8 @@ class Repository:
         self.close_all_repositories()
 
         done = False
-        if etpRepositories.has_key(repoid):
-            del etpRepositories[repoid]
+        if self.SystemSettings['repositories']['available'].has_key(repoid):
+            del self.SystemSettings['repositories']['available'][repoid]
             done = True
 
         if self.SystemSettings['repositories']['excluded'].has_key(repoid):
@@ -306,7 +306,7 @@ class Repository:
                 self.SystemSettings['repositories']['order'].remove(repoid)
 
             self.repository_move_clear_cache(repoid)
-            # save new etpRepositories to file
+            # save new self.SystemSettings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
             if disable:
@@ -329,7 +329,7 @@ class Repository:
 
     def enable_repository(self, repoid):
         self.repository_move_clear_cache(repoid)
-        # save new etpRepositories to file
+        # save new self.SystemSettings['repositories']['available'] to file
         repodata = {}
         repodata['repoid'] = repoid
         self.entropyTools.save_repository_settings(repodata, enable = True)
@@ -337,10 +337,10 @@ class Repository:
         self.validate_repositories()
 
     def disable_repository(self, repoid):
-        # update etpRepositories
+        # update self.SystemSettings['repositories']['available']
         done = False
         try:
-            del etpRepositories[repoid]
+            del self.SystemSettings['repositories']['available'][repoid]
             done = True
         except:
             pass
@@ -354,7 +354,7 @@ class Repository:
             # self.SystemSettings['repositories']['order'] counters
 
             self.repository_move_clear_cache(repoid)
-            # save new etpRepositories to file
+            # save new self.SystemSettings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
             self.entropyTools.save_repository_settings(repodata, disable = True)

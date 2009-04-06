@@ -109,7 +109,7 @@ class Fetchers:
             @param checksum bool verify checksum?
             @param fetch_abort_function callable method that could raise exceptions
         """
-        repo_uris = dict(((x[0],etpRepositories[x[0]]['packages'][::-1],) for x in download_list))
+        repo_uris = dict(((x[0],self.SystemSettings['repositories']['available'][x[0]]['packages'][::-1],) for x in download_list))
         remaining = repo_uris.copy()
         my_download_list = download_list[:]
 
@@ -368,7 +368,7 @@ class Fetchers:
     def fetch_file_on_mirrors(self, repository, branch, filename,
             digest = False, fetch_abort_function = None):
 
-        uris = etpRepositories[repository]['packages'][::-1]
+        uris = self.SystemSettings['repositories']['available'][repository]['packages'][::-1]
         remaining = set(uris)
 
         mirrorcount = 0

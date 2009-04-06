@@ -73,13 +73,13 @@ class Repository:
         self.current_repository_got_locked = False
         self.updated_repos = set()
 
-        # check etpRepositories
-        if not etpRepositories:
+        # check self.Entropy.SystemSettings['repositories']['available']
+        if not self.Entropy.SystemSettings['repositories']['available']:
             mytxt = _("No repositories specified in %s") % (etpConst['repositoriesconf'],)
             raise MissingParameter("MissingParameter: %s" % (mytxt,))
 
         if not self.reponames:
-            self.reponames.extend(etpRepositories.keys()[:])
+            self.reponames.extend(self.Entropy.SystemSettings['repositories']['available'].keys()[:])
 
     def __del__(self):
         if self.LockScanner != None:
@@ -87,14 +87,14 @@ class Repository:
 
     def get_eapi3_connection(self, repository):
         # get database url
-        dburl = etpRepositories[repository]['plain_database']
+        dburl = self.Entropy.SystemSettings['repositories']['available'][repository]['plain_database']
         if dburl.startswith("file://"):
             return None
         try:
             dburl = dburl.split("/")[2]
         except IndexError:
             return None
-        port = etpRepositories[repository]['service_port']
+        port = self.Entropy.SystemSettings['repositories']['available'][repository]['service_port']
         try:
             from entropy.services.ugc.interfaces import Client
             from entropy.client.services.ugc.commands import Client as CommandsClient
@@ -148,7 +148,7 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        cmethod = etpConst['etpdatabasecompressclasses'].get(etpRepositories[repo]['dbcformat'])
+        cmethod = etpConst['etpdatabasecompressclasses'].get(self.Entropy.SystemSettings['repositories']['available'][repo]['dbcformat'])
         if cmethod == None:
             mytxt = _("Wrong database compression method")
             raise InvalidDataType("InvalidDataType: %s" % (mytxt,))
@@ -160,8 +160,8 @@ class Repository:
         self.__validate_repository_id(repo)
 
         # create dir if it doesn't exist
-        if not os.path.isdir(etpRepositories[repo]['dbpath']):
-            os.makedirs(etpRepositories[repo]['dbpath'],0775)
+        if not os.path.isdir(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']):
+            os.makedirs(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],0775)
 
         const_setup_perms(etpConst['etpdatabaseclientdir'],etpConst['entropygid'])
 
@@ -174,8 +174,8 @@ class Repository:
                 mytxt = _("For %s, cmethod can't be None") % (item,)
                 raise InvalidData("InvalidData: %s" % (mytxt,))
 
-        repo_db = etpRepositories[repo]['database']
-        repo_dbpath = etpRepositories[repo]['dbpath']
+        repo_db = self.Entropy.SystemSettings['repositories']['available'][repo]['database']
+        repo_dbpath = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
         ec_rev = etpConst['etpdatabaserevisionfile']
         ec_hash = etpConst['etpdatabasehashfile']
         ec_maskfile = etpConst['etpdatabasemaskfile']
@@ -191,7 +191,7 @@ class Repository:
         repo_lock_file = etpConst['etpdatabasedownloadlockfile']
         ca_cert_file = etpConst['etpdatabasecacertfile']
         server_cert_file = etpConst['etpdatabaseservercertfile']
-        notice_board_filename = os.path.basename(etpRepositories[repo]['notice_board'])
+        notice_board_filename = os.path.basename(self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'])
         meta_file = etpConst['etpdatabasemetafilesfile']
         ec_cm2 = None
         ec_cm3 = None
@@ -220,7 +220,7 @@ class Repository:
             'lock': ("%s/%s" % (repo_db,repo_lock_file,),"%s/%s" % (repo_dbpath,repo_lock_file,),),
             'server.cert': ("%s/%s" % (repo_db,server_cert_file,),"%s/%s" % (repo_dbpath,server_cert_file,),),
             'ca.cert': ("%s/%s" % (repo_db,ca_cert_file,),"%s/%s" % (repo_dbpath,ca_cert_file,),),
-            'notice_board': (etpRepositories[repo]['notice_board'],"%s/%s" % (repo_dbpath,notice_board_filename,),),
+            'notice_board': (self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'],"%s/%s" % (repo_dbpath,notice_board_filename,),),
             'meta_file': ("%s/%s" % (repo_db,meta_file,),"%s/%s" % (repo_dbpath,meta_file,),),
         }
 
@@ -230,7 +230,7 @@ class Repository:
 
         dbfilenameid = cmethod[2]
         self.__validate_repository_id(repo)
-        repo_dbpath = etpRepositories[repo]['dbpath']
+        repo_dbpath = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
 
         def remove_eapi1(repo_dbpath, dbfilenameid):
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabasehashfile']):
@@ -261,7 +261,7 @@ class Repository:
         path = None
 
         if self.dbformat_eapi == 1:
-            myfile = etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[2]]
+            myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[2]]
             try:
                 path = eval("self.entropyTools."+cmethod[1])(myfile)
             except EOFError:
@@ -269,7 +269,7 @@ class Repository:
             if os.path.isfile(myfile):
                 os.remove(myfile)
         elif self.dbformat_eapi == 2:
-            myfile = etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[3]]
+            myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[3]]
             try:
                 path = eval("self.entropyTools."+cmethod[1])(myfile)
             except EOFError:
@@ -292,7 +292,7 @@ class Repository:
         if self.dbformat_eapi == 1:
             dbfile = etpConst['etpdatabasefile']
             try:
-                f = open(etpRepositories[repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
+                f = open(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
                 md5hash = f.readline().strip()
                 md5hash = md5hash.split()[0]
                 f.close()
@@ -301,7 +301,7 @@ class Repository:
         elif self.dbformat_eapi == 2:
             dbfile = etpConst[cmethod[3]]
             try:
-                f = open(etpRepositories[repo]['dbpath']+"/"+etpConst[cmethod[4]],"r")
+                f = open(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[4]],"r")
                 md5hash = f.readline().strip()
                 md5hash = md5hash.split()[0]
                 f.close()
@@ -311,7 +311,7 @@ class Repository:
             mytxt = _("self.dbformat_eapi must be in (1,2)")
             raise InvalidData('InvalidData: %s' % (mytxt,))
 
-        rc = self.entropyTools.compare_md5(etpRepositories[repo]['dbpath']+"/"+dbfile,md5hash)
+        rc = self.entropyTools.compare_md5(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+dbfile,md5hash)
         return rc
 
     # @returns -1 if the file is not available
@@ -320,7 +320,7 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabaserevisionfile']
+        url = self.Entropy.SystemSettings['repositories']['available'][repo]['database']+"/"+etpConst['etpdatabaserevisionfile']
         status = self.entropyTools.get_remote_data(url)
         if (status):
             status = status[0].strip()
@@ -334,7 +334,7 @@ class Repository:
 
     def get_online_eapi3_lock(self, repo):
         self.__validate_repository_id(repo)
-        url = etpRepositories[repo]['database']+"/"+etpConst['etpdatabaseeapi3lockfile']
+        url = self.Entropy.SystemSettings['repositories']['available'][repo]['database']+"/"+etpConst['etpdatabaseeapi3lockfile']
         data = self.entropyTools.get_remote_data(url)
         if not data:
             return False
@@ -454,20 +454,20 @@ class Repository:
     def show_repository_information(self, repo, count_info):
 
         self.Entropy.updateProgress(
-            bold("%s") % ( etpRepositories[repo]['description'] ),
+            bold("%s") % ( self.Entropy.SystemSettings['repositories']['available'][repo]['description'] ),
             importance = 2,
             type = "info",
             count = count_info,
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database URL")),darkgreen(etpRepositories[repo]['database']),)
+        mytxt = "%s: %s" % (red(_("Database URL")),darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['database']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database local path")),darkgreen(etpRepositories[repo]['dbpath']),)
+        mytxt = "%s: %s" % (red(_("Database local path")),darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
@@ -484,7 +484,7 @@ class Repository:
 
     def get_eapi3_local_database(self, repo):
 
-        dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
+        dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasefile'])
         mydbconn = None
         try:
             mydbconn = self.Entropy.open_generic_database(dbfile, xcache = False, indexing_override = False)
@@ -845,8 +845,8 @@ class Repository:
             do_db_update_transfer = False
             rc = 0
             # some variables
-            dumpfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasedump'])
-            dbfile = os.path.join(etpRepositories[repo]['dbpath'],etpConst['etpdatabasefile'])
+            dumpfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasedump'])
+            dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasefile'])
             dbfile_old = dbfile+".sync"
             cmethod = self.__validate_compression_method(repo)
 
@@ -1463,7 +1463,7 @@ class Repository:
         pkg_keywords = os.path.basename(etpConst['spm']['global_package_keywords'])
         pkg_use = os.path.basename(etpConst['spm']['global_package_use'])
         profile_link = etpConst['spm']['global_make_profile_link_name']
-        notice_board = os.path.basename(etpRepositories[repo]['local_notice_board'])
+        notice_board = os.path.basename(self.Entropy.SystemSettings['repositories']['available'][repo]['local_notice_board'])
 
         objects_to_unpack = ("meta_file",)
 
@@ -1664,7 +1664,7 @@ class Repository:
                 if not os.path.lexists(tmpdir): break
             os.makedirs(tmpdir,0775)
 
-            repo_dir = etpRepositories[repo]['dbpath']
+            repo_dir = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
             try:
                 done = self.entropyTools.universal_uncompress(mypath, tmpdir, catch_empty = True)
                 if not done: continue
