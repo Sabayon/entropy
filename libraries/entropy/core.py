@@ -118,6 +118,7 @@ class SystemSettings(Singleton):
                 'user_live_unmask': 11,
                 'user_live_mask': 12,
             },
+            'backed_up': {},
         }
 
         self.__setup_const()
