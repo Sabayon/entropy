@@ -860,15 +860,19 @@ class Misc:
         return False # yay!
 
     def backup_setting(self, setting_name):
-        if etpConst.has_key(setting_name):
-            myinst = etpConst[setting_name]
-            if type(etpConst[setting_name]) in (list,tuple):
-                myinst = etpConst[setting_name][:]
-            elif type(etpConst[setting_name]) in (dict,set):
-                myinst = etpConst[setting_name].copy()
+        var = etpConst
+        if self.SystemSettings.has_key(setting_name):
+            var = self.SystemSettings
+
+        if var.has_key(setting_name):
+            myinst = var[setting_name]
+            if type(var[setting_name]) in (list,tuple):
+                myinst = var[setting_name][:]
+            elif type(var[setting_name]) in (dict,set):
+                myinst = var[setting_name].copy()
             else:
-                myinst = etpConst[setting_name]
-            etpConst['backed_up'].update({setting_name: myinst})
+                myinst = var[setting_name]
+            var['backed_up'].update({setting_name: myinst})
         else:
             t = _("Nothing to backup in etpConst with %s key") % (setting_name,)
             raise InvalidData("InvalidData: %s" % (t,))
