@@ -152,6 +152,14 @@ class SystemSettings(Singleton):
         self.Entropy = entropy_instance
         self.__scan() # do this again to re-fill settings
 
+    def disconnect_entropy(self):
+        """
+        Remove an Entropy (client/server) instance to
+        this Singleton.
+        """
+        self.Entropy = None
+        self.__scan()
+
     def __setup_const(self):
 
         """
