@@ -413,6 +413,30 @@ class SystemSettings(Singleton):
         self.__setup_const()
         self.__scan()
 
+    def set_persistent_setting(self, persistent_dict):
+        """
+        Make metadata persistent, the input dict will be merged
+        with the base one at every reset call (clear()).
+
+        @param persistent_dict -- dictionary to merge
+        @type persistent_dict dict
+
+        @return None
+        """
+        self.__persistent_settings.update(persistent_dict)
+
+    def unset_persistent_setting(self, persistent_key):
+        """
+        Remove dict key from persistent dictionary
+
+        @param persistent_key -- key to remove
+        @type persistent_dict dict
+
+        @return None
+        """
+        del self.__persistent_settings[persistent_key]
+        del self.__data[persistent_key]
+
     def __setup_setting_vars(self):
 
         """
