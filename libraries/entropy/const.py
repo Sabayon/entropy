@@ -620,8 +620,7 @@ def const_set_nice_level(nice_level = 0):
         pass
     return current_nice
 
-def const_extract_cli_repo_params(repostring, branch = etpConst['branch'],
-    product = etpConst['product']):
+def const_extract_cli_repo_params(repostring, branch = None, product = None):
 
     """
     Extract repository information from the provided repository string,
@@ -633,6 +632,11 @@ def const_extract_cli_repo_params(repostring, branch = etpConst['branch'],
         reponame => repository identifier (string),
         mydata => extracted repository information (dict)
     """
+
+    if branch == None:
+        branch = etpConst['branch']
+    if product == None:
+        product = etpConst['product']
 
     reponame = repostring.split("|")[1].strip()
     repodesc = repostring.split("|")[2].strip()
@@ -927,7 +931,7 @@ def const_configure_lock_paths():
     }
 
 
-def const_extract_srv_repo_params(repostring, product = etpConst['product']):
+def const_extract_srv_repo_params(repostring, product = None):
     """
     Analyze a server repository string (usually contained in server.conf),
     extracting all the parameters.
@@ -936,6 +940,10 @@ def const_extract_srv_repo_params(repostring, product = etpConst['product']):
     @type repostring basestring
     @return None
     """
+
+    if product == None:
+        product = etpConst['product']
+
     mydata = {}
     repoid = repostring.split("|")[1].strip()
     repodesc = repostring.split("|")[2].strip()
