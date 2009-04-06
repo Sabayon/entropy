@@ -568,7 +568,8 @@ class Server:
                 )
                 ftp.close()
                 continue
-            cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+            db_format = self.Entropy.SystemSettings['server']['database_file_format']
+            cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod == None:
                 raise InvalidDataType("InvalidDataType: %s." % (
                         _("Wrong database compression method passed"),
@@ -1311,7 +1312,8 @@ class Server:
 
         for uri in uris:
 
-            cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+            db_format = self.Entropy.SystemSettings['server']['database_file_format']
+            cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod == None:
                 raise InvalidDataType("InvalidDataType: %s." % (
                         _("wrong database compression method passed"),
@@ -1459,7 +1461,8 @@ class Server:
 
         for uri in uris:
 
-            cmethod = etpConst['etpdatabasecompressclasses'].get(etpConst['etpdatabasefileformat'])
+            db_format = self.Entropy.SystemSettings['server']['database_file_format']
+            cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod == None:
                 raise InvalidDataType("InvalidDataType: %s." % (
                         _("wrong database compression method passed"),
