@@ -64,15 +64,61 @@ class Singleton(object):
         """
         return self.__is_singleton
 
+class SystemSettingsPlugin:
+
+    """
+    This is a plugin base class for all SystemSettings plugins.
+    It allows to add extra parsers (though metadata) to
+    SystemSettings.
+    Just inherit from this class and call add_parser to add
+    your custom parsers.
+    SystemSettings will call the parse method, as explained below.
+    """
+
+    def __init__(self, helper_interface):
+        """
+        SystemSettingsPlugin constructor.
+
+        @param handler_interface -- any Python instance that could
+            be of help to your parsers
+        @type handler_instance instance
+        """
+        self.__parsers = []
+        self.__plugin_interface = helper_interface
+
+    def add_parser(self, callable_function):
+        """
+        You must call this method in order to add your custom
+        parsers to the plugin.
+
+        @param callable_function - any callable function which has
+            the following signature: callable(system_settings_instance)
+            can return True to stop further parsers calls
+        """
+        self.__parsers.append(callable_function)
+
+    def parse(self, system_settings_instance):
+        """
+        This method is called by SystemSettings instance
+        when building its settings metadata.
+
+        @param system_settings_instance -- SystemSettings instance
+        @type system_settings_instance SystemSettings instance
+        """
+        for parser in self.__parsers:
+            block = parser(system_settings_instance)
+            if block:
+                break
+
 class SystemSettings(Singleton):
 
     """
-        This is the place where all the Entropy settings are stored if
-        they are not considered instance constants (etpConst).
-        For example, here we store package masking cache information and
-        settings.
-        Also, this class mimics a dictionary (even if not inheriting it
-        due to issues with the Singleton class).
+    This is the place where all the Entropy settings are stored if
+    they are not considered instance constants (etpConst).
+    For example, here we store package masking cache information and
+    settings.
+    Also, this class mimics a dictionary (even if not inheriting it
+    due to issues with the Singleton class).
     """
 
     import entropy.tools as entropyTools
@@ -88,6 +134,7 @@ class SystemSettings(Singleton):
         self.__is_destroyed = False
         self.Entropy = None
 
+        self.__plugins = {}
         self.__setting_files_order = []
         self.__setting_files_pre_run = []
         self.__setting_files = {}
@@ -136,6 +183,41 @@ class SystemSettings(Singleton):
         @return None
         """
         self.__is_destroyed = True
+
+    def add_plugin(self, plugin_id, system_settings_plugin_instance):
+        """
+        This method lets you add custom parsers to SystemSettings.
+        Mind that you are responsible of handling your plugin instance
+        and remove it before it is destroyed. You can remove the plugin
+        instance at any time by issuing remove_plugin.
+        Every add_plugin or remove_plugin method will also issue clear()
+        for you. This could be bad and it might be removed in future.
+
+        @param plugin_id -- plugin identifier
+        @type plugin_id basestring
+        @param system_settings_plugin_instance -- valid SystemSettingsPlugin
+            instance
+        @type system_settings_plugin_instance SystemSettingsPlugin instance
+        """
+        if not isinstance(system_settings_plugin_instance,SystemSettingsPlugin):
+            raise AttributeError("SystemSettings: expected valid " + \
+                    "SystemSettingsPlugin instance")
+        self.__plugins[plugin_id] = system_settings_plugin_instance
+        self.clear()
+
+    def remove_plugin(self, plugin_id):
+        """
+        This method lets you remove previously added custom parsers from
+        SystemSettings through its plugin identifier. If plugin_id is not
+        available, KeyError exception will be raised.
+        Every add_plugin or remove_plugin method will also issue clear()
+        for you. This could be bad and it might be removed in future.
+
+        @param plugin_id -- plugin identifier
+        @type plugin_id basestring
+        """
+        del self.__plugins[plugin_id]
+        self.clear()
 
     def connect_entropy(self, entropy_instance):
         """
