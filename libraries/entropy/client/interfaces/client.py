@@ -197,9 +197,12 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
             self.clientLog.close()
         if hasattr(self,'Cacher'):
             self.Cacher.stop()
-        if hasattr(self,'SystemSettings'):
-            if hasattr(self.SystemSettings,'disconnect_entropy'):
-                self.SystemSettings.disconnect_entropy()
+        if hasattr(self,'SystemSettings') and \
+            hasattr(self,'sys_settings_mask_plugin_id'):
+
+            if hasattr(self.SystemSettings,'remove_plugin'):
+                self.SystemSettings.remove_plugin(
+                    self.sys_settings_mask_plugin_id)
 
         self.close_all_repositories(mask_clear = False)
         self.closeAllSecurity()
