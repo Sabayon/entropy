@@ -859,22 +859,18 @@ class Misc:
             time.sleep(sleep_seconds)
         return False # yay!
 
-    def backup_setting(self, setting_name):
-        var = etpConst
-        if self.SystemSettings.has_key(setting_name):
-            var = self.SystemSettings
-
-        if var.has_key(setting_name):
-            myinst = var[setting_name]
-            if type(var[setting_name]) in (list,tuple):
-                myinst = var[setting_name][:]
-            elif type(var[setting_name]) in (dict,set):
-                myinst = var[setting_name].copy()
+    def backup_constant(self, constant_name):
+        if etpConst.has_key(constant_name):
+            myinst = etpConst[constant_name]
+            if type(etpConst[constant_name]) in (list,tuple):
+                myinst = etpConst[constant_name][:]
+            elif type(etpConst[constant_name]) in (dict,set):
+                myinst = etpConst[constant_name].copy()
             else:
-                myinst = var[setting_name]
-            var['backed_up'].update({setting_name: myinst})
+                myinst = etpConst[constant_name]
+            etpConst['backed_up'].update({constant_name: myinst})
         else:
-            t = _("Nothing to backup in etpConst with %s key") % (setting_name,)
+            t = _("Nothing to backup in etpConst with %s key") % (constant_name,)
             raise InvalidData("InvalidData: %s" % (t,))
 
     def set_priority(self, low = 0):

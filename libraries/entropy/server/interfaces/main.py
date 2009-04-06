@@ -412,7 +412,7 @@ class Server(Singleton,TextInterface):
 
     def backup_entropy_settings(self):
         for setting in self.settings_to_backup:
-            self.ClientService.backup_setting(setting)
+            self.ClientService.backup_constant(setting)
 
     def is_repository_initialized(self, repo):
 
