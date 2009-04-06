@@ -110,7 +110,7 @@ def repositories(options):
             return 1
         repo = myopts[0]
 
-        if repo not in etpConst['server_repositories']:
+        if repo not in Entropy.SystemSettings['server']['repositories']:
             return 3
 
         tag_string = myopts[1]
@@ -136,7 +136,7 @@ def repositories(options):
             return 1
         repo = myopts[0]
 
-        if repo not in etpConst['server_repositories']:
+        if repo not in Entropy.SystemSettings['server']['repositories']:
             return 3
 
         atoms = myopts[1:]

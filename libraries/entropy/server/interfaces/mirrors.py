@@ -1251,7 +1251,7 @@ class Server:
             repo = self.Entropy.default_repository
         dbconn = self.Entropy.open_server_repository(read_only = False, no_upload = True, repo = repo)
         # grab treeupdates from other databases and inject
-        server_repos = etpConst['server_repositories'].keys()
+        server_repos = self.Entropy.SystemSettings['server']['repositories'].keys()
         all_actions = set()
         for myrepo in server_repos:
 
