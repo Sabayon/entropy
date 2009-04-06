@@ -860,7 +860,6 @@ class Misc:
         return False # yay!
 
     def backup_setting(self, setting_name):
-        # FIXME: support nested settings (SystemSettings['something']['somethingelse'])
         var = etpConst
         if self.SystemSettings.has_key(setting_name):
             var = self.SystemSettings

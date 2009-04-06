@@ -52,7 +52,7 @@ class Server(Singleton,TextInterface):
 
         self.default_repository = default_repository
         if self.default_repository == None:
-            self.default_repository = etpConst['officialserverrepositoryid']
+            self.default_repository = self.SystemSettings['server']['default_repository_id']
 
         if self.default_repository in self.SystemSettings['server']['repositories']:
             self.ensure_paths(self.default_repository)
@@ -256,7 +256,7 @@ class Server(Singleton,TextInterface):
                     )
             )
         self.close_server_databases()
-        etpConst['officialserverrepositoryid'] = repoid
+        self.SystemSettings['server']['default_repository_id'] = repoid
         self.default_repository = repoid
         self.setup_services()
         if save:
