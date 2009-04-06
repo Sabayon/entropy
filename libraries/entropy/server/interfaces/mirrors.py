@@ -2565,7 +2565,8 @@ class Server:
         if not os.path.isfile(pkg_path):
             return False
         mtime = self.entropyTools.get_file_unix_mtime(pkg_path)
-        delta = int(etpConst['packagesexpirationdays'])*24*3600
+        days = self.Entropy.SystemSettings['server']['packages_expiration_days']
+        delta = int(days)*24*3600
         currmtime = time.time()
         file_delta = currmtime - mtime
         if file_delta > delta:
