@@ -23,8 +23,9 @@
 from __future__ import with_statement
 import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
-from entropy.const import etpConst, const_setup_perms, etpRepositories, \
-    etpRepositoriesOrder, const_secure_config_file, const_set_nice_level
+from entropy.const import etpConst, etpSys, const_setup_perms, etpRepositories,\
+    etpRepositoriesOrder, const_secure_config_file, const_set_nice_level, \
+    const_extract_srv_repo_params
 from entropy.i18n import _
 
 class Singleton(object):
