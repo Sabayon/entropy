@@ -269,8 +269,10 @@ class SystemSettings(Singleton):
         self.__data['repos_system_mask_installed'] = mask_installed
         self.__data['repos_system_mask_installed_keys'] = mask_installed_keys
 
-        # Live package masking
+        # merge persistent settings back
         self.__data.update(self.__persistent_settings)
+        # restore backed-up settings
+        self.__data.update(self.__persistent_settings['backed_up'])
 
     def __setitem__(self, mykey, myvalue):
         """
