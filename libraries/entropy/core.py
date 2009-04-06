@@ -20,7 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 # pylint ~ ok
-
+from __future__ import with_statement
 import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, const_setup_perms, etpRepositories, \
