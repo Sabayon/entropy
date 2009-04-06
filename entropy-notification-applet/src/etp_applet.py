@@ -40,7 +40,7 @@ import entropy.tools as entropyTools
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.client.interfaces import Repository as RepoInterface
 from entropy.transceivers import urlFetcher
-from entropy.const import etpConst, etpRepositories
+from entropy.const import etpConst
 
 class Entropy(EquoInterface):
 
@@ -434,7 +434,7 @@ class EntropyApplet:
             return repos,str(e) # unknown error
 
         # now get remote
-        for repoid in etpRepositories:
+        for repoid in self.Entropy.SystemSettings['repositories']['available']:
             if repoConn.is_repository_updatable(repoid):
                 self.Entropy.repository_move_clear_cache(repoid)
                 repos[repoid] = {}

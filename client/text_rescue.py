@@ -322,8 +322,8 @@ def database(options):
         atoms = {}
         pkgsfound = set()
 
-        for repo in etpRepositories:
-            mytxt = red("  %s: %s") % (_("Matching in repository"),etpRepositories[repo]['description'],)
+        for repo in Equo.SystemSettings['repositories']['order']:
+            mytxt = red("  %s: %s") % (_("Matching in repository"),Equo.SystemSettings['repositories']['available'][repo]['description'],)
             print_info(mytxt)
             # get all idpackages
             dbconn = Equo.open_repository(repo)
@@ -791,7 +791,7 @@ def getinfo(dict = False):
     info['Entropy API'] = etpConst['etpapi']
     info['Equo pidfile'] = etpConst['pidfile']
     info['Entropy database tag'] = etpConst['databasestarttag']
-    info['Repositories'] = etpRepositories
+    info['Repositories'] = SysSettings['repositories']['available']
     info['System Config'] = etpSys
     info['UI Config'] = etpUi
 
@@ -811,8 +811,8 @@ def getinfo(dict = False):
 
     # repository databases info (if found on the system)
     info['Repository databases'] = {}
-    for x in etpRepositories:
-        dbfile = etpRepositories[x]['dbpath']+"/"+etpConst['etpdatabasefile']
+    for x in SysSettings['repositories']['order']:
+        dbfile = SysSettings['repositories']['available'][x]['dbpath']+"/"+etpConst['etpdatabasefile']
         if os.path.isfile(dbfile):
             # print info about this database
             dbconn = Equo.open_repository(x)

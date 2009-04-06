@@ -250,7 +250,8 @@ class EntropyPackages:
         my_set_from = _('Set from')
         set_from_desc = _('Unknown')
         if set_from in self.Entropy.validRepositories:
-            set_from_desc = etpRepositories[set_from]['description']
+            avail_repos = self.Entropy.SystemSettings['repositories']['available']
+            set_from_desc = avail_repos[set_from]['description']
         elif set_from == etpConst['userpackagesetsid']:
             set_from_desc = _("User configuration")
         return "%s: %s" % (my_set_from,set_from_desc,)

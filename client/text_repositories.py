@@ -57,7 +57,7 @@ def repositories(options):
             return 1
         rc = do_sync(reponames = repo_names, forceUpdate = equoRequestForceUpdate)
     elif (options[0] == "status"):
-        for repo in etpRepositories:
+        for repo in Equo.SystemSettings['repositories']['order']:
             showRepositoryInfo(repo)
     elif (options[0] == "repoinfo"):
         myopts = options[1:]
@@ -68,7 +68,7 @@ def repositories(options):
 
     elif (options[0] == "notice"):
         myopts = options[1:]
-        myopts = [x for x in myopts if x in etpRepositories]
+        myopts = [x for x in myopts if x in Equo.SystemSettings['repositories']['available']]
         if not myopts:
             rc = -10
         else:
@@ -91,7 +91,7 @@ def showRepositoryFile(myfile, repos):
 
     myrepos = []
     for repo in repos:
-        if repo in etpRepositories:
+        if repo in Equo.SystemSettings['repositories']['available']:
             myrepos.append(repo)
     if not myrepos:
         if not etpUi['quiet']:
@@ -99,7 +99,7 @@ def showRepositoryFile(myfile, repos):
         return 1
 
     for repo in myrepos:
-        mypath = os.path.join(etpRepositories[repo]['dbpath'],myfile)
+        mypath = os.path.join(Equo.SystemSettings['repositories']['available'][repo]['dbpath'],myfile)
         if (not os.path.isfile(mypath)) or (not os.access(mypath,os.R_OK)):
             if not etpUi['quiet']:
                 mytxt = "%s: %s." % (blue(os.path.basename(mypath)),darkred(_("not available")),)
@@ -123,38 +123,38 @@ def showRepositoryFile(myfile, repos):
 def showRepositories():
     print_info(darkred(" * ")+darkgreen("%s:" % (_("Active Repositories"),) ))
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.SystemSettings['repositories']['order']:
         repoNumber += 1
-        print_info(blue("\t#"+str(repoNumber))+bold(" "+etpRepositories[repo]['description']))
+        print_info(blue("\t#"+str(repoNumber))+bold(" "+Equo.SystemSettings['repositories']['available'][repo]['description']))
         sourcecount = 0
-        for pkgrepo in etpRepositories[repo]['packages']:
+        for pkgrepo in Equo.SystemSettings['repositories']['available'][repo]['packages']:
             sourcecount += 1
             print_info( red("\t\t%s #%s : %s") % (_("Packages Mirror"),sourcecount,darkgreen(pkgrepo),) )
-        print_info( red("\t\t%s: %s") % (_("Database URL"),darkgreen(etpRepositories[repo]['database']),))
+        print_info( red("\t\t%s: %s") % (_("Database URL"),darkgreen(Equo.SystemSettings['repositories']['available'][repo]['database']),))
         print_info( red("\t\t%s: %s") % (_("Repository identifier"),bold(repo),) )
-        print_info( red("\t\t%s: %s") % (_("Repository database path"),blue(etpRepositories[repo]['dbpath']),) )
+        print_info( red("\t\t%s: %s") % (_("Repository database path"),blue(Equo.SystemSettings['repositories']['available'][repo]['dbpath']),) )
     return 0
 
 def showRepositoryInfo(reponame):
 
     repoNumber = 0
-    for repo in etpRepositories:
+    for repo in Equo.SystemSettings['repositories']['order']:
         repoNumber += 1
         if repo == reponame:
             break
-    print_info(blue("#"+str(repoNumber))+bold(" "+etpRepositories[reponame]['description']))
-    if os.path.isfile(etpRepositories[reponame]['dbpath']+"/"+etpConst['etpdatabasefile']):
+    print_info(blue("#"+str(repoNumber))+bold(" "+Equo.SystemSettings['repositories']['available'][reponame]['description']))
+    if os.path.isfile(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabasefile']):
         status = _("active")
     else:
         status = _("never synced")
     print_info( darkgreen("\t%s: %s") % (_("Status"),darkred(status),) )
     urlcount = 0
-    for repourl in etpRepositories[reponame]['packages'][::-1]:
+    for repourl in Equo.SystemSettings['repositories']['available'][reponame]['packages'][::-1]:
         urlcount += 1
         print_info( red("\t%s #%s: %s") % (_("Packages URL"),urlcount,darkgreen(repourl),) )
-    print_info( red("\t%s: %s") % (_("Database URL"),darkgreen(etpRepositories[reponame]['database']),) )
+    print_info( red("\t%s: %s") % (_("Database URL"),darkgreen(Equo.SystemSettings['repositories']['available'][reponame]['database']),) )
     print_info( red("\t%s: %s") % (_("Repository name"),bold(reponame),) )
-    print_info( red("\t%s: %s") % (_("Repository database path"),blue(etpRepositories[reponame]['dbpath']),) )
+    print_info( red("\t%s: %s") % (_("Repository database path"),blue(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']),) )
     revision = Equo.get_repository_revision(reponame)
     mhash = Equo.get_repository_db_file_checksum(reponame)
     print_info( red("\t%s: %s") % (_("Repository database checksum"),mhash,) )
@@ -188,7 +188,7 @@ def check_notice_board_availability(reponame):
     def show_err():
         print_error(darkred(" @@ ")+blue("%s" % (_("Notice board not available"),) ))
 
-    board_file = etpRepositories[reponame]['local_notice_board']
+    board_file = Equo.SystemSettings['repositories']['available'][reponame]['local_notice_board']
     if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
         show_err()
         return

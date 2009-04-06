@@ -1205,7 +1205,8 @@ class SpritzApplication(Controller):
     def showNoticeBoard(self):
         repoids = {}
         for repoid in self.Equo.validRepositories:
-            board_file = etpRepositories[repoid]['local_notice_board']
+            avail_repos = self.Equo.SystemSettings['repositories']['available']
+            board_file = avail_repos[repoid]['local_notice_board']
             if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
                 continue
             if entropy.tools.get_file_size(board_file) < 10:
@@ -1898,7 +1899,7 @@ class SpritzApplication(Controller):
         errors = []
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
-        if repodata['repoid'] and etpRepositories.has_key(repodata['repoid']):
+        if repodata['repoid'] and self.Equo.SystemSettings['repositories']['available'].has_key(repodata['repoid']):
             if not edit:
                 errors.append(_('Duplicated Repository Identifier'))
         if not repodata['description']:
@@ -2502,7 +2503,8 @@ class SpritzApplication(Controller):
     def on_ugcClearCacheButton_clicked(self, widget):
         if self.Equo.UGC == None: return
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        for repoid in list(set(etpRepositories.keys()+repo_excluded.keys())):
+        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
             self.Equo.UGC.UGCCache.clear_cache(repoid)
             self.setStatus("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
         self.setStatus("%s" % (_("UGC cache cleared"),))
@@ -2510,7 +2512,8 @@ class SpritzApplication(Controller):
     def on_ugcClearCredentialsButton_clicked(self, widget):
         if self.Equo.UGC == None: return
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        for repoid in list(set(etpRepositories.keys()+repo_excluded.keys())):
+        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
             if not self.Equo.UGC.is_repository_eapi3_aware(repoid): continue
             logged_data = self.Equo.UGC.read_login(repoid)
             if logged_data: self.Equo.UGC.remove_login(repoid)
@@ -2749,8 +2752,9 @@ class SpritzApplication(Controller):
         self.ugcRepositoriesModel.clear()
         repo_order = self.Equo.SystemSettings['repositories']['order']
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        avail_repos = self.Equo.SystemSettings['repositories']['available']
         for repoid in repo_order+sorted(repo_excluded.keys()):
-            repodata = etpRepositories.get(repoid)
+            repodata = avail_repos.get(repoid)
             if repodata == None:
                 repodata = repo_excluded.get(repoid)
             if repodata == None: continue # wtf?

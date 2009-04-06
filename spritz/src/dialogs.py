@@ -134,12 +134,13 @@ class NoticeBoardWindow(MenuSkel):
     def show_data(self):
         self.model.clear()
         colors = ["#CDEEFF","#AFCBDA"]
+        avail_repos = self.Entropy.SystemSettings['repositories']['available']
         for repoid in self.repoids:
             counter = 0
             master_dict = {
                 'is_repo': True,
                 'name': repoid,
-                'desc': etpRepositories[repoid].get('description'),
+                'desc': avail_repos[repoid].get('description'),
                 'path': self.repoids[repoid],
                 'color': colors[0]
             }
@@ -4277,13 +4278,14 @@ class PkgInfoMenu(MenuSkel):
             item.set_markup("<b>%s</b>" % (t,))
 
         repo = pkg.matched_atom[1]
+        avail_repos = self.Entropy.SystemSettings['repositories']['available']
         if repo == 0:
             self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
         else:
             if remote:
                 self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"),pkg.repoid,))
             else:
-                self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(etpRepositories[repo]['description']),))
+                self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(avail_repos[repo]['description']),))
 
         self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
         tag = pkg.tag

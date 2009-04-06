@@ -1757,7 +1757,7 @@ class EntropyRepoView:
         self.store.clear()
         """ Populate a repo liststore with data """
         for repo in self.Equo.SystemSettings['repositories']['order']:
-            repodata = etpRepositories[repo]
+            repodata = self.Equo.SystemSettings['repositories']['available'][repo]
             self.store.append([1,1,repodata['dbrevision'],repo,repodata['description']])
         # excluded ones
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']

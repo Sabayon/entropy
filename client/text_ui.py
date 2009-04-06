@@ -469,7 +469,7 @@ def _showPackageInfo(foundAtoms, deps):
                     installedTag = "NoTag"
                 installedRev = Equo.clientDbconn.retrieveRevision(idx)
 
-            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(etpRepositories[reponame]['description']))
+            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(Equo.SystemSettings['repositories']['available'][reponame]['description']))
             mytxt = "\t%s:\t %s / %s / %s %s %s / %s / %s" % (
                 red(_("Versions")),
                 blue(installedVer),

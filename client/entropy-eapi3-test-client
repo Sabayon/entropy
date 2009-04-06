@@ -6,8 +6,8 @@ from entropy.client.interfaces import Client as EquoInterface
 from entropyConstants import *
 repository = 'sabayonlinux.org'
 Entropy = EquoInterface()
-dburl = etpRepositories[repository]['plain_database'].split("/")[2]
-port = etpRepositories[repository]['service_port']
+dburl = Entropy.SystemSettings['repositories']['available'][repository]['plain_database'].split("/")[2]
+port = Entropy.SystemSettings['repositories']['available'][repository]['service_port']
 
 ssl_ca_cert = "/etc/entropy/certs/sabayonlinux.org.crt"
 ssl_cert = "/etc/entropy/certs/sabayonlinux.org.server.crt"

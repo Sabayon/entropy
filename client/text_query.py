@@ -21,7 +21,7 @@
 '''
 
 import os
-from entropy.const import etpRepositories, etpUi
+from entropy.const import etpUi
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
@@ -729,7 +729,7 @@ def search_package(packages, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + etpRepositories[repo]['description']))
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
         for package in packages:
@@ -835,7 +835,7 @@ def search_slotted_packages(slots, dbconn = None, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #"+str(repo_number)) + \
-                bold(" " + etpRepositories[repo]['description']))
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
         if dbclose:
             dbconn = Equo.open_repository(repo)
@@ -914,7 +914,7 @@ def search_tagged_packages(tags, dbconn = None, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + etpRepositories[repo]['description']))
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
         if dbclose:
             dbconn = Equo.open_repository(repo)
@@ -959,7 +959,7 @@ def search_licenses(licenses, dbconn = None, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + etpRepositories[repo]['description']))
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
         if dbclose:
             dbconn = Equo.open_repository(repo)
@@ -1002,7 +1002,7 @@ def search_description(descriptions, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + etpRepositories[repo]['description']))
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
         descdata = search_descriptions(descriptions, dbconn, Equo = Equo)
