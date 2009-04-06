@@ -14,7 +14,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Add all button doesn't effectively add all the packages to the queue or
     - when calculating the queue some packages are excluded for unknown reasons
   - Unit Test module
-  - Move Trigger.trigger_configure_boot_grub & friends to ebuild (reduce size of Trigger)
+  - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
     -> next kernel 2.6.30
   - Documentation + Pylint (NLnet Milestone 7)
   - System Package Set representing what's inside a stock distribution
