@@ -342,7 +342,7 @@ class LocalRepository:
         self.dbSearchCacheKey = etpCache['dbSearch']
         self.dbname = dbname
         self.lockRemote = lockRemote
-        self.db_branch = etpConst['branch']
+        self.db_branch = self.SystemSettings['repositories']['branch']
         if self.dbname == etpConst['clientdbid']:
             self.db_branch = None
         if useBranch != None: self.db_branch = useBranch
@@ -722,7 +722,7 @@ class LocalRepository:
             clientDbconn.setRepositoryUpdatesDigest(repository, stored_digest)
             # store new actions
             clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'],
-                update_actions, etpConst['branch'])
+                update_actions, self.SystemSettings['repositories']['branch'])
             clientDbconn.commitChanges()
             # clear client cache
             clientDbconn.clearCache()
@@ -1892,7 +1892,7 @@ class LocalRepository:
 
     def insertCounter(self, idpackage, counter, branch = None):
         if not branch: branch = self.db_branch
-        if not branch: branch = etpConst['branch']
+        if not branch: branch = self.SystemSettings['repositories']['branch']
         with self.WriteLock:
             self.cursor.execute("""
             DELETE FROM counters 

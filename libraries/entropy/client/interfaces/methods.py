@@ -227,6 +227,8 @@ class Repository:
         return mhash
 
     def add_repository(self, repodata):
+        product = self.SystemSettings['repositories']['product']
+        branch = self.SystemSettings['repositories']['branch']
         # update etpRepositories
         try:
             etpRepositories[repodata['repoid']] = {}
@@ -252,15 +254,15 @@ class Repository:
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
             etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
-            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+etpConst['product'] for x in repodata['plain_packages']]
+            etpRepositories[repodata['repoid']]['packages'] = [x+"/"+product for x in repodata['plain_packages']]
             etpRepositories[repodata['repoid']]['plain_database'] = repodata['plain_database']
             etpRepositories[repodata['repoid']]['database'] = repodata['plain_database'] + \
-                "/" + etpConst['product'] + "/database/" + etpConst['currentarch'] + "/" + etpConst['branch']
+                "/" + product + "/database/" + etpConst['currentarch'] + "/" + branch
             if not repodata['dbcformat'] in etpConst['etpdatabasesupportedcformats']:
                 repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
             etpRepositories[repodata['repoid']]['dbcformat'] = repodata['dbcformat']
             etpRepositories[repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + \
-                "/" + repodata['repoid'] + "/" + etpConst['product'] + "/" + etpConst['currentarch']  + "/" + etpConst['branch']
+                "/" + repodata['repoid'] + "/" + product + "/" + etpConst['currentarch']  + "/" + branch
             # set dbrevision
             myrev = self.get_repository_revision(repodata['repoid'])
             if myrev == -1:
@@ -754,6 +756,7 @@ class Misc:
 
     def reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
+        self.SystemSettings.clear()
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
@@ -1208,7 +1211,7 @@ class Misc:
 
     def move_to_branch(self, branch, pretend = False):
         if pretend: return 0
-        if branch != etpConst['branch']:
+        if branch != self.SystemSettings['repositories']['branch']:
             # update configuration
             self.entropyTools.write_new_branch(branch)
             # reset treeupdatesactions
@@ -1217,9 +1220,8 @@ class Misc:
             self.purge_cache(showProgress = False)
             # reopen Client Database, this will make treeupdates to be re-read
             self.close_all_repositories()
-            etpConst['branch'] = branch
+            # if we are successful, the new branch will be set
             self.reload_constants()
-            etpConst['branch'] = branch
             self.validate_repositories()
             self.reopen_client_repository()
         return 0
@@ -1257,7 +1259,8 @@ class Misc:
         pkg_matches = []
         for repo in self.validRepositories:
             dbconn = self.open_repository(repo)
-            catsdata = dbconn.searchPackagesByCategory(category, branch = etpConst['branch'])
+            branch = self.SystemSettings['repositories']['branch']
+            catsdata = dbconn.searchPackagesByCategory(category, branch = branch)
             pkg_matches.extend([(x[1],repo,) for x in catsdata if (x[1],repo,) not in pkg_matches])
         return pkg_matches
 

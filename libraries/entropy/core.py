@@ -25,7 +25,8 @@ import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, etpRepositories,\
     etpRepositoriesOrder, const_secure_config_file, const_set_nice_level, \
-    const_extract_srv_repo_params
+    const_extract_srv_repo_params, etpRepositories, etpRepositoriesExcluded, \
+    etpRepositoriesOrder, const_extract_cli_repo_params
 from entropy.i18n import _
 
 class Singleton(object):
@@ -87,6 +88,7 @@ class SystemSettings(Singleton):
         self.__is_destroyed = False
         self.Entropy = None
 
+        self.__setting_files_order = []
         self.__setting_files = {}
         self.__mtime_files = {}
         self.__persistent_settings = {
@@ -169,6 +171,7 @@ class SystemSettings(Singleton):
         @return None
         """
 
+        del self.__setting_files_order[:]
         self.__setting_files.clear()
         self.__mtime_files.clear()
 
@@ -193,7 +196,16 @@ class SystemSettings(Singleton):
             'system': etpConst['entropyconf'],
             'client': etpConst['clientconf'],
             'server': etpConst['serverconf'],
+            'repositories': etpConst['repositoriesconf'],
         })
+        self.__setting_files_order.extend([
+            'repositories', 'keywords', 'unmask', 'mask', 'license_mask',
+            'repos_system_mask', 'system_mask', 'repos_mask',
+            'repos_license_whitelist', 'system_package_sets',
+            'conflicting_tagged_packages', 'system_dirs',
+            'system_dirs_mask', 'socket_service', 'system',
+            'client', 'server'
+        ])
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
         trunk_fsdirs_conf = "../conf/fsdirs.conf"
@@ -224,7 +236,7 @@ class SystemSettings(Singleton):
         @return None
         """
 
-        self.__data.update(self.__parse())
+        self.__parse()
         # merge universal keywords
         for keyword in self.__data['keywords']['universal']:
             etpConst['keywords'].add(keyword)
@@ -541,13 +553,12 @@ class SystemSettings(Singleton):
         self.__setup_package_sets_vars()
 
         data = {}
-        for item in self.__setting_files:
+        for item in self.__setting_files_order:
             myattr = '%s_parser' % (item,)
             if not hasattr(self, myattr):
                 continue
             func = getattr(self, myattr)
-            data[item] = func()
-        return data
+            self.__data[item] = func()
 
     def get_setting_files_data(self):
         """
@@ -1119,8 +1130,8 @@ class SystemSettings(Singleton):
                 data['branches'] = []
                 for branch in branches.split():
                     data['branches'].append(branch)
-                if etpConst['branch'] not in data['branches']:
-                    data['branches'].append(etpConst['branch'])
+                if self['repositories']['branch'] not in data['branches']:
+                    data['branches'].append(self['repositories']['branch'])
                 data['branches'] = sorted(data['branches'])
 
             elif (line.find("officialserverrepositoryid|") != -1) and \
@@ -1140,7 +1151,8 @@ class SystemSettings(Singleton):
 
             elif line.startswith("repository|") and (split_line_len in [5, 6]):
 
-                repoid, repodata = const_extract_srv_repo_params(line)
+                repoid, repodata = const_extract_srv_repo_params(line,
+                    product = self['repositories']['product'])
                 if repoid in data['repositories']:
                     # just update mirrors
                     data['repositories'][repoid]['mirrors'].extend(
@@ -1229,13 +1241,13 @@ class SystemSettings(Singleton):
                                 etpSys['arch']
                             )
             data['repositories'][repoid]['packages_relative_path'] = \
-                os.path.join(   etpConst['product'],
+                os.path.join(   self['repositories']['product'],
                                 repoid,
                                 "packages",
                                 etpSys['arch']
                             )+"/"
             data['repositories'][repoid]['database_relative_path'] = \
-                os.path.join(   etpConst['product'],
+                os.path.join(   self['repositories']['product'],
                                 repoid,
                                 "database",
                                 etpSys['arch']
@@ -1253,6 +1265,138 @@ class SystemSettings(Singleton):
                 data['packages_expiration_days'] = expiration_days
             except ValueError:
                 pass
+
+        return data
+
+    def repositories_parser(self):
+
+        """
+        Setup Entropy Client repository settings reading them from
+        the relative config file specified in etpConst['repositoriesconf']
+
+        @return None
+        """
+
+        data = {
+            'available': {},
+            'excluded': {},
+            'order': [],
+            'product': etpConst['product'],
+            'branch': etpConst['branch'],
+            'default_repository': etpConst['officialrepositoryid'],
+            'transfer_limit': etpConst['downloadspeedlimit'],
+            'security_advisories_url': etpConst['securityurl'],
+        }
+
+        # kept for backward compatibility
+        # XXX will be removed before 10-10-2009
+        etpRepositories.clear()
+        etpRepositoriesExcluded.clear()
+        del etpRepositoriesOrder[:]
+
+        repo_conf = etpConst['repositoriesconf']
+        if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
+            return data
+
+        repo_f = open(repo_conf,"r")
+        repositoriesconf = [x.strip() for x in repo_f.readlines() if x.strip()]
+        repo_f.close()
+
+        # setup product and branch first
+        for line in repositoriesconf:
+
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
+            if (line.find("product|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                data['product'] = split_line[1]
+
+            elif (line.find("branch|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                branch = split_line[1].strip()
+                data['branch'] = branch
+                if not os.path.isdir(etpConst['packagesbindir']+"/"+branch) \
+                    and (etpConst['uid'] == 0):
+
+                    os.makedirs(etpConst['packagesbindir']+"/"+branch)
+
+        for line in repositoriesconf:
+
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
+            # populate data['available']
+            if (line.find("repository|") != -1) and (split_line_len == 5):
+
+                excluded = False
+                my_repodata = data['available']
+                if line.startswith("##"):
+                    continue
+                elif line.startswith("#"):
+                    excluded = True
+                    my_repodata = data['excluded']
+                    line = line[1:]
+
+                reponame, repodata = const_extract_cli_repo_params(line,
+                    data['branch'], data['product'])
+                if my_repodata.has_key(reponame):
+
+                    my_repodata[reponame]['plain_packages'].extend(
+                        repodata['plain_packages'])
+                    my_repodata[reponame]['packages'].extend(
+                        repodata['packages'])
+
+                    if (not my_repodata[reponame]['plain_database']) and \
+                        repodata['plain_database']:
+
+                        my_repodata[reponame]['plain_database'] = \
+                            repodata['plain_database']
+                        my_repodata[reponame]['database'] = \
+                            repodata['database']
+                        my_repodata[reponame]['dbrevision'] = \
+                            repodata['dbrevision']
+                        my_repodata[reponame]['dbcformat'] = \
+                            repodata['dbcformat']
+                else:
+
+                    my_repodata[reponame] = repodata.copy()
+                    if not excluded:
+                        data['order'].append(reponame)
+
+            elif (line.find("officialrepositoryid|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                officialreponame = split_line[1]
+                data['default_repository'] = officialreponame
+
+            elif (line.find("downloadspeedlimit|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                try:
+                    myval = int(split_line[1])
+                    if myval > 0:
+                        data['transfer_limit'] = myval
+                    else:
+                        data['transfer_limit'] = None
+                except (ValueError, IndexError,):
+                    data['transfer_limit'] = None
+
+            elif (line.find("securityurl|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                try:
+                    data['security_advisories_url'] = split_line[1]
+                except (IndexError, ValueError, TypeError,):
+                    continue
+
+        # kept for backward compatibility
+        # XXX will be removed before 10-10-2009
+        etpRepositories.update(data['available'])
+        etpRepositoriesExcluded.update(data['excluded'])
+        etpRepositoriesOrder.extend(data['order'])
 
         return data
 

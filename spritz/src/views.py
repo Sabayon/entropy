@@ -1692,7 +1692,7 @@ class EntropyRepoView:
         myiter = self.store.get_iter( path )
         state = self.store.get_value(myiter,0)
         repoid = self.store.get_value(myiter,3)
-        if repoid != etpConst['officialrepositoryid']:
+        if repoid != self.Equo.SystemSettings['repositories']['default_repository']:
             if state:
                 self.store.set_value(myiter,1, not state)
                 self.Equo.disable_repository(repoid)

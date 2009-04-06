@@ -197,7 +197,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
                 )
                 return 1,-2
             elif not etpUi['pretend']:
-                old_branch = etpConst['branch'][:]
+                old_branch = Equo.SystemSettings['repositories']['branch'][:]
                 status = True
                 try:
                     repoConn = Equo.Repositories([], False)

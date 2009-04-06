@@ -1177,7 +1177,8 @@ class Calculators:
 
     def calculate_available_packages(self, use_cache = True):
 
-        c_hash = self.get_available_packages_chash(etpConst['branch'])
+        branch = self.SystemSettings['repositories']['branch']
+        c_hash = self.get_available_packages_chash(branch)
 
         if use_cache and self.xcache:
             cached = self.get_available_packages_cache(myhash = c_hash)
@@ -1194,8 +1195,9 @@ class Calculators:
             except (RepositoryError,SystemDatabaseError):
                 self.cycleDone()
                 continue
-            idpackages = [  x for x in dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom') \
-                            if dbconn.idpackageValidator(x)[0] != -1  ]
+            idpackages = [x for x in dbconn.listAllIdpackages(branch = branch,
+                branch_operator = "<=", order_by = 'atom') \
+                if dbconn.idpackageValidator(x)[0] != -1]
             count = 0
             maxlen = len(idpackages)
             myavailable = []
@@ -1231,13 +1233,11 @@ class Calculators:
             self.Cacher.push("%s%s" % (etpCache['world_available'],c_hash),available)
         return available
 
-    def calculate_world_updates(
-            self,
-            empty_deps = False,
-            branch = etpConst['branch'],
-            ignore_spm_downgrades = None,
-            use_cache = True
-        ):
+    def calculate_world_updates(self, empty_deps = False, branch = None,
+            ignore_spm_downgrades = None, use_cache = True):
+
+        if branch == None:
+            branch = self.SystemSettings['repositories']['branch']
 
         if ignore_spm_downgrades == None:
             client_sys_settings = self.SystemSettings['client']
@@ -1393,7 +1393,9 @@ class Calculators:
     # This is the function that should be used by third party applications
     # to retrieve a list of available updates, along with conflicts (removalQueue) and obsoletes
     # (removed)
-    def get_world_queue(self, empty_deps = False, branch = etpConst['branch']):
+    def get_world_queue(self, empty_deps = False, branch = None):
+        if branch == None:
+            branch = self.SystemSettings['repositories']['branch']
         update, remove, fine = self.calculate_world_updates(empty_deps = empty_deps, branch = branch)
         del fine
         data = {}

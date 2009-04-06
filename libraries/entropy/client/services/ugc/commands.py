@@ -26,6 +26,7 @@ from entropy.exceptions import *
 from entropy.const import etpConst
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
+from entropy.core import SystemSettings
 
 class Base:
 
@@ -50,6 +51,7 @@ class Base:
         self.Output = OutputInterface
         self.Service = Service
         self.output_header = ''
+        self.SystemSettings = SystemSettings()
 
     def handle_standard_answer(self, data, repository = None, arch = None, product = None):
         do_skip = False
@@ -303,7 +305,7 @@ class Client(Base):
             repository,
             arch,
             product,
-            etpConst['branch'],
+            self.SystemSettings['repositories']['branch'],
             myidlist,
         )
 
@@ -325,7 +327,7 @@ class Client(Base):
             repository,
             arch,
             product,
-            etpConst['branch'],
+            self.SystemSettings['repositories']['branch'],
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
@@ -337,7 +339,7 @@ class Client(Base):
             repository,
             arch,
             product,
-            etpConst['branch'],
+            self.SystemSettings['repositories']['branch'],
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
@@ -350,7 +352,7 @@ class Client(Base):
             repository,
             arch,
             product,
-            etpConst['branch'],
+            self.SystemSettings['repositories']['branch'],
             ' '.join([str(x) for x in idpackages]),
         )
 
@@ -382,7 +384,7 @@ class Client(Base):
                 release_string = f.read(512)
 
         mydict = {
-            'branch': etpConst['branch'],
+            'branch': self.SystemSettings['repositories']['branch'],
             'release_string': release_string,
             'pkgkeys': ' '.join(pkgkeys),
         }

@@ -981,7 +981,7 @@ class Repository(SocketCommands):
         data['community_mode'] = self.HostInterface.Entropy.community_repo
         data['current'] = self.HostInterface.Entropy.default_repository
         data['branches'] = self.HostInterface.Entropy.SystemSettings['server']['branches']
-        data['branch'] = etpConst['branch']
+        data['branch'] = self.HostInterface.Entropy.SystemSettings['repositories']['branch']
         return True, data
 
     def docmd_set_default_repository(self, myargs):

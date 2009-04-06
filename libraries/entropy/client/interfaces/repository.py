@@ -500,8 +500,9 @@ class Repository:
 
     def get_eapi3_database_differences(self, eapi3_interface, repo, idpackages, session):
 
+        product = self.Entropy.SystemSettings['repositories']['product']
         data = eapi3_interface.CmdInterface.differential_packages_comparison(
-            session, idpackages, repo, etpConst['currentarch'], etpConst['product']
+            session, idpackages, repo, etpConst['currentarch'], product
         )
         if isinstance(data,bool): # then it's probably == False
             return False,False,False
@@ -514,17 +515,19 @@ class Repository:
         return data['added'],data['removed'],data['checksum']
 
     def get_eapi3_database_treeupdates(self, eapi3_interface, repo, session):
+        product = self.Entropy.SystemSettings['repositories']['product']
         self.socket.setdefaulttimeout(self.big_socket_timeout)
         data = eapi3_interface.CmdInterface.get_repository_treeupdates(
-            session, repo, etpConst['currentarch'], etpConst['product']
+            session, repo, etpConst['currentarch'], product
         )
         if not isinstance(data,dict): return None,None
         return data.get('digest'), data.get('actions')
 
     def get_eapi3_package_sets(self, eapi3_interface, repo, session):
+        product = self.Entropy.SystemSettings['repositories']['product']
         self.socket.setdefaulttimeout(self.big_socket_timeout)
         data = eapi3_interface.CmdInterface.get_package_sets(
-            session, repo, etpConst['currentarch'], etpConst['product']
+            session, repo, etpConst['currentarch'], product
         )
         if not isinstance(data,dict): return {}
         return data
@@ -606,6 +609,7 @@ class Repository:
         # fetch and store
         count = 0
         maxcount = len(added_segments)
+        product = self.Entropy.SystemSettings['repositories']['product']
         for segment in added_segments:
 
             count += 1
@@ -627,10 +631,11 @@ class Repository:
 
                 fetch_count += 1
                 pkgdata = eapi3_interface.CmdInterface.get_package_information(
-                    session, segment, repo, etpConst['currentarch'], etpConst['product']
+                    session, segment, repo, etpConst['currentarch'], product
                 )
                 if pkgdata == None:
-                    mytxt = "%s: %s" % ( blue(_("Fetch error on segment")), darkred(str(segment)),)
+                    mytxt = "%s: %s" % ( blue(_("Fetch error on segment")),
+                        darkred(str(segment)),)
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "warning",
                         header = "\t", count = (count,maxcount,)
@@ -987,7 +992,8 @@ class Repository:
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
-            if (repo == etpConst['officialrepositoryid']):
+            def_repoid = self.Entropy.SystemSettings['repositories']['default_repository']
+            if repo == def_repoid:
                 try:
                     self.run_config_files_updates(repo)
                 except Exception, e:

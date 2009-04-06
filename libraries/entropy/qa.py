@@ -25,6 +25,7 @@ from entropy.const import etpConst
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
 from entropy.exceptions import *
 from entropy.i18n import _
+from entropy.core import SystemSettings
 
 class QAInterface:
 
@@ -33,6 +34,7 @@ class QAInterface:
     def __init__(self, OutputInterface):
 
         self.Output = OutputInterface
+        self.SystemSettings = SystemSettings()
 
         if not hasattr(self.Output,'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
@@ -41,7 +43,9 @@ class QAInterface:
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
-    def test_depends_linking(self, idpackages, dbconn, repo = etpConst['officialrepositoryid']):
+    def test_depends_linking(self, idpackages, dbconn, repo = None):
+
+        repo = self.SystemSettings['repositories']['default_repository']
 
         scan_msg = blue(_("Now searching for broken depends"))
         self.Output.updateProgress(
@@ -130,8 +134,11 @@ class QAInterface:
 
 
     def scan_missing_dependencies(self, idpackages, dbconn, ask = True,
-            self_check = False, repo = etpConst['officialrepositoryid'],
-            black_list = None, black_list_adder = None):
+            self_check = False, repo = None, black_list = None,
+            black_list_adder = None):
+
+        if repo == None:
+            repo = self.SystemSettings['repositories']['default_repository']
 
         if not isinstance(black_list,set):
             black_list = set()

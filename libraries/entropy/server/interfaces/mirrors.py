@@ -49,6 +49,7 @@ class Server:
         self.Cacher = EntropyCacher()
         self.FtpInterface = self.Entropy.FtpInterface
         self.rssFeed = self.Entropy.rssFeed
+        self.SystemSettings = self.Entropy.SystemSettings
 
         mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
         self.Entropy.updateProgress(
@@ -101,7 +102,7 @@ class Server:
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True # issues
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
             ftp.set_cwd(my_path, dodir = True)
 
             if lock and ftp.is_file_available(etpConst['etpdatabaselockfile']):
@@ -181,7 +182,7 @@ class Server:
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True # issues
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
             ftp.set_cwd(my_path, dodir = True)
 
             if lock and ftp.is_file_available(etpConst['etpdatabasedownloadlockfile']):
@@ -225,7 +226,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
         if not ftp_connection:
             try:
                 ftp_connection = self.FtpInterface(uri, self.Entropy)
@@ -286,7 +287,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
         if not ftp_connection:
             try:
                 ftp_connection = self.FtpInterface(uri, self.Entropy)
@@ -552,7 +553,7 @@ class Server:
             # let it raise an exception if connection is impossible
             ftp = self.FtpInterface(uri, self.Entropy)
             try:
-                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
                 ftp.set_cwd(my_path, dodir = True)
             except ftp.ftplib.error_perm:
                 crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
@@ -656,7 +657,7 @@ class Server:
             data = [uri,False,False]
             ftp = self.FtpInterface(uri, self.Entropy)
             try:
-                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+                my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
                 ftp.set_cwd(my_path)
             except ftp.ftplib.error_perm:
                 ftp.close()
@@ -810,6 +811,7 @@ class Server:
     def update_rss_feed(self, repo = None):
 
         sys_settings = self.Entropy.SystemSettings
+        product = sys_settings['repositories']['product']
         #db_dir = self.Entropy.get_local_database_dir(repo)
         rss_path = self.Entropy.get_local_database_rss_file(repo)
         rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
@@ -835,8 +837,8 @@ class Server:
                 commitmessage = ' :: '+self.Entropy.rssMessages['commitmessage']
 
             title = ": " + sys_settings['system']['name'] + " " + \
-                etpConst['product'][0].upper() + etpConst['product'][1:] + \
-                " " + etpConst['branch'] + " :: Revision: " + revision + \
+                product[0].upper() + product[1:] + \
+                " " + self.SystemSettings['repositories']['branch'] + " :: Revision: " + revision + \
                 commitmessage
 
             link = sys_settings['server']['rss']['base_url']
@@ -844,7 +846,7 @@ class Server:
             added_items = db_actions.get("added")
             if added_items:
                 for atom in added_items:
-                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
+                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+product
                     description = atom+": "+added_items[atom]['description']
                     Rss.addItem(title = "Added/Updated"+title, link = mylink, description = description)
             removed_items = db_actions.get("removed")
@@ -856,7 +858,7 @@ class Server:
             if light_items:
                 rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = sys_settings['server']['rss']['light_max_entries'])
                 for atom in light_items:
-                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+etpConst['product']
+                    mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+product
                     description = light_items[atom]['description']
                     rssLight.addItem(title = "["+revision+"] "+atom, link = mylink, description = description)
                 rssLight.writeChanges()
@@ -1184,7 +1186,7 @@ class Server:
         except ConnectionError:
             self.entropyTools.print_traceback()
             return True # gave up
-        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+        my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
         ftp.set_cwd(my_path, dodir = True)
 
         lock_file = self.get_database_lockfile(repo)
@@ -2367,7 +2369,7 @@ class Server:
                 "[repo:%s|%s|branch:%s] %s: %s" % (
                     repo,
                     red(_("sync")),
-                    brown(etpConst['branch']),
+                    brown(self.SystemSettings['repositories']['branch']),
                     blue(_("packages sync")),
                     bold(crippled_uri),
                 ),
@@ -2377,14 +2379,14 @@ class Server:
             )
 
             try:
-                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, etpConst['branch'], repo)
+                uploadQueue, downloadQueue, removalQueue, fineQueue, remote_packages_data = self.calculate_packages_to_sync(uri, self.SystemSettings['repositories']['branch'], repo)
                 del fineQueue
             except self.socket.error, e:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
                         repo,
                         red(_("sync")),
-                        etpConst['branch'],
+                        self.SystemSettings['repositories']['branch'],
                         darkred(_("socket error")),
                         e,
                         darkred(_("on")),
@@ -2401,7 +2403,7 @@ class Server:
                     "[repo:%s|%s|branch:%s] %s: %s" % (
                         repo,
                         red(_("sync")),
-                        etpConst['branch'],
+                        self.SystemSettings['repositories']['branch'],
                         darkgreen(_("nothing to do on")),
                         crippled_uri,
                     ),
@@ -2424,11 +2426,11 @@ class Server:
                         downloadQueue,
                         removalQueue,
                         remote_packages_data,
-                        etpConst['branch'],
+                        self.SystemSettings['repositories']['branch'],
                         repo
             )
             del uploadQueue, downloadQueue, removalQueue, remote_packages_data
-            self._show_sync_queues(upload, download, removal, copy, metainfo, etpConst['branch'])
+            self._show_sync_queues(upload, download, removal, copy, metainfo, self.SystemSettings['repositories']['branch'])
 
             if not len(upload)+len(download)+len(removal)+len(copy):
 
@@ -2436,7 +2438,7 @@ class Server:
                     "[repo:%s|%s|branch:%s] %s %s" % (
                         self.Entropy.default_repository,
                         red(_("sync")),
-                        etpConst['branch'],
+                        self.SystemSettings['repositories']['branch'],
                         blue(_("nothing to sync for")),
                         crippled_uri,
                     ),
@@ -2460,16 +2462,16 @@ class Server:
             try:
 
                 if removal:
-                    self._sync_run_removal_queue(removal, etpConst['branch'], repo)
+                    self._sync_run_removal_queue(removal, self.SystemSettings['repositories']['branch'], repo)
                 if copy:
-                    self._sync_run_copy_queue(copy, etpConst['branch'], repo)
+                    self._sync_run_copy_queue(copy, self.SystemSettings['repositories']['branch'], repo)
                 if upload or download:
                     mirrors_tainted = True
                 if upload:
-                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, etpConst['branch'], repo)
+                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, self.SystemSettings['repositories']['branch'], repo)
                     if d_errors: mirror_errors = True
                 if download:
-                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, etpConst['branch'], repo)
+                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, self.SystemSettings['repositories']['branch'], repo)
                     if d_errors: mirror_errors = True
                 if not mirror_errors:
                     successfull_mirrors.add(uri)
@@ -2481,7 +2483,7 @@ class Server:
                     "[repo:%s|%s|branch:%s] %s" % (
                         repo,
                         red(_("sync")),
-                        etpConst['branch'],
+                        self.SystemSettings['repositories']['branch'],
                         darkgreen(_("keyboard interrupt !")),
                     ),
                     importance = 1,
@@ -2499,7 +2501,7 @@ class Server:
                     "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
                         repo,
                         red(_("sync")),
-                        etpConst['branch'],
+                        self.SystemSettings['repositories']['branch'],
                         darkred(_("exception caught")),
                         Exception,
                         _("error"),
@@ -2524,7 +2526,7 @@ class Server:
                         "[repo:%s|%s|branch:%s] %s" % (
                             repo,
                             red(_("sync")),
-                            etpConst['branch'],
+                            self.SystemSettings['repositories']['branch'],
                             darkred(_("at least one mirror has been sync'd properly, hooray!")),
                         ),
                         importance = 1,
@@ -2535,7 +2537,7 @@ class Server:
 
         # if at least one server has been synced successfully, move files
         if (len(successfull_mirrors) > 0) and not pretend:
-            self.remove_expiration_files(etpConst['branch'], repo)
+            self.remove_expiration_files(self.SystemSettings['repositories']['branch'], repo)
 
         if packages_check:
             check_data = self.Entropy.verify_local_packages([], ask = ask, repo = repo)
@@ -2607,7 +2609,7 @@ class Server:
             "[repo:%s|%s|branch:%s] %s" % (
                 brown(repo),
                 red(_("tidy")),
-                blue(etpConst['branch']),
+                blue(self.SystemSettings['repositories']['branch']),
                 blue(_("collecting expired packages")),
             ),
             importance = 1,
@@ -2620,10 +2622,10 @@ class Server:
 
         branch_data['errors'] = False
 
-        if etpConst['branch'] != self.Entropy.SystemSettings['server']['branches'][-1]:
+        if self.SystemSettings['repositories']['branch'] != self.Entropy.SystemSettings['server']['branches'][-1]:
             self.Entropy.updateProgress(
                 "[branch:%s] %s" % (
-                    brown(etpConst['branch']),
+                    brown(self.SystemSettings['repositories']['branch']),
                     blue(_("not the latest branch, skipping tidy for consistence. This branch entered the maintenance mode.")),
                 ),
                 importance = 1,
@@ -2635,7 +2637,7 @@ class Server:
 
         self.Entropy.updateProgress(
             "[branch:%s] %s" % (
-                brown(etpConst['branch']),
+                brown(self.SystemSettings['repositories']['branch']),
                 blue(_("collecting expired packages in the selected branches")),
             ),
             importance = 1,
@@ -2644,15 +2646,15 @@ class Server:
         )
 
         # collect removed packages
-        expiring_packages = self.collect_expiring_packages(etpConst['branch'], repo)
+        expiring_packages = self.collect_expiring_packages(self.SystemSettings['repositories']['branch'], repo)
 
         removal = []
         for package in expiring_packages:
-            expired = self.is_package_expired(package, etpConst['branch'], repo)
+            expired = self.is_package_expired(package, self.SystemSettings['repositories']['branch'], repo)
             if expired:
                 removal.append(package)
             else:
-                self.create_expiration_file(package, etpConst['branch'], repo, gentle = True)
+                self.create_expiration_file(package, self.SystemSettings['repositories']['branch'], repo, gentle = True)
 
         # fill returning data
         branch_data['removal'] = removal[:]
@@ -2660,7 +2662,7 @@ class Server:
         if not removal:
             self.Entropy.updateProgress(
                 "[branch:%s] %s" % (
-                        brown(etpConst['branch']),
+                        brown(self.SystemSettings['repositories']['branch']),
                         blue(_("nothing to remove on this branch")),
                 ),
                 importance = 1,
@@ -2671,7 +2673,7 @@ class Server:
         else:
             self.Entropy.updateProgress(
                 "[branch:%s] %s:" % (
-                    brown(etpConst['branch']),
+                    brown(self.SystemSettings['repositories']['branch']),
                     blue(_("these are the expired packages")),
                 ),
                 importance = 1,
@@ -2681,7 +2683,7 @@ class Server:
             for package in removal:
                 self.Entropy.updateProgress(
                     "[branch:%s] %s: %s" % (
-                                brown(etpConst['branch']),
+                                brown(self.SystemSettings['repositories']['branch']),
                                 blue(_("remove")),
                                 darkgreen(package),
                         ),
@@ -2702,12 +2704,12 @@ class Server:
         for package in removal:
             myqueue.append(package+etpConst['packagesmd5fileext'])
             myqueue.append(package)
-        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),etpConst['branch'])
+        ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),self.SystemSettings['repositories']['branch'])
         for uri in self.Entropy.get_remote_mirrors(repo):
 
             self.Entropy.updateProgress(
                 "[branch:%s] %s..." % (
-                    brown(etpConst['branch']),
+                    brown(self.SystemSettings['repositories']['branch']),
                     blue(_("removing packages remotely")),
                 ),
                 importance = 1,
@@ -2732,7 +2734,7 @@ class Server:
                 reason = my_broken_uris[0][1]
                 self.Entropy.updateProgress(
                     "[branch:%s] %s: %s, %s: %s" % (
-                        brown(etpConst['branch']),
+                        brown(self.SystemSettings['repositories']['branch']),
                         blue(_("remove errors")),
                         red(crippled_uri),
                         blue(_("reason")),
@@ -2747,7 +2749,7 @@ class Server:
 
             self.Entropy.updateProgress(
                 "[branch:%s] %s..." % (
-                        brown(etpConst['branch']),
+                        brown(self.SystemSettings['repositories']['branch']),
                         blue(_("removing packages locally")),
                     ),
                 importance = 1,
@@ -2757,14 +2759,14 @@ class Server:
 
             branch_data['removed'] = set()
             for package in removal:
-                package_path = os.path.join(self.Entropy.get_local_packages_directory(repo),etpConst['branch'],package)
+                package_path = os.path.join(self.Entropy.get_local_packages_directory(repo),self.SystemSettings['repositories']['branch'],package)
                 package_path_hash = package_path+etpConst['packagesmd5fileext']
                 package_path_expired = package_path+etpConst['packagesexpirationfileext']
                 for myfile in [package_path_hash,package_path,package_path_expired]:
                     if os.path.isfile(myfile):
                         self.Entropy.updateProgress(
                             "[branch:%s] %s: %s" % (
-                                        brown(etpConst['branch']),
+                                        brown(self.SystemSettings['repositories']['branch']),
                                         blue(_("removing")),
                                         darkgreen(myfile),
                                 ),

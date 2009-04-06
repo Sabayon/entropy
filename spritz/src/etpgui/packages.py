@@ -407,7 +407,8 @@ class EntropyPackage:
         return EquoIntf.entropyTools.convert_unix_time_to_human_time(float(self.dbconn.retrieveDateCreation(self.matched_id)))
 
     def getRel(self):
-        if self.pkgset: return etpConst['branch']
+        if self.pkgset:
+            return EquoIntf.SystemSettings['repositories']['branch']
         return self.dbconn.retrieveBranch(self.matched_id)
 
     def getUGCPackageVote(self):

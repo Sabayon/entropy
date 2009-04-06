@@ -36,10 +36,13 @@ class urlFetcher:
     def __init__(self, url, path_to_save, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
-            thread_stop_func = None, speed_limit = etpConst['downloadspeedlimit'],
+            thread_stop_func = None, speed_limit = None,
             OutputInterface = None):
 
         self.__system_settings = SystemSettings()
+        if speed_limit == None:
+            speed_limit = self.__system_settings['repositories']['transfer_limit']
+
         self.progress = None
         import entropy.tools as entropyTools
         import socket
@@ -409,6 +412,7 @@ class MultipleUrlFetcher:
                 print instance output through a common interface
             @param urlFetcherClass, urlFetcher instance/interface used
         """
+        self.__system_settings = SystemSettings()
         self.__url_path_list = url_path_list
         self.__resume = resume
         self.__checksum = checksum
@@ -458,7 +462,7 @@ class MultipleUrlFetcher:
 
         th_id = 0
         speed_limit = 0
-        dsl = etpConst['downloadspeedlimit']
+        dsl = self.__system_settings['repositories']['transfer_limit']
         if isinstance(dsl,int) and self.__url_path_list:
             speed_limit = dsl/len(self.__url_path_list)
 
@@ -1079,7 +1083,8 @@ class FtpServerHandler:
             self.use_handlers = False
         if not ftp_basedir:
             # default to database directory
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),etpConst['branch'])
+            branch = self.Entropy.SystemSettings['repositories']['branch']
+            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo), branch)
             self.ftp_basedir = unicode(my_path)
         else:
             self.ftp_basedir = unicode(ftp_basedir)
@@ -1228,7 +1233,8 @@ class FtpServerHandler:
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True,fine_uris,broken_uris # issues
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo),etpConst['branch'])
+            branch = self.Entropy.SystemSettings['repositories']['branch']
+            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo), branch)
             self.Entropy.updateProgress(
                 "[%s|%s] %s %s..." % (
                     blue(crippled_uri),

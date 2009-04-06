@@ -353,7 +353,7 @@ class EntropyPackages:
 
         for repoid in self.Entropy.validRepositories:
             dbconn = self.Entropy.open_repository(repoid)
-            repodata = dbconn.listAllIdpackages(branch = etpConst['branch'], branch_operator = "<=", order_by = 'atom')
+            repodata = dbconn.listAllIdpackages(order_by = 'atom')
             def fm(idpackage):
                 idpackage_filtered, idreason = dbconn.idpackageValidator(idpackage)
                 if idpackage_filtered == -1:
@@ -392,7 +392,7 @@ class EntropyPackages:
         matched_data = set()
         for repoid in self.Entropy.validRepositories:
             dbconn = self.Entropy.open_repository(repoid)
-            repodata = dbconn.listAllPackages(get_scope = True, branch = etpConst['branch'], branch_operator = "<=")
+            repodata = dbconn.listAllPackages(get_scope = True)
             mydata = {}
             for idpackage, atom, slot, revision in repodata:
                 mydata[(atom, slot, revision)] = idpackage

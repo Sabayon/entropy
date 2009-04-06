@@ -327,7 +327,7 @@ def database(options):
             print_info(mytxt)
             # get all idpackages
             dbconn = Equo.open_repository(repo)
-            idpackages = dbconn.listAllIdpackages(branch = etpConst['branch'])
+            idpackages = dbconn.listAllIdpackages()
             count = str(len(idpackages))
             cnt = 0
             for idpackage in idpackages:
@@ -781,13 +781,13 @@ def getinfo(dict = False):
     info['Collision Protection'] = SysSettings['client']['collisionprotect']
     info['Gentoo Compatibility'] = etpConst['gentoo-compat']
     info['Entropy Log Level'] = SysSettings['system']['log_level']
-    info['Current branch'] = etpConst['branch']
+    info['Current branch'] = SysSettings['repositories']['branch']
     info['Entropy configuration directory'] = etpConst['confdir']
     info['Entropy work directory'] = etpConst['entropyworkdir']
     info['Entropy unpack directory'] = etpConst['entropyunpackdir']
     info['Entropy packages directory'] = etpConst['packagesbindir']
     info['Entropy logging directory'] = etpConst['logdir']
-    info['Entropy Official Repository identifier'] = etpConst['officialrepositoryid']
+    info['Entropy Official Repository identifier'] = SysSettings['repositories']['default_repository']
     info['Entropy API'] = etpConst['etpapi']
     info['Equo pidfile'] = etpConst['pidfile']
     info['Entropy database tag'] = etpConst['databasestarttag']

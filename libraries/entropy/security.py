@@ -58,6 +58,8 @@ class SecurityInterface:
         self.Entropy = EquoInstance
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
+        from entropy.core import SystemSettings
+        self.SystemSettings = SystemSettings()
         self.lastfetch = None
         self.previous_checksum = "0"
         self.advisories_changed = None
@@ -79,15 +81,16 @@ class SecurityInterface:
                             "rlt": "<" # <~
         }
 
+        security_url = self.SystemSettings['repositories']['security_advisories_url']
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],"security-"+str(self.entropyTools.get_random_number()))
-        self.security_url = etpConst['securityurl']
+        self.security_url = security_url
         self.unpacked_package = os.path.join(self.unpackdir,"glsa_package")
-        self.security_url_checksum = etpConst['securityurl']+etpConst['packagesmd5fileext']
-        self.download_package = os.path.join(self.unpackdir,os.path.basename(etpConst['securityurl']))
+        self.security_url_checksum = security_url+etpConst['packagesmd5fileext']
+        self.download_package = os.path.join(self.unpackdir,os.path.basename(security_url))
         self.download_package_checksum = self.download_package+etpConst['packagesmd5fileext']
-        self.old_download_package_checksum = os.path.join(etpConst['dumpstoragedir'],os.path.basename(etpConst['securityurl']))+etpConst['packagesmd5fileext']
+        self.old_download_package_checksum = os.path.join(etpConst['dumpstoragedir'],os.path.basename(security_url))+etpConst['packagesmd5fileext']
 
-        self.security_package = os.path.join(etpConst['securitydir'],os.path.basename(etpConst['securityurl']))
+        self.security_package = os.path.join(etpConst['securitydir'],os.path.basename(security_url))
         self.security_package_checksum = self.security_package+etpConst['packagesmd5fileext']
 
         try:
@@ -196,7 +199,9 @@ class SecurityInterface:
 
         if self.Entropy.xcache:
             dir_checksum = self.entropyTools.md5sum_directory(etpConst['securitydir'])
-            c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
+            c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (
+                hash(self.SystemSettings['repositories']['branch']), hash(dir_checksum),
+                hash(etpConst['systemroot']),)),)
             adv_metadata = self.Cacher.pop(c_hash)
             if adv_metadata != None:
                 self.adv_metadata = adv_metadata.copy()
@@ -205,7 +210,9 @@ class SecurityInterface:
     def set_advisories_cache(self, adv_metadata):
         if self.Entropy.xcache:
             dir_checksum = self.entropyTools.md5sum_directory(etpConst['securitydir'])
-            c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (hash(etpConst['branch']),hash(dir_checksum),hash(etpConst['systemroot']),)),)
+            c_hash = "%s%s" % (etpCache['advisories'],hash("%s|%s|%s" % (
+                hash(self.SystemSettings['repositories']['branch']), hash(dir_checksum),
+                hash(etpConst['systemroot']),)),)
             self.Cacher.push(c_hash,adv_metadata)
 
     def get_advisories_list(self):

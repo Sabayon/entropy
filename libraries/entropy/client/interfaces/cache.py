@@ -193,11 +193,17 @@ class Cache:
                 pass
         return sum_hashes
 
-    def get_available_packages_cache(self, branch = etpConst['branch'], myhash = None):
+    def get_available_packages_cache(self, branch = None, myhash = None):
+        if branch == None:
+            branch = self.SystemSettings['repositories']['branch']
         if myhash == None: myhash = self.get_available_packages_chash(branch)
         return self.Cacher.pop("%s%s" % (etpCache['world_available'],myhash))
 
-    def get_world_update_cache(self, empty_deps, branch = etpConst['branch'], db_digest = None, ignore_spm_downgrades = False):
+    def get_world_update_cache(self, empty_deps, branch = None,
+        db_digest = None, ignore_spm_downgrades = False):
+
+        if branch == None:
+            branch = self.SystemSettings['repositories']['branch']
         if self.xcache:
             if db_digest == None: db_digest = self.all_repositories_checksum()
             c_hash = "%s%s" % (etpCache['world_update'],

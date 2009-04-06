@@ -173,7 +173,8 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
 def InflateHandler(mytbz2s, savedir):
 
-    print_info(brown(" %s: " % (_("Using branch"),))+bold(etpConst['branch']))
+    branch = Equo.SystemSettings['repositories']['branch']
+    print_info(brown(" %s: " % (_("Using branch"),))+bold(branch))
 
     # analyze files
     for tbz2 in mytbz2s:

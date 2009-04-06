@@ -572,7 +572,7 @@ class Base:
 
                     Entropy.updateProgress( "[%s|%s] %s" % (
                             repoid,
-                            etpConst['branch'],
+                            Entropy.SystemSettings['repositories']['branch'],
                             _("Adding packages"),
                         )
                     )
@@ -788,7 +788,9 @@ class Base:
 
                         try:
                             upload_queue, download_queue, removal_queue, \
-                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(uri, etpConst['branch'], repoid)
+                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(
+                                    uri, Entropy.SystemSettings['repositories']['branch'],
+                                    repoid)
                         except socket.error:
                             self.entropyTools.print_traceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")
@@ -800,7 +802,7 @@ class Base:
                                 download_queue,
                                 removal_queue,
                                 remote_packages_data,
-                                etpConst['branch'],
+                                Entropy.SystemSettings['repositories']['branch'],
                                 repoid
                             )
                             if len(upload)+len(download)+len(removal)+len(copy):

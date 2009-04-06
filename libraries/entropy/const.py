@@ -120,7 +120,6 @@ def initconfig_entropy_constants(rootdir):
     const_read_entropy_release()
     const_create_working_dirs()
     const_setup_entropy_pid()
-    const_read_repo_settings()
     const_configure_lock_paths()
 
     # reflow back settings
@@ -621,7 +620,8 @@ def const_set_nice_level(nice_level = 0):
         pass
     return current_nice
 
-def const_extract_cli_repo_params(repostring):
+def const_extract_cli_repo_params(repostring, branch = etpConst['branch'],
+    product = etpConst['product']):
 
     """
     Extract repository information from the provided repository string,
@@ -672,8 +672,7 @@ def const_extract_cli_repo_params(repostring):
     mydata['plain_packages'] = []
 
     mydata['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + reponame + \
-        "/" + etpConst['product'] + "/" + etpConst['currentarch'] + \
-            "/" + etpConst['branch']
+        "/" + product + "/" + etpConst['currentarch'] + "/" + branch
 
     mydata['dbcformat'] = dbformat
     if not dbformat in etpConst['etpdatabasesupportedcformats']:
@@ -681,9 +680,9 @@ def const_extract_cli_repo_params(repostring):
 
     mydata['plain_database'] = repodatabase
 
-    mydata['database'] = repodatabase + "/" + etpConst['product'] + "/" + \
+    mydata['database'] = repodatabase + "/" + product + "/" + \
         reponame + "/database/" + etpConst['currentarch'] + \
-        "/" + etpConst['branch']
+        "/" + branch
 
     mydata['notice_board'] = mydata['database'] + "/" + \
         etpConst['rss-notice-board']
@@ -712,119 +711,9 @@ def const_extract_cli_repo_params(repostring):
         except (UnicodeDecodeError,UnicodeEncodeError,):
             continue
         mydata['plain_packages'].append(repo_package)
-        mydata['packages'].append(repo_package + "/" + \
-            etpConst['product'] + "/" + reponame)
+        mydata['packages'].append(repo_package + "/" + product + "/" + reponame)
 
     return reponame, mydata
-
-
-def const_read_repo_settings():
-
-    """
-    Setup Entropy Client repository settings reading them from
-    the relative config file specified in etpConst['repositoriesconf']
-
-    @return None
-    """
-
-    etpRepositories.clear()
-    etpRepositoriesExcluded.clear()
-    del etpRepositoriesOrder[:]
-
-    repo_conf = etpConst['repositoriesconf']
-    if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
-        return
-
-    repo_f = open(repo_conf,"r")
-    repositoriesconf = [x.strip() for x in repo_f.readlines() if x.strip()]
-    repo_f.close()
-
-    # setup product and branch first
-    for line in repositoriesconf:
-
-        if (line.find("product|") != -1) and \
-            (not line.startswith("#")) and  \
-            (len(line.split("|")) == 2):
-
-            etpConst['product'] = line.strip().split("|")[1]
-
-        elif (line.find("branch|") != -1) and \
-            (not line.startswith("#")) and \
-            (len(line.split("|")) == 2):
-
-            branch = line.split("|")[1].strip()
-            etpConst['branch'] = branch
-            if not os.path.isdir(etpConst['packagesbindir']+"/"+branch) and \
-                (etpConst['uid'] == 0):
-
-                os.makedirs(etpConst['packagesbindir']+"/"+branch)
-
-    for line in repositoriesconf:
-
-        # populate etpRepositories
-        if (line.find("repository|") != -1) and \
-            (len(line.split("|")) == 5):
-
-            excluded = False
-            my_repodata = etpRepositories
-            if line.startswith("##"):
-                continue
-            elif line.startswith("#"):
-                excluded = True
-                my_repodata = etpRepositoriesExcluded
-                line = line[1:]
-
-            reponame, repodata = const_extract_cli_repo_params(line)
-            if my_repodata.has_key(reponame):
-
-                my_repodata[reponame]['plain_packages'].extend(
-                    repodata['plain_packages'])
-                my_repodata[reponame]['packages'].extend(
-                    repodata['packages'])
-
-                if (not my_repodata[reponame]['plain_database']) and \
-                    repodata['plain_database']:
-
-                    my_repodata[reponame]['plain_database'] = \
-                        repodata['plain_database']
-                    my_repodata[reponame]['database'] = \
-                        repodata['database']
-                    my_repodata[reponame]['dbrevision'] = \
-                        repodata['dbrevision']
-                    my_repodata[reponame]['dbcformat'] = \
-                        repodata['dbcformat']
-            else:
-
-                my_repodata[reponame] = repodata.copy()
-                if not excluded:
-                    etpRepositoriesOrder.append(reponame)
-
-        elif (line.find("officialrepositoryid|") != -1) and \
-            (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-            officialreponame = line.split("|")[1]
-            etpConst['officialrepositoryid'] = officialreponame
-
-        elif (line.find("downloadspeedlimit|") != -1) and \
-            (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-            try:
-                myval = int(line.split("|")[1])
-                if myval > 0:
-                    etpConst['downloadspeedlimit'] = myval
-                else:
-                    etpConst['downloadspeedlimit'] = None
-            except (ValueError, IndexError,):
-                etpConst['downloadspeedlimit'] = None
-
-        elif (line.find("securityurl|") != -1) and \
-            (not line.startswith("#")) and (len(line.split("|")) == 2):
-
-            try:
-                url = line.split("|")[1]
-                etpConst['securityurl'] = url
-            except (IndexError, ValueError, TypeError,):
-                continue
 
 def const_read_entropy_release():
     """
@@ -1038,7 +927,7 @@ def const_configure_lock_paths():
     }
 
 
-def const_extract_srv_repo_params(repostring):
+def const_extract_srv_repo_params(repostring, product = etpConst['product']):
     """
     Analyze a server repository string (usually contained in server.conf),
     extracting all the parameters.
@@ -1080,8 +969,7 @@ def const_extract_srv_repo_params(repostring):
     mydata['service_port'] = eapi3_port
     mydata['ssl_service_port'] = eapi3_ssl_port
     if repohandlers:
-        repohandlers = os.path.join(repohandlers, etpConst['product'],
-            repoid, "handlers")
+        repohandlers = os.path.join(repohandlers, product, repoid, "handlers")
         mydata['handler'] = repohandlers
     uris = repouris.split()
     for uri in uris:

@@ -662,7 +662,8 @@ class Package:
 
             disk_cache = self.Cacher.pop(etpCache['world_available'])
             if disk_cache != None:
-                c_hash = self.Entropy.get_available_packages_chash(etpConst['branch'])
+                branch = self.Entropy.SystemSettings['repositories']['branch']
+                c_hash = self.Entropy.get_available_packages_chash(branch)
                 try:
                     if disk_cache['chash'] == c_hash:
 

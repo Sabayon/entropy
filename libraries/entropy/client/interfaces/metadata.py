@@ -275,7 +275,11 @@ class Extractors:
         return tag
 
     # This function extracts all the info from a .tbz2 file and returns them
-    def extract_pkg_metadata(self, package, etpBranch = etpConst['branch'], silent = False, inject = False):
+    def extract_pkg_metadata(self, package, etpBranch = None, silent = False,
+        inject = False):
+
+        if etpBranch == None:
+            etpBranch = self.SystemSettings['repositories']['branch']
 
         data = {}
         info_package = bold(os.path.basename(package))+": "

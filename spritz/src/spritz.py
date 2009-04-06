@@ -1051,7 +1051,7 @@ class SpritzApplication(Controller):
             etpConst['repositoriesconf']: [
                 (
                     'downloadspeedlimit',
-                    etpConst['downloadspeedlimit'],
+                    self.Equo.SystemSettings['repositories']['transfer_limit'],
                     int,
                     fillSetting,
                     saveSetting,
@@ -1959,7 +1959,9 @@ class SpritzApplication(Controller):
         text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                repoid, repodata = const_extract_cli_repo_params(text)
+                current_branch = self.Equo.SystemSettings['repositories']['branch']
+                current_product = self.Equo.SystemSettings['repositories']['product']
+                repoid, repodata = const_extract_cli_repo_params(text, current_branch, current_product)
                 self.__loadRepodata(repodata)
             else:
                 okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
@@ -1971,7 +1973,7 @@ class SpritzApplication(Controller):
         # get text
         if repodata[1] != None:
             repoid = self.repoView.get_repoid(repodata)
-            if repoid == etpConst['officialrepositoryid']:
+            if repoid == self.Equo.SystemSettings['repositories']['default_repository']:
                 okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
                 return True
             self.Equo.remove_repository(repoid)
