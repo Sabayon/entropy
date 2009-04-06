@@ -126,7 +126,6 @@ def initconfig_entropy_constants(rootdir):
     # reflow back settings
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
-    const_setup_environment()
 
     if sys.excepthook == sys.__excepthook__:
         sys.excepthook = const_handle_exception
@@ -1089,25 +1088,6 @@ def const_extract_srv_repo_params(repostring):
         mydata['mirrors'].append(uri)
 
     return repoid, mydata
-
-def const_setup_environment():
-    """
-    Read environment variables and updates entropy settings.
-
-    @return None
-    """
-    shell_repoid = os.getenv('ETP_REPO')
-    if shell_repoid:
-        etpConst['officialserverrepositoryid'] = shell_repoid
-
-    expiration_days = os.getenv('ETP_EXPIRATION_DAYS')
-    if expiration_days:
-        try:
-            expiration_days = int(expiration_days)
-            etpConst['packagesexpirationdays'] = expiration_days
-        except ValueError:
-            pass
-
 
 def const_setup_perms(mydir, gid):
     """

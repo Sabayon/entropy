@@ -1171,7 +1171,7 @@ class SystemSettings(Singleton):
                 except (ValueError, IndexError,):
                     continue
 
-        # now setup paths properly
+        # expand paths
         for repoid in data['repositories']:
             data['repositories'][repoid]['packages_dir'] = \
                 os.path.join(   etpConst['entropyworkdir'],
@@ -1213,6 +1213,19 @@ class SystemSettings(Singleton):
                                 "database",
                                 etpSys['arch']
                             )+"/"
+
+        # Support for shell variables
+        shell_repoid = os.getenv('ETP_REPO')
+        if shell_repoid:
+            data['default_repository_id'] = shell_repoid
+
+        expiration_days = os.getenv('ETP_EXPIRATION_DAYS')
+        if expiration_days:
+            try:
+                expiration_days = int(expiration_days)
+                data['packages_expiration_days'] = expiration_days
+            except ValueError:
+                pass
 
         return data
 
