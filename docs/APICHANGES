@@ -61,7 +61,7 @@ From SVN 3112 there have been several API changes:
         getCurrentUnixTime => get_current_unix_time
         getYear => get_year
         convertSecondsToFancyOutput => convert_seconds_to_fancy_output
-        getRepositorySettings => get_repository_settings
+        getRepositorySettings => entropy.client.interfaces.Client.get_repository_settings
         writeOrderedRepositoriesEntries => write_ordered_repositories_entries
         saveRepositorySettings => save_repository_settings
         _saveRepositoriesContent => _save_repositories_content
