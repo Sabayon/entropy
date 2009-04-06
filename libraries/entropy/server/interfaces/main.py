@@ -45,7 +45,7 @@ class Server(Singleton,TextInterface):
         from entropy.misc import LogFile
         self.SystemSettings = SystemSettings()
         self.serverLog = LogFile(
-            level = sys_settings['system']['log_level'],
+            level = self.SystemSettings['system']['log_level'],
             filename = etpConst['entropylogfile'],
             header = "[server]"
         )
