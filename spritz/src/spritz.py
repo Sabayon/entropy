@@ -1588,8 +1588,9 @@ class SpritzApplication(Controller):
         if repodata[1] != None:
             repoid = self.repoView.get_repoid(repodata)
             # do it if it's enabled
-            if repoid in etpRepositoriesOrder:
-                idx = etpRepositoriesOrder.index(repoid)
+            repo_order = self.Equo.SystemSettings['repositories']['order']
+            if repoid in repo_order:
+                idx = repo_order.index(repoid)
                 return idx, repoid, repodata
         return None, None, None
 
@@ -2743,7 +2744,8 @@ class SpritzApplication(Controller):
 
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
-        for repoid in etpRepositoriesOrder+sorted(etpRepositoriesExcluded.keys()):
+        repo_order = self.Equo.SystemSettings['repositories']['order']
+        for repoid in repo_order+sorted(etpRepositoriesExcluded.keys()):
             repodata = etpRepositories.get(repoid)
             if repodata == None:
                 repodata = etpRepositoriesExcluded.get(repoid)

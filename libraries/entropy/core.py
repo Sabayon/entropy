@@ -26,7 +26,7 @@ from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, etpRepositories,\
     etpRepositoriesOrder, const_secure_config_file, const_set_nice_level, \
     const_extract_srv_repo_params, etpRepositories, etpRepositoriesExcluded, \
-    etpRepositoriesOrder, const_extract_cli_repo_params
+    const_extract_cli_repo_params
 from entropy.i18n import _
 
 class Singleton(object):
@@ -89,6 +89,7 @@ class SystemSettings(Singleton):
         self.Entropy = None
 
         self.__setting_files_order = []
+        self.__setting_files_pre_run = []
         self.__setting_files = {}
         self.__mtime_files = {}
         self.__persistent_settings = {
@@ -172,6 +173,7 @@ class SystemSettings(Singleton):
         """
 
         del self.__setting_files_order[:]
+        del self.__setting_files_pre_run[:]
         self.__setting_files.clear()
         self.__mtime_files.clear()
 
@@ -199,13 +201,14 @@ class SystemSettings(Singleton):
             'repositories': etpConst['repositoriesconf'],
         })
         self.__setting_files_order.extend([
-            'repositories', 'keywords', 'unmask', 'mask', 'license_mask',
+            'keywords', 'unmask', 'mask', 'license_mask',
             'repos_system_mask', 'system_mask', 'repos_mask',
             'repos_license_whitelist', 'system_package_sets',
             'conflicting_tagged_packages', 'system_dirs',
             'system_dirs_mask', 'socket_service', 'system',
             'client', 'server'
         ])
+        self.__setting_files_pre_run.extend(['repositories'])
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
         trunk_fsdirs_conf = "../conf/fsdirs.conf"
@@ -460,13 +463,13 @@ class SystemSettings(Singleton):
         """
 
         dmp_dir = etpConst['dumpstoragedir']
-        for repoid in etpRepositoriesOrder:
+        for repoid in self['repositories']['order']:
 
             repos_mask_setting = {}
             repos_mask_mtime = {}
             repos_lic_wl_setting = {}
             repos_lic_wl_mtime = {}
-            repo_data = etpRepositories[repoid]
+            repo_data = self['repositories']['available'][repoid]
             repos_sm_mask_setting = {}
             repos_sm_mask_mtime = {}
             confl_tagged = {}
@@ -548,6 +551,14 @@ class SystemSettings(Singleton):
 
         @return dict settings metadata
         """
+        # some parsers must be run BEFORE everything:
+        for item in self.__setting_files_pre_run:
+            myattr = '%s_parser' % (item,)
+            if not hasattr(self, myattr):
+                continue
+            func = getattr(self, myattr)
+            self.__data[item] = func()
+
         # parse main settings
         self.__setup_setting_vars()
         self.__setup_package_sets_vars()
@@ -802,7 +813,7 @@ class SystemSettings(Singleton):
         """
         data = {}
         # keep priority order
-        repoids = [x for x in etpRepositoriesOrder if x in \
+        repoids = [x for x in self['repositories']['order'] if x in \
             self.__setting_files['conflicting_tagged_packages']]
         for repoid in repoids:
             filepath = self.__setting_files['conflicting_tagged_packages'].get(
@@ -1436,7 +1447,7 @@ class SystemSettings(Singleton):
                 self.Entropy.repository_move_clear_cache(repoid)
                 return
             if self.Entropy != None:
-                for repoid in etpRepositoriesOrder:
+                for repoid in self['repositories']['order']:
                     self.Entropy.repository_move_clear_cache(repoid)
         else:
             os.makedirs(etpConst['dumpstoragedir'])

@@ -46,7 +46,7 @@ def repositories(options):
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
-        elif opt in etpRepositoriesOrder:
+        elif opt in Equo.SystemSettings['repositories']['order']:
             repo_names.append(opt)
 
     if (options[0] == "update"):

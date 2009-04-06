@@ -36,14 +36,17 @@ class Cache:
             try: self.repository_move_clear_cache()
             except IOError: pass
         elif isinstance(cached,tuple):
-            difflist = [x for x in cached if x not in etpRepositoriesOrder]
+            difflist = [x for x in cached if x not in \
+                self.SystemSettings['repositories']['order']]
             for repoid in difflist:
                 try: self.repository_move_clear_cache(repoid)
                 except IOError: pass
         self.store_repository_list_cache()
 
     def store_repository_list_cache(self):
-        self.Cacher.push(etpCache['repolist'],tuple(etpRepositoriesOrder), async = False)
+        self.Cacher.push(etpCache['repolist'],
+            tuple(self.SystemSettings['repositories']['order']),
+            async = False)
 
     def generate_cache(self, depcache = True, configcache = True, client_purge = True, install_queue = True):
         self.Cacher.stop()
@@ -216,7 +219,8 @@ class Cache:
                     return None
 
     def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
-        return str(hash("%s|%s|%s|%s|%s|%s" % ( 
+        return str(hash("%s|%s|%s|%s|%s|%s" % (
             db_digest,empty_deps,self.validRepositories,
-            etpRepositoriesOrder, branch, ignore_spm_downgrades,
+            self.SystemSettings['repositories']['order'], branch,
+            ignore_spm_downgrades,
         )))

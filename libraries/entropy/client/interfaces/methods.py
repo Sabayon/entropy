@@ -44,7 +44,7 @@ class Repository:
         self._package_match_validator_cache.clear()
         # valid repositories
         del self.validRepositories[:]
-        for repoid in etpRepositoriesOrder:
+        for repoid in self.SystemSettings['repositories']['order']:
             # open database
             try:
                 dbc = self.open_repository(repoid)
@@ -250,7 +250,7 @@ class Repository:
             except KeyError:
                 raise InvalidData("InvalidData: repodata dictionary is corrupted")
             # put at top priority, shift others
-            etpRepositoriesOrder.insert(0,repodata['repoid'])
+            self.SystemSettings['repositories']['order'].insert(0, repodata['repoid'])
         else:
             # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
             etpRepositories[repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
@@ -269,9 +269,11 @@ class Repository:
                 myrev = 0
             etpRepositories[repodata['repoid']]['dbrevision'] = str(myrev)
             if repodata.has_key("position"):
-                etpRepositoriesOrder.insert(repodata['position'],repodata['repoid'])
+                self.SystemSettings['repositories']['order'].insert(
+                    repodata['position'], repodata['repoid'])
             else:
-                etpRepositoriesOrder.append(repodata['repoid'])
+                self.SystemSettings['repositories']['order'].append(
+                    repodata['repoid'])
             if not repodata.has_key("service_port"):
                 repodata['service_port'] = int(etpConst['socket_service']['port'])
             if not repodata.has_key("ssl_service_port"):
@@ -300,8 +302,8 @@ class Repository:
 
         if done:
 
-            if repoid in etpRepositoriesOrder:
-                etpRepositoriesOrder.remove(repoid)
+            if repoid in self.SystemSettings['repositories']['order']:
+                self.SystemSettings['repositories']['order'].remove(repoid)
 
             self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file
@@ -316,10 +318,11 @@ class Repository:
         self.validate_repositories()
 
     def shift_repository(self, repoid, toidx):
-        # update etpRepositoriesOrder
-        etpRepositoriesOrder.remove(repoid)
-        etpRepositoriesOrder.insert(toidx,repoid)
-        self.entropyTools.write_ordered_repositories_entries()
+        # update self.SystemSettings['repositories']['order']
+        self.SystemSettings['repositories']['order'].remove(repoid)
+        self.SystemSettings['repositories']['order'].insert(toidx, repoid)
+        self.entropyTools.write_ordered_repositories_entries(
+            self.SystemSettings['repositories']['order'])
         self.reload_constants()
         self.repository_move_clear_cache(repoid)
         self.validate_repositories()
@@ -344,10 +347,11 @@ class Repository:
 
         if done:
             try:
-                etpRepositoriesOrder.remove(repoid)
-            except:
+                self.SystemSettings['repositories']['order'].remove(repoid)
+            except (IndexError,):
                 pass
-            # it's not vital to reset etpRepositoriesOrder counters
+            # it's not vital to reset
+            # self.SystemSettings['repositories']['order'] counters
 
             self.repository_move_clear_cache(repoid)
             # save new etpRepositories to file

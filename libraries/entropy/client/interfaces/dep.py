@@ -944,7 +944,8 @@ class Calculators:
             matched_repos.add(depmatch[1])
             matched_deps.add(depmatch)
 
-        matched_repos = [x for x in etpRepositoriesOrder if x in matched_repos]
+        matched_repos = [x for x in self.SystemSettings['repositories']['order'] \
+            if x in matched_repos]
         found_matches = set()
         for needed in repodata:
             for myrepo in matched_repos:

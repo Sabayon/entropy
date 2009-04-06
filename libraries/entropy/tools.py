@@ -2172,13 +2172,12 @@ def get_repository_settings(repoid):
         repodata = etpRepositoriesExcluded[repoid].copy()
     return repodata
 
-def write_ordered_repositories_entries():
-    #repoOrder = [x for x in etpRepositoriesOrder if not x.endswith(".tbz2")]
+def write_ordered_repositories_entries(ordered_repository_list):
     content = read_repositories_conf()
     content = [x.strip() for x in content]
     repolines = [x for x in content if x.startswith("repository|") and (len(x.split("|")) == 5)]
     content = [x for x in content if x not in repolines]
-    for repoid in etpRepositoriesOrder:
+    for repoid in ordered_repository_list:
         # get repoid from repolines
         for x in repolines:
             repoidline = x.split("|")[1]
@@ -2186,7 +2185,6 @@ def write_ordered_repositories_entries():
                 content.append(x)
     _save_repositories_content(content)
 
-# etpRepositories and etpRepositoriesOrder must be already configured, see where this function is used
 def save_repository_settings(repodata, remove = False, disable = False, enable = False):
 
     if repodata['repoid'].endswith(".tbz2"):
