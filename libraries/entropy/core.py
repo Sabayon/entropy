@@ -26,7 +26,7 @@ from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, etpRepositories,\
     etpRepositoriesOrder, const_secure_config_file, const_set_nice_level, \
     const_extract_srv_repo_params, etpRepositories, etpRepositoriesExcluded, \
-    const_extract_cli_repo_params
+    const_extract_cli_repo_params, etpCache
 from entropy.i18n import _
 
 class Singleton(object):
@@ -79,12 +79,12 @@ class SystemSettingsPlugin:
         """
         SystemSettingsPlugin constructor.
 
-        @param handler_interface -- any Python instance that could
+        @param helper_interface -- any Python instance that could
             be of help to your parsers
         @type handler_instance instance
         """
         self.__parsers = []
-        self.__plugin_interface = helper_interface
+        self._helper = helper_interface
 
     def add_parser(self, callable_function):
         """
@@ -132,7 +132,6 @@ class SystemSettings(Singleton):
 
         self.__data = {}
         self.__is_destroyed = False
-        self.Entropy = None
 
         self.__plugins = {}
         self.__setting_files_order = []
@@ -218,33 +217,6 @@ class SystemSettings(Singleton):
         """
         del self.__plugins[plugin_id]
         self.clear()
-
-    def connect_entropy(self, entropy_instance):
-        """
-        Connect an Entropy (client/server) instance to
-        this Singleton. Be warned, it could be very dangerous
-        if you don't know what you are doing.
-
-        Valid instances are:
-            entropy.client.interfaces.Client
-            entropy.server.interfaces.Server
-        """
-
-        from entropy.client.interfaces import Client
-        from entropy.server.interfaces import Server
-        if not isinstance(entropy_instance,(Client,Server,)):
-            mytxt = _("A valid Client/Server interface instance is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        self.Entropy = entropy_instance
-        self.__scan() # do this again to re-fill settings
-
-    def disconnect_entropy(self):
-        """
-        Remove an Entropy (client/server) instance to
-        this Singleton.
-        """
-        self.Entropy = None
-        self.__scan()
 
     def __setup_const(self):
 
@@ -341,35 +313,7 @@ class SystemSettings(Singleton):
         for plugin_id in sorted(self.__plugins):
             self.__plugins[plugin_id].parse(self)
 
-        # match installed packages of system_mask
-        mask_installed = []
-        mask_installed_keys = {}
-        if self.Entropy != None:
-            while (self.Entropy.clientDbconn != None):
-                try:
-                    self.Entropy.clientDbconn.validateDatabase()
-                except SystemDatabaseError:
-                    break
-                mc_cache = set()
-                m_list = self.__data['repos_system_mask'] + \
-                    self.__data['system_mask']
-                for atom in m_list:
-                    m_ids, m_r = self.Entropy.clientDbconn.atomMatch(atom,
-                        multiMatch = True)
-                    if m_r != 0:
-                        continue
-                    mykey = self.entropyTools.dep_getkey(atom)
-                    if mykey not in mask_installed_keys:
-                        mask_installed_keys[mykey] = set()
-                    for m_id in m_ids:
-                        if m_id in mc_cache:
-                            continue
-                        mc_cache.add(m_id)
-                        mask_installed.append(m_id)
-                        mask_installed_keys[mykey].add(m_id)
-                break
-        self.__data['repos_system_mask_installed'] = mask_installed
-        self.__data['repos_system_mask_installed_keys'] = mask_installed_keys
+        print self.__data.get('repos_system_mask_installed_keys')
 
         # merge persistent settings back
         self.__data.update(self.__persistent_settings)
@@ -1498,6 +1442,48 @@ class SystemSettings(Singleton):
 
         return data
 
+    def _clear_repository_cache(self, repoid = None):
+        """
+        Internal method, go away!
+        """
+        self._clear_dump_cache(etpCache['world_available'])
+        self._clear_dump_cache(etpCache['world_update'])
+        self._clear_dump_cache(etpCache['check_package_update'])
+        self._clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self._clear_dump_cache(etpCache['atomMatch'])
+        self._clear_dump_cache(etpCache['dep_tree'])
+        if repoid != None:
+            self._clear_dump_cache("%s/%s%s/" % (
+                etpCache['dbMatch'],etpConst['dbnamerepoprefix'],repoid,))
+            self._clear_dump_cache("%s/%s%s/" % (
+                etpCache['dbSearch'],etpConst['dbnamerepoprefix'],repoid,))
+
+    def _clear_dump_cache(self, dump_name, skip = []):
+        """
+        Internal method, go away!
+        """
+        dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
+        dump_dir = os.path.dirname(dump_path)
+        #dump_file = os.path.basename(dump_path)
+        for currentdir, subdirs, files in os.walk(dump_dir):
+            path = os.path.join(dump_dir,currentdir)
+            if skip:
+                found = False
+                for myskip in skip:
+                    if path.find(myskip) != -1:
+                        found = True
+                        break
+                if found: continue
+            for item in files:
+                if item.endswith(etpConst['cachedumpext']):
+                    item = os.path.join(path,item)
+                    try: os.remove(item)
+                    except OSError: pass
+            try:
+                if not os.listdir(path):
+                    os.rmdir(path)
+            except OSError:
+                pass
 
     def __generic_parser(self, filepath):
         """
@@ -1530,12 +1516,11 @@ class SystemSettings(Singleton):
         @return None
         """
         if os.path.isdir(etpConst['dumpstoragedir']):
-            if repoid and (self.Entropy != None):
-                self.Entropy.repository_move_clear_cache(repoid)
+            if repoid:
+                self._clear_repository_cache(repoid = repoid)
                 return
-            if self.Entropy != None:
-                for repoid in self['repositories']['order']:
-                    self.Entropy.repository_move_clear_cache(repoid)
+            for repoid in self['repositories']['order']:
+                self._clear_repository_cache(repoid = repoid)
         else:
             os.makedirs(etpConst['dumpstoragedir'])
 

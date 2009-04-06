@@ -125,28 +125,7 @@ class Cache:
 
     def clear_dump_cache(self, dump_name, skip = []):
         self.Cacher.sync(wait = True)
-        dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
-        dump_dir = os.path.dirname(dump_path)
-        #dump_file = os.path.basename(dump_path)
-        for currentdir, subdirs, files in os.walk(dump_dir):
-            path = os.path.join(dump_dir,currentdir)
-            if skip:
-                found = False
-                for myskip in skip:
-                    if path.find(myskip) != -1:
-                        found = True
-                        break
-                if found: continue
-            for item in files:
-                if item.endswith(etpConst['cachedumpext']):
-                    item = os.path.join(path,item)
-                    try: os.remove(item)
-                    except OSError: pass
-            try:
-                if not os.listdir(path):
-                    os.rmdir(path)
-            except OSError:
-                pass
+        self.SystemSettings._clear_dump_cache(dump_name, skip = skip)
 
     def update_ugc_cache(self, repository):
         if not self.UGC.is_repository_eapi3_aware(repository):
@@ -167,15 +146,7 @@ class Cache:
         return status
 
     def repository_move_clear_cache(self, repoid = None):
-        self.clear_dump_cache(etpCache['world_available'])
-        self.clear_dump_cache(etpCache['world_update'])
-        self.clear_dump_cache(etpCache['check_package_update'])
-        self.clear_dump_cache(etpCache['filter_satisfied_deps'])
-        self.clear_dump_cache(self.atomMatchCacheKey)
-        self.clear_dump_cache(etpCache['dep_tree'])
-        if repoid != None:
-            self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],repoid,))
-            self.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],etpConst['dbnamerepoprefix'],repoid,))
+        return self.SystemSettings._clear_repository_cache(repoid = repoid)
 
     def get_available_packages_chash(self, branch):
         # client digest not needed, cache is kept updated

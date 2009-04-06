@@ -32,6 +32,43 @@ from entropy.client.interfaces.methods import Repository as CRepository, Misc, M
 from entropy.client.interfaces.fetch import Fetchers
 from entropy.client.interfaces.metadata import Extractors
 from entropy.const import etpConst, etpCache
+from entropy.core import SystemSettings, SystemSettingsPlugin
+
+class ClientSystemSettingsPlugin(SystemSettingsPlugin):
+
+    import entropy.tools as entropyTools
+
+    def system_mask_parser(self, system_settings_instance):
+
+        # match installed packages of system_mask
+        mask_installed = []
+        mask_installed_keys = {}
+        while (self._helper.clientDbconn != None):
+            try:
+                self._helper.clientDbconn.validateDatabase()
+            except SystemDatabaseError:
+                break
+            mc_cache = set()
+            m_list = system_settings_instance['repos_system_mask'] + \
+                system_settings_instance['system_mask']
+            for atom in m_list:
+                m_ids, m_r = self._helper.clientDbconn.atomMatch(atom,
+                    multiMatch = True)
+                if m_r != 0:
+                    continue
+                mykey = self.entropyTools.dep_getkey(atom)
+                if mykey not in mask_installed_keys:
+                    mask_installed_keys[mykey] = set()
+                for m_id in m_ids:
+                    if m_id in mc_cache:
+                        continue
+                    mc_cache.add(m_id)
+                    mask_installed.append(m_id)
+                    mask_installed_keys[mykey].add(m_id)
+            break
+
+        system_settings_instance['repos_system_mask_installed'] = mask_installed
+        system_settings_instance['repos_system_mask_installed_keys'] = mask_installed_keys
 
 class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         CRepository, Misc, Match, Fetchers, Extractors):
@@ -58,7 +95,6 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         self.noclientdb = False
         self.openclientdb = True
 
-        from entropy.core import SystemSettings
         # setup package settings (masking and other stuff)
         self.SystemSettings = SystemSettings()
 
@@ -130,8 +166,14 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
         if self.openclientdb:
             self.open_client_repository()
 
-        # Make sure we connect Entropy AFTER client db init
-        self.SystemSettings.connect_entropy(self)
+        # create our SystemSettings plugin
+        self.sys_settings_mask_plugin = ClientSystemSettingsPlugin(self)
+        self.sys_settings_mask_plugin_id = str(self)
+        self.sys_settings_mask_plugin.add_parser(
+            self.sys_settings_mask_plugin.system_mask_parser)
+        # Make sure we connect Entropy Client plugin AFTER client db init
+        self.SystemSettings.add_plugin(
+            self.sys_settings_mask_plugin_id, self.sys_settings_mask_plugin)
 
         # needs to be started here otherwise repository cache will be
         # always dropped
