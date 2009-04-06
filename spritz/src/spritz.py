@@ -1865,7 +1865,8 @@ class SpritzApplication(Controller):
             return True
         else:
             disable = False
-            if etpRepositoriesExcluded.has_key(repodata['repoid']):
+            repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+            if repo_excluded.has_key(repodata['repoid']):
                 disable = True
             self.Equo.remove_repository(repodata['repoid'], disable = disable)
             if not disable:
@@ -2500,14 +2501,16 @@ class SpritzApplication(Controller):
 
     def on_ugcClearCacheButton_clicked(self, widget):
         if self.Equo.UGC == None: return
-        for repoid in list(set(etpRepositories.keys()+etpRepositoriesExcluded.keys())):
+        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        for repoid in list(set(etpRepositories.keys()+repo_excluded.keys())):
             self.Equo.UGC.UGCCache.clear_cache(repoid)
             self.setStatus("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
         self.setStatus("%s" % (_("UGC cache cleared"),))
 
     def on_ugcClearCredentialsButton_clicked(self, widget):
         if self.Equo.UGC == None: return
-        for repoid in list(set(etpRepositories.keys()+etpRepositoriesExcluded.keys())):
+        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        for repoid in list(set(etpRepositories.keys()+repo_excluded.keys())):
             if not self.Equo.UGC.is_repository_eapi3_aware(repoid): continue
             logged_data = self.Equo.UGC.read_login(repoid)
             if logged_data: self.Equo.UGC.remove_login(repoid)
@@ -2745,10 +2748,11 @@ class SpritzApplication(Controller):
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
         repo_order = self.Equo.SystemSettings['repositories']['order']
-        for repoid in repo_order+sorted(etpRepositoriesExcluded.keys()):
+        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        for repoid in repo_order+sorted(repo_excluded.keys()):
             repodata = etpRepositories.get(repoid)
             if repodata == None:
-                repodata = etpRepositoriesExcluded.get(repoid)
+                repodata = repo_excluded.get(repoid)
             if repodata == None: continue # wtf?
             self.ugcRepositoriesModel.append([repodata])
 

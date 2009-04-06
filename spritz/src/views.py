@@ -1760,8 +1760,9 @@ class EntropyRepoView:
             repodata = etpRepositories[repo]
             self.store.append([1,1,repodata['dbrevision'],repo,repodata['description']])
         # excluded ones
-        for repo in etpRepositoriesExcluded:
-            repodata = etpRepositoriesExcluded[repo]
+        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        for repo in repo_excluded:
+            repodata = repo_excluded[repo]
             self.store.append([0,0,repodata['dbrevision'],repo,repodata['description']])
 
     def new_pixbuf( self, column, cell, model, myiter ):

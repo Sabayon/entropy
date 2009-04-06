@@ -296,8 +296,8 @@ class Repository:
             del etpRepositories[repoid]
             done = True
 
-        if etpRepositoriesExcluded.has_key(repoid):
-            del etpRepositoriesExcluded[repoid]
+        if self.SystemSettings['repositories']['excluded'].has_key(repoid):
+            del self.SystemSettings['repositories']['excluded'][repoid]
             done = True
 
         if done:
