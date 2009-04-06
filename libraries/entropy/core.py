@@ -336,6 +336,11 @@ class SystemSettings(Singleton):
             }
         )
 
+
+        # plugins support
+        for plugin_id in sorted(self.__plugins):
+            self.__plugins[plugin_id].parse(self)
+
         # match installed packages of system_mask
         mask_installed = []
         mask_installed_keys = {}
