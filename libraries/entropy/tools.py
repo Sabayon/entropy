@@ -2163,15 +2163,6 @@ def read_repositories_conf():
         f.close()
     return content
 
-def get_repository_settings(repoid):
-    try:
-        repodata = etpRepositories[repoid].copy()
-    except KeyError:
-        if not etpRepositoriesExcluded.has_key(repoid):
-            raise
-        repodata = etpRepositoriesExcluded[repoid].copy()
-    return repodata
-
 def write_ordered_repositories_entries(ordered_repository_list):
     content = read_repositories_conf()
     content = [x.strip() for x in content]
@@ -2794,11 +2785,6 @@ def convertSecondsToFancyOutput(*args, **kwargs):
     import warnings
     warnings.warn("deprecated, use convert_seconds_to_fancy_output instead")
     return convert_seconds_to_fancy_output(*args, **kwargs)
-
-def getRepositorySettings(*args, **kwargs):
-    import warnings
-    warnings.warn("deprecated, use get_repository_settings instead")
-    return get_repository_settings(*args, **kwargs)
 
 def writeOrderedRepositoriesEntries(*args, **kwargs):
     import warnings

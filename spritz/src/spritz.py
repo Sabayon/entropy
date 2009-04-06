@@ -1993,7 +1993,7 @@ class SpritzApplication(Controller):
         repostuff = selection.get_selected()
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
-            repodata = entropy.tools.get_repository_settings(repoid)
+            repodata = self.Equo.get_repository_settings(repoid)
             self.__loadRepodata(repodata)
             self.addrepo_ui.addRepoWin.show()
 

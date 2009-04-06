@@ -361,6 +361,15 @@ class Repository:
             self.reload_constants()
         self.validate_repositories()
 
+    def get_repository_settings(self, repoid):
+        try:
+            repodata = self.SystemSettings['repositories']['available'][repoid].copy()
+        except KeyError:
+            if not self.SystemSettings['repositories']['excluded'].has_key(repoid):
+                raise
+            repodata = self.SystemSettings['repositories']['excluded'][repoid].copy()
+        return repodata
+
     # every tbz2 file that would be installed must pass from here
     def add_tbz2_to_repos(self, tbz2file):
         atoms_contained = []
