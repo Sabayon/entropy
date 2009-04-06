@@ -205,10 +205,11 @@ class Server(Singleton,TextInterface):
         self.MirrorsService = MirrorsServer(self)
 
     def setup_entropy_settings(self, repo = None):
+        curr_repoid = self.SystemSettings['server']['default_repository_id']
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
-            'officialserverrepositoryid'
+            {'server': {'default_repository_id': curr_repoid}},
         ]
         for setting in backup_list:
             if setting not in self.settings_to_backup:
@@ -412,7 +413,10 @@ class Server(Singleton,TextInterface):
 
     def backup_entropy_settings(self):
         for setting in self.settings_to_backup:
-            self.ClientService.backup_constant(setting)
+            if isinstance(setting, basestring):
+                self.ClientService.backup_constant(setting)
+            elif isinstance(setting, dict):
+                self.SystemSettings.set_persistent_setting(setting)
 
     def is_repository_initialized(self, repo):
 
