@@ -3,10 +3,10 @@ TODO list
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.80:
-  - SHA512 instead of MD5 (add preliminary support)
   - avoid calling portage hooks when not needed?
 
   0.90+:
+  - remove mutex from entropy.db ? (WriteLock)
   - Updates daemon + shrink notification applet? (dev-python/dbus-python)
   - Entropy repository daemon facilities (init script, config, etc)
   - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
@@ -22,3 +22,4 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Implement entropy:// URI handler
   - use expiration as a base to have and handle multiple packages in repo?
   - LZMA future support
+  - Put SHA1, SHA256 and SHA512 signatures to work on the Client.
