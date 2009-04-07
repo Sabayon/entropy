@@ -329,6 +329,8 @@ def const_default_settings(rootdir):
         # of its releated package file
         'packagesmd5fileext': ".md5",
         'packagessha512fileext': ".sha512",
+        'packagessha256fileext': ".sha256",
+        'packagessha1fileext': ".sha1",
         # Extension of the file that "contains" expiration mtime
         'packagesexpirationfileext': ".expired",
         # number of days after a package will be removed from mirrors

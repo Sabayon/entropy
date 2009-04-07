@@ -485,6 +485,26 @@ def sha512(filepath):
     readfile.close()
     return m.hexdigest()
 
+def sha256(filepath):
+    m = hashlib.sha256()
+    readfile = open(filepath)
+    block = readfile.read(1024)
+    while block:
+        m.update(block)
+        block = readfile.read(1024)
+    readfile.close()
+    return m.hexdigest()
+
+def sha1(filepath):
+    m = hashlib.sha1()
+    readfile = open(filepath)
+    block = readfile.read(1024)
+    while block:
+        m.update(block)
+        block = readfile.read(1024)
+    readfile.close()
+    return m.hexdigest()
+
 def md5sum_directory(directory, get_obj = False):
     if not os.path.isdir(directory):
         raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
@@ -888,6 +908,26 @@ def create_sha512_file(filepath):
     f.close()
     return hashfile
 
+def create_sha256_file(filepath):
+    sha256hash = sha256(filepath)
+    hashfile = filepath+etpConst['packagessha256fileext']
+    f = open(hashfile,"w")
+    tbz2name = os.path.basename(filepath)
+    f.write(sha256hash+"  "+filepath+"\n")
+    f.flush()
+    f.close()
+    return hashfile
+
+def create_sha1_file(filepath):
+    sha1hash = sha1(filepath)
+    hashfile = filepath+etpConst['packagessha1fileext']
+    f = open(hashfile,"w")
+    tbz2name = os.path.basename(filepath)
+    f.write(sha1hash+"  "+filepath+"\n")
+    f.flush()
+    f.close()
+    return hashfile
+
 def compare_md5(filepath,checksum):
     checksum = str(checksum)
     result = md5sum(filepath)
@@ -899,6 +939,22 @@ def compare_md5(filepath,checksum):
 def compare_sha512(filepath, checksum):
     checksum = str(checksum)
     result = sha512(filepath)
+    result = str(result)
+    if checksum == result:
+        return True
+    return False
+
+def compare_sha256(filepath, checksum):
+    checksum = str(checksum)
+    result = sha256(filepath)
+    result = str(result)
+    if checksum == result:
+        return True
+    return False
+
+def compare_sha1(filepath, checksum):
+    checksum = str(checksum)
+    result = sha1(filepath)
     result = str(result)
     if checksum == result:
         return True
