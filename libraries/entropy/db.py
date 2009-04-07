@@ -325,6 +325,13 @@ class Schema:
                 md5 VARCHAR
             );
 
+            CREATE TABLE packagesignatures (
+                idpackage INTEGER PRIMARY KEY,
+                sha1 VARCHAR,
+                sha256 VARCHAR,
+                sha512 VARCHAR
+            );
+
         """
 
 class LocalRepository:
@@ -1332,6 +1339,9 @@ class LocalRepository:
                     etpData['changelog'])
             except (UnicodeEncodeError, UnicodeDecodeError,):
                 pass
+        # package signatures
+        if etpData.get('signatures'):
+            self.insertSignatures(idpackage, etpData['signatures'])
 
         # not depending on other tables == no select done
         self.insertContent(idpackage, etpData['content'],
@@ -1483,6 +1493,10 @@ class LocalRepository:
         # not yet possible to add these calls above
         try:
             self.removeAutomergefiles(idpackage)
+        except self.dbapi2.OperationalError:
+            pass
+        try:
+            self.removeSignatures(idpackage)
         except self.dbapi2.OperationalError:
             pass
 
@@ -1704,6 +1718,10 @@ class LocalRepository:
         with self.WriteLock:
             self.cursor.execute('DELETE FROM automergefiles WHERE idpackage = (?)', (idpackage,))
 
+    def removeSignatures(self, idpackage):
+        with self.WriteLock:
+            self.cursor.execute('DELETE FROM packagesignatures WHERE idpackage = (?)', (idpackage,))
+
     def insertChangelog(self, category, name, changelog_txt):
         with self.WriteLock:
             mytxt = changelog_txt
@@ -1768,6 +1786,12 @@ class LocalRepository:
 
         with self.WriteLock:
             self.cursor.executemany('INSERT into useflags VALUES (?,?)', mydata)
+
+    def insertSignatures(self, idpackage, signatures):
+        with self.WriteLock:
+            self.cursor.execute("""
+            INSERT INTO packagesignatures VALUES (?,?,?,?)
+            """, (idpackage,)+tuple(signatures))
 
     def insertSources(self, idpackage, sources):
 
@@ -2201,7 +2225,7 @@ class LocalRepository:
 
         data = {
             'atom': atom,
-            'name': name, 
+            'name': name,
             'version': version,
             'versiontag':versiontag,
             'description': description,
@@ -2241,6 +2265,7 @@ class LocalRepository:
             'dependencies': dict((x, y,) for x, y in \
                 self.retrieveDependencies(idpackage, extended = True)),
             'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],
+            'signatures': self.retrieveSignatures(idpackage),
         }
 
         return data
@@ -2469,6 +2494,21 @@ class LocalRepository:
         self.cursor.execute('SELECT digest FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         digest = self.cursor.fetchone()
         if digest: return digest[0]
+
+    def retrieveSignatures(self, idpackage):
+        mydict = {
+            'sha1': None,
+            'sha256': None,
+            'sha512': None,
+        }
+        if self.doesTableExist('packagesignatures'):
+            self.cursor.execute("""
+            SELECT sha1, sha256, sha512 FROM packagesignatures 
+            WHERE idpackage = (?)""", (idpackage,))
+            data = self.cursor.fetchone()
+            if data:
+                mydict['sha1'], mydict['sha256'], mydict['sha512'] = data[0]
+        return mydict
 
     def retrieveName(self, idpackage):
         self.cursor.execute('SELECT name FROM baseinfo WHERE idpackage = (?)', (idpackage,))
@@ -3628,6 +3668,9 @@ class LocalRepository:
         if not self.doesTableExist('automergefiles'):
             self.createAutomergefilesTable()
 
+        if not self.doesTableExist('packagesignatures'):
+            self.createPackagesignaturesTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -4288,6 +4331,10 @@ class LocalRepository:
     def createAutomergefilesTable(self):
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE automergefiles ( idpackage INTEGER, configfile VARCHAR, md5 VARCHAR );')
+
+    def createPackagesignaturesTable(self):
+        with self.WriteLock:
+            self.cursor.execute('CREATE TABLE packagesignatures ( idpackage INTEGER PRIMARY KEY, sha1 VARCHAR, sha256 VARCHAR, sha512 VARCHAR );')
 
     def createPackagesetsTable(self):
         with self.WriteLock:

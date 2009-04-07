@@ -310,6 +310,11 @@ class Extractors:
         data['name'] = pkgname
         data['version'] = pkgver
         data['digest'] = self.entropyTools.md5sum(tbz2File)
+        data['signatures'] = {
+            'sha1': self.entropyTools.sha1(tbz2File),
+            'sha256': self.entropyTools.sha256(tbz2File),
+            'sha512': self.entropyTools.sha512(tbz2File),
+        }
         data['datecreation'] = str(self.entropyTools.get_file_unix_mtime(tbz2File))
         data['size'] = str(self.entropyTools.get_file_size(tbz2File))
 
