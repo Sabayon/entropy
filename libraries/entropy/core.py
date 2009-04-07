@@ -130,6 +130,8 @@ class SystemSettings(Singleton):
 
         """
 
+        from entropy.cache import EntropyCacher
+        self.__cacher = EntropyCacher()
         self.__data = {}
         self.__is_destroyed = False
 
@@ -1444,6 +1446,7 @@ class SystemSettings(Singleton):
         """
         Internal method, go away!
         """
+        self.__cacher.sync(wait = True)
         self._clear_dump_cache(etpCache['world_available'])
         self._clear_dump_cache(etpCache['world_update'])
         self._clear_dump_cache(etpCache['check_package_update'])
