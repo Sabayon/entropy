@@ -150,7 +150,7 @@ class Package:
 
     def multi_match_checksum(self):
         rc = 0
-        for repository, branch, download, digest in self.infoDict['multi_checksum_list']:
+        for repository, branch, download, digest, signatures in self.infoDict['multi_checksum_list']:
             rc = self.match_checksum(repository, digest, download)
             if rc != 0: break
         return rc
@@ -1450,7 +1450,8 @@ class Package:
 
     def fetch_step(self):
         self.error_on_not_prepared()
-        mytxt = "%s: %s" % (blue(_("Downloading archive")),red(os.path.basename(self.infoDict['download'])),)
+        mytxt = "%s: %s" % (blue(_("Downloading archive")),
+            red(os.path.basename(self.infoDict['download'])),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
@@ -2082,6 +2083,7 @@ class Package:
         self.infoDict['name'] = dbconn.retrieveName(idpackage)
         self.infoDict['messages'] = dbconn.retrieveMessages(idpackage)
         self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+        self.infoDict['signatures'] = dbconn.retrieveSignatures(idpackage)
         self.infoDict['accept_license'] = dbconn.retrieveLicensedataKeys(idpackage)
         self.infoDict['conflicts'] = self.Entropy.get_match_conflicts(self.matched_atom)
 
@@ -2229,6 +2231,7 @@ class Package:
             self.infoDict['download'] = dbconn.retrieveSources(idpackage, extended = True)
         else:
             self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+            self.infoDict['signatures'] = dbconn.retrieveSignatures(idpackage)
             self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
 
         if not self.infoDict['download']:
@@ -2309,15 +2312,15 @@ class Package:
             self.infoDict['repository_atoms'][repository].add(myatom)
 
             download = dbconn.retrieveDownloadURL(idpackage)
-            #branch = dbconn.retrieveBranch(idpackage)
             digest = dbconn.retrieveDigest(idpackage)
+            signatures = dbconn.retrieveSignatures(idpackage)
             repo_size = dbconn.retrieveSize(idpackage)
             orig_branch = self.Entropy.get_branch_from_download_relative_uri(download)
             if self.Entropy.check_needed_package_download(download, None) < 0:
-                temp_fetch_list.append((repository, orig_branch, download, digest))
+                temp_fetch_list.append((repository, orig_branch, download, digest, signatures,))
                 continue
             elif dochecksum:
-                temp_checksum_list.append((repository, orig_branch, download, digest))
+                temp_checksum_list.append((repository, orig_branch, download, digest, signatures,))
             down_path = os.path.join(etp_workdir,download)
             if os.path.isfile(down_path):
                 with open(down_path,"r") as f:

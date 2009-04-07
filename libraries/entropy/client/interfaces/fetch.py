@@ -105,7 +105,7 @@ class Fetchers:
 
     def fetch_files_on_mirrors(self, download_list, checksum = False, fetch_abort_function = None):
         """
-            @param download_map list [(repository,branch,filename,checksum (digest),),..]
+            @param download_map list [(repository,branch,filename,checksum (digest),signatures,),..]
             @param checksum bool verify checksum?
             @param fetch_abort_function callable method that could raise exceptions
         """
@@ -121,7 +121,7 @@ class Fetchers:
 
         def update_download_list(down_list, failed_down):
             newlist = []
-            for repo,branch,fname,cksum in down_list:
+            for repo, branch, fname, cksum, signatures in down_list:
                 myuri = get_best_mirror(repo)
                 myuri = os.path.join(myuri,fname)
                 if myuri not in failed_down:
@@ -160,7 +160,7 @@ class Fetchers:
 
         def show_download_summary(down_list):
             # fetch_files_list.append((myuri,None,cksum,branch,))
-            for repo, branch, fname, cksum in down_list:
+            for repo, branch, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -176,7 +176,7 @@ class Fetchers:
                 )
 
         def show_successful_download(down_list, data_transfer):
-            for repo, branch, fname, cksum in down_list:
+            for repo, branch, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -203,7 +203,7 @@ class Fetchers:
             )
 
         def show_download_error(down_list, rc):
-            for repo, branch, fname, cksum in down_list:
+            for repo, branch, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -248,7 +248,7 @@ class Fetchers:
             while 1:
 
                 fetch_files_list = []
-                for repo, branch, fname, cksum in my_download_list:
+                for repo, branch, fname, cksum, signatures in my_download_list:
                     best_mirror = get_best_mirror(repo)
                     if best_mirror != None:
                         mirror_fail_check(repo, best_mirror)
