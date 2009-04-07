@@ -3852,7 +3852,7 @@ class LocalRepository:
         return self.fetchall2list(self.cursor.fetchall())
 
     def doesTableExist(self, table):
-        self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table", table))
+        self.cursor.execute('select name from SQLITE_MASTER where type = "table" and name = (?)', (table,))
         rslt = self.cursor.fetchone()
         if rslt == None:
             return False
