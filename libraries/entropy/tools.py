@@ -794,8 +794,10 @@ def suck_xpak(tbz2file, outputpath):
 def append_xpak(tbz2file, atom):
     import entropy.xpak as xpak
     from entropy.spm import Spm
-    SpmIntf = Spm(None)
-    spm = SpmIntf.intf
+    from entropy.output import TextInterface
+    text = TextInterface()
+    spm_intf = Spm.get_spm_interface()
+    spm = spm_intf(text)
     dbdir = spm.get_vdb_path()+"/"+atom+"/"
     if os.path.isdir(dbdir):
         tbz2 = xpak.tbz2(tbz2file)
