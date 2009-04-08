@@ -29,6 +29,17 @@
 ../libraries/entropy/client/__init__.py
 ../libraries/entropy/client/mirrors.py
 ../libraries/entropy/client/misc.py
+../libraries/entropy/client/interfaces/cache.py
+../libraries/entropy/client/interfaces/client.py
+../libraries/entropy/client/interfaces/dep.py
+../libraries/entropy/client/interfaces/fetch.py
+../libraries/entropy/client/interfaces/__init__.py
+../libraries/entropy/client/interfaces/loaders.py
+../libraries/entropy/client/interfaces/metadata.py
+../libraries/entropy/client/interfaces/methods.py
+../libraries/entropy/client/interfaces/package.py
+../libraries/entropy/client/interfaces/repository.py
+../libraries/entropy/client/interfaces/trigger.py
 ../libraries/entropy/cache.py
 ../libraries/entropy/const.py
 ../libraries/entropy/core.py

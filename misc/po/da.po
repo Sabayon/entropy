@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-08 15:05+0200\n"
+"POT-Creation-Date: 2009-04-08 16:31+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -689,6 +689,12 @@ msgid "revision"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:2031
+#: ../../libraries/entropy/client/interfaces/methods.py:1134
+#: ../../libraries/entropy/client/interfaces/repository.py:1314
+#: ../../libraries/entropy/client/interfaces/repository.py:1351
+#: ../../libraries/entropy/client/interfaces/repository.py:1366
+#: ../../libraries/entropy/client/interfaces/repository.py:1378
+#: ../../libraries/entropy/client/interfaces/repository.py:1393
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
 #: ../../client/text_ui.py:875 ../../client/text_ui.py:876
 #: ../../client/text_ui.py:878 ../../client/text_ui.py:879
@@ -736,6 +742,7 @@ msgid "digest verification of"
 msgstr "_Beskrivelse"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2172
+#: ../../libraries/entropy/client/interfaces/metadata.py:134
 #: ../../libraries/entropy/transceivers.py:1132
 #, fuzzy
 msgid "not supported"
@@ -767,6 +774,8 @@ msgid "This is the list of broken packages"
 msgstr "Vis Installerede Pakker"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2225
+#: ../../libraries/entropy/client/interfaces/fetch.py:141
+#: ../../libraries/entropy/client/interfaces/fetch.py:391
 #, fuzzy
 msgid "Mirror"
 msgstr "_Filspejlsliste"
@@ -795,6 +804,7 @@ msgid "Number of broken packages"
 msgstr "Du er ved at slette %s pakker\n"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2289
+#: ../../libraries/entropy/client/interfaces/repository.py:801
 msgid "local"
 msgstr ""
 
@@ -980,6 +990,8 @@ msgid "downloading package"
 msgstr "Henter Pakker:"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:446
+#: ../../libraries/entropy/client/interfaces/repository.py:1079
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
 #: ../../client/text_security.py:73 ../../client/text_smart.py:89
 msgid "does not exist"
 msgstr ""
@@ -1287,6 +1299,7 @@ msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1845
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2687
+#: ../../libraries/entropy/client/interfaces/package.py:444
 #, fuzzy
 msgid "remove"
 msgstr "Sletter"
@@ -2113,6 +2126,7 @@ msgid "Notice link"
 msgstr "Installeret"
 
 #: ../../libraries/entropy/client/misc.py:37
+#: ../../libraries/entropy/client/interfaces/package.py:43
 msgid "A valid Client instance or subclass is needed"
 msgstr ""
 
@@ -2138,9 +2152,1441 @@ msgstr "Navn på den nye profil"
 msgid "Invalid config file number"
 msgstr ""
 
+#: ../../libraries/entropy/client/interfaces/cache.py:63
+#, fuzzy
+msgid "Configuration files"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:68
+#, fuzzy
+msgid "Scanning hard disk"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:74
+#, fuzzy
+msgid "Cache generation complete."
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:82
+#, fuzzy
+msgid "Resolving metadata"
+msgstr "Behandler metadata"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:98
+#, fuzzy
+msgid "Dependencies cache filled."
+msgstr "Indstillinger"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:112
+#, python-format
+msgid "Cleaning %s => dumps..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/cache.py:121
+#, fuzzy
+msgid "Cache is now empty."
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:49
+#, fuzzy, python-format
+msgid "Checking %s"
+msgstr "Henter : %s"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:249
+#: ../../libraries/entropy/client/interfaces/dep.py:432
+msgid "server_repos needs serverInstance"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1016
+#, fuzzy
+msgid "Sorting dependencies"
+msgstr "Installer som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1099
+#, fuzzy
+msgid "Calculating inverse dependencies for"
+msgstr "Installer som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1191
+#, fuzzy
+msgid "Calculating available packages for"
+msgstr "Vis Tilgængelige Pakker"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1261
+#, fuzzy
+msgid "Calculating world packages"
+msgstr "Installer som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:143
+#: ../../libraries/entropy/client/interfaces/fetch.py:393
+msgid "maximum failure threshold reached"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:184
+msgid "success"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:193
+msgid "Aggregated transfer rate"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:196
+#: ../../libraries/entropy/client/interfaces/fetch.py:441
+#: ../../libraries/entropy/client/interfaces/package.py:1414
+msgid "second"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:211
+#: ../../libraries/entropy/client/interfaces/fetch.py:456
+#: ../../libraries/entropy/client/interfaces/package.py:1429
+#, fuzzy
+msgid "Error downloading from"
+msgstr "Fejl i Hentning af pakker:\n"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:215
+#, fuzzy
+msgid "files not available on this mirror"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:218
+#: ../../libraries/entropy/client/interfaces/fetch.py:464
+#, fuzzy
+msgid "wrong checksum"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:220
+#: ../../libraries/entropy/client/interfaces/fetch.py:466
+#: ../../libraries/entropy/spm.py:543 ../../server/server_reagent.py:89
+#: ../../server/server_reagent.py:101
+msgid "not found"
+msgstr ""
+
+#. timeout!
+#: ../../libraries/entropy/client/interfaces/fetch.py:222
+#, fuzzy
+msgid "timeout error"
+msgstr "Du er ved at slette %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:224
+#: ../../libraries/entropy/client/interfaces/fetch.py:474
+#: ../../libraries/entropy/client/interfaces/package.py:1438
+#, fuzzy
+msgid "discarded download"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:227
+#: ../../libraries/entropy/client/interfaces/fetch.py:477
+#: ../../libraries/entropy/client/interfaces/package.py:1440
+#, fuzzy
+msgid "unknown reason"
+msgstr "Filkilde"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:421
+#, fuzzy
+msgid "Downloading from"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:439
+#: ../../libraries/entropy/client/interfaces/package.py:1412
+msgid "Successfully downloaded from"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:441
+#: ../../libraries/entropy/client/interfaces/package.py:1414
+#, fuzzy
+msgid "at"
+msgstr "Fi_ler"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:461
+#: ../../libraries/entropy/client/interfaces/package.py:1434
+#, fuzzy
+msgid "file not available on this mirror"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:470
+#, fuzzy
+msgid "timeout, retrying on this mirror"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:472
+#, fuzzy
+msgid "timeout, giving up"
+msgstr "Opsætning af Yum Konfiguration"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:135
+msgid "Probably Portage API has changed"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:227
+#, fuzzy
+msgid "not set"
+msgstr "Installeret"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:227
+msgid "have you configured make.conf properly?"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:289
+#, fuzzy
+msgid "Extracting package metadata"
+msgstr "Behandler metadata fra : %s"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:484
+#, fuzzy
+msgid "Package extraction complete"
+msgstr "Indlæsning af pakker afsluttet"
+
+#. repository
+#. glsa title
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
+#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
+#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
+#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
+#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
+#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
+#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
+#: ../../spritz/src/views.py:1683
+msgid "Repository"
+msgstr "Kilde"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../client/text_ui.py:197
+#, fuzzy
+msgid "is not available"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#, fuzzy
+msgid "Cannot validate"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:56
+msgid "Please update your repositories now in order to remove this message!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#, fuzzy
+msgid "is corrupted"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:122
+#, fuzzy
+msgid "bad repository id specified"
+msgstr "Ingen valgte pakker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:134
+#, fuzzy, python-format
+msgid "Repository %s hasn't been downloaded yet."
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:239
+#, fuzzy
+msgid "repodata dictionary is corrupted"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:449
+#, fuzzy
+msgid "System database not found or corrupted"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:450
+msgid "running in safe mode using empty database from RAM"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:493
+#: ../../libraries/entropy/client/interfaces/methods.py:524
+#: ../../libraries/entropy/client/interfaces/methods.py:532
+msgid "Sanity Check"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:493
+#, fuzzy
+msgid "system database"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:501
+#, fuzzy
+msgid "Scanning..."
+msgstr "Søgnings Indstiller"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:518
+#, python-format
+msgid "Errors on idpackage %s, error: %s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:524
+msgid "PASSED"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:532
+msgid "CORRUPTED"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:590
+#, fuzzy
+msgid "Cannot backup selected database"
+msgstr "Ønsker du at forsættet ?"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:590
+#: ../../libraries/entropy/client/interfaces/methods.py:644
+#, fuzzy
+msgid "permission denied"
+msgstr "Installer som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:607
+#, fuzzy
+msgid "Backing up database to"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:621
+msgid "Unable to compress"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:624
+#, fuzzy
+msgid "Database backed up successfully"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:632
+#: ../../libraries/entropy/client/interfaces/methods.py:683
+#: ../../libraries/entropy/client/interfaces/methods.py:981
+#: ../../libraries/entropy/client/interfaces/methods.py:1004
 #: ../../libraries/entropy/const.py:513
 msgid "All fine"
 msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:643
+#, fuzzy
+msgid "Cannot restore selected backup"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:654
+#, fuzzy
+msgid "Restoring backed up database"
+msgstr "Vis Pakker Opdateringer"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:670
+msgid "Unable to unpack"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:673
+#, fuzzy
+msgid "Database restored successfully"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:828
+msgid ""
+"Another Entropy instance is currently active, cannot satisfy your request."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:848
+msgid "Resources unlocked, let's go!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:857
+#, python-format
+msgid "Resources still locked after %s minutes, giving up!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:865
+#, python-format
+msgid "Resources locked, sleeping %s seconds, check #%s/%s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:889
+#, python-format
+msgid "Nothing to backup in etpConst with %s key"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:959
+#: ../../libraries/entropy/client/interfaces/methods.py:988
+msgid "must be an ASCII string"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:962
+#: ../../libraries/entropy/client/interfaces/methods.py:991
+#, fuzzy
+msgid "cannot start with"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:964
+#, fuzzy
+msgid "Name already taken"
+msgstr "Slettet"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:972
+#, fuzzy
+msgid "Cannot remove the old element"
+msgstr "Navn på den nye profil"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:974
+#, fuzzy
+msgid "Cannot create the element"
+msgstr "Navn på den nye profil"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:994
+#, fuzzy
+msgid "Already removed"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:998
+msgid "Not defined by user"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1005
+#, fuzzy
+msgid "Set not found or unable to remove"
+msgstr "Ingen valgte pakker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1056
+#: ../../spritz/src/spritz.glade.h:106
+msgid "Libraries test"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1071
+#, fuzzy
+msgid "Cannot find "
+msgstr "Installeret"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1129
+#, fuzzy
+msgid "Collecting broken executables"
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1135
+msgid "don't worry about libraries that are shown here but not later."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1148
+#, fuzzy
+msgid "Scanning libraries"
+msgstr "behøvet af %s"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1183
+msgid "various broken symbols"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1200
+#, fuzzy
+msgid "Matching broken libraries/executables"
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1540
+#, fuzzy
+msgid "not a valid method"
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:68
+#, fuzzy
+msgid "Already prepared"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:73
+msgid "Not yet prepared"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:78
+msgid "Action must be in"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:95
+#, fuzzy
+msgid "Checking package checksum..."
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:105
+#, fuzzy
+msgid "Package checksum matches"
+msgstr "<b>Pakker Til Opdatering</b>"
+
+#: ../../libraries/entropy/client/interfaces/package.py:116
+#, python-format
+msgid "Package checksum does not match. Redownloading... attempt #%s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:131
+msgid "Cannot properly fetch package! Quitting."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:141
+msgid ""
+"Cannot properly fetch package or checksum does not match. Try download "
+"latest repositories."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:318
+#: ../../libraries/entropy/client/interfaces/package.py:849
+#: ../../libraries/entropy/client/interfaces/trigger.py:268
+#: ../../libraries/entropy/client/interfaces/trigger.py:946
+#: ../../libraries/entropy/client/interfaces/trigger.py:1020
+#: ../../libraries/entropy/client/interfaces/trigger.py:1107
+#: ../../libraries/entropy/client/interfaces/trigger.py:1196
+#: ../../libraries/entropy/client/interfaces/trigger.py:1457
+#: ../../libraries/entropy/client/interfaces/trigger.py:1471
+#: ../../libraries/entropy/client/interfaces/trigger.py:1514
+#: ../../libraries/entropy/client/interfaces/trigger.py:1532
+#: ../../libraries/entropy/client/interfaces/trigger.py:1561
+#: ../../libraries/entropy/client/interfaces/trigger.py:1574
+#: ../../libraries/entropy/client/interfaces/trigger.py:1587
+msgid "QA"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:319
+msgid "Cannot run Spm pkg_config() for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:321
+#: ../../libraries/entropy/client/interfaces/trigger.py:271
+#: ../../libraries/entropy/client/interfaces/trigger.py:949
+#: ../../libraries/entropy/client/interfaces/trigger.py:1023
+#: ../../libraries/entropy/client/interfaces/trigger.py:1110
+#: ../../libraries/entropy/client/interfaces/trigger.py:1199
+#, fuzzy
+msgid "Please report it"
+msgstr "Konfirmation af behandling af køen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:322
+#: ../../libraries/entropy/client/interfaces/package.py:1474
+#: ../../libraries/entropy/client/interfaces/package.py:1504
+#: ../../libraries/entropy/client/interfaces/package.py:1574
+#: ../../libraries/entropy/client/interfaces/package.py:1580
+#: ../../libraries/entropy/client/interfaces/package.py:1605
+#: ../../libraries/entropy/client/interfaces/package.py:1630
+#: ../../libraries/entropy/client/interfaces/package.py:1785
+#: ../../libraries/entropy/client/interfaces/package.py:1798
+#: ../../libraries/entropy/client/interfaces/trigger.py:65
+#: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
+#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
+#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
+msgid "Error"
+msgstr "Fejl"
+
+#: ../../libraries/entropy/client/interfaces/package.py:346
+#, fuzzy
+msgid "Removing from Entropy"
+msgstr "Sletter"
+
+#. in this way we filter out directories
+#: ../../libraries/entropy/client/interfaces/package.py:386
+#, fuzzy
+msgid "Collision found during removal of"
+msgstr "Fejl i test af pakke signaturer:\n"
+
+#: ../../libraries/entropy/client/interfaces/package.py:387
+#: ../../libraries/entropy/client/interfaces/package.py:1346
+#, fuzzy
+msgid "cannot overwrite"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:426
+msgid "Removing config file, never modified"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:445
+#: ../../libraries/entropy/client/interfaces/package.py:1304
+#, fuzzy
+msgid "Protecting config file"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/package.py:460
+msgid "This package contains a badly encoded file !!!"
+msgstr ""
+
+#. inject into database
+#: ../../libraries/entropy/client/interfaces/package.py:734
+#, fuzzy
+msgid "Updating database"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/package.py:767
+#, fuzzy
+msgid "Cleaning old package files..."
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:850
+msgid "Cannot update Portage database to destination"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:885
+#, python-format
+msgid "Cannot update Portage counter, destination %s does not exist."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:909
+#, python-format
+msgid "Cannot update Portage world file, destination %s does not exist."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:934
+#, python-format
+msgid "Cannot update Portage world file, destination %s is corrupted."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1065
+#, python-format
+msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1143
+msgid "Automerging config file, never modified"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1177
+#, python-format
+msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1206
+#, fuzzy
+msgid "File move error"
+msgstr "Du er ved at slette %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1206
+#, fuzzy
+msgid "please report"
+msgstr "Konfirmation af behandling af køen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1318
+#, fuzzy
+msgid "Skipping file installation/removal"
+msgstr "Installeret"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1331
+msgid "Cannot check CONFIG PROTECTION. Error"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1345
+msgid "Collision found during install for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1394
+#: ../../libraries/entropy/client/interfaces/package.py:1488
+#, fuzzy
+msgid "Downloading"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1422
+#, fuzzy
+msgid "Local path"
+msgstr "Opdateret"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1453
+#, fuzzy
+msgid "Downloading archive"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1473
+msgid "Package cannot be fetched. Try to update repositories and retry"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1488
+#, fuzzy
+msgid "archives"
+msgstr "Søgnings Indstiller"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1503
+msgid "Some packages cannot be fetched. Try to update repositories and retry"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1525
+#, fuzzy
+msgid "Fetch for the chosen package is not available, unknown error."
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1534
+msgid "Installed package in queue vanished, skipping."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1553
+#, fuzzy
+msgid "Unpacking package"
+msgstr "Opdater som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1561
+#, fuzzy
+msgid "Merging package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1572
+msgid "You are running out of disk space"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1573
+msgid "I bet, you're probably Michele"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1578
+#, fuzzy
+msgid "An error occured while trying to unpack the package"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1579
+#: ../../libraries/entropy/client/interfaces/package.py:1604
+msgid "Check if your system is healthy"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1593
+#, fuzzy
+msgid "Installing package"
+msgstr "Vis Tilgængelige Pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1603
+#, fuzzy
+msgid "An error occured while trying to install the package"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1618
+#, fuzzy
+msgid "Removing data"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1628
+#, fuzzy
+msgid "An error occured while trying to remove the package"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1629
+msgid "Check if you have enough disk space on your hard disk"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1643
+#: ../../libraries/entropy/client/interfaces/package.py:1882
+#, fuzzy
+msgid "Cleaning"
+msgstr "Oprydning"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1668
+#, fuzzy
+msgid "Compilation messages"
+msgstr "Ingen valgte pakker"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1773
+#, fuzzy
+msgid "Configuring package"
+msgstr "I_nformation"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1783
+#: ../../libraries/entropy/client/interfaces/package.py:1796
+#, fuzzy
+msgid "An error occured while trying to configure the package"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1784
+msgid "Make sure that your system is healthy"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1797
+msgid "It seems that the Source Package Manager entry is missing"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1826
+#: ../../spritz/src/entropyapi.py:111
+#, fuzzy
+msgid "Fetching"
+msgstr "Opdaterer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1831
+#, fuzzy
+msgid "Multi Fetching"
+msgstr "Opdaterer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1832
+#: ../../libraries/entropy/client/interfaces/package.py:1848
+#: ../../client/text_query.py:376 ../../client/text_query.py:409
+#: ../../client/text_ui.py:1032 ../../server/server_reagent.py:463
+#, fuzzy
+msgid "packages"
+msgstr "Pakker."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1837
+#, fuzzy
+msgid "Fetching sources"
+msgstr "Opdaterer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1842
+#, fuzzy
+msgid "Verifying"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1847
+#, fuzzy
+msgid "Multi Verification"
+msgstr "_Beskrivelse"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1854
+#, fuzzy
+msgid "Unpacking"
+msgstr "Søgnings Indstiller"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1857
+#, fuzzy
+msgid "Merging"
+msgstr "Søgnings Indstiller"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1866
+#, fuzzy
+msgid "Installing"
+msgstr "Installeret"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1871
+#: ../../client/text_rescue.py:531
+msgid "Removing"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1887
+#, fuzzy
+msgid "Postinstall"
+msgstr "Installeret"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1892
+#, fuzzy
+msgid "Preinstall"
+msgstr "Installeret"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1897
+#, fuzzy
+msgid "Preremove"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1902
+#, fuzzy
+msgid "Postremove"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1907
+#, fuzzy
+msgid "Configuring"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1969
+#, fuzzy
+msgid "An error occured. Action aborted."
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:46
+msgid "A valid Equo instance or subclass is needed"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:78
+#, fuzzy, python-format
+msgid "No repositories specified in %s"
+msgstr "Ingen valgte pakker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:144
+#, fuzzy
+msgid "Repository is not listed in self.reponames"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:153
+#, fuzzy
+msgid "Wrong database compression method"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:171
+#, python-format
+msgid "Supported items: %s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:174
+#, python-format
+msgid "For %s, cmethod can't be None"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:254
+msgid "self.dbformat_eapi must be in (1,2,3,)"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:280
+#: ../../libraries/entropy/client/interfaces/repository.py:311
+msgid "self.dbformat_eapi must be in (1,2)"
+msgstr ""
+
+#. verify checksum
+#: ../../libraries/entropy/client/interfaces/repository.py:410
+#, fuzzy
+msgid "Checking downloaded database"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:420
+#, fuzzy
+msgid "Cannot open digest"
+msgstr "Ønsker du at forsættet ?"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:420
+#: ../../libraries/entropy/client/interfaces/repository.py:1280
+#, fuzzy
+msgid "Cannot verify database integrity"
+msgstr "fandt %d pakker, som matcher : %s"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:428
+#: ../../libraries/entropy/client/interfaces/repository.py:436
+#, fuzzy
+msgid "Downloaded database status"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:428
+msgid "OK"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:436
+msgid "ERROR"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:443
+#, fuzzy
+msgid "An error occured while checking database integrity"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:443
+msgid "Giving up"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:463
+#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
+msgid "Database URL"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:470
+#, fuzzy
+msgid "Database local path"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:477
+#, fuzzy
+msgid "Database EAPI"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:571
+#: ../../libraries/entropy/client/interfaces/repository.py:692
+#: ../../libraries/entropy/client/interfaces/repository.py:707
+#: ../../libraries/entropy/client/interfaces/repository.py:725
+msgid "EAPI3 Service status"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:571
+msgid "remote database suddenly locked"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:583
+#, fuzzy
+msgid "EAPI3 Service"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:583
+#, fuzzy
+msgid "skipping differential sync"
+msgstr "Installer som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:584
+msgid "threshold"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:616
+#, fuzzy
+msgid "Fetching segments"
+msgstr "Opdaterer"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:637
+msgid "Fetch error on segment"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:646
+#: ../../libraries/entropy/client/interfaces/repository.py:657
+#, fuzzy
+msgid "Service status"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:674
+#, fuzzy
+msgid "Local status"
+msgstr "Opdateret"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:692
+#, fuzzy
+msgid "treeupdates data not available"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:707
+msgid "cannot update treeupdates data"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:725
+#, fuzzy
+msgid "cannot update package sets data"
+msgstr "Ingen pakker i køen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:746
+msgid "Fetch error on segment while adding"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:756
+#, fuzzy
+msgid "Injecting package"
+msgstr "Henter Pakker : %s"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:768
+#, fuzzy
+msgid "Packages injection complete"
+msgstr "Indlæsning af pakker afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:778
+#, fuzzy
+msgid "Removing package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:786
+#, fuzzy
+msgid "Packages removal complete"
+msgstr "Indlæsning af pakker afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:800
+#, fuzzy
+msgid "Database checksum doesn't match remote."
+msgstr "<b>Pakker Til Opdatering</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:802
+#, fuzzy
+msgid "remote"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:883
+#, fuzzy
+msgid "EAPI3 Service error"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1002
+#, fuzzy
+msgid "Configuration files update error, not critical, continuing"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1037
+msgid "Something bad happened. Please have a look."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1056
+#, fuzzy
+msgid "Skipping configuration files update, you are not root."
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1079
+#, fuzzy
+msgid "Overwriting"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1119
+#, fuzzy
+msgid "variable differs"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1119
+#: ../../libraries/entropy/client/interfaces/repository.py:1190
+#, fuzzy
+msgid "Updating"
+msgstr "Opdaterer"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1132
+#, fuzzy
+msgid "updating critical variables"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1190
+#, fuzzy
+msgid "differs"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
+#, fuzzy
+msgid "Reverting"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1225
+#, fuzzy
+msgid "a new release is available"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1226
+#, fuzzy
+msgid "Mind to install it before any other package"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1240
+#, fuzzy
+msgid "Unpacking database to"
+msgstr "Kører Transaktion"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1250
+#, fuzzy
+msgid "Cannot unpack compressed package"
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1250
+#, fuzzy
+msgid "Skipping repository"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1269
+#, fuzzy
+msgid "Downloading checksum"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1280
+#, fuzzy
+msgid "Cannot fetch checksum"
+msgstr "Kan ikke læse %s attributen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1308
+msgid "Current repository got suddenly locked. Download aborted."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1314
+msgid "remote database got suddenly locked"
+msgstr ""
+
+#. starting to download
+#: ../../libraries/entropy/client/interfaces/repository.py:1323
+#, fuzzy
+msgid "Downloading repository database"
+msgstr "Kilde"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1351
+#, fuzzy
+msgid "database does not exist online"
+msgstr "I_nformation"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1366
+#, fuzzy
+msgid "database is already up to date"
+msgstr "Slettet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1378
+#, fuzzy
+msgid "database will be ready soon"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1394
+#, fuzzy
+msgid "Repository is being updated"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1395
+msgid "Try again in a few minutes"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1427
+#, fuzzy
+msgid "Injecting downloaded dump"
+msgstr "Henter Pakker:"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1429
+#: ../../libraries/entropy/db.py:3718 ../../spritz/src/spritz.glade.h:289
+msgid "please wait"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1451
+msgid "Advisories fetch error"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1476
+#, fuzzy
+msgid "Downloading repository metafile"
+msgstr "Kilde"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1486
+#, fuzzy
+msgid "Downloading SSL CA certificate"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1496
+#, fuzzy
+msgid "Downloading SSL Server certificate"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1506
+#, fuzzy
+msgid "Downloading package mask"
+msgstr "Henter Pakker:"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1516
+#, fuzzy
+msgid "Downloading packages system mask"
+msgstr "Henter Pakker:"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1526
+#, fuzzy
+msgid "Downloading conflicting tagged packages file"
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1536
+#, fuzzy
+msgid "Downloading license whitelist"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1546
+#, fuzzy
+msgid "Downloading revision"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1556
+#, fuzzy
+msgid "Downloading SPM global configuration"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1566
+#, fuzzy
+msgid "Downloading SPM package unmasking configuration"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1576
+#, fuzzy
+msgid "Downloading SPM package keywording configuration"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1586
+#, fuzzy
+msgid "Downloading SPM package USE flags configuration"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1596
+#, fuzzy
+msgid "Downloading SPM Profile configuration"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1606
+#, fuzzy
+msgid "Downloading Notice Board"
+msgstr "Henter Pakker:"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1632
+msgid "unpacked meta file"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1649
+#, fuzzy
+msgid "not available, it's ok"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1652
+#, fuzzy
+msgid "not available, not much ok!"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1657
+#, fuzzy
+msgid "available, w00t!"
+msgstr "Tilgængelige"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1702
+#: ../../client/text_repositories.py:161
+#, fuzzy
+msgid "Repository revision"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1718
+#, fuzzy
+msgid "Indexing Repository metadata"
+msgstr "Kilde"
+
+#. let's dance!
+#: ../../libraries/entropy/client/interfaces/repository.py:1746
+#, fuzzy
+msgid "Repositories synchronization"
+msgstr "Filkilder"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:38
+msgid "A valid Entropy Instance is needed"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:64
+msgid "Portage interface can't be loaded"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:67
+#, fuzzy
+msgid "please fix"
+msgstr "Konfirmation af behandling af køen"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:82
+msgid "Valid phases"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:269
+msgid "Cannot run External trigger for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:488
+#, fuzzy
+msgid "Please remember"
+msgstr "Konfirmation af behandling af køen"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:488
+msgid "It is always better to leave Entropy updates isolated"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:494
+#, fuzzy
+msgid "Purging Entropy cache"
+msgstr "Sorterer Pakker"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:508
+msgid "Updating {conf.d,init.d} mtime"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:534
+#, fuzzy
+msgid "Configuring Binutils Profile"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:554
+#, fuzzy
+msgid "Updating moduledb"
+msgstr "Opdaterer"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:562
+#, fuzzy
+msgid "Running depmod"
+msgstr "Sletter som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:599
+#, fuzzy
+msgid "Removing boot service"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:617
+#, fuzzy
+msgid "A new service will be installed"
+msgstr "Behandling af pakker afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:638
+#: ../../libraries/entropy/client/interfaces/trigger.py:671
+#, fuzzy
+msgid "Reconfiguring OpenGL"
+msgstr "I_nformation"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:656
+#: ../../libraries/entropy/client/interfaces/trigger.py:689
+msgid "Eselect NOT found, cannot run OpenGL trigger"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:719
+#: ../../libraries/entropy/client/interfaces/trigger.py:744
+#, fuzzy
+msgid "Configuring GRUB bootloader"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:720
+#, fuzzy
+msgid "Adding the new kernel"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:745
+#, fuzzy
+msgid "Removing the selected kernel"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:777
+#, fuzzy
+msgid "Mounted /boot successfully"
+msgstr "Indlæsning afsluttet"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:788
+msgid "Cannot mount /boot automatically !!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:823
+msgid "Creating kernel symlink"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:825
+msgid "for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:857
+#, fuzzy
+msgid "Regenerating"
+msgstr "Sletter"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:873
+msgid "Updating environment"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:947
+#: ../../libraries/entropy/client/interfaces/trigger.py:1021
+#: ../../libraries/entropy/client/interfaces/trigger.py:1108
+#: ../../libraries/entropy/client/interfaces/trigger.py:1197
+msgid "Cannot run Portage trigger for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:950
+#: ../../libraries/entropy/client/interfaces/trigger.py:1024
+#: ../../libraries/entropy/client/interfaces/trigger.py:1111
+#: ../../libraries/entropy/client/interfaces/trigger.py:1200
+msgid "Attach this"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1458
+#, fuzzy
+msgid "Cannot find df"
+msgstr "Installeret"
+
+#. 'cannot match device /dev/foo with a grub one'
+#: ../../libraries/entropy/client/interfaces/trigger.py:1459
+#: ../../libraries/entropy/client/interfaces/trigger.py:1473
+#: ../../libraries/entropy/client/interfaces/trigger.py:1518
+#: ../../libraries/entropy/client/interfaces/trigger.py:1563
+#: ../../libraries/entropy/client/interfaces/trigger.py:1576
+#: ../../libraries/entropy/client/interfaces/trigger.py:1589
+msgid "Cannot properly configure the kernel"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1460
+#: ../../libraries/entropy/client/interfaces/trigger.py:1474
+#: ../../libraries/entropy/client/interfaces/trigger.py:1519
+#: ../../libraries/entropy/client/interfaces/trigger.py:1536
+#: ../../libraries/entropy/client/interfaces/trigger.py:1564
+#: ../../libraries/entropy/client/interfaces/trigger.py:1577
+#: ../../libraries/entropy/client/interfaces/trigger.py:1590
+#, fuzzy
+msgid "Defaulting to"
+msgstr "Søgnings Indstiller"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1472
+#, fuzzy
+msgid "Cannot find grub"
+msgstr "Ønsker du at forsættet ?"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1515
+#, fuzzy
+msgid "cannot match device"
+msgstr "Vis Installerede Pakker"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1517
+msgid "with a grub one"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1533
+msgid "grub translation not supported for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1535
+msgid "Cannot properly configure grub.conf"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1562
+msgid "cannot match grub device with a Linux one"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1575
+#, fuzzy
+msgid "cannot find generated device.map"
+msgstr "Opdater som afhængighed"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1588
+#, fuzzy
+msgid "cannot run df /boot"
+msgstr "Installeret"
 
 #: ../../libraries/entropy/const.py:514
 msgid "Corrupted Client Repository. Please restore a backup."
@@ -2250,12 +3696,6 @@ msgstr "Fandt %d %s pakker"
 #: ../../libraries/entropy/db.py:44
 msgid "Entropy needs Python compiled with sqlite3 support"
 msgstr ""
-
-#: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
-#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
-msgid "Error"
-msgstr "Fejl"
 
 #: ../../libraries/entropy/db.py:362
 #, fuzzy
@@ -2386,10 +3826,6 @@ msgstr ""
 #, fuzzy
 msgid "Syncing current database"
 msgstr "Kører Transaktion"
-
-#: ../../libraries/entropy/db.py:3718 ../../spritz/src/spritz.glade.h:289
-msgid "please wait"
-msgstr ""
 
 #: ../../libraries/entropy/db.py:3730
 #, fuzzy
@@ -2682,11 +4118,6 @@ msgstr "Installeret"
 #, fuzzy
 msgid "Invalid backend"
 msgstr "_Beskrivelse"
-
-#: ../../libraries/entropy/spm.py:543 ../../server/server_reagent.py:89
-#: ../../server/server_reagent.py:101
-msgid "not found"
-msgstr ""
 
 #: ../../libraries/entropy/spm.py:962
 #, fuzzy
@@ -4198,12 +5629,6 @@ msgstr "behøvet af %s"
 msgid "Library"
 msgstr ""
 
-#: ../../client/text_query.py:376 ../../client/text_query.py:409
-#: ../../client/text_ui.py:1032 ../../server/server_reagent.py:463
-#, fuzzy
-msgid "packages"
-msgstr "Pakker."
-
 #: ../../client/text_query.py:387
 #, fuzzy
 msgid "Eclass Search"
@@ -4533,10 +5958,6 @@ msgstr "Filkilder"
 msgid "Packages Mirror"
 msgstr "Pakker."
 
-#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
-msgid "Database URL"
-msgstr ""
-
 #: ../../client/text_repositories.py:134
 #, fuzzy
 msgid "Repository identifier"
@@ -4576,11 +5997,6 @@ msgstr "Kilde"
 #: ../../client/text_repositories.py:160
 #, fuzzy
 msgid "Repository database checksum"
-msgstr "Filkilder"
-
-#: ../../client/text_repositories.py:161
-#, fuzzy
-msgid "Repository revision"
 msgstr "Filkilder"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:210
@@ -4911,10 +6327,6 @@ msgstr ""
 #: ../../client/text_rescue.py:519
 msgid "Continue with removal ?"
 msgstr ""
-
-#: ../../client/text_rescue.py:531
-msgid "Removing"
-msgstr "Sletter"
 
 #: ../../client/text_rescue.py:536
 #, fuzzy
@@ -5466,11 +6878,6 @@ msgstr "Kører Transaktion"
 #, fuzzy
 msgid "Selected release"
 msgstr "%s profilen er valgt"
-
-#: ../../client/text_ui.py:197
-#, fuzzy
-msgid "is not available"
-msgstr "Tilgængelige"
 
 #: ../../client/text_ui.py:222
 #, fuzzy
@@ -6080,19 +7487,6 @@ msgstr "Installerer"
 #, fuzzy
 msgid "Enabled"
 msgstr "_Valgt"
-
-#. repository
-#. glsa title
-#: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
-#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
-#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
-#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
-#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
-#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
-#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
-#: ../../spritz/src/views.py:1683
-msgid "Repository"
-msgstr "Kilde"
 
 #: ../../server/server_reagent.py:86
 #, fuzzy
@@ -7062,11 +8456,6 @@ msgstr ""
 #, fuzzy
 msgid "Error enabling masked package"
 msgstr "Sorterer Pakker"
-
-#: ../../spritz/src/entropyapi.py:111
-#, fuzzy
-msgid "Fetching"
-msgstr "Opdaterer"
 
 #: ../../spritz/src/entropyapi.py:113
 #, fuzzy
@@ -8425,10 +9814,6 @@ msgstr ""
 msgid "Keywords (space separated)"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:106
-msgid "Libraries test"
-msgstr ""
-
 #: ../../spritz/src/spritz.glade.h:107
 #, fuzzy
 msgid "Library test"
@@ -9178,456 +10563,12 @@ msgstr ""
 #~ msgstr "_Beskrivelse"
 
 #, fuzzy
-#~ msgid "Cannot validate"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "bad repository id specified"
-#~ msgstr "Ingen valgte pakker"
-
-#, fuzzy
-#~ msgid "Cannot backup selected database"
-#~ msgstr "Ønsker du at forsættet ?"
-
-#, fuzzy
-#~ msgid "permission denied"
-#~ msgstr "Installer som afhængighed"
-
-#, fuzzy
-#~ msgid "Database backed up successfully"
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "Cannot restore selected backup"
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Restoring backed up database"
-#~ msgstr "Vis Pakker Opdateringer"
-
-#, fuzzy
-#~ msgid "Database restored successfully"
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "Cache is now empty."
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "Configuration files"
-#~ msgstr "Oprettelse af %s profilen fejlede"
-
-#, fuzzy
-#~ msgid "Cache generation complete."
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "Resolving metadata"
-#~ msgstr "Behandler metadata"
-
-#, fuzzy
-#~ msgid "Dependencies cache filled."
-#~ msgstr "Indstillinger"
-
-#, fuzzy
-#~ msgid "Cannot find "
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Collecting broken executables"
-#~ msgstr "Sorterer Pakker"
-
-#, fuzzy
-#~ msgid "Sorting dependencies"
-#~ msgstr "Installer som afhængighed"
-
-#, fuzzy
 #~ msgid "Calculating removable depends of"
 #~ msgstr "Installer som afhængighed"
 
 #, fuzzy
-#~ msgid "Calculating available packages for"
-#~ msgstr "Vis Tilgængelige Pakker"
-
-#, fuzzy
-#~ msgid "Calculating world packages"
-#~ msgstr "Installer som afhængighed"
-
-#, fuzzy
-#~ msgid "cannot start with"
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Cannot remove the old element"
-#~ msgstr "Navn på den nye profil"
-
-#, fuzzy
-#~ msgid "Cannot create the element"
-#~ msgstr "Navn på den nye profil"
-
-#, fuzzy
-#~ msgid "Already removed"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "Set not found or unable to remove"
-#~ msgstr "Ingen valgte pakker"
-
-#, fuzzy
-#~ msgid "Error downloading from"
-#~ msgstr "Fejl i Hentning af pakker:\n"
-
-#, fuzzy
-#~ msgid "files not available on this mirror"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "timeout error"
-#~ msgstr "Du er ved at slette %s pakker\n"
-
-#, fuzzy
-#~ msgid "Downloading from"
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "file not available on this mirror"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "timeout, retrying on this mirror"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "timeout, giving up"
-#~ msgstr "Opsætning af Yum Konfiguration"
-
-#, fuzzy
-#~ msgid "not set"
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Extracting package metadata"
-#~ msgstr "Behandler metadata fra : %s"
-
-#, fuzzy
-#~ msgid "Package extraction complete"
-#~ msgstr "Indlæsning af pakker afsluttet"
-
-#, fuzzy
-#~ msgid "Package checksum matches"
-#~ msgstr "<b>Pakker Til Opdatering</b>"
-
-#, fuzzy
-#~ msgid "Please report it"
-#~ msgstr "Konfirmation af behandling af køen"
-
-#, fuzzy
-#~ msgid "Cleaning old package files..."
-#~ msgstr "Sorterer Pakker"
-
-#, fuzzy
-#~ msgid "File move error"
-#~ msgstr "Du er ved at slette %s pakker\n"
-
-#, fuzzy
-#~ msgid "please report"
-#~ msgstr "Konfirmation af behandling af køen"
-
-#, fuzzy
-#~ msgid "Skipping file installation/removal"
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#, fuzzy
-#~ msgid "Local path"
-#~ msgstr "Opdateret"
-
-#, fuzzy
-#~ msgid "Downloading archive"
-#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#, fuzzy
-#~ msgid "archives"
-#~ msgstr "Søgnings Indstiller"
-
-#, fuzzy
-#~ msgid "Fetch for the chosen package is not available, unknown error."
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Unpacking package"
-#~ msgstr "Opdater som afhængighed"
-
-#, fuzzy
-#~ msgid "Merging package"
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Installing package"
-#~ msgstr "Vis Tilgængelige Pakker"
-
-#, fuzzy
-#~ msgid "An error occured while trying to install the package"
-#~ msgstr "Du er ved at tilføje %s pakker\n"
-
-#, fuzzy
-#~ msgid "Removing data"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "Cleaning"
-#~ msgstr "Oprydning"
-
-#, fuzzy
-#~ msgid "Configuring package"
-#~ msgstr "I_nformation"
-
-#, fuzzy
-#~ msgid "An error occured while trying to configure the package"
-#~ msgstr "Du er ved at tilføje %s pakker\n"
-
-#, fuzzy
-#~ msgid "Multi Fetching"
-#~ msgstr "Opdaterer"
-
-#, fuzzy
-#~ msgid "Fetching sources"
-#~ msgstr "Opdaterer"
-
-#, fuzzy
-#~ msgid "Multi Verification"
-#~ msgstr "_Beskrivelse"
-
-#, fuzzy
-#~ msgid "Unpacking"
-#~ msgstr "Søgnings Indstiller"
-
-#, fuzzy
-#~ msgid "Merging"
-#~ msgstr "Søgnings Indstiller"
-
-#, fuzzy
-#~ msgid "Installing"
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Postinstall"
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Preinstall"
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Preremove"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "Postremove"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "No repositories specified in %s"
-#~ msgstr "Ingen valgte pakker"
-
-#, fuzzy
-#~ msgid "Wrong database compression method"
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "Cannot open digest"
-#~ msgstr "Ønsker du at forsættet ?"
-
-#, fuzzy
-#~ msgid "Cannot verify database integrity"
-#~ msgstr "fandt %d pakker, som matcher : %s"
-
-#, fuzzy
-#~ msgid "Database local path"
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "skipping differential sync"
-#~ msgstr "Installer som afhængighed"
-
-#, fuzzy
-#~ msgid "treeupdates data not available"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "Injecting package"
-#~ msgstr "Henter Pakker : %s"
-
-#, fuzzy
-#~ msgid "Packages injection complete"
-#~ msgstr "Indlæsning af pakker afsluttet"
-
-#, fuzzy
-#~ msgid "Removing package"
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Packages removal complete"
-#~ msgstr "Indlæsning af pakker afsluttet"
-
-#, fuzzy
-#~ msgid "remote"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "Skipping configuration files update, you are not root."
-#~ msgstr "Oprettelse af %s profilen fejlede"
-
-#, fuzzy
-#~ msgid "Overwriting"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "variable differs"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "Updating"
-#~ msgstr "Opdaterer"
-
-#, fuzzy
-#~ msgid "updating critical variables"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "Reverting"
-#~ msgstr "Sletter"
-
-#, fuzzy
-#~ msgid "a new release is available"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "Mind to install it before any other package"
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Unpacking database to"
-#~ msgstr "Kører Transaktion"
-
-#, fuzzy
-#~ msgid "Cannot unpack compressed package"
-#~ msgstr "Sorterer Pakker"
-
-#, fuzzy
-#~ msgid "Skipping repository"
-#~ msgstr "Filkilder"
-
-#, fuzzy
-#~ msgid "Downloading repository database"
-#~ msgstr "Kilde"
-
-#, fuzzy
-#~ msgid "database will be ready soon"
-#~ msgstr "Filkilder"
-
-#, fuzzy
-#~ msgid "Repository is being updated"
-#~ msgstr "Filkilder"
-
-#, fuzzy
-#~ msgid "Downloading SSL CA certificate"
-#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#, fuzzy
-#~ msgid "Downloading SSL Server certificate"
-#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#, fuzzy
-#~ msgid "Downloading package mask"
-#~ msgstr "Henter Pakker:"
-
-#, fuzzy
-#~ msgid "Downloading packages system mask"
-#~ msgstr "Henter Pakker:"
-
-#, fuzzy
-#~ msgid "Downloading conflicting tagged packages file"
-#~ msgstr "Sorterer Pakker"
-
-#, fuzzy
-#~ msgid "Downloading license whitelist"
-#~ msgstr "Indlæsning afsluttet"
-
-#, fuzzy
-#~ msgid "Downloading revision"
-#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#, fuzzy
-#~ msgid "Downloading SPM Profile configuration"
-#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#, fuzzy
-#~ msgid "Downloading Notice Board"
-#~ msgstr "Henter Pakker:"
-
-#, fuzzy
-#~ msgid "not available, it's ok"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "not available, not much ok!"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "available, w00t!"
-#~ msgstr "Tilgængelige"
-
-#, fuzzy
-#~ msgid "Indexing Repository metadata"
-#~ msgstr "Kilde"
-
-#, fuzzy
-#~ msgid "Repositories synchronization"
-#~ msgstr "Filkilder"
-
-#, fuzzy
 #~ msgid "Upload status"
 #~ msgstr "Opdateret"
-
-#, fuzzy
-#~ msgid "please fix"
-#~ msgstr "Konfirmation af behandling af køen"
-
-#, fuzzy
-#~ msgid "Please remember"
-#~ msgstr "Konfirmation af behandling af køen"
-
-#, fuzzy
-#~ msgid "Purging Entropy cache"
-#~ msgstr "Sorterer Pakker"
-
-#, fuzzy
-#~ msgid "Configuring Binutils Profile"
-#~ msgstr "Oprettelse af %s profilen fejlede"
-
-#, fuzzy
-#~ msgid "Running depmod"
-#~ msgstr "Sletter som afhængighed"
-
-#, fuzzy
-#~ msgid "Removing the selected kernel"
-#~ msgstr "Vis Installerede Pakker"
-
-#, fuzzy
-#~ msgid "Cannot find df"
-#~ msgstr "Installeret"
-
-#, fuzzy
-#~ msgid "Cannot find grub"
-#~ msgstr "Ønsker du at forsættet ?"
-
-#, fuzzy
-#~ msgid "cannot find generated device.map"
-#~ msgstr "Opdater som afhængighed"
 
 #, fuzzy
 #~ msgid "failed"
@@ -9640,10 +10581,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cannot connect to %s"
 #~ msgstr "Ønsker du at forsættet ?"
-
-#, fuzzy
-#~ msgid "Cache is corrupted"
-#~ msgstr "Indlæsning afsluttet"
 
 #, fuzzy
 #~ msgid "migrating table"
@@ -9674,16 +10611,8 @@ msgstr ""
 #~ msgstr "Sletter"
 
 #, fuzzy
-#~ msgid "Configuring GCC Profile"
-#~ msgstr "Oprettelse af %s profilen fejlede"
-
-#, fuzzy
 #~ msgid "Updating desktop mime database"
 #~ msgstr "Kilde"
-
-#, fuzzy
-#~ msgid "Configuring SQLite"
-#~ msgstr "Oprettelse af %s profilen fejlede"
 
 #, fuzzy
 #~ msgid "<small>Powered by User Generated Content</small>"

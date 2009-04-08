@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-08 15:05+0200\n"
+"POT-Creation-Date: 2009-04-08 16:31+0200\n"
 "PO-Revision-Date: 2009-03-05 12:19-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -633,6 +633,12 @@ msgid "revision"
 msgstr "Herziening"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2031
+#: ../../libraries/entropy/client/interfaces/methods.py:1134
+#: ../../libraries/entropy/client/interfaces/repository.py:1314
+#: ../../libraries/entropy/client/interfaces/repository.py:1351
+#: ../../libraries/entropy/client/interfaces/repository.py:1366
+#: ../../libraries/entropy/client/interfaces/repository.py:1378
+#: ../../libraries/entropy/client/interfaces/repository.py:1393
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
 #: ../../client/text_ui.py:875 ../../client/text_ui.py:876
 #: ../../client/text_ui.py:878 ../../client/text_ui.py:879
@@ -674,6 +680,7 @@ msgid "digest verification of"
 msgstr "'digest' controle voor"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2172
+#: ../../libraries/entropy/client/interfaces/metadata.py:134
 #: ../../libraries/entropy/transceivers.py:1132
 msgid "not supported"
 msgstr "niet ondersteund"
@@ -702,6 +709,8 @@ msgid "This is the list of broken packages"
 msgstr "Dit is de lijst met gebroken pakketten"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2225
+#: ../../libraries/entropy/client/interfaces/fetch.py:141
+#: ../../libraries/entropy/client/interfaces/fetch.py:391
 msgid "Mirror"
 msgstr "Mirror"
 
@@ -726,6 +735,7 @@ msgid "Number of broken packages"
 msgstr "Aantal beschadigde pakketten"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2289
+#: ../../libraries/entropy/client/interfaces/repository.py:801
 msgid "local"
 msgstr "lokaal"
 
@@ -888,6 +898,8 @@ msgid "downloading package"
 msgstr "pakket wordt gedownload"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:446
+#: ../../libraries/entropy/client/interfaces/repository.py:1079
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
 #: ../../client/text_security.py:73 ../../client/text_smart.py:89
 msgid "does not exist"
 msgstr "bestaat niet"
@@ -1159,6 +1171,7 @@ msgstr "kopie"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1845
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2687
+#: ../../libraries/entropy/client/interfaces/package.py:444
 msgid "remove"
 msgstr "verwijder"
 
@@ -1901,6 +1914,7 @@ msgid "Notice link"
 msgstr "Notitie link"
 
 #: ../../libraries/entropy/client/misc.py:37
+#: ../../libraries/entropy/client/interfaces/package.py:43
 #, fuzzy
 msgid "A valid Client instance or subclass is needed"
 msgstr "Een geldige Equo instantie of subklasse is nodig"
@@ -1924,9 +1938,1281 @@ msgstr "Kan bestand niet auto-samenvoegen"
 msgid "Invalid config file number"
 msgstr "ongeldig nummer van configuratie bestand"
 
+#: ../../libraries/entropy/client/interfaces/cache.py:63
+msgid "Configuration files"
+msgstr "Configuratie bestanden"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:68
+msgid "Scanning hard disk"
+msgstr "harddisk scannen"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:74
+msgid "Cache generation complete."
+msgstr "Cache generatie compleet."
+
+#: ../../libraries/entropy/client/interfaces/cache.py:82
+msgid "Resolving metadata"
+msgstr "Oplossen van metadata"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:98
+msgid "Dependencies cache filled."
+msgstr "Afhankelijkheden cache gevuld."
+
+#: ../../libraries/entropy/client/interfaces/cache.py:112
+#, python-format
+msgid "Cleaning %s => dumps..."
+msgstr "Opruimen %s => dumps..."
+
+#: ../../libraries/entropy/client/interfaces/cache.py:121
+msgid "Cache is now empty."
+msgstr "Cache is nu leeg."
+
+#: ../../libraries/entropy/client/interfaces/dep.py:49
+#, python-format
+msgid "Checking %s"
+msgstr "Checken %s"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:249
+#: ../../libraries/entropy/client/interfaces/dep.py:432
+msgid "server_repos needs serverInstance"
+msgstr "server_repos heeft serverInstance nodig"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1016
+msgid "Sorting dependencies"
+msgstr "Sorteren van afhankelijkheden"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1099
+#, fuzzy
+msgid "Calculating inverse dependencies for"
+msgstr "Berekenen van afhankelijkheden"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1191
+msgid "Calculating available packages for"
+msgstr "Berekenen beschikbare pakketten voor"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1261
+msgid "Calculating world packages"
+msgstr "Berekenen wereld pakketten"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:143
+#: ../../libraries/entropy/client/interfaces/fetch.py:393
+msgid "maximum failure threshold reached"
+msgstr "maximum aantal foutmeldingen bereikt"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:184
+msgid "success"
+msgstr "succesvol"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:193
+msgid "Aggregated transfer rate"
+msgstr "Geaggregeerde overdracht snelheid"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:196
+#: ../../libraries/entropy/client/interfaces/fetch.py:441
+#: ../../libraries/entropy/client/interfaces/package.py:1414
+msgid "second"
+msgstr "seconde"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:211
+#: ../../libraries/entropy/client/interfaces/fetch.py:456
+#: ../../libraries/entropy/client/interfaces/package.py:1429
+msgid "Error downloading from"
+msgstr "Fout tijdens het downloaden vanaf"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:215
+msgid "files not available on this mirror"
+msgstr "bestanden niet beschikbaar op deze mirror"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:218
+#: ../../libraries/entropy/client/interfaces/fetch.py:464
+msgid "wrong checksum"
+msgstr "verkeerde controlesom"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:220
+#: ../../libraries/entropy/client/interfaces/fetch.py:466
+#: ../../libraries/entropy/spm.py:543 ../../server/server_reagent.py:89
+#: ../../server/server_reagent.py:101
+msgid "not found"
+msgstr "niet gevonden"
+
+#. timeout!
+#: ../../libraries/entropy/client/interfaces/fetch.py:222
+msgid "timeout error"
+msgstr "fout: tijd verstreken"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:224
+#: ../../libraries/entropy/client/interfaces/fetch.py:474
+#: ../../libraries/entropy/client/interfaces/package.py:1438
+msgid "discarded download"
+msgstr "afgewezen download"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:227
+#: ../../libraries/entropy/client/interfaces/fetch.py:477
+#: ../../libraries/entropy/client/interfaces/package.py:1440
+msgid "unknown reason"
+msgstr "onbekende reden"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:421
+msgid "Downloading from"
+msgstr "Downloaden vanaf"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:439
+#: ../../libraries/entropy/client/interfaces/package.py:1412
+msgid "Successfully downloaded from"
+msgstr "Succesvol gedownload van"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:441
+#: ../../libraries/entropy/client/interfaces/package.py:1414
+msgid "at"
+msgstr "met"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:461
+#: ../../libraries/entropy/client/interfaces/package.py:1434
+msgid "file not available on this mirror"
+msgstr "bestand niet beschikbaar op deze mirror"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:470
+msgid "timeout, retrying on this mirror"
+msgstr "tijd verstreken, opnieuw proberen met deze mirror"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:472
+msgid "timeout, giving up"
+msgstr "tijd verstreken, ik geef op‏‎"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:135
+msgid "Probably Portage API has changed"
+msgstr "Waarschijnlijk is Portage API veranderd"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:227
+msgid "not set"
+msgstr "Niet ingesteld"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:227
+msgid "have you configured make.conf properly?"
+msgstr "Is je make.conf juist geconfigureerd?"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:289
+msgid "Extracting package metadata"
+msgstr "Uitpakken van pakket metadata"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:484
+msgid "Package extraction complete"
+msgstr "Uitpakken van pakket is compleet"
+
+#. repository
+#. glsa title
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
+#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
+#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
+#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
+#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
+#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
+#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
+#: ../../spritz/src/views.py:1683
+msgid "Repository"
+msgstr "Repository"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../client/text_ui.py:197
+msgid "is not available"
+msgstr "is niet beschikbaar"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+msgid "Cannot validate"
+msgstr "kan niet valideren"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:56
+msgid "Please update your repositories now in order to remove this message!"
+msgstr "Update a.u.b. jouw repositories nu om dit bericht te verwijderen!"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+msgid "is corrupted"
+msgstr "is corrupt"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:122
+msgid "bad repository id specified"
+msgstr "foute repository ID opgegeven"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:134
+#, python-format
+msgid "Repository %s hasn't been downloaded yet."
+msgstr "Repository %s is nog niet gedownload."
+
+#: ../../libraries/entropy/client/interfaces/methods.py:239
+msgid "repodata dictionary is corrupted"
+msgstr "repo-data woordenboek is corrupt"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:449
+msgid "System database not found or corrupted"
+msgstr "Systeem database niet gevonden of corrupt"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:450
+msgid "running in safe mode using empty database from RAM"
+msgstr " in veilige modes gebruik makend van de lege database vanaf RAM"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:493
+#: ../../libraries/entropy/client/interfaces/methods.py:524
+#: ../../libraries/entropy/client/interfaces/methods.py:532
+msgid "Sanity Check"
+msgstr "Gezondheids check"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:493
+msgid "system database"
+msgstr "systeem database"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:501
+msgid "Scanning..."
+msgstr "Scannen..."
+
+#: ../../libraries/entropy/client/interfaces/methods.py:518
+#, python-format
+msgid "Errors on idpackage %s, error: %s"
+msgstr "Fouten in idpackage %s, fout: %s"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:524
+msgid "PASSED"
+msgstr "VOLTOOID"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:532
+msgid "CORRUPTED"
+msgstr "CORRUPT"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:590
+msgid "Cannot backup selected database"
+msgstr "Kan geen back-up maken van de geselecteerde database"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:590
+#: ../../libraries/entropy/client/interfaces/methods.py:644
+msgid "permission denied"
+msgstr "toegang geweigerd"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:607
+msgid "Backing up database to"
+msgstr "Back-up maken van database naar"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:621
+msgid "Unable to compress"
+msgstr "Onmogelijk te comprimeren"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:624
+msgid "Database backed up successfully"
+msgstr "Database back-up succesvol"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:632
+#: ../../libraries/entropy/client/interfaces/methods.py:683
+#: ../../libraries/entropy/client/interfaces/methods.py:981
+#: ../../libraries/entropy/client/interfaces/methods.py:1004
 #: ../../libraries/entropy/const.py:513
 msgid "All fine"
 msgstr "Alles is goed"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:643
+msgid "Cannot restore selected backup"
+msgstr "Kan geselecteerde back-up niet herstellen"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:654
+msgid "Restoring backed up database"
+msgstr "Herstellen van database back-up"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:670
+msgid "Unable to unpack"
+msgstr "Onmogelijk om uit te pakken"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:673
+msgid "Database restored successfully"
+msgstr "Database succesvol hersteld"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:828
+msgid ""
+"Another Entropy instance is currently active, cannot satisfy your request."
+msgstr ""
+"Een andere instantie van Entropy is actief, ik kan je verzoek niet "
+"behandelen."
+
+#: ../../libraries/entropy/client/interfaces/methods.py:848
+msgid "Resources unlocked, let's go!"
+msgstr "Middelen ontsloten, laten we gaan!"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:857
+#, python-format
+msgid "Resources still locked after %s minutes, giving up!"
+msgstr "Middelen nog steeds geblokkeerd na %s minuten, Ik geef het op!"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:865
+#, python-format
+msgid "Resources locked, sleeping %s seconds, check #%s/%s"
+msgstr "Middelen geblokkeerd, slapend voor %s seconden, check #%s/%s"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:889
+#, python-format
+msgid "Nothing to backup in etpConst with %s key"
+msgstr "Niets te backuppen in etpConst met sleutel %s"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:959
+#: ../../libraries/entropy/client/interfaces/methods.py:988
+msgid "must be an ASCII string"
+msgstr "moet een ASCII string zijn"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:962
+#: ../../libraries/entropy/client/interfaces/methods.py:991
+msgid "cannot start with"
+msgstr "Kan niet starten met"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:964
+msgid "Name already taken"
+msgstr "Naam reeds in gebruik"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:972
+msgid "Cannot remove the old element"
+msgstr "Kan oud element niet verwijderen"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:974
+msgid "Cannot create the element"
+msgstr "Kan element niet aanmaken"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:994
+msgid "Already removed"
+msgstr "Reeds verwijderd"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:998
+msgid "Not defined by user"
+msgstr "Niet gedefinieerd door gebruiker"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1005
+msgid "Set not found or unable to remove"
+msgstr "Set niet gevonden of onmogelijk te verwijderen"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1056
+#: ../../spritz/src/spritz.glade.h:106
+msgid "Libraries test"
+msgstr "Bibliotheken test"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1071
+msgid "Cannot find "
+msgstr "Kan het niet vinden"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1129
+msgid "Collecting broken executables"
+msgstr "Opzoeken van beschadigde opstartbestanden"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1135
+msgid "don't worry about libraries that are shown here but not later."
+msgstr ""
+"maak je geen zorgen over bibliotheken die hier worden getoond maar niet "
+"later."
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1148
+msgid "Scanning libraries"
+msgstr "Scannen van bibliotheken"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1183
+msgid "various broken symbols"
+msgstr "meerdere gebroken symbolen"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1200
+msgid "Matching broken libraries/executables"
+msgstr "vergelijken van gebroken bibliotheken/opstartbestanden"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1540
+msgid "not a valid method"
+msgstr "geen geldige methode"
+
+#: ../../libraries/entropy/client/interfaces/package.py:68
+msgid "Already prepared"
+msgstr "Al voorbereid"
+
+#: ../../libraries/entropy/client/interfaces/package.py:73
+msgid "Not yet prepared"
+msgstr "Nog niet voorbereid"
+
+#: ../../libraries/entropy/client/interfaces/package.py:78
+msgid "Action must be in"
+msgstr "Actie moet zijn in"
+
+#: ../../libraries/entropy/client/interfaces/package.py:95
+msgid "Checking package checksum..."
+msgstr "Nagaan van pakketten controlesom..."
+
+#: ../../libraries/entropy/client/interfaces/package.py:105
+msgid "Package checksum matches"
+msgstr "Pakket controlesom komt overeen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:116
+#, python-format
+msgid "Package checksum does not match. Redownloading... attempt #%s"
+msgstr ""
+"Controlesom van Pakket komt niet overeen. Opnieuw downloaden... poging #%s"
+
+#: ../../libraries/entropy/client/interfaces/package.py:131
+msgid "Cannot properly fetch package! Quitting."
+msgstr "Kan pakket niet juist binnenhalen! Afsluiten."
+
+#: ../../libraries/entropy/client/interfaces/package.py:141
+msgid ""
+"Cannot properly fetch package or checksum does not match. Try download "
+"latest repositories."
+msgstr ""
+"Kan pakket niet juist binnenhalen of controlesom komt niet overeen. Probeer "
+"de laatste repositories te downloaden."
+
+#: ../../libraries/entropy/client/interfaces/package.py:318
+#: ../../libraries/entropy/client/interfaces/package.py:849
+#: ../../libraries/entropy/client/interfaces/trigger.py:268
+#: ../../libraries/entropy/client/interfaces/trigger.py:946
+#: ../../libraries/entropy/client/interfaces/trigger.py:1020
+#: ../../libraries/entropy/client/interfaces/trigger.py:1107
+#: ../../libraries/entropy/client/interfaces/trigger.py:1196
+#: ../../libraries/entropy/client/interfaces/trigger.py:1457
+#: ../../libraries/entropy/client/interfaces/trigger.py:1471
+#: ../../libraries/entropy/client/interfaces/trigger.py:1514
+#: ../../libraries/entropy/client/interfaces/trigger.py:1532
+#: ../../libraries/entropy/client/interfaces/trigger.py:1561
+#: ../../libraries/entropy/client/interfaces/trigger.py:1574
+#: ../../libraries/entropy/client/interfaces/trigger.py:1587
+msgid "QA"
+msgstr "VA"
+
+#: ../../libraries/entropy/client/interfaces/package.py:319
+msgid "Cannot run Spm pkg_config() for"
+msgstr "kan Spm pkg_config() niet starten voor"
+
+#: ../../libraries/entropy/client/interfaces/package.py:321
+#: ../../libraries/entropy/client/interfaces/trigger.py:271
+#: ../../libraries/entropy/client/interfaces/trigger.py:949
+#: ../../libraries/entropy/client/interfaces/trigger.py:1023
+#: ../../libraries/entropy/client/interfaces/trigger.py:1110
+#: ../../libraries/entropy/client/interfaces/trigger.py:1199
+msgid "Please report it"
+msgstr "Rapporteer het alsjeblieft"
+
+#: ../../libraries/entropy/client/interfaces/package.py:322
+#: ../../libraries/entropy/client/interfaces/package.py:1474
+#: ../../libraries/entropy/client/interfaces/package.py:1504
+#: ../../libraries/entropy/client/interfaces/package.py:1574
+#: ../../libraries/entropy/client/interfaces/package.py:1580
+#: ../../libraries/entropy/client/interfaces/package.py:1605
+#: ../../libraries/entropy/client/interfaces/package.py:1630
+#: ../../libraries/entropy/client/interfaces/package.py:1785
+#: ../../libraries/entropy/client/interfaces/package.py:1798
+#: ../../libraries/entropy/client/interfaces/trigger.py:65
+#: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
+#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
+#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
+msgid "Error"
+msgstr "Fout"
+
+#: ../../libraries/entropy/client/interfaces/package.py:346
+msgid "Removing from Entropy"
+msgstr "Verwijderen van Entropy"
+
+#. in this way we filter out directories
+#: ../../libraries/entropy/client/interfaces/package.py:386
+msgid "Collision found during removal of"
+msgstr "Aanvaring gevonden tijdens verwijderen van"
+
+#: ../../libraries/entropy/client/interfaces/package.py:387
+#: ../../libraries/entropy/client/interfaces/package.py:1346
+msgid "cannot overwrite"
+msgstr "kan niet overschrijven"
+
+#: ../../libraries/entropy/client/interfaces/package.py:426
+msgid "Removing config file, never modified"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:445
+#: ../../libraries/entropy/client/interfaces/package.py:1304
+msgid "Protecting config file"
+msgstr "Beschermen van configuratie bestand"
+
+#: ../../libraries/entropy/client/interfaces/package.py:460
+msgid "This package contains a badly encoded file !!!"
+msgstr "Dit pakket bevat een slecht gecodeerd bestand !!!"
+
+#. inject into database
+#: ../../libraries/entropy/client/interfaces/package.py:734
+msgid "Updating database"
+msgstr "Database actualiseren"
+
+#: ../../libraries/entropy/client/interfaces/package.py:767
+msgid "Cleaning old package files..."
+msgstr "Oude pakket bestanden opruimen..."
+
+#: ../../libraries/entropy/client/interfaces/package.py:850
+msgid "Cannot update Portage database to destination"
+msgstr "Kan niet naar de Portage database bestemming updaten"
+
+#: ../../libraries/entropy/client/interfaces/package.py:885
+#, python-format
+msgid "Cannot update Portage counter, destination %s does not exist."
+msgstr "Kan Portage teller niet updaten, locatie %s bestaat niet."
+
+#: ../../libraries/entropy/client/interfaces/package.py:909
+#, python-format
+msgid "Cannot update Portage world file, destination %s does not exist."
+msgstr "Kan Portage wereld bestand niet updaten, locatie %s bestaat niet."
+
+#: ../../libraries/entropy/client/interfaces/package.py:934
+#, python-format
+msgid "Cannot update Portage world file, destination %s is corrupted."
+msgstr "Kan Portage wereld bestand niet updaten, locatie %s is corrupt."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1065
+#, python-format
+msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
+msgstr ""
+"%s is een bestand maar moet een map zijn !! verwijderen in 20 seconden..."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1143
+msgid "Automerging config file, never modified"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1177
+#, python-format
+msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
+msgstr ""
+"%s is een map maar moet een bestand zijn !! verwijderen in 20 seconden..."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1206
+msgid "File move error"
+msgstr "Bestand verplaats fout"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1206
+msgid "please report"
+msgstr "rapporteer het alsjeblieft"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1318
+msgid "Skipping file installation/removal"
+msgstr "Bestand installatie/verwijdering overslaan"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1331
+msgid "Cannot check CONFIG PROTECTION. Error"
+msgstr "Kan CONFIG PROTECTIE niet checken. Fout"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1345
+msgid "Collision found during install for"
+msgstr "Blokkade gevonden tijdens installatie van"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1394
+#: ../../libraries/entropy/client/interfaces/package.py:1488
+msgid "Downloading"
+msgstr "Downloaden"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1422
+msgid "Local path"
+msgstr "Lokale pad"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1453
+msgid "Downloading archive"
+msgstr "Archief downloaden"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1473
+msgid "Package cannot be fetched. Try to update repositories and retry"
+msgstr ""
+"Pakket kan niet worden binnengehaald. Probeer de repositories up-te-daten en "
+"probeer dan opnieuw"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1488
+msgid "archives"
+msgstr "archieven"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1503
+msgid "Some packages cannot be fetched. Try to update repositories and retry"
+msgstr ""
+"Sommige pakketten kunnen niet worden opgehaald. Probeer de repositories te "
+"updaten en probeer dan opnieuw"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1525
+msgid "Fetch for the chosen package is not available, unknown error."
+msgstr "Ophalen van het gekozen pakket is niet mogelijk, onbekende fout."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1534
+msgid "Installed package in queue vanished, skipping."
+msgstr "Geïnstalleerde pakket in wachtrij verdwenen, wordt overgeslagen."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1553
+msgid "Unpacking package"
+msgstr "Pakket uitpakken"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1561
+msgid "Merging package"
+msgstr "Pakket samenvoegen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1572
+msgid "You are running out of disk space"
+msgstr "Je hebt bijna geen schijfruimte meer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1573
+msgid "I bet, you're probably Michele"
+msgstr "Ik gok dat jij Michele bent"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1578
+msgid "An error occured while trying to unpack the package"
+msgstr "Een probleem deed zich voor tijdens het uitpakken"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1579
+#: ../../libraries/entropy/client/interfaces/package.py:1604
+msgid "Check if your system is healthy"
+msgstr "Ga na of je systeem gezond is"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1593
+msgid "Installing package"
+msgstr "Pakket Installeren"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1603
+msgid "An error occured while trying to install the package"
+msgstr "Een probleem deed zich voor tijdens het installeren van het pakket"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1618
+msgid "Removing data"
+msgstr "Verwijderen van data"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1628
+msgid "An error occured while trying to remove the package"
+msgstr "Een fout deed zich voor tijdens een poging het pakket te verwijderen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1629
+msgid "Check if you have enough disk space on your hard disk"
+msgstr "Ga na of je genoeg ruimte over hebt op je harddisk"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1643
+#: ../../libraries/entropy/client/interfaces/package.py:1882
+msgid "Cleaning"
+msgstr "Opruimen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1668
+msgid "Compilation messages"
+msgstr "Compilatie berichten"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1773
+msgid "Configuring package"
+msgstr "Configureren van pakket"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1783
+#: ../../libraries/entropy/client/interfaces/package.py:1796
+msgid "An error occured while trying to configure the package"
+msgstr "Een fout deed zich voor tijdens het configureren van het pakket"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1784
+msgid "Make sure that your system is healthy"
+msgstr "Ga na of je systeem gezond is"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1797
+msgid "It seems that the Source Package Manager entry is missing"
+msgstr "Het ziet ernaar uit dat de Source Pakket Manager ingang mist"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1826
+#: ../../spritz/src/entropyapi.py:111
+msgid "Fetching"
+msgstr "Ophalen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1831
+msgid "Multi Fetching"
+msgstr "Multi Ophalen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1832
+#: ../../libraries/entropy/client/interfaces/package.py:1848
+#: ../../client/text_query.py:376 ../../client/text_query.py:409
+#: ../../client/text_ui.py:1032 ../../server/server_reagent.py:463
+msgid "packages"
+msgstr "Pakketten"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1837
+msgid "Fetching sources"
+msgstr "Binnenhalen van bronnen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1842
+msgid "Verifying"
+msgstr "Verifiëren"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1847
+msgid "Multi Verification"
+msgstr "Multi Verificatie"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1854
+msgid "Unpacking"
+msgstr "Uitpakken"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1857
+msgid "Merging"
+msgstr "Samenvoegen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1866
+msgid "Installing"
+msgstr "Installeren"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1871
+#: ../../client/text_rescue.py:531
+msgid "Removing"
+msgstr "Verwijderen"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1887
+msgid "Postinstall"
+msgstr "Post-installeer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1892
+msgid "Preinstall"
+msgstr "Pre-installeer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1897
+msgid "Preremove"
+msgstr "Pre-Verwijder"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1902
+msgid "Postremove"
+msgstr "Post-Verwijder"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1907
+msgid "Configuring"
+msgstr "Configureren"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1969
+msgid "An error occured. Action aborted."
+msgstr "Een fout deed zich voor. Actie afgebroken."
+
+#: ../../libraries/entropy/client/interfaces/repository.py:46
+#, fuzzy
+msgid "A valid Equo instance or subclass is needed"
+msgstr "Een geldige EquoInterface instantie of subklasse is nodig"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:78
+#, python-format
+msgid "No repositories specified in %s"
+msgstr "Geen repositories opgegeven in %s"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:144
+msgid "Repository is not listed in self.reponames"
+msgstr "Repository staat niet in de lijst in self.reponames"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:153
+msgid "Wrong database compression method"
+msgstr "Verkeerde database compressie methode"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:171
+#, python-format
+msgid "Supported items: %s"
+msgstr "Ondersteunde items: %s"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:174
+#, python-format
+msgid "For %s, cmethod can't be None"
+msgstr "Voor %s, cmethode kan geen 'None' zijn"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:254
+#, fuzzy
+msgid "self.dbformat_eapi must be in (1,2,3,)"
+msgstr "self.dbformat_eapi moet zijn in (1,2)"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:280
+#: ../../libraries/entropy/client/interfaces/repository.py:311
+msgid "self.dbformat_eapi must be in (1,2)"
+msgstr "self.dbformat_eapi moet zijn in (1,2)"
+
+#. verify checksum
+#: ../../libraries/entropy/client/interfaces/repository.py:410
+msgid "Checking downloaded database"
+msgstr "Check gedownloade database"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:420
+msgid "Cannot open digest"
+msgstr "Kan 'digest' niet openen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:420
+#: ../../libraries/entropy/client/interfaces/repository.py:1280
+msgid "Cannot verify database integrity"
+msgstr "Kan database integriteit niet verifiëren"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:428
+#: ../../libraries/entropy/client/interfaces/repository.py:436
+msgid "Downloaded database status"
+msgstr "Gedownloade database status"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:428
+msgid "OK"
+msgstr "OK"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:436
+msgid "ERROR"
+msgstr "FOUT"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:443
+msgid "An error occured while checking database integrity"
+msgstr ""
+"Een fout deed zich voor tijdens het controleren van database integriteit"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:443
+msgid "Giving up"
+msgstr "Opgeven"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:463
+#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
+msgid "Database URL"
+msgstr "Database URL"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:470
+msgid "Database local path"
+msgstr "Lokale pad van database"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:477
+msgid "Database EAPI"
+msgstr "Database EAPI"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:571
+#: ../../libraries/entropy/client/interfaces/repository.py:692
+#: ../../libraries/entropy/client/interfaces/repository.py:707
+#: ../../libraries/entropy/client/interfaces/repository.py:725
+msgid "EAPI3 Service status"
+msgstr "EAPI3 Service status"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:571
+msgid "remote database suddenly locked"
+msgstr "externe database opeens geblokkeerd"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:583
+msgid "EAPI3 Service"
+msgstr "EAPI3 Service"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:583
+msgid "skipping differential sync"
+msgstr "overslaan van differentiële sync"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:584
+msgid "threshold"
+msgstr "drempelwaarde"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:616
+msgid "Fetching segments"
+msgstr "Binnenhalen van segmenten"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:637
+msgid "Fetch error on segment"
+msgstr "Ophaal fout in segment"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:646
+#: ../../libraries/entropy/client/interfaces/repository.py:657
+msgid "Service status"
+msgstr "Service status"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:674
+msgid "Local status"
+msgstr "Lokale status"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:692
+msgid "treeupdates data not available"
+msgstr "boomupdates data niet beschikbaar"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:707
+msgid "cannot update treeupdates data"
+msgstr "Kan boomupdates data niet updaten"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:725
+msgid "cannot update package sets data"
+msgstr "Kan pakket sets data niet updaten"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:746
+msgid "Fetch error on segment while adding"
+msgstr "Ophaal fout in segment tijdens toevoegen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:756
+msgid "Injecting package"
+msgstr "Pakket injecteren"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:768
+msgid "Packages injection complete"
+msgstr "Pakket injectie is compleet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:778
+msgid "Removing package"
+msgstr "Pakket verwijdering"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:786
+msgid "Packages removal complete"
+msgstr "Pakket verwijdering compleet"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:800
+msgid "Database checksum doesn't match remote."
+msgstr "Database controlesom komt niet overeen met externe."
+
+#: ../../libraries/entropy/client/interfaces/repository.py:802
+msgid "remote"
+msgstr "op afstand"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:883
+msgid "EAPI3 Service error"
+msgstr "EAPI3 Service fout"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1002
+msgid "Configuration files update error, not critical, continuing"
+msgstr "Configuratie bestanden update fout, niet kritisch, verdergaan"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1037
+msgid "Something bad happened. Please have a look."
+msgstr "Er is iets vreselijks gebeurt. neem een kijkje."
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1056
+msgid "Skipping configuration files update, you are not root."
+msgstr "Overslaan van configuratie bestanden update, je bent geen root."
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1079
+msgid "Overwriting"
+msgstr "Overschrijven"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1119
+msgid "variable differs"
+msgstr "variabele is anders"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1119
+#: ../../libraries/entropy/client/interfaces/repository.py:1190
+msgid "Updating"
+msgstr "Updaten"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1132
+msgid "updating critical variables"
+msgstr "updaten van kritische variabelen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1190
+msgid "differs"
+msgstr "is anders"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
+msgid "Reverting"
+msgstr "Terug draaien"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1225
+msgid "a new release is available"
+msgstr "Een nieuwere versie is beschikbaar."
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1226
+msgid "Mind to install it before any other package"
+msgstr "Vergeet ze niet te installeren vóór enig ander pakket"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1240
+msgid "Unpacking database to"
+msgstr "Uitpakken van database naar"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1250
+msgid "Cannot unpack compressed package"
+msgstr "Kan gecomprimeerd pakket niet uitpakken"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1250
+msgid "Skipping repository"
+msgstr "Repository wordt overgeslagen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1269
+msgid "Downloading checksum"
+msgstr "Downloaden van controlesom"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1280
+msgid "Cannot fetch checksum"
+msgstr "Kan controlesom niet binnenhalen"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1308
+msgid "Current repository got suddenly locked. Download aborted."
+msgstr "Huidige repository blijkt opeens geblokkeerd. Download afgebroken."
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1314
+msgid "remote database got suddenly locked"
+msgstr "externe database blijkt opeens geblokkeerd"
+
+#. starting to download
+#: ../../libraries/entropy/client/interfaces/repository.py:1323
+msgid "Downloading repository database"
+msgstr "Downloaden van repository database"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1351
+msgid "database does not exist online"
+msgstr "database bestaat niet online"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1366
+msgid "database is already up to date"
+msgstr "database reeds up to date"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1378
+msgid "database will be ready soon"
+msgstr "database is binnenkort bruikbaar"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1394
+msgid "Repository is being updated"
+msgstr "Repository wordt bijgewerkt"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1395
+msgid "Try again in a few minutes"
+msgstr "Probeer opnieuw in een paar minuten"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1427
+msgid "Injecting downloaded dump"
+msgstr "Injecteren van gedownloade dump"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1429
+#: ../../libraries/entropy/db.py:3718 ../../spritz/src/spritz.glade.h:289
+msgid "please wait"
+msgstr "even wachten"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1451
+msgid "Advisories fetch error"
+msgstr "'Advisories' ophaal fout"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1476
+#, fuzzy
+msgid "Downloading repository metafile"
+msgstr "Downloaden van repository database"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1486
+msgid "Downloading SSL CA certificate"
+msgstr "Downloaden van SSL CA certificaat"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1496
+msgid "Downloading SSL Server certificate"
+msgstr "Downloaden van SSL Server certificaat"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1506
+msgid "Downloading package mask"
+msgstr "Downloaden van pakket masker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1516
+msgid "Downloading packages system mask"
+msgstr "Downloaden van pakketten systeem masker"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1526
+msgid "Downloading conflicting tagged packages file"
+msgstr "Downloaden van conflicterend ge-tagged pakketten bestand"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1536
+msgid "Downloading license whitelist"
+msgstr "Downloaden van licenties wittelijst"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1546
+msgid "Downloading revision"
+msgstr "Download herziening"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1556
+msgid "Downloading SPM global configuration"
+msgstr "Downloaden van globale SPM configuratie"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1566
+msgid "Downloading SPM package unmasking configuration"
+msgstr "Downloaden van SPM pakket demaskeer configuratie"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1576
+msgid "Downloading SPM package keywording configuration"
+msgstr "Downloaden van SPM pakket sleutelwoord configuratie"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1586
+msgid "Downloading SPM package USE flags configuration"
+msgstr "Downloaden van SPM pakket USE vlaggen configuratie"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1596
+msgid "Downloading SPM Profile configuration"
+msgstr "Downloaden van SPM Profiel configuratie"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1606
+msgid "Downloading Notice Board"
+msgstr "Downloaden van Notitie Bord"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1632
+msgid "unpacked meta file"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1649
+msgid "not available, it's ok"
+msgstr "niet Beschikbaar, geen punt"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1652
+msgid "not available, not much ok!"
+msgstr "niet beschikbaar, dat is minder!"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1657
+msgid "available, w00t!"
+msgstr "Beschikbaar, w00t!"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1702
+#: ../../client/text_repositories.py:161
+msgid "Repository revision"
+msgstr "Repository herziening"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1718
+msgid "Indexing Repository metadata"
+msgstr "Indexeren van Repository metadata"
+
+#. let's dance!
+#: ../../libraries/entropy/client/interfaces/repository.py:1746
+msgid "Repositories synchronization"
+msgstr "Repositories synchronisatie"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:38
+msgid "A valid Entropy Instance is needed"
+msgstr "Een geldige Entropy Instantie is nodig"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:64
+msgid "Portage interface can't be loaded"
+msgstr "Portage interface kan niet worden geladen"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:67
+msgid "please fix"
+msgstr "repareer aub"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:82
+msgid "Valid phases"
+msgstr "Geldige fases"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:269
+msgid "Cannot run External trigger for"
+msgstr "Kan Externe trekker niet starten voor"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:488
+msgid "Please remember"
+msgstr "Onthoud"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:488
+msgid "It is always better to leave Entropy updates isolated"
+msgstr "Het is altijd beter Entropy updates apart te installeren"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:494
+msgid "Purging Entropy cache"
+msgstr "Opschonen van Entropy cache"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:508
+msgid "Updating {conf.d,init.d} mtime"
+msgstr "Updaten van {conf.d,init.d} mtime"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:534
+msgid "Configuring Binutils Profile"
+msgstr "Configureren van Binutils Profiel"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:554
+msgid "Updating moduledb"
+msgstr "Updaten van moduledb"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:562
+msgid "Running depmod"
+msgstr "Uitvoeren van depmod"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:599
+msgid "Removing boot service"
+msgstr "opstart service wordt verwijderd"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:617
+msgid "A new service will be installed"
+msgstr "Een nieuwe service wordt geïnstalleerd"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:638
+#: ../../libraries/entropy/client/interfaces/trigger.py:671
+msgid "Reconfiguring OpenGL"
+msgstr "Her configureren van OpenGL"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:656
+#: ../../libraries/entropy/client/interfaces/trigger.py:689
+msgid "Eselect NOT found, cannot run OpenGL trigger"
+msgstr "Eselect NIET gevonden, kan OpenGL functie niet starten"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:719
+#: ../../libraries/entropy/client/interfaces/trigger.py:744
+msgid "Configuring GRUB bootloader"
+msgstr "Configureren van GRUB opstartbeheerder"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:720
+msgid "Adding the new kernel"
+msgstr "Voeg de nieuwe kernel toe"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:745
+msgid "Removing the selected kernel"
+msgstr "geselecteerde kernel wordt verwijderd"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:777
+msgid "Mounted /boot successfully"
+msgstr "/boot succesvol aangekoppeld"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:788
+msgid "Cannot mount /boot automatically !!"
+msgstr "Kan /boot niet automatisch aankoppelen !!"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:823
+msgid "Creating kernel symlink"
+msgstr "aanmaken van symbolische koppeling voor kernel"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:825
+msgid "for"
+msgstr "voor"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:857
+msgid "Regenerating"
+msgstr "Hergenereren"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:873
+msgid "Updating environment"
+msgstr "Updaten van werkomgeving"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:947
+#: ../../libraries/entropy/client/interfaces/trigger.py:1021
+#: ../../libraries/entropy/client/interfaces/trigger.py:1108
+#: ../../libraries/entropy/client/interfaces/trigger.py:1197
+msgid "Cannot run Portage trigger for"
+msgstr "Kan Portage functie niet starten voor"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:950
+#: ../../libraries/entropy/client/interfaces/trigger.py:1024
+#: ../../libraries/entropy/client/interfaces/trigger.py:1111
+#: ../../libraries/entropy/client/interfaces/trigger.py:1200
+msgid "Attach this"
+msgstr "Koppel deze"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1458
+msgid "Cannot find df"
+msgstr "Kan df niet vinden"
+
+#. 'cannot match device /dev/foo with a grub one'
+#: ../../libraries/entropy/client/interfaces/trigger.py:1459
+#: ../../libraries/entropy/client/interfaces/trigger.py:1473
+#: ../../libraries/entropy/client/interfaces/trigger.py:1518
+#: ../../libraries/entropy/client/interfaces/trigger.py:1563
+#: ../../libraries/entropy/client/interfaces/trigger.py:1576
+#: ../../libraries/entropy/client/interfaces/trigger.py:1589
+msgid "Cannot properly configure the kernel"
+msgstr "Kan de kernel niet juist configureren"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1460
+#: ../../libraries/entropy/client/interfaces/trigger.py:1474
+#: ../../libraries/entropy/client/interfaces/trigger.py:1519
+#: ../../libraries/entropy/client/interfaces/trigger.py:1536
+#: ../../libraries/entropy/client/interfaces/trigger.py:1564
+#: ../../libraries/entropy/client/interfaces/trigger.py:1577
+#: ../../libraries/entropy/client/interfaces/trigger.py:1590
+msgid "Defaulting to"
+msgstr "Terugvallen naar"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1472
+msgid "Cannot find grub"
+msgstr "Kan grub niet vinden"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1515
+msgid "cannot match device"
+msgstr "kan het apparaat niet voldoen."
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1517
+msgid "with a grub one"
+msgstr "met een van grub"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1533
+msgid "grub translation not supported for"
+msgstr "grub vertaling wordt niet ondersteund voor"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1535
+msgid "Cannot properly configure grub.conf"
+msgstr "Kan grub.conf niet juist configureren"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1562
+msgid "cannot match grub device with a Linux one"
+msgstr "Kan grub apparaat niet herkennen als een van Linux"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1575
+msgid "cannot find generated device.map"
+msgstr "Kan gegenereerde 'device.map' niet vinden"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1588
+msgid "cannot run df /boot"
+msgstr "Kan 'df /boot' niet starten"
 
 #: ../../libraries/entropy/const.py:514
 #, fuzzy
@@ -2028,12 +3314,6 @@ msgid "Entropy needs Python compiled with sqlite3 support"
 msgstr ""
 "Entropy heeft een werkende sqlite+pysqlite of Python gecompileerd met sqlite "
 "ondersteuning nodig"
-
-#: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
-#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
-msgid "Error"
-msgstr "Fout"
 
 #: ../../libraries/entropy/db.py:362
 msgid "valid database path needed"
@@ -2155,10 +3435,6 @@ msgstr ""
 #: ../../libraries/entropy/db.py:3718
 msgid "Syncing current database"
 msgstr "Synchroniseren van huidige database"
-
-#: ../../libraries/entropy/db.py:3718 ../../spritz/src/spritz.glade.h:289
-msgid "please wait"
-msgstr "even wachten"
 
 #: ../../libraries/entropy/db.py:3730
 msgid "Removing entry"
@@ -2414,11 +3690,6 @@ msgstr "installeren"
 #: ../../libraries/entropy/spm.py:44
 msgid "Invalid backend"
 msgstr "Ongeldig backend-type"
-
-#: ../../libraries/entropy/spm.py:543 ../../server/server_reagent.py:89
-#: ../../server/server_reagent.py:101
-msgid "not found"
-msgstr "niet gevonden"
 
 #: ../../libraries/entropy/spm.py:962
 msgid "Error calculating dependencies"
@@ -3829,11 +5100,6 @@ msgstr "Zoeken op Benodigde"
 msgid "Library"
 msgstr "Bibliotheek"
 
-#: ../../client/text_query.py:376 ../../client/text_query.py:409
-#: ../../client/text_ui.py:1032 ../../server/server_reagent.py:463
-msgid "packages"
-msgstr "Pakketten"
-
 #: ../../client/text_query.py:387
 msgid "Eclass Search"
 msgstr "Zoeken op Eclass"
@@ -4124,10 +5390,6 @@ msgstr "Actieve Repositories"
 msgid "Packages Mirror"
 msgstr "Pakketten Mirror"
 
-#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
-msgid "Database URL"
-msgstr "Database URL"
-
 #: ../../client/text_repositories.py:134
 msgid "Repository identifier"
 msgstr "Repository Herkenner"
@@ -4161,10 +5423,6 @@ msgstr "Repository naam"
 #: ../../client/text_repositories.py:160
 msgid "Repository database checksum"
 msgstr "Repository database controlesom"
-
-#: ../../client/text_repositories.py:161
-msgid "Repository revision"
-msgstr "Repository herziening"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:210
 #: ../../spritz/src/spritz.py:1245
@@ -4475,10 +5733,6 @@ msgstr "Deze zullen worden verwijderd uit de systeem database"
 #: ../../client/text_rescue.py:519
 msgid "Continue with removal ?"
 msgstr "Verder gaan met verwijderen ?"
-
-#: ../../client/text_rescue.py:531
-msgid "Removing"
-msgstr "Verwijderen"
 
 #: ../../client/text_rescue.py:536
 msgid "Database removal complete"
@@ -4972,10 +6226,6 @@ msgstr "Starten met"
 #: ../../client/text_ui.py:196
 msgid "Selected release"
 msgstr "Geselecteerde uitgave"
-
-#: ../../client/text_ui.py:197
-msgid "is not available"
-msgstr "is niet beschikbaar"
 
 #: ../../client/text_ui.py:222
 msgid "Calculating System Updates"
@@ -5514,19 +6764,6 @@ msgstr "Inschakelen"
 #: ../../server/server_reagent.py:83 ../../spritz/src/dialogs.py:5022
 msgid "Enabled"
 msgstr "Ingeschakeld"
-
-#. repository
-#. glsa title
-#: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
-#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
-#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
-#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
-#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
-#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
-#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
-#: ../../spritz/src/views.py:1683
-msgid "Repository"
-msgstr "Repository"
 
 #: ../../server/server_reagent.py:86
 msgid "already enabled"
@@ -6383,10 +7620,6 @@ msgstr "Kan je rapport niet versturen. Heb je wel contact met internet?"
 #: ../../spritz/src/entropyapi.py:72
 msgid "Error enabling masked package"
 msgstr "Fout tijdens het activeren van het afgeschermde pakket"
-
-#: ../../spritz/src/entropyapi.py:111
-msgid "Fetching"
-msgstr "Ophalen"
 
 #: ../../spritz/src/entropyapi.py:113
 msgid "Downloading sources"
@@ -7620,10 +8853,6 @@ msgstr "Kernel Tag"
 msgid "Keywords (space separated)"
 msgstr "Sleutel woorden (met spaties gescheiden)"
 
-#: ../../spritz/src/spritz.glade.h:106
-msgid "Libraries test"
-msgstr "Bibliotheken test"
-
 #: ../../spritz/src/spritz.glade.h:107
 msgid "Library test"
 msgstr "Bibliotheken test"
@@ -8270,697 +9499,8 @@ msgstr "voer uw gebruikersnaam hier in"
 #~ msgid "Depends Search"
 #~ msgstr "Zoeken op afhankelijken"
 
-#~ msgid "Cannot validate"
-#~ msgstr "kan niet valideren"
-
-#~ msgid "Please update your repositories now in order to remove this message!"
-#~ msgstr "Update a.u.b. jouw repositories nu om dit bericht te verwijderen!"
-
-#~ msgid "is corrupted"
-#~ msgstr "is corrupt"
-
-#~ msgid ""
-#~ "Another Entropy instance is currently active, cannot satisfy your request."
-#~ msgstr ""
-#~ "Een andere instantie van Entropy is actief, ik kan je verzoek niet "
-#~ "behandelen."
-
-#~ msgid "Resources unlocked, let's go!"
-#~ msgstr "Middelen ontsloten, laten we gaan!"
-
-#~ msgid "Resources still locked after %s minutes, giving up!"
-#~ msgstr "Middelen nog steeds geblokkeerd na %s minuten, Ik geef het op!"
-
-#~ msgid "Resources locked, sleeping %s seconds, check #%s/%s"
-#~ msgstr "Middelen geblokkeerd, slapend voor %s seconden, check #%s/%s"
-
-#~ msgid "Nothing to backup in etpConst with %s key"
-#~ msgstr "Niets te backuppen in etpConst met sleutel %s"
-
-#~ msgid "System database not found or corrupted"
-#~ msgstr "Systeem database niet gevonden of corrupt"
-
-#~ msgid "running in safe mode using empty database from RAM"
-#~ msgstr " in veilige modes gebruik makend van de lege database vanaf RAM"
-
-#~ msgid "Sanity Check"
-#~ msgstr "Gezondheids check"
-
-#~ msgid "system database"
-#~ msgstr "systeem database"
-
-#~ msgid "Scanning..."
-#~ msgstr "Scannen..."
-
-#~ msgid "Errors on idpackage %s, error: %s"
-#~ msgstr "Fouten in idpackage %s, fout: %s"
-
-#~ msgid "PASSED"
-#~ msgstr "VOLTOOID"
-
-#~ msgid "CORRUPTED"
-#~ msgstr "CORRUPT"
-
-#~ msgid "bad repository id specified"
-#~ msgstr "foute repository ID opgegeven"
-
-#~ msgid "Repository %s hasn't been downloaded yet."
-#~ msgstr "Repository %s is nog niet gedownload."
-
-#~ msgid "Cannot backup selected database"
-#~ msgstr "Kan geen back-up maken van de geselecteerde database"
-
-#~ msgid "permission denied"
-#~ msgstr "toegang geweigerd"
-
-#~ msgid "Backing up database to"
-#~ msgstr "Back-up maken van database naar"
-
-#~ msgid "Unable to compress"
-#~ msgstr "Onmogelijk te comprimeren"
-
-#~ msgid "Database backed up successfully"
-#~ msgstr "Database back-up succesvol"
-
-#~ msgid "Cannot restore selected backup"
-#~ msgstr "Kan geselecteerde back-up niet herstellen"
-
-#~ msgid "Restoring backed up database"
-#~ msgstr "Herstellen van database back-up"
-
-#~ msgid "Unable to unpack"
-#~ msgstr "Onmogelijk om uit te pakken"
-
-#~ msgid "Database restored successfully"
-#~ msgstr "Database succesvol hersteld"
-
-#~ msgid "Cleaning %s => dumps..."
-#~ msgstr "Opruimen %s => dumps..."
-
-#~ msgid "Cache is now empty."
-#~ msgstr "Cache is nu leeg."
-
-#~ msgid "Configuration files"
-#~ msgstr "Configuratie bestanden"
-
-#~ msgid "Scanning hard disk"
-#~ msgstr "harddisk scannen"
-
-#~ msgid "Cache generation complete."
-#~ msgstr "Cache generatie compleet."
-
-#~ msgid "Resolving metadata"
-#~ msgstr "Oplossen van metadata"
-
-#~ msgid "Dependencies cache filled."
-#~ msgstr "Afhankelijkheden cache gevuld."
-
-#~ msgid "Checking %s"
-#~ msgstr "Checken %s"
-
-#~ msgid "Cannot find "
-#~ msgstr "Kan het niet vinden"
-
-#~ msgid "Collecting broken executables"
-#~ msgstr "Opzoeken van beschadigde opstartbestanden"
-
-#~ msgid "don't worry about libraries that are shown here but not later."
-#~ msgstr ""
-#~ "maak je geen zorgen over bibliotheken die hier worden getoond maar niet "
-#~ "later."
-
-#~ msgid "Scanning libraries"
-#~ msgstr "Scannen van bibliotheken"
-
-#~ msgid "various broken symbols"
-#~ msgstr "meerdere gebroken symbolen"
-
-#~ msgid "Matching broken libraries/executables"
-#~ msgstr "vergelijken van gebroken bibliotheken/opstartbestanden"
-
-#~ msgid "server_repos needs serverInstance"
-#~ msgstr "server_repos heeft serverInstance nodig"
-
-#~ msgid "repodata dictionary is corrupted"
-#~ msgstr "repo-data woordenboek is corrupt"
-
-#~ msgid "Sorting dependencies"
-#~ msgstr "Sorteren van afhankelijkheden"
-
 #~ msgid "Calculating removable depends of"
 #~ msgstr "Berekenen verwijderbare afhankelijkheden voor"
-
-#~ msgid "Calculating available packages for"
-#~ msgstr "Berekenen beschikbare pakketten voor"
-
-#~ msgid "Calculating world packages"
-#~ msgstr "Berekenen wereld pakketten"
-
-#~ msgid "not a valid method"
-#~ msgstr "geen geldige methode"
-
-#~ msgid "must be an ASCII string"
-#~ msgstr "moet een ASCII string zijn"
-
-#~ msgid "cannot start with"
-#~ msgstr "Kan niet starten met"
-
-#~ msgid "Name already taken"
-#~ msgstr "Naam reeds in gebruik"
-
-#~ msgid "Cannot remove the old element"
-#~ msgstr "Kan oud element niet verwijderen"
-
-#~ msgid "Cannot create the element"
-#~ msgstr "Kan element niet aanmaken"
-
-#~ msgid "Already removed"
-#~ msgstr "Reeds verwijderd"
-
-#~ msgid "Not defined by user"
-#~ msgstr "Niet gedefinieerd door gebruiker"
-
-#~ msgid "Set not found or unable to remove"
-#~ msgstr "Set niet gevonden of onmogelijk te verwijderen"
-
-#~ msgid "maximum failure threshold reached"
-#~ msgstr "maximum aantal foutmeldingen bereikt"
-
-#~ msgid "success"
-#~ msgstr "succesvol"
-
-#~ msgid "Aggregated transfer rate"
-#~ msgstr "Geaggregeerde overdracht snelheid"
-
-#~ msgid "second"
-#~ msgstr "seconde"
-
-#~ msgid "Error downloading from"
-#~ msgstr "Fout tijdens het downloaden vanaf"
-
-#~ msgid "files not available on this mirror"
-#~ msgstr "bestanden niet beschikbaar op deze mirror"
-
-#~ msgid "wrong checksum"
-#~ msgstr "verkeerde controlesom"
-
-#~ msgid "timeout error"
-#~ msgstr "fout: tijd verstreken"
-
-#~ msgid "discarded download"
-#~ msgstr "afgewezen download"
-
-#~ msgid "unknown reason"
-#~ msgstr "onbekende reden"
-
-#~ msgid "Downloading from"
-#~ msgstr "Downloaden vanaf"
-
-#~ msgid "Successfully downloaded from"
-#~ msgstr "Succesvol gedownload van"
-
-#~ msgid "at"
-#~ msgstr "met"
-
-#~ msgid "file not available on this mirror"
-#~ msgstr "bestand niet beschikbaar op deze mirror"
-
-#~ msgid "timeout, retrying on this mirror"
-#~ msgstr "tijd verstreken, opnieuw proberen met deze mirror"
-
-#~ msgid "timeout, giving up"
-#~ msgstr "tijd verstreken, ik geef op‏‎"
-
-#~ msgid "Probably Portage API has changed"
-#~ msgstr "Waarschijnlijk is Portage API veranderd"
-
-#~ msgid "not set"
-#~ msgstr "Niet ingesteld"
-
-#~ msgid "have you configured make.conf properly?"
-#~ msgstr "Is je make.conf juist geconfigureerd?"
-
-#~ msgid "Extracting package metadata"
-#~ msgstr "Uitpakken van pakket metadata"
-
-#~ msgid "Package extraction complete"
-#~ msgstr "Uitpakken van pakket is compleet"
-
-#~ msgid "Already prepared"
-#~ msgstr "Al voorbereid"
-
-#~ msgid "Not yet prepared"
-#~ msgstr "Nog niet voorbereid"
-
-#~ msgid "Action must be in"
-#~ msgstr "Actie moet zijn in"
-
-#~ msgid "Checking package checksum..."
-#~ msgstr "Nagaan van pakketten controlesom..."
-
-#~ msgid "Package checksum matches"
-#~ msgstr "Pakket controlesom komt overeen"
-
-#~ msgid "Package checksum does not match. Redownloading... attempt #%s"
-#~ msgstr ""
-#~ "Controlesom van Pakket komt niet overeen. Opnieuw downloaden... poging #%s"
-
-#~ msgid "Cannot properly fetch package! Quitting."
-#~ msgstr "Kan pakket niet juist binnenhalen! Afsluiten."
-
-#~ msgid ""
-#~ "Cannot properly fetch package or checksum does not match. Try download "
-#~ "latest repositories."
-#~ msgstr ""
-#~ "Kan pakket niet juist binnenhalen of controlesom komt niet overeen. "
-#~ "Probeer de laatste repositories te downloaden."
-
-#~ msgid "QA"
-#~ msgstr "VA"
-
-#~ msgid "Cannot run Spm pkg_config() for"
-#~ msgstr "kan Spm pkg_config() niet starten voor"
-
-#~ msgid "Please report it"
-#~ msgstr "Rapporteer het alsjeblieft"
-
-#~ msgid "Removing from Entropy"
-#~ msgstr "Verwijderen van Entropy"
-
-#~ msgid "Collision found during removal of"
-#~ msgstr "Aanvaring gevonden tijdens verwijderen van"
-
-#~ msgid "cannot overwrite"
-#~ msgstr "kan niet overschrijven"
-
-#~ msgid "Protecting config file"
-#~ msgstr "Beschermen van configuratie bestand"
-
-#~ msgid "This package contains a badly encoded file !!!"
-#~ msgstr "Dit pakket bevat een slecht gecodeerd bestand !!!"
-
-#~ msgid "Updating database"
-#~ msgstr "Database actualiseren"
-
-#~ msgid "Cleaning old package files..."
-#~ msgstr "Oude pakket bestanden opruimen..."
-
-#~ msgid "Cannot update Portage database to destination"
-#~ msgstr "Kan niet naar de Portage database bestemming updaten"
-
-#~ msgid "Cannot update Portage counter, destination %s does not exist."
-#~ msgstr "Kan Portage teller niet updaten, locatie %s bestaat niet."
-
-#~ msgid "Cannot update Portage world file, destination %s does not exist."
-#~ msgstr "Kan Portage wereld bestand niet updaten, locatie %s bestaat niet."
-
-#~ msgid "Cannot update Portage world file, destination %s is corrupted."
-#~ msgstr "Kan Portage wereld bestand niet updaten, locatie %s is corrupt."
-
-#~ msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
-#~ msgstr ""
-#~ "%s is een bestand maar moet een map zijn !! verwijderen in 20 seconden..."
-
-#~ msgid ""
-#~ "%s is a directory when it should be a file !! Removing in 20 seconds..."
-#~ msgstr ""
-#~ "%s is een map maar moet een bestand zijn !! verwijderen in 20 seconden..."
-
-#~ msgid "File move error"
-#~ msgstr "Bestand verplaats fout"
-
-#~ msgid "please report"
-#~ msgstr "rapporteer het alsjeblieft"
-
-#~ msgid "Skipping file installation/removal"
-#~ msgstr "Bestand installatie/verwijdering overslaan"
-
-#~ msgid "Cannot check CONFIG PROTECTION. Error"
-#~ msgstr "Kan CONFIG PROTECTIE niet checken. Fout"
-
-#~ msgid "Collision found during install for"
-#~ msgstr "Blokkade gevonden tijdens installatie van"
-
-#~ msgid "Downloading"
-#~ msgstr "Downloaden"
-
-#~ msgid "Local path"
-#~ msgstr "Lokale pad"
-
-#~ msgid "Downloading archive"
-#~ msgstr "Archief downloaden"
-
-#~ msgid "Package cannot be fetched. Try to update repositories and retry"
-#~ msgstr ""
-#~ "Pakket kan niet worden binnengehaald. Probeer de repositories up-te-daten "
-#~ "en probeer dan opnieuw"
-
-#~ msgid "archives"
-#~ msgstr "archieven"
-
-#~ msgid ""
-#~ "Some packages cannot be fetched. Try to update repositories and retry"
-#~ msgstr ""
-#~ "Sommige pakketten kunnen niet worden opgehaald. Probeer de repositories "
-#~ "te updaten en probeer dan opnieuw"
-
-#~ msgid "Fetch for the chosen package is not available, unknown error."
-#~ msgstr "Ophalen van het gekozen pakket is niet mogelijk, onbekende fout."
-
-#~ msgid "Installed package in queue vanished, skipping."
-#~ msgstr "Geïnstalleerde pakket in wachtrij verdwenen, wordt overgeslagen."
-
-#~ msgid "Unpacking package"
-#~ msgstr "Pakket uitpakken"
-
-#~ msgid "Merging package"
-#~ msgstr "Pakket samenvoegen"
-
-#~ msgid "You are running out of disk space"
-#~ msgstr "Je hebt bijna geen schijfruimte meer"
-
-#~ msgid "I bet, you're probably Michele"
-#~ msgstr "Ik gok dat jij Michele bent"
-
-#~ msgid "An error occured while trying to unpack the package"
-#~ msgstr "Een probleem deed zich voor tijdens het uitpakken"
-
-#~ msgid "Check if your system is healthy"
-#~ msgstr "Ga na of je systeem gezond is"
-
-#~ msgid "Installing package"
-#~ msgstr "Pakket Installeren"
-
-#~ msgid "An error occured while trying to install the package"
-#~ msgstr "Een probleem deed zich voor tijdens het installeren van het pakket"
-
-#~ msgid "Removing data"
-#~ msgstr "Verwijderen van data"
-
-#~ msgid "An error occured while trying to remove the package"
-#~ msgstr ""
-#~ "Een fout deed zich voor tijdens een poging het pakket te verwijderen"
-
-#~ msgid "Check if you have enough disk space on your hard disk"
-#~ msgstr "Ga na of je genoeg ruimte over hebt op je harddisk"
-
-#~ msgid "Cleaning"
-#~ msgstr "Opruimen"
-
-#~ msgid "Compilation messages"
-#~ msgstr "Compilatie berichten"
-
-#~ msgid "Configuring package"
-#~ msgstr "Configureren van pakket"
-
-#~ msgid "An error occured while trying to configure the package"
-#~ msgstr "Een fout deed zich voor tijdens het configureren van het pakket"
-
-#~ msgid "Make sure that your system is healthy"
-#~ msgstr "Ga na of je systeem gezond is"
-
-#~ msgid "It seems that the Source Package Manager entry is missing"
-#~ msgstr "Het ziet ernaar uit dat de Source Pakket Manager ingang mist"
-
-#~ msgid "Multi Fetching"
-#~ msgstr "Multi Ophalen"
-
-#~ msgid "Fetching sources"
-#~ msgstr "Binnenhalen van bronnen"
-
-#~ msgid "Verifying"
-#~ msgstr "Verifiëren"
-
-#~ msgid "Multi Verification"
-#~ msgstr "Multi Verificatie"
-
-#~ msgid "Unpacking"
-#~ msgstr "Uitpakken"
-
-#~ msgid "Merging"
-#~ msgstr "Samenvoegen"
-
-#~ msgid "Installing"
-#~ msgstr "Installeren"
-
-#~ msgid "Postinstall"
-#~ msgstr "Post-installeer"
-
-#~ msgid "Preinstall"
-#~ msgstr "Pre-installeer"
-
-#~ msgid "Preremove"
-#~ msgstr "Pre-Verwijder"
-
-#~ msgid "Postremove"
-#~ msgstr "Post-Verwijder"
-
-#~ msgid "Configuring"
-#~ msgstr "Configureren"
-
-#~ msgid "An error occured. Action aborted."
-#~ msgstr "Een fout deed zich voor. Actie afgebroken."
-
-#~ msgid "No repositories specified in %s"
-#~ msgstr "Geen repositories opgegeven in %s"
-
-#~ msgid "Repository is not listed in self.reponames"
-#~ msgstr "Repository staat niet in de lijst in self.reponames"
-
-#~ msgid "Wrong database compression method"
-#~ msgstr "Verkeerde database compressie methode"
-
-#~ msgid "Supported items: %s"
-#~ msgstr "Ondersteunde items: %s"
-
-#~ msgid "For %s, cmethod can't be None"
-#~ msgstr "Voor %s, cmethode kan geen 'None' zijn"
-
-#~ msgid "self.dbformat_eapi must be in (1,2)"
-#~ msgstr "self.dbformat_eapi moet zijn in (1,2)"
-
-#~ msgid "Checking downloaded database"
-#~ msgstr "Check gedownloade database"
-
-#~ msgid "Cannot open digest"
-#~ msgstr "Kan 'digest' niet openen"
-
-#~ msgid "Cannot verify database integrity"
-#~ msgstr "Kan database integriteit niet verifiëren"
-
-#~ msgid "Downloaded database status"
-#~ msgstr "Gedownloade database status"
-
-#~ msgid "OK"
-#~ msgstr "OK"
-
-#~ msgid "ERROR"
-#~ msgstr "FOUT"
-
-#~ msgid "An error occured while checking database integrity"
-#~ msgstr ""
-#~ "Een fout deed zich voor tijdens het controleren van database integriteit"
-
-#~ msgid "Giving up"
-#~ msgstr "Opgeven"
-
-#~ msgid "Database local path"
-#~ msgstr "Lokale pad van database"
-
-#~ msgid "Database EAPI"
-#~ msgstr "Database EAPI"
-
-#~ msgid "EAPI3 Service status"
-#~ msgstr "EAPI3 Service status"
-
-#~ msgid "remote database suddenly locked"
-#~ msgstr "externe database opeens geblokkeerd"
-
-#~ msgid "EAPI3 Service"
-#~ msgstr "EAPI3 Service"
-
-#~ msgid "skipping differential sync"
-#~ msgstr "overslaan van differentiële sync"
-
-#~ msgid "threshold"
-#~ msgstr "drempelwaarde"
-
-#~ msgid "Fetching segments"
-#~ msgstr "Binnenhalen van segmenten"
-
-#~ msgid "Fetch error on segment"
-#~ msgstr "Ophaal fout in segment"
-
-#~ msgid "Service status"
-#~ msgstr "Service status"
-
-#~ msgid "Local status"
-#~ msgstr "Lokale status"
-
-#~ msgid "treeupdates data not available"
-#~ msgstr "boomupdates data niet beschikbaar"
-
-#~ msgid "cannot update treeupdates data"
-#~ msgstr "Kan boomupdates data niet updaten"
-
-#~ msgid "cannot update package sets data"
-#~ msgstr "Kan pakket sets data niet updaten"
-
-#~ msgid "Fetch error on segment while adding"
-#~ msgstr "Ophaal fout in segment tijdens toevoegen"
-
-#~ msgid "Injecting package"
-#~ msgstr "Pakket injecteren"
-
-#~ msgid "Packages injection complete"
-#~ msgstr "Pakket injectie is compleet"
-
-#~ msgid "Removing package"
-#~ msgstr "Pakket verwijdering"
-
-#~ msgid "Packages removal complete"
-#~ msgstr "Pakket verwijdering compleet"
-
-#~ msgid "Database checksum doesn't match remote."
-#~ msgstr "Database controlesom komt niet overeen met externe."
-
-#~ msgid "remote"
-#~ msgstr "op afstand"
-
-#~ msgid "EAPI3 Service error"
-#~ msgstr "EAPI3 Service fout"
-
-#~ msgid "Configuration files update error, not critical, continuing"
-#~ msgstr "Configuratie bestanden update fout, niet kritisch, verdergaan"
-
-#~ msgid "Something bad happened. Please have a look."
-#~ msgstr "Er is iets vreselijks gebeurt. neem een kijkje."
-
-#~ msgid "Skipping configuration files update, you are not root."
-#~ msgstr "Overslaan van configuratie bestanden update, je bent geen root."
-
-#~ msgid "Overwriting"
-#~ msgstr "Overschrijven"
-
-#~ msgid "variable differs"
-#~ msgstr "variabele is anders"
-
-#~ msgid "Updating"
-#~ msgstr "Updaten"
-
-#~ msgid "updating critical variables"
-#~ msgstr "updaten van kritische variabelen"
-
-#~ msgid "differs"
-#~ msgstr "is anders"
-
-#~ msgid "Reverting"
-#~ msgstr "Terug draaien"
-
-#~ msgid "a new release is available"
-#~ msgstr "Een nieuwere versie is beschikbaar."
-
-#~ msgid "Mind to install it before any other package"
-#~ msgstr "Vergeet ze niet te installeren vóór enig ander pakket"
-
-#~ msgid "Unpacking database to"
-#~ msgstr "Uitpakken van database naar"
-
-#~ msgid "Cannot unpack compressed package"
-#~ msgstr "Kan gecomprimeerd pakket niet uitpakken"
-
-#~ msgid "Skipping repository"
-#~ msgstr "Repository wordt overgeslagen"
-
-#~ msgid "Downloading checksum"
-#~ msgstr "Downloaden van controlesom"
-
-#~ msgid "Cannot fetch checksum"
-#~ msgstr "Kan controlesom niet binnenhalen"
-
-#~ msgid "Current repository got suddenly locked. Download aborted."
-#~ msgstr "Huidige repository blijkt opeens geblokkeerd. Download afgebroken."
-
-#~ msgid "remote database got suddenly locked"
-#~ msgstr "externe database blijkt opeens geblokkeerd"
-
-#~ msgid "Downloading repository database"
-#~ msgstr "Downloaden van repository database"
-
-#~ msgid "database does not exist online"
-#~ msgstr "database bestaat niet online"
-
-#~ msgid "database is already up to date"
-#~ msgstr "database reeds up to date"
-
-#~ msgid "database will be ready soon"
-#~ msgstr "database is binnenkort bruikbaar"
-
-#~ msgid "Repository is being updated"
-#~ msgstr "Repository wordt bijgewerkt"
-
-#~ msgid "Try again in a few minutes"
-#~ msgstr "Probeer opnieuw in een paar minuten"
-
-#~ msgid "Injecting downloaded dump"
-#~ msgstr "Injecteren van gedownloade dump"
-
-#~ msgid "Advisories fetch error"
-#~ msgstr "'Advisories' ophaal fout"
-
-#~ msgid "Downloading SSL CA certificate"
-#~ msgstr "Downloaden van SSL CA certificaat"
-
-#~ msgid "Downloading SSL Server certificate"
-#~ msgstr "Downloaden van SSL Server certificaat"
-
-#~ msgid "Downloading package mask"
-#~ msgstr "Downloaden van pakket masker"
-
-#~ msgid "Downloading packages system mask"
-#~ msgstr "Downloaden van pakketten systeem masker"
-
-#~ msgid "Downloading conflicting tagged packages file"
-#~ msgstr "Downloaden van conflicterend ge-tagged pakketten bestand"
-
-#~ msgid "Downloading license whitelist"
-#~ msgstr "Downloaden van licenties wittelijst"
-
-#~ msgid "Downloading revision"
-#~ msgstr "Download herziening"
-
-#~ msgid "Downloading SPM global configuration"
-#~ msgstr "Downloaden van globale SPM configuratie"
-
-#~ msgid "Downloading SPM package unmasking configuration"
-#~ msgstr "Downloaden van SPM pakket demaskeer configuratie"
-
-#~ msgid "Downloading SPM package keywording configuration"
-#~ msgstr "Downloaden van SPM pakket sleutelwoord configuratie"
-
-#~ msgid "Downloading SPM package USE flags configuration"
-#~ msgstr "Downloaden van SPM pakket USE vlaggen configuratie"
-
-#~ msgid "Downloading SPM Profile configuration"
-#~ msgstr "Downloaden van SPM Profiel configuratie"
-
-#~ msgid "Downloading Notice Board"
-#~ msgstr "Downloaden van Notitie Bord"
-
-#~ msgid "not available, it's ok"
-#~ msgstr "niet Beschikbaar, geen punt"
-
-#~ msgid "not available, not much ok!"
-#~ msgstr "niet beschikbaar, dat is minder!"
-
-#~ msgid "available, w00t!"
-#~ msgstr "Beschikbaar, w00t!"
-
-#~ msgid "Indexing Repository metadata"
-#~ msgstr "Indexeren van Repository metadata"
-
-#~ msgid "Repositories synchronization"
-#~ msgstr "Repositories synchronisatie"
 
 #~ msgid "A valid TextInterface based instance is needed"
 #~ msgstr "Een geldige TextInterface gebaseerde instantie is nodig"
@@ -8968,125 +9508,8 @@ msgstr "voer uw gebruikersnaam hier in"
 #~ msgid "Upload status"
 #~ msgstr "Upload Status"
 
-#~ msgid "A valid Entropy Instance is needed"
-#~ msgstr "Een geldige Entropy Instantie is nodig"
-
-#~ msgid "Portage interface can't be loaded"
-#~ msgstr "Portage interface kan niet worden geladen"
-
-#~ msgid "please fix"
-#~ msgstr "repareer aub"
-
-#~ msgid "Valid phases"
-#~ msgstr "Geldige fases"
-
-#~ msgid "Cannot run External trigger for"
-#~ msgstr "Kan Externe trekker niet starten voor"
-
-#~ msgid "Please remember"
-#~ msgstr "Onthoud"
-
-#~ msgid "It is always better to leave Entropy updates isolated"
-#~ msgstr "Het is altijd beter Entropy updates apart te installeren"
-
-#~ msgid "Purging Entropy cache"
-#~ msgstr "Opschonen van Entropy cache"
-
-#~ msgid "Updating {conf.d,init.d} mtime"
-#~ msgstr "Updaten van {conf.d,init.d} mtime"
-
-#~ msgid "Configuring Binutils Profile"
-#~ msgstr "Configureren van Binutils Profiel"
-
-#~ msgid "Updating moduledb"
-#~ msgstr "Updaten van moduledb"
-
-#~ msgid "Running depmod"
-#~ msgstr "Uitvoeren van depmod"
-
-#~ msgid "Removing boot service"
-#~ msgstr "opstart service wordt verwijderd"
-
-#~ msgid "A new service will be installed"
-#~ msgstr "Een nieuwe service wordt geïnstalleerd"
-
-#~ msgid "Reconfiguring OpenGL"
-#~ msgstr "Her configureren van OpenGL"
-
-#~ msgid "Eselect NOT found, cannot run OpenGL trigger"
-#~ msgstr "Eselect NIET gevonden, kan OpenGL functie niet starten"
-
-#~ msgid "Configuring GRUB bootloader"
-#~ msgstr "Configureren van GRUB opstartbeheerder"
-
-#~ msgid "Adding the new kernel"
-#~ msgstr "Voeg de nieuwe kernel toe"
-
-#~ msgid "Removing the selected kernel"
-#~ msgstr "geselecteerde kernel wordt verwijderd"
-
-#~ msgid "Mounted /boot successfully"
-#~ msgstr "/boot succesvol aangekoppeld"
-
-#~ msgid "Cannot mount /boot automatically !!"
-#~ msgstr "Kan /boot niet automatisch aankoppelen !!"
-
-#~ msgid "Creating kernel symlink"
-#~ msgstr "aanmaken van symbolische koppeling voor kernel"
-
-#~ msgid "for"
-#~ msgstr "voor"
-
-#~ msgid "Regenerating"
-#~ msgstr "Hergenereren"
-
-#~ msgid "Updating environment"
-#~ msgstr "Updaten van werkomgeving"
-
-#~ msgid "Cannot run Portage trigger for"
-#~ msgstr "Kan Portage functie niet starten voor"
-
-#~ msgid "Attach this"
-#~ msgstr "Koppel deze"
-
-#~ msgid "Cannot find df"
-#~ msgstr "Kan df niet vinden"
-
-#~ msgid "Cannot properly configure the kernel"
-#~ msgstr "Kan de kernel niet juist configureren"
-
-#~ msgid "Defaulting to"
-#~ msgstr "Terugvallen naar"
-
-#~ msgid "Cannot find grub"
-#~ msgstr "Kan grub niet vinden"
-
-#~ msgid "cannot match device"
-#~ msgstr "kan het apparaat niet voldoen."
-
-#~ msgid "with a grub one"
-#~ msgstr "met een van grub"
-
-#~ msgid "grub translation not supported for"
-#~ msgstr "grub vertaling wordt niet ondersteund voor"
-
-#~ msgid "Cannot properly configure grub.conf"
-#~ msgstr "Kan grub.conf niet juist configureren"
-
-#~ msgid "cannot match grub device with a Linux one"
-#~ msgstr "Kan grub apparaat niet herkennen als een van Linux"
-
-#~ msgid "cannot find generated device.map"
-#~ msgstr "Kan gegenereerde 'device.map' niet vinden"
-
-#~ msgid "cannot run df /boot"
-#~ msgstr "Kan 'df /boot' niet starten"
-
 #~ msgid "repository in branch packages.db.mask"
 #~ msgstr "repository in branche packages.db.mask"
-
-#~ msgid "A valid EquoInterface instance or subclass is needed"
-#~ msgstr "Een geldige EquoInterface instantie of subklasse is nodig"
 
 #~ msgid "Fetch"
 #~ msgstr "Ophalen"

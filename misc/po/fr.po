@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: LAN_FR\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-08 15:05+0200\n"
+"POT-Creation-Date: 2009-04-08 16:31+0200\n"
 "PO-Revision-Date: 2008-05-24 17:01-0000\n"
 "Last-Translator: Alexandre Héaumé <alexandreheaume@gmail.com>\n"
 "Language-Team: french <nsuffys@gmail.com>\n"
@@ -699,6 +699,12 @@ msgid "revision"
 msgstr "révision"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2031
+#: ../../libraries/entropy/client/interfaces/methods.py:1134
+#: ../../libraries/entropy/client/interfaces/repository.py:1314
+#: ../../libraries/entropy/client/interfaces/repository.py:1351
+#: ../../libraries/entropy/client/interfaces/repository.py:1366
+#: ../../libraries/entropy/client/interfaces/repository.py:1378
+#: ../../libraries/entropy/client/interfaces/repository.py:1393
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
 #: ../../client/text_ui.py:875 ../../client/text_ui.py:876
 #: ../../client/text_ui.py:878 ../../client/text_ui.py:879
@@ -747,6 +753,7 @@ msgid "digest verification of"
 msgstr "Notification de mises à jour"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2172
+#: ../../libraries/entropy/client/interfaces/metadata.py:134
 #: ../../libraries/entropy/transceivers.py:1132
 #, fuzzy
 msgid "not supported"
@@ -779,6 +786,8 @@ msgid "This is the list of broken packages"
 msgstr "Voici les paquets installés"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2225
+#: ../../libraries/entropy/client/interfaces/fetch.py:141
+#: ../../libraries/entropy/client/interfaces/fetch.py:391
 #, fuzzy
 msgid "Mirror"
 msgstr "Mirroirs"
@@ -808,6 +817,7 @@ msgid "Number of broken packages"
 msgstr "supprimer un ou plusieurs paquets"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2289
+#: ../../libraries/entropy/client/interfaces/repository.py:801
 msgid "local"
 msgstr ""
 
@@ -1001,6 +1011,8 @@ msgid "downloading package"
 msgstr "télécharger les paquets uniquement"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:446
+#: ../../libraries/entropy/client/interfaces/repository.py:1079
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
 #: ../../client/text_security.py:73 ../../client/text_smart.py:89
 msgid "does not exist"
 msgstr "n'existe pas"
@@ -1316,6 +1328,7 @@ msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1845
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2687
+#: ../../libraries/entropy/client/interfaces/package.py:444
 #, fuzzy
 msgid "remove"
 msgstr "supprimé"
@@ -2153,6 +2166,7 @@ msgid "Notice link"
 msgstr "ou le"
 
 #: ../../libraries/entropy/client/misc.py:37
+#: ../../libraries/entropy/client/interfaces/package.py:43
 msgid "A valid Client instance or subclass is needed"
 msgstr ""
 
@@ -2177,10 +2191,1468 @@ msgstr "Auto-combination des fichiers"
 msgid "Invalid config file number"
 msgstr ""
 
+#: ../../libraries/entropy/client/interfaces/cache.py:63
+#, fuzzy
+msgid "Configuration files"
+msgstr "Fichier de configuration"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:68
+#, fuzzy
+msgid "Scanning hard disk"
+msgstr "librairies"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:74
+#, fuzzy
+msgid "Cache generation complete."
+msgstr "Caclcul terminé"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:82
+#, fuzzy
+msgid "Resolving metadata"
+msgstr "collecte des métadonnées Entropy"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:98
+#, fuzzy
+msgid "Dependencies cache filled."
+msgstr "Dépendances"
+
+#: ../../libraries/entropy/client/interfaces/cache.py:112
+#, python-format
+msgid "Cleaning %s => dumps..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/cache.py:121
+#, fuzzy
+msgid "Cache is now empty."
+msgstr "Caclcul terminé"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:49
+#, fuzzy, python-format
+msgid "Checking %s"
+msgstr "Somme de contrôle"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:249
+#: ../../libraries/entropy/client/interfaces/dep.py:432
+msgid "server_repos needs serverInstance"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1016
+#, fuzzy
+msgid "Sorting dependencies"
+msgstr "Dépendances incomplètes"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1099
+#, fuzzy
+msgid "Calculating inverse dependencies for"
+msgstr "Calcul des dépendances"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1191
+#, fuzzy
+msgid "Calculating available packages for"
+msgstr "Installation des paquets disponibles dans"
+
+#: ../../libraries/entropy/client/interfaces/dep.py:1261
+#, fuzzy
+msgid "Calculating world packages"
+msgstr "Calcul des dépendances"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:143
+#: ../../libraries/entropy/client/interfaces/fetch.py:393
+msgid "maximum failure threshold reached"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:184
+#, fuzzy
+msgid "success"
+msgstr "accès"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:193
+#, fuzzy
+msgid "Aggregated transfer rate"
+msgstr "Télécharger"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:196
+#: ../../libraries/entropy/client/interfaces/fetch.py:441
+#: ../../libraries/entropy/client/interfaces/package.py:1414
+#, fuzzy
+msgid "second"
+msgstr "10 secondes"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:211
+#: ../../libraries/entropy/client/interfaces/fetch.py:456
+#: ../../libraries/entropy/client/interfaces/package.py:1429
+#, fuzzy
+msgid "Error downloading from"
+msgstr "Erreur lors du chargement des Alertes"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:215
+#, fuzzy
+msgid "files not available on this mirror"
+msgstr "n'est pas diponible"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:218
+#: ../../libraries/entropy/client/interfaces/fetch.py:464
+#, fuzzy
+msgid "wrong checksum"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:220
+#: ../../libraries/entropy/client/interfaces/fetch.py:466
+#: ../../libraries/entropy/spm.py:543 ../../server/server_reagent.py:89
+#: ../../server/server_reagent.py:101
+msgid "not found"
+msgstr "introuvable"
+
+#. timeout!
+#: ../../libraries/entropy/client/interfaces/fetch.py:222
+#, fuzzy
+msgid "timeout error"
+msgstr "supprimer un ou plusieurs paquets"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:224
+#: ../../libraries/entropy/client/interfaces/fetch.py:474
+#: ../../libraries/entropy/client/interfaces/package.py:1438
+#, fuzzy
+msgid "discarded download"
+msgstr "Télécharger"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:227
+#: ../../libraries/entropy/client/interfaces/fetch.py:477
+#: ../../libraries/entropy/client/interfaces/package.py:1440
+#, fuzzy
+msgid "unknown reason"
+msgstr "Dépaquetage impossible pour raison inconnue"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:421
+#, fuzzy
+msgid "Downloading from"
+msgstr "Pas de mirroir de téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:439
+#: ../../libraries/entropy/client/interfaces/package.py:1412
+#, fuzzy
+msgid "Successfully downloaded from"
+msgstr "déjà activé"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:441
+#: ../../libraries/entropy/client/interfaces/package.py:1414
+#, fuzzy
+msgid "at"
+msgstr "atome"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:461
+#: ../../libraries/entropy/client/interfaces/package.py:1434
+#, fuzzy
+msgid "file not available on this mirror"
+msgstr "n'est pas diponible"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:470
+#, fuzzy
+msgid "timeout, retrying on this mirror"
+msgstr "n'est pas diponible"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:472
+#, fuzzy
+msgid "timeout, giving up"
+msgstr "Entropy bloqué, abandon"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:135
+msgid "Probably Portage API has changed"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:227
+#, fuzzy
+msgid "not set"
+msgstr "n'est pas installé"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:227
+msgid "have you configured make.conf properly?"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:289
+#, fuzzy
+msgid "Extracting package metadata"
+msgstr "Extraction des métadonnées Entropy de"
+
+#: ../../libraries/entropy/client/interfaces/metadata.py:484
+#, fuzzy
+msgid "Package extraction complete"
+msgstr "Caclcul terminé"
+
+#. repository
+#. glsa title
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
+#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
+#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
+#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
+#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
+#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
+#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
+#: ../../spritz/src/views.py:1683
+msgid "Repository"
+msgstr "Dépot"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../client/text_ui.py:197
+msgid "is not available"
+msgstr "n'est pas diponible"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:55
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#, fuzzy
+msgid "Cannot validate"
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:56
+msgid "Please update your repositories now in order to remove this message!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:70
+#, fuzzy
+msgid "is corrupted"
+msgstr "Cache de reprise corrompu"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:122
+#, fuzzy
+msgid "bad repository id specified"
+msgstr "Pas de dépôt valide spécifié."
+
+#: ../../libraries/entropy/client/interfaces/methods.py:134
+#, fuzzy, python-format
+msgid "Repository %s hasn't been downloaded yet."
+msgstr "Identificateur de dépôt"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:239
+#, fuzzy
+msgid "repodata dictionary is corrupted"
+msgstr "Cache de reprise corrompu"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:449
+#, fuzzy
+msgid "System database not found or corrupted"
+msgstr "synchroniser la base de données"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:450
+msgid "running in safe mode using empty database from RAM"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:493
+#: ../../libraries/entropy/client/interfaces/methods.py:524
+#: ../../libraries/entropy/client/interfaces/methods.py:532
+msgid "Sanity Check"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:493
+#, fuzzy
+msgid "system database"
+msgstr "synchroniser la base de données"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:501
+#, fuzzy
+msgid "Scanning..."
+msgstr "Recherche en cours"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:518
+#, python-format
+msgid "Errors on idpackage %s, error: %s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:524
+msgid "PASSED"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:532
+msgid "CORRUPTED"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:590
+#, fuzzy
+msgid "Cannot backup selected database"
+msgstr "Impossible de continuer"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:590
+#: ../../libraries/entropy/client/interfaces/methods.py:644
+#, fuzzy
+msgid "permission denied"
+msgstr "Dépendances incomplètes"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:607
+#, fuzzy
+msgid "Backing up database to"
+msgstr "Synchronisation des bases de données"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:621
+#, fuzzy
+msgid "Unable to compress"
+msgstr "Révision de la base de donnée"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:624
+#, fuzzy
+msgid "Database backed up successfully"
+msgstr "Dépots ressucité avec succès"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:632
+#: ../../libraries/entropy/client/interfaces/methods.py:683
+#: ../../libraries/entropy/client/interfaces/methods.py:981
+#: ../../libraries/entropy/client/interfaces/methods.py:1004
 #: ../../libraries/entropy/const.py:513
 #, fuzzy
 msgid "All fine"
 msgstr "Terminé"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:643
+#, fuzzy
+msgid "Cannot restore selected backup"
+msgstr "Suppression des paquets sélectionnés"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:654
+#, fuzzy
+msgid "Restoring backed up database"
+msgstr "Montrer les mises à jours des paquets"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:670
+#, fuzzy
+msgid "Unable to unpack"
+msgstr "Révision de la base de donnée"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:673
+#, fuzzy
+msgid "Database restored successfully"
+msgstr "Dépots ressucité avec succès"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:828
+#, fuzzy
+msgid ""
+"Another Entropy instance is currently active, cannot satisfy your request."
+msgstr ""
+"Une autre instance d'Entropy est lancée. Impossible de traiter la file "
+"d'attente."
+
+#: ../../libraries/entropy/client/interfaces/methods.py:848
+msgid "Resources unlocked, let's go!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:857
+#, python-format
+msgid "Resources still locked after %s minutes, giving up!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:865
+#, python-format
+msgid "Resources locked, sleeping %s seconds, check #%s/%s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:889
+#, python-format
+msgid "Nothing to backup in etpConst with %s key"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:959
+#: ../../libraries/entropy/client/interfaces/methods.py:988
+msgid "must be an ASCII string"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:962
+#: ../../libraries/entropy/client/interfaces/methods.py:991
+#, fuzzy
+msgid "cannot start with"
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:964
+#, fuzzy
+msgid "Name already taken"
+msgstr "déjà activé"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:972
+#, fuzzy
+msgid "Cannot remove the old element"
+msgstr "Auto-combination des fichiers"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:974
+#, fuzzy
+msgid "Cannot create the element"
+msgstr "Auto-combination des fichiers"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:994
+#, fuzzy
+msgid "Already removed"
+msgstr "déjà activé"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:998
+msgid "Not defined by user"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1005
+#, fuzzy
+msgid "Set not found or unable to remove"
+msgstr "Pas de dépôt trouvé en ligne"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1056
+#: ../../spritz/src/spritz.glade.h:106
+#, fuzzy
+msgid "Libraries test"
+msgstr "librairies"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1071
+#, fuzzy
+msgid "Cannot find "
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1129
+#, fuzzy
+msgid "Collecting broken executables"
+msgstr "Collecte des compteurs Portage"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1135
+msgid "don't worry about libraries that are shown here but not later."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1148
+#, fuzzy
+msgid "Scanning libraries"
+msgstr "librairies"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1183
+msgid "various broken symbols"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1200
+#, fuzzy
+msgid "Matching broken libraries/executables"
+msgstr "Collecte des compteurs Portage"
+
+#: ../../libraries/entropy/client/interfaces/methods.py:1540
+#, fuzzy
+msgid "not a valid method"
+msgstr "n'est pas un paquet Entropy valide"
+
+#: ../../libraries/entropy/client/interfaces/package.py:68
+#, fuzzy
+msgid "Already prepared"
+msgstr "déjà activé"
+
+#: ../../libraries/entropy/client/interfaces/package.py:73
+#, fuzzy
+msgid "Not yet prepared"
+msgstr "déjà activé"
+
+#: ../../libraries/entropy/client/interfaces/package.py:78
+msgid "Action must be in"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:95
+#, fuzzy
+msgid "Checking package checksum..."
+msgstr "Vérification des mises à jour..."
+
+# not sure : match
+#: ../../libraries/entropy/client/interfaces/package.py:105
+#, fuzzy
+msgid "Package checksum matches"
+msgstr "Mise à jour de la comparaison des paquets"
+
+#: ../../libraries/entropy/client/interfaces/package.py:116
+#, python-format
+msgid "Package checksum does not match. Redownloading... attempt #%s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:131
+msgid "Cannot properly fetch package! Quitting."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:141
+msgid ""
+"Cannot properly fetch package or checksum does not match. Try download "
+"latest repositories."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:318
+#: ../../libraries/entropy/client/interfaces/package.py:849
+#: ../../libraries/entropy/client/interfaces/trigger.py:268
+#: ../../libraries/entropy/client/interfaces/trigger.py:946
+#: ../../libraries/entropy/client/interfaces/trigger.py:1020
+#: ../../libraries/entropy/client/interfaces/trigger.py:1107
+#: ../../libraries/entropy/client/interfaces/trigger.py:1196
+#: ../../libraries/entropy/client/interfaces/trigger.py:1457
+#: ../../libraries/entropy/client/interfaces/trigger.py:1471
+#: ../../libraries/entropy/client/interfaces/trigger.py:1514
+#: ../../libraries/entropy/client/interfaces/trigger.py:1532
+#: ../../libraries/entropy/client/interfaces/trigger.py:1561
+#: ../../libraries/entropy/client/interfaces/trigger.py:1574
+#: ../../libraries/entropy/client/interfaces/trigger.py:1587
+msgid "QA"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:319
+msgid "Cannot run Spm pkg_config() for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:321
+#: ../../libraries/entropy/client/interfaces/trigger.py:271
+#: ../../libraries/entropy/client/interfaces/trigger.py:949
+#: ../../libraries/entropy/client/interfaces/trigger.py:1023
+#: ../../libraries/entropy/client/interfaces/trigger.py:1110
+#: ../../libraries/entropy/client/interfaces/trigger.py:1199
+#, fuzzy
+msgid "Please report it"
+msgstr "Merci de patienter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:322
+#: ../../libraries/entropy/client/interfaces/package.py:1474
+#: ../../libraries/entropy/client/interfaces/package.py:1504
+#: ../../libraries/entropy/client/interfaces/package.py:1574
+#: ../../libraries/entropy/client/interfaces/package.py:1580
+#: ../../libraries/entropy/client/interfaces/package.py:1605
+#: ../../libraries/entropy/client/interfaces/package.py:1630
+#: ../../libraries/entropy/client/interfaces/package.py:1785
+#: ../../libraries/entropy/client/interfaces/package.py:1798
+#: ../../libraries/entropy/client/interfaces/trigger.py:65
+#: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
+#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
+#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
+#, fuzzy
+msgid "Error"
+msgstr "Mirroirs"
+
+#: ../../libraries/entropy/client/interfaces/package.py:346
+#, fuzzy
+msgid "Removing from Entropy"
+msgstr "Enlever"
+
+#. in this way we filter out directories
+#: ../../libraries/entropy/client/interfaces/package.py:386
+#, fuzzy
+msgid "Collision found during removal of"
+msgstr "Pas assez de paramètres"
+
+#: ../../libraries/entropy/client/interfaces/package.py:387
+#: ../../libraries/entropy/client/interfaces/package.py:1346
+#, fuzzy
+msgid "cannot overwrite"
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/package.py:426
+msgid "Removing config file, never modified"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:445
+#: ../../libraries/entropy/client/interfaces/package.py:1304
+#, fuzzy
+msgid "Protecting config file"
+msgstr "Fichier de configuration"
+
+#: ../../libraries/entropy/client/interfaces/package.py:460
+msgid "This package contains a badly encoded file !!!"
+msgstr ""
+
+#. inject into database
+#: ../../libraries/entropy/client/interfaces/package.py:734
+#, fuzzy
+msgid "Updating database"
+msgstr "Remplissage de la base de données"
+
+#: ../../libraries/entropy/client/interfaces/package.py:767
+#, fuzzy
+msgid "Cleaning old package files..."
+msgstr "Collecte des paquets Entropy"
+
+#: ../../libraries/entropy/client/interfaces/package.py:850
+msgid "Cannot update Portage database to destination"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:885
+#, python-format
+msgid "Cannot update Portage counter, destination %s does not exist."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:909
+#, python-format
+msgid "Cannot update Portage world file, destination %s does not exist."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:934
+#, python-format
+msgid "Cannot update Portage world file, destination %s is corrupted."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1065
+#, python-format
+msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1143
+msgid "Automerging config file, never modified"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1177
+#, python-format
+msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1206
+#, fuzzy
+msgid "File move error"
+msgstr "supprimer un ou plusieurs paquets"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1206
+#, fuzzy
+msgid "please report"
+msgstr "Merci de patienter"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1318
+#, fuzzy
+msgid "Skipping file installation/removal"
+msgstr "Réinstalle"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1331
+msgid "Cannot check CONFIG PROTECTION. Error"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1345
+msgid "Collision found during install for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1394
+#: ../../libraries/entropy/client/interfaces/package.py:1488
+#, fuzzy
+msgid "Downloading"
+msgstr "Télécharger"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1422
+#, fuzzy
+msgid "Local path"
+msgstr "Statistiques"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1453
+#, fuzzy
+msgid "Downloading archive"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1473
+#, fuzzy
+msgid "Package cannot be fetched. Try to update repositories and retry"
+msgstr "Paquets introuvables dans les dépôts, réessayez plus tard."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1488
+#, fuzzy
+msgid "archives"
+msgstr "actif"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1503
+#, fuzzy
+msgid "Some packages cannot be fetched. Try to update repositories and retry"
+msgstr "Paquets introuvables dans les dépôts, réessayez plus tard."
+
+#: ../../libraries/entropy/client/interfaces/package.py:1525
+#, fuzzy
+msgid "Fetch for the chosen package is not available, unknown error."
+msgstr "Les paquets sélectionnés ne sont pas vulnérables"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1534
+msgid "Installed package in queue vanished, skipping."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1553
+#, fuzzy
+msgid "Unpacking package"
+msgstr "Déballage du paquet principal"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1561
+#, fuzzy
+msgid "Merging package"
+msgstr "Montrer les paquets installés"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1572
+msgid "You are running out of disk space"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1573
+msgid "I bet, you're probably Michele"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1578
+#, fuzzy
+msgid "An error occured while trying to unpack the package"
+msgstr "Une erreur est survenue pendant l'analyse"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1579
+#: ../../libraries/entropy/client/interfaces/package.py:1604
+#, fuzzy
+msgid "Check if your system is healthy"
+msgstr "Le système est en bonne santé"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1593
+#, fuzzy
+msgid "Installing package"
+msgstr "Installation des paquets disponibles dans"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1603
+#, fuzzy
+msgid "An error occured while trying to install the package"
+msgstr "Une erreur est survenue pendant l'analyse"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1618
+#, fuzzy
+msgid "Removing data"
+msgstr "Enlever"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1628
+#, fuzzy
+msgid "An error occured while trying to remove the package"
+msgstr "Une erreur est survenue pendant l'analyse"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1629
+msgid "Check if you have enough disk space on your hard disk"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1643
+#: ../../libraries/entropy/client/interfaces/package.py:1882
+#, fuzzy
+msgid "Cleaning"
+msgstr "Calcul en cours"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1668
+#, fuzzy
+msgid "Compilation messages"
+msgstr "Compilé avec"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1773
+#, fuzzy
+msgid "Configuring package"
+msgstr "Information Critique"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1783
+#: ../../libraries/entropy/client/interfaces/package.py:1796
+#, fuzzy
+msgid "An error occured while trying to configure the package"
+msgstr "Une erreur est survenue pendant l'analyse"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1784
+#, fuzzy
+msgid "Make sure that your system is healthy"
+msgstr "Le système est en bonne santé"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1797
+msgid "It seems that the Source Package Manager entry is missing"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1826
+#: ../../spritz/src/entropyapi.py:111
+#, fuzzy
+msgid "Fetching"
+msgstr "Matching"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1831
+#, fuzzy
+msgid "Multi Fetching"
+msgstr "Matching"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1832
+#: ../../libraries/entropy/client/interfaces/package.py:1848
+#: ../../client/text_query.py:376 ../../client/text_query.py:409
+#: ../../client/text_ui.py:1032 ../../server/server_reagent.py:463
+msgid "packages"
+msgstr "paquets"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1837
+#, fuzzy
+msgid "Fetching sources"
+msgstr "Matching"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1842
+#, fuzzy
+msgid "Verifying"
+msgstr "Versions"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1847
+#, fuzzy
+msgid "Multi Verification"
+msgstr "Notification de mises à jour"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1854
+#, fuzzy
+msgid "Unpacking"
+msgstr "Remplacement"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1857
+#, fuzzy
+msgid "Merging"
+msgstr "Recherche en cours"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1866
+#, fuzzy
+msgid "Installing"
+msgstr "Installer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1871
+#: ../../client/text_rescue.py:531
+msgid "Removing"
+msgstr "Enlever"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1887
+#, fuzzy
+msgid "Postinstall"
+msgstr "installer"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1892
+#, fuzzy
+msgid "Preinstall"
+msgstr "Réinstalle"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1897
+#, fuzzy
+msgid "Preremove"
+msgstr "supprimé"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1902
+#, fuzzy
+msgid "Postremove"
+msgstr "supprimé"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1907
+#, fuzzy
+msgid "Configuring"
+msgstr "Fichier de configuration"
+
+#: ../../libraries/entropy/client/interfaces/package.py:1969
+#, fuzzy
+msgid "An error occured. Action aborted."
+msgstr "Une erreur est survenue pendant l'analyse"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:46
+#, fuzzy
+msgid "A valid Equo instance or subclass is needed"
+msgstr "Chemin de la base de données du dépôt"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:78
+#, fuzzy, python-format
+msgid "No repositories specified in %s"
+msgstr "Pas de dépôt spécifié dans"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:144
+#, fuzzy
+msgid "Repository is not listed in self.reponames"
+msgstr "n'est pas diponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:153
+#, fuzzy
+msgid "Wrong database compression method"
+msgstr "Révision de la base de donnée"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:171
+#, python-format
+msgid "Supported items: %s"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:174
+#, python-format
+msgid "For %s, cmethod can't be None"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:254
+msgid "self.dbformat_eapi must be in (1,2,3,)"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:280
+#: ../../libraries/entropy/client/interfaces/repository.py:311
+msgid "self.dbformat_eapi must be in (1,2)"
+msgstr ""
+
+#. verify checksum
+#: ../../libraries/entropy/client/interfaces/repository.py:410
+#, fuzzy
+msgid "Checking downloaded database"
+msgstr "Transductionactionintaction des bases de données"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:420
+#, fuzzy
+msgid "Cannot open digest"
+msgstr "Impossible de continuer"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:420
+#: ../../libraries/entropy/client/interfaces/repository.py:1280
+#, fuzzy
+msgid "Cannot verify database integrity"
+msgstr "vérifier également l'intégrité des paquets"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:428
+#: ../../libraries/entropy/client/interfaces/repository.py:436
+#, fuzzy
+msgid "Downloaded database status"
+msgstr "Télécharger"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:428
+msgid "OK"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:436
+msgid "ERROR"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:443
+#, fuzzy
+msgid "An error occured while checking database integrity"
+msgstr "Une erreur est survenue pendant l'analyse"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:443
+msgid "Giving up"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:463
+#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
+msgid "Database URL"
+msgstr "URL de la base de données"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:470
+#, fuzzy
+msgid "Database local path"
+msgstr "Verrouillage des bases de données terminé"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:477
+#, fuzzy
+msgid "Database EAPI"
+msgstr "URL de la base de données"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:571
+#: ../../libraries/entropy/client/interfaces/repository.py:692
+#: ../../libraries/entropy/client/interfaces/repository.py:707
+#: ../../libraries/entropy/client/interfaces/repository.py:725
+#, fuzzy
+msgid "EAPI3 Service status"
+msgstr "Statut"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:571
+msgid "remote database suddenly locked"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:583
+#, fuzzy
+msgid "EAPI3 Service"
+msgstr "Révision du dépot"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:583
+#, fuzzy
+msgid "skipping differential sync"
+msgstr "affichage des différences"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:584
+msgid "threshold"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:616
+#, fuzzy
+msgid "Fetching segments"
+msgstr "Matching"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:637
+msgid "Fetch error on segment"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:646
+#: ../../libraries/entropy/client/interfaces/repository.py:657
+#, fuzzy
+msgid "Service status"
+msgstr "Statut"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:674
+#, fuzzy
+msgid "Local status"
+msgstr "Statistiques"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:692
+#, fuzzy
+msgid "treeupdates data not available"
+msgstr "mises à jour disponibles"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:707
+msgid "cannot update treeupdates data"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:725
+#, fuzzy
+msgid "cannot update package sets data"
+msgstr "Pas de paquets trouvés"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:746
+msgid "Fetch error on segment while adding"
+msgstr ""
+
+# not sure : inflate
+#: ../../libraries/entropy/client/interfaces/repository.py:756
+#, fuzzy
+msgid "Injecting package"
+msgstr "Paquet construit"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:768
+#, fuzzy
+msgid "Packages injection complete"
+msgstr "Caclcul terminé"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:778
+#, fuzzy
+msgid "Removing package"
+msgstr "Suppression des paquets sélectionnés"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:786
+#, fuzzy
+msgid "Packages removal complete"
+msgstr "Suppression de la base de données complète"
+
+# not sure : match
+#: ../../libraries/entropy/client/interfaces/repository.py:800
+#, fuzzy
+msgid "Database checksum doesn't match remote."
+msgstr "Mise à jour de la comparaison des paquets"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:802
+#, fuzzy
+msgid "remote"
+msgstr "supprimé"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:883
+#, fuzzy
+msgid "EAPI3 Service error"
+msgstr "Révision du dépot"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1002
+#, fuzzy
+msgid "Configuration files update error, not critical, continuing"
+msgstr "outil de mise à jour des fichiers de configuration"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1037
+msgid "Something bad happened. Please have a look."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1056
+#, fuzzy
+msgid "Skipping configuration files update, you are not root."
+msgstr "outil de mise à jour des fichiers de configuration"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1079
+#, fuzzy
+msgid "Overwriting"
+msgstr "Remplacer ?"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1119
+#, fuzzy
+msgid "variable differs"
+msgstr "Disponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1119
+#: ../../libraries/entropy/client/interfaces/repository.py:1190
+#, fuzzy
+msgid "Updating"
+msgstr "Matching"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1132
+#, fuzzy
+msgid "updating critical variables"
+msgstr "mises à jour disponibles"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1190
+#, fuzzy
+msgid "differs"
+msgstr "Disponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
+#, fuzzy
+msgid "Reverting"
+msgstr "Regénérer le cache"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1225
+#, fuzzy
+msgid "a new release is available"
+msgstr "Pas de mises à jour disponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1226
+#, fuzzy
+msgid "Mind to install it before any other package"
+msgstr "Suppression des paquets sélectionnés"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1240
+#, fuzzy
+msgid "Unpacking database to"
+msgstr "Synchronisation des bases de données"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1250
+#, fuzzy
+msgid "Cannot unpack compressed package"
+msgstr "Compression des paquets"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1250
+#, fuzzy
+msgid "Skipping repository"
+msgstr "dans les dépôts"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1269
+#, fuzzy
+msgid "Downloading checksum"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1280
+#, fuzzy
+msgid "Cannot fetch checksum"
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1308
+msgid "Current repository got suddenly locked. Download aborted."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1314
+msgid "remote database got suddenly locked"
+msgstr ""
+
+# not sure : bump
+#. starting to download
+#: ../../libraries/entropy/client/interfaces/repository.py:1323
+#, fuzzy
+msgid "Downloading repository database"
+msgstr "Saut de la base de données du dépôt"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1351
+#, fuzzy
+msgid "database does not exist online"
+msgstr "la base de données n'existe pas ou est sévèrement endommagée"
+
+# not sure : matching
+#: ../../libraries/entropy/client/interfaces/repository.py:1366
+#, fuzzy
+msgid "database is already up to date"
+msgstr "Comparaison des paquets déjà à jour"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1378
+#, fuzzy
+msgid "database will be ready soon"
+msgstr "Bases de données déjà synchronisées"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1394
+#, fuzzy
+msgid "Repository is being updated"
+msgstr "Identificateur de dépôt"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1395
+msgid "Try again in a few minutes"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1427
+#, fuzzy
+msgid "Injecting downloaded dump"
+msgstr "télécharger les paquets uniquement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1429
+#: ../../libraries/entropy/db.py:3718 ../../spritz/src/spritz.glade.h:289
+#, fuzzy
+msgid "please wait"
+msgstr "Merci de patienter"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1451
+#, fuzzy
+msgid "Advisories fetch error"
+msgstr "Sources"
+
+# not sure : bump
+#: ../../libraries/entropy/client/interfaces/repository.py:1476
+#, fuzzy
+msgid "Downloading repository metafile"
+msgstr "Saut de la base de données du dépôt"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1486
+#, fuzzy
+msgid "Downloading SSL CA certificate"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1496
+#, fuzzy
+msgid "Downloading SSL Server certificate"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1506
+#, fuzzy
+msgid "Downloading package mask"
+msgstr "télécharger les paquets uniquement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1516
+#, fuzzy
+msgid "Downloading packages system mask"
+msgstr "télécharger les paquets uniquement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1526
+#, fuzzy
+msgid "Downloading conflicting tagged packages file"
+msgstr "Collecte des paquets Entropy"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1536
+#, fuzzy
+msgid "Downloading license whitelist"
+msgstr "Téléchargement terminé"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1546
+#, fuzzy
+msgid "Downloading revision"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1556
+#, fuzzy
+msgid "Downloading SPM global configuration"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1566
+#, fuzzy
+msgid "Downloading SPM package unmasking configuration"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1576
+#, fuzzy
+msgid "Downloading SPM package keywording configuration"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1586
+#, fuzzy
+msgid "Downloading SPM package USE flags configuration"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1596
+#, fuzzy
+msgid "Downloading SPM Profile configuration"
+msgstr "Taille du téléchargement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1606
+#, fuzzy
+msgid "Downloading Notice Board"
+msgstr "télécharger les paquets uniquement"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1632
+msgid "unpacked meta file"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1649
+#, fuzzy
+msgid "not available, it's ok"
+msgstr "Indisponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1652
+#, fuzzy
+msgid "not available, not much ok!"
+msgstr "n'est pas diponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1657
+#, fuzzy
+msgid "available, w00t!"
+msgstr "Disponible"
+
+#: ../../libraries/entropy/client/interfaces/repository.py:1702
+#: ../../client/text_repositories.py:161
+msgid "Repository revision"
+msgstr "Révision du dépot"
+
+# not sure : bump
+#: ../../libraries/entropy/client/interfaces/repository.py:1718
+#, fuzzy
+msgid "Indexing Repository metadata"
+msgstr "Saut de la base de données du dépôt"
+
+#. let's dance!
+#: ../../libraries/entropy/client/interfaces/repository.py:1746
+#, fuzzy
+msgid "Repositories synchronization"
+msgstr "Révision du dépot"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:38
+#, fuzzy
+msgid "A valid Entropy Instance is needed"
+msgstr "Chemin de la base de données du dépôt"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:64
+msgid "Portage interface can't be loaded"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:67
+#, fuzzy
+msgid "please fix"
+msgstr "Merci de patienter"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:82
+msgid "Valid phases"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:269
+msgid "Cannot run External trigger for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:488
+#, fuzzy
+msgid "Please remember"
+msgstr "Merci de patienter"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:488
+msgid "It is always better to leave Entropy updates isolated"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:494
+#, fuzzy
+msgid "Purging Entropy cache"
+msgstr "regénérer le cache Entropy"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:508
+msgid "Updating {conf.d,init.d} mtime"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:534
+#, fuzzy
+msgid "Configuring Binutils Profile"
+msgstr "Fichier de configuration"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:554
+#, fuzzy
+msgid "Updating moduledb"
+msgstr "Remplissage de la base de données"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:562
+#, fuzzy
+msgid "Running depmod"
+msgstr "Vérification des dépendances"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:599
+#, fuzzy
+msgid "Removing boot service"
+msgstr "Enlever"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:617
+#, fuzzy
+msgid "A new service will be installed"
+msgstr "Paquets nécessitant une installation"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:638
+#: ../../libraries/entropy/client/interfaces/trigger.py:671
+#, fuzzy
+msgid "Reconfiguring OpenGL"
+msgstr "Information Critique"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:656
+#: ../../libraries/entropy/client/interfaces/trigger.py:689
+msgid "Eselect NOT found, cannot run OpenGL trigger"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:719
+#: ../../libraries/entropy/client/interfaces/trigger.py:744
+#, fuzzy
+msgid "Configuring GRUB bootloader"
+msgstr "Fichier de configuration"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:720
+#, fuzzy
+msgid "Adding the new kernel"
+msgstr "Suppression des paquets sélectionnés"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:745
+#, fuzzy
+msgid "Removing the selected kernel"
+msgstr "Suppression des paquets sélectionnés"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:777
+#, fuzzy
+msgid "Mounted /boot successfully"
+msgstr "Dépots mis à jour avec succès"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:788
+msgid "Cannot mount /boot automatically !!"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:823
+msgid "Creating kernel symlink"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:825
+msgid "for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:857
+#, fuzzy
+msgid "Regenerating"
+msgstr "Regénérer le cache"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:873
+msgid "Updating environment"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:947
+#: ../../libraries/entropy/client/interfaces/trigger.py:1021
+#: ../../libraries/entropy/client/interfaces/trigger.py:1108
+#: ../../libraries/entropy/client/interfaces/trigger.py:1197
+msgid "Cannot run Portage trigger for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:950
+#: ../../libraries/entropy/client/interfaces/trigger.py:1024
+#: ../../libraries/entropy/client/interfaces/trigger.py:1111
+#: ../../libraries/entropy/client/interfaces/trigger.py:1200
+msgid "Attach this"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1458
+#, fuzzy
+msgid "Cannot find df"
+msgstr "Impossible de trouver"
+
+#. 'cannot match device /dev/foo with a grub one'
+#: ../../libraries/entropy/client/interfaces/trigger.py:1459
+#: ../../libraries/entropy/client/interfaces/trigger.py:1473
+#: ../../libraries/entropy/client/interfaces/trigger.py:1518
+#: ../../libraries/entropy/client/interfaces/trigger.py:1563
+#: ../../libraries/entropy/client/interfaces/trigger.py:1576
+#: ../../libraries/entropy/client/interfaces/trigger.py:1589
+msgid "Cannot properly configure the kernel"
+msgstr ""
+
+# not sure : deflate
+#: ../../libraries/entropy/client/interfaces/trigger.py:1460
+#: ../../libraries/entropy/client/interfaces/trigger.py:1474
+#: ../../libraries/entropy/client/interfaces/trigger.py:1519
+#: ../../libraries/entropy/client/interfaces/trigger.py:1536
+#: ../../libraries/entropy/client/interfaces/trigger.py:1564
+#: ../../libraries/entropy/client/interfaces/trigger.py:1577
+#: ../../libraries/entropy/client/interfaces/trigger.py:1590
+#, fuzzy
+msgid "Defaulting to"
+msgstr "Déconstruction"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1472
+#, fuzzy
+msgid "Cannot find grub"
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1515
+#, fuzzy
+msgid "cannot match device"
+msgstr "Impossible de trouver"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1517
+msgid "with a grub one"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1533
+msgid "grub translation not supported for"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1535
+msgid "Cannot properly configure grub.conf"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1562
+msgid "cannot match grub device with a Linux one"
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1575
+#, fuzzy
+msgid "cannot find generated device.map"
+msgstr "Impossible de compléter les dépendances"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:1588
+#, fuzzy
+msgid "cannot run df /boot"
+msgstr "Impossible de trouver"
 
 #: ../../libraries/entropy/const.py:514
 #, fuzzy
@@ -2294,13 +3766,6 @@ msgstr "Trouvé %s paquets"
 #: ../../libraries/entropy/db.py:44
 msgid "Entropy needs Python compiled with sqlite3 support"
 msgstr ""
-
-#: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
-#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
-#, fuzzy
-msgid "Error"
-msgstr "Mirroirs"
 
 #: ../../libraries/entropy/db.py:362
 #, fuzzy
@@ -2433,11 +3898,6 @@ msgstr ""
 #, fuzzy
 msgid "Syncing current database"
 msgstr "Synchronisation des bases de données"
-
-#: ../../libraries/entropy/db.py:3718 ../../spritz/src/spritz.glade.h:289
-#, fuzzy
-msgid "please wait"
-msgstr "Merci de patienter"
 
 #: ../../libraries/entropy/db.py:3730
 #, fuzzy
@@ -2732,11 +4192,6 @@ msgstr "installer"
 #, fuzzy
 msgid "Invalid backend"
 msgstr "Description"
-
-#: ../../libraries/entropy/spm.py:543 ../../server/server_reagent.py:89
-#: ../../server/server_reagent.py:101
-msgid "not found"
-msgstr "introuvable"
 
 #: ../../libraries/entropy/spm.py:962
 #, fuzzy
@@ -4205,11 +5660,6 @@ msgstr "Recherche sur Needed"
 msgid "Library"
 msgstr "Librairie"
 
-#: ../../client/text_query.py:376 ../../client/text_query.py:409
-#: ../../client/text_ui.py:1032 ../../server/server_reagent.py:463
-msgid "packages"
-msgstr "paquets"
-
 #: ../../client/text_query.py:387
 msgid "Eclass Search"
 msgstr "Recherche Eclass"
@@ -4509,10 +5959,6 @@ msgstr "Dépôts Actifs"
 msgid "Packages Mirror"
 msgstr "Miroir des Paquets"
 
-#: ../../client/text_repositories.py:133 ../../client/text_repositories.py:155
-msgid "Database URL"
-msgstr "URL de la base de données"
-
 #: ../../client/text_repositories.py:134
 #, fuzzy
 msgid "Repository identifier"
@@ -4547,10 +5993,6 @@ msgstr "Nom du dépôt"
 #: ../../client/text_repositories.py:160
 msgid "Repository database checksum"
 msgstr "Somme de contrôle de la base de données du dépôt"
-
-#: ../../client/text_repositories.py:161
-msgid "Repository revision"
-msgstr "Révision du dépot"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:210
 #: ../../spritz/src/spritz.py:1245
@@ -4874,10 +6316,6 @@ msgstr "Ils seraient supprimés de la base de donnée système"
 #: ../../client/text_rescue.py:519
 msgid "Continue with removal ?"
 msgstr "Continuer avec la suppression ?"
-
-#: ../../client/text_rescue.py:531
-msgid "Removing"
-msgstr "Enlever"
 
 #: ../../client/text_rescue.py:536
 msgid "Database removal complete"
@@ -5400,10 +6838,6 @@ msgstr "Lancée avec"
 #: ../../client/text_ui.py:196
 msgid "Selected release"
 msgstr "Version sélectionnée"
-
-#: ../../client/text_ui.py:197
-msgid "is not available"
-msgstr "n'est pas diponible"
 
 #: ../../client/text_ui.py:222
 msgid "Calculating System Updates"
@@ -5964,19 +7398,6 @@ msgstr "Activation"
 #: ../../server/server_reagent.py:83 ../../spritz/src/dialogs.py:5022
 msgid "Enabled"
 msgstr "Activé"
-
-#. repository
-#. glsa title
-#: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
-#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
-#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
-#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
-#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
-#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
-#: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
-#: ../../spritz/src/views.py:1683
-msgid "Repository"
-msgstr "Dépot"
 
 #: ../../server/server_reagent.py:86
 msgid "already enabled"
@@ -6926,11 +8347,6 @@ msgstr "Impossible de soumettre votre rapport. Êtes-vous connecté à internet 
 #, fuzzy
 msgid "Error enabling masked package"
 msgstr "Compression du smart package"
-
-#: ../../spritz/src/entropyapi.py:111
-#, fuzzy
-msgid "Fetching"
-msgstr "Matching"
 
 #: ../../spritz/src/entropyapi.py:113
 #, fuzzy
@@ -8259,11 +9675,6 @@ msgstr ""
 msgid "Keywords (space separated)"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:106
-#, fuzzy
-msgid "Libraries test"
-msgstr "librairies"
-
 #: ../../spritz/src/spritz.glade.h:107
 #, fuzzy
 msgid "Library test"
@@ -9017,576 +10428,12 @@ msgstr ""
 #~ msgstr "Recherche de dépendance (Depends)"
 
 #, fuzzy
-#~ msgid "Cannot validate"
-#~ msgstr "Impossible de trouver"
-
-#, fuzzy
-#~ msgid "is corrupted"
-#~ msgstr "Cache de reprise corrompu"
-
-#, fuzzy
-#~ msgid ""
-#~ "Another Entropy instance is currently active, cannot satisfy your request."
-#~ msgstr ""
-#~ "Une autre instance d'Entropy est lancée. Impossible de traiter la file "
-#~ "d'attente."
-
-#, fuzzy
-#~ msgid "system database"
-#~ msgstr "synchroniser la base de données"
-
-#, fuzzy
-#~ msgid "bad repository id specified"
-#~ msgstr "Pas de dépôt valide spécifié."
-
-#, fuzzy
-#~ msgid "Cannot backup selected database"
-#~ msgstr "Impossible de continuer"
-
-#, fuzzy
-#~ msgid "permission denied"
-#~ msgstr "Dépendances incomplètes"
-
-#, fuzzy
-#~ msgid "Backing up database to"
-#~ msgstr "Synchronisation des bases de données"
-
-#, fuzzy
-#~ msgid "Unable to compress"
-#~ msgstr "Révision de la base de donnée"
-
-#, fuzzy
-#~ msgid "Database backed up successfully"
-#~ msgstr "Dépots ressucité avec succès"
-
-#, fuzzy
-#~ msgid "Cannot restore selected backup"
-#~ msgstr "Suppression des paquets sélectionnés"
-
-#, fuzzy
-#~ msgid "Restoring backed up database"
-#~ msgstr "Montrer les mises à jours des paquets"
-
-#, fuzzy
-#~ msgid "Database restored successfully"
-#~ msgstr "Dépots ressucité avec succès"
-
-#, fuzzy
-#~ msgid "Cache is now empty."
-#~ msgstr "Caclcul terminé"
-
-#, fuzzy
-#~ msgid "Configuration files"
-#~ msgstr "Fichier de configuration"
-
-#, fuzzy
-#~ msgid "Cache generation complete."
-#~ msgstr "Caclcul terminé"
-
-#, fuzzy
-#~ msgid "Resolving metadata"
-#~ msgstr "collecte des métadonnées Entropy"
-
-#, fuzzy
-#~ msgid "Dependencies cache filled."
-#~ msgstr "Dépendances"
-
-#, fuzzy
-#~ msgid "Cannot find "
-#~ msgstr "Impossible de trouver"
-
-#, fuzzy
-#~ msgid "Collecting broken executables"
-#~ msgstr "Collecte des compteurs Portage"
-
-#, fuzzy
-#~ msgid "Scanning libraries"
-#~ msgstr "librairies"
-
-#, fuzzy
-#~ msgid "Sorting dependencies"
-#~ msgstr "Dépendances incomplètes"
-
-#, fuzzy
 #~ msgid "Calculating removable depends of"
 #~ msgstr "Calcul des dépendances de suppression, merci de patienter"
 
 #, fuzzy
-#~ msgid "Calculating available packages for"
-#~ msgstr "Installation des paquets disponibles dans"
-
-#, fuzzy
-#~ msgid "Calculating world packages"
-#~ msgstr "Calcul des dépendances"
-
-#, fuzzy
-#~ msgid "cannot start with"
-#~ msgstr "Impossible de trouver"
-
-#, fuzzy
-#~ msgid "Name already taken"
-#~ msgstr "déjà activé"
-
-#, fuzzy
-#~ msgid "Cannot remove the old element"
-#~ msgstr "Auto-combination des fichiers"
-
-#, fuzzy
-#~ msgid "Cannot create the element"
-#~ msgstr "Auto-combination des fichiers"
-
-#, fuzzy
-#~ msgid "Already removed"
-#~ msgstr "déjà activé"
-
-#, fuzzy
-#~ msgid "Set not found or unable to remove"
-#~ msgstr "Pas de dépôt trouvé en ligne"
-
-#, fuzzy
-#~ msgid "success"
-#~ msgstr "accès"
-
-#, fuzzy
-#~ msgid "Aggregated transfer rate"
-#~ msgstr "Télécharger"
-
-#, fuzzy
-#~ msgid "Error downloading from"
-#~ msgstr "Erreur lors du chargement des Alertes"
-
-#, fuzzy
-#~ msgid "files not available on this mirror"
-#~ msgstr "n'est pas diponible"
-
-#, fuzzy
-#~ msgid "timeout error"
-#~ msgstr "supprimer un ou plusieurs paquets"
-
-#, fuzzy
-#~ msgid "Downloading from"
-#~ msgstr "Pas de mirroir de téléchargement"
-
-#, fuzzy
-#~ msgid "at"
-#~ msgstr "atome"
-
-#, fuzzy
-#~ msgid "file not available on this mirror"
-#~ msgstr "n'est pas diponible"
-
-#, fuzzy
-#~ msgid "timeout, retrying on this mirror"
-#~ msgstr "n'est pas diponible"
-
-#, fuzzy
-#~ msgid "timeout, giving up"
-#~ msgstr "Entropy bloqué, abandon"
-
-#, fuzzy
-#~ msgid "not set"
-#~ msgstr "n'est pas installé"
-
-#, fuzzy
-#~ msgid "Extracting package metadata"
-#~ msgstr "Extraction des métadonnées Entropy de"
-
-#, fuzzy
-#~ msgid "Package extraction complete"
-#~ msgstr "Caclcul terminé"
-
-#, fuzzy
-#~ msgid "Already prepared"
-#~ msgstr "déjà activé"
-
-#, fuzzy
-#~ msgid "Checking package checksum..."
-#~ msgstr "Vérification des mises à jour..."
-
-# not sure : match
-#, fuzzy
-#~ msgid "Package checksum matches"
-#~ msgstr "Mise à jour de la comparaison des paquets"
-
-#, fuzzy
-#~ msgid "Please report it"
-#~ msgstr "Merci de patienter"
-
-#, fuzzy
-#~ msgid "Updating database"
-#~ msgstr "Remplissage de la base de données"
-
-#, fuzzy
-#~ msgid "Cleaning old package files..."
-#~ msgstr "Collecte des paquets Entropy"
-
-#, fuzzy
-#~ msgid "File move error"
-#~ msgstr "supprimer un ou plusieurs paquets"
-
-#, fuzzy
-#~ msgid "please report"
-#~ msgstr "Merci de patienter"
-
-#, fuzzy
-#~ msgid "Skipping file installation/removal"
-#~ msgstr "Réinstalle"
-
-#, fuzzy
-#~ msgid "Downloading"
-#~ msgstr "Télécharger"
-
-#, fuzzy
-#~ msgid "Local path"
-#~ msgstr "Statistiques"
-
-#, fuzzy
-#~ msgid "Downloading archive"
-#~ msgstr "Taille du téléchargement"
-
-#, fuzzy
-#~ msgid "Package cannot be fetched. Try to update repositories and retry"
-#~ msgstr "Paquets introuvables dans les dépôts, réessayez plus tard."
-
-#, fuzzy
-#~ msgid "archives"
-#~ msgstr "actif"
-
-#, fuzzy
-#~ msgid ""
-#~ "Some packages cannot be fetched. Try to update repositories and retry"
-#~ msgstr "Paquets introuvables dans les dépôts, réessayez plus tard."
-
-#, fuzzy
-#~ msgid "Fetch for the chosen package is not available, unknown error."
-#~ msgstr "Les paquets sélectionnés ne sont pas vulnérables"
-
-#, fuzzy
-#~ msgid "Unpacking package"
-#~ msgstr "Déballage du paquet principal"
-
-#, fuzzy
-#~ msgid "Merging package"
-#~ msgstr "Montrer les paquets installés"
-
-#, fuzzy
-#~ msgid "An error occured while trying to unpack the package"
-#~ msgstr "Une erreur est survenue pendant l'analyse"
-
-#, fuzzy
-#~ msgid "Check if your system is healthy"
-#~ msgstr "Le système est en bonne santé"
-
-#, fuzzy
-#~ msgid "Installing package"
-#~ msgstr "Installation des paquets disponibles dans"
-
-#, fuzzy
-#~ msgid "An error occured while trying to install the package"
-#~ msgstr "Une erreur est survenue pendant l'analyse"
-
-#, fuzzy
-#~ msgid "Removing data"
-#~ msgstr "Enlever"
-
-#, fuzzy
-#~ msgid "An error occured while trying to remove the package"
-#~ msgstr "Une erreur est survenue pendant l'analyse"
-
-#, fuzzy
-#~ msgid "Cleaning"
-#~ msgstr "Calcul en cours"
-
-#, fuzzy
-#~ msgid "Configuring package"
-#~ msgstr "Information Critique"
-
-#, fuzzy
-#~ msgid "An error occured while trying to configure the package"
-#~ msgstr "Une erreur est survenue pendant l'analyse"
-
-#, fuzzy
-#~ msgid "Make sure that your system is healthy"
-#~ msgstr "Le système est en bonne santé"
-
-#, fuzzy
-#~ msgid "Multi Fetching"
-#~ msgstr "Matching"
-
-#, fuzzy
-#~ msgid "Fetching sources"
-#~ msgstr "Matching"
-
-#, fuzzy
-#~ msgid "Multi Verification"
-#~ msgstr "Notification de mises à jour"
-
-#, fuzzy
-#~ msgid "Unpacking"
-#~ msgstr "Remplacement"
-
-#, fuzzy
-#~ msgid "Merging"
-#~ msgstr "Recherche en cours"
-
-#, fuzzy
-#~ msgid "Installing"
-#~ msgstr "Installer"
-
-#, fuzzy
-#~ msgid "Postinstall"
-#~ msgstr "installer"
-
-#, fuzzy
-#~ msgid "Preinstall"
-#~ msgstr "Réinstalle"
-
-#, fuzzy
-#~ msgid "Preremove"
-#~ msgstr "supprimé"
-
-#, fuzzy
-#~ msgid "Postremove"
-#~ msgstr "supprimé"
-
-#, fuzzy
-#~ msgid "An error occured. Action aborted."
-#~ msgstr "Une erreur est survenue pendant l'analyse"
-
-#, fuzzy
-#~ msgid "No repositories specified in %s"
-#~ msgstr "Pas de dépôt spécifié dans"
-
-#, fuzzy
-#~ msgid "Wrong database compression method"
-#~ msgstr "Révision de la base de donnée"
-
-#, fuzzy
-#~ msgid "Cannot open digest"
-#~ msgstr "Impossible de continuer"
-
-#, fuzzy
-#~ msgid "Cannot verify database integrity"
-#~ msgstr "vérifier également l'intégrité des paquets"
-
-#, fuzzy
-#~ msgid "An error occured while checking database integrity"
-#~ msgstr "Une erreur est survenue pendant l'analyse"
-
-#, fuzzy
-#~ msgid "Database local path"
-#~ msgstr "Verrouillage des bases de données terminé"
-
-#, fuzzy
-#~ msgid "Database EAPI"
-#~ msgstr "URL de la base de données"
-
-#, fuzzy
-#~ msgid "skipping differential sync"
-#~ msgstr "affichage des différences"
-
-#, fuzzy
-#~ msgid "Service status"
-#~ msgstr "Statut"
-
-#, fuzzy
-#~ msgid "Local status"
-#~ msgstr "Statistiques"
-
-#, fuzzy
-#~ msgid "treeupdates data not available"
-#~ msgstr "mises à jour disponibles"
-
-# not sure : inflate
-#, fuzzy
-#~ msgid "Injecting package"
-#~ msgstr "Paquet construit"
-
-#, fuzzy
-#~ msgid "Packages injection complete"
-#~ msgstr "Caclcul terminé"
-
-#, fuzzy
-#~ msgid "Removing package"
-#~ msgstr "Suppression des paquets sélectionnés"
-
-#, fuzzy
-#~ msgid "Packages removal complete"
-#~ msgstr "Suppression de la base de données complète"
-
-#, fuzzy
-#~ msgid "remote"
-#~ msgstr "supprimé"
-
-#, fuzzy
-#~ msgid "Skipping configuration files update, you are not root."
-#~ msgstr "outil de mise à jour des fichiers de configuration"
-
-#, fuzzy
-#~ msgid "Overwriting"
-#~ msgstr "Remplacer ?"
-
-#, fuzzy
-#~ msgid "variable differs"
-#~ msgstr "Disponible"
-
-#, fuzzy
-#~ msgid "Updating"
-#~ msgstr "Matching"
-
-#, fuzzy
-#~ msgid "updating critical variables"
-#~ msgstr "mises à jour disponibles"
-
-#, fuzzy
-#~ msgid "Reverting"
-#~ msgstr "Regénérer le cache"
-
-#, fuzzy
-#~ msgid "a new release is available"
-#~ msgstr "Pas de mises à jour disponible"
-
-#, fuzzy
-#~ msgid "Mind to install it before any other package"
-#~ msgstr "Suppression des paquets sélectionnés"
-
-#, fuzzy
-#~ msgid "Unpacking database to"
-#~ msgstr "Synchronisation des bases de données"
-
-#, fuzzy
-#~ msgid "Cannot unpack compressed package"
-#~ msgstr "Compression des paquets"
-
-#, fuzzy
-#~ msgid "Skipping repository"
-#~ msgstr "dans les dépôts"
-
-#, fuzzy
-#~ msgid "Downloading checksum"
-#~ msgstr "Taille du téléchargement"
-
-# not sure : bump
-#, fuzzy
-#~ msgid "Downloading repository database"
-#~ msgstr "Saut de la base de données du dépôt"
-
-#, fuzzy
-#~ msgid "database does not exist online"
-#~ msgstr "la base de données n'existe pas ou est sévèrement endommagée"
-
-#, fuzzy
-#~ msgid "database will be ready soon"
-#~ msgstr "Bases de données déjà synchronisées"
-
-#, fuzzy
-#~ msgid "Repository is being updated"
-#~ msgstr "Identificateur de dépôt"
-
-#, fuzzy
-#~ msgid "Downloading SSL CA certificate"
-#~ msgstr "Taille du téléchargement"
-
-#, fuzzy
-#~ msgid "Downloading SSL Server certificate"
-#~ msgstr "Taille du téléchargement"
-
-#, fuzzy
-#~ msgid "Downloading package mask"
-#~ msgstr "télécharger les paquets uniquement"
-
-#, fuzzy
-#~ msgid "Downloading packages system mask"
-#~ msgstr "télécharger les paquets uniquement"
-
-#, fuzzy
-#~ msgid "Downloading conflicting tagged packages file"
-#~ msgstr "Collecte des paquets Entropy"
-
-#, fuzzy
-#~ msgid "Downloading license whitelist"
-#~ msgstr "Téléchargement terminé"
-
-#, fuzzy
-#~ msgid "Downloading revision"
-#~ msgstr "Taille du téléchargement"
-
-#, fuzzy
-#~ msgid "Downloading SPM Profile configuration"
-#~ msgstr "Taille du téléchargement"
-
-#, fuzzy
-#~ msgid "Downloading Notice Board"
-#~ msgstr "télécharger les paquets uniquement"
-
-#, fuzzy
-#~ msgid "not available, it's ok"
-#~ msgstr "Indisponible"
-
-#, fuzzy
-#~ msgid "not available, not much ok!"
-#~ msgstr "n'est pas diponible"
-
-#, fuzzy
-#~ msgid "available, w00t!"
-#~ msgstr "Disponible"
-
-# not sure : bump
-#, fuzzy
-#~ msgid "Indexing Repository metadata"
-#~ msgstr "Saut de la base de données du dépôt"
-
-#, fuzzy
-#~ msgid "Repositories synchronization"
-#~ msgstr "Révision du dépot"
-
-#, fuzzy
 #~ msgid "Upload status"
 #~ msgstr "Mise à jour"
-
-#, fuzzy
-#~ msgid "please fix"
-#~ msgstr "Merci de patienter"
-
-#, fuzzy
-#~ msgid "Please remember"
-#~ msgstr "Merci de patienter"
-
-#, fuzzy
-#~ msgid "Purging Entropy cache"
-#~ msgstr "regénérer le cache Entropy"
-
-#, fuzzy
-#~ msgid "Configuring Binutils Profile"
-#~ msgstr "Fichier de configuration"
-
-#, fuzzy
-#~ msgid "Running depmod"
-#~ msgstr "Vérification des dépendances"
-
-#, fuzzy
-#~ msgid "A new service will be installed"
-#~ msgstr "Paquets nécessitant une installation"
-
-#, fuzzy
-#~ msgid "Removing the selected kernel"
-#~ msgstr "Suppression des paquets sélectionnés"
-
-#, fuzzy
-#~ msgid "Mounted /boot successfully"
-#~ msgstr "Dépots mis à jour avec succès"
-
-#, fuzzy
-#~ msgid "Cannot find df"
-#~ msgstr "Impossible de trouver"
-
-#, fuzzy
-#~ msgid "Cannot find grub"
-#~ msgstr "Impossible de trouver"
-
-#, fuzzy
-#~ msgid "cannot find generated device.map"
-#~ msgstr "Impossible de compléter les dépendances"
 
 #, fuzzy
 #~ msgid "Fetch"
@@ -9606,10 +10453,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Cannot connect to %s"
 #~ msgstr "Impossible de continuer"
-
-#, fuzzy
-#~ msgid "Cache is corrupted"
-#~ msgstr "Cache de reprise corrompu"
 
 #, fuzzy
 #~ msgid "regenerating indexes after migration"
@@ -9646,10 +10489,6 @@ msgstr ""
 #~ msgstr "Fichiers de configuration"
 
 #, fuzzy
-#~ msgid "Configuring GCC Profile"
-#~ msgstr "Fichier de configuration"
-
-#, fuzzy
 #~ msgid "Updating shared mime info database"
 #~ msgstr "Transformation depuis la base de données"
 
@@ -9665,10 +10504,6 @@ msgstr ""
 #, fuzzy
 #~ msgid "Reloading gconf2 database"
 #~ msgstr "Remplissage de la base de données"
-
-#, fuzzy
-#~ msgid "Configuring SQLite"
-#~ msgstr "Fichier de configuration"
 
 #, fuzzy
 #~ msgid "<small>Powered by User Generated Content</small>"
