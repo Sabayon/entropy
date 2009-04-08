@@ -21,26 +21,25 @@
 '''
 # pylint ~ ok
 
+import os
 _LOCALE = None
+_LOCALE_FULL = os.getenv('LC_ALL')
+if _LOCALE_FULL == None:
+    _LOCALE_FULL = os.getenv('LANG')
+if _LOCALE_FULL == None:
+    _LOCALE_FULL = os.getenv('LANGUAGE')
+
+if _LOCALE_FULL:
+    _LOCALE = _LOCALE_FULL.split('.')[0]
+    _LOCALE = _LOCALE.split('_')[0]
+    _LOCALE = _LOCALE.lower()
+
 try:
     import gettext
-    import os
     gettext.bindtextdomain('entropy', '/usr/share/locale')
     gettext.textdomain('entropy')
     gettext.install('entropy', unicode=True)
     _ = _
-
-    _LOCALE_FULL = os.getenv('LC_ALL')
-    if _LOCALE_FULL == None:
-        _LOCALE_FULL = os.getenv('LANG')
-    if _LOCALE_FULL == None:
-        _LOCALE_FULL = os.getenv('LANGUAGE')
-
-    if _LOCALE_FULL:
-        _LOCALE = _LOCALE_FULL.split('.')[0]
-        _LOCALE = _LOCALE.split('_')[0]
-        _LOCALE = _LOCALE.lower()
-
 except (ImportError,OSError,):
     def _(raw_string):
         """
