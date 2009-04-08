@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-01 21:50+0200\n"
+"POT-Creation-Date: 2009-04-08 06:24+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -16,1054 +16,1054 @@ msgstr ""
 "Content-Type: text/plain; charset=iso-8859-1\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../client/equo.py:54
+#: ../../client/equo.py:56
 msgid "You should run equo --help"
 msgstr ""
 
-#: ../../client/equo.py:55
+#: ../../client/equo.py:57
 msgid "You didn't run equo --help, did you?"
 msgstr ""
 
-#: ../../client/equo.py:56
+#: ../../client/equo.py:58
 msgid "Did you even read equo --help??"
 msgstr ""
 
-#: ../../client/equo.py:57
+#: ../../client/equo.py:59
 msgid "I give up. Run that equo --help !!!!!!!"
 msgstr ""
 
-#: ../../client/equo.py:58
+#: ../../client/equo.py:60
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
 msgstr ""
 
-#: ../../client/equo.py:59
+#: ../../client/equo.py:61
 msgid "Illiteracy is a huge problem in this world"
 msgstr ""
 
-#: ../../client/equo.py:60
+#: ../../client/equo.py:62
 msgid "Ok i give up, you are hopeless"
 msgstr ""
 
-#: ../../client/equo.py:61
+#: ../../client/equo.py:63
 msgid "Go to hell."
 msgstr ""
 
-#: ../../client/equo.py:68 ../../server/activator.py:39
-#: ../../server/reagent.py:40
+#: ../../client/equo.py:70 ../../server/activator.py:41
+#: ../../server/reagent.py:42
 #, fuzzy
 msgid "Basic Options"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/equo.py:70 ../../server/activator.py:41
-#: ../../server/reagent.py:42
+#: ../../client/equo.py:72 ../../server/activator.py:43
+#: ../../server/reagent.py:44
 msgid "this output"
 msgstr ""
 
-#: ../../client/equo.py:71 ../../server/activator.py:42
-#: ../../server/reagent.py:43
+#: ../../client/equo.py:73 ../../server/activator.py:44
+#: ../../server/reagent.py:45
 #, fuzzy
 msgid "print version"
 msgstr "Sletter"
 
-#: ../../client/equo.py:72 ../../server/activator.py:43
-#: ../../server/reagent.py:44
+#: ../../client/equo.py:74 ../../server/activator.py:45
+#: ../../server/reagent.py:46
 msgid "disable colorized output"
 msgstr ""
 
-#: ../../client/equo.py:74 ../../server/activator.py:45
-#: ../../server/reagent.py:46
+#: ../../client/equo.py:76 ../../server/activator.py:47
+#: ../../server/reagent.py:48
 #, fuzzy
 msgid "Application Options"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/equo.py:76
+#: ../../client/equo.py:78
 #, fuzzy
 msgid "update configured repositories"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:77
+#: ../../client/equo.py:79
 msgid "force sync regardless repositories status"
 msgstr ""
 
-#: ../../client/equo.py:78
+#: ../../client/equo.py:80
 #, fuzzy
 msgid "show repositories information"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:79
+#: ../../client/equo.py:81
 #, fuzzy
 msgid "show make.conf for the chosen repositories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:80
+#: ../../client/equo.py:82
 #, fuzzy
 msgid "show package.mask for the chosen repositories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:81
+#: ../../client/equo.py:83
 #, fuzzy
 msgid "show package.unmask for the chosen repositories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:82
+#: ../../client/equo.py:84
 #, fuzzy
 msgid "show package.keywords for the chosen repositories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:83
+#: ../../client/equo.py:85
 #, fuzzy
 msgid "show package.use for the chosen repositories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:84
+#: ../../client/equo.py:86
 #, fuzzy
 msgid "show make.profile link for the chosen repositories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:85
+#: ../../client/equo.py:87
 #, fuzzy
 msgid "repository notice board reader"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:86
+#: ../../client/equo.py:88
 #, fuzzy
 msgid "show respositories status"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:88
+#: ../../client/equo.py:90
 #, fuzzy
 msgid "search packages in repositories"
 msgstr "Pakke Beskrivelser"
 
-#: ../../client/equo.py:89
+#: ../../client/equo.py:91
 #, fuzzy
 msgid "match a package in repositories"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:90
+#: ../../client/equo.py:92
 msgid "return all the possible matches"
 msgstr ""
 
-#: ../../client/equo.py:91
+#: ../../client/equo.py:93
 #, fuzzy
 msgid "return matches from every repository"
 msgstr "Behander pakker i køen"
 
-#: ../../client/equo.py:92
+#: ../../client/equo.py:94
 #, fuzzy
 msgid "print repository information (w/--quiet)"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:93
+#: ../../client/equo.py:95
 msgid "print description too (w/--quiet)"
 msgstr ""
 
-#: ../../client/equo.py:95
+#: ../../client/equo.py:97
 #, fuzzy
 msgid "update system with the latest available packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:96 ../../client/equo.py:116 ../../client/equo.py:122
-#: ../../client/equo.py:138 ../../client/equo.py:143 ../../client/equo.py:151
-#: ../../client/equo.py:156 ../../client/equo.py:166 ../../client/equo.py:230
-#: ../../client/equo.py:250 ../../server/activator.py:56
+#: ../../client/equo.py:98 ../../client/equo.py:118 ../../client/equo.py:124
+#: ../../client/equo.py:140 ../../client/equo.py:145 ../../client/equo.py:153
+#: ../../client/equo.py:158 ../../client/equo.py:168 ../../client/equo.py:232
+#: ../../client/equo.py:252 ../../server/activator.py:58
 msgid "ask before making any changes"
 msgstr ""
 
-#: ../../client/equo.py:97 ../../client/equo.py:117
+#: ../../client/equo.py:99 ../../client/equo.py:119
 #, fuzzy
 msgid "just download packages"
 msgstr "Henter Pakker:"
 
-#: ../../client/equo.py:98 ../../client/equo.py:251
-#: ../../server/activator.py:57
+#: ../../client/equo.py:100 ../../client/equo.py:253
+#: ../../server/activator.py:59
 msgid "only show what would be done"
 msgstr ""
 
-#: ../../client/equo.py:99 ../../client/equo.py:131
+#: ../../client/equo.py:101 ../../client/equo.py:133
 msgid "show more details about what is going on"
 msgstr ""
 
-#: ../../client/equo.py:100
+#: ../../client/equo.py:102
 msgid "reinstall all the packages and their dependencies"
 msgstr ""
 
-#: ../../client/equo.py:101
+#: ../../client/equo.py:103
 msgid "same as --replay"
 msgstr ""
 
-#: ../../client/equo.py:102 ../../client/equo.py:126 ../../client/equo.py:148
+#: ../../client/equo.py:104 ../../client/equo.py:128 ../../client/equo.py:150
 msgid "resume previously interrupted operations"
 msgstr ""
 
-#: ../../client/equo.py:103
+#: ../../client/equo.py:105
 msgid "used with --resume, makes the first package to be skipped"
 msgstr ""
 
-#: ../../client/equo.py:104
+#: ../../client/equo.py:106
 msgid "upgrade your distribution to the specified release"
 msgstr ""
 
-#: ../../client/equo.py:105 ../../client/equo.py:133
+#: ../../client/equo.py:107 ../../client/equo.py:135
 #, fuzzy
 msgid "disable package integrity check"
 msgstr "fandt %d pakker, som matcher : %s"
 
-#: ../../client/equo.py:106 ../../client/equo.py:134
+#: ../../client/equo.py:108 ../../client/equo.py:136
 msgid "download multiple packages in parallel (default 3)"
 msgstr ""
 
-#: ../../client/equo.py:107 ../../client/equo.py:135
+#: ../../client/equo.py:109 ../../client/equo.py:137
 msgid "download N packages in parallel (max 10)"
 msgstr ""
 
-#: ../../client/equo.py:109
+#: ../../client/equo.py:111
 msgid "security infrastructure functions"
 msgstr ""
 
-#: ../../client/equo.py:110
+#: ../../client/equo.py:112
 msgid "download the latest Security Advisories"
 msgstr ""
 
-#: ../../client/equo.py:111
+#: ../../client/equo.py:113
 msgid "list all the available Security Advisories"
 msgstr ""
 
-#: ../../client/equo.py:112
+#: ../../client/equo.py:114
 msgid "list only affected"
 msgstr ""
 
-#: ../../client/equo.py:113
+#: ../../client/equo.py:115
 msgid "list only unaffected"
 msgstr ""
 
-#: ../../client/equo.py:114
+#: ../../client/equo.py:116
 msgid "show information about provided advisories identifiers"
 msgstr ""
 
-#: ../../client/equo.py:115
+#: ../../client/equo.py:117
 msgid "automatically install all the available security updates"
 msgstr ""
 
-#: ../../client/equo.py:118 ../../client/equo.py:123 ../../client/equo.py:139
-#: ../../client/equo.py:144 ../../client/equo.py:152 ../../client/equo.py:157
-#: ../../client/equo.py:167 ../../client/equo.py:231
+#: ../../client/equo.py:120 ../../client/equo.py:125 ../../client/equo.py:141
+#: ../../client/equo.py:146 ../../client/equo.py:154 ../../client/equo.py:159
+#: ../../client/equo.py:169 ../../client/equo.py:233
 msgid "just show what would be done"
 msgstr ""
 
-#: ../../client/equo.py:119 ../../client/equo.py:155 ../../client/equo.py:160
-#: ../../client/equo.py:165
+#: ../../client/equo.py:121 ../../client/equo.py:157 ../../client/equo.py:162
+#: ../../client/equo.py:167
 msgid "show less details (useful for scripting)"
 msgstr ""
 
-#: ../../client/equo.py:121
+#: ../../client/equo.py:123
 #, fuzzy
 msgid "install atoms or .tbz2 packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:124
+#: ../../client/equo.py:126
 #, fuzzy
 msgid "just download packages without doing the install"
 msgstr "Henter Pakker:"
 
-#: ../../client/equo.py:125 ../../client/equo.py:145
+#: ../../client/equo.py:127 ../../client/equo.py:147
 #, fuzzy
 msgid "do not pull in any dependency"
 msgstr "Installer som afhængighed"
 
-#: ../../client/equo.py:127
+#: ../../client/equo.py:129
 msgid "used with --resume, makes the first package in queue to be skipped"
 msgstr ""
 
-#: ../../client/equo.py:128
+#: ../../client/equo.py:130
 #, fuzzy
 msgid "remove downloaded packages after being used"
 msgstr "Henter Pakker:"
 
-#: ../../client/equo.py:129 ../../client/equo.py:206
+#: ../../client/equo.py:131 ../../client/equo.py:208
 msgid "pull all the dependencies in, regardless their state"
 msgstr ""
 
-#: ../../client/equo.py:130
+#: ../../client/equo.py:132
 msgid "makes dependency rules stricter"
 msgstr ""
 
-#: ../../client/equo.py:132
+#: ../../client/equo.py:134
 #, fuzzy
 msgid "makes old configuration files to be removed"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:137
+#: ../../client/equo.py:139
 #, fuzzy
 msgid "download atoms source code"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/equo.py:140
+#: ../../client/equo.py:142
 msgid "save sources in current working directory"
 msgstr ""
 
-#: ../../client/equo.py:142
+#: ../../client/equo.py:144
 #, fuzzy
 msgid "remove one or more packages"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../client/equo.py:146
+#: ../../client/equo.py:148
 msgid "also pull unused dependencies where depends list is empty"
 msgstr ""
 
-#: ../../client/equo.py:147
+#: ../../client/equo.py:149
 #, fuzzy
 msgid "makes configuration files to be removed"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:150
+#: ../../client/equo.py:152
 #, fuzzy
 msgid "configure one or more installed packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:154 ../../server/reagent.py:106
+#: ../../client/equo.py:156 ../../server/reagent.py:108
 #, fuzzy
 msgid "look for unsatisfied dependencies"
 msgstr "Sletter som afhængighed"
 
-#: ../../client/equo.py:159
+#: ../../client/equo.py:161
 msgid "look for unused packages (pay attention)"
 msgstr ""
 
-#: ../../client/equo.py:161
+#: ../../client/equo.py:163
 #, fuzzy
 msgid "sort packages by disk size"
 msgstr "Pakke Beskrivelser"
 
-#: ../../client/equo.py:163 ../../server/reagent.py:107
+#: ../../client/equo.py:165 ../../server/reagent.py:109
 msgid "look for missing libraries"
 msgstr ""
 
-#: ../../client/equo.py:164
+#: ../../client/equo.py:166
 msgid "print broken files to stdout"
 msgstr ""
 
-#: ../../client/equo.py:169
+#: ../../client/equo.py:171
 #, fuzzy
 msgid "configuration files update tool"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:170
+#: ../../client/equo.py:172
 #, fuzzy
 msgid "show configuration files to be updated"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:171
+#: ../../client/equo.py:173
 #, fuzzy
 msgid "run the configuration files update function"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:173
+#: ../../client/equo.py:175
 #, fuzzy
 msgid "do misc queries on repository and local databases"
 msgstr "Kilde"
 
-#: ../../client/equo.py:174
+#: ../../client/equo.py:176
 msgid "search from what package a file belongs"
 msgstr ""
 
-#: ../../client/equo.py:175 ../../client/equo.py:298
+#: ../../client/equo.py:177 ../../client/equo.py:300
 #, fuzzy
 msgid "show packages changelog"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:176
+#: ../../client/equo.py:178
 #, fuzzy
 msgid "search what packages depend on the provided atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:177 ../../client/equo.py:300
-#: ../../server/reagent.py:64
+#: ../../client/equo.py:179 ../../client/equo.py:302
+#: ../../server/reagent.py:66
 #, fuzzy
 msgid "search packages by description"
 msgstr "Pakke Beskrivelser"
 
-#: ../../client/equo.py:178 ../../client/equo.py:302
-#: ../../server/reagent.py:62
+#: ../../client/equo.py:180 ../../client/equo.py:304
+#: ../../server/reagent.py:64
 msgid "show files owned by the provided atoms"
 msgstr ""
 
-#: ../../client/equo.py:179
+#: ../../client/equo.py:181
 msgid "search a package into the local database"
 msgstr ""
 
-#: ../../client/equo.py:180
+#: ../../client/equo.py:182
 #, fuzzy
 msgid "show packages owning the provided licenses"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:181
+#: ../../client/equo.py:183
 #, fuzzy
 msgid "list packages based on the chosen parameter below"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:182
+#: ../../client/equo.py:184
 #, fuzzy
 msgid "list installed packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:183 ../../client/equo.py:304
-#: ../../server/reagent.py:58
+#: ../../client/equo.py:185 ../../client/equo.py:306
+#: ../../server/reagent.py:60
 msgid "show runtime libraries needed by the provided atoms"
 msgstr ""
 
-#: ../../client/equo.py:184
+#: ../../client/equo.py:186
 msgid "search files that do not belong to any package"
 msgstr ""
 
-#: ../../client/equo.py:185
+#: ../../client/equo.py:187
 #, fuzzy
 msgid "show the removal tree for the specified atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:186
+#: ../../client/equo.py:188
 #, fuzzy
 msgid "show atoms needing the provided libraries"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:187 ../../client/equo.py:306
-#: ../../server/reagent.py:61
+#: ../../client/equo.py:189 ../../client/equo.py:308
+#: ../../server/reagent.py:63
 #, fuzzy
 msgid "search available package sets"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../client/equo.py:188
+#: ../../client/equo.py:190
 #, fuzzy
 msgid "show packages owning the provided slot"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:189
+#: ../../client/equo.py:191
 #, fuzzy
 msgid "show packages owning the provided tags"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:190 ../../client/equo.py:308 ../../client/equo.py:353
-#: ../../server/reagent.py:67
+#: ../../client/equo.py:192 ../../client/equo.py:310 ../../client/equo.py:355
+#: ../../server/reagent.py:69
 msgid "show more details"
 msgstr ""
 
-#: ../../client/equo.py:191 ../../client/equo.py:309 ../../client/equo.py:354
-#: ../../server/reagent.py:68
+#: ../../client/equo.py:193 ../../client/equo.py:311 ../../client/equo.py:356
+#: ../../server/reagent.py:70
 msgid "print results in a scriptable way"
 msgstr ""
 
-#: ../../client/equo.py:197
+#: ../../client/equo.py:199
 msgid "!!! Use --verbose to get full help output"
 msgstr ""
 
-#: ../../client/equo.py:202
+#: ../../client/equo.py:204
 #, fuzzy
 msgid "Extended Options"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/equo.py:204
+#: ../../client/equo.py:206
 msgid "handles extended functionalities"
 msgstr ""
 
-#: ../../client/equo.py:205
+#: ../../client/equo.py:207
 msgid "make a smart application for the provided atoms (experimental)"
 msgstr ""
 
-#: ../../client/equo.py:207
+#: ../../client/equo.py:209
 msgid ""
 "make a smart package for the provided atoms (multiple packages into one file)"
 msgstr ""
 
-#: ../../client/equo.py:208
+#: ../../client/equo.py:210
 msgid "recreate an Entropy package from your System"
 msgstr ""
 
-#: ../../client/equo.py:209 ../../client/equo.py:211 ../../client/equo.py:213
+#: ../../client/equo.py:211 ../../client/equo.py:213 ../../client/equo.py:215
 #, fuzzy
 msgid "save new packages into the specified directory"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:210
+#: ../../client/equo.py:212
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
 msgstr ""
 
-#: ../../client/equo.py:212
+#: ../../client/equo.py:214
 msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
 msgstr ""
 
-#: ../../client/equo.py:214
+#: ../../client/equo.py:216
 #, fuzzy
 msgid "extract Entropy metadata from provided .tbz2 packages"
 msgstr "Sorterer Pakker"
 
-#: ../../client/equo.py:215
+#: ../../client/equo.py:217
 #, fuzzy
 msgid "save new metadata into the specified directory"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:217
+#: ../../client/equo.py:219
 #, fuzzy
 msgid "handles installed packages database"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:218
+#: ../../client/equo.py:220
 msgid "check System Database for errors"
 msgstr ""
 
-#: ../../client/equo.py:219
+#: ../../client/equo.py:221
 msgid "remove System Database internal indexes to save space"
 msgstr ""
 
-#: ../../client/equo.py:221
+#: ../../client/equo.py:223
 msgid ""
 "generate installed packages database using files on the system [last hope]"
 msgstr ""
 
-#: ../../client/equo.py:222
+#: ../../client/equo.py:224
 msgid "regenerate depends caching table"
 msgstr ""
 
-#: ../../client/equo.py:223
+#: ../../client/equo.py:225
 msgid "update/generate counters table (Portage <-> Entropy packages table)"
 msgstr ""
 
-#: ../../client/equo.py:224
+#: ../../client/equo.py:226
 msgid "makes Entropy aware of your Portage-updated packages"
 msgstr ""
 
-#: ../../client/equo.py:225
+#: ../../client/equo.py:227
 #, fuzzy
 msgid "backup the current Entropy installed packages database"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:226
+#: ../../client/equo.py:228
 #, fuzzy
 msgid "restore a previously backed up Entropy installed packages database"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:228
+#: ../../client/equo.py:230
 msgid "handles packages helper applications"
 msgstr ""
 
-#: ../../client/equo.py:229
+#: ../../client/equo.py:231
 msgid "migrate all Python modules to the latest installed version"
 msgstr ""
 
-#: ../../client/equo.py:233
+#: ../../client/equo.py:235
 msgid "handles community-side features"
 msgstr ""
 
-#: ../../client/equo.py:235
+#: ../../client/equo.py:237
 #, fuzzy
 msgid "community repositories management functions"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:236 ../../server/reagent.py:48
+#: ../../client/equo.py:238 ../../server/reagent.py:50
 msgid "scan the System looking for newly compiled packages"
 msgstr ""
 
-#: ../../client/equo.py:237 ../../client/equo.py:243 ../../client/equo.py:246
-#: ../../client/equo.py:272 ../../client/equo.py:274
-#: ../../server/activator.py:48
+#: ../../client/equo.py:239 ../../client/equo.py:245 ../../client/equo.py:248
+#: ../../client/equo.py:274 ../../client/equo.py:276
+#: ../../server/activator.py:50
 msgid "choose on what branch operating"
 msgstr ""
 
-#: ../../client/equo.py:238 ../../server/reagent.py:49
+#: ../../client/equo.py:240 ../../server/reagent.py:51
 msgid "analyze the Entropy Store directory directly"
-msgstr ""
-
-#: ../../client/equo.py:239 ../../server/reagent.py:50
-#, fuzzy
-msgid "repackage the specified atoms"
-msgstr "Ingen valgte pakker"
-
-#: ../../client/equo.py:240 ../../client/equo.py:247
-#: ../../server/activator.py:49 ../../server/reagent.py:51
-msgid "do not ask anything except critical things"
 msgstr ""
 
 #: ../../client/equo.py:241 ../../server/reagent.py:52
 #, fuzzy
+msgid "repackage the specified atoms"
+msgstr "Ingen valgte pakker"
+
+#: ../../client/equo.py:242 ../../client/equo.py:249
+#: ../../server/activator.py:51 ../../server/reagent.py:53
+msgid "do not ask anything except critical things"
+msgstr ""
+
+#: ../../client/equo.py:243 ../../server/reagent.py:54
+#, fuzzy
 msgid "manage only the specified atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:242 ../../server/reagent.py:54
+#: ../../client/equo.py:244 ../../server/reagent.py:56
 msgid "add binary packages to repository w/o affecting scopes (multipackages)"
 msgstr ""
 
-#: ../../client/equo.py:244
+#: ../../client/equo.py:246
 #, fuzzy
 msgid "community repositories mirrors management functions"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:245 ../../server/activator.py:47
+#: ../../client/equo.py:247 ../../server/activator.py:49
 msgid "sync packages, database and also do some tidy"
 msgstr ""
 
-#: ../../client/equo.py:248 ../../client/equo.py:252 ../../client/equo.py:255
-#: ../../server/activator.py:50 ../../server/activator.py:58
-#: ../../server/activator.py:68
+#: ../../client/equo.py:250 ../../client/equo.py:254 ../../client/equo.py:257
+#: ../../server/activator.py:52 ../../server/activator.py:60
+#: ../../server/activator.py:70
 #, fuzzy
 msgid "sync all the configured repositories"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:249
+#: ../../client/equo.py:251
 msgid "sync packages across primary mirrors"
 msgstr ""
 
-#: ../../client/equo.py:253 ../../server/activator.py:59
+#: ../../client/equo.py:255 ../../server/activator.py:61
 #, fuzzy
 msgid "also verify packages integrity"
 msgstr "fandt %d pakker, som matcher : %s"
 
-#: ../../client/equo.py:254 ../../server/activator.py:62
+#: ../../client/equo.py:256 ../../server/activator.py:64
 #, fuzzy
 msgid "sync the current repository database across primary mirrors"
 msgstr "Kilde"
 
-#: ../../client/equo.py:256 ../../server/activator.py:63
+#: ../../client/equo.py:258 ../../server/activator.py:65
 #, fuzzy
 msgid "lock the current repository database (server-side)"
 msgstr "Kilde"
 
-#: ../../client/equo.py:257 ../../server/activator.py:64
+#: ../../client/equo.py:259 ../../server/activator.py:66
 #, fuzzy
 msgid "unlock the current repository database (server-side)"
 msgstr "Kilde"
 
-#: ../../client/equo.py:258 ../../server/activator.py:65
+#: ../../client/equo.py:260 ../../server/activator.py:67
 #, fuzzy
 msgid "lock the current repository database (client-side)"
 msgstr "Kilde"
 
-#: ../../client/equo.py:259 ../../server/activator.py:66
+#: ../../client/equo.py:261 ../../server/activator.py:68
 #, fuzzy
 msgid "unlock the current repository database (client-side)"
 msgstr "Kilde"
 
-#: ../../client/equo.py:260 ../../server/activator.py:67
+#: ../../client/equo.py:262 ../../server/activator.py:69
 #, fuzzy
 msgid "show current lock status"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/equo.py:261 ../../server/activator.py:52
+#: ../../client/equo.py:263 ../../server/activator.py:54
 msgid "remove binary packages not in repositories and expired"
 msgstr ""
 
-#: ../../client/equo.py:265
+#: ../../client/equo.py:267
 #, fuzzy
 msgid "community repositories database functions"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:266 ../../server/reagent.py:71
+#: ../../client/equo.py:268 ../../server/reagent.py:73
 #, fuzzy
 msgid "(re)initialize the current repository database"
 msgstr "Kilde"
 
-#: ../../client/equo.py:267 ../../server/reagent.py:72
+#: ../../client/equo.py:269 ../../server/reagent.py:74
 msgid "do not refill database using packages on mirrors"
 msgstr ""
 
-#: ../../client/equo.py:268 ../../server/reagent.py:73
+#: ../../client/equo.py:270 ../../server/reagent.py:75
 #, fuzzy
 msgid "(re)create the database for the specified repository"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:269 ../../server/reagent.py:74
+#: ../../client/equo.py:271 ../../server/reagent.py:76
 #, fuzzy
 msgid "manually force a revision bump for the current repository database"
 msgstr "Kilde"
 
-#: ../../client/equo.py:270 ../../server/reagent.py:75
+#: ../../client/equo.py:272 ../../server/reagent.py:77
 #, fuzzy
 msgid "synchronize the database"
 msgstr "Kører Transaktion"
 
-#: ../../client/equo.py:271 ../../server/reagent.py:76
+#: ../../client/equo.py:273 ../../server/reagent.py:78
 #, fuzzy
 msgid "remove the provided atoms from the current repository database"
 msgstr "Kilde"
 
-#: ../../client/equo.py:273 ../../server/reagent.py:77
+#: ../../client/equo.py:275 ../../server/reagent.py:79
 msgid "remove the provided injected atoms (all if no atom specified)"
 msgstr ""
 
-#: ../../client/equo.py:275 ../../server/reagent.py:78
+#: ../../client/equo.py:277 ../../server/reagent.py:80
 #, fuzzy
 msgid "create an empty repository database in the provided path"
 msgstr "Kilde"
 
-#: ../../client/equo.py:276
+#: ../../client/equo.py:278
 msgid "switch to the specified branch the provided atoms (or world)"
 msgstr ""
 
-#: ../../client/equo.py:277 ../../server/reagent.py:80
+#: ../../client/equo.py:279 ../../server/reagent.py:82
 msgid "verify integrity of the provided atoms (or world)"
 msgstr ""
 
-#: ../../client/equo.py:278 ../../server/reagent.py:81
+#: ../../client/equo.py:280 ../../server/reagent.py:83
 msgid "verify remote integrity of the provided atoms (or world)"
 msgstr ""
 
-#: ../../client/equo.py:279 ../../server/reagent.py:82
+#: ../../client/equo.py:281 ../../server/reagent.py:84
 #, fuzzy
 msgid "backup current repository database"
 msgstr "Kilde"
 
-#: ../../client/equo.py:280 ../../server/reagent.py:83
+#: ../../client/equo.py:282 ../../server/reagent.py:85
 #, fuzzy
 msgid "restore a previously backed-up repository database"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/equo.py:284 ../../server/reagent.py:85
+#: ../../client/equo.py:286 ../../server/reagent.py:87
 #, fuzzy
 msgid "manage a repository"
 msgstr "Kilde"
 
-#: ../../client/equo.py:285 ../../server/reagent.py:86
+#: ../../client/equo.py:287 ../../server/reagent.py:88
 #, fuzzy
 msgid "enable the specified repository"
 msgstr "Kilde"
 
-#: ../../client/equo.py:286 ../../server/reagent.py:87
+#: ../../client/equo.py:288 ../../server/reagent.py:89
 #, fuzzy
 msgid "disable the specified repository"
 msgstr "Kilde"
 
-#: ../../client/equo.py:287 ../../server/reagent.py:88
+#: ../../client/equo.py:289 ../../server/reagent.py:90
 msgid "show the current Server Interface status"
 msgstr ""
 
-#: ../../client/equo.py:288 ../../server/reagent.py:89
+#: ../../client/equo.py:290 ../../server/reagent.py:91
 #, fuzzy
 msgid "handle packages manual dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../client/equo.py:289
+#: ../../client/equo.py:291
 #, fuzzy
 msgid "clone a package inside a repository assigning it an arbitrary tag"
 msgstr "Kilde"
 
-#: ../../client/equo.py:290 ../../server/reagent.py:91
+#: ../../client/equo.py:292 ../../server/reagent.py:93
 msgid "move packages from a repository to another"
 msgstr ""
 
-#: ../../client/equo.py:291 ../../server/reagent.py:92
+#: ../../client/equo.py:293 ../../server/reagent.py:94
 msgid "copy packages from a repository to another"
 msgstr ""
 
-#: ../../client/equo.py:292 ../../server/reagent.py:93
+#: ../../client/equo.py:294 ../../server/reagent.py:95
 #, fuzzy
 msgid "set the default repository"
 msgstr "Rediger Filkilder"
 
-#: ../../client/equo.py:296
+#: ../../client/equo.py:298
 #, fuzzy
 msgid "do some searches into community repository databases"
 msgstr "Kilde"
 
-#: ../../client/equo.py:297 ../../server/reagent.py:63
+#: ../../client/equo.py:299 ../../server/reagent.py:65
 msgid "show from what package the provided files belong"
 msgstr ""
 
-#: ../../client/equo.py:299 ../../server/reagent.py:59
+#: ../../client/equo.py:301 ../../server/reagent.py:61
 #, fuzzy
 msgid "show what packages depend on the provided atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:301 ../../server/reagent.py:65
+#: ../../client/equo.py:303 ../../server/reagent.py:67
 #, fuzzy
 msgid "search packages using the provided eclasses"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:303 ../../server/reagent.py:66
+#: ../../client/equo.py:305 ../../server/reagent.py:68
 #, fuzzy
 msgid "list all the packages in the default repository"
 msgstr "Rediger Filkilder"
 
-#: ../../client/equo.py:305 ../../server/reagent.py:57
+#: ../../client/equo.py:307 ../../server/reagent.py:59
 #, fuzzy
 msgid "search packages inside the default repository database"
 msgstr "Kilde"
 
-#: ../../client/equo.py:307 ../../server/reagent.py:60
+#: ../../client/equo.py:309 ../../server/reagent.py:62
 #, fuzzy
 msgid "show packages owning the specified tags"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:313 ../../server/reagent.py:95
+#: ../../client/equo.py:315 ../../server/reagent.py:97
 #, fuzzy
 msgid "source package manager functions"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:314 ../../server/reagent.py:96
+#: ../../client/equo.py:316 ../../server/reagent.py:98
 #, fuzzy
 msgid "compilation function"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/equo.py:315 ../../server/reagent.py:97
+#: ../../client/equo.py:317 ../../server/reagent.py:99
 #, fuzzy
 msgid "compile packages belonging to the provided categories"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:316 ../../client/equo.py:318
-#: ../../server/reagent.py:98 ../../server/reagent.py:100
+#: ../../client/equo.py:318 ../../client/equo.py:320
+#: ../../server/reagent.py:100 ../../server/reagent.py:102
 #, fuzzy
 msgid "just list packages"
 msgstr "Henter Pakker:"
 
-#: ../../client/equo.py:317 ../../server/reagent.py:99
+#: ../../client/equo.py:319 ../../server/reagent.py:101
 #, fuzzy
 msgid "compile packages in provided package set names"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:319 ../../server/reagent.py:101
+#: ../../client/equo.py:321 ../../server/reagent.py:103
 msgid "rebuild everything"
 msgstr ""
 
-#: ../../client/equo.py:320 ../../server/reagent.py:102
+#: ../../client/equo.py:322 ../../server/reagent.py:104
 #, fuzzy
 msgid "run database update if all went fine"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/equo.py:321 ../../server/reagent.py:103
+#: ../../client/equo.py:323 ../../server/reagent.py:105
 msgid "run mirror sync if all went fine"
 msgstr ""
 
-#: ../../client/equo.py:322 ../../server/reagent.py:104
+#: ../../client/equo.py:324 ../../server/reagent.py:106
 msgid "scan orphaned packages on SPM"
 msgstr ""
 
-#: ../../client/equo.py:326 ../../server/activator.py:70
+#: ../../client/equo.py:328 ../../server/activator.py:72
 #, fuzzy
 msgid "notice board handling functions"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:327 ../../server/activator.py:71
+#: ../../client/equo.py:329 ../../server/activator.py:73
 msgid "add a news item to the notice board"
 msgstr ""
 
-#: ../../client/equo.py:328 ../../server/activator.py:72
+#: ../../client/equo.py:330 ../../server/activator.py:74
 msgid "remove a news item from the notice board"
 msgstr ""
 
-#: ../../client/equo.py:329 ../../server/activator.py:73
+#: ../../client/equo.py:331 ../../server/activator.py:75
 msgid "read the current notice board"
 msgstr ""
 
-#: ../../client/equo.py:333
+#: ../../client/equo.py:335
 #, fuzzy
 msgid "look for unsatisfied dependencies across community repositories"
 msgstr "Sletter som afhængighed"
 
-#: ../../client/equo.py:334 ../../server/reagent.py:108
+#: ../../client/equo.py:336 ../../server/reagent.py:110
 msgid "regenerate the depends table"
 msgstr ""
 
-#: ../../client/equo.py:337
+#: ../../client/equo.py:339
 msgid "handles User Generated Content features"
 msgstr ""
 
-#: ../../client/equo.py:338
+#: ../../client/equo.py:340
 #, fuzzy
 msgid "login against a specified repository"
 msgstr "Kilde"
 
-#: ../../client/equo.py:339
+#: ../../client/equo.py:341
 #, fuzzy
 msgid "logout from a specified repository"
 msgstr "Kilde"
 
-#: ../../client/equo.py:340
+#: ../../client/equo.py:342
 #, fuzzy
 msgid "force action"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/equo.py:341
+#: ../../client/equo.py:343
 #, fuzzy
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:342
+#: ../../client/equo.py:344
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
 msgstr ""
 
-#: ../../client/equo.py:343
+#: ../../client/equo.py:345
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
 msgstr ""
 
-#: ../../client/equo.py:344
+#: ../../client/equo.py:346
 msgid "remove documents from database using their identifiers"
 msgstr ""
 
-#: ../../client/equo.py:345
+#: ../../client/equo.py:347
 #, fuzzy
 msgid "manage package votes for the selected repository"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/equo.py:346
+#: ../../client/equo.py:348
 msgid "get vote for the specified package key (example: x11-libs/qt)"
 msgstr ""
 
-#: ../../client/equo.py:347
+#: ../../client/equo.py:349
 msgid "add vote for the specified package key (example: x11-libs/qt)"
 msgstr ""
 
-#: ../../client/equo.py:350
+#: ../../client/equo.py:352
 #, fuzzy
 msgid "handles Entropy cache"
 msgstr "Sorterer Pakker"
 
-#: ../../client/equo.py:351
+#: ../../client/equo.py:353
 #, fuzzy
 msgid "clean Entropy cache"
 msgstr "Sorterer Pakker"
 
-#: ../../client/equo.py:352
+#: ../../client/equo.py:354
 #, fuzzy
 msgid "regenerate Entropy cache"
 msgstr "Sorterer Pakker"
 
-#: ../../client/equo.py:356
+#: ../../client/equo.py:358
 msgid "remove downloaded packages and clean temp. directories"
 msgstr ""
 
-#: ../../client/equo.py:358
+#: ../../client/equo.py:360
 #, fuzzy
 msgid "show system information"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:461
+#: ../../client/equo.py:463
 msgid "Caching equo conf"
 msgstr ""
 
-#: ../../client/equo.py:470
+#: ../../client/equo.py:472
 #, fuzzy
 msgid "Caching not run."
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/equo.py:474
+#: ../../client/equo.py:476
 #, fuzzy
 msgid "Caching complete."
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/equo.py:480
+#: ../../client/equo.py:482
 #: ../../entropy-notification-applet/src/etp_applet.py:594
 msgid "There are"
 msgstr ""
 
-#: ../../client/equo.py:482
+#: ../../client/equo.py:484
 #, fuzzy
 msgid "configuration file(s) needing update"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:485
+#: ../../client/equo.py:487
 #, fuzzy
 msgid "Please run"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../client/equo.py:593 ../../client/equo.py:608 ../../client/equo.py:627
-#: ../../client/equo.py:637 ../../client/equo.py:657 ../../client/equo.py:666
-#: ../../client/equo.py:676 ../../client/equo.py:686
+#: ../../client/equo.py:595 ../../client/equo.py:610 ../../client/equo.py:629
+#: ../../client/equo.py:639 ../../client/equo.py:659 ../../client/equo.py:668
+#: ../../client/equo.py:678 ../../client/equo.py:688
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 
-#: ../../client/equo.py:648
+#: ../../client/equo.py:650
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 
-#: ../../client/equo.py:713
+#: ../../client/equo.py:715
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
 msgstr ""
 
-#: ../../client/equo.py:716 ../../client/equo.py:720 ../../client/equo.py:723
-#: ../../client/equo.py:726 ../../client/equo.py:729 ../../client/equo.py:732
-#: ../../client/text_smart.py:127 ../../client/text_smart.py:271
-#: ../../client/text_smart.py:406
+#: ../../client/equo.py:718 ../../client/equo.py:722 ../../client/equo.py:725
+#: ../../client/equo.py:728 ../../client/equo.py:731 ../../client/equo.py:734
+#: ../../client/text_smart.py:127 ../../client/text_smart.py:272
+#: ../../client/text_smart.py:407
 #, fuzzy
 msgid "Cannot continue"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../client/equo.py:737
+#: ../../client/equo.py:739
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr ""
 
-#: ../../client/equo.py:748
+#: ../../client/equo.py:750
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
 msgstr ""
 
-#: ../../client/equo.py:762
+#: ../../client/equo.py:764
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
 msgstr ""
 
-#: ../../client/equo.py:763
+#: ../../client/equo.py:765
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr ""
 
-#: ../../client/equo.py:764
+#: ../../client/equo.py:766
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 
-#: ../../client/equo.py:765
+#: ../../client/equo.py:767
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 
-#: ../../client/equo.py:791
+#: ../../client/equo.py:793
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
 msgstr ""
 
-#: ../../client/equo.py:796
+#: ../../client/equo.py:798
 msgid "Of course you are on the Internet..."
 msgstr ""
 
-#: ../../client/equo.py:797
+#: ../../client/equo.py:799
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
 "logged)"
 msgstr ""
 
-#: ../../client/equo.py:799
+#: ../../client/equo.py:801
 msgid "Ok, ok ok ok... Sorry!"
 msgstr ""
 
-#: ../../client/equo.py:802
+#: ../../client/equo.py:804
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
 msgstr ""
 
-#: ../../client/equo.py:803
+#: ../../client/equo.py:805
 msgid "Your Full name:"
 msgstr ""
 
-#: ../../client/equo.py:804
+#: ../../client/equo.py:806
 msgid "Your E-Mail address:"
 msgstr ""
 
-#: ../../client/equo.py:805
+#: ../../client/equo.py:807
 msgid "What you were doing:"
 msgstr ""
 
-#: ../../client/equo.py:811
+#: ../../client/equo.py:813
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
 msgstr ""
 
-#: ../../client/equo.py:813
+#: ../../client/equo.py:815
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -1300,14 +1300,14 @@ msgid "ChangeLog Search"
 msgstr "Søgnings Indstiller"
 
 #: ../../client/text_query.py:216 ../../client/text_query.py:221
-#: ../../client/text_ui.py:377
+#: ../../client/text_ui.py:378
 msgid "No match for"
 msgstr ""
 
 #. atom
 #: ../../client/text_query.py:227 ../../client/text_query.py:339
-#: ../../spritz/src/dialogs.py:2685 ../../spritz/src/dialogs.py:3313
-#: ../../spritz/src/dialogs.py:5656
+#: ../../spritz/src/dialogs.py:2686 ../../spritz/src/dialogs.py:3314
+#: ../../spritz/src/dialogs.py:5658
 #, fuzzy
 msgid "Atom"
 msgstr "Fi_ler"
@@ -1322,7 +1322,7 @@ msgstr "Tilgængelige"
 msgid "Inverse Dependencies Search"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_query.py:291 ../../client/text_ui.py:1605
+#: ../../client/text_query.py:291 ../../client/text_ui.py:1606
 #, fuzzy
 msgid "Matched"
 msgstr "Opdaterer"
@@ -1363,7 +1363,7 @@ msgid "Library"
 msgstr ""
 
 #: ../../client/text_query.py:376 ../../client/text_query.py:409
-#: ../../client/text_ui.py:1030 ../../server/server_reagent.py:463
+#: ../../client/text_ui.py:1031 ../../server/server_reagent.py:463
 #, fuzzy
 msgid "packages"
 msgstr "Pakker."
@@ -1376,9 +1376,9 @@ msgstr "Ekskludering"
 #. package
 #. glsa id
 #: ../../client/text_query.py:444 ../../client/text_query.py:1091
-#: ../../spritz/src/dialogs.py:2297 ../../spritz/src/dialogs.py:2579
-#: ../../spritz/src/dialogs.py:4434 ../../spritz/src/dialogs.py:5182
-#: ../../spritz/src/dialogs.py:5188 ../../spritz/src/views.py:1004
+#: ../../spritz/src/dialogs.py:2298 ../../spritz/src/dialogs.py:2580
+#: ../../spritz/src/dialogs.py:4436 ../../spritz/src/dialogs.py:5184
+#: ../../spritz/src/dialogs.py:5190 ../../spritz/src/views.py:1004
 msgid "Package"
 msgstr "Pakke"
 
@@ -1454,9 +1454,9 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Removal Search"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_query.py:629 ../../client/text_ui.py:588
-#: ../../client/text_ui.py:654 ../../client/text_ui.py:1176
-#: ../../client/text_ui.py:1268 ../../server/server_reagent.py:498
+#: ../../client/text_query.py:629 ../../client/text_ui.py:589
+#: ../../client/text_ui.py:655 ../../client/text_ui.py:1177
+#: ../../client/text_ui.py:1269 ../../server/server_reagent.py:498
 #: ../../server/server_reagent.py:543
 #, fuzzy
 msgid "No packages found"
@@ -1473,9 +1473,9 @@ msgid "These are the packages that would added to the removal queue"
 msgstr "Vis Installerede Pakker"
 
 #: ../../client/text_query.py:663 ../../client/text_smart.py:113
-#: ../../client/text_smart.py:262 ../../client/text_smart.py:396
-#: ../../client/text_ui.py:573 ../../client/text_ui.py:804
-#: ../../client/text_ui.py:971 ../../client/text_ui.py:1349
+#: ../../client/text_smart.py:263 ../../client/text_smart.py:397
+#: ../../client/text_ui.py:574 ../../client/text_ui.py:805
+#: ../../client/text_ui.py:972 ../../client/text_ui.py:1350
 msgid "from"
 msgstr ""
 
@@ -1528,17 +1528,17 @@ msgid "Description Search"
 msgstr "_Beskrivelse"
 
 #. client info
-#: ../../client/text_query.py:1074 ../../client/text_ui.py:456
-#: ../../client/text_ui.py:485
+#: ../../client/text_query.py:1074 ../../client/text_ui.py:457
+#: ../../client/text_ui.py:486
 #: ../../entropy-notification-applet/src/etp_applet.py:748
 #, fuzzy
 msgid "Not installed"
 msgstr "Installeret"
 
 #: ../../client/text_query.py:1075 ../../client/text_query.py:1076
-#: ../../spritz/src/dialogs.py:3474 ../../spritz/src/dialogs.py:3533
-#: ../../spritz/src/dialogs.py:3581 ../../spritz/src/dialogs.py:3695
-#: ../../spritz/src/dialogs.py:3698
+#: ../../spritz/src/dialogs.py:3475 ../../spritz/src/dialogs.py:3534
+#: ../../spritz/src/dialogs.py:3582 ../../spritz/src/dialogs.py:3696
+#: ../../spritz/src/dialogs.py:3699
 msgid "N/A"
 msgstr ""
 
@@ -1551,8 +1551,8 @@ msgstr "Kategorier"
 msgid "Name"
 msgstr "Navn"
 
-#: ../../client/text_query.py:1117 ../../spritz/src/dialogs.py:851
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:42
+#: ../../client/text_query.py:1117 ../../spritz/src/dialogs.py:852
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:44
 #: ../../spritz/src/spritz.glade.h:15
 msgid "Available"
 msgstr "Tilgængelige"
@@ -1566,18 +1566,18 @@ msgstr "Sletter"
 msgid "revision"
 msgstr ""
 
-#: ../../client/text_query.py:1122 ../../spritz/src/dialogs.py:849
+#: ../../client/text_query.py:1122 ../../spritz/src/dialogs.py:850
 #: ../../spritz/src/spritz.glade.h:99
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1128 ../../spritz/src/dialogs.py:862
-#: ../../spritz/src/dialogs.py:885 ../../spritz/src/spritz.glade.h:205
+#: ../../client/text_query.py:1128 ../../spritz/src/dialogs.py:863
+#: ../../spritz/src/dialogs.py:886 ../../spritz/src/spritz.glade.h:205
 msgid "Slot"
 msgstr ""
 
 #: ../../client/text_query.py:1135 ../../client/text_ugc.py:559
-#: ../../spritz/src/dialogs.py:881 ../../spritz/src/dialogs.py:3711
+#: ../../spritz/src/dialogs.py:882 ../../spritz/src/dialogs.py:3712
 #: ../../spritz/src/spritz.glade.h:204
 msgid "Size"
 msgstr "Størrelse"
@@ -1592,7 +1592,7 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Checksum"
 msgstr "Henter : %s"
 
-#: ../../client/text_query.py:1150 ../../spritz/src/dialogs.py:4105
+#: ../../client/text_query.py:1150 ../../spritz/src/dialogs.py:4106
 #, fuzzy
 msgid "Dependencies"
 msgstr "Indstillinger"
@@ -1601,22 +1601,22 @@ msgstr "Indstillinger"
 msgid "Conflicts"
 msgstr ""
 
-#: ../../client/text_query.py:1161 ../../spritz/src/dialogs.py:891
+#: ../../client/text_query.py:1161 ../../spritz/src/dialogs.py:892
 msgid "Homepage"
 msgstr ""
 
 #. desc col
 #: ../../client/text_query.py:1167 ../../client/text_security.py:89
-#: ../../client/text_ugc.py:366 ../../spritz/src/dialogs.py:716
-#: ../../spritz/src/dialogs.py:729 ../../spritz/src/dialogs.py:870
-#: ../../spritz/src/dialogs.py:3313 ../../spritz/src/dialogs.py:3718
+#: ../../client/text_ugc.py:366 ../../spritz/src/dialogs.py:717
+#: ../../spritz/src/dialogs.py:730 ../../spritz/src/dialogs.py:871
+#: ../../spritz/src/dialogs.py:3314 ../../spritz/src/dialogs.py:3719
 #: ../../spritz/src/views.py:1522 ../../spritz/src/views.py:1745
 #: ../../spritz/src/spritz.glade.h:54
 #, fuzzy
 msgid "Description"
 msgstr "_Beskrivelse"
 
-#: ../../client/text_query.py:1172 ../../spritz/src/dialogs.py:4089
+#: ../../client/text_query.py:1172 ../../spritz/src/dialogs.py:4090
 msgid "USE flags"
 msgstr ""
 
@@ -1637,7 +1637,7 @@ msgstr ""
 msgid "Portage eclasses"
 msgstr "Ekskludering"
 
-#: ../../client/text_query.py:1196 ../../spritz/src/dialogs.py:4065
+#: ../../client/text_query.py:1196 ../../spritz/src/dialogs.py:4066
 msgid "Sources"
 msgstr ""
 
@@ -1654,8 +1654,8 @@ msgid "Compiled with"
 msgstr ""
 
 #: ../../client/text_query.py:1208 ../../client/text_ugc.py:371
-#: ../../client/text_ugc.py:554 ../../spritz/src/dialogs.py:3720
-#: ../../spritz/src/dialogs.py:4081 ../../spritz/src/spritz.glade.h:104
+#: ../../client/text_ugc.py:554 ../../spritz/src/dialogs.py:3721
+#: ../../spritz/src/dialogs.py:4082 ../../spritz/src/spritz.glade.h:104
 msgid "Keywords"
 msgstr ""
 
@@ -1664,8 +1664,8 @@ msgstr ""
 msgid "Created"
 msgstr "Slettet"
 
-#: ../../client/text_query.py:1220 ../../client/text_ui.py:967
-#: ../../spritz/src/dialogs.py:5926
+#: ../../client/text_query.py:1220 ../../client/text_ui.py:968
+#: ../../spritz/src/dialogs.py:5928
 #, fuzzy
 msgid "License"
 msgstr "Filnavn"
@@ -1728,8 +1728,8 @@ msgstr "Søgnings Indstiller"
 msgid "never synced"
 msgstr ""
 
-#: ../../client/text_repositories.py:150 ../../spritz/src/dialogs.py:747
-#: ../../spritz/src/dialogs.py:791 ../../spritz/src/dialogs.py:1323
+#: ../../client/text_repositories.py:150 ../../spritz/src/dialogs.py:748
+#: ../../spritz/src/dialogs.py:792 ../../spritz/src/dialogs.py:1324
 #: ../../spritz/src/views.py:1499
 #, fuzzy
 msgid "Status"
@@ -1756,14 +1756,14 @@ msgid "Repository revision"
 msgstr "Filkilder"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:209
-#: ../../spritz/src/spritz.py:1244
+#: ../../spritz/src/spritz.py:1245
 #: ../../entropy-notification-applet/src/etp_applet.py:510
 #, fuzzy
 msgid "No repositories specified in"
 msgstr "Ingen valgte pakker"
 
 #: ../../client/text_repositories.py:178 ../../client/text_ui.py:212
-#: ../../spritz/src/spritz.py:1253
+#: ../../spritz/src/spritz.py:1254
 #: ../../entropy-notification-applet/src/etp_applet.py:520
 #, fuzzy
 msgid "Unhandled exception"
@@ -1782,14 +1782,14 @@ msgstr "Tilgængelige"
 #: ../../client/text_ugc.py:361 ../../client/text_ugc.py:545
 #: ../../server/server_activator.py:147 ../../server/server_activator.py:180
 #: ../../server/server_activator.py:212 ../../spritz/src/dialogs.py:100
-#: ../../spritz/src/dialogs.py:1336 ../../spritz/src/dialogs.py:1971
-#: ../../spritz/src/dialogs.py:3716 ../../spritz/src/spritz.glade.h:222
+#: ../../spritz/src/dialogs.py:1337 ../../spritz/src/dialogs.py:1972
+#: ../../spritz/src/dialogs.py:3717 ../../spritz/src/spritz.glade.h:222
 #, fuzzy
 msgid "Title"
 msgstr "_Filer"
 
 #: ../../client/text_repositories.py:220 ../../client/text_ugc.py:551
-#: ../../server/server_activator.py:153 ../../spritz/src/dialogs.py:4164
+#: ../../server/server_activator.py:153 ../../spritz/src/dialogs.py:4165
 #: ../../spritz/src/spritz.glade.h:40
 msgid "Content"
 msgstr ""
@@ -1808,7 +1808,7 @@ msgstr "Ønsker du at forsættet ?"
 msgid "Choose one by typing its identifier"
 msgstr ""
 
-#: ../../client/text_repositories.py:286 ../../spritz/src/dialogs.py:2029
+#: ../../client/text_repositories.py:286 ../../spritz/src/dialogs.py:2030
 #: ../../spritz/src/spritz.glade.h:126
 #, fuzzy
 msgid "Notice board"
@@ -1826,8 +1826,8 @@ msgstr "Vis Installerede Pakker"
 
 #: ../../client/text_rescue.py:72 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:232 ../../client/text_rescue.py:237
-#: ../../client/text_ui.py:419 ../../client/text_ui.py:1148
-#: ../../client/text_ui.py:1240
+#: ../../client/text_ui.py:420 ../../client/text_ui.py:1149
+#: ../../client/text_ui.py:1241
 msgid "ATTENTION"
 msgstr ""
 
@@ -1903,8 +1903,8 @@ msgstr ""
 msgid "Now checking dependency atoms validity"
 msgstr ""
 
-#: ../../client/text_rescue.py:187 ../../client/text_ui.py:373
-#: ../../client/text_ui.py:564
+#: ../../client/text_rescue.py:187 ../../client/text_ui.py:374
+#: ../../client/text_ui.py:565
 #, fuzzy
 msgid "atom"
 msgstr "Fi_ler"
@@ -1979,9 +1979,9 @@ msgid "Please wait"
 msgstr ""
 
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
-#: ../../client/text_ui.py:873 ../../client/text_ui.py:874
-#: ../../client/text_ui.py:876 ../../client/text_ui.py:877
-#: ../../spritz/src/dialogs.py:5567 ../../spritz/src/misc.py:88
+#: ../../client/text_ui.py:874 ../../client/text_ui.py:875
+#: ../../client/text_ui.py:877 ../../client/text_ui.py:878
+#: ../../spritz/src/dialogs.py:5569 ../../spritz/src/misc.py:88
 #: ../../spritz/src/misc.py:372 ../../spritz/src/spritz.py:1078
 msgid "Attention"
 msgstr ""
@@ -2300,19 +2300,19 @@ msgid "All the available updates have been already installed"
 msgstr ""
 
 #: ../../client/text_smart.py:79 ../../client/text_smart.py:136
-#: ../../client/text_smart.py:240 ../../client/text_smart.py:369
+#: ../../client/text_smart.py:241 ../../client/text_smart.py:370
 #, fuzzy
 msgid "No packages specified"
 msgstr "Ingen valgte pakker"
 
-#: ../../client/text_smart.py:98 ../../client/text_smart.py:249
-#: ../../client/text_smart.py:383
+#: ../../client/text_smart.py:98 ../../client/text_smart.py:250
+#: ../../client/text_smart.py:384
 #, fuzzy
 msgid "Cannot find"
 msgstr "Installeret"
 
-#: ../../client/text_smart.py:101 ../../client/text_smart.py:252
-#: ../../client/text_smart.py:386
+#: ../../client/text_smart.py:101 ../../client/text_smart.py:253
+#: ../../client/text_smart.py:387
 #, fuzzy
 msgid "No valid packages specified"
 msgstr "Ingen valgte pakker"
@@ -2352,114 +2352,114 @@ msgstr ""
 msgid "directory does not exist"
 msgstr ""
 
-#: ../../client/text_smart.py:160 ../../client/text_ui.py:415
-#: ../../spritz/src/spritz.py:2127
+#: ../../client/text_smart.py:160 ../../client/text_ui.py:416
+#: ../../spritz/src/spritz.py:2132
 #, fuzzy
 msgid "is not a valid Entropy package"
 msgstr "Sorterer Pakker"
 
-#: ../../client/text_smart.py:176
+#: ../../client/text_smart.py:177
 msgid "Using branch"
 msgstr ""
 
-#: ../../client/text_smart.py:206
+#: ../../client/text_smart.py:207
 #, fuzzy
 msgid "Inflated package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_smart.py:214
+#: ../../client/text_smart.py:215
 #, fuzzy
 msgid "Deflating"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/text_smart.py:219
+#: ../../client/text_smart.py:220
 #, fuzzy
 msgid "Deflated package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_smart.py:227
+#: ../../client/text_smart.py:228
 #, fuzzy
 msgid "Extracting Entropy metadata from"
 msgstr "Behandler metadata fra : %s"
 
-#: ../../client/text_smart.py:233
+#: ../../client/text_smart.py:234
 #, fuzzy
 msgid "Extracted Entropy metadata from"
 msgstr "Behandler metadata fra : %s"
 
 #. print the list
-#: ../../client/text_smart.py:256
+#: ../../client/text_smart.py:257
 #, fuzzy
 msgid "This is the list of the packages that would be merged into a single one"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_smart.py:264 ../../client/text_smart.py:398
+#: ../../client/text_smart.py:265 ../../client/text_smart.py:399
 msgid "Would you like to create the packages above ?"
 msgstr ""
 
-#: ../../client/text_smart.py:268
+#: ../../client/text_smart.py:269
 #, fuzzy
 msgid "Creating merged Smart Package"
 msgstr "Sorterer Pakker"
 
-#: ../../client/text_smart.py:313
+#: ../../client/text_smart.py:314
 #, fuzzy
 msgid "collecting Entropy metadata"
 msgstr "Oprydning af alt Yum metadat"
 
-#: ../../client/text_smart.py:341
+#: ../../client/text_smart.py:342
 msgid "Unpack failed due to unknown reasons"
 msgstr ""
 
-#: ../../client/text_smart.py:346
+#: ../../client/text_smart.py:347
 #, fuzzy
 msgid "Compressing smart package"
 msgstr "Sorterer Pakker"
 
-#: ../../client/text_smart.py:353
+#: ../../client/text_smart.py:354
 msgid "Compression failed due to unknown reasons"
 msgstr ""
 
-#: ../../client/text_smart.py:357
+#: ../../client/text_smart.py:358
 msgid "Compressed file does not exist"
 msgstr ""
 
-#: ../../client/text_smart.py:374
+#: ../../client/text_smart.py:375
 #, fuzzy
 msgid "Cannot find G++ compiler"
 msgstr "Installeret"
 
 #. print the list
-#: ../../client/text_smart.py:390
+#: ../../client/text_smart.py:391
 #, fuzzy
 msgid "This is the list of the packages that would be worked out"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_smart.py:403
+#: ../../client/text_smart.py:404
 msgid "Creating Smart Application from"
 msgstr ""
 
-#: ../../client/text_smart.py:431
+#: ../../client/text_smart.py:432
 #, fuzzy
 msgid "Missing dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_smart.py:438
+#: ../../client/text_smart.py:439
 #, fuzzy
 msgid "This is the list of the dependencies that would be included"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_smart.py:460
+#: ../../client/text_smart.py:461
 #, fuzzy
 msgid "Unpacking the main package"
 msgstr "Opdater som afhængighed"
 
-#: ../../client/text_smart.py:477
+#: ../../client/text_smart.py:478
 #, fuzzy
 msgid "Unpacking dependency package"
 msgstr "Opdater som afhængighed"
 
-#: ../../client/text_smart.py:546
+#: ../../client/text_smart.py:547
 #, fuzzy
 msgid "Compressing smart application"
 msgstr "Sorterer Pakker"
@@ -2548,7 +2548,7 @@ msgstr "Sletter"
 msgid "Vote added, thank you!"
 msgstr ""
 
-#: ../../client/text_ugc.py:282 ../../spritz/src/dialogs.py:4249
+#: ../../client/text_ugc.py:282 ../../spritz/src/dialogs.py:4250
 #, fuzzy
 msgid "Number of downloads"
 msgstr "Navn på den nye profil"
@@ -2654,14 +2654,14 @@ msgstr ""
 
 #: ../../client/text_ui.py:133 ../../client/text_ui.py:146
 #: ../../client/text_ui.py:163 ../../client/text_ui.py:170
-#: ../../client/text_ui.py:671 ../../client/text_ui.py:1313
-#: ../../server/server_reagent.py:746
+#: ../../client/text_ui.py:672 ../../client/text_ui.py:1314
+#: ../../server/server_reagent.py:749
 #, fuzzy
 msgid "Nothing to do"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:184 ../../client/text_ui.py:629
-#: ../../client/text_ui.py:1137 ../../client/text_ui.py:1217
+#: ../../client/text_ui.py:184 ../../client/text_ui.py:630
+#: ../../client/text_ui.py:1138 ../../client/text_ui.py:1218
 #, fuzzy
 msgid "Running with"
 msgstr "Kører Transaktion"
@@ -2697,480 +2697,480 @@ msgid "Packages matching already up to date"
 msgstr "<b>Pakker Til Opdatering</b>"
 
 #. None or {}
-#: ../../client/text_ui.py:253 ../../client/text_ui.py:909
-#: ../../client/text_ui.py:1400
+#: ../../client/text_ui.py:253 ../../client/text_ui.py:910
+#: ../../client/text_ui.py:1401
 #, fuzzy
 msgid "Nothing to resume"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:264 ../../client/text_ui.py:922
-#: ../../client/text_ui.py:1408
+#: ../../client/text_ui.py:264 ../../client/text_ui.py:923
+#: ../../client/text_ui.py:1409
 #, fuzzy
 msgid "Resume cache corrupted"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:290
+#: ../../client/text_ui.py:291
 #, fuzzy
 msgid "Nothing to update"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:301
+#: ../../client/text_ui.py:302
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr ""
 
-#: ../../client/text_ui.py:305
+#: ../../client/text_ui.py:306
 msgid "Even if they are usually harmless, it is suggested to remove them."
 msgstr ""
 
-#: ../../client/text_ui.py:309
+#: ../../client/text_ui.py:310
 msgid "Would you like to scan them ?"
 msgstr ""
 
-#: ../../client/text_ui.py:323
+#: ../../client/text_ui.py:324
 #, fuzzy
 msgid "Calculation complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:326
+#: ../../client/text_ui.py:327
 #, fuzzy
 msgid "Nothing to remove"
 msgstr "Behandler pakker for %s"
 
-#: ../../client/text_ui.py:346 ../../client/text_ui.py:537
+#: ../../client/text_ui.py:347 ../../client/text_ui.py:538
 #, fuzzy
 msgid "Every package matching"
 msgstr "fandt %d pakker, som matcher : %s"
 
-#: ../../client/text_ui.py:348 ../../client/text_ui.py:539
+#: ../../client/text_ui.py:349 ../../client/text_ui.py:540
 #, fuzzy
 msgid "is masked"
 msgstr "Slettet"
 
-#: ../../client/text_ui.py:369 ../../client/text_ui.py:560
+#: ../../client/text_ui.py:370 ../../client/text_ui.py:561
 #, fuzzy
 msgid "matching"
 msgstr "Opdaterer"
 
-#: ../../client/text_ui.py:371 ../../client/text_ui.py:562
+#: ../../client/text_ui.py:372 ../../client/text_ui.py:563
 #, fuzzy
 msgid "is broken"
 msgstr "Filkilder"
 
-#: ../../client/text_ui.py:379
+#: ../../client/text_ui.py:380
 #, fuzzy
 msgid "in repositories"
 msgstr "Kilde"
 
-#: ../../client/text_ui.py:391 ../../client/text_ui.py:1160
-#: ../../client/text_ui.py:1252
+#: ../../client/text_ui.py:392 ../../client/text_ui.py:1161
+#: ../../client/text_ui.py:1253
 msgid "When you wrote"
-msgstr ""
-
-#: ../../client/text_ui.py:393 ../../client/text_ui.py:1162
-#: ../../client/text_ui.py:1254
-msgid "You Meant(tm)"
 msgstr ""
 
 #: ../../client/text_ui.py:394 ../../client/text_ui.py:1163
 #: ../../client/text_ui.py:1255
+msgid "You Meant(tm)"
+msgstr ""
+
+#: ../../client/text_ui.py:395 ../../client/text_ui.py:1164
+#: ../../client/text_ui.py:1256
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:417 ../../spritz/src/spritz.py:2129
+#: ../../client/text_ui.py:418 ../../spritz/src/spritz.py:2134
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
-#: ../../client/text_ui.py:422
+#: ../../client/text_ui.py:423
 #, fuzzy
 msgid "Skipped"
 msgstr "_Spring Over"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:435 ../../client/text_ui.py:1275
+#: ../../client/text_ui.py:436 ../../client/text_ui.py:1276
 #, fuzzy
 msgid "These are the chosen packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:459 ../../client/text_ui.py:726
+#: ../../client/text_ui.py:460 ../../client/text_ui.py:727
 #, fuzzy
 msgid "Not available"
 msgstr "Tilgængelige"
 
-#: ../../client/text_ui.py:473
+#: ../../client/text_ui.py:474
 #, fuzzy
 msgid "Versions"
 msgstr "_Filspejlsliste"
 
-#: ../../client/text_ui.py:496
+#: ../../client/text_ui.py:497
 #, fuzzy
 msgid "Switch repo"
 msgstr "Opdaterer"
 
-#: ../../client/text_ui.py:497 ../../client/text_ui.py:499
+#: ../../client/text_ui.py:498 ../../client/text_ui.py:500
 #: ../../spritz/src/spritz.glade.h:170
 #, fuzzy
 msgid "Reinstall"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:502 ../../spritz/src/spritz.glade.h:92
+#: ../../client/text_ui.py:503 ../../spritz/src/spritz.glade.h:92
 #, fuzzy
 msgid "Install"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:504
+#: ../../client/text_ui.py:505
 #, fuzzy
 msgid "Upgrade"
 msgstr "Opdateret"
 
-#: ../../client/text_ui.py:506
+#: ../../client/text_ui.py:507
 #, fuzzy
 msgid "Downgrade"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_ui.py:507 ../../spritz/src/dialogs.py:2062
+#: ../../client/text_ui.py:508 ../../spritz/src/dialogs.py:2063
 #, fuzzy
 msgid "Action"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/text_ui.py:510 ../../client/text_ui.py:1193
-#: ../../client/text_ui.py:1310
+#: ../../client/text_ui.py:511 ../../client/text_ui.py:1194
+#: ../../client/text_ui.py:1311
 #, fuzzy
 msgid "Packages involved"
 msgstr "Pakker"
 
-#: ../../client/text_ui.py:514
+#: ../../client/text_ui.py:515
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr ""
 
-#: ../../client/text_ui.py:525
+#: ../../client/text_ui.py:526
 #, fuzzy
 msgid "Calculating dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_ui.py:529
+#: ../../client/text_ui.py:530
 #, fuzzy
 msgid "Cannot find needed dependencies"
 msgstr "Opdater som afhængighed"
 
-#: ../../client/text_ui.py:568
+#: ../../client/text_ui.py:569
 #, fuzzy
 msgid "Not found"
 msgstr "Ingen pakker i køen"
 
-#: ../../client/text_ui.py:571
+#: ../../client/text_ui.py:572
 #, fuzzy
 msgid "Probably needed by"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:613
+#: ../../client/text_ui.py:614
 msgid "sources fetch"
 msgstr ""
 
-#: ../../client/text_ui.py:688 ../../client/text_ui.py:792
+#: ../../client/text_ui.py:689 ../../client/text_ui.py:793
 #, fuzzy
 msgid "These are the packages that would be"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:688
+#: ../../client/text_ui.py:689
 msgid "merged"
 msgstr ""
 
-#: ../../client/text_ui.py:793
+#: ../../client/text_ui.py:794
 #, fuzzy
 msgid "removed"
 msgstr "Sletter"
 
-#: ../../client/text_ui.py:794
+#: ../../client/text_ui.py:795
 msgid "conflicting/substituted"
 msgstr ""
 
 #. show download info
-#: ../../client/text_ui.py:809
+#: ../../client/text_ui.py:810
 #, fuzzy
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:811
+#: ../../client/text_ui.py:812
 #, fuzzy
 msgid "Packages needing to be removed"
 msgstr "Pakker til behandling"
 
-#: ../../client/text_ui.py:815
+#: ../../client/text_ui.py:816
 #, fuzzy
 msgid "Packages needing to be installed"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:820
+#: ../../client/text_ui.py:821
 #, fuzzy
 msgid "Packages needing to be reinstalled"
 msgstr "Pakker til behandling"
 
-#: ../../client/text_ui.py:825
+#: ../../client/text_ui.py:826
 #, fuzzy
 msgid "Packages needing to be updated"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:830
+#: ../../client/text_ui.py:831
 #, fuzzy
 msgid "Packages needing to be downgraded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../client/text_ui.py:840
+#: ../../client/text_ui.py:841
 #, fuzzy
 msgid "Download size"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_ui.py:846
+#: ../../client/text_ui.py:847
 #, fuzzy
 msgid "Used disk space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:848 ../../spritz/src/misc.py:437
+#: ../../client/text_ui.py:849 ../../spritz/src/misc.py:437
 #, fuzzy
 msgid "Freed disk space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:860
+#: ../../client/text_ui.py:861
 msgid "You need at least"
 msgstr ""
 
-#: ../../client/text_ui.py:862
+#: ../../client/text_ui.py:863
 #, fuzzy
 msgid "of free space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:870
+#: ../../client/text_ui.py:871
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 
-#: ../../client/text_ui.py:880
+#: ../../client/text_ui.py:881
 msgid "Would you like to execute the queue ?"
 msgstr ""
 
-#: ../../client/text_ui.py:920 ../../client/text_ui.py:1406
+#: ../../client/text_ui.py:921 ../../client/text_ui.py:1407
 #, fuzzy
 msgid "Resuming previous operations"
 msgstr "Filkilder"
 
-#: ../../client/text_ui.py:944
+#: ../../client/text_ui.py:945
 #, fuzzy
 msgid "Please select an option"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:945
+#: ../../client/text_ui.py:946
 msgid "Read the license"
 msgstr ""
 
-#: ../../client/text_ui.py:946
+#: ../../client/text_ui.py:947
 msgid "Accept the license (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:947
+#: ../../client/text_ui.py:948
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 
-#: ../../client/text_ui.py:948
+#: ../../client/text_ui.py:949
 msgid "Quit"
 msgstr ""
 
 #. wait user interaction
-#: ../../client/text_ui.py:950
+#: ../../client/text_ui.py:951
 msgid "Your choice (type a number and press enter)"
 msgstr ""
 
-#: ../../client/text_ui.py:963
+#: ../../client/text_ui.py:964
 msgid "You need to accept the licenses below"
 msgstr ""
 
-#: ../../client/text_ui.py:967
+#: ../../client/text_ui.py:968
 #, fuzzy
 msgid "needed by"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:987
+#: ../../client/text_ui.py:988
 msgid "No file viewer"
 msgstr ""
 
-#: ../../client/text_ui.py:987
+#: ../../client/text_ui.py:988
 #, fuzzy
 msgid "License saved into"
 msgstr "Filnavn"
 
-#: ../../client/text_ui.py:1028 ../../client/text_ui.py:1053
+#: ../../client/text_ui.py:1029 ../../client/text_ui.py:1054
 #, fuzzy
 msgid "fetch"
 msgstr "Opdaterer"
 
-#: ../../client/text_ui.py:1078
+#: ../../client/text_ui.py:1079
 #, fuzzy
 msgid "Download complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:1095
+#: ../../client/text_ui.py:1096
 #, fuzzy
 msgid "install"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:1124
+#: ../../client/text_ui.py:1125
 #, fuzzy
 msgid "Installation complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_ui.py:1150 ../../client/text_ui.py:1242
+#: ../../client/text_ui.py:1151 ../../client/text_ui.py:1243
 #, fuzzy
 msgid "is not installed"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:1189 ../../client/text_ui.py:1306
+#: ../../client/text_ui.py:1190 ../../client/text_ui.py:1307
 #, fuzzy
 msgid "Installed from"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:1196
+#: ../../client/text_ui.py:1197
 #, fuzzy
 msgid "Would you like to configure them now ?"
 msgstr "Vis Tilgængelige Pakker"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:1294
+#: ../../client/text_ui.py:1295
 #, fuzzy
 msgid "vital package"
 msgstr "Sorterer Pakker"
 
-#: ../../client/text_ui.py:1295
+#: ../../client/text_ui.py:1296
 #, fuzzy
 msgid "Removal forbidden"
 msgstr "Sletter som afhængighed"
 
-#: ../../client/text_ui.py:1305
+#: ../../client/text_ui.py:1306
 msgid "Disk size"
 msgstr ""
 
-#: ../../client/text_ui.py:1318
+#: ../../client/text_ui.py:1319
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1321 ../../server/server_reagent.py:345
+#: ../../client/text_ui.py:1322 ../../server/server_reagent.py:345
 msgid "Would you like to remove them now ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1337
+#: ../../client/text_ui.py:1338
 msgid "This is the new removal queue"
 msgstr ""
 
-#: ../../client/text_ui.py:1362
+#: ../../client/text_ui.py:1363
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1364
+#: ../../client/text_ui.py:1365
 msgid "Would you like to proceed with a selective removal ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1371
+#: ../../client/text_ui.py:1372
 msgid "Would you like to skip this step then ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1376
+#: ../../client/text_ui.py:1377
 msgid "Starting removal in"
 msgstr ""
 
-#: ../../client/text_ui.py:1440
+#: ../../client/text_ui.py:1441
 #, fuzzy
 msgid "Remove this one ?"
 msgstr "Sletter"
 
-#: ../../client/text_ui.py:1476
+#: ../../client/text_ui.py:1477
 msgid "All done"
 msgstr ""
 
-#: ../../client/text_ui.py:1482
+#: ../../client/text_ui.py:1483
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 
-#: ../../client/text_ui.py:1505
+#: ../../client/text_ui.py:1506
 #, fuzzy
 msgid "Running dependency test"
 msgstr "Sletter som afhængighed"
 
-#: ../../client/text_ui.py:1543
+#: ../../client/text_ui.py:1544
 msgid "These are the dependencies not found"
 msgstr ""
 
-#: ../../client/text_ui.py:1547
+#: ../../client/text_ui.py:1548
 #, fuzzy
 msgid "Needed by"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:1552
+#: ../../client/text_ui.py:1553
 #, fuzzy
 msgid "Would you like to install the available packages ?"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../client/text_ui.py:1557 ../../client/text_ui.py:1634
+#: ../../client/text_ui.py:1558 ../../client/text_ui.py:1635
 #, fuzzy
 msgid "Installing available packages in"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../client/text_ui.py:1558 ../../client/text_ui.py:1635
+#: ../../client/text_ui.py:1559 ../../client/text_ui.py:1636
 msgid "10 seconds"
 msgstr ""
 
-#: ../../client/text_ui.py:1593
+#: ../../client/text_ui.py:1594
 msgid "System is healthy"
 msgstr ""
 
-#: ../../client/text_ui.py:1599
+#: ../../client/text_ui.py:1600
 msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/text_ui.py:1601
+#: ../../client/text_ui.py:1602
 #, fuzzy
 msgid "Not matched"
 msgstr "Vis Installerede Pakker"
 
-#: ../../client/text_ui.py:1628
+#: ../../client/text_ui.py:1629
 msgid "Would you like to install them ?"
 msgstr ""
 
-#: ../../server/activator.py:54
+#: ../../server/activator.py:56
 #, fuzzy
 msgid "package repositories handling functions"
 msgstr "Filkilder"
 
-#: ../../server/activator.py:55
+#: ../../server/activator.py:57
 #, fuzzy
 msgid "sync package repositories across primary mirrors"
 msgstr "Kilde"
 
-#: ../../server/activator.py:61
+#: ../../server/activator.py:63
 #, fuzzy
 msgid "database handling functions"
 msgstr "Filkilder"
 
-#: ../../server/reagent.py:56
+#: ../../server/reagent.py:58
 #, fuzzy
 msgid "do some searches into repository databases"
 msgstr "Kilde"
 
-#: ../../server/reagent.py:70
+#: ../../server/reagent.py:72
 #, fuzzy
 msgid "repository database functions"
 msgstr "Filkilder"
 
-#: ../../server/reagent.py:79
+#: ../../server/reagent.py:81
 #, fuzzy
 msgid "switch to the specified branch the repository"
 msgstr "Kilde"
 
-#: ../../server/reagent.py:90
+#: ../../server/reagent.py:92
 msgid "clone a package assigning it an arbitrary tag"
 msgstr ""
 
-#: ../../server/reagent.py:110
+#: ../../server/reagent.py:112
 #, fuzzy
 msgid "remove downloaded packages and clean temp. directories)"
 msgstr "Henter Pakker:"
@@ -3195,7 +3195,7 @@ msgstr ""
 msgid "Exit/Commit"
 msgstr ""
 
-#: ../../server/server_activator.py:213 ../../spritz/src/dialogs.py:1985
+#: ../../server/server_activator.py:213 ../../spritz/src/dialogs.py:1986
 #, fuzzy
 msgid "Notice text"
 msgstr "Installeret"
@@ -3336,7 +3336,7 @@ msgstr "Installerer"
 msgid "repository"
 msgstr "Kilde"
 
-#: ../../server/server_reagent.py:83 ../../spritz/src/dialogs.py:5020
+#: ../../server/server_reagent.py:83 ../../spritz/src/dialogs.py:5022
 #, fuzzy
 msgid "Enabled"
 msgstr "_Valgt"
@@ -3344,11 +3344,11 @@ msgstr "_Valgt"
 #. repository
 #. glsa title
 #: ../../server/server_reagent.py:86 ../../server/server_reagent.py:98
-#: ../../spritz/src/dialogs.py:2060 ../../spritz/src/dialogs.py:2222
-#: ../../spritz/src/dialogs.py:2299 ../../spritz/src/dialogs.py:2582
-#: ../../spritz/src/dialogs.py:3263 ../../spritz/src/dialogs.py:3316
-#: ../../spritz/src/dialogs.py:3350 ../../spritz/src/dialogs.py:3373
-#: ../../spritz/src/dialogs.py:3399 ../../spritz/src/dialogs.py:3439
+#: ../../spritz/src/dialogs.py:2061 ../../spritz/src/dialogs.py:2223
+#: ../../spritz/src/dialogs.py:2300 ../../spritz/src/dialogs.py:2583
+#: ../../spritz/src/dialogs.py:3264 ../../spritz/src/dialogs.py:3317
+#: ../../spritz/src/dialogs.py:3351 ../../spritz/src/dialogs.py:3374
+#: ../../spritz/src/dialogs.py:3400 ../../spritz/src/dialogs.py:3440
 #: ../../spritz/src/spritz.py:872 ../../spritz/src/views.py:1018
 #: ../../spritz/src/views.py:1683
 msgid "Repository"
@@ -3395,7 +3395,7 @@ msgid "package dependencies"
 msgstr "Installer som afhængighed"
 
 #: ../../server/server_reagent.py:169 ../../server/server_reagent.py:174
-#: ../../spritz/src/dialogs.py:2983
+#: ../../spritz/src/dialogs.py:2984
 #, fuzzy
 msgid "No dependencies"
 msgstr "Indstillinger"
@@ -3499,7 +3499,7 @@ msgid "Entries handled"
 msgstr ""
 
 #: ../../server/server_reagent.py:426 ../../server/server_reagent.py:451
-#: ../../server/server_reagent.py:486 ../../spritz/src/dialogs.py:2850
+#: ../../server/server_reagent.py:486 ../../spritz/src/dialogs.py:2851
 #, fuzzy
 msgid "Not enough parameters"
 msgstr "Fejl i test af pakke signaturer:\n"
@@ -3568,17 +3568,17 @@ msgstr "Vis Installerede Pakker"
 msgid "Bumping Repository database"
 msgstr "Kilde"
 
-#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2561
-#: ../../spritz/src/spritz.py:2592 ../../spritz/src/spritz.glade.h:72
+#: ../../server/server_reagent.py:589 ../../spritz/src/spritz.py:2570
+#: ../../spritz/src/spritz.py:2601 ../../spritz/src/spritz.glade.h:72
 msgid "Error"
 msgstr "Fejl"
 
-#: ../../server/server_reagent.py:699
+#: ../../server/server_reagent.py:702
 #, fuzzy
 msgid "No package sets found"
 msgstr "Ingen pakker i køen"
 
-#: ../../server/server_reagent.py:709
+#: ../../server/server_reagent.py:712
 #, fuzzy
 msgid "package set not found"
 msgstr "Ingen pakker i køen"
@@ -3600,821 +3600,821 @@ msgstr ""
 msgid "Notice"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:194
+#: ../../spritz/src/dialogs.py:195
 #, fuzzy
 msgid "Connection name"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/dialogs.py:195 ../../spritz/src/dialogs.py:258
+#: ../../spritz/src/dialogs.py:196 ../../spritz/src/dialogs.py:259
 #: ../../spritz/src/spritz.glade.h:87
 #, fuzzy
 msgid "Hostname"
 msgstr "Filnavn"
 
-#: ../../spritz/src/dialogs.py:196 ../../spritz/src/dialogs.py:259
+#: ../../spritz/src/dialogs.py:197 ../../spritz/src/dialogs.py:260
 #: ../../spritz/src/spritz.glade.h:150
 #, fuzzy
 msgid "Port"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:197 ../../spritz/src/spritz.glade.h:245
+#: ../../spritz/src/dialogs.py:198 ../../spritz/src/spritz.glade.h:245
 #, fuzzy
 msgid "Username"
 msgstr "Filnavn"
 
-#: ../../spritz/src/dialogs.py:198
+#: ../../spritz/src/dialogs.py:199
 #, fuzzy
 msgid "SSL Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/dialogs.py:201 ../../spritz/src/dialogs.py:3403
+#: ../../spritz/src/dialogs.py:202 ../../spritz/src/dialogs.py:3404
 msgid "Choose what kind of test you would like to run"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:257
+#: ../../spritz/src/dialogs.py:258
 #, fuzzy
 msgid "Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/dialogs.py:263
+#: ../../spritz/src/dialogs.py:264
 msgid "SSL"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:332 ../../spritz/src/dialogs.py:958
+#: ../../spritz/src/dialogs.py:333 ../../spritz/src/dialogs.py:959
 #, fuzzy
 msgid "Connection Error"
 msgstr "Ønsker du at forsættet ?"
 
 #.
-#: ../../spritz/src/dialogs.py:540 ../../spritz/src/dialogs.py:559
-#: ../../spritz/src/dialogs.py:576
+#: ../../spritz/src/dialogs.py:541 ../../spritz/src/dialogs.py:560
+#: ../../spritz/src/dialogs.py:577
 #, fuzzy
 msgid "Packages information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/dialogs.py:545 ../../spritz/src/spritz.glade.h:11
+#: ../../spritz/src/dialogs.py:546 ../../spritz/src/spritz.glade.h:11
 #, fuzzy
 msgid "Advisory information"
 msgstr "Filkilder"
 
 #.
-#: ../../spritz/src/dialogs.py:552 ../../spritz/src/dialogs.py:569
+#: ../../spritz/src/dialogs.py:553 ../../spritz/src/dialogs.py:570
 msgid "Execute"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:564
+#: ../../spritz/src/dialogs.py:565
 #, fuzzy
 msgid "Destination repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:581
+#: ../../spritz/src/dialogs.py:582
 #, fuzzy
 msgid "Remove packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:586
+#: ../../spritz/src/dialogs.py:587
 #, fuzzy
 msgid "Copy/move packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:591
+#: ../../spritz/src/dialogs.py:592
 #, fuzzy
 msgid "Compile selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:596 ../../spritz/src/spritz.glade.h:7
+#: ../../spritz/src/dialogs.py:597 ../../spritz/src/spritz.glade.h:7
 msgid "Add USE"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:601 ../../spritz/src/spritz.glade.h:176
+#: ../../spritz/src/dialogs.py:602 ../../spritz/src/spritz.glade.h:176
 #, fuzzy
 msgid "Remove USE"
 msgstr "Sletter"
 
 #.
-#: ../../spritz/src/dialogs.py:608
+#: ../../spritz/src/dialogs.py:609
 #, fuzzy
 msgid "View"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:613
+#: ../../spritz/src/dialogs.py:614
 msgid "Add"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:618 ../../spritz/src/spritz.glade.h:173
+#: ../../spritz/src/dialogs.py:619 ../../spritz/src/spritz.glade.h:173
 #, fuzzy
 msgid "Remove"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:623 ../../spritz/src/spritz.glade.h:169
+#: ../../spritz/src/dialogs.py:624 ../../spritz/src/spritz.glade.h:169
 #, fuzzy
 msgid "Refresh"
 msgstr "Indstillinger"
 
 #. command col
-#: ../../spritz/src/dialogs.py:714 ../../spritz/src/dialogs.py:755
+#: ../../spritz/src/dialogs.py:715 ../../spritz/src/dialogs.py:756
 msgid "Command"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:727
+#: ../../spritz/src/dialogs.py:728
 msgid "None"
 msgstr ""
 
 #. description col
-#: ../../spritz/src/dialogs.py:731 ../../spritz/src/dialogs.py:757
+#: ../../spritz/src/dialogs.py:732 ../../spritz/src/dialogs.py:758
 msgid "Parameters"
 msgstr ""
 
 #. date col
 #. date
-#: ../../spritz/src/dialogs.py:759 ../../spritz/src/dialogs.py:799
+#: ../../spritz/src/dialogs.py:760 ../../spritz/src/dialogs.py:800
 #: ../../spritz/src/spritz.py:832 ../../spritz/src/spritz.glade.h:48
 #, fuzzy
 msgid "Date"
 msgstr "Opdateret"
 
 #. note
-#: ../../spritz/src/dialogs.py:801 ../../spritz/src/dialogs.py:3116
+#: ../../spritz/src/dialogs.py:802 ../../spritz/src/dialogs.py:3117
 #: ../../spritz/src/spritz.glade.h:124
 msgid "Note"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:860
+#: ../../spritz/src/dialogs.py:861
 msgid "Key"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:872
+#: ../../spritz/src/dialogs.py:873
 msgid "USE Flags"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:883 ../../spritz/src/spritz.glade.h:20
+#: ../../spritz/src/dialogs.py:884 ../../spritz/src/spritz.glade.h:20
 #, fuzzy
 msgid "Branch"
 msgstr "Arkitektur"
 
-#: ../../spritz/src/dialogs.py:887 ../../spritz/src/dialogs.py:3313
+#: ../../spritz/src/dialogs.py:888 ../../spritz/src/dialogs.py:3314
 #, fuzzy
 msgid "Tag"
 msgstr "_Tag"
 
-#: ../../spritz/src/dialogs.py:889
+#: ../../spritz/src/dialogs.py:890
 #, fuzzy
 msgid "Injected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:947
+#: ../../spritz/src/dialogs.py:948
 msgid "No connection to host, please check your data"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:951
+#: ../../spritz/src/dialogs.py:952
 msgid "Unable to create a remote session. Try again later."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:955
+#: ../../spritz/src/dialogs.py:956
 msgid "Login failed. Please retry."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:964
+#: ../../spritz/src/dialogs.py:965
 msgid "SSL Error, are you sure the server supports SSL?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:999
+#: ../../spritz/src/dialogs.py:1000
 msgid "Communication error"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1028
+#: ../../spritz/src/dialogs.py:1029
 msgid "Current"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1030
+#: ../../spritz/src/dialogs.py:1031
 msgid "c.mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1032
+#: ../../spritz/src/dialogs.py:1033
 #, fuzzy
 msgid "branch"
 msgstr "Arkitektur"
 
-#: ../../spritz/src/dialogs.py:1034
+#: ../../spritz/src/dialogs.py:1035
 msgid "supported branches"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1036
+#: ../../spritz/src/dialogs.py:1037
 #, fuzzy
 msgid "repositories"
 msgstr "Kilde"
 
 #. glsa id
-#: ../../spritz/src/dialogs.py:1333
+#: ../../spritz/src/dialogs.py:1334
 #, fuzzy
 msgid "GLSA Id."
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:1374
+#: ../../spritz/src/dialogs.py:1375
 #, fuzzy
 msgid "Are you sure you want to remove the selected packages ? (For EVA!)"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:1377
+#: ../../spritz/src/dialogs.py:1378
 msgid "This is your last chance, are you really really really sure?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1404 ../../spritz/src/dialogs.py:2932
-#: ../../spritz/src/dialogs.py:2975 ../../spritz/src/dialogs.py:3033
+#: ../../spritz/src/dialogs.py:1405 ../../spritz/src/dialogs.py:2933
+#: ../../spritz/src/dialogs.py:2976 ../../spritz/src/dialogs.py:3034
 msgid "Atoms, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1406
+#: ../../spritz/src/dialogs.py:1407
 msgid "USE flags, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1409
+#: ../../spritz/src/dialogs.py:1410
 msgid "Insert command parameters"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1805
+#: ../../spritz/src/dialogs.py:1806
 #, fuzzy
 msgid "Cannot move/copy packages from different repositories"
 msgstr "Pakke Beskrivelser"
 
-#: ../../spritz/src/dialogs.py:1823
+#: ../../spritz/src/dialogs.py:1824
 #, fuzzy
 msgid "To repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:1824
+#: ../../spritz/src/dialogs.py:1825
 msgid "Execute copy"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1827
+#: ../../spritz/src/dialogs.py:1828
 #, fuzzy
 msgid "Entropy packages move/copy"
 msgstr "Behandler pakker for %s"
 
-#: ../../spritz/src/dialogs.py:1983
+#: ../../spritz/src/dialogs.py:1984
 #, fuzzy
 msgid "Notice title"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:1984
+#: ../../spritz/src/dialogs.py:1985
 msgid "Link (URL)"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1988
+#: ../../spritz/src/dialogs.py:1989
 msgid "Insert your new notice board entry"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2064
+#: ../../spritz/src/dialogs.py:2065
 #, fuzzy
 msgid "Server"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2066
+#: ../../spritz/src/dialogs.py:2067
 msgid "Yes"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2067
+#: ../../spritz/src/dialogs.py:2068
 msgid "No"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2073 ../../spritz/src/spritz.py:829
+#: ../../spritz/src/dialogs.py:2074 ../../spritz/src/spritz.py:829
 #, fuzzy
 msgid "Database"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/dialogs.py:2074
+#: ../../spritz/src/dialogs.py:2075
 #, fuzzy
 msgid "current revision"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2076
+#: ../../spritz/src/dialogs.py:2077
 #, fuzzy
 msgid "remote revision"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2078
+#: ../../spritz/src/dialogs.py:2079
 msgid "upload"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2080
+#: ../../spritz/src/dialogs.py:2081
 #, fuzzy
 msgid "download"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/dialogs.py:2096 ../../spritz/src/dialogs.py:2251
+#: ../../spritz/src/dialogs.py:2097 ../../spritz/src/dialogs.py:2252
 #, fuzzy
 msgid "Execution mode"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:2096 ../../spritz/src/dialogs.py:2251
+#: ../../spritz/src/dialogs.py:2097 ../../spritz/src/dialogs.py:2252
 #, fuzzy
 msgid "Execute all"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:2096 ../../spritz/src/dialogs.py:2251
+#: ../../spritz/src/dialogs.py:2097 ../../spritz/src/dialogs.py:2252
 msgid "Execute only selected"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2099 ../../spritz/src/dialogs.py:2254
+#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2255
 msgid "Choose the execution mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2138
+#: ../../spritz/src/dialogs.py:2139
 msgid "Commit message"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2139
+#: ../../spritz/src/dialogs.py:2140
 #, fuzzy
 msgid "Pretend mode"
 msgstr "Slettet"
 
-#: ../../spritz/src/dialogs.py:2140
+#: ../../spritz/src/dialogs.py:2141
 #, fuzzy
 msgid "Packages check"
 msgstr "Pakker."
 
-#: ../../spritz/src/dialogs.py:2144
+#: ../../spritz/src/dialogs.py:2145
 #, fuzzy
 msgid "Choose sync options"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2164
+#: ../../spritz/src/dialogs.py:2165
 #, fuzzy
 msgid "Mirror updates information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2234
+#: ../../spritz/src/dialogs.py:2235
 #, fuzzy
 msgid "Choose the destination repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/dialogs.py:2310
+#: ../../spritz/src/dialogs.py:2311
 #, fuzzy
 msgid "To be added"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:2317 ../../spritz/src/dialogs.py:5229
-#: ../../spritz/src/dialogs.py:5247
+#: ../../spritz/src/dialogs.py:2318 ../../spritz/src/dialogs.py:5231
+#: ../../spritz/src/dialogs.py:5249
 #, fuzzy
 msgid "To be removed"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:2324
+#: ../../spritz/src/dialogs.py:2325
 #, fuzzy
 msgid "To be injected"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:2770 ../../spritz/src/dialogs.py:2803
+#: ../../spritz/src/dialogs.py:2771 ../../spritz/src/dialogs.py:2804
 msgid "Categories, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2776
+#: ../../spritz/src/dialogs.py:2777
 #, fuzzy
 msgid "Insert categories"
 msgstr "Kategorier"
 
-#: ../../spritz/src/dialogs.py:2809
+#: ../../spritz/src/dialogs.py:2810
 msgid "Insert categories (if you want)"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2831
+#: ../../spritz/src/dialogs.py:2832
 msgid "Invalid Command"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2831 ../../spritz/src/dialogs.py:2850
-#: ../../spritz/src/dialogs.py:2857
+#: ../../spritz/src/dialogs.py:2832 ../../spritz/src/dialogs.py:2851
+#: ../../spritz/src/dialogs.py:2858
 msgid "Custom command Error"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2857
+#: ../../spritz/src/dialogs.py:2858
 #, fuzzy
 msgid "Error executing call"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:2934 ../../spritz/src/dialogs.py:2977
+#: ../../spritz/src/dialogs.py:2935 ../../spritz/src/dialogs.py:2978
 #, fuzzy
 msgid "Pretend"
 msgstr "Slettet"
 
-#: ../../spritz/src/dialogs.py:2935 ../../spritz/src/dialogs.py:2979
+#: ../../spritz/src/dialogs.py:2936 ../../spritz/src/dialogs.py:2980
 #, fuzzy
 msgid "Verbose"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/dialogs.py:2936 ../../spritz/src/dialogs.py:2980
+#: ../../spritz/src/dialogs.py:2937 ../../spritz/src/dialogs.py:2981
 msgid "No color"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2939
+#: ../../spritz/src/dialogs.py:2940
 #, fuzzy
 msgid "Insert packages removal parameters"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../spritz/src/dialogs.py:2978
+#: ../../spritz/src/dialogs.py:2979
 msgid "Oneshot"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2981
+#: ../../spritz/src/dialogs.py:2982
 #, fuzzy
 msgid "Fetch only"
 msgstr "Opdaterer"
 
-#: ../../spritz/src/dialogs.py:2982
+#: ../../spritz/src/dialogs.py:2983
 msgid "Build only"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2984
+#: ../../spritz/src/dialogs.py:2985
 msgid "Custom USE flags"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2985
+#: ../../spritz/src/dialogs.py:2986
 msgid "Custom LDFLAGS"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2986
+#: ../../spritz/src/dialogs.py:2987
 msgid "Custom CFLAGS"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2989
+#: ../../spritz/src/dialogs.py:2990
 #, fuzzy
 msgid "Insert compilation parameters"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:3036
+#: ../../spritz/src/dialogs.py:3037
 #, fuzzy
 msgid "Insert Package Information parameters"
 msgstr "I_nformation"
 
-#: ../../spritz/src/dialogs.py:3081
+#: ../../spritz/src/dialogs.py:3082
 msgid "Full output"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3084
+#: ../../spritz/src/dialogs.py:3085
 #, fuzzy
 msgid "Auto refresh"
 msgstr "_Automatisk indlæsning ved start"
 
-#: ../../spritz/src/dialogs.py:3086
+#: ../../spritz/src/dialogs.py:3087
 msgid "Insert output parameters"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3117 ../../spritz/src/spritz.glade.h:76
+#: ../../spritz/src/dialogs.py:3118 ../../spritz/src/spritz.glade.h:76
 #, fuzzy
 msgid "Extended note"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:3120
+#: ../../spritz/src/dialogs.py:3121
 msgid "Insert your new pinboard item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3194
+#: ../../spritz/src/dialogs.py:3195
 msgid "List type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3197
+#: ../../spritz/src/dialogs.py:3198
 msgid "Choose what kind of list you want to see"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3267
+#: ../../spritz/src/dialogs.py:3268
 #, fuzzy
 msgid "Choose from which repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:3313
+#: ../../spritz/src/dialogs.py:3314
 #, fuzzy
 msgid "Needed Libraries"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/dialogs.py:3313
+#: ../../spritz/src/dialogs.py:3314
 #, fuzzy
 msgid "Reverse dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../spritz/src/dialogs.py:3313 ../../spritz/src/dialogs.py:4140
+#: ../../spritz/src/dialogs.py:3314 ../../spritz/src/dialogs.py:4141
 #, fuzzy
 msgid "File"
 msgstr "_Filer"
 
-#: ../../spritz/src/dialogs.py:3313
+#: ../../spritz/src/dialogs.py:3314
 #, fuzzy
 msgid "Eclass"
 msgstr "Ekskludering"
 
-#: ../../spritz/src/dialogs.py:3317
+#: ../../spritz/src/dialogs.py:3318
 #, fuzzy
 msgid "Search type"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:3318
+#: ../../spritz/src/dialogs.py:3319
 #, fuzzy
 msgid "Search string"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:3321
+#: ../../spritz/src/dialogs.py:3322
 #, fuzzy
 msgid "Entropy Search"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/dialogs.py:3354
+#: ../../spritz/src/dialogs.py:3355
 #, fuzzy
 msgid "Choose the repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/dialogs.py:3376
+#: ../../spritz/src/dialogs.py:3377
 #, fuzzy
 msgid "Choose the repositories you want to scan"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:3400
+#: ../../spritz/src/dialogs.py:3401
 msgid "Choose mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3400
+#: ../../spritz/src/dialogs.py:3401
 msgid "Server check"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3400
+#: ../../spritz/src/dialogs.py:3401
 #, fuzzy
 msgid "Mirrors check"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/dialogs.py:3443
+#: ../../spritz/src/dialogs.py:3444
 #, fuzzy
 msgid "Choose what notice board you want to see"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:3693
+#: ../../spritz/src/dialogs.py:3694
 msgid "Expand to browse"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3709 ../../spritz/src/spritz.glade.h:88
+#: ../../spritz/src/dialogs.py:3710 ../../spritz/src/spritz.glade.h:88
 #, fuzzy
 msgid "Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:3713 ../../spritz/src/spritz.glade.h:14
+#: ../../spritz/src/dialogs.py:3714 ../../spritz/src/spritz.glade.h:14
 #, fuzzy
 msgid "Author"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/dialogs.py:3989
+#: ../../spritz/src/dialogs.py:3990
 #, fuzzy
 msgid "Package ChangeLog"
 msgstr "Pakker"
 
-#: ../../spritz/src/dialogs.py:4042 ../../spritz/src/views.py:1065
+#: ../../spritz/src/dialogs.py:4043 ../../spritz/src/views.py:1065
 #, fuzzy
 msgid "Vote registered successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/dialogs.py:4044 ../../spritz/src/views.py:1067
+#: ../../spritz/src/dialogs.py:4045 ../../spritz/src/views.py:1067
 #, fuzzy
 msgid "Error registering vote"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:4057
+#: ../../spritz/src/dialogs.py:4058
 #, fuzzy
 msgid "License name"
 msgstr "Filnavn"
 
-#: ../../spritz/src/dialogs.py:4073 ../../spritz/src/spritz.glade.h:120
+#: ../../spritz/src/dialogs.py:4074 ../../spritz/src/spritz.glade.h:120
 #, fuzzy
 msgid "Mirrors"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/dialogs.py:4097
+#: ../../spritz/src/dialogs.py:4098
 #, fuzzy
 msgid "Eclasses"
 msgstr "Ekskludering"
 
-#: ../../spritz/src/dialogs.py:4113
+#: ../../spritz/src/dialogs.py:4114
 #, fuzzy
 msgid "Depends"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/dialogs.py:4121
+#: ../../spritz/src/dialogs.py:4122
 #, fuzzy
 msgid "Needed libraries"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/dialogs.py:4129
+#: ../../spritz/src/dialogs.py:4130
 msgid "Protected item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4132 ../../spritz/src/dialogs.py:4144
-#: ../../spritz/src/dialogs.py:4156
+#: ../../spritz/src/dialogs.py:4133 ../../spritz/src/dialogs.py:4145
+#: ../../spritz/src/dialogs.py:4157
 msgid "Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4244
+#: ../../spritz/src/dialogs.py:4245
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4245
+#: ../../spritz/src/dialogs.py:4246
 msgid "Be part of our Community!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4281
+#: ../../spritz/src/dialogs.py:4283
 msgid "From your Operating System"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4284
+#: ../../spritz/src/dialogs.py:4286
 #, fuzzy
 msgid "Remotely"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:4442
+#: ../../spritz/src/dialogs.py:4444
 msgid "Bug"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4450
+#: ../../spritz/src/dialogs.py:4452
 #, fuzzy
 msgid "Reference"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/dialogs.py:4524
+#: ../../spritz/src/dialogs.py:4526
 msgid "impact"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4528
+#: ../../spritz/src/dialogs.py:4530
 msgid "access"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4543
+#: ../../spritz/src/dialogs.py:4545
 msgid "Vulnerables"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4547
+#: ../../spritz/src/dialogs.py:4549
 #, fuzzy
 msgid "Unaffected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:4631
+#: ../../spritz/src/dialogs.py:4633
 msgid "Id"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4709
+#: ../../spritz/src/dialogs.py:4711
 msgid "Write your"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4712
+#: ../../spritz/src/dialogs.py:4714
 #, fuzzy
 msgid "Select your"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:4719
+#: ../../spritz/src/dialogs.py:4721
 msgid "Submit issue"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4732
+#: ../../spritz/src/dialogs.py:4734
 msgid "Empty Document"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4736
+#: ../../spritz/src/dialogs.py:4738
 #, fuzzy
 msgid "Invalid Description"
 msgstr "_Beskrivelse"
 
-#: ../../spritz/src/dialogs.py:4742
+#: ../../spritz/src/dialogs.py:4744
 msgid "Invalid Document Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4745
+#: ../../spritz/src/dialogs.py:4747
 #, fuzzy
 msgid "Invalid Title"
 msgstr "Kilde"
 
 #. confirm ?
-#: ../../spritz/src/dialogs.py:4749
+#: ../../spritz/src/dialogs.py:4751
 msgid "Do you confirm your submission?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4775
+#: ../../spritz/src/dialogs.py:4777
 #, fuzzy
 msgid "UGC Error"
 msgstr "Fejl"
 
-#: ../../spritz/src/dialogs.py:4779
+#: ../../spritz/src/dialogs.py:4781
 msgid "Document added successfully. Thank you"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4779
+#: ../../spritz/src/dialogs.py:4781
 msgid "Success!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4834
+#: ../../spritz/src/dialogs.py:4836
 msgid "Write your document"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4842
+#: ../../spritz/src/dialogs.py:4844
 #, fuzzy
 msgid "Select your file"
 msgstr "%s profilen er valgt"
 
-#: ../../spritz/src/dialogs.py:4854
+#: ../../spritz/src/dialogs.py:4856
 #, fuzzy
 msgid "On repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:4921
+#: ../../spritz/src/dialogs.py:4923
 #, fuzzy
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:4923
+#: ../../spritz/src/dialogs.py:4925
 #, fuzzy
 msgid "Some packages are masked"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:5012
+#: ../../spritz/src/dialogs.py:5014
 #, fuzzy
 msgid "Masked package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:5090 ../../spritz/src/dialogs.py:5253
-#: ../../spritz/src/dialogs.py:5264 ../../spritz/src/dialogs.py:5275
-#: ../../spritz/src/dialogs.py:5286 ../../spritz/src/views.py:1127
+#: ../../spritz/src/dialogs.py:5092 ../../spritz/src/dialogs.py:5255
+#: ../../spritz/src/dialogs.py:5266 ../../spritz/src/dialogs.py:5277
+#: ../../spritz/src/dialogs.py:5288 ../../spritz/src/views.py:1127
 #: ../../spritz/src/views.py:1403
 #, fuzzy
 msgid "No description"
 msgstr "_Beskrivelse"
 
-#: ../../spritz/src/dialogs.py:5144
+#: ../../spritz/src/dialogs.py:5146
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:5205 ../../spritz/src/dialogs.py:5258
+#: ../../spritz/src/dialogs.py:5207 ../../spritz/src/dialogs.py:5260
 #, fuzzy
 msgid "To be reinstalled"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:5211 ../../spritz/src/dialogs.py:5269
+#: ../../spritz/src/dialogs.py:5213 ../../spritz/src/dialogs.py:5271
 #, fuzzy
 msgid "To be installed"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:5217 ../../spritz/src/dialogs.py:5280
+#: ../../spritz/src/dialogs.py:5219 ../../spritz/src/dialogs.py:5282
 #, fuzzy
 msgid "To be updated"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:5223
+#: ../../spritz/src/dialogs.py:5225
 #, fuzzy
 msgid "To be downgraded"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:5417
+#: ../../spritz/src/dialogs.py:5419
 #, fuzzy
 msgid "About"
 msgstr "Om"
 
-#: ../../spritz/src/dialogs.py:5537
+#: ../../spritz/src/dialogs.py:5539
 #, fuzzy
 msgid "Spritz Question"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:5542
+#: ../../spritz/src/dialogs.py:5544
 msgid "Hey!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:5587
+#: ../../spritz/src/dialogs.py:5589
 msgid "Please fill the following form"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:5656
+#: ../../spritz/src/dialogs.py:5658
 #, fuzzy
 msgid "Add atom"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/dialogs.py:5776
+#: ../../spritz/src/dialogs.py:5778
 #, fuzzy
 msgid "Invalid entry"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:5840
+#: ../../spritz/src/dialogs.py:5842
 msgid "Cancel"
 msgstr ""
 
 #. new
-#: ../../spritz/src/dialogs.py:5929
+#: ../../spritz/src/dialogs.py:5931
 #, fuzzy
 msgid "Accepted"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:6020
+#: ../../spritz/src/dialogs.py:6022
 #, fuzzy
 msgid "Exception caught"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:6021
+#: ../../spritz/src/dialogs.py:6023
 msgid "Spritz crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:6030
+#: ../../spritz/src/dialogs.py:6032
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:6032
+#: ../../spritz/src/dialogs.py:6034
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
@@ -4505,34 +4505,34 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
-#: ../../spritz/src/packages.py:255
+#: ../../spritz/src/packages.py:256
 #, fuzzy
 msgid "User configuration"
 msgstr "Oprettelse af %s profilen fejlede"
 
 #. load a pixmap inside the treeview
-#: ../../spritz/src/packages.py:311
+#: ../../spritz/src/packages.py:312
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../spritz/src/packages.py:311 ../../spritz/src/spritz.py:1946
-#: ../../spritz/src/spritz.py:1980
+#: ../../spritz/src/packages.py:312 ../../spritz/src/spritz.py:1949
+#: ../../spritz/src/spritz.py:1985
 #, fuzzy
 msgid "Update Repositories"
 msgstr "Filkilder"
 
-#: ../../spritz/src/packages.py:311 ../../spritz/src/spritz.py:557
+#: ../../spritz/src/packages.py:312 ../../spritz/src/spritz.py:557
 #, fuzzy
 msgid "Repository Selection"
 msgstr "Filkilder"
 
-#: ../../spritz/src/packages.py:315
+#: ../../spritz/src/packages.py:316
 #, fuzzy
 msgid "No updates available"
 msgstr "Tilgængelige"
 
-#: ../../spritz/src/packages.py:316
+#: ../../spritz/src/packages.py:317
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
@@ -4678,7 +4678,7 @@ msgid "An issue occured while loading a preference"
 msgstr "Du er ved at tilføje %s pakker\n"
 
 #: ../../spritz/src/spritz.py:912 ../../spritz/src/spritz.py:938
-#: ../../spritz/src/spritz.py:2025
+#: ../../spritz/src/spritz.py:2030
 #, fuzzy
 msgid "Parameter"
 msgstr "Slettet"
@@ -4691,7 +4691,7 @@ msgstr ""
 msgid "got"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:937 ../../spritz/src/spritz.py:2024
+#: ../../spritz/src/spritz.py:937 ../../spritz/src/spritz.py:2029
 #, fuzzy
 msgid "An issue occured while saving a preference"
 msgstr "Du er ved at tilføje %s pakker\n"
@@ -4725,361 +4725,361 @@ msgstr ""
 msgid "Error loading advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../spritz/src/spritz.py:1234
+#: ../../spritz/src/spritz.py:1235
 #, fuzzy
 msgid "Initializing Repository module..."
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:1240
+#: ../../spritz/src/spritz.py:1241
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1249
+#: ../../spritz/src/spritz.py:1250
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1272
+#: ../../spritz/src/spritz.py:1273
 #, fuzzy
 msgid "Errors updating repositories."
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:1273
+#: ../../spritz/src/spritz.py:1274
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1276
+#: ../../spritz/src/spritz.py:1277
 #, fuzzy
 msgid "Repositories updated successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:1279
+#: ../../spritz/src/spritz.py:1280
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1281
+#: ../../spritz/src/spritz.py:1282
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1284
+#: ../../spritz/src/spritz.py:1285
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1292
+#: ../../spritz/src/spritz.py:1293
 #, fuzzy
 msgid "Nothing to do. I am idle."
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:1293
+#: ../../spritz/src/spritz.py:1294
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1294
+#: ../../spritz/src/spritz.py:1295
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:1395
+#: ../../spritz/src/spritz.py:1396
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1396
+#: ../../spritz/src/spritz.py:1397
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1397
+#: ../../spritz/src/spritz.py:1398
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1399 ../../spritz/src/spritz.py:1405
+#: ../../spritz/src/spritz.py:1400 ../../spritz/src/spritz.py:1406
 #, fuzzy
 msgid "Calculating"
 msgstr "Installer som afhængighed"
 
 #. if bootstrap: time.sleep(1)
-#: ../../spritz/src/spritz.py:1418
+#: ../../spritz/src/spritz.py:1419
 #, fuzzy
 msgid "Showing"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.py:1418
+#: ../../spritz/src/spritz.py:1419
 #, fuzzy
 msgid "items"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.py:1445
+#: ../../spritz/src/spritz.py:1446
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1451
+#: ../../spritz/src/spritz.py:1452
 #, fuzzy
 msgid "Running tasks"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/spritz.py:1459
+#: ../../spritz/src/spritz.py:1460
 msgid "Processing Packages in queue"
 msgstr "Behander pakker i køen"
 
-#: ../../spritz/src/spritz.py:1516
+#: ../../spritz/src/spritz.py:1517
 msgid "Attention. You chose to abort the processing."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1519
+#: ../../spritz/src/spritz.py:1520
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1558
+#: ../../spritz/src/spritz.py:1559
 msgid "No packages selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:1627
+#: ../../spritz/src/spritz.py:1629
 #, fuzzy
 msgid "The chosen package is not vulnerable"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1635
+#: ../../spritz/src/spritz.py:1637
 msgid "Packages in Advisory have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1650
+#: ../../spritz/src/spritz.py:1652
 msgid "Packages in all Advisories have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1664
+#: ../../spritz/src/spritz.py:1666
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1803 ../../spritz/src/spritz.py:1825
+#: ../../spritz/src/spritz.py:1805 ../../spritz/src/spritz.py:1827
 msgid "Insert URL"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1803 ../../spritz/src/spritz.py:1825
+#: ../../spritz/src/spritz.py:1805 ../../spritz/src/spritz.py:1827
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1808
+#: ../../spritz/src/spritz.py:1810
 msgid "You must enter either a HTTP or a FTP url."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1862 ../../spritz/src/spritz.py:1949
+#: ../../spritz/src/spritz.py:1864 ../../spritz/src/spritz.py:1952
 msgid "Wrong entries, errors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1876 ../../spritz/src/spritz.py:1946
+#: ../../spritz/src/spritz.py:1879 ../../spritz/src/spritz.py:1949
 msgid "You should press the button"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1876 ../../spritz/src/spritz.py:1980
+#: ../../spritz/src/spritz.py:1879 ../../spritz/src/spritz.py:1985
 #, fuzzy
 msgid "Regenerate Cache"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.py:1876 ../../spritz/src/spritz.py:1946
-#: ../../spritz/src/spritz.py:1980
+#: ../../spritz/src/spritz.py:1879 ../../spritz/src/spritz.py:1949
+#: ../../spritz/src/spritz.py:1985
 msgid "now"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1898
+#: ../../spritz/src/spritz.py:1901
 #, fuzzy
 msgid "No Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1901
+#: ../../spritz/src/spritz.py:1904
 #, fuzzy
 msgid "Duplicated Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1905
+#: ../../spritz/src/spritz.py:1908
 #, fuzzy
 msgid "No download mirrors"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:1907
+#: ../../spritz/src/spritz.py:1910
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1915
+#: ../../spritz/src/spritz.py:1918
 #, fuzzy
 msgid "Repository Services Port not valid"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1923
+#: ../../spritz/src/spritz.py:1926
 #, fuzzy
 msgid "Secure Services Port not valid"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1959
+#: ../../spritz/src/spritz.py:1962
 #, fuzzy
 msgid "Insert Repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/spritz.py:1959
+#: ../../spritz/src/spritz.py:1962
 #, fuzzy
 msgid "Insert Repository identification string"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1965
+#: ../../spritz/src/spritz.py:1970
 #, fuzzy
 msgid "This Repository identification string is malformed"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:1975
+#: ../../spritz/src/spritz.py:1980
 msgid "You! Why do you want to remove the main repository ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1980
+#: ../../spritz/src/spritz.py:1985
 msgid "You must now either press the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1980
+#: ../../spritz/src/spritz.py:1985
 #, fuzzy
 msgid "or the"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:2010
+#: ../../spritz/src/spritz.py:2015
 msgid "Are you sure ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2023
+#: ../../spritz/src/spritz.py:2028
 #, fuzzy
 msgid "Error saving parameter"
 msgstr "Fejl opstået i Yum Extender"
 
-#: ../../spritz/src/spritz.py:2025
+#: ../../spritz/src/spritz.py:2030
 #, fuzzy
 msgid "not saved"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:2037 ../../spritz/src/spritz.py:2043
-#: ../../spritz/src/spritz.py:2049 ../../spritz/src/spritz.py:2073
-#: ../../spritz/src/spritz.py:2083 ../../spritz/src/spritz.py:2093
+#: ../../spritz/src/spritz.py:2042 ../../spritz/src/spritz.py:2048
+#: ../../spritz/src/spritz.py:2054 ../../spritz/src/spritz.py:2078
+#: ../../spritz/src/spritz.py:2088 ../../spritz/src/spritz.py:2098
 msgid "New"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2037 ../../spritz/src/spritz.py:2043
-#: ../../spritz/src/spritz.py:2049
+#: ../../spritz/src/spritz.py:2042 ../../spritz/src/spritz.py:2048
+#: ../../spritz/src/spritz.py:2054
 #, fuzzy
 msgid "Please insert a new path"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:2073 ../../spritz/src/spritz.py:2083
-#: ../../spritz/src/spritz.py:2093
+#: ../../spritz/src/spritz.py:2078 ../../spritz/src/spritz.py:2088
+#: ../../spritz/src/spritz.py:2098
 #, fuzzy
 msgid "Please edit the selected path"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:2113
+#: ../../spritz/src/spritz.py:2118
 #, fuzzy
 msgid "You have chosen to install this package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:2115
+#: ../../spritz/src/spritz.py:2120
 msgid "Are you supa sure?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2133
+#: ../../spritz/src/spritz.py:2138
 #, fuzzy
 msgid "Cannot install"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:2231
+#: ../../spritz/src/spritz.py:2236
 #, fuzzy
 msgid "Please select at least one repository"
 msgstr "Vis Installerede Pakker"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:2264
+#: ../../spritz/src/spritz.py:2269
 msgid "No packages in queue"
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:2311
+#: ../../spritz/src/spritz.py:2316
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2416
+#: ../../spritz/src/spritz.py:2421
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2423 ../../spritz/src/spritz.py:2674
+#: ../../spritz/src/spritz.py:2428 ../../spritz/src/spritz.py:2683
 msgid "Aborting queue tasks."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2429
+#: ../../spritz/src/spritz.py:2434
 #, fuzzy
 msgid "Skipping current mirror."
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:2502
+#: ../../spritz/src/spritz.py:2509
 #, fuzzy
 msgid "Cleaning UGC cache of"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.py:2503
+#: ../../spritz/src/spritz.py:2510
 msgid "UGC cache cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2512
+#: ../../spritz/src/spritz.py:2521
 msgid "UGC credentials cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2548
+#: ../../spritz/src/spritz.py:2557
 #, fuzzy
 msgid "Package Set name"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.py:2549
+#: ../../spritz/src/spritz.py:2558
 #, fuzzy
 msgid "Package atoms"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.py:2553
+#: ../../spritz/src/spritz.py:2562
 #, fuzzy
 msgid "Choose what Package Set you want to add"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:2579
+#: ../../spritz/src/spritz.py:2588
 #, fuzzy
 msgid "Removable Package Set"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:2583
+#: ../../spritz/src/spritz.py:2592
 #, fuzzy
 msgid "Choose what Package Set you want to remove"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:2604
+#: ../../spritz/src/spritz.py:2613
 #, fuzzy
 msgid "No missing dependencies found."
 msgstr "Installer som afhængighed"
 
-#: ../../spritz/src/spritz.py:2638
+#: ../../spritz/src/spritz.py:2647
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2646
+#: ../../spritz/src/spritz.py:2655
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2648
+#: ../../spritz/src/spritz.py:2657
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2703
+#: ../../spritz/src/spritz.py:2712
 #, fuzzy
 msgid "Libraries test aborted"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/spritz.py:2711
+#: ../../spritz/src/spritz.py:2720
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2713
+#: ../../spritz/src/spritz.py:2722
 #, fuzzy
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Vis Installerede Pakker"
@@ -5208,22 +5208,22 @@ msgstr "Filkilder"
 msgid "Recursive Package Set"
 msgstr "Vis Installerede Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:40
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:42
 #, fuzzy
 msgid "Package Name"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:41
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:43
 #, fuzzy
 msgid "Version Installed"
 msgstr "Installeret"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:85
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:87
 #, fuzzy
 msgid "Critical Information"
 msgstr "I_nformation"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:372
+#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:377
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to "
