@@ -26,7 +26,7 @@ from entropy.exceptions import *
 from entropy.output import bold, darkgreen, darkred, blue, red
 from entropy.i18n import _
 
-class Calculators:
+class CalculatorsMixin:
 
     def dependencies_test(self, dbconn = None):
 

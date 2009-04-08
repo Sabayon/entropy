@@ -23,7 +23,7 @@ from __future__ import with_statement
 from entropy.const import *
 from entropy.exceptions import *
 
-class Loaders:
+class LoadersMixin:
 
     __QA_cache = {}
     __security_cache = {}

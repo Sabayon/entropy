@@ -32,7 +32,7 @@ from entropy.db import dbapi2, LocalRepository
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
 
-class Repository:
+class RepositoryMixin:
 
     __repo_error_messages_cache = set()
     __repodb_cache = {}
@@ -765,7 +765,7 @@ class Repository:
         return self.disable_repository(repoid)
 
 
-class Misc:
+class MiscMixin:
 
     def reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
@@ -1423,7 +1423,7 @@ class Misc:
         return self.switch_chroot(*args, **kwargs)
 
 
-class Match:
+class MatchMixin:
 
     def get_package_action(self, match):
         """

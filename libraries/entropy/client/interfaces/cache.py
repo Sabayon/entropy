@@ -26,7 +26,7 @@ from entropy.exceptions import *
 from entropy.output import red, darkred, darkgreen
 from entropy.i18n import _
 
-class Cache:
+class CacheMixin:
 
     def validate_repositories_cache(self):
         # is the list of repos changed?

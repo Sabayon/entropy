@@ -25,14 +25,16 @@ import os
 from entropy.core import Singleton
 from entropy.output import TextInterface
 from entropy.db import dbapi2
-from entropy.client.interfaces.loaders import Loaders
-from entropy.client.interfaces.cache import Cache
-from entropy.client.interfaces.dep import Calculators
-from entropy.client.interfaces.methods import Repository as CRepository, Misc, Match
-from entropy.client.interfaces.fetch import Fetchers
-from entropy.client.interfaces.metadata import Extractors
+from entropy.client.interfaces.loaders import LoadersMixin
+from entropy.client.interfaces.cache import CacheMixin
+from entropy.client.interfaces.dep import CalculatorsMixin
+from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
+    MatchMixin
+from entropy.client.interfaces.fetch import FetchersMixin
+from entropy.client.interfaces.metadata import ExtractorsMixin
 from entropy.const import etpConst, etpCache
 from entropy.core import SystemSettings, SystemSettingsPlugin
+from entropy.exceptions import SystemDatabaseError
 
 class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -70,8 +72,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         system_settings_instance['repos_system_mask_installed'] = mask_installed
         system_settings_instance['repos_system_mask_installed_keys'] = mask_installed_keys
 
-class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
-        CRepository, Misc, Match, Fetchers, Extractors):
+class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
+        RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, ExtractorsMixin):
 
     def init_singleton(self, indexing = True, noclientdb = 0,
             xcache = True, user_xcache = False, repo_validation = True,
@@ -140,7 +142,7 @@ class Client(Singleton, TextInterface, Loaders, Cache, Calculators, \
             self.UGC = ugcClient(self)
 
         # class init
-        Loaders.__init__(self)
+        LoadersMixin.__init__(self)
 
         self.xcache = xcache
         shell_xcache = os.getenv("ETP_NOCACHE")

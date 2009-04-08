@@ -27,7 +27,7 @@ from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import red, bold, brown
 
-class Extractors:
+class ExtractorsMixin:
 
     def _extract_pkg_metadata_generate_extraction_dict(self):
         data = {

@@ -26,7 +26,7 @@ from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, darkblue
 
-class Fetchers:
+class FetchersMixin:
 
     def check_needed_package_download(self, filepath, checksum = None):
         # is the file available
