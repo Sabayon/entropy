@@ -43,8 +43,8 @@ entropy-server-install:
 
 	install -m 755 server/reagent.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	install -m 755 server/activator.py $(DESTDIR)/$(LIBDIR)/entropy/server/
-	ln -sf ../lib/entropy/server/reagent.py $(DESTDIR)/usr/sbin/reagent
-	ln -sf ../lib/entropy/server/activator.py $(DESTDIR)/usr/sbin/activator
+	ln -sf /$(LIBDIR)/entropy/server/reagent.py $(DESTDIR)/usr/sbin/reagent
+	ln -sf /$(LIBDIR)/entropy/server/activator.py $(DESTDIR)/usr/sbin/activator
 
 equo-install:
 
@@ -61,7 +61,7 @@ equo-install:
 	install -m 644 client/entropy-system-test-client $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 755 client/equo.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 
-	ln -sf ../lib/entropy/client/equo.py $(DESTDIR)/usr/bin/equo
+	ln -sf /$(LIBDIR)/entropy/client/equo.py $(DESTDIR)/usr/bin/equo
 
 
 notification-applet-install:
