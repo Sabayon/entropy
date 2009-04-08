@@ -5,11 +5,13 @@ SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py e
 
 all:
 	for d in $(SUBDIRS); do make -C $$d; done
-	cd pylzma && $(PYTHON) setup.py build
 
 clean:
 	for d in $(SUBDIRS); do make -C $$d clean; done
 	cd pylzma && $(PYTHON) setup.py clean --all
+
+pylzma:
+	cd pylzma && $(PYTHON) setup.py build
 
 entropy-install:
 
@@ -79,4 +81,4 @@ pycompile-all:
 
 	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)/usr/', force = True, quiet = True)"
 
-install: entropy-install entropy-server-install equo-install notification-applet-install spritz-install pylzma-install pycompile-all
+install: entropy-install entropy-server-install equo-install notification-applet-install spritz-install pycompile-all
