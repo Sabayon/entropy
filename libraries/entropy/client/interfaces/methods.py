@@ -717,7 +717,7 @@ class Repository:
     def clientDatabaseSanityCheck(self):
         import warnings
         warnings.warn("deprecated, use client_repository_sanity_check instead")
-        return self_repository_sanity_check()
+        return self.client_repository_sanity_check()
 
     def openClientDatabase(self):
         import warnings
