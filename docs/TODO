@@ -2,9 +2,6 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  0.80:
-  - avoid calling portage hooks when not needed?
-
   0.90+:
   - remove mutex from entropy.db ? (WriteLock)
   - Updates daemon + shrink notification applet? (dev-python/dbus-python)
@@ -23,3 +20,4 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   - use expiration as a base to have and handle multiple packages in repo?
   - LZMA future support
   - Put SHA1, SHA256 and SHA512 signatures to work on the Client.
+  - avoid calling portage hooks when not needed? (needs DEFINED_PHASES on vardb)
