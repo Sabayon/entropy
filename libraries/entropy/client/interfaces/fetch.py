@@ -126,7 +126,7 @@ class FetchersMixin:
                 myuri = os.path.join(myuri,fname)
                 if myuri not in failed_down:
                     continue
-                newlist.append((repo,branch,fname,cksum,))
+                newlist.append((repo,branch,fname,cksum,signatures,))
             return newlist
 
         # return True: for failing, return False: for fine
