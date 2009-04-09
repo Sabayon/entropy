@@ -2507,7 +2507,7 @@ class LocalRepository:
             WHERE idpackage = (?)""", (idpackage,))
             data = self.cursor.fetchone()
             if data:
-                mydict['sha1'], mydict['sha256'], mydict['sha512'] = data[0]
+                mydict['sha1'], mydict['sha256'], mydict['sha512'] = data
         return mydict
 
     def retrieveName(self, idpackage):
