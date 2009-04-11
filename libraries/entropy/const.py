@@ -489,7 +489,8 @@ def const_default_settings(rootdir):
                 'inherited': "INHERITED",
                 'keywords': "KEYWORDS",
                 'contents': "CONTENTS",
-                'counter': "COUNTER"
+                'counter': "COUNTER",
+                'defined_phases': "DEFINED_PHASES",
             },
             'system_packages': [],
             'ignore-spm-downgrades': False,

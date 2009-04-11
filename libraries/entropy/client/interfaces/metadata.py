@@ -103,6 +103,10 @@ class ExtractorsMixin:
                 'path': etpConst['spm']['xpak_entries']['keywords'],
                 'critical': False,
             },
+            'spm_phases': {
+                'path': etpConst['spm']['xpak_entries']['defined_phases'],
+                'critical': False,
+            },
         }
         return data
 
