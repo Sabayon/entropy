@@ -3686,10 +3686,9 @@ class LocalRepository:
             (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
-        if self.dbname == etpConst['clientdbid']:
-            if not self.doesColumnInTableExist("installedtable",
-                "source"):
-                self.createInstalledTableSource()
+        if self.doesTableExist("installedtable") and \
+            not self.doesColumnInTableExist("installedtable","source"):
+            self.createInstalledTableSource()
 
         if not self.doesTableExist("categoriesdescription"):
             self.createCategoriesdescriptionTable()
