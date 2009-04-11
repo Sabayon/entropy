@@ -103,7 +103,13 @@ class Trigger:
         functions = []
         # Gentoo hook
         if self.gentoo_compat:
-            functions.append('ebuild_postinstall')
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['postinst_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_postinstall')
+                break
 
         # equo purge cache
         if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-apps/entropy":
@@ -160,9 +166,15 @@ class Trigger:
 
         functions = []
 
-        # Gentoo hook
+        # Portage phases
         if self.gentoo_compat:
-            functions.append('ebuild_preinstall')
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['preinst_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_preinstall')
+                break
 
         for x in self.pkgdata['content']:
             if x.startswith("/etc/init.d/") and ("initinform" not in functions):
@@ -208,9 +220,24 @@ class Trigger:
 
         # Gentoo hook
         if self.gentoo_compat:
-            functions.append('ebuild_preremove')
-            functions.append('ebuild_postremove')
-            # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
+
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['prerm_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_preremove')
+                break
+
+            # doing here because we need /var/db/pkg stuff
+            # in place and also because doesn't make any difference
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['postrm_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_postremove')
+                break
 
         # opengl configuration
         if (self.pkgdata['category'] == "x11-drivers") and \
