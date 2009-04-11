@@ -2217,6 +2217,7 @@ class LocalRepository:
             'trigger': self.retrieveTrigger(idpackage),
             'eclasses': self.retrieveEclasses(idpackage),
             'content': self.retrieveContent(idpackage),
+            'spm_phases': self.retrieveSpmPhases(idpackage),
         }
         return data
 
