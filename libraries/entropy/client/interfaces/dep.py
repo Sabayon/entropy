@@ -1314,16 +1314,6 @@ class CalculatorsMixin:
                     if (m_idpackage,repoid) not in update:
                         update.append((m_idpackage,repoid))
                     continue
-                elif (mystrictdata[2] != version):
-                    # different versions
-                    if (m_idpackage,repoid) not in update:
-                        update.append((m_idpackage,repoid))
-                    continue
-                elif (mystrictdata[3] != tag):
-                    # different tags
-                    if (m_idpackage,repoid) not in update:
-                        update.append((m_idpackage,repoid))
-                    continue
                 elif (mystrictdata[4] != revision):
                     # different revision
                     if mystrictdata[4] == 9999 and ignore_spm_downgrades:
@@ -1334,6 +1324,16 @@ class CalculatorsMixin:
                         if (m_idpackage,repoid) not in update:
                             update.append((m_idpackage,repoid))
                         continue
+                elif (mystrictdata[2] != version):
+                    # different versions
+                    if (m_idpackage,repoid) not in update:
+                        update.append((m_idpackage,repoid))
+                    continue
+                elif (mystrictdata[3] != tag):
+                    # different tags
+                    if (m_idpackage,repoid) not in update:
+                        update.append((m_idpackage,repoid))
+                    continue
                 else:
                     # no difference
                     fine.append(mystrictdata[5])
