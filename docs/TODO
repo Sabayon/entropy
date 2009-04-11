@@ -4,23 +4,21 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.90+:
 
-  prio:
-  - Documentation + Pylint (NLnet Milestone 7)
-  - remove mutex from entropy.db ? (WriteLock)
-  - Put SHA1, SHA256 and SHA512 signatures to work on the Client.
-  - avoid calling portage hooks when not needed? (needs DEFINED_PHASES on vardb)
-  - Updates daemon + shrink notification applet? (dev-python/dbus-python)
-  - Unit Test module
-  - LZMA future support
-  - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
-    - Add all button doesn't effectively add all the packages to the queue or
-    - when calculating the queue some packages are excluded for unknown reasons
+    - Documentation + Pylint (NLnet Milestone 7)
+    - remove mutex from entropy.db ? (WriteLock)
+    - Put SHA1, SHA256 and SHA512 signatures to work on the Client.
+    - Updates daemon + shrink notification applet? (dev-python/dbus-python)
+    - Unit Test module
+    - LZMA future support
+    - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
+        - Add all button doesn't effectively add all the packages to the queue or
+        - when calculating the queue some packages are excluded for unknown reasons
 
-  - Entropy repository daemon facilities (init script, config, etc)
-  - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
-    -> next kernel 2.6.30
-  - System Package Set representing what's inside a stock distribution
-    - Connect Smart applications to it to filter out common deps and eventually make it usable
-      - Implement Smart applications in Spritz too
-    - Implement entropy:// URI handler
-  - use expiration as a base to have and handle multiple packages in repo?
+    - Entropy repository daemon facilities (init script, config, etc)
+    - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
+        -> next kernel 2.6.30
+    - System Package Set representing what's inside a stock distribution
+        - Connect Smart applications to it to filter out common deps and eventually make it usable
+        - Implement Smart applications in Spritz too
+        - Implement entropy:// URI handler
+    - use expiration as a base to have and handle multiple packages in repo?
