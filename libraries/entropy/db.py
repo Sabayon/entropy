@@ -4405,7 +4405,7 @@ class LocalRepository:
     def createInstalledTable(self):
         with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
-            self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
+            self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR, source INTEGER );')
 
     def addDependsRelationToDependsTable(self, iterable):
         with self.WriteLock:
