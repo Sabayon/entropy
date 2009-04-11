@@ -1247,7 +1247,8 @@ class CalculatorsMixin:
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
             cached = self.get_world_update_cache(empty_deps = empty_deps,
-                branch = branch, db_digest = db_digest, ignore_spm_downgrades = ignore_spm_downgrades)
+                branch = branch, db_digest = db_digest,
+                    ignore_spm_downgrades = ignore_spm_downgrades)
             if cached != None: return cached
 
         update = []
@@ -1274,17 +1275,20 @@ class CalculatorsMixin:
                     footer = " ::"
                 )
 
-            mystrictdata = self.clientDbconn.getStrictData(idpackage)
-            # check against broken entries, or removed during iteration
-            if mystrictdata == None:
+            try:
+                cl_pkgkey, cl_slot, cl_version, \
+                    cl_tag, cl_revision, \
+                    cl_atom = self.clientDbconn.getStrictData(idpackage)
+            except TypeError:
+                # check against broken entries, or removed during iteration
                 continue
             use_match_cache = True
             do_continue = False
             while 1:
                 try:
                     match = self.atom_match(
-                        mystrictdata[0],
-                        matchSlot = mystrictdata[1],
+                        cl_pkgkey,
+                        matchSlot = cl_slot,
                         matchBranches = (branch,),
                         extendedResults = True,
                         useCache = use_match_cache
@@ -1302,9 +1306,9 @@ class CalculatorsMixin:
                 break
             if do_continue: continue
             # now compare
-            # version: mystrictdata[2]
-            # tag: mystrictdata[3]
-            # revision: mystrictdata[4]
+            # version: cl_version
+            # tag: cl_tag
+            # revision: cl_revision
             if (m_idpackage != -1):
                 repoid = match[1]
                 version = match[0][1]
@@ -1314,49 +1318,54 @@ class CalculatorsMixin:
                     if (m_idpackage,repoid) not in update:
                         update.append((m_idpackage,repoid))
                     continue
-                elif (mystrictdata[4] != revision):
+                elif (cl_revision != revision):
                     # different revision
-                    if mystrictdata[4] == 9999 and ignore_spm_downgrades:
+                    if cl_revision == 9999 and ignore_spm_downgrades:
                         # no difference, we're ignoring revision 9999
-                        fine.append(mystrictdata[5])
+                        fine.append(cl_atom)
                         continue
                     else:
                         if (m_idpackage,repoid) not in update:
                             update.append((m_idpackage,repoid))
                         continue
-                elif (mystrictdata[2] != version):
+                elif (cl_version != version):
                     # different versions
                     if (m_idpackage,repoid) not in update:
                         update.append((m_idpackage,repoid))
                     continue
-                elif (mystrictdata[3] != tag):
+                elif (cl_tag != tag):
                     # different tags
                     if (m_idpackage,repoid) not in update:
                         update.append((m_idpackage,repoid))
                     continue
                 else:
                     # no difference
-                    fine.append(mystrictdata[5])
+                    fine.append(cl_atom)
                     continue
 
             # don't take action if it's just masked
-            maskedresults = self.atom_match(mystrictdata[0], matchSlot = mystrictdata[1], matchBranches = (branch,), packagesFilter = False)
+            maskedresults = self.atom_match(cl_pkgkey, matchSlot = cl_slot,
+                matchBranches = (branch,), packagesFilter = False)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
-                # look for packages that would match key with any slot (for eg: gcc, kernel updates)
-                matchresults = self.atom_match(mystrictdata[0], matchBranches = (branch,))
+                # look for packages that would match key
+                # with any slot (for eg: gcc, kernel updates)
+                matchresults = self.atom_match(cl_pkgkey,
+                    matchBranches = (branch,))
                 if matchresults[0] != -1:
                     m_action = self.get_package_action(matchresults)
                     if m_action > 0 and (matchresults not in update):
                         update.append(matchresults)
 
         if self.xcache:
-            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades)
+            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps,
+                branch, ignore_spm_downgrades)
             data = {
                 'r': (update, remove, fine,),
                 'empty_deps': empty_deps,
             }
-            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,), data, async = False)
+            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,),
+                data, async = False)
 
         return update, remove, fine
 
