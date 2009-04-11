@@ -2290,6 +2290,7 @@ class LocalRepository:
                 self.retrieveDependencies(idpackage, extended = True)),
             'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],
             'signatures': self.retrieveSignatures(idpackage),
+            'spm_phases': self.retrieveSpmPhases(idpackage),
         }
 
         return data
