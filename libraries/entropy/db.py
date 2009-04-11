@@ -3859,16 +3859,11 @@ class LocalRepository:
         return True
 
     def doesColumnInTableExist(self, table, column):
-        self.cursor.execute('PRAGMA table_info( '+table+' )')
-        rslt = self.cursor.fetchall()
-        if not rslt:
-            return False
-        found = False
-        for row in rslt:
-            if row[1] == column:
-                found = True
-                break
-        return found
+        self.cursor.execute('PRAGMA table_info( %s )' % (table,))
+        rslt = (x[1] for x in self.cursor.fetchall())
+        if column in rslt:
+            return True
+        return False
 
     def database_checksum(self, do_order = False, strict = True, strings = False):
 
