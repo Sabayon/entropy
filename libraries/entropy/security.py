@@ -25,7 +25,7 @@ import shutil
 from entropy.exceptions import *
 from entropy.const import etpConst, etpCache, etpUi, const_setup_perms
 from entropy.i18n import _
-from outputTools import blue, bold, red, darkgreen, darkred
+from entropy.output import blue, bold, red, darkgreen, darkred
 
 class SecurityInterface:
 
