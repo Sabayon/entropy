@@ -263,9 +263,6 @@ class Trigger:
         return functions
 
 
-    '''
-        Real triggers
-    '''
     def trigger_call_ext_preinstall(self):
         return self.trigger_call_ext_generic()
 
