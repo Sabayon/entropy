@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 import unittest
 import os
 from entropy.client.interfaces import Client
@@ -15,7 +16,8 @@ class LocalRepositoryTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
-        pass
+        sys.stdout.write("%s ran\n" % (self,))
+        sys.stdout.flush()
 
     def test_db_creation(self):
         dbname = 'test_suite'
