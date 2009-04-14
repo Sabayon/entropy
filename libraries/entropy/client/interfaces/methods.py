@@ -98,6 +98,11 @@ class RepositoryMixin:
         self.__repodb_cache.clear()
         if mask_clear: self.SystemSettings.clear()
 
+    def is_repository_connection_cached(self, repoid):
+        if (repoid,etpConst['systemroot'],) in self.__repodb_cache:
+            return True
+        return False
+
     def open_repository(self, repoid):
 
         if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],)):
