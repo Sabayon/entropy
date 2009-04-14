@@ -2031,7 +2031,8 @@ class SpritzApplication(Controller):
                         )
         initconfig_entropy_constants(etpConst['systemroot'])
         # re-read configprotect
-        self.Equo.SystemSettings.clear()
+        self.resetSpritzCacheStatus()
+        self.addPackages()
         self.Equo.reload_repositories_config()
         self.setupPreferences()
 
