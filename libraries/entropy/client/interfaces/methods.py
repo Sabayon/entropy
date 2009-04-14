@@ -100,17 +100,25 @@ class RepositoryMixin:
 
     def open_repository(self, repoid):
         t_ident = 1 # thread.get_ident() disabled for now
+
         if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],t_ident,)):
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
-            except:
+            except (self.dbapi2.OperationalError, TypeError,):
                 pass
             self.__repodb_cache[(repoid,etpConst['systemroot'],t_ident,)] = dbconn
-            return dbconn
         else:
-            return self.__repodb_cache.get((repoid,etpConst['systemroot'],t_ident,))
+            dbconn = self.__repodb_cache.get((repoid,etpConst['systemroot'],t_ident,))
+
+        # initialize CONFIG_PROTECT
+        repo_data = self.SystemSettings['repositories']['available'][repoid]
+        if (repo_data['configprotect'] == None) or \
+            (repo_data['configprotectmask'] == None):
+            self.setup_repository_config(repoid, dbconn)
+
+        return dbconn
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):
 
@@ -151,10 +159,6 @@ class RepositoryMixin:
             OutputInterface = self,
             ServiceInterface = self
         )
-        # initialize CONFIG_PROTECT
-        if (self.SystemSettings['repositories']['available'][repoid]['configprotect'] == None) or \
-            (self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] == None):
-                self.setup_repository_config(repoid, conn)
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
             (self.entropyTools.is_user_in_entropy_group()) and \
