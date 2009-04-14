@@ -99,8 +99,8 @@ class RepositoryMixin:
         if mask_clear: self.SystemSettings.clear()
 
     def open_repository(self, repoid):
-        t_ident = 1 # thread.get_ident() disabled for now
 
+        t_ident = 1 # thread.get_ident() disabled for now
         if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],t_ident,)):
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
@@ -109,16 +109,8 @@ class RepositoryMixin:
             except (self.dbapi2.OperationalError, TypeError,):
                 pass
             self.__repodb_cache[(repoid,etpConst['systemroot'],t_ident,)] = dbconn
-        else:
-            dbconn = self.__repodb_cache.get((repoid,etpConst['systemroot'],t_ident,))
-
-        # initialize CONFIG_PROTECT
-        repo_data = self.SystemSettings['repositories']['available'][repoid]
-        if (repo_data['configprotect'] == None) or \
-            (repo_data['configprotectmask'] == None):
-            self.setup_repository_config(repoid, dbconn)
-
-        return dbconn
+            return dbconn
+        return self.__repodb_cache.get((repoid,etpConst['systemroot'],t_ident,))
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):
 
@@ -159,6 +151,12 @@ class RepositoryMixin:
             OutputInterface = self,
             ServiceInterface = self
         )
+
+        # initialize CONFIG_PROTECT
+        repo_data = self.SystemSettings['repositories']['available'][repoid]
+        if (repo_data['configprotect'] == None) or \
+            (repo_data['configprotectmask'] == None):
+            self.setup_repository_config(repoid, conn)
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
             (self.entropyTools.is_user_in_entropy_group()) and \
@@ -1559,7 +1557,8 @@ class MatchMixin:
 
         self.Cacher.sync(wait = True)
         done = f(match, dry_run)
-        if done: self.SystemSettings.clear()
+        if done:
+            self.SystemSettings.clear()
 
         # clear atomMatch cache anyway
         if clean_all_cache and not dry_run:
