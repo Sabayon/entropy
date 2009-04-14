@@ -1032,8 +1032,9 @@ class Package:
     def __move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
-        protect = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['configprotect']
-        mask = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['configprotectmask']
+        repoid = self.infoDict['repository']
+        protect = self.Entropy.SystemSettings['repositories']['available'][repoid]['configprotect']
+        mask = self.Entropy.SystemSettings['repositories']['available'][repoid]['configprotectmask']
         sys_root = etpConst['systemroot']
         col_protect = self.Entropy.SystemSettings['client']['collisionprotect']
         items_installed = set()
