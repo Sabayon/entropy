@@ -1,0 +1,18 @@
+#!/usr/bin/python2
+import sys
+import unittest
+sys.path.insert(0,'.')
+from tests import db
+rc = 0
+
+# Add to the list the module to test
+mods = [db]
+
+tests = []
+for mod in mods:
+    tests.append(unittest.TestLoader().loadTestsFromModule(mod))
+
+result = unittest.TextTestRunner(verbosity = 1).run(unittest.TestSuite(tests))
+if result.errors:
+    rc = 1
+raise SystemExit(rc)

@@ -332,6 +332,11 @@ class Schema:
                 sha512 VARCHAR
             );
 
+            CREATE TABLE packagespmphases (
+                idpackage INTEGER PRIMARY KEY,
+                phases VARCHAR
+            );
+
         """
 
 class LocalRepository:
@@ -1343,6 +1348,10 @@ class LocalRepository:
         if etpData.get('signatures'):
             self.insertSignatures(idpackage, etpData['signatures'])
 
+        # spm phases
+        if etpData.get('spm_phases'):
+            self.insertSpmPhases(idpackage, etpData['spm_phases'])
+
         # not depending on other tables == no select done
         self.insertContent(idpackage, etpData['content'],
             already_formatted = formatted_content)
@@ -1497,6 +1506,10 @@ class LocalRepository:
             pass
         try:
             self.removeSignatures(idpackage)
+        except self.dbapi2.OperationalError:
+            pass
+        try:
+            self.removeSpmPhases(idpackage)
         except self.dbapi2.OperationalError:
             pass
 
@@ -1722,6 +1735,10 @@ class LocalRepository:
         with self.WriteLock:
             self.cursor.execute('DELETE FROM packagesignatures WHERE idpackage = (?)', (idpackage,))
 
+    def removeSpmPhases(self, idpackage):
+        with self.WriteLock:
+            self.cursor.execute('DELETE FROM packagespmphases WHERE idpackage = (?)', (idpackage,))
+
     def insertChangelog(self, category, name, changelog_txt):
         with self.WriteLock:
             mytxt = changelog_txt
@@ -1792,6 +1809,12 @@ class LocalRepository:
             self.cursor.execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?)
             """, (idpackage,)+tuple(signatures))
+
+    def insertSpmPhases(self, idpackage, phases):
+        with self.WriteLock:
+            self.cursor.execute("""
+            INSERT INTO packagespmphases VALUES (?,?)
+            """, (idpackage,phases,))
 
     def insertSources(self, idpackage, sources):
 
@@ -2194,6 +2217,7 @@ class LocalRepository:
             'trigger': self.retrieveTrigger(idpackage),
             'eclasses': self.retrieveEclasses(idpackage),
             'content': self.retrieveContent(idpackage),
+            'spm_phases': self.retrieveSpmPhases(idpackage),
         }
         return data
 
@@ -2266,6 +2290,7 @@ class LocalRepository:
                 self.retrieveDependencies(idpackage, extended = True)),
             'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],
             'signatures': self.retrieveSignatures(idpackage),
+            'spm_phases': self.retrieveSpmPhases(idpackage),
         }
 
         return data
@@ -2501,6 +2526,7 @@ class LocalRepository:
             'sha256': None,
             'sha512': None,
         }
+        # FIXME: remove this check in future
         if self.doesTableExist('packagesignatures'):
             self.cursor.execute("""
             SELECT sha1, sha256, sha512 FROM packagesignatures 
@@ -2569,6 +2595,17 @@ class LocalRepository:
         WHERE eclasses.idpackage = (?) AND 
         eclasses.idclass = eclassesreference.idclass""", (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
+
+    def retrieveSpmPhases(self, idpackage):
+        # FIXME: remove this check in future:
+        if not self.doesTableExist('packagespmphases'):
+            return None
+        self.cursor.execute("""
+        SELECT phases FROM packagespmphases
+        WHERE idpackage = (?)
+        """, (idpackage,))
+        rslt = self.cursor.fetchone()
+        if rslt: return rslt[0]
 
     def retrieveNeededRaw(self, idpackage):
         self.cursor.execute("""
@@ -3651,10 +3688,9 @@ class LocalRepository:
             (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
 
-        if self.dbname == etpConst['clientdbid']:
-            if not self.doesColumnInTableExist("installedtable",
-                "source"):
-                self.createInstalledTableSource()
+        if self.doesTableExist("installedtable") and \
+            not self.doesColumnInTableExist("installedtable","source"):
+            self.createInstalledTableSource()
 
         if not self.doesTableExist("categoriesdescription"):
             self.createCategoriesdescriptionTable()
@@ -3670,6 +3706,9 @@ class LocalRepository:
 
         if not self.doesTableExist('packagesignatures'):
             self.createPackagesignaturesTable()
+
+        if not self.doesTableExist('packagespmphases'):
+            self.createPackagespmphases()
 
         self.readOnly = old_readonly
         self.connection.commit()
@@ -3859,16 +3898,11 @@ class LocalRepository:
         return True
 
     def doesColumnInTableExist(self, table, column):
-        self.cursor.execute('PRAGMA table_info( '+table+' )')
-        rslt = self.cursor.fetchall()
-        if not rslt:
-            return False
-        found = False
-        for row in rslt:
-            if row[1] == column:
-                found = True
-                break
-        return found
+        self.cursor.execute('PRAGMA table_info( %s )' % (table,))
+        rslt = (x[1] for x in self.cursor.fetchall())
+        if column in rslt:
+            return True
+        return False
 
     def database_checksum(self, do_order = False, strict = True, strings = False):
 
@@ -4336,6 +4370,15 @@ class LocalRepository:
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE packagesignatures ( idpackage INTEGER PRIMARY KEY, sha1 VARCHAR, sha256 VARCHAR, sha512 VARCHAR );')
 
+    def createPackagespmphases(self):
+        with self.WriteLock:
+            self.cursor.execute("""
+                CREATE TABLE packagespmphases (
+                    idpackage INTEGER PRIMARY KEY,
+                    phases VARCHAR
+                );
+            """)
+
     def createPackagesetsTable(self):
         with self.WriteLock:
             self.cursor.execute('CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );')
@@ -4363,7 +4406,7 @@ class LocalRepository:
     def createInstalledTable(self):
         with self.WriteLock:
             self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
-            self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR );')
+            self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR, source INTEGER );')
 
     def addDependsRelationToDependsTable(self, iterable):
         with self.WriteLock:

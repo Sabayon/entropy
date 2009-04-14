@@ -318,7 +318,7 @@ class SystemSettings(Singleton):
         # merge persistent settings back
         self.__data.update(self.__persistent_settings)
         # restore backed-up settings
-        self.__data.update(self.__persistent_settings['backed_up'])
+        self.__data.update(self.__persistent_settings['backed_up'].copy())
 
     def __setitem__(self, mykey, myvalue):
         """

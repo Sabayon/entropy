@@ -209,7 +209,7 @@ class Server(Singleton,TextInterface):
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
-            {'server': {'default_repository_id': curr_repoid}},
+            {'server': self.SystemSettings['server'].copy()},
         ]
         for setting in backup_list:
             if setting not in self.settings_to_backup:

@@ -103,7 +103,13 @@ class Trigger:
         functions = []
         # Gentoo hook
         if self.gentoo_compat:
-            functions.append('ebuild_postinstall')
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['postinst_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_postinstall')
+                break
 
         # equo purge cache
         if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-apps/entropy":
@@ -160,9 +166,15 @@ class Trigger:
 
         functions = []
 
-        # Gentoo hook
+        # Portage phases
         if self.gentoo_compat:
-            functions.append('ebuild_preinstall')
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['preinst_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_preinstall')
+                break
 
         for x in self.pkgdata['content']:
             if x.startswith("/etc/init.d/") and ("initinform" not in functions):
@@ -208,9 +220,24 @@ class Trigger:
 
         # Gentoo hook
         if self.gentoo_compat:
-            functions.append('ebuild_preremove')
-            functions.append('ebuild_postremove')
-            # doing here because we need /var/db/pkg stuff in place and also because doesn't make any difference
+
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['prerm_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_preremove')
+                break
+
+            # doing here because we need /var/db/pkg stuff
+            # in place and also because doesn't make any difference
+            while 1:
+                if self.pkgdata['spm_phases'] != None:
+                    if etpConst['spm']['postrm_phase'] not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append('ebuild_postremove')
+                break
 
         # opengl configuration
         if (self.pkgdata['category'] == "x11-drivers") and \
@@ -236,9 +263,6 @@ class Trigger:
         return functions
 
 
-    '''
-        Real triggers
-    '''
     def trigger_call_ext_preinstall(self):
         return self.trigger_call_ext_generic()
 
@@ -898,25 +922,9 @@ class Trigger:
             )
             try:
 
-                if not os.path.isfile(self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"):
-                    # if environment is not yet created, we need to run pkg_setup()
-                    sys.stdout = stdfile
-                    rc = self.Spm.spm_doebuild(
-                        myebuild,
-                        mydo = "setup",
-                        tree = "bintree",
-                        cpv = portage_atom,
-                        portage_tmpdir = self.pkgdata['unpackdir'],
-                        licenses = self.pkgdata['accept_license']
-                    )
-                    if rc == 1:
-                        self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
-                            "[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_setup())"
-                            " trigger for "+str(portage_atom)+". Something bad happened."
-                        )
-                    sys.stdout = oldstdout
+                sys.stdout = stdfile
+                self.__ebuild_setup_phase(myebuild, portage_atom)
+                sys.stdout = oldstdout
 
                 rc = self.Spm.spm_doebuild(
                     myebuild,
@@ -960,6 +968,29 @@ class Trigger:
         stdfile.close()
         return 0
 
+    def __ebuild_setup_phase(self, ebuild, portage_atom):
+        rc = 0
+        env_file = self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"
+        if not os.path.isfile(env_file):
+            # if environment is not yet created, we need to run pkg_setup()
+            rc = self.Spm.spm_doebuild(
+                ebuild,
+                mydo = "setup",
+                tree = "bintree",
+                cpv = portage_atom,
+                portage_tmpdir = self.pkgdata['unpackdir'],
+                licenses = self.pkgdata['accept_license']
+            ) # create mysettings["T"]+"/environment"
+            if rc == 1:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[POST] ATTENTION Cannot properly run Portage pkg_setup()"
+                    " phase for "+str(portage_atom)+". Something bad happened."
+                )
+        return rc
+
+
     def trigger_ebuild_preinstall(self):
         stdfile = open("/dev/null","w")
         oldstderr = sys.stderr
@@ -976,23 +1007,11 @@ class Trigger:
                 header = red("   ##")
             )
             try:
+
                 sys.stdout = stdfile
-                rc = self.Spm.spm_doebuild(
-                    myebuild,
-                    mydo = "setup",
-                    tree = "bintree",
-                    cpv = portage_atom,
-                    portage_tmpdir = self.pkgdata['unpackdir'],
-                    licenses = self.pkgdata['accept_license']
-                ) # create mysettings["T"]+"/environment"
-                if rc == 1:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Portage preinstall (pkg_setup()) trigger for " + \
-                        str(portage_atom) + ". Something bad happened."
-                    )
+                self.__ebuild_setup_phase(myebuild, portage_atom)
                 sys.stdout = oldstdout
+
                 rc = self.Spm.spm_doebuild(
                     myebuild,
                     mydo = "preinst",
