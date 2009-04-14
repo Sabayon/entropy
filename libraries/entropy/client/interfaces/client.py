@@ -34,7 +34,7 @@ from entropy.client.interfaces.fetch import FetchersMixin
 from entropy.client.interfaces.metadata import ExtractorsMixin
 from entropy.const import etpConst, etpCache
 from entropy.core import SystemSettings, SystemSettingsPlugin
-from entropy.exceptions import SystemDatabaseError
+from entropy.exceptions import SystemDatabaseError, RepositoryError
 
 class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -68,6 +68,21 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     mask_installed.append(m_id)
                     mask_installed_keys[mykey].add(m_id)
             break
+
+        # this makes sure that repository metadata is initialized
+        # in fact, CONFIG_PROTECT and CONFIG_PROTECT_MASK are stored
+        # inside the database.
+        # We won't care about load errors since db will be always
+        # initialized
+        avail_repos = system_settings_instance['repositories']['available']
+        for repoid in avail_repos:
+            if not self._helper.is_repository_connection_cached(repoid):
+                continue
+            try:
+                dbconn = self._helper.open_repository(repoid)
+                self._helper.setup_repository_config(repoid, dbconn)
+            except RepositoryError:
+                pass
 
         system_settings_instance['repos_system_mask_installed'] = mask_installed
         system_settings_instance['repos_system_mask_installed_keys'] = mask_installed_keys
