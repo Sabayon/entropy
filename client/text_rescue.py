@@ -420,6 +420,7 @@ def database(options):
         # make it crash
         Equo.noclientdb = False
         Equo.reopen_client_repository()
+        Equo.close_all_repositories()
 
         # test if counters table exists, because if not, it's useless to run the diff scan
         try:

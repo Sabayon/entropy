@@ -913,9 +913,14 @@ class MiscMixin:
         self.reload_constants()
         self.validate_repositories()
         self.reopen_client_repository()
+        # keep them closed, since SystemSettings.clear() is called
+        # above on reopen_client_repository()
+        self.close_all_repositories()
         if chroot:
-            try: self.clientDbconn.resetTreeupdatesDigests()
-            except: pass
+            try:
+                self.clientDbconn.resetTreeupdatesDigests()
+            except:
+                pass
         # I don't think it's safe to keep them open
         # isn't it?
         self.closeAllSecurity()
@@ -1235,12 +1240,14 @@ class MiscMixin:
             self.clientDbconn.resetTreeupdatesDigests()
             # clean cache
             self.purge_cache(showProgress = False)
-            # reopen Client Database, this will make treeupdates to be re-read
             self.close_all_repositories()
             # if we are successful, the new branch will be set
             self.reload_constants()
             self.validate_repositories()
             self.reopen_client_repository()
+            # since reopen_client_repository() calls SystemSettings.clear
+            # we need to make sure that all the repos are closed
+            self.close_all_repositories()
         return 0
 
     def get_meant_packages(self, search_term, from_installed = False, valid_repos = []):
