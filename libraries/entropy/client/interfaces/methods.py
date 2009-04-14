@@ -100,17 +100,16 @@ class RepositoryMixin:
 
     def open_repository(self, repoid):
 
-        t_ident = 1 # thread.get_ident() disabled for now
-        if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],t_ident,)):
+        if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],)):
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
             except (self.dbapi2.OperationalError, TypeError,):
                 pass
-            self.__repodb_cache[(repoid,etpConst['systemroot'],t_ident,)] = dbconn
+            self.__repodb_cache[(repoid,etpConst['systemroot'],)] = dbconn
             return dbconn
-        return self.__repodb_cache.get((repoid,etpConst['systemroot'],t_ident,))
+        return self.__repodb_cache.get((repoid,etpConst['systemroot'],))
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):
 
