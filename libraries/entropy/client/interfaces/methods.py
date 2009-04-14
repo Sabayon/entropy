@@ -287,7 +287,8 @@ class RepositoryMixin:
             self.repository_move_clear_cache(repodata['repoid'])
             # save new self.SystemSettings['repositories']['available'] to file
             self.entropyTools.save_repository_settings(repodata)
-            self.reload_constants()
+            self.SystemSettings.clear()
+            self.close_all_repositories()
         self.validate_repositories()
 
     def remove_repository(self, repoid, disable = False):
@@ -317,8 +318,10 @@ class RepositoryMixin:
                 self.entropyTools.save_repository_settings(repodata, disable = True)
             else:
                 self.entropyTools.save_repository_settings(repodata, remove = True)
-            self.reload_constants()
+            self.SystemSettings.clear()
 
+        # reset db cache
+        self.close_all_repositories()
         self.validate_repositories()
 
     def shift_repository(self, repoid, toidx):
@@ -327,7 +330,8 @@ class RepositoryMixin:
         self.SystemSettings['repositories']['order'].insert(toidx, repoid)
         self.entropyTools.write_ordered_repositories_entries(
             self.SystemSettings['repositories']['order'])
-        self.reload_constants()
+        self.SystemSettings.clear()
+        self.close_all_repositories()
         self.repository_move_clear_cache(repoid)
         self.validate_repositories()
 
@@ -337,7 +341,8 @@ class RepositoryMixin:
         repodata = {}
         repodata['repoid'] = repoid
         self.entropyTools.save_repository_settings(repodata, enable = True)
-        self.reload_constants()
+        self.SystemSettings.clear()
+        self.close_all_repositories()
         self.validate_repositories()
 
     def disable_repository(self, repoid):
@@ -362,7 +367,9 @@ class RepositoryMixin:
             repodata = {}
             repodata['repoid'] = repoid
             self.entropyTools.save_repository_settings(repodata, disable = True)
-            self.reload_constants()
+            self.SystemSettings.clear()
+
+        self.close_all_repositories()
         self.validate_repositories()
 
     def get_repository_settings(self, repoid):
