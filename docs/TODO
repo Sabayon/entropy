@@ -6,7 +6,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - etpConst['dbconfigprotect'] to SystemSettings
     - etpConst['dbconfigprotectmask'] to SystemSettings
-    - make it working on r/o fs (SystemSettings mostly => mtime files writing)
     - Unit Test module
 
     - Documentation + Pylint (NLnet Milestone 7)
