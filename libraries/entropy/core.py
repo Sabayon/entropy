@@ -23,10 +23,10 @@
 from __future__ import with_statement
 import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
-from entropy.const import etpConst, etpSys, const_setup_perms, etpRepositories,\
-    etpRepositoriesOrder, const_secure_config_file, const_set_nice_level, \
-    const_extract_srv_repo_params, etpRepositories, etpRepositoriesExcluded, \
-    const_extract_cli_repo_params, etpCache
+from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
+    etpRepositories, etpRepositoriesOrder, const_secure_config_file, \
+    const_set_nice_level, const_extract_srv_repo_params, etpRepositories, \
+    etpRepositoriesExcluded, const_extract_cli_repo_params, etpCache
 from entropy.i18n import _
 
 class Singleton(object):
@@ -1363,7 +1363,10 @@ class SystemSettings(Singleton):
                 if not os.path.isdir(etpConst['packagesbindir']+"/"+branch) \
                     and (etpConst['uid'] == 0):
 
-                    os.makedirs(etpConst['packagesbindir']+"/"+branch)
+                    try:
+                        os.makedirs(etpConst['packagesbindir']+"/"+branch)
+                    except (OSError, IOError,):
+                        continue
 
         for line in repositoriesconf:
 
@@ -1478,12 +1481,14 @@ class SystemSettings(Singleton):
             for item in files:
                 if item.endswith(etpConst['cachedumpext']):
                     item = os.path.join(path,item)
-                    try: os.remove(item)
-                    except OSError: pass
+                    try:
+                        os.remove(item)
+                    except (OSError, IOError,):
+                        pass
             try:
                 if not os.listdir(path):
                     os.rmdir(path)
-            except OSError:
+            except (OSError, IOError,):
                 pass
 
     def __generic_parser(self, filepath):
@@ -1523,7 +1528,14 @@ class SystemSettings(Singleton):
             for repoid in self['repositories']['order']:
                 self._clear_repository_cache(repoid = repoid)
         else:
-            os.makedirs(etpConst['dumpstoragedir'])
+            try:
+                os.makedirs(etpConst['dumpstoragedir'])
+            except IOError, e:
+                if e.errno == 30: # readonly filesystem
+                    etpUi['pretend'] = True
+                return
+            except OSError:
+                return
 
     def __save_file_mtime(self, toread, tosaveinto):
         """
@@ -1541,17 +1553,32 @@ class SystemSettings(Singleton):
             currmtime = os.path.getmtime(toread)
 
         if not os.path.isdir(etpConst['dumpstoragedir']):
-            os.makedirs(etpConst['dumpstoragedir'], 0775)
-            const_setup_perms(etpConst['dumpstoragedir'],
-                etpConst['entropygid'])
+            try:
+                os.makedirs(etpConst['dumpstoragedir'], 0775)
+                const_setup_perms(etpConst['dumpstoragedir'],
+                    etpConst['entropygid'])
+            except IOError, e:
+                if e.errno == 30: # readonly filesystem
+                    etpUi['pretend'] = True
+                return
+            except (OSError,), e:
+                # unable to create the storage directory
+                # useless to continue
+                return
 
-        mtime_f = open(tosaveinto,"w")
-        mtime_f.write(str(currmtime))
-        mtime_f.flush()
-        mtime_f.close()
-        os.chmod(tosaveinto, 0664)
-        if etpConst['entropygid'] != None:
-            os.chown(tosaveinto, 0, etpConst['entropygid'])
+        try:
+            mtime_f = open(tosaveinto,"w")
+        except IOError, e: # unable to write?
+            if e.errno == 30: # readonly filesystem
+                etpUi['pretend'] = True
+            return
+        else:
+            mtime_f.write(str(currmtime))
+            mtime_f.flush()
+            mtime_f.close()
+            os.chmod(tosaveinto, 0664)
+            if etpConst['entropygid'] != None:
+                os.chown(tosaveinto, 0, etpConst['entropygid'])
 
 
     def __validate_entropy_cache(self, maskfile, mtimefile, repoid = None):
