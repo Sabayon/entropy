@@ -1351,7 +1351,7 @@ class LocalRepository:
             self.insertSignatures(idpackage, etpData['signatures'])
 
         # spm phases
-        if etpData.get('spm_phases'):
+        if etpData.get('spm_phases') != None:
             self.insertSpmPhases(idpackage, etpData['spm_phases'])
 
         # not depending on other tables == no select done
