@@ -451,7 +451,10 @@ class ExtractorsMixin:
             if x.startswith("!") or (x in ("(","||",")","")):
                 continue
             data['dependencies'][x] = etpConst['spm']['pdepend_id']
-        data['conflicts'] = [x[1:] for x in portage_metadata['RDEPEND'].split()+portage_metadata['PDEPEND'].split() if x.startswith("!") and not x in ("(","||",")","")]
+        data['conflicts'] = [x[1:] for x in \
+            portage_metadata['RDEPEND'].split() + \
+            portage_metadata['PDEPEND'].split() if \
+            x.startswith("!") and not x in ("(","||",")","")]
 
         if (kernelstuff) and (not kernelstuff_kernel):
             # add kname to the dependency
@@ -462,6 +465,10 @@ class ExtractorsMixin:
         confl_data = self.SystemSettings['conflicting_tagged_packages'].get(key)
         if confl_data != None:
             for conflict in confl_data: data['conflicts'].append(conflict)
+
+        # conflicts must be a set, which is what is returned
+        # by entropy.db.getPackageData
+        data['conflicts'] = set(data['conflicts'])
 
         # Get License text if possible
         licenses_dir = os.path.join(Spm.get_spm_setting('PORTDIR'),'licenses')
