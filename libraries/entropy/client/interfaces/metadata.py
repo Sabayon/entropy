@@ -444,6 +444,8 @@ class ExtractorsMixin:
                 data['useflags'].append(x)
             else:
                 data['useflags'].append("-"+x)
+        # useflags must be a set, as returned by entropy.db.getPackageData
+        data['useflags'] = set(data['useflags'])
         data['sources'] = portage_metadata['SRC_URI'].split()
         data['dependencies'] = {}
         for x in portage_metadata['RDEPEND'].split():
