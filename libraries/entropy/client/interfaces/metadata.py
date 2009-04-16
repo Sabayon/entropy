@@ -518,6 +518,11 @@ class ExtractorsMixin:
                 red(info_package+_("Package extraction complete")), importance = 0,
                 type = "info", header = brown(" * "), back = True
             )
+
+        # clear unused metadata
+        del data['use'], data['iuse'], data['depend'], data['pdepend'], \
+            data['rdepend']
+
         return data
 
 
