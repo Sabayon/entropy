@@ -496,7 +496,8 @@ class ExtractorsMixin:
         log_dir = etpConst['logdir']+"/elog"
         if not os.path.isdir(log_dir): os.makedirs(log_dir)
         data['messages'] = self._extract_pkg_metadata_messages(log_dir, data['category'], data['name'], data['version'], silent = silent)
-        data['etpapi'] = etpConst['etpapi']
+        # etpapi must be int, as returned by entropy.db.getPackageData
+        data['etpapi'] = int(etpConst['etpapi'])
 
         # removing temporary directory
         shutil.rmtree(tbz2TmpDir,True)
