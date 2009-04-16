@@ -422,7 +422,7 @@ class ExtractorsMixin:
             data['rdepend'], data['pdepend'], data['provide'], data['sources']
         )
 
-        data['provide'] = portage_metadata['PROVIDE'].split()
+        data['provide'] = set(portage_metadata['PROVIDE'].split())
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
         for x in data['use'].split():
