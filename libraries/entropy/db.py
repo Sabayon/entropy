@@ -1808,9 +1808,11 @@ class LocalRepository:
 
     def insertSignatures(self, idpackage, signatures):
         with self.WriteLock:
+            sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
+                signatures['sha512']
             self.cursor.execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?)
-            """, (idpackage,)+tuple(signatures))
+            """, (idpackage, sha1, sha256, sha512))
 
     def insertSpmPhases(self, idpackage, phases):
         with self.WriteLock:
