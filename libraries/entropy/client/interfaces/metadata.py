@@ -424,7 +424,15 @@ class ExtractorsMixin:
         # Get Spm ChangeLog
         pkgatom = "%s/%s-%s" % (data['category'],data['name'],data['version'],)
         try:
-            data['changelog'] = Spm.get_package_changelog(pkgatom)
+            data['changelog'] = unicode(Spm.get_package_changelog(pkgatom),
+                'raw_unicode_escape')
+        except (UnicodeEncodeError, UnicodeDecodeError,), e:
+            self.updateProgress(
+                red(info_package) + _("changelog string conversion error") + \
+                    " " + bold(str(e)),
+                importance = 0, type = "warning", header = bold(" !!! ")
+            )
+            data['changelog'] = None
         except:
             data['changelog'] = None
 
