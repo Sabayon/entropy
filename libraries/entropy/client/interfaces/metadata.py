@@ -360,6 +360,9 @@ class ExtractorsMixin:
             data['counter'] = -2 # -2 values will be insterted as incremental negative values into the database
         data['keywords'] = [x.strip() for x in data['keywords'].split() if x.strip()]
         if not data['keywords']: data['keywords'].insert(0,"") # support for packages with no keywords
+        # keywords must be a set, as returned by
+        # entropy.db.getPackageData
+        data['keywords'] = set(data['keywords'])
         needed_file = os.path.join(tbz2TmpDir,etpConst['spm']['xpak_entries']['needed'])
         data['needed'] = self._extract_pkg_metadata_needed(needed_file)
         content_file = os.path.join(tbz2TmpDir,etpConst['spm']['xpak_entries']['contents'])
