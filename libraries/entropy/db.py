@@ -1284,6 +1284,8 @@ class LocalRepository:
         pkgatom = self.entropyTools.create_package_atom_string(
             etpData['category'], etpData['name'], etpData['version'],
             etpData['versiontag'])
+        # add atom metadatum
+        etpData['atom'] = pkgatom
 
         mybaseinfo_data = (pkgatom, catid, etpData['name'], etpData['version'],
             etpData['versiontag'], revision, etpData['branch'], etpData['slot'],
