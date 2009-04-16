@@ -353,7 +353,8 @@ class ExtractorsMixin:
             data['spm_phases'] = None
 
         # setup vars
-        data['eclasses'] = data['eclasses'].split()
+        # eclasses must be a set as returned by entropy.db.getPackageData
+        data['eclasses'] = set(data['eclasses'].split())
         try:
             data['counter'] = int(data['counter'])
         except ValueError:
