@@ -345,6 +345,13 @@ class ExtractorsMixin:
                     raise
             data[item] = value
 
+        # setup spm_phases properly
+        spm_defined_phases_path = os.path.join(tbz2TmpDir,
+            portage_entries['spm_phases']['path'])
+        if not os.path.isfile(spm_defined_phases_path):
+            # force to None, because metadatum can be '', which is valid
+            data['spm_phases'] = None
+
         # setup vars
         data['eclasses'] = data['eclasses'].split()
         try:
