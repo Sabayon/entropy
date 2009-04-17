@@ -56,11 +56,6 @@
 ../libraries/entropy/tools.py
 ../libraries/entropy/transceivers.py
 ../libraries/entropy/xpak.py
-../libraries/dumpTools.py
-../libraries/entropyConstants.py
-../libraries/entropy_i18n.py
-../libraries/entropyTools.py
-../libraries/outputTools.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
