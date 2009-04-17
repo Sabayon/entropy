@@ -1393,7 +1393,6 @@ class CalculatorsMixin:
                 # does it really exist on current repos?
                 pkg_key = self.entropyTools.dep_getkey(myatom)
                 pkg_id, pkg_repo = self.atom_match(pkg_key)
-                print pkg_id, pkg_repo
                 if pkg_id != -1:
                     found = True
             del pkg_unsatisfied
