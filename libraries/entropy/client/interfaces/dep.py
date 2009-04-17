@@ -483,7 +483,7 @@ class CalculatorsMixin:
             client_checksum = self.clientDbconn.database_checksum()
             c_hash = hash("%s|%s|%s" % (c_data,deep_deps,client_checksum,))
             c_hash = "%s%s" % (etpCache['filter_satisfied_deps'],c_hash,)
-            cached = self.dumpTools.loadobj(c_hash)
+            cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
         if not isinstance(depcache,dict):
@@ -1390,14 +1390,18 @@ class CalculatorsMixin:
                 pkg_match += "#%s" % (mytag,)
             pkg_unsatisfied = self.get_unsatisfied_dependencies([pkg_match], deep_deps = deep)
             if pkg_unsatisfied:
-                found = True
+                # does it really exist on current repos?
+                pkg_key = self.entropyTools.dep_getkey(myatom)
+                pkg_id, pkg_repo = self.atom_match(pkg_key)
+                print pkg_id, pkg_repo
+                if pkg_id != -1:
+                    found = True
             del pkg_unsatisfied
             matched = self.atom_match(pkg_match)
         del match
 
         if self.xcache:
-            self.Cacher.push(c_hash,(found,matched))
-
+            self.Cacher.push(c_hash,(found, matched))
         return found, matched
 
     # This is the function that should be used by third party applications
