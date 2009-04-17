@@ -103,7 +103,6 @@ myopts = [
     (2,'--empty',2,_('same as --replay')),
     (2,'--resume',1,_('resume previously interrupted operations')),
     (2,'--skipfirst',1,_('used with --resume, makes the first package to be skipped')),
-    (2,'--upgrade',1,_('upgrade your distribution to the specified release')),
     (2,'--nochecksum',1,_('disable package integrity check')),
     (2,'--multifetch',1,_('download multiple packages in parallel (default 3)')),
     (2,'--multifetch=N',1,_('download N packages in parallel (max 10)')),
@@ -499,7 +498,8 @@ try:
     elif options[0] == "moo":
         do_moo()
 
-    elif options[0] in ["install","remove","config","world","deptest","unusedpackages","libtest","source"]:
+    elif options[0] in ("install", "remove", "config", "world",
+        "deptest", "unusedpackages", "libtest", "source", "hop"):
 
         import text_ui
         rc = text_ui.package(options)

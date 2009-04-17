@@ -44,10 +44,8 @@ def package(options):
     equoRequestDeep = False
     equoRequestConfigFiles = False
     equoRequestReplay = False
-    equoRequestUpgrade = False
     equoRequestResume = False
     equoRequestSkipfirst = False
-    equoRequestUpgradeTo = None
     equoRequestListfiles = False
     equoRequestChecksum = True
     equoRequestSortSize = False
@@ -74,8 +72,6 @@ def package(options):
             equoRequestConfigFiles = True
         elif (opt == "--replay"):
             equoRequestReplay = True
-        elif (opt == "--upgrade"):
-            equoRequestUpgrade = True
         elif (opt == "--resume"):
             equoRequestResume = True
         elif (opt == "--sortbysize"):
@@ -102,9 +98,7 @@ def package(options):
         else:
             if opt.startswith("--"):
                 continue
-            if (equoRequestUpgrade):
-                equoRequestUpgradeTo = opt
-            elif opt.endswith(".tbz2") and \
+            if opt.endswith(".tbz2") and \
                 os.path.isabs(opt) and \
                 os.access(opt,os.R_OK) and \
                 Equo.entropyTools.is_entropy_package_file(opt):
@@ -150,7 +144,7 @@ def package(options):
     elif (options[0] == "world"):
         status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch,
             replay = (equoRequestReplay or equoRequestEmptyDeps),
-            upgradeTo = equoRequestUpgradeTo, resume = equoRequestResume,
+            resume = equoRequestResume,
             skipfirst = equoRequestSkipfirst, human = True,
             dochecksum = equoRequestChecksum,
             multifetch = equoRequestMultifetch)
@@ -177,7 +171,7 @@ def package(options):
     return rc
 
 
-def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = False,
+def worldUpdate(onlyfetch = False, replay = False, resume = False,
     skipfirst = False, human = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
@@ -188,39 +182,8 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
 
     if not resume:
 
-        # verify selected release (branch)
-        if upgradeTo:
-            # set the new branch
-            result = Equo.move_to_branch(upgradeTo, pretend = etpUi['pretend'])
-            if result == 1:
-                print_error(red("%s: " % (_("Selected release"),) ) + bold(str(upgradeTo)) + \
-                    red(" %s." % (_("is not available"),) )
-                )
-                return 1,-2
-            elif not etpUi['pretend']:
-                old_branch = Equo.SystemSettings['repositories']['branch'][:]
-                status = True
-                try:
-                    repoConn = Equo.Repositories([], False)
-                except PermissionDenied:
-                    mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
-                    print_error("\t"+mytxt)
-                    status = False
-                except MissingParameter:
-                    print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
-                    status = False
-                except Exception, e:
-                    print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
-                    status = False
-                if status:
-                    rc = repoConn.sync()
-                    if rc: status = False
-                if not status:
-                    Equo.move_to_branch(old_branch, pretend = etpUi['pretend'])
-                    return 1,-2
-
         print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
-        update, remove, fine = Equo.calculate_world_updates(empty_deps = replay, branch = upgradeTo)
+        update, remove, fine = Equo.calculate_world_updates(empty_deps = replay)
 
         if (etpUi['verbose'] or etpUi['pretend']):
             print_info(red(" @@ ")+darkgreen("%s:\t\t" % (_("Packages matching update"),) )+bold(str(len(update))))
