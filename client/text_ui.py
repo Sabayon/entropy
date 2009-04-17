@@ -296,7 +296,7 @@ def worldUpdate(onlyfetch = False, replay = False, upgradeTo = None, resume = Fa
     # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
     remove = [x for x in remove if Equo.clientDbconn.isIDPackageAvailable(x)]
 
-    if remove and Equo.validRepositories:
+    if remove and Equo.validRepositories and (not onlyfetch):
         remove = sorted(remove)
         print_info(red(" @@ ") + \
             blue("%s." % (
