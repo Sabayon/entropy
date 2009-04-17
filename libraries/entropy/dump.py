@@ -63,8 +63,8 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
                 if d_paths:
                     d_paths = sorted(d_paths)
                     for d_path in d_paths:
-                        os.mkdir(d_path, 0775)
-                        const_setup_perms(d_path, E_GID)
+                        os.mkdir(d_path)
+                        const_setup_file(d_path, E_GID, 0775)
 
                 dmpfile = dump_path+D_EXT
             with open(dmpfile,"wb") as dmp_f:
