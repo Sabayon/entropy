@@ -105,16 +105,17 @@ class RepositoryMixin:
 
     def open_repository(self, repoid):
 
-        if not self.__repodb_cache.has_key((repoid,etpConst['systemroot'],)):
+        key = (repoid, etpConst['systemroot'],)
+        if not self.__repodb_cache.has_key(key):
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
             except (self.dbapi2.OperationalError, TypeError,):
                 pass
-            self.__repodb_cache[(repoid,etpConst['systemroot'],)] = dbconn
+            self.__repodb_cache[key] = dbconn
             return dbconn
-        return self.__repodb_cache.get((repoid,etpConst['systemroot'],))
+        return self.__repodb_cache.get(key)
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):
 
@@ -1240,24 +1241,37 @@ class MiscMixin:
 
         return packagesMatched,plain_brokenexecs,0
 
-    def move_to_branch(self, branch, pretend = False):
-        if pretend: return 0
-        if branch != self.SystemSettings['repositories']['branch']:
-            # update configuration
+    def set_branch(self, branch, persistent = False):
+        """
+        Set new Entropy branch. This is NOT thread-safe.
+        Please note that if you call this method all your
+        repository instance references will become invalid.
+        This is caused by close_all_repositories and SystemSettings
+        clear methods.
+        Once you changed branch, the repository databases won't be
+        available until you fetch them (through Repositories class)
+
+        @param branch -- new branch
+        @type branch basestring
+        @param persistent -- write new branch to config file?
+        @type persistent bool
+        @return None
+        """
+        self.Cacher.sync(wait = True)
+        self.Cacher.stop()
+        self.purge_cache(showProgress = False)
+        self.close_all_repositories()
+        # etpConst should be readonly but we override the rule here
+        etpConst['branch'] = branch
+        if persistent:
             self.entropyTools.write_new_branch(branch)
-            # reset treeupdatesactions
-            self.clientDbconn.resetTreeupdatesDigests()
-            # clean cache
-            self.purge_cache(showProgress = False)
-            self.close_all_repositories()
-            # if we are successful, the new branch will be set
-            self.reload_constants()
-            self.validate_repositories()
-            self.reopen_client_repository()
-            # since reopen_client_repository() calls SystemSettings.clear
-            # we need to make sure that all the repos are closed
-            self.close_all_repositories()
-        return 0
+        self.SystemSettings.clear()
+        # reset treeupdatesactions
+        self.reopen_client_repository()
+        self.clientDbconn.resetTreeupdatesDigests()
+        self.close_all_repositories()
+        if self.xcache:
+            self.Cacher.start()
 
     def get_meant_packages(self, search_term, from_installed = False, valid_repos = []):
 
