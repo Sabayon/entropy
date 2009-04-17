@@ -149,6 +149,13 @@ def package(options):
             dochecksum = equoRequestChecksum,
             multifetch = equoRequestMultifetch)
 
+    elif (options[0] == "hop"):
+        if myopts:
+            status, rc = branchHop(myopts[0])
+        else:
+            print_error(red(" %s." % (_("Nothing to do"),) ))
+            rc = 127
+
     elif (options[0] == "remove"):
         if myopts or equoRequestResume:
             status, rc = removePackages(myopts, deps = equoRequestDeps,
@@ -291,6 +298,56 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
         print_info(red(" @@ ")+blue("%s." % (_("Nothing to remove"),) ))
 
     return 0,0
+
+def branchHop(branch):
+    # set the new branch
+    if branch == Equo.SystemSettings['repositories']['branch']:
+        mytxt = "%s %s: %s" % (bold(" !!! "),
+            darkred(_("Already on branch")), purple(branch),)
+        print_warning(mytxt)
+        return 1, -1
+
+    old_branch = Equo.SystemSettings['repositories']['branch'][:]
+    Equo.set_branch(branch)
+    status = True
+
+    try:
+        repoConn = Equo.Repositories([], forceUpdate = False,
+            fetchSecurity = False)
+    except PermissionDenied:
+        mytxt = darkred(_("You must be either root or in the %s group.")) % (
+            etpConst['sysgroup'],)
+        print_error("\t"+mytxt)
+        status = False
+    except MissingParameter:
+        print_error(darkred(" * ")+red("%s %s" % (
+            _("No repositories specified in"), etpConst['repositoriesconf'],)))
+        status = False
+    except Exception, e:
+        print_error(darkred(" @@ ")+red("%s: %s" % (
+            _("Unhandled exception"), e,)))
+        status = False
+    else:
+        rc = repoConn.sync()
+        if rc:
+            status = False
+
+    if status:
+        mytxt = "%s %s: %s" % (red(" @@ "),
+            darkgreen(_("Succesfully switched to branch")), purple(branch),)
+        print_info(mytxt)
+        mytxt = "%s %s" % (brown(" ?? "),
+            darkgreen(
+                _("Now run 'equo world' to upgrade your distribution to")),
+            )
+        print_info(mytxt)
+        return 0, 0
+    else:
+        Equo.set_branch(old_branch)
+        mytxt = "%s %s: %s" % (bold(" !!! "),
+            darkred(_("Unable to switch to branch")), purple(branch),)
+        print_error(mytxt)
+        return 1, -2
 
 def _scanPackages(packages, tbz2):
 

@@ -94,6 +94,8 @@ myopts = [
     (2,'--showrepo',1,_('print repository information (w/--quiet)')),
     (2,'--showdesc',1,_('print description too (w/--quiet)')),
     None,
+    (1,'hop <branch>',1,_('upgrade your distribution to a new release (branch)')),
+    None,
     (1,'world',2,_('update system with the latest available packages')),
     (2,'--ask',2,_('ask before making any changes')),
     (2,'--fetch',2,_('just download packages')),
@@ -503,8 +505,9 @@ try:
 
         import text_ui
         rc = text_ui.package(options)
+        if options[0] not in ("hop",):
+            load_conf_cache()
         text_ui.Equo.destroy()
-        load_conf_cache()
 
     elif options[0] == "security":
         import text_security
