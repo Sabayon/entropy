@@ -1043,7 +1043,7 @@ def const_setup_file(myfile, gid, chmod):
     cur_gid = os.stat(myfile)[stat.ST_GID]
     if cur_gid != gid:
         os.chown(myfile, -1, gid)
-        const_set_chmod(myfile, chmod)
+    const_set_chmod(myfile, chmod)
 
 # you need to convert to int
 def const_get_chmod(myfile):
