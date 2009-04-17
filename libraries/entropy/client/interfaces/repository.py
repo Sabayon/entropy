@@ -1215,7 +1215,7 @@ class Repository:
         rc = False
         if not self.noEquoCheck:
             try:
-                rc = self.Entropy.check_package_update("sys-apps/entropy", deep = True)
+                rc, pkg_match = self.Entropy.check_package_update("sys-apps/entropy", deep = True)
             except:
                 pass
         if rc:
