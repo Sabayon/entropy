@@ -1241,7 +1241,7 @@ class MiscMixin:
 
         return packagesMatched,plain_brokenexecs,0
 
-    def set_branch(self, branch, persistent = False):
+    def set_branch(self, branch):
         """
         Set new Entropy branch. This is NOT thread-safe.
         Please note that if you call this method all your
@@ -1253,8 +1253,6 @@ class MiscMixin:
 
         @param branch -- new branch
         @type branch basestring
-        @param persistent -- write new branch to config file?
-        @type persistent bool
         @return None
         """
         self.Cacher.sync(wait = True)
@@ -1262,10 +1260,11 @@ class MiscMixin:
         self.purge_cache(showProgress = False)
         self.close_all_repositories()
         # etpConst should be readonly but we override the rule here
+        # this is also useful when no config file or parameter into it exists
         etpConst['branch'] = branch
-        if persistent:
-            self.entropyTools.write_new_branch(branch)
+        self.entropyTools.write_new_branch(branch)
         self.SystemSettings.clear()
+
         # reset treeupdatesactions
         self.reopen_client_repository()
         self.clientDbconn.resetTreeupdatesDigests()
