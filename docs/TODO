@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.90+:
 
-    - equo world --fetch should not do orpans search
     - etpConst['dbconfigprotect'] to SystemSettings
     - etpConst['dbconfigprotectmask'] to SystemSettings
     - Unit Test module
