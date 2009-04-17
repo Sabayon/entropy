@@ -94,6 +94,8 @@ class EntropyCacher(Singleton):
 
         @return None
         """
+        with self.__cache_lock:
+            self.__cache_buffer.clear()
         self.__cache_writer = TimeScheduled(1, self.__cacher)
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
@@ -121,18 +123,19 @@ class EntropyCacher(Singleton):
 
         @return None
         """
-        if not self.__alive:
-            return
-        if self.__cache_buffer and self.__alive:
-            watch_dog = 20
-            while self.__cache_buffer.is_filled() and watch_dog:
-                watch_dog -= 1
-                time.sleep(0.5)
+
+        self.__alive = False
+        watch_dog = 20
+        while self.__cache_buffer.is_filled() and (watch_dog > 0):
+            watch_dog -= 1
+            time.sleep(0.5)
+
+        with self.__cache_lock:
             self.__cache_buffer.clear()
         if self.__cache_writer != None:
             self.__cache_writer.kill()
             self.__cache_writer.join()
-        self.__alive = False
+            self.__cache_writer = None
 
     def sync(self, wait = False):
         """
@@ -146,7 +149,9 @@ class EntropyCacher(Singleton):
         if not self.__alive:
             return
         watch_dog = 10
-        while self.__cache_buffer.is_filled() and ((watch_dog > 0) or wait):
+        while self.__cache_buffer.is_filled() and ((watch_dog > 0) or wait) \
+            and self.__alive:
+
             if not wait:
                 watch_dog -= 1
             time.sleep(0.5)
