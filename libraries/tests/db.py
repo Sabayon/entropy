@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import unittest
 import os
@@ -11,6 +12,7 @@ class LocalRepositoryTest(unittest.TestCase):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         self.test_db_name = "test_suite"
+        self.test_db = self.__open_test_db()
 
     def tearDown(self):
         """
@@ -18,26 +20,35 @@ class LocalRepositoryTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
+        self.test_db.closeDB()
 
     def __open_test_db(self):
         return self.Client.open_memory_database(dbname = self.test_db_name)
 
     def test_db_creation(self):
-        mdb = self.__open_test_db()
-        self.assert_(isinstance(mdb,LocalRepository))
-        self.assertEqual(self.test_db_name,mdb.dbname)
-        self.assert_(mdb.doesTableExist('baseinfo'))
-        self.assert_(mdb.doesTableExist('extrainfo'))
-        mdb.closeDB()
+        self.assert_(isinstance(self.test_db,LocalRepository))
+        self.assertEqual(self.test_db_name,self.test_db.dbname)
+        self.assert_(self.test_db.doesTableExist('baseinfo'))
+        self.assert_(self.test_db.doesTableExist('extrainfo'))
 
-    def test_db_insert_and_match(self):
+    def test_db_insert_compare_match(self):
+
+        # insert/compare
         test_pkg = _misc.get_test_package()
         data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
-        mdb = self.__open_test_db()
-        idpackage, rev, new_data = mdb.handlePackage(data)
-        db_data = mdb.getPackageData(idpackage, trigger_unicode = True)
-        mdb.closeDB()
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage, trigger_unicode = True)
         self.assertEqual(new_data, db_data)
+
+        # match
+        nf_match = (-1, 1)
+        f_match = (1, 0)
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
+        self.assertEqual(f_match,
+            self.test_db.atomMatch(_misc.get_test_package_name()))
+        self.assertEqual(f_match,
+            self.test_db.atomMatch(_misc.get_test_package_atom()))
+	
 
 if __name__ == '__main__':
     unittest.main()
