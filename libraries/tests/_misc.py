@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 from entropy.exceptions import FileNotFound
 
@@ -10,3 +11,9 @@ def get_test_package():
     elif os.path.isfile(path2):
         return path2
     raise FileNotFound("cannot find test package %s" % (test_pkg,))
+
+def get_test_package_name():
+    return "zlib"
+
+def get_test_package_atom():
+    return "sys-libs/zlib-1.2.3-r1"
