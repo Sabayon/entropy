@@ -42,6 +42,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
     def system_mask_parser(self, system_settings_instance):
 
+        parser_data = {}
         # match installed packages of system_mask
         mask_installed = []
         mask_installed_keys = {}
@@ -69,6 +70,14 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     mask_installed_keys[mykey].add(m_id)
             break
 
+        parser_data.update({
+            'repos_installed': mask_installed,
+            'repos_installed_keys': mask_installed_keys,
+        })
+        return parser_data
+
+    def repo_setup_parser(self, system_settings_instance):
+
         # this makes sure that repository metadata is initialized
         # in fact, CONFIG_PROTECT and CONFIG_PROTECT_MASK are stored
         # inside the database.
@@ -83,9 +92,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self._helper.setup_repository_config(repoid, dbconn)
             except RepositoryError:
                 pass
-
-        system_settings_instance['repos_system_mask_installed'] = mask_installed
-        system_settings_instance['repos_system_mask_installed_keys'] = mask_installed_keys
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
         RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, ExtractorsMixin):
@@ -184,13 +190,12 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.open_client_repository()
 
         # create our SystemSettings plugin
-        self.sys_settings_mask_plugin = ClientSystemSettingsPlugin(self)
-        self.sys_settings_mask_plugin_id = str(self)
-        self.sys_settings_mask_plugin.add_parser(
-            self.sys_settings_mask_plugin.system_mask_parser)
+        self.sys_settings_client_plugin_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        self.sys_settings_client_plugin = ClientSystemSettingsPlugin(
+            self.sys_settings_client_plugin_id, self)
         # Make sure we connect Entropy Client plugin AFTER client db init
-        self.SystemSettings.add_plugin(
-            self.sys_settings_mask_plugin_id, self.sys_settings_mask_plugin)
+        self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
 
         # needs to be started here otherwise repository cache will be
         # always dropped
@@ -215,11 +220,11 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if hasattr(self,'Cacher'):
             self.Cacher.stop()
         if hasattr(self,'SystemSettings') and \
-            hasattr(self,'sys_settings_mask_plugin_id'):
+            hasattr(self,'sys_settings_client_plugin_id'):
 
             if hasattr(self.SystemSettings,'remove_plugin'):
                 self.SystemSettings.remove_plugin(
-                    self.sys_settings_mask_plugin_id)
+                    self.sys_settings_client_plugin_id)
 
         self.close_all_repositories(mask_clear = False)
         self.closeAllSecurity()

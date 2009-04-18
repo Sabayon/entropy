@@ -1429,9 +1429,11 @@ class CalculatorsMixin:
 
         pkgatom = self.clientDbconn.retrieveAtom(idpackage)
         pkgkey = self.entropyTools.dep_getkey(pkgatom)
+        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        mask_installed_keys = self.SystemSettings[client_plugin_id]['system_mask']['repos_installed_keys']
 
         if self.is_installed_idpackage_in_system_mask(idpackage):
-            idpackages = self.SystemSettings['repos_system_mask_installed_keys'].get(pkgkey)
+            idpackages = mask_installed_keys.get(pkgkey)
             if not idpackages: return False
             if len(idpackages) > 1:
                 return True

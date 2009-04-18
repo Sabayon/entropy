@@ -75,40 +75,76 @@ class SystemSettingsPlugin:
     SystemSettings will call the parse method, as explained below.
     """
 
-    def __init__(self, helper_interface):
+    def __init__(self, plugin_id, helper_interface):
         """
         SystemSettingsPlugin constructor.
 
+        @param plugin_id -- plugin identifier, must be unique
+        @type plugin_id basestring
         @param helper_interface -- any Python instance that could
             be of help to your parsers
         @type handler_instance instance
         """
         self.__parsers = []
+        self.__plugin_id = plugin_id
         self._helper = helper_interface
+        parser_postfix = "_parser"
+        for method in dir(self):
+            if method == "add_parser":
+                continue
+            elif method.endswith(parser_postfix) and (method != parser_postfix):
+                parser_id = method[:len(parser_postfix)*-1]
+                self.__parsers.append((parser_id, getattr(self, method),))
 
-    def add_parser(self, callable_function):
+    def get_id(self):
+        """
+        Returns the unique plugin id passed at construction time.
+
+        @return plugin identifier
+        """
+        return self.__plugin_id
+
+    def add_parser(self, parser_id, parser_callable):
         """
         You must call this method in order to add your custom
         parsers to the plugin.
+        Please note, if your parser method ends with "_parser"
+        it will be automatically added this way:
 
-        @param callable_function - any callable function which has
+        method: foo_parser
+            parser_id => foo
+        method: another_fabulous_parser
+            parser_id => another_fabulous
+
+        @param parser_id -- parser identifier, must be unique
+        @type parser_id basestring
+        @param parser_callable -- any callable function which has
             the following signature: callable(system_settings_instance)
             can return True to stop further parsers calls
+        @type parser_callable callable
         """
-        self.__parsers.append(callable_function)
+        self.__parsers.append((parser_id, parser_callable,))
 
     def parse(self, system_settings_instance):
         """
         This method is called by SystemSettings instance
         when building its settings metadata.
 
+        Returned data from parser will be put into the SystemSettings
+        dict using plugin_id and parser_id keys.
+        If returned data is None, SystemSettings dict won't be changed.
+
         @param system_settings_instance -- SystemSettings instance
         @type system_settings_instance SystemSettings instance
         """
-        for parser in self.__parsers:
-            block = parser(system_settings_instance)
-            if block:
-                break
+        plugin_id = self.get_id()
+        for parser_id, parser in self.__parsers:
+            data = parser(system_settings_instance)
+            if data == None:
+                continue
+            if not system_settings_instance.has_key(plugin_id):
+                system_settings_instance[plugin_id] = {}
+            system_settings_instance[plugin_id][parser_id] = data
 
 class SystemSettings(Singleton):
 
@@ -185,7 +221,7 @@ class SystemSettings(Singleton):
         """
         self.__is_destroyed = True
 
-    def add_plugin(self, plugin_id, system_settings_plugin_instance):
+    def add_plugin(self, system_settings_plugin_instance):
         """
         This method lets you add custom parsers to SystemSettings.
         Mind that you are responsible of handling your plugin instance
@@ -200,10 +236,11 @@ class SystemSettings(Singleton):
             instance
         @type system_settings_plugin_instance SystemSettingsPlugin instance
         """
-        if not isinstance(system_settings_plugin_instance,SystemSettingsPlugin):
+        inst = system_settings_plugin_instance
+        if not isinstance(inst,SystemSettingsPlugin):
             raise AttributeError("SystemSettings: expected valid " + \
                     "SystemSettingsPlugin instance")
-        self.__plugins[plugin_id] = system_settings_plugin_instance
+        self.__plugins[inst.get_id()] = inst
         self.clear()
 
     def remove_plugin(self, plugin_id):

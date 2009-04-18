@@ -1024,7 +1024,9 @@ class MiscMixin:
         return -3,_("Set not found or unable to remove")
 
     def is_installed_idpackage_in_system_mask(self, idpackage):
-        if idpackage in self.SystemSettings['repos_system_mask_installed']:
+        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        mask_installed = self.SystemSettings[client_plugin_id]['system_mask']['repos_installed']
+        if idpackage in mask_installed:
             return True
         return False
 
