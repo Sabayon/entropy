@@ -312,7 +312,7 @@ def branchHop(branch):
         mytxt = "%s %s: %s" % (bold(" !!! "),
             darkred(_("Already on branch")), purple(branch),)
         print_warning(mytxt)
-        return 1, -1
+        return 2, -1
 
     old_branch = Equo.SystemSettings['repositories']['branch'][:]
     Equo.set_branch(branch)
@@ -354,7 +354,7 @@ def branchHop(branch):
         mytxt = "%s %s: %s" % (bold(" !!! "),
             darkred(_("Unable to switch to branch")), purple(branch),)
         print_error(mytxt)
-        return 1, -2
+        return 3, -2
 
 def _scanPackages(packages, tbz2):
 
