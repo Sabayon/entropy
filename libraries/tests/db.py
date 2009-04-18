@@ -37,7 +37,7 @@ class LocalRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package()
         data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
         idpackage, rev, new_data = self.test_db.handlePackage(data)
-        db_data = self.test_db.getPackageData(idpackage, trigger_unicode = True)
+        db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
         # match
@@ -48,7 +48,7 @@ class LocalRepositoryTest(unittest.TestCase):
             self.test_db.atomMatch(_misc.get_test_package_name()))
         self.assertEqual(f_match,
             self.test_db.atomMatch(_misc.get_test_package_atom()))
-	
+
 
 if __name__ == '__main__':
     unittest.main()
