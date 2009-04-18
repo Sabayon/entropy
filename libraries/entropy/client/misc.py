@@ -38,7 +38,9 @@ class FileUpdates:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
         from entropy.cache import EntropyCacher
+        from entropy.core import SystemSettings
         self.Cacher = EntropyCacher()
+        self.SystemSettings = SystemSettings()
         self.scandata = None
 
     def merge_file(self, key):
@@ -94,11 +96,12 @@ class FileUpdates:
             except:
                 pass
 
-        # open client database to fill etpConst['dbconfigprotect']
         scandata = {}
         counter = 0
         name_cache = set()
-        for path in etpConst['dbconfigprotect']:
+        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        client_conf_protect = self.SystemSettings[client_plugin_id]['client_repo']['config_protect']
+        for path in client_conf_protect:
             # it's a file?
             scanfile = False
             if os.path.isfile(path):

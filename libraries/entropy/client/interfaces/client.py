@@ -93,6 +93,44 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             except RepositoryError:
                 pass
 
+    def client_repo_parser(self, system_settings_instance):
+
+        data = {
+            'config_protect': [],
+            'config_protect_mask': [],
+        }
+        if self._helper.clientDbconn != None:
+
+            config_protect = []
+            config_protect_mask = []
+            conn = self._helper.clientDbconn
+            try:
+                config_protect = conn.listConfigProtectDirectories()
+            except (dbapi2.Error,):
+                pass
+            try:
+                config_protect_mask = \
+                    conn.listConfigProtectDirectories(mask = True)
+            except (dbapi2.Error,):
+                pass
+
+            config_protect = [etpConst['systemroot']+x for x in config_protect]
+            config_protect_mask = [etpConst['systemroot']+x for x in \
+                config_protect_mask]
+
+            sys_conf_protect = system_settings_instance['client']['configprotect']
+            sys_conf_protect_mask = system_settings_instance['client']['configprotectmask']
+
+            data['config_protect'] = config_protect + [
+                etpConst['systemroot']+x for x in sys_conf_protect if \
+                etpConst['systemroot']+x not in config_protect]
+
+            data['config_protect_mask'] = config_protect_mask + [
+                etpConst['systemroot']+x for x in sys_conf_protect_mask if \
+                etpConst['systemroot']+x not in config_protect_mask]
+
+        return data
+
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
         RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, ExtractorsMixin):
 

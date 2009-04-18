@@ -366,13 +366,13 @@ class Package:
 
     def __remove_content_from_system(self, protected_removable_config_files):
 
-        # load CONFIG_PROTECT and its mask
-        # client database at this point has been surely opened,
-        # so our dicts are already filled
-        protect = etpConst['dbconfigprotect']
-        mask = etpConst['dbconfigprotectmask']
         sys_root = etpConst['systemroot']
-        col_protect = self.Entropy.SystemSettings['client']['collisionprotect']
+        # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
+        sys_settings = self.Entropy.SystemSettings
+        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        protect = sys_settings[client_plugin_id]['client_repo']['config_protect']
+        mask = sys_settings[client_plugin_id]['client_repo']['config_protect_mask']
+        col_protect = sys_settings['client']['collisionprotect']
 
         # remove files from system
         directories = set()

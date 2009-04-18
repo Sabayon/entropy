@@ -437,25 +437,6 @@ class RepositoryMixin:
         # make sure settings are in sync
         self.SystemSettings.clear()
 
-    def __client_repo_setup_const(self, conn):
-        if conn.doesTableExist('configprotect') and conn.doesTableExist('configprotectreference'):
-            etpConst['dbconfigprotect'] = conn.listConfigProtectDirectories()
-        if conn.doesTableExist('configprotectmask') and conn.doesTableExist('configprotectreference'):
-            etpConst['dbconfigprotectmask'] = conn.listConfigProtectDirectories(mask = True)
-
-        etpConst['dbconfigprotect'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
-        etpConst['dbconfigprotectmask'] = [etpConst['systemroot']+x for x in etpConst['dbconfigprotect']]
-
-        conf_protect = self.SystemSettings['client']['configprotect']
-        conf_protect_mask = self.SystemSettings['client']['configprotectmask']
-
-        etpConst['dbconfigprotect'] += [etpConst['systemroot']+x for \
-            x in conf_protect if etpConst['systemroot']+x not \
-                in etpConst['dbconfigprotect']]
-        etpConst['dbconfigprotectmask'] += [etpConst['systemroot']+x for \
-            x in conf_protect_mask if etpConst['systemroot']+x not \
-                in etpConst['dbconfigprotectmask']]
-
     def open_client_repository(self):
 
         def load_db_from_ram():
@@ -495,9 +476,6 @@ class RepositoryMixin:
                         pass
                     self.entropyTools.print_traceback(f = self.clientLog)
                     conn = load_db_from_ram()
-
-        if not etpConst['dbconfigprotect']:
-            self.__client_repo_setup_const(conn)
 
         self.clientDbconn = conn
         return self.clientDbconn
