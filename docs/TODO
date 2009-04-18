@@ -4,10 +4,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.90+:
 
-    - etpConst['dbconfigprotect'] to SystemSettings
-    - etpConst['dbconfigprotectmask'] to SystemSettings
     - Unit Test module
-
     - Documentation + Pylint (NLnet Milestone 7)
     - use expiration as a base to have and handle multiple packages in repo?
     - Server-side: ability to exclude EAPIs when uploading?
