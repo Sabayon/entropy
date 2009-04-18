@@ -1365,7 +1365,8 @@ class LocalRepository:
                                 etpData['injected']
         )
         self.insertOnDiskSize(idpackage, etpData['disksize'])
-        self.insertTrigger(idpackage, etpData['trigger'])
+        if etpData['trigger']:
+            self.insertTrigger(idpackage, etpData['trigger'])
         self.insertConflicts(idpackage, etpData['conflicts'])
         self.insertProvide(idpackage, etpData['provide'])
         self.insertMessages(idpackage, etpData['messages'])
@@ -2225,7 +2226,8 @@ class LocalRepository:
         }
         return data
 
-    def getPackageData(self, idpackage, get_content = True, content_insert_formatted = False, trigger_unicode = False):
+    def getPackageData(self, idpackage, get_content = True,
+            content_insert_formatted = False, trigger_unicode = True):
         data = {}
 
         try:
@@ -2468,13 +2470,11 @@ class LocalRepository:
     def retrieveTrigger(self, idpackage, get_unicode = False):
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
-        if trigger:
-            trigger = trigger[0]
-        else:
-            trigger = ''
-        if get_unicode:
-            trigger = unicode(trigger, 'raw_unicode_escape')
-        return trigger
+        if not trigger:
+            return None
+        if not get_unicode:
+            return trigger[0]
+        return unicode(trigger[0], 'raw_unicode_escape')
 
     def retrieveDownloadURL(self, idpackage):
         self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))

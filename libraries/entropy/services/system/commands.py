@@ -1032,7 +1032,7 @@ class Repository(SocketCommands):
         repoid = myargs[1]
 
         dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-        package_data = dbconn.getPackageData(idpackage, trigger_unicode = True)
+        package_data = dbconn.getPackageData(idpackage)
         dbconn.closeDB()
         return True,package_data
 
