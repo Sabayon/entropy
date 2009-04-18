@@ -530,6 +530,10 @@ def const_default_settings(rootdir):
             },
         },
 
+        'system_settings_plugins_ids': {
+            'client_plugin': "client_plugin",
+        },
+
         'clientserverrepoid': "__system__",
         'clientdbid': "client",
         'serverdbid': "etpdb:",
