@@ -507,7 +507,8 @@ try:
         rc = text_ui.package(options)
         if options[0] not in ("hop",):
             load_conf_cache()
-        text_ui.Equo.destroy()
+        else:
+            text_ui.Equo.destroy()
 
     elif options[0] == "security":
         import text_security
