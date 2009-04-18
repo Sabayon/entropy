@@ -300,6 +300,13 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
     return 0,0
 
 def branchHop(branch):
+
+    # check if I am root
+    if (not Equo.entropyTools.is_root()):
+        mytxt = "%s." % (darkred(_("Cannot switch branch as user")),)
+        print_error(mytxt)
+        return 1, -1
+
     # set the new branch
     if branch == Equo.SystemSettings['repositories']['branch']:
         mytxt = "%s %s: %s" % (bold(" !!! "),
