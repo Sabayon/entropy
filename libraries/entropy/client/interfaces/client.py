@@ -139,7 +139,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
-    def misc_parser(self):
+    def misc_parser(self, sys_settings_instance):
 
         """
         Parses Entropy client system configuration file.
