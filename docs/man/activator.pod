@@ -28,6 +28,9 @@ B<activator> --version
 
 B<ETP_REPO>=valid repository id: on-the-fly switch default Entropy repository.
 
+B<ETP_EXPIRATION_DAYS>=valid number: on-the-fly removed packages expiration days
+setting.
+
 =head1 BUGS
 
 Please report bugs to http://bugs.sabayonlinux.org.
