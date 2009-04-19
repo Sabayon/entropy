@@ -337,7 +337,7 @@ class rssFeed:
         self.__feed_description = description
         self.__feed_language = "en-EN"
         self.__srv_settings_plugin_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
+            etpConst['system_settings_plugins_ids']['server_plugin']
         self.__feed_editor = self.__system_settings[self.__srv_settings_plugin_id]['server']['rss']['editor']
         self.__feed_copyright = "%s - (C) %s" % (
             self.__system_settings['system']['name'],
