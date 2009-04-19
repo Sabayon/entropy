@@ -73,7 +73,6 @@ class Server(Singleton,TextInterface):
         self.rssFeed = rssFeed
         self.serverDbCache = {}
         self.repository_treeupdate_digests = {}
-        self.package_match_validator_cache = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
         self.rssMessages = {
