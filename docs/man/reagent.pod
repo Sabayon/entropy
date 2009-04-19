@@ -1,0 +1,50 @@
+=head1 NAME
+
+B<reagent> - Official Sabayon Linux Server-Side Package Management tool
+
+=head1 SYNOPSIS
+
+B<reagent> [action] [basic_options] [options] [atom | package_file | @set] ...
+
+B<reagent> [action] [basic_options] [options] ...
+
+B<reagent> --help
+
+B<reagent> --version
+
+=head1 DESCRIPTION
+
+ empty
+
+=head1 BASIC_OPTIONS
+
+ empty
+
+=head1 OPTIONS
+
+ empty
+
+=head1 ENVIRONMENT
+
+-B<ETP_REPO>=valid repository id: on-the-fly switch default Entropy repository.
+
+=head1 BUGS
+
+Please report bugs to http://bugs.sabayonlinux.org.
+
+=head1 EXAMPLES
+
+ empty
+
+=head1 EXIT STATUS
+
+B<reagent> returns a zero exit status if the called command succeeded. Non zero
+is returned in case of failure.
+
+=head1 AUTHOR
+
+Fabio Erculiani <lxnay@sabayon.org>
+
+=head1 SEE ALSO
+
+activator(1), equo(1)

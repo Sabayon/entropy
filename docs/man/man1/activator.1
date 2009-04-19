@@ -128,36 +128,24 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "EQUO 1"
-.TH EQUO 1 "2009-04-19" "perl v5.8.8" "Entropy"
+.IX Title "ACTIVATOR 1"
+.TH ACTIVATOR 1 "2009-04-19" "perl v5.8.8" "Entropy"
 .SH "NAME"
-\&\fBequo\fR \- Official Sabayon Linux Package Manager Client
+\&\fBactivator\fR \- Official Sabayon Linux Server\-Side Repositories Management tool.
 .SH "SYNOPSIS"
 .IX Header "SYNOPSIS"
-\&\fBequo\fR [action] [basic_options] [options] [atom | package_file | \f(CW@set\fR] ...
+\&\fBactivator\fR [action] [basic_options] [options] [atom | package_file | \f(CW@set\fR] ...
 .PP
-\&\fBequo\fR [action] [basic_options] [options] ...
+\&\fBactivator\fR [action] [basic_options] [options] ...
 .PP
-\&\fBequo\fR \-\-info
+\&\fBactivator\fR \-\-help
 .PP
-\&\fBequo\fR \-\-help
-.PP
-\&\fBequo\fR \-\-version
+\&\fBactivator\fR \-\-version
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-\&\fBequo\fR is the definitive (rofl)... scratch it.
-\&\fBequo\fR is the official command-line interface to the Entropy framework. Primarily
-used to ease packages management on Gentoo\-based, Entropy-enabled distributions.
-.PP
-With \fBequo\fR you can easily install and remove any application inside available and
-enabled repositories: it's a binary package manager which brings the best from
-apt, yum and rpm, keeping 100% backward Portage (see 'man emerge') compatibility.
-Being Entropy a framework means that it's not just ended here.
-.PP
-For example, through \fBequo\fR you can build your own software repository (called
-Community Repository), do searches, keep your system secure, download packages'
-source code, sanity check your system, see and be part of the User Generated
-Content produced by other users.
+.Vb 1
+\& empty
+.Ve
 .SH "BASIC_OPTIONS"
 .IX Header "BASIC_OPTIONS"
 .Vb 1
@@ -170,20 +158,10 @@ Content produced by other users.
 .Ve
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
-\&\fB\s-1ETP_NOCACHE\s0\fR: if set, all the Entropy framework will never use its internal
-on-disk cache.
-.PP
-\&\fB\s-1FORCE_EAPI\s0\fR=N: if set to 1, 2 or 3 and used with '\fBequo\fR update', Entropy
-repository synchronized will be force to use the provided \s-1EAPI\s0 to update
-repositories.
+\&\fB\s-1ETP_REPO\s0\fR=valid repository id: on-the-fly switch default Entropy repository.
 .SH "BUGS"
 .IX Header "BUGS"
 Please report bugs to http://bugs.sabayonlinux.org.
-\&\fBequo\fR has a nice bug-reporting feature: whenever a valid exception occurs, it
-asks the user to automatically submit the issue. \fB\s-1WARNING\s0\fR: to do efficient bug
-squashing, some hardware specs are going to be collected, ask wrote before
-submitting any data. No personal data is going to be uploaded and your report
-will be kept private.
 .SH "EXAMPLES"
 .IX Header "EXAMPLES"
 .Vb 1
@@ -191,11 +169,11 @@ will be kept private.
 .Ve
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
-\&\fBequo\fR returns a zero exit status if the called command succeeded. Non zero is
-returned in case of failure.
+\&\fBactivator\fR returns a zero exit status if the called command succeeded. Non zero
+is returned in case of failure.
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 Fabio Erculiani <lxnay@sabayon.org>
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
-\&\fIreagent\fR\|(1), \fIactivator\fR\|(1)
+\&\fIreagent\fR\|(1), \fIequo\fR\|(1)

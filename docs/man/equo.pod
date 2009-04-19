@@ -40,11 +40,11 @@ Content produced by other users.
 
 =head1 ENVIRONMENT
 
--B<ETP_NOCACHE>: if set, all the Entropy framework will never use its internal
+B<ETP_NOCACHE>: if set, all the Entropy framework will never use its internal
 on-disk cache.
 
 
--B<FORCE_EAPI>=N: if set to 1, 2 or 3 and used with 'B<equo> update', Entropy
+B<FORCE_EAPI>=N: if set to 1, 2 or 3 and used with 'B<equo> update', Entropy
 repository synchronized will be force to use the provided EAPI to update
 repositories.
 
@@ -73,4 +73,4 @@ Fabio Erculiani <lxnay@sabayon.org>
 
 =head1 SEE ALSO
 
-reagent(1), activator(1), entropy(1)
+reagent(1), activator(1)
