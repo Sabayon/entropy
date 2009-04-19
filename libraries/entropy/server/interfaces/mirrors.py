@@ -1330,6 +1330,9 @@ class Server:
                     )
                 )
 
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            database_path = self.Entropy.get_local_database_file(repo)
+
             if disabled_eapis:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|%s] %s: %s" % (
@@ -1344,8 +1347,6 @@ class Server:
                     header = darkgreen(" * ")
                 )
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-            database_path = self.Entropy.get_local_database_file(repo)
             # create/update timestamp file
             self.update_repository_timestamp(repo)
 
