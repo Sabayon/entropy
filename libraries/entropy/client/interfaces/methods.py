@@ -41,7 +41,8 @@ class RepositoryMixin:
     def validate_repositories(self):
         self.MirrorStatus.clear()
         self.__repo_error_messages_cache.clear()
-        self.SystemSettings['package_masking']['cache'].clear()
+        cl_id = self.sys_settings_client_plugin_id
+        self.SystemSettings[cl_id]['masking_validation']['cache'].clear()
         # valid repositories
         del self.validRepositories[:]
         for repoid in self.SystemSettings['repositories']['order']:
@@ -1572,7 +1573,8 @@ class MatchMixin:
         self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],match[1],))
         self.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],etpConst['dbnamerepoprefix'],match[1],))
 
-        self.SystemSettings['package_masking']['cache'].clear()
+        cl_id = self.sys_settings_client_plugin_id
+        self.SystemSettings[cl_id]['masking_validation']['cache'].clear()
         return done
 
     def unmask_match_by_atom(self, match, dry_run = False):
