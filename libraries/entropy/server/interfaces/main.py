@@ -75,6 +75,7 @@ class Server(Singleton,TextInterface):
         self.repository_treeupdate_digests = {}
         self.settings_to_backup = []
         self.do_save_repository = save_repository
+        self.__sync_lock_cache = set()
         self.rssMessages = {
             'added': {},
             'removed': {},
@@ -547,8 +548,10 @@ class Server(Singleton,TextInterface):
         if not os.path.isdir(os.path.dirname(local_dbfile)):
             os.makedirs(os.path.dirname(local_dbfile))
 
-        if (not read_only) and (lock_remote):
+        if (not read_only) and (lock_remote) and \
+            (repo not in self.__sync_lock_cache):
             self.do_server_repository_sync_lock(repo, no_upload)
+            self.__sync_lock_cache.add(repo)
 
         conn = self.LocalRepository(
             readOnly = read_only,
