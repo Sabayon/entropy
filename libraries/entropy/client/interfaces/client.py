@@ -107,6 +107,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
         if self._helper.clientDbconn != None:
 
+            # FIXME: workaround because this method is called
+            # before misc_parser
+            misc_data = self.misc_parser(system_settings_instance)
             config_protect = []
             config_protect_mask = []
             conn = self._helper.clientDbconn
@@ -126,8 +129,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
             sys_set_plg_id = \
                 etpConst['system_settings_plugins_ids']['client_plugin']
-            sys_conf_protect = system_settings_instance[sys_set_plg_id]['misc']['configprotect']
-            sys_conf_protect_mask = system_settings_instance[sys_set_plg_id]['misc']['configprotectmask']
+            sys_conf_protect = misc_data['configprotect']
+            sys_conf_protect_mask = misc_data['configprotectmask']
 
             data['config_protect'] = config_protect + [
                 etpConst['systemroot']+x for x in sys_conf_protect if \
