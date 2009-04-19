@@ -529,7 +529,6 @@ class Server(Singleton,TextInterface):
             read_only = True
             no_upload = True
 
-        t_ident = 1 # thread.get_ident() disabled for now
         local_dbfile = self.get_local_database_file(repo, use_branch)
         if do_cache:
             cached = self.serverDbCache.get(
@@ -539,7 +538,6 @@ class Server(Singleton,TextInterface):
                                 no_upload,
                                 just_reading,
                                 repo,
-                                t_ident,
                                 use_branch,
                                 lock_remote,
                             )
@@ -610,7 +608,6 @@ class Server(Singleton,TextInterface):
                 no_upload,
                 just_reading,
                 repo,
-                t_ident,
                 use_branch,
                 lock_remote
             )] = conn
