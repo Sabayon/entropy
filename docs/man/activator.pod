@@ -14,15 +14,15 @@ B<activator> --version
 
 =head1 DESCRIPTION
 
- empty
+ work in progress
 
 =head1 BASIC_OPTIONS
 
- empty
+ work in progress
 
 =head1 OPTIONS
 
- empty
+ work in progress
 
 =head1 ENVIRONMENT
 
@@ -34,7 +34,7 @@ Please report bugs to http://bugs.sabayonlinux.org.
 
 =head1 EXAMPLES
 
- empty
+ work in progress
 
 =head1 EXIT STATUS
 

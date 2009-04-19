@@ -32,11 +32,11 @@ Content produced by other users.
 
 =head1 BASIC_OPTIONS
 
- empty
+ work in progress
 
 =head1 OPTIONS
 
- empty
+ work in progress
 
 =head1 ENVIRONMENT
 
@@ -60,7 +60,7 @@ will be kept private.
 
 =head1 EXAMPLES
 
- empty
+ work in progress
 
 =head1 EXIT STATUS
 
