@@ -3,6 +3,8 @@ import sys
 import unittest
 import os
 from entropy.client.interfaces import Client
+from entropy.const import etpConst
+from entropy.core import SystemSettings
 from entropy.db import LocalRepository
 import _misc
 
@@ -11,8 +13,9 @@ class LocalRepositoryTest(unittest.TestCase):
     def setUp(self):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
-        self.test_db_name = "test_suite"
+        self.test_db_name = "%s_test_suite" % (etpConst['dbnamerepoprefix'],)
         self.test_db = self.__open_test_db()
+        self.SystemSettings = SystemSettings()
 
     def tearDown(self):
         """
@@ -43,12 +46,44 @@ class LocalRepositoryTest(unittest.TestCase):
         # match
         nf_match = (-1, 1)
         f_match = (1, 0)
+        pkg_atom = _misc.get_test_package_atom()
+        pkg_name = _misc.get_test_package_name()
         self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(_misc.get_test_package_name()))
+            self.test_db.atomMatch(pkg_name))
         self.assertEqual(f_match,
-            self.test_db.atomMatch(_misc.get_test_package_atom()))
+            self.test_db.atomMatch(pkg_atom))
 
+        # test package masking
+        f_match_mask = (1, 
+            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+            f_match_mask)
+        self.Client._package_match_validator_cache.clear()
+        self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
+        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+            f_match_mask)
+        self.Client._package_match_validator_cache.clear()
+        self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
+    def test_db_package_sets(self):
+
+        set_name = 'my_test_set'
+        set_deps = ["app-foo/foo","app-pling/plong","media-foo/ajez"]
+        set_name2 = 'my_test_set2'
+        set_deps2 = ["app-foo/foo2","app-pling/plong2","media-foo/ajez2"]
+        pkgsets = {
+            set_name: set(set_deps),
+            set_name2: set(set_deps2),
+        }
+        self.test_db.insertPackageSets(pkgsets)
+        self.assertEqual(self.test_db.retrievePackageSets(), pkgsets)
+        set_search = self.test_db.searchSets(set_name2)
+        self.assertEqual(set([set_name2]),set_search)
+
+
+    # XXX complete
 
 if __name__ == '__main__':
     unittest.main()
