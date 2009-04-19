@@ -52,6 +52,7 @@ equo-install:
 	mkdir -p $(DESTDIR)/etc/portage
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)/usr/bin
+	mkdir -p $(DESTDIR)/usr/share/man/man1
 
 	# copying portage bashrc
 	install -m 644 conf/bashrc.entropy $(DESTDIR)/etc/portage/bashrc.entropy
@@ -62,6 +63,9 @@ equo-install:
 	install -m 755 client/equo.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 
 	ln -sf /$(LIBDIR)/entropy/client/equo.py $(DESTDIR)/usr/bin/equo
+
+	# copy man page
+	install -m 644 ../docs/man/man1/equo.1 $(DESTDIR)/usr/share/man/man1/
 
 
 notification-applet-install:
