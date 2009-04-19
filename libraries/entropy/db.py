@@ -1387,11 +1387,12 @@ class LocalRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
-            not self.clientDatabase:
+        if self.SystemSettings.has_key(self.srv_sys_settings_plugin):
+            if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
+                not self.clientDatabase:
 
-            self._write_rss_for_added_package(pkgatom, revision,
-                etpData['description'], etpData['homepage'])
+                self._write_rss_for_added_package(pkgatom, revision,
+                    etpData['description'], etpData['homepage'])
 
         # Update category description
         if not self.clientDatabase:
@@ -1472,11 +1473,12 @@ class LocalRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
-            (not self.clientDatabase) and do_rss:
+        if self.SystemSettings.has_key(self.srv_sys_settings_plugin):
+            if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
+                (not self.clientDatabase) and do_rss:
 
-            # store addPackage action
-            self._write_rss_for_removed_package(idpackage)
+                # store addPackage action
+                self._write_rss_for_removed_package(idpackage)
 
         with self.WriteLock:
 
