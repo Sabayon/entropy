@@ -78,7 +78,7 @@ def query(myopts):
     elif cmd == "eclass":
         text_query.search_eclass(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "list":
-        text_query.search_installed_packages(dbconn = dbconn, Equo = Entropy)
+        text_query.search_installed_packages(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "changelog":
         text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
 
