@@ -887,6 +887,8 @@ class Base:
             try:
 
                 repo_data = {}
+                sys_settings_srv_plugin_id = \
+                    etpConst['system_settings_plugins_ids']['server_plugin']
                 for repoid in repository_data:
 
                     # avoid __default__
@@ -927,7 +929,7 @@ class Base:
 
                     if (not mirrors_errors) and repository_data[repoid]['db']:
 
-                        if mirrors_tainted and Entropy.SystemSettings['server']['rss']['enabled']:
+                        if mirrors_tainted and Entropy.SystemSettings[sys_settings_srv_plugin_id]['server']['rss']['enabled']:
                             commit_msg = repository_data[repoid]['commit_msg']
                             if not commit_msg: commit_msg = "Autodriven update"
                             Entropy.rssMessages['commitmessage'] = commit_msg

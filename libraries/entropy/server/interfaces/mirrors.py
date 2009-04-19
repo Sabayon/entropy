@@ -49,6 +49,8 @@ class Server:
         self.Cacher = EntropyCacher()
         self.FtpInterface = self.Entropy.FtpInterface
         self.rssFeed = self.Entropy.rssFeed
+        self.sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
         self.SystemSettings = self.Entropy.SystemSettings
 
         mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
@@ -569,7 +571,7 @@ class Server:
                 )
                 ftp.close()
                 continue
-            db_format = self.Entropy.SystemSettings['server']['database_file_format']
+            db_format = self.SystemSettings[self.sys_settings_plugin_id]['server']['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod == None:
                 raise InvalidDataType("InvalidDataType: %s." % (
@@ -773,11 +775,10 @@ class Server:
 
     def update_notice_board(self, title, notice_text, link = None, repo = None):
 
-        sys_settings = self.Entropy.SystemSettings
-        rss_title = "%s Notice Board" % (sys_settings['system']['name'],)
+        rss_title = "%s Notice Board" % (self.SystemSettings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        if not link: link = sys_settings['server']['rss']['website_url']
+        if not link: link = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['website_url']
 
         self.download_notice_board(repo)
         Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = 20)
@@ -797,9 +798,8 @@ class Server:
 
     def remove_from_notice_board(self, identifier, repo = None):
 
-        sys_settings = self.Entropy.SystemSettings
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        rss_title = "%s Notice Board" % (sys_settings['system']['name'],)
+        rss_title = "%s Notice Board" % (self.SystemSettings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         if not (os.path.isfile(rss_path) and os.access(rss_path,os.R_OK)):
             return 0
@@ -810,8 +810,7 @@ class Server:
 
     def update_rss_feed(self, repo = None):
 
-        sys_settings = self.Entropy.SystemSettings
-        product = sys_settings['repositories']['product']
+        product = self.SystemSettings['repositories']['product']
         #db_dir = self.Entropy.get_local_database_dir(repo)
         rss_path = self.Entropy.get_local_database_rss_file(repo)
         rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
@@ -819,10 +818,10 @@ class Server:
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
         rss_title = "%s Online Repository Status" % (
-            sys_settings['system']['name'],)
+            self.SystemSettings['system']['name'],)
         rss_description = "Keep you updated on what's going on in the %s Repository." % (
-            sys_settings['system']['name'],)
-        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = sys_settings['server']['rss']['max_entries'])
+            self.SystemSettings['system']['name'],)
+        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['max_entries'])
         # load dump
         db_actions = self.Cacher.pop(rss_dump_name)
         if db_actions:
@@ -836,12 +835,12 @@ class Server:
             if self.Entropy.rssMessages['commitmessage']:
                 commitmessage = ' :: '+self.Entropy.rssMessages['commitmessage']
 
-            title = ": " + sys_settings['system']['name'] + " " + \
+            title = ": " + self.SystemSettings['system']['name'] + " " + \
                 product[0].upper() + product[1:] + \
                 " " + self.SystemSettings['repositories']['branch'] + " :: Revision: " + revision + \
                 commitmessage
 
-            link = sys_settings['server']['rss']['base_url']
+            link = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['base_url']
             # create description
             added_items = db_actions.get("added")
             if added_items:
@@ -856,7 +855,7 @@ class Server:
                     Rss.addItem(title = "Removed"+title, link = link, description = description)
             light_items = db_actions.get('light')
             if light_items:
-                rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = sys_settings['server']['rss']['light_max_entries'])
+                rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['light_max_entries'])
                 for atom in light_items:
                     mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+product
                     description = light_items[atom]['description']
@@ -1254,7 +1253,7 @@ class Server:
             repo = self.Entropy.default_repository
         dbconn = self.Entropy.open_server_repository(read_only = False, no_upload = True, repo = repo)
         # grab treeupdates from other databases and inject
-        server_repos = self.Entropy.SystemSettings['server']['repositories'].keys()
+        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         all_actions = set()
         for myrepo in server_repos:
 
@@ -1305,7 +1304,7 @@ class Server:
         myt = type(bz2)
         del myt
 
-        if self.Entropy.SystemSettings['server']['rss']['enabled']:
+        if self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['enabled']:
             self.update_rss_feed(repo = repo)
 
         upload_errors = False
@@ -1314,7 +1313,7 @@ class Server:
 
         for uri in uris:
 
-            db_format = self.Entropy.SystemSettings['server']['database_file_format']
+            db_format = self.SystemSettings[self.sys_settings_plugin_id]['server']['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod == None:
                 raise InvalidDataType("InvalidDataType: %s." % (
@@ -1463,7 +1462,7 @@ class Server:
 
         for uri in uris:
 
-            db_format = self.Entropy.SystemSettings['server']['database_file_format']
+            db_format = self.SystemSettings[self.sys_settings_plugin_id]['server']['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod == None:
                 raise InvalidDataType("InvalidDataType: %s." % (
@@ -2570,7 +2569,7 @@ class Server:
         if not os.path.isfile(pkg_path):
             return False
         mtime = self.entropyTools.get_file_unix_mtime(pkg_path)
-        days = self.Entropy.SystemSettings['server']['packages_expiration_days']
+        days = self.SystemSettings[self.sys_settings_plugin_id]['server']['packages_expiration_days']
         delta = int(days)*24*3600
         currmtime = time.time()
         file_delta = currmtime - mtime
@@ -2622,7 +2621,7 @@ class Server:
 
         branch_data['errors'] = False
 
-        if self.SystemSettings['repositories']['branch'] != self.Entropy.SystemSettings['server']['branches'][-1]:
+        if self.SystemSettings['repositories']['branch'] != self.SystemSettings[self.sys_settings_plugin_id]['server']['branches'][-1]:
             self.Entropy.updateProgress(
                 "[branch:%s] %s" % (
                     brown(self.SystemSettings['repositories']['branch']),

@@ -266,8 +266,11 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             hasattr(self,'sys_settings_client_plugin_id'):
 
             if hasattr(self.SystemSettings,'remove_plugin'):
-                self.SystemSettings.remove_plugin(
-                    self.sys_settings_client_plugin_id)
+                try:
+                    self.SystemSettings.remove_plugin(
+                        self.sys_settings_client_plugin_id)
+                except KeyError:
+                    pass
 
         self.close_all_repositories(mask_clear = False)
         self.closeAllSecurity()

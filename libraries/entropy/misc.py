@@ -336,7 +336,9 @@ class rssFeed:
         self.__feed_title = self.__feed_title.strip()
         self.__feed_description = description
         self.__feed_language = "en-EN"
-        self.__feed_editor = self.__system_settings['server']['rss']['editor']
+        self.__srv_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        self.__feed_editor = self.__system_settings[self.__srv_settings_plugin_id]['server']['rss']['editor']
         self.__feed_copyright = "%s - (C) %s" % (
             self.__system_settings['system']['name'],
             self.entropyTools.get_year(),
@@ -363,7 +365,7 @@ class rssFeed:
             self.__language = self.__feed_language
             self.__cright = self.__feed_copyright
             self.__editor = self.__feed_editor
-            self.__link = self.__system_settings['server']['rss']['website_url']
+            self.__link = self.__system_settings[self.__srv_settings_plugin_id]['server']['rss']['website_url']
             rss_f = open(self.__file, "w")
             rss_f.write('')
             rss_f.flush()

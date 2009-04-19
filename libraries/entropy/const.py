@@ -532,6 +532,7 @@ def const_default_settings(rootdir):
 
         'system_settings_plugins_ids': {
             'client_plugin': "client_plugin",
+            'server_plugin': "server_plugin",
         },
 
         'clientserverrepoid': "__system__",

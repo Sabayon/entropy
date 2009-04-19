@@ -26,12 +26,194 @@ import shutil
 from entropy.core import Singleton
 from entropy.exceptions import *
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs
+    const_create_working_dirs, const_extract_srv_repo_params
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred, darkblue
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
-from entropy.core import SystemSettings
+from entropy.core import SystemSettings, SystemSettingsPlugin
+
+class ServerSystemSettingsPlugin(SystemSettingsPlugin):
+
+    def server_parser(self, sys_settings_instance):
+
+        """
+        Parses Entropy server system configuration file.
+
+        @return dict data
+        """
+
+        data = {
+            'repositories': etpConst['server_repositories'].copy(),
+            'branches': etpConst['branches'][:],
+            'default_repository_id': etpConst['officialserverrepositoryid'],
+            'packages_expiration_days': etpConst['packagesexpirationdays'],
+            'database_file_format': etpConst['etpdatabasefileformat'],
+            'rss': {
+                'enabled': etpConst['rss-feed'],
+                'name': etpConst['rss-name'],
+                'base_url': etpConst['rss-base-url'],
+                'website_url': etpConst['rss-website-url'],
+                'editor': etpConst['rss-managing-editor'],
+                'max_entries': etpConst['rss-max-entries'],
+                'light_max_entries': etpConst['rss-light-max-entries'],
+            },
+        }
+
+        if not os.access(etpConst['serverconf'], os.R_OK):
+            return data
+
+        with open(etpConst['serverconf'],"r") as server_f:
+            serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
+
+        for line in serverconf:
+
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
+            if line.startswith("branches|") and (split_line_len == 2):
+
+                branches = split_line[1]
+                data['branches'] = []
+                for branch in branches.split():
+                    data['branches'].append(branch)
+                if sys_settings_instance['repositories']['branch'] not in data['branches']:
+                    data['branches'].append(sys_settings_instance['repositories']['branch'])
+                data['branches'] = sorted(data['branches'])
+
+            elif (line.find("officialserverrepositoryid|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                data['default_repository_id'] = split_line[1].strip()
+
+            elif (line.find("expiration-days|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                mydays = split_line[1].strip()
+                try:
+                    mydays = int(mydays)
+                    data['packages_expiration_days'] = mydays
+                except ValueError:
+                    continue
+
+            elif line.startswith("repository|") and (split_line_len in [5, 6]):
+
+                repoid, repodata = const_extract_srv_repo_params(line,
+                    product = sys_settings_instance['repositories']['product'])
+                if repoid in data['repositories']:
+                    # just update mirrors
+                    data['repositories'][repoid]['mirrors'].extend(
+                        repodata['mirrors'])
+                else:
+                    data['repositories'][repoid] = repodata.copy()
+
+            elif line.startswith("database-format|") and (split_line_len == 2):
+
+                fmt = split_line[1]
+                if fmt in etpConst['etpdatabasesupportedcformats']:
+                    data['database_file_format'] = fmt
+
+            elif line.startswith("rss-feed|") and (split_line_len == 2):
+
+                feed = split_line[1]
+                if feed in ("enable", "enabled", "true", "1"):
+                    data['rss']['enabled'] = True
+                elif feed in ("disable", "disabled", "false", "0", "no",):
+                    data['rss']['enabled'] = False
+
+            elif line.startswith("rss-name|") and (split_line_len == 2):
+
+                feedname = line.split("rss-name|")[1].strip()
+                data['rss']['name'] = feedname
+
+            elif line.startswith("rss-base-url|") and (split_line_len == 2):
+
+                data['rss']['base_url'] = line.split("rss-base-url|")[1].strip()
+                if not data['rss']['base_url'][-1] == "/":
+                    data['rss']['base_url'] += "/"
+
+            elif line.startswith("rss-website-url|") and (split_line_len == 2):
+
+                data['rss']['website_url'] = split_line[1].strip()
+
+            elif line.startswith("managing-editor|") and (split_line_len == 2):
+
+                data['rss']['editor'] = split_line[1].strip()
+
+            elif line.startswith("max-rss-entries|") and (split_line_len == 2):
+
+                try:
+                    entries = int(split_line[1].strip())
+                    data['rss']['max_entries'] = entries
+                except (ValueError, IndexError,):
+                    continue
+
+            elif line.startswith("max-rss-light-entries|") and \
+                (split_line_len == 2):
+
+                try:
+                    entries = int(split_line[1].strip())
+                    data['rss']['light_max_entries'] = entries
+                except (ValueError, IndexError,):
+                    continue
+
+        # expand paths
+        for repoid in data['repositories']:
+            data['repositories'][repoid]['packages_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "packages",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['store_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "store",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['upload_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "upload",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['database_dir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                "database",
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['packages_relative_path'] = \
+                os.path.join(   sys_settings_instance['repositories']['product'],
+                                repoid,
+                                "packages",
+                                etpSys['arch']
+                            )+"/"
+            data['repositories'][repoid]['database_relative_path'] = \
+                os.path.join(   sys_settings_instance['repositories']['product'],
+                                repoid,
+                                "database",
+                                etpSys['arch']
+                            )+"/"
+
+        # Support for shell variables
+        shell_repoid = os.getenv('ETP_REPO')
+        if shell_repoid:
+            data['default_repository_id'] = shell_repoid
+
+        expiration_days = os.getenv('ETP_EXPIRATION_DAYS')
+        if expiration_days:
+            try:
+                expiration_days = int(expiration_days)
+                data['packages_expiration_days'] = expiration_days
+            except ValueError:
+                pass
+
+        return data
 
 class Server(Singleton,TextInterface):
 
@@ -50,11 +232,18 @@ class Server(Singleton,TextInterface):
             header = "[server]"
         )
 
+        # create our SystemSettings plugin
+        self.sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        self.sys_settings_plugin = ServerSystemSettingsPlugin(
+            self.sys_settings_plugin_id, None)
+        self.SystemSettings.add_plugin(self.sys_settings_plugin)
+
         self.default_repository = default_repository
         if self.default_repository == None:
-            self.default_repository = self.SystemSettings['server']['default_repository_id']
+            self.default_repository = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
 
-        if self.default_repository in self.SystemSettings['server']['repositories']:
+        if self.default_repository in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
             self.ensure_paths(self.default_repository)
         self.migrate_repository_databases_to_new_branched_path()
         self.community_repo = community_repo
@@ -84,13 +273,13 @@ class Server(Singleton,TextInterface):
         }
 
 
-        if self.default_repository not in self.SystemSettings['server']['repositories']:
+        if self.default_repository not in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         self.default_repository,
                         _("repository not configured"),
                     )
             )
-        if etpConst['clientserverrepoid'] in self.SystemSettings['server']['repositories']:
+        if etpConst['clientserverrepoid'] in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         etpConst['clientserverrepoid'],
                         _("protected repository id, can't use this, sorry dude..."),
@@ -107,6 +296,12 @@ class Server(Singleton,TextInterface):
             self.serverLog.close()
         if hasattr(self,'ClientService'):
             self.ClientService.destroy()
+        if hasattr(self,'sys_settings_server_plugin'):
+            try:
+                self.SystemSettings.remove_plugin(
+                    self.sys_settings_plugin_id)
+            except KeyError:
+                pass
         self.close_server_databases()
 
     def is_destroyed(self):
@@ -127,10 +322,10 @@ class Server(Singleton,TextInterface):
     # FIXME: this will be removed in future, creation date: 2008-10-08
     def migrate_repository_databases_to_new_branched_path(self):
         migrated_filename = '.branch_migrated'
-        for repoid in self.SystemSettings['server']['repositories'].keys():
+        for repoid in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys():
 
             if repoid == etpConst['clientserverrepoid']: continue
-            mydir = self.SystemSettings['server']['repositories'][repoid]['database_dir']
+            mydir = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repoid]['database_dir']
             if not os.path.isdir(mydir): # empty ?
                 continue
 
@@ -173,12 +368,12 @@ class Server(Singleton,TextInterface):
             f.close()
 
     def add_client_database_to_repositories(self):
-        self.SystemSettings['server']['repositories'][etpConst['clientserverrepoid']] = {}
+        self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][etpConst['clientserverrepoid']] = {}
         mydata = {}
         mydata['description'] = "Community Repositories System Database"
         mydata['mirrors'] = []
         mydata['community'] = False
-        self.SystemSettings['server']['repositories'][etpConst['clientserverrepoid']].update(mydata)
+        self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][etpConst['clientserverrepoid']].update(mydata)
 
     def setup_services(self):
         self.setup_entropy_settings()
@@ -205,11 +400,11 @@ class Server(Singleton,TextInterface):
         self.MirrorsService = MirrorsServer(self)
 
     def setup_entropy_settings(self, repo = None):
-        curr_repoid = self.SystemSettings['server']['default_repository_id']
+        curr_repoid = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
-            {'server': self.SystemSettings['server'].copy()},
+            {'server': self.SystemSettings[self.sys_settings_plugin_id]['server'].copy()},
         ]
         for setting in backup_list:
             if setting not in self.settings_to_backup:
@@ -240,7 +435,7 @@ class Server(Singleton,TextInterface):
             instance.closeDB()
 
     def get_available_repositories(self):
-        return self.SystemSettings['server']['repositories'].copy()
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].copy()
 
     def switch_default_repository(self, repoid, save = None, handle_uninitialized = True):
 
@@ -250,14 +445,14 @@ class Server(Singleton,TextInterface):
 
         if save == None:
             save = self.do_save_repository
-        if repoid not in self.SystemSettings['server']['repositories']:
+        if repoid not in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         repoid,
                         _("repository not configured"),
                     )
             )
         self.close_server_databases()
-        self.SystemSettings['server']['default_repository_id'] = repoid
+        self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id'] = repoid
         self.default_repository = repoid
         self.setup_services()
         if save:
@@ -270,8 +465,8 @@ class Server(Singleton,TextInterface):
 
     def setup_community_repositories_settings(self):
         if self.community_repo:
-            for repoid in self.SystemSettings['server']['repositories']:
-                self.SystemSettings['server']['repositories'][repoid]['community'] = True
+            for repoid in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
+                self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repoid]['community'] = True
 
 
     def handle_uninitialized_repository(self, repoid):
@@ -327,7 +522,7 @@ class Server(Singleton,TextInterface):
             type = "info",
             header = red(" @@ ")
         )
-        repos = self.SystemSettings['server']['repositories'].keys()
+        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         mytxt = blue("%s:") % (_("Currently configured repositories"),) # ...: <list>
         self.updateProgress(
                 mytxt,
@@ -626,7 +821,7 @@ class Server(Singleton,TextInterface):
 
     def deps_tester(self, default_repo = None):
 
-        server_repos = self.SystemSettings['server']['repositories'].keys()
+        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         installed_packages = set()
         # if a default repository is passed, we will just test against it
         if default_repo:
@@ -678,7 +873,7 @@ class Server(Singleton,TextInterface):
             header = red(" @@ ")
         )
 
-        server_repos = self.SystemSettings['server']['repositories'].keys()
+        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         deps_not_matched = self.deps_tester(repo)
 
         if deps_not_matched:
@@ -1178,7 +1373,7 @@ class Server(Singleton,TextInterface):
 
         # set trashed counters
         trashing_counters = set()
-        myserver_repos = self.SystemSettings['server']['repositories'].keys()
+        myserver_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         for myrepo in myserver_repos:
             mydbconn = self.open_server_repository(read_only = True, no_upload = True, repo = myrepo)
             mylist = mydbconn.retrieve_packages_to_remove(
@@ -1481,17 +1676,17 @@ class Server(Singleton,TextInterface):
     def get_remote_mirrors(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings['server']['repositories'][repo]['mirrors'][:]
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['mirrors'][:]
 
     def get_remote_packages_relative_path(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings['server']['repositories'][repo]['packages_relative_path']
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['packages_relative_path']
 
     def get_remote_database_relative_path(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings['server']['repositories'][repo]['database_relative_path']
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['database_relative_path']
 
     def get_local_database_file(self, repo = None, branch = None):
         if repo == None:
@@ -1501,17 +1696,17 @@ class Server(Singleton,TextInterface):
     def get_local_store_directory(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings['server']['repositories'][repo]['store_dir']
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['store_dir']
 
     def get_local_upload_directory(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings['server']['repositories'][repo]['upload_dir']
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['upload_dir']
 
     def get_local_packages_directory(self, repo = None):
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings['server']['repositories'][repo]['packages_dir']
+        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['packages_dir']
 
     def get_local_database_taint_file(self, repo = None, branch = None):
         if repo == None:
@@ -1561,7 +1756,7 @@ class Server(Singleton,TextInterface):
     def get_local_database_rss_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),self.SystemSettings['server']['rss']['name'])
+        return os.path.join(self.get_local_database_dir(repo, branch),self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['name'])
 
     def get_local_database_rsslight_file(self, repo = None, branch = None):
         if repo == None:
@@ -1598,14 +1793,14 @@ class Server(Singleton,TextInterface):
             repo = self.default_repository
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        return os.path.join(self.SystemSettings['server']['repositories'][repo]['database_dir'],branch)
+        return os.path.join(self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['database_dir'],branch)
 
     def get_missing_dependencies_blacklist_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        return os.path.join(self.SystemSettings['server']['repositories'][repo]['database_dir'],branch,etpConst['etpdatabasemissingdepsblfile'])
+        return os.path.join(self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['database_dir'],branch,etpConst['etpdatabasemissingdepsblfile'])
 
     def get_missing_dependencies_blacklist(self, repo = None, branch = None):
         if repo == None:
@@ -1687,25 +1882,25 @@ class Server(Singleton,TextInterface):
         return "%s" % (datetime.fromtimestamp(time.time()),)
 
     def package_set_list(self, *args, **kwargs):
-        repos = self.SystemSettings['server']['repositories'].keys()
+        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.package_set_list(*args,**kwargs)
 
     def package_set_search(self, *args, **kwargs):
-        repos = self.SystemSettings['server']['repositories'].keys()
+        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.package_set_search(*args,**kwargs)
 
     def package_set_match(self, *args, **kwargs):
-        repos = self.SystemSettings['server']['repositories'].keys()
+        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.package_set_match(*args,**kwargs)
 
     def atom_match(self, *args, **kwargs):
-        repos = self.SystemSettings['server']['repositories'].keys()
+        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.atom_match(*args,**kwargs)
@@ -1718,7 +1913,7 @@ class Server(Singleton,TextInterface):
         toBeRemoved = set()
         toBeInjected = set()
 
-        server_repos = self.SystemSettings['server']['repositories'].keys()
+        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
 
         # packages to be added
         for spm_atom,spm_counter in installed_packages:
@@ -1802,7 +1997,7 @@ class Server(Singleton,TextInterface):
         return toBeAdded, toBeRemoved, toBeInjected
 
     def is_counter_trashed(self, counter):
-        server_repos = self.SystemSettings['server']['repositories'].keys()
+        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
         for repo in server_repos:
             dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
             if dbconn.isCounterTrashed(counter):
@@ -2039,9 +2234,9 @@ class Server(Singleton,TextInterface):
     def get_remote_package_checksum(self, repo, filename, branch):
 
         import urllib2
-        if not self.SystemSettings['server']['repositories'][repo].has_key('handler'):
+        if not self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo].has_key('handler'):
             return None
-        url = self.SystemSettings['server']['repositories'][repo]['handler']
+        url = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['handler']
 
         # does the package has "#" (== tag) ? hackish thing that works
         filename = filename.replace("#","%23")

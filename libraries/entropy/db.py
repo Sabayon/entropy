@@ -350,6 +350,8 @@ class LocalRepository:
         skipChecks = False, useBranch = None, lockRemote = True):
 
         self.SystemSettings = SystemSettings()
+        self.srv_sys_settings_plugin = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
         self.dbMatchCacheKey = etpCache['dbMatch']
         self.dbSearchCacheKey = etpCache['dbSearch']
         self.dbname = dbname
@@ -1385,7 +1387,7 @@ class LocalRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if self.SystemSettings['server']['rss']['enabled'] and \
+        if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
             not self.clientDatabase:
 
             self._write_rss_for_added_package(pkgatom, revision,
@@ -1470,7 +1472,7 @@ class LocalRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if self.SystemSettings['server']['rss']['enabled'] and \
+        if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
             (not self.clientDatabase) and do_rss:
 
             # store addPackage action
