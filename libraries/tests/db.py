@@ -14,6 +14,8 @@ class LocalRepositoryTest(unittest.TestCase):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         self.test_db_name = "%s_test_suite" % (etpConst['dbnamerepoprefix'],)
+        self.client_sysset_plugin_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
         self.test_db = self.__open_test_db()
         self.SystemSettings = SystemSettings()
 
@@ -55,16 +57,20 @@ class LocalRepositoryTest(unittest.TestCase):
             self.test_db.atomMatch(pkg_atom))
 
         # test package masking
+        plug_id = self.client_sysset_plugin_id
+        masking_validation = \
+            self.SystemSettings[plug_id]['masking_validation']['cache']
         f_match_mask = (1, 
             self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+
         self.SystemSettings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
-        self.Client._package_match_validator_cache.clear()
+        masking_validation.clear()
         self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
 
         self.SystemSettings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
-        self.Client._package_match_validator_cache.clear()
+        masking_validation.clear()
         self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
 
     def test_db_package_sets(self):

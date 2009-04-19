@@ -354,6 +354,7 @@ class LocalRepository:
         self.dbSearchCacheKey = etpCache['dbSearch']
         self.dbname = dbname
         self.lockRemote = lockRemote
+        self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
         self.db_branch = self.SystemSettings['repositories']['branch']
         if self.dbname == etpConst['clientdbid']:
             self.db_branch = None
@@ -4516,7 +4517,11 @@ class LocalRepository:
         if idpackage in user_package_mask_ids:
             # sorry, masked
             myr = self.SystemSettings['pkg_masking_reference']['user_package_mask']
-            self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
+            try:
+                validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                validator_cache[(idpackage, reponame, live)] = -1, myr
+            except KeyError: # system settings client plugin not found
+                pass
             return -1, myr
 
     def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
@@ -4532,7 +4537,11 @@ class LocalRepository:
             self.SystemSettings[mykw] = user_package_unmask_ids
         if idpackage in user_package_unmask_ids:
             myr = self.SystemSettings['pkg_masking_reference']['user_package_unmask']
-            self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
+            try:
+                validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                validator_cache[(idpackage, reponame, live)] = idpackage, myr
+            except KeyError: # system settings client plugin not found
+                pass
             return idpackage, myr
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
@@ -4552,7 +4561,11 @@ class LocalRepository:
                 repos_mask[mask_repo_id] = repomask_ids
             if idpackage in repomask_ids:
                 myr = self.SystemSettings['pkg_masking_reference']['repository_packages_db_mask']
-                self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
+                try:
+                    validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                    validator_cache[(idpackage, reponame, live)] = -1, myr
+                except KeyError: # system settings client plugin not found
+                    pass
                 return -1, myr
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
@@ -4563,7 +4576,11 @@ class LocalRepository:
             for mylicense in mylicenses:
                 if mylicense not in lic_mask: continue
                 myr = self.SystemSettings['pkg_masking_reference']['user_license_mask']
-                self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
+                try:
+                    validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                    validator_cache[(idpackage, reponame, live)] = -1, myr
+                except KeyError: # system settings client plugin not found
+                    pass
                 return -1, myr
 
     def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
@@ -4576,7 +4593,11 @@ class LocalRepository:
         for key in etpConst['keywords']:
             if key not in mykeywords: continue
             myr = self.SystemSettings['pkg_masking_reference']['system_keyword']
-            self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
+            try:
+                validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                validator_cache[(idpackage, reponame, live)] = idpackage, myr
+            except KeyError: # system settings client plugin not found
+                pass
             return idpackage, myr
 
         # if we get here, it means we didn't find mykeywords in etpConst['keywords']
@@ -4589,7 +4610,11 @@ class LocalRepository:
                 if not keyword_data: continue
                 if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
                     myr = self.SystemSettings['pkg_masking_reference']['user_repo_package_keywords_all']
-                    self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
+                    try:
+                        validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                        validator_cache[(idpackage, reponame, live)] = idpackage, myr
+                    except KeyError: # system settings client plugin not found
+                        pass
                     return idpackage, myr
                 kwd_key = "%s_ids" % (keyword,)
                 keyword_data_ids = self.SystemSettings['keywords']['repositories'][reponame].get(kwd_key)
@@ -4602,7 +4627,11 @@ class LocalRepository:
                     self.SystemSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
                 if idpackage in keyword_data_ids:
                     myr = self.SystemSettings['pkg_masking_reference']['user_repo_package_keywords']
-                    self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
+                    try:
+                        validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                        validator_cache[(idpackage, reponame, live)] = idpackage, myr
+                    except KeyError: # system settings client plugin not found
+                        pass
                     return idpackage, myr
 
         # if we get here, it means we didn't find a match in repositories
@@ -4625,29 +4654,35 @@ class LocalRepository:
             if idpackage in keyword_data_ids:
                 # valid!
                 myr = self.SystemSettings['pkg_masking_reference']['user_package_keywords']
-                self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = idpackage, myr
+                try:
+                    validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+                    validator_cache[(idpackage, reponame, live)] = idpackage, myr
+                except KeyError: # system settings client plugin not found
+                    pass
                 return idpackage, myr
 
 
 
     # function that validate one atom by reading keywords settings
-    # self.ServiceInterface._package_match_validator_cache = {} >> function cache
+    # validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
     def idpackageValidator(self, idpackage, live = True):
 
         if self.dbname == etpConst['clientdbid']:
             return idpackage, 0
         elif self.dbname.startswith(etpConst['serverdbid']):
             return idpackage, 0
-        elif self.ServiceInterface == None:
-            return idpackage, 0
 
         reponame = self.dbname[len(etpConst['dbnamerepoprefix']):]
-        cached = self.ServiceInterface._package_match_validator_cache.get((idpackage, reponame, live))
-        if cached != None:
-            return cached
-        # avoid memleaks
-        if len(self.ServiceInterface._package_match_validator_cache) > 10000:
-            self.ServiceInterface._package_match_validator_cache.clear()
+        try:
+            validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+            cached = validator_cache.get((idpackage, reponame, live))
+            if cached != None:
+                return cached
+            # avoid memleaks
+            if len(validator_cache) > 10000:
+                validator_cache.clear()
+        except KeyError: # plugin does not exist
+            pass
 
         if live:
             data = self._idpackageValidator_live(idpackage, reponame)
@@ -4670,7 +4705,7 @@ class LocalRepository:
 
         # holy crap, can't validate
         myr = self.SystemSettings['pkg_masking_reference']['completely_masked']
-        self.ServiceInterface._package_match_validator_cache[(idpackage, reponame, live)] = -1, myr
+        validator_cache[(idpackage, reponame, live)] = -1, myr
         return -1, myr
 
     # packages filter used by atomMatch, input must me foundIDs, a list like this:

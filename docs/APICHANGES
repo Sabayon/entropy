@@ -110,7 +110,7 @@ From SVN 3112 there have been several API changes:
         securityCache => __security_cache
         QACache => __QA_cache
         memoryDbInstances => _memory_db_instances
-        package_match_validator_cache => _package_match_validator_cache
+        package_match_validator_cache => SystemSettings[etpConst['system_settings_plugins_ids']['client_plugin']]['masking_validation']['cache']
         spmCache => __spm_cache
 
    - ServerInterface (now entropy.server.interfaces.Server) API changes:

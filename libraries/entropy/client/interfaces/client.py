@@ -76,6 +76,12 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         })
         return parser_data
 
+    def masking_validation_parser(self, system_settings_instance):
+        data = {
+            'cache': {}, # package masking validation cache
+        }
+        return data
+
     def repo_setup_parser(self, system_settings_instance):
 
         # this makes sure that repository metadata is initialized
@@ -143,7 +149,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.atomMatchCacheKey = etpCache['atomMatch']
         self.dbapi2 = dbapi2 # export for third parties
         self.FileUpdates = None
-        self._package_match_validator_cache = {}
         self.validRepositories = []
         self.UGC = None
         # supporting external updateProgress stuff, you can point self.progress
