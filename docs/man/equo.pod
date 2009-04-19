@@ -40,7 +40,7 @@ Content produced by other users.
 
 =head1 ENVIRONMENT
 
-B<ETP_NOCACHE>: if set, all the Entropy framework will never use its internal
+B<ETP_NOCACHE>=1: if set, all the Entropy framework will never use its internal
 on-disk cache.
 
 
@@ -48,6 +48,10 @@ B<FORCE_EAPI>=N: if set to 1, 2 or 3 and used with 'B<equo> update', Entropy
 repository synchronized will be force to use the provided EAPI to update
 repositories.
 
+B<ACCEPT_LICENSE>=license_id1:license_id2:...: this is a way to avoid equo
+asking to accept specific licenses.
+
+B<ETP_NO_COLOR>=1: disable entropy coloured output.
 
 =head1 BUGS
 

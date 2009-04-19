@@ -161,21 +161,26 @@ Content produced by other users.
 .SH "BASIC_OPTIONS"
 .IX Header "BASIC_OPTIONS"
 .Vb 1
-\& empty
+\& work in progress
 .Ve
 .SH "OPTIONS"
 .IX Header "OPTIONS"
 .Vb 1
-\& empty
+\& work in progress
 .Ve
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
-\&\fB\s-1ETP_NOCACHE\s0\fR: if set, all the Entropy framework will never use its internal
+\&\fB\s-1ETP_NOCACHE\s0\fR=1: if set, all the Entropy framework will never use its internal
 on-disk cache.
 .PP
 \&\fB\s-1FORCE_EAPI\s0\fR=N: if set to 1, 2 or 3 and used with '\fBequo\fR update', Entropy
 repository synchronized will be force to use the provided \s-1EAPI\s0 to update
 repositories.
+.PP
+\&\fB\s-1ACCEPT_LICENSE\s0\fR=license_id1:license_id2:...: this is a way to avoid equo
+asking to accept specific licenses.
+.PP
+\&\fB\s-1ETP_NO_COLOR\s0\fR=1: disable entropy coloured output.
 .SH "BUGS"
 .IX Header "BUGS"
 Please report bugs to http://bugs.sabayonlinux.org.
@@ -187,7 +192,7 @@ will be kept private.
 .SH "EXAMPLES"
 .IX Header "EXAMPLES"
 .Vb 1
-\& empty
+\& work in progress
 .Ve
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
