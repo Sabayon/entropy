@@ -1,0 +1,8 @@
+Entropy man pages notes:
+
+- to compile the man page use pod2man
+- to learn about .pod files syntax, see 'man perlpod'
+- any help is warmly appreciated (see 'man 1 equo' AUTHOR field contacts)
+- to learn more about man pages:
+  - http://www.linuxfocus.org/English/November2003/article309.shtml
+  - http://www.schweikhardt.net/man_page_howto.html

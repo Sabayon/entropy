@@ -1,0 +1,72 @@
+=head1 NAME
+
+B<equo> - Official Sabayon Linux Package Manager Client
+
+=head1 SYNOPSIS
+
+B<equo> [action] [basic_options] [options] [atom | package_file | @set] ...
+
+B<equo> [action] [basic_options] [options] ...
+
+B<equo> --info
+
+B<equo> --help
+
+B<equo> --version
+
+=head1 DESCRIPTION
+
+B<equo> is the definitive (rofl)... scratch it.
+B<equo> is the official command-line interface to the Entropy framework. Primarily
+used to ease packages management on Gentoo-based, Entropy-enabled distributions.
+
+With B<equo> you can easily install and remove any application inside available and
+enabled repositories: it's a binary package manager which brings the best from
+apt, yum and rpm, keeping 100% backward Portage (see 'man emerge') compatibility.
+Being Entropy a framework means that it's not just ended here.
+
+For example, through B<equo> you can build your own software repository (called
+Community Repository), do searches, keep your system secure, download packages'
+source code, sanity check your system, see and be part of the User Generated
+Content produced by other users.
+
+=head1 BASIC_OPTIONS
+
+
+
+=head1 OPTIONS
+
+
+
+=head1 ENVIRONMENT
+
+
+
+=head1 DIAGNOSTICS
+
+
+
+=head1 BUGS
+
+Please report bugs to http://bugs.sabayonlinux.org.
+B<equo> has a nice bug-reporting feature: whenever a valid exception occurs, it
+asks the user to automatically submit the issue. B<WARNING>: to do efficient bug
+squashing, some hardware specs are going to be collected, ask wrote before
+submitting any data. No personal data is going to be uploaded and your report
+will be kept private.
+
+=head1 EXAMPLES
+
+
+=head1 EXIT STATUS
+
+B<equo> returns a zero exit status if the called command succeeded. Non zero is
+returned in case of failure.
+
+=head1 AUTHOR
+
+Fabio Erculiani <lxnay@sabayon.org>
+
+=head1 SEE ALSO
+
+reagent(1), activator(1), entropy(1)
