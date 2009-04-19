@@ -4639,13 +4639,10 @@ class LocalRepository:
             return idpackage, 0
         elif self.dbname.startswith(etpConst['serverdbid']):
             return idpackage, 0
-
-        if self.ServiceInterface == None:
-            return idpackage, 0
-        elif not hasattr(self.ServiceInterface, 'SystemSettings'):
+        elif self.ServiceInterface == None:
             return idpackage, 0
 
-        reponame = self.dbname[5:]
+        reponame = self.dbname[len(etpConst['dbnamerepoprefix']):]
         cached = self.ServiceInterface._package_match_validator_cache.get((idpackage, reponame, live))
         if cached != None:
             return cached
