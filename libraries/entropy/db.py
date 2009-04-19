@@ -556,10 +556,9 @@ class LocalRepository:
         self.cursor.executescript(my.get_init())
         self.databaseStructureUpdates()
         # set cache size
-        self.setCacheSize(6000)
-        self.setDefaultCacheSize(6000)
+        self.setCacheSize(8192)
+        self.setDefaultCacheSize(8192)
         self.commitChanges()
-        del my
 
     def checkReadOnly(self):
         if self.readOnly:
