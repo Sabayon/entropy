@@ -3,11 +3,11 @@ import sys
 import unittest
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
-from tests import db
+from tests import db, client
 rc = 0
 
 # Add to the list the module to test
-mods = [db]
+mods = [db, client]
 
 tests = []
 for mod in mods:
