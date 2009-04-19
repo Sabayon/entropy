@@ -561,7 +561,8 @@ class RepositoryMixin:
             xcache = False,
             indexing = False,
             OutputInterface = self,
-            skipChecks = True
+            skipChecks = True,
+            ServiceInterface = self
         )
         dbc.initializeDatabase()
         return dbc
