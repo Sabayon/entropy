@@ -32,18 +32,21 @@ Content produced by other users.
 
 =head1 BASIC_OPTIONS
 
-
+ empty
 
 =head1 OPTIONS
 
-
+ empty
 
 =head1 ENVIRONMENT
 
+-B<ETP_NOCACHE>: if set, all the Entropy framework will never use its internal
+on-disk cache.
 
 
-=head1 DIAGNOSTICS
-
+-B<FORCE_EAPI>=N: if set to 1, 2 or 3 and used with 'B<equo> update', Entropy
+repository synchronized will be force to use the provided EAPI to update
+repositories.
 
 
 =head1 BUGS
@@ -57,6 +60,7 @@ will be kept private.
 
 =head1 EXAMPLES
 
+ empty
 
 =head1 EXIT STATUS
 

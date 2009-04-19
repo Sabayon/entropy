@@ -160,12 +160,22 @@ source code, sanity check your system, see and be part of the User Generated
 Content produced by other users.
 .SH "BASIC_OPTIONS"
 .IX Header "BASIC_OPTIONS"
+.Vb 1
+\& empty
+.Ve
 .SH "OPTIONS"
 .IX Header "OPTIONS"
+.Vb 1
+\& empty
+.Ve
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
-.SH "DIAGNOSTICS"
-.IX Header "DIAGNOSTICS"
+\&\-\fB\s-1ETP_NOCACHE\s0\fR: if set, all the Entropy framework will never use its internal
+on-disk cache.
+.PP
+\&\-\fB\s-1FORCE_EAPI\s0\fR=N: if set to 1, 2 or 3 and used with '\fBequo\fR update', Entropy
+repository synchronized will be force to use the provided \s-1EAPI\s0 to update
+repositories.
 .SH "BUGS"
 .IX Header "BUGS"
 Please report bugs to http://bugs.sabayonlinux.org.
@@ -176,6 +186,9 @@ submitting any data. No personal data is going to be uploaded and your report
 will be kept private.
 .SH "EXAMPLES"
 .IX Header "EXAMPLES"
+.Vb 1
+\& empty
+.Ve
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
 \&\fBequo\fR returns a zero exit status if the called command succeeded. Non zero is
