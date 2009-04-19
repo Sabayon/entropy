@@ -39,12 +39,18 @@ entropy-server-install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/server
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)/usr/sbin
+	mkdir -p $(DESTDIR)/usr/share/man/man1
+
 	install -m 644 conf/server.conf.example $(DESTDIR)/etc/entropy/
 
 	install -m 755 server/reagent.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	install -m 755 server/activator.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	ln -sf /$(LIBDIR)/entropy/server/reagent.py $(DESTDIR)/usr/sbin/reagent
 	ln -sf /$(LIBDIR)/entropy/server/activator.py $(DESTDIR)/usr/sbin/activator
+
+	# copy man pages
+	install -m 644 ../docs/man/man1/reagent.1 $(DESTDIR)/usr/share/man/man1/
+	install -m 644 ../docs/man/man1/activator.1 $(DESTDIR)/usr/share/man/man1/
 
 equo-install:
 
