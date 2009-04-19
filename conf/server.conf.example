@@ -3,7 +3,7 @@
 #
 # Branches configuration:
 # branches|<branch> <branch> <branch>
-# 
+#
 #
 # Specify here the currently maintained branches
 #
@@ -17,7 +17,8 @@ branches|3.5
 # expiration-days|<number>
 #
 #
-# Number of days after a binary package will be removed from its belonging repository if not available anymore (old files)
+# Number of days after a binary package will be removed from its belonging
+# repository if not available anymore (old files)
 #
 #   example:
 #   expiration-days|15
@@ -49,8 +50,24 @@ officialserverrepositoryid|sabayonlinux.org
 # bz2 or gz
 database-format|bz2
 
+# Disabled EAPIs (comma separated).
+# By default, all current EAPI implementations are supported (1, 2, 3).
+# This means that when uploading/downloading database files, a lot of
+# redoundant transfers take place. You can decide to disable EAPI1, EAPI2, EAPI3
+# or 2 of them. You cannot disable all of them, in this case this setting will
+# be ignored.
+#
+# WARNING: USE-AT-YOUR-OWN-RISK. I mean, use it with brain_on(): entropy clients
+# tries to fetch repositories starting from the highest EAPI supported and scale
+# down to 2 and 1 if error occurs. So, if you are disabling EAPI3 and 2 and want
+# to keep EAPI1, make sure to remove "unmaintained" files from your remote mirror.
+# A fast way to achieve this is removing the whole remote database dir and re-upload
+# everything (backup first!).
+# disabled-eapis|1,2
+
 # Online RSS support to track changes of the things happened on the database.
-# Here are basic settings, like the ability to enable/disable this feature or set the name of the feed.
+# Here are basic settings, like the ability to enable/disable this feature or
+# set the name of the feed.
 # Feed will be uploaded on the same packages.db.[bz2|gz] directory
 #
 # syntax for rss-feed:

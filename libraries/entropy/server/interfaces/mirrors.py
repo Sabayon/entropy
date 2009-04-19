@@ -897,7 +897,11 @@ class Server:
             pass
         f_out.close()
 
-    def get_files_to_sync(self, cmethod, download = False, repo = None):
+    def get_files_to_sync(self, cmethod, download = False, repo = None,
+        disabled_eapis = None):
+
+        if disabled_eapis == None:
+            disabled_eapis = []
 
         critical = []
         extra_text_files = []
@@ -954,22 +958,25 @@ class Server:
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
-            data['metafiles_path'] = self.Entropy.get_local_database_compressed_metafiles_file(repo)
-            critical.append(data['metafiles_path'])
-            data['dump_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[3]])
-            critical.append(data['dump_path'])
-            data['dump_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[4]])
-            critical.append(data['dump_path_digest'])
-            data['database_path'] = self.Entropy.get_local_database_file(repo)
-            critical.append(data['database_path'])
+            if 3 not in disabled_eapis:
+                data['metafiles_path'] = self.Entropy.get_local_database_compressed_metafiles_file(repo)
+                critical.append(data['metafiles_path'])
+            if 2 not in disabled_eapis:
+                data['dump_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[3]])
+                critical.append(data['dump_path'])
+                data['dump_path_digest'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[4]])
+                critical.append(data['dump_path_digest'])
+                data['database_path'] = self.Entropy.get_local_database_file(repo)
+                critical.append(data['database_path'])
 
         # EAPI 1
-        data['compressed_database_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[2]])
-        critical.append(data['compressed_database_path'])
-        data['compressed_database_path_digest'] = os.path.join(
-            self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasehashfile']
-        )
-        critical.append(data['compressed_database_path_digest'])
+        if 1 not in disabled_eapis:
+            data['compressed_database_path'] = os.path.join(self.Entropy.get_local_database_dir(repo),etpConst[cmethod[2]])
+            critical.append(data['compressed_database_path'])
+            data['compressed_database_path_digest'] = os.path.join(
+                self.Entropy.get_local_database_dir(repo),etpConst['etpdatabasehashfile']
+            )
+            critical.append(data['compressed_database_path_digest'])
 
         # SSL cert file, just for reference
         ssl_ca_cert = self.Entropy.get_local_database_ca_cert_file()
@@ -1311,6 +1318,8 @@ class Server:
         broken_uris = set()
         fine_uris = set()
 
+        disabled_eapis = sorted(self.SystemSettings[self.sys_settings_plugin_id]['server']['disabled_eapis'])
+
         for uri in uris:
 
             db_format = self.SystemSettings[self.sys_settings_plugin_id]['server']['database_file_format']
@@ -1321,13 +1330,27 @@ class Server:
                     )
                 )
 
+            if disabled_eapis:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|%s] %s: %s" % (
+                        blue(repo),
+                        red(crippled_uri),
+                        darkgreen(_("upload")),
+                        darkred(_("disabled EAPI")),
+                        bold(', '.join(disabled_eapis)),
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = darkgreen(" * ")
+                )
+
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             # create/update timestamp file
             self.update_repository_timestamp(repo)
 
             upload_data, critical, text_files = self.get_files_to_sync(cmethod,
-                repo = repo)
+                repo = repo, disabled_eapis = disabled_eapis)
 
             if lock_check:
                 given_up = self.mirror_lock_check(uri, repo = repo)
@@ -1373,20 +1396,23 @@ class Server:
             self.shrink_database_and_close(repo)
 
             # EAPI 3
-            self._create_metafiles_file(upload_data['metafiles_path'], text_files, repo)
-            self._show_eapi3_upload_messages(crippled_uri, database_path, repo)
+            if 3 not in disabled_eapis:
+                self._create_metafiles_file(upload_data['metafiles_path'], text_files, repo)
+                self._show_eapi3_upload_messages(crippled_uri, database_path, repo)
 
             # EAPI 2
-            self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
-            # create compressed dump + checksum
-            self.dump_database_to_file(database_path, upload_data['dump_path'], eval(cmethod[0]), repo = repo)
-            self.create_file_checksum(upload_data['dump_path'], upload_data['dump_path_digest'])
+            if 2 not in disabled_eapis:
+                self._show_eapi2_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
+                # create compressed dump + checksum
+                self.dump_database_to_file(database_path, upload_data['dump_path'], eval(cmethod[0]), repo = repo)
+                self.create_file_checksum(upload_data['dump_path'], upload_data['dump_path_digest'])
 
             # EAPI 1
-            self._show_eapi1_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
-            # compress the database
-            self.compress_file(database_path, upload_data['compressed_database_path'], eval(cmethod[0]))
-            self.create_file_checksum(database_path, upload_data['compressed_database_path_digest'])
+            if 1 not in disabled_eapis:
+                self._show_eapi1_upload_messages(crippled_uri, database_path, upload_data, cmethod, repo)
+                # compress the database
+                self.compress_file(database_path, upload_data['compressed_database_path'], eval(cmethod[0]))
+                self.create_file_checksum(database_path, upload_data['compressed_database_path_digest'])
 
             if not pretend:
                 # upload
@@ -1459,6 +1485,7 @@ class Server:
         download_errors = False
         broken_uris = set()
         fine_uris = set()
+        disabled_eapis = sorted(self.SystemSettings[self.sys_settings_plugin_id]['server']['disabled_eapis'])
 
         for uri in uris:
 
@@ -1473,7 +1500,9 @@ class Server:
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(self.Entropy.get_local_database_file(repo))
-            download_data, critical, text_files = self.get_files_to_sync(cmethod, download = True, repo = repo)
+            download_data, critical, text_files = self.get_files_to_sync(
+                cmethod, download = True,
+                repo = repo, disabled_eapis = disabled_eapis)
             mytmpdir = self.entropyTools.get_random_temp_file()
             os.makedirs(mytmpdir)
 
@@ -1544,13 +1573,14 @@ class Server:
 
                 # all fine then, we need to move data from mytmpdir to database_dir_path
 
-                # EAPI 1
-                # unpack database
-                compressed_db_filename = os.path.basename(download_data['compressed_database_path'])
-                uncompressed_db_filename = os.path.basename(database_path)
-                compressed_file = os.path.join(mytmpdir,compressed_db_filename)
-                uncompressed_file = os.path.join(mytmpdir,uncompressed_db_filename)
-                self.entropyTools.uncompress_file(compressed_file, uncompressed_file, eval(cmethod[0]))
+                # EAPI 1 -- unpack database
+                if 1 not in disabled_eapis:
+                    compressed_db_filename = os.path.basename(download_data['compressed_database_path'])
+                    uncompressed_db_filename = os.path.basename(database_path)
+                    compressed_file = os.path.join(mytmpdir,compressed_db_filename)
+                    uncompressed_file = os.path.join(mytmpdir,uncompressed_db_filename)
+                    self.entropyTools.uncompress_file(compressed_file, uncompressed_file, eval(cmethod[0]))
+
                 # now move
                 for myfile in os.listdir(mytmpdir):
                     fromfile = os.path.join(mytmpdir,myfile)

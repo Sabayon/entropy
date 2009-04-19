@@ -49,6 +49,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'default_repository_id': etpConst['officialserverrepositoryid'],
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
+            'disabled_eapis': set(),
             'rss': {
                 'enabled': etpConst['rss-feed'],
                 'name': etpConst['rss-name'],
@@ -95,6 +96,18 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     data['packages_expiration_days'] = mydays
                 except ValueError:
                     continue
+
+            elif line.startswith("disabled-eapis|") and (split_line_len == 2):
+
+                mydis = split_line[1].strip().split(",")
+                try:
+                    mydis = [int(x) for x in mydis]
+                    mydis = set([x for x in mydis if x in (1, 2, 3,)])
+                except ValueError:
+                    continue
+                if (len(mydis) < 3) and mydis:
+                    data['disabled_eapis'] = mydis
+
 
             elif line.startswith("repository|") and (split_line_len in [5, 6]):
 
