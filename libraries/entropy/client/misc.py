@@ -61,7 +61,9 @@ class FileUpdates:
 
     def do_backup(self, key):
         self.scanfs(dcache = True)
-        files_backup = self.Entropy.SystemSettings['client']['filesbackup']
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        files_backup = self.Entropy.SystemSettings[sys_set_plg_id]['misc']['filesbackup']
         dest_file = etpConst['systemroot'] + self.scandata[key]['destination']
         if files_backup and os.path.isfile(dest_file):
             bcount = 0

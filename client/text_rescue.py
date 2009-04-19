@@ -777,9 +777,11 @@ def getinfo(dict = False):
 
     from entropy.core import SystemSettings
     SysSettings = SystemSettings()
+    sys_set_client_plg_id = \
+        etpConst['system_settings_plugins_ids']['client_plugin']
     # variables
-    info['User protected directories'] = SysSettings['client']['configprotect']
-    info['Collision Protection'] = SysSettings['client']['collisionprotect']
+    info['User protected directories'] = SysSettings[sys_set_client_plg_id]['misc']['configprotect']
+    info['Collision Protection'] = SysSettings[sys_set_client_plg_id]['misc']['collisionprotect']
     info['Gentoo Compatibility'] = etpConst['gentoo-compat']
     info['Entropy Log Level'] = SysSettings['system']['log_level']
     info['Current branch'] = SysSettings['repositories']['branch']

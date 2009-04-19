@@ -195,8 +195,10 @@ class RepositoryMixin:
         self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = [etpConst['systemroot']+x for \
             x in self.SystemSettings['repositories']['available'][repoid]['configprotectmask']]
 
-        conf_protect = self.SystemSettings['client']['configprotect']
-        conf_protect_mask = self.SystemSettings['client']['configprotectmask']
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        conf_protect = self.SystemSettings[sys_set_plg_id]['misc']['configprotect']
+        conf_protect_mask = self.SystemSettings[sys_set_plg_id]['misc']['configprotectmask']
 
         self.SystemSettings['repositories']['available'][repoid]['configprotect'] += [etpConst['systemroot']+x for \
             x in conf_protect if etpConst['systemroot']+x not \

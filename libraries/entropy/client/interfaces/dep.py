@@ -1241,7 +1241,9 @@ class CalculatorsMixin:
             branch = self.SystemSettings['repositories']['branch']
 
         if ignore_spm_downgrades == None:
-            client_sys_settings = self.SystemSettings['client']
+            sys_set_plg_id = \
+                etpConst['system_settings_plugins_ids']['client_plugin']
+            client_sys_settings = self.SystemSettings['sys_set_plg_id']['misc']
             ignore_spm_downgrades = client_sys_settings['ignore_spm_downgrades']
 
         db_digest = self.all_repositories_checksum()

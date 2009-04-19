@@ -953,6 +953,8 @@ class SpritzApplication(Controller):
         def saveParameter(config_file, name, data):
             return entropy.tools.write_parameter_to_file(config_file,name,data)
 
+        sys_settings_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
         self.Preferences = {
             etpConst['entropyconf']: [
                 (
@@ -1004,7 +1006,7 @@ class SpritzApplication(Controller):
             etpConst['clientconf']: [
                 (
                     'collisionprotect',
-                    self.Equo.SystemSettings['client']['collisionprotect'],
+                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['collisionprotect'],
                     int,
                     fillSetting,
                     saveSetting,
@@ -1013,7 +1015,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'configprotect',
-                    self.Equo.SystemSettings['client']['configprotect'],
+                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotect'],
                     list,
                     fillSettingView,
                     saveSettingView,
@@ -1022,7 +1024,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'configprotectmask',
-                    self.Equo.SystemSettings['client']['configprotectmask'],
+                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotectmask'],
                     list,
                     fillSettingView,
                     saveSettingView,
@@ -1031,7 +1033,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'configprotectskip',
-                    self.Equo.SystemSettings['client']['configprotectskip'],
+                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotectskip'],
                     list,
                     fillSettingView,
                     saveSettingView,
@@ -1040,7 +1042,7 @@ class SpritzApplication(Controller):
                 ),
                 (
                     'filesbackup',
-                    self.Equo.SystemSettings['client']['filesbackup'],
+                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['filesbackup'],
                     bool,
                     fillSetting,
                     saveSetting,

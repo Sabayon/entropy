@@ -124,8 +124,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             config_protect_mask = [etpConst['systemroot']+x for x in \
                 config_protect_mask]
 
-            sys_conf_protect = system_settings_instance['client']['configprotect']
-            sys_conf_protect_mask = system_settings_instance['client']['configprotectmask']
+            sys_set_plg_id = \
+                etpConst['system_settings_plugins_ids']['client_plugin']
+            sys_conf_protect = system_settings_instance[sys_set_plg_id]['misc']['configprotect']
+            sys_conf_protect_mask = system_settings_instance[sys_set_plg_id]['misc']['configprotectmask']
 
             data['config_protect'] = config_protect + [
                 etpConst['systemroot']+x for x in sys_conf_protect if \
@@ -136,6 +138,82 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 etpConst['systemroot']+x not in config_protect_mask]
 
         return data
+
+    def misc_parser(self):
+
+        """
+        Parses Entropy client system configuration file.
+
+        @return dict data
+        """
+
+        data = {
+            'filesbackup': etpConst['filesbackup'],
+            'ignore_spm_downgrades': etpConst['spm']['ignore-spm-downgrades'],
+            'collisionprotect': etpConst['collisionprotect'],
+            'configprotect': etpConst['configprotect'][:],
+            'configprotectmask': etpConst['configprotectmask'][:],
+            'configprotectskip': etpConst['configprotectskip'][:],
+        }
+
+        cli_conf = etpConst['clientconf']
+        if not (os.path.isfile(cli_conf) and os.access(cli_conf, os.R_OK)):
+            return data
+
+        client_f = open(cli_conf,"r")
+        clientconf = [x.strip() for x in client_f.readlines() if \
+            x.strip() and not x.strip().startswith("#")]
+        client_f.close()
+        for line in clientconf:
+
+            split_line = line.split("|")
+            split_line_len = len(split_line)
+
+            if line.startswith("filesbackup|") and (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("disable", "disabled","false", "0", "no",):
+                    data['filesbackup'] = False
+
+            elif line.startswith("ignore-spm-downgrades|") and \
+                (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("enable", "enabled", "true", "1", "yes"):
+                    data['ignore_spm_downgrades'] = True
+
+            elif line.startswith("collisionprotect|") and (split_line_len == 2):
+
+                collopt = split_line[1].strip()
+                if collopt.lower() in ("0", "1", "2",):
+                    data['collisionprotect'] = int(collopt)
+
+            elif line.startswith("configprotect|") and (split_line_len == 2):
+
+                configprotect = split_line[1].strip()
+                for myprot in configprotect.split():
+                    data['configprotect'].append(
+                        unicode(myprot,'raw_unicode_escape'))
+
+            elif line.startswith("configprotectmask|") and \
+                (split_line_len == 2):
+
+                configprotect = split_line[1].strip()
+                for myprot in configprotect.split():
+                    data['configprotectmask'].append(
+                        unicode(myprot,'raw_unicode_escape'))
+
+            elif line.startswith("configprotectskip|") and \
+                (split_line_len == 2):
+
+                configprotect = split_line[1].strip()
+                for myprot in configprotect.split():
+                    data['configprotectskip'].append(
+                        etpConst['systemroot']+unicode(myprot,
+                            'raw_unicode_escape'))
+
+        return data
+
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
         RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, ExtractorsMixin):

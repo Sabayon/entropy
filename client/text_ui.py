@@ -242,9 +242,11 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
                 return 128,-1
 
     # disable collisions protection, better
-    equo_client_settings = Equo.SystemSettings['client']
+    sys_set_client_plg_id = \
+        etpConst['system_settings_plugins_ids']['client_plugin']
+    equo_client_settings = Equo.SystemSettings[sys_set_client_plg_id]['misc']
     oldcollprotect = equo_client_settings['collisionprotect']
-    Equo.SystemSettings['client']['collisionprotect'] = 1
+    equo_client_settings['collisionprotect'] = 1
 
     if (update) or (resume):
         rc = installPackages(
@@ -261,7 +263,7 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
     else:
         print_info(red(" @@ ")+blue("%s." % (_("Nothing to update"),) ))
 
-    Equo.SystemSettings['client']['collisionprotect'] = oldcollprotect
+    equo_client_settings['collisionprotect'] = oldcollprotect
 
     # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
     remove = [x for x in remove if Equo.clientDbconn.isIDPackageAvailable(x)]

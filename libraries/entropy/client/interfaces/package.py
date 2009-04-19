@@ -372,7 +372,9 @@ class Package:
         client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
         protect = sys_settings[client_plugin_id]['client_repo']['config_protect']
         mask = sys_settings[client_plugin_id]['client_repo']['config_protect_mask']
-        col_protect = sys_settings['client']['collisionprotect']
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        col_protect = sys_settings[sys_set_plg_id]['misc']['collisionprotect']
 
         # remove files from system
         directories = set()
@@ -1036,7 +1038,9 @@ class Package:
         protect = self.Entropy.SystemSettings['repositories']['available'][repoid]['configprotect']
         mask = self.Entropy.SystemSettings['repositories']['available'][repoid]['configprotectmask']
         sys_root = etpConst['systemroot']
-        col_protect = self.Entropy.SystemSettings['client']['collisionprotect']
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        col_protect = self.Entropy.SystemSettings[sys_set_plg_id]['misc']['collisionprotect']
         items_installed = set()
 
         # setup imageDir properly
@@ -1284,7 +1288,9 @@ class Package:
 
             # request new tofile then
             if protected:
-                client_settings = self.Entropy.SystemSettings['client']
+                sys_set_plg_id = \
+                    etpConst['system_settings_plugins_ids']['client_plugin']
+                client_settings = self.Entropy.SystemSettings[sys_set_plg_id]['misc']
                 if tofile not in client_settings['configprotectskip']:
                     prot_status = True
                     if do_allocation_check:
