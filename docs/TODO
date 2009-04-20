@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.90:
 
-    - Unit Test module
     - Put SHA1, SHA256 and SHA512 signatures to work on the Client.
     - use expiration as a base to have and handle multiple packages in repo?
     - Entropy repository daemon facilities (init script, config, etc)
