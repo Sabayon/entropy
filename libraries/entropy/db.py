@@ -1626,6 +1626,15 @@ class LocalRepository:
             self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest, idpackage,))
             self.commitChanges()
 
+    def setSignatures(self, idpackage, signatures):
+        with self.WriteLock:
+            sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
+                signatures['sha512']
+            self.cursor.execute("""
+            UPDATE packagesignatures SET sha1 = (?), sha256 = (?), sha512 = (?)
+            WHERE idpackage = (?)
+            """, (sha1, sha256, sha512, idpackage))
+
     def setDownloadURL(self, idpackage, url):
         with self.WriteLock:
             self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url, idpackage,))
@@ -2475,7 +2484,7 @@ class LocalRepository:
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
         if not trigger:
-            return '' # backward compatibility
+            return '' # FIXME backward compatibility with <=0.52.x
         if not get_unicode:
             return trigger[0]
         return unicode(trigger[0], 'raw_unicode_escape')
