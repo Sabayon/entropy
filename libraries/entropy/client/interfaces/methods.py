@@ -78,9 +78,13 @@ class RepositoryMixin:
         # to avoid having zillions of open files when loading a lot of EquoInterfaces
         self.close_all_repositories(mask_clear = False)
 
+    def __get_repository_cache_key(self, repoid):
+        return (repoid, etpConst['systemroot'],)
+
     def init_generic_memory_repository(self, repoid, description, package_mirrors = []):
         dbc = self.open_memory_database(dbname = repoid)
-        self._memory_db_instances[repoid] = dbc
+        repo_key = self.__get_repository_cache_key(repoid)
+        self._memory_db_instances[repo_key] = dbc
 
         # add to self.SystemSettings['repositories']['available']
         repodata = {
@@ -95,6 +99,12 @@ class RepositoryMixin:
 
     def close_all_repositories(self, mask_clear = True):
         for item in self.__repodb_cache:
+            # in-memory repositories cannot be closed
+            # otherwise everything will be lost, to
+            # effectively close these repos you
+            # must call remove_repository method
+            if item in self._memory_db_instances:
+                continue
             self.__repodb_cache[item].closeDB()
         self.__repodb_cache.clear()
         if mask_clear: self.SystemSettings.clear()
@@ -106,7 +116,7 @@ class RepositoryMixin:
 
     def open_repository(self, repoid):
 
-        key = (repoid, etpConst['systemroot'],)
+        key = self.__get_repository_cache_key(repoid)
         if not self.__repodb_cache.has_key(key):
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
@@ -124,7 +134,8 @@ class RepositoryMixin:
             if repoid.endswith(etpConst['packagesext']):
                 xcache = False
 
-        if repoid not in self.SystemSettings['repositories']['available']:
+        repo_data = self.SystemSettings['repositories']['available']
+        if repoid not in repo_data:
             t = _("bad repository id specified")
             if repoid not in self.__repo_error_messages_cache:
                 self.updateProgress(
@@ -135,33 +146,37 @@ class RepositoryMixin:
                 self.__repo_error_messages_cache.add(repoid)
             raise RepositoryError("RepositoryError: %s" % (t,))
 
-        dbfile = self.SystemSettings['repositories']['available'][repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
-        if not os.path.isfile(dbfile):
-            t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
-            if repoid not in self.__repo_error_messages_cache:
-                self.updateProgress(
-                    darkred(t),
-                    importance = 2,
-                    type = "warning"
-                )
-                self.__repo_error_messages_cache.add(repoid)
-            raise RepositoryError("RepositoryError: %s" % (t,))
+        if repo_data[repoid].get('in_memory'):
+            repo_key = self.__get_repository_cache_key(repoid)
+            conn = self._memory_db_instances.get(repo_key)
+        else:
+            dbfile = repo_data[repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
+            if not os.path.isfile(dbfile):
+                t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
+                if repoid not in self.__repo_error_messages_cache:
+                    self.updateProgress(
+                        darkred(t),
+                        importance = 2,
+                        type = "warning"
+                    )
+                    self.__repo_error_messages_cache.add(repoid)
+                raise RepositoryError("RepositoryError: %s" % (t,))
 
-        conn = LocalRepository(
-            readOnly = True,
-            dbFile = dbfile,
-            clientDatabase = True,
-            dbname = etpConst['dbnamerepoprefix']+repoid,
-            xcache = xcache,
-            indexing = indexing,
-            OutputInterface = self,
-            ServiceInterface = self
-        )
+            conn = LocalRepository(
+                readOnly = True,
+                dbFile = dbfile,
+                clientDatabase = True,
+                dbname = etpConst['dbnamerepoprefix']+repoid,
+                xcache = xcache,
+                indexing = indexing,
+                OutputInterface = self,
+                ServiceInterface = self
+            )
 
         # initialize CONFIG_PROTECT
-        repo_data = self.SystemSettings['repositories']['available'][repoid]
-        if (repo_data['configprotect'] == None) or \
-            (repo_data['configprotectmask'] == None):
+        this_repo_data = repo_data[repoid]
+        if (this_repo_data['configprotect'] == None) or \
+            (this_repo_data['configprotectmask'] == None):
             self.setup_repository_config(repoid, conn)
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
@@ -254,11 +269,13 @@ class RepositoryMixin:
                 # no need # self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
                 self.SystemSettings['repositories']['available'][repodata['repoid']]['packages'] = repodata['packages'][:]
                 smart_package = repodata.get('smartpackage')
-                if smart_package != None: self.SystemSettings['repositories']['available'][repodata['repoid']]['smartpackage'] = smart_package
-                self.SystemSettings['repositories']['available'][repodata['repoid']]['dbpath'] = repodata.get('dbpath')
-                self.SystemSettings['repositories']['available'][repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
+                if smart_package != None:
+                    self.SystemSettings['repositories']['available'][repodata['repoid']]['smartpackage'] = smart_package
             except KeyError:
                 raise InvalidData("InvalidData: repodata dictionary is corrupted")
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbpath'] = repodata.get('dbpath')
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
+            self.SystemSettings['repositories']['available'][repodata['repoid']]['in_memory'] = repodata.get('in_memory')
             # put at top priority, shift others
             self.SystemSettings['repositories']['order'].insert(0, repodata['repoid'])
         else:
@@ -325,6 +342,11 @@ class RepositoryMixin:
             else:
                 self.entropyTools.save_repository_settings(repodata, remove = True)
             self.SystemSettings.clear()
+
+        repo_mem_key = self.__get_repository_cache_key(repoid)
+        mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
+        if isinstance(mem_inst, LocalRepository):
+            mem_inst.closeDB()
 
         # reset db cache
         self.close_all_repositories()
