@@ -230,42 +230,25 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
 class Server(Singleton,TextInterface):
 
-    def init_singleton(self, default_repository = None, save_repository = False, community_repo = False):
+    def init_singleton(self, default_repository = None, save_repository = False,
+            community_repo = False, fake_default_repo = False,
+            fake_default_repo_id = '::fake::',
+            fake_default_repo_desc = 'this is a fake repository'):
 
         self.__instance_destroyed = False
         if etpConst['uid'] != 0:
             mytxt = _("Entropy Server interface must be run as root")
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
+        # settings
         from entropy.misc import LogFile
         self.SystemSettings = SystemSettings()
-        self.serverLog = LogFile(
-            level = self.SystemSettings['system']['log_level'],
-            filename = etpConst['entropylogfile'],
-            header = "[server]"
-        )
-
-        # create our SystemSettings plugin
-        self.sys_settings_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
-        self.sys_settings_plugin = ServerSystemSettingsPlugin(
-            self.sys_settings_plugin_id, None)
-        self.SystemSettings.add_plugin(self.sys_settings_plugin)
-
-        self.default_repository = default_repository
-        if self.default_repository == None:
-            self.default_repository = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
-
-        if self.default_repository in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
-            self.ensure_paths(self.default_repository)
-        self.migrate_repository_databases_to_new_branched_path()
         self.community_repo = community_repo
         from entropy.db import dbapi2, LocalRepository
         self.LocalRepository = LocalRepository
         self.dbapi2 = dbapi2 # export for third parties
-
-        # settings
         etpSys['serverside'] = True
+        self._memory_db_instances = {}
         self.indexing = False
         self.xcache = False
         self.MirrorsService = None
@@ -285,6 +268,32 @@ class Server(Singleton,TextInterface):
             'light': {},
         }
 
+        self.serverLog = LogFile(
+            level = self.SystemSettings['system']['log_level'],
+            filename = etpConst['entropylogfile'],
+            header = "[server]"
+        )
+
+        if fake_default_repo:
+            default_repository = fake_default_repo_id
+            etpConst['officialserverrepositoryid'] = fake_default_repo_id
+            self.init_generic_memory_server_repository(fake_default_repo_id,
+                fake_default_repo_desc)
+
+        # create our SystemSettings plugin
+        self.sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        self.sys_settings_plugin = ServerSystemSettingsPlugin(
+            self.sys_settings_plugin_id, None)
+        self.SystemSettings.add_plugin(self.sys_settings_plugin)
+
+        self.default_repository = default_repository
+        if self.default_repository == None:
+            self.default_repository = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
+
+        if self.default_repository in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
+            self.ensure_paths(self.default_repository)
+        self.migrate_repository_databases_to_new_branched_path()
 
         if self.default_repository not in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
@@ -435,7 +444,7 @@ class Server(Singleton,TextInterface):
                     self.serverDbCache[item].closeDB()
                 except self.dbapi2.ProgrammingError: # already closed?
                     pass
-        self.serverDbCache.clear()
+                self.serverDbCache.pop(item)
 
     def close_server_database(self, dbinstance):
         found = None
@@ -713,6 +722,51 @@ class Server(Singleton,TextInterface):
             self.MirrorsService.lock_mirrors(True, repo = repo)
             self.MirrorsService.sync_databases(no_upload, repo = repo)
 
+
+    def init_generic_memory_server_repository(self, repoid, description,
+        mirrors = [], community_repo = False, service_url = None):
+
+        product = self.SystemSettings['repositories']['product']
+        dbc = self.open_memory_database(dbname = etpConst['serverdbid']+repoid)
+        self._memory_db_instances[repoid] = dbc
+
+        eapi3_port = int(etpConst['socket_service']['port'])
+        eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+        # add to settings
+        repodata = {
+            'repoid': repoid,
+            'description': description,
+            'mirrors': mirrors,
+            'community': community_repo,
+            'service_port': eapi3_port,
+            'ssl_service_port': eapi3_ssl_port,
+            'service_url': service_url,
+            'handler': '', # not supported
+            'in_memory': True,
+        }
+
+        etpConst['server_repositories'][repoid] = repodata
+        self.SystemSettings.clear()
+
+        return dbc
+
+    def open_memory_database(self, dbname = None):
+        if dbname == None:
+            dbname = etpConst['genericdbid']
+        dbc = self.LocalRepository(
+            readOnly = False,
+            dbFile = ':memory:',
+            clientDatabase = True,
+            dbname = dbname,
+            xcache = False,
+            indexing = False,
+            OutputInterface = self,
+            skipChecks = True,
+            ServiceInterface = self
+        )
+        dbc.initializeDatabase()
+        return dbc
+
     def open_server_repository(
             self,
             read_only = True,
@@ -733,6 +787,10 @@ class Server(Singleton,TextInterface):
         if repo == etpConst['clientserverrepoid'] and self.community_repo:
             return self.ClientService.clientDbconn
 
+        # in-memory server repos
+        if repo in self._memory_db_instances:
+            return self._memory_db_instances.get(repo)
+
         if just_reading:
             read_only = True
             no_upload = True
@@ -740,15 +798,8 @@ class Server(Singleton,TextInterface):
         local_dbfile = self.get_local_database_file(repo, use_branch)
         if do_cache:
             cached = self.serverDbCache.get(
-                            (   etpConst['systemroot'],
-                                local_dbfile,
-                                read_only,
-                                no_upload,
-                                just_reading,
-                                repo,
-                                use_branch,
-                                lock_remote,
-                            )
+                (repo, etpConst['systemroot'], local_dbfile, read_only,
+                    no_upload, just_reading, use_branch, lock_remote,)
             )
             if cached != None:
                 return cached
@@ -811,16 +862,9 @@ class Server(Singleton,TextInterface):
         if do_cache:
             # !!! also cache just_reading otherwise there will be
             # real issues if the connection is opened several times
-            self.serverDbCache[(
-                etpConst['systemroot'],
-                local_dbfile,
-                read_only,
-                no_upload,
-                just_reading,
-                repo,
-                use_branch,
-                lock_remote
-            )] = conn
+            self.serverDbCache[
+                (repo, etpConst['systemroot'], local_dbfile, read_only,
+                no_upload, just_reading, use_branch, lock_remote,)] = conn
 
         # auto-update package sets
         if (not read_only) and (not is_new):
