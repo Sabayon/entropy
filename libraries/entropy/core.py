@@ -470,7 +470,7 @@ class SystemSettings(Singleton):
         """
         return self.__data.setdefault(mykey, default)
 
-    def update(self, **kwargs):
+    def update(self, kwargs):
         """
         dict method. See Python dict API reference.
         """
