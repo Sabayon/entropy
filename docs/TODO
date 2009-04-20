@@ -2,22 +2,24 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  0.90+:
+  0.90:
 
     - Unit Test module
-    - Documentation + Pylint (NLnet Milestone 7)
-    - use expiration as a base to have and handle multiple packages in repo?
     - Put SHA1, SHA256 and SHA512 signatures to work on the Client.
+    - use expiration as a base to have and handle multiple packages in repo?
+    - Entropy repository daemon facilities (init script, config, etc)
     - Updates daemon + shrink notification applet? (dev-python/dbus-python)
+
+  1.0_beta1:
+
+    - Documentation (NLnet Milestone 7) + man pages (complete)
 
     - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
         - Add all button doesn't effectively add all the packages to the queue or
         - when calculating the queue some packages are excluded for unknown reasons
 
-    - Entropy repository daemon facilities (init script, config, etc)
     - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
         -> next kernel 2.6.30
-    - Move Trigger.trigger_purgecache to entropy ebuild
 
     - System Package Set representing what's inside a stock distribution
         - Connect Smart applications to it to filter out common deps and eventually make it usable
