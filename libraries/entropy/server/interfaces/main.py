@@ -444,7 +444,7 @@ class Server(Singleton,TextInterface):
                     self.serverDbCache[item].closeDB()
                 except self.dbapi2.ProgrammingError: # already closed?
                     pass
-                self.serverDbCache.pop(item)
+            self.serverDbCache.clear()
 
     def close_server_database(self, dbinstance):
         found = None
