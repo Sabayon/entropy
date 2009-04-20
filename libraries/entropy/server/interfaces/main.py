@@ -1653,6 +1653,12 @@ class Server(Singleton,TextInterface):
             digest = self.entropyTools.md5sum(package_path)
             # update digest
             dbconn.setDigest(idpackage,digest)
+            # update signatures
+            signatures = data['signatures'].copy()
+            for hash_key in sorted(signatures):
+                hash_func = getattr(self.entropyTools,hash_key)
+                signatures[hash_key] = hash_func(package_path)
+            dbconn.setSignatures(idpackage, signatures)
             self.entropyTools.create_md5_file(package_path)
             # remove garbage
             os.remove(dbpath)
