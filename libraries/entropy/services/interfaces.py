@@ -214,10 +214,6 @@ class SocketHost:
             self.SSL = self.HostInterface.SSL
             self.real_sock = None
             self.ssl_authorized_clients_only = authorized_clients_only
-            # declare undeclared attributes
-            self.address_family = None
-            self.socket_type = None
-            self.RequestHandlerClass = RequestHandlerClass
 
             if self.SSL:
                 self.SocketServer.BaseServer.__init__(self, server_address, RequestHandlerClass)
