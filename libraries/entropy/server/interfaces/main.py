@@ -61,6 +61,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             },
         }
 
+        fake_instance = self._helper.fake_default_repo
+
         if not os.access(etpConst['serverconf'], os.R_OK):
             return data
 
@@ -85,7 +87,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             elif (line.find("officialserverrepositoryid|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):
 
-                data['default_repository_id'] = split_line[1].strip()
+                if not fake_instance:
+                    data['default_repository_id'] = split_line[1].strip()
 
             elif (line.find("expiration-days|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):
@@ -109,7 +112,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     data['disabled_eapis'] = mydis
 
 
-            elif line.startswith("repository|") and (split_line_len in [5, 6]):
+            elif line.startswith("repository|") and (split_line_len in [5, 6]) \
+                and (not fake_instance):
 
                 repoid, repodata = const_extract_srv_repo_params(line,
                     product = sys_settings_instance['repositories']['product'])
@@ -249,6 +253,7 @@ class Server(Singleton,TextInterface):
         self.dbapi2 = dbapi2 # export for third parties
         etpSys['serverside'] = True
         self._memory_db_instances = {}
+        self.fake_default_repo = fake_default_repo
         self.indexing = False
         self.xcache = False
         self.MirrorsService = None
@@ -274,18 +279,19 @@ class Server(Singleton,TextInterface):
             header = "[server]"
         )
 
+        # create our SystemSettings plugin
+        self.sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        self.sys_settings_plugin = ServerSystemSettingsPlugin(
+            self.sys_settings_plugin_id, self)
+        self.SystemSettings.add_plugin(self.sys_settings_plugin)
+
         if fake_default_repo:
             default_repository = fake_default_repo_id
             etpConst['officialserverrepositoryid'] = fake_default_repo_id
             self.init_generic_memory_server_repository(fake_default_repo_id,
                 fake_default_repo_desc)
-
-        # create our SystemSettings plugin
-        self.sys_settings_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
-        self.sys_settings_plugin = ServerSystemSettingsPlugin(
-            self.sys_settings_plugin_id, None)
-        self.SystemSettings.add_plugin(self.sys_settings_plugin)
+            self.SystemSettings.clear()
 
         self.default_repository = default_repository
         if self.default_repository == None:
@@ -804,14 +810,16 @@ class Server(Singleton,TextInterface):
             if cached != None:
                 return cached
 
-        if not os.path.isdir(os.path.dirname(local_dbfile)):
-            os.makedirs(os.path.dirname(local_dbfile))
+        local_dbfile_dir = os.path.dirname(local_dbfile)
+        if not os.path.isdir(local_dbfile_dir):
+            os.makedirs(local_dbfile_dir)
 
         if (not read_only) and (lock_remote) and \
             (repo not in self.__sync_lock_cache):
             self.do_server_repository_sync_lock(repo, no_upload)
             self.__sync_lock_cache.add(repo)
 
+        local_dbfile_exists = os.path.lexists(local_dbfile)
         conn = self.LocalRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
@@ -822,6 +830,11 @@ class Server(Singleton,TextInterface):
             useBranch = use_branch,
             lockRemote = lock_remote
         )
+        if not local_dbfile_exists:
+            # better than having a completely broken db
+            conn.readOnly = False
+            conn.initializeDatabase()
+            conn.commitChanges()
 
         valid = True
         try:
