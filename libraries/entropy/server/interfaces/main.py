@@ -279,19 +279,18 @@ class Server(Singleton,TextInterface):
             header = "[server]"
         )
 
+        if fake_default_repo:
+            default_repository = fake_default_repo_id
+            etpConst['officialserverrepositoryid'] = fake_default_repo_id
+            self.init_generic_memory_server_repository(fake_default_repo_id,
+                fake_default_repo_desc)
+
         # create our SystemSettings plugin
         self.sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
         self.sys_settings_plugin = ServerSystemSettingsPlugin(
             self.sys_settings_plugin_id, self)
         self.SystemSettings.add_plugin(self.sys_settings_plugin)
-
-        if fake_default_repo:
-            default_repository = fake_default_repo_id
-            etpConst['officialserverrepositoryid'] = fake_default_repo_id
-            self.init_generic_memory_server_repository(fake_default_repo_id,
-                fake_default_repo_desc)
-            self.SystemSettings.clear()
 
         self.default_repository = default_repository
         if self.default_repository == None:
