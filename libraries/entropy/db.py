@@ -2475,7 +2475,7 @@ class LocalRepository:
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
         if not trigger:
-            return None
+            return '' # backward compatibility
         if not get_unicode:
             return trigger[0]
         return unicode(trigger[0], 'raw_unicode_escape')
