@@ -26,6 +26,7 @@ class LocalRepositoryTest(unittest.TestCase):
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
         self.test_db.closeDB()
+        self.Client.destroy()
 
     def __open_test_db(self):
         return self.Client.open_memory_database(dbname = self.test_db_name)

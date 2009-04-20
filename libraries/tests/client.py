@@ -24,6 +24,7 @@ class LocalRepositoryTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
+        self.Client.destroy()
 
     def test_constant_backup(self):
         const_key = 'foo_foo_foo'
