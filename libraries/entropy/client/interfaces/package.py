@@ -78,7 +78,9 @@ class Package:
             mytxt = _("Action must be in")
             raise InvalidData("InvalidData: %s %s" % (mytxt,self.valid_actions,))
 
-    def match_checksum(self, repository = None, checksum = None, download = None):
+    def match_checksum(self, repository = None, checksum = None,
+        download = None, signatures = None):
+
         self.error_on_not_prepared()
 
         if repository == None:
@@ -87,10 +89,63 @@ class Package:
             checksum = self.infoDict['checksum']
         if download == None:
             download = self.infoDict['download']
+        if signatures == None:
+            signatures = self.infoDict['signatures']
+
+        def do_signatures_validation(signatures):
+            # check signatures, if available
+            if isinstance(signatures,dict):
+                for hash_type in sorted(signatures):
+                    hash_val = signatures[hash_type]
+                    # XXX workaround bug on unreleased
+                    # entropy versions
+                    if hash_type == hash_val:
+                        continue
+                    if not hasattr(self.entropyTools,
+                        'compare_%s' % (hash_type,)):
+                        continue
+
+                    self.Entropy.updateProgress(
+                        "%s: %s" % (blue(_("Checking package hash")),
+                            purple(hash_type.upper()),),
+                        importance = 0,
+                        type = "info",
+                        header = red("   ## "),
+                        back = True
+                    )
+                    cmp_func = getattr(self.entropyTools,
+                        'compare_%s' % (hash_type,))
+                    mydownload = os.path.join(etpConst['entropyworkdir'],
+                        download)
+                    valid = cmp_func(mydownload, hash_val)
+                    if not valid:
+                        self.Entropy.updateProgress(
+                            "%s: %s %s" % (
+                                darkred(_("Package hash")),
+                                purple(hash_type.upper()),
+                                darkred(_("does not match the recorded one")),
+                            ),
+                            importance = 0,
+                            type = "warning",
+                            header = darkred("   ## ")
+                        )
+                        return 1
+                    self.Entropy.updateProgress(
+                        "%s: %s %s" % (
+                            blue(_("Package hash")),
+                            purple(hash_type.upper()),
+                            blue(_("matches")),
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = red("   ## ")
+                    )
+            return 0
 
         dlcount = 0
         match = False
         while dlcount <= 5:
+
             self.Entropy.updateProgress(
                 blue(_("Checking package checksum...")),
                 importance = 0,
@@ -98,26 +153,34 @@ class Package:
                 header = red("   ## "),
                 back = True
             )
-            dlcheck = self.Entropy.check_needed_package_download(download, checksum = checksum)
+
+            dlcheck = self.Entropy.check_needed_package_download(download,
+                checksum = checksum)
             if dlcheck == 0:
                 basef = os.path.basename(download)
                 self.Entropy.updateProgress(
-                    "%s: %s" % (blue(_("Package checksum matches")),darkgreen(basef),),
+                    "%s: %s" % (
+                        blue(_("Package checksum matches")),
+                        darkgreen(basef),
+                    ),
                     importance = 0,
                     type = "info",
                     header = red("   ## ")
                 )
-                self.infoDict['verified'] = True
-                match = True
-                break # file downloaded successfully
-            else:
+
+                dlcheck = do_signatures_validation(signatures)
+                if dlcheck == 0:
+                    self.infoDict['verified'] = True
+                    match = True
+                    break # file downloaded successfully
+
+            if dlcheck != 0:
                 dlcount += 1
                 self.Entropy.updateProgress(
-                    blue(_("Package checksum does not match. Redownloading... attempt #%s") % (dlcount,)),
+                    darkred(_("Package checksum does not match. Redownloading... attempt #%s") % (dlcount,)),
                     importance = 0,
-                    type = "info",
-                    header = red("   ## "),
-                    back = True
+                    type = "warning",
+                    header = darkred("   ## ")
                 )
                 fetch = self.Entropy.fetch_file_on_mirrors(
                     repository,
@@ -130,14 +193,16 @@ class Package:
                     self.Entropy.updateProgress(
                         blue(_("Cannot properly fetch package! Quitting.")),
                         importance = 0,
-                        type = "info",
-                        header = red("   ## ")
+                        type = "error",
+                        header = darkred("   ## ")
                     )
                     return fetch
-                self.infoDict['verified'] = True
-                match = True
-                break
-        if (not match):
+
+                # package is fetched, let's loop one more time
+                # to make sure to run all the checksum checks
+                continue
+
+        if not match:
             mytxt = _("Cannot properly fetch package or checksum does not match. Try download latest repositories.")
             self.Entropy.updateProgress(
                 blue(mytxt),
@@ -146,12 +211,13 @@ class Package:
                 header = red("   ## ")
             )
             return 1
+
         return 0
 
     def multi_match_checksum(self):
         rc = 0
         for repository, branch, download, digest, signatures in self.infoDict['multi_checksum_list']:
-            rc = self.match_checksum(repository, digest, download)
+            rc = self.match_checksum(repository, digest, download, signatures)
             if rc != 0: break
         return rc
 
