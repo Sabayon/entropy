@@ -111,10 +111,6 @@ class Trigger:
                 functions.append('ebuild_postinstall')
                 break
 
-        # equo purge cache
-        if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-apps/entropy":
-            functions.append("purgecache")
-
         # binutils configuration
         if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
             functions.append("binutilsswitch")
@@ -501,27 +497,6 @@ class Trigger:
             my = self.EntropyPySandbox(self.Entropy)
         return my.run(self.phase, self.pkgdata, triggerfile)
 
-
-    def trigger_purgecache(self):
-        self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
-            "[POST] Purging Entropy cache..."
-        )
-
-        mytxt = "%s: %s." % (_("Please remember"),_("It is always better to leave Entropy updates isolated"),)
-        self.Entropy.updateProgress(
-            brown(mytxt),
-            importance = 0,
-            header = red("   ## ")
-        )
-        mytxt = "%s ..." % (_("Purging Entropy cache"),)
-        self.Entropy.updateProgress(
-            brown(mytxt),
-            importance = 0,
-            header = red("   ## ")
-        )
-        self.Entropy.purge_cache(False)
 
     def trigger_conftouch(self):
         self.Entropy.clientLog.log(
