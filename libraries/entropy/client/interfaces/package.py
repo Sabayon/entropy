@@ -101,7 +101,9 @@ class Package:
                     # entropy versions
                     if hash_type == hash_val:
                         continue
-                    if not hasattr(self.entropyTools,
+                    elif hash_val == None:
+                        continue
+                    elif not hasattr(self.entropyTools,
                         'compare_%s' % (hash_type,)):
                         continue
 
