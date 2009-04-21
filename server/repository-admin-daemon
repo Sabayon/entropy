@@ -21,7 +21,7 @@ from entropy.output import print_menu, nocolor
 
 myopts = [
     None,
-    (0," ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ",1,'Entropy Package Manager - (C) %s' % (get_year(),) ),
+    (0," ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ",1,'Repository Administration daemon - (C) %s' % (get_year(),) ),
     None,
     (0,_('Basic Options'),0,None),
     None,
