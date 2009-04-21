@@ -1,7 +1,7 @@
 PKGNAME = entropy
 PYTHON = python2
 SUBDIRS = client conf docs entropy-notification-applet handlers libraries misc/po misc server spritz
-SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py entropy-system-daemon entropy-repository-daemon server_query.py
+SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon entropy-repository-daemon server_query.py
 
 all:
 	for d in $(SUBDIRS); do make -C $$d; done
@@ -20,7 +20,7 @@ entropy-install:
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)/etc/env.d
 	cp libraries $(DESTDIR)/$(LIBDIR)/entropy/ -Ra
-	install -m 755 server/entropy-system-daemon $(DESTDIR)/usr/sbin/
+	install -m 755 server/repository-admin-daemon $(DESTDIR)/usr/sbin/
 	install -m 755 misc/entropy.sh $(DESTDIR)/usr/sbin/
 
 	install -m 644 conf/entropy.conf $(DESTDIR)/etc/entropy/
