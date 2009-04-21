@@ -99,7 +99,7 @@ class Package:
                     hash_val = signatures[hash_type]
                     # XXX workaround bug on unreleased
                     # entropy versions
-                    if hash_type == hash_val:
+                    if hash_val in signatures:
                         continue
                     elif hash_val == None:
                         continue
