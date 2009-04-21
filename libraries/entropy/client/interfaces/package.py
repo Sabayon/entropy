@@ -131,14 +131,13 @@ class Package:
                         )
                         return 1
                     self.Entropy.updateProgress(
-                        "%s: %s %s" % (
-                            blue(_("Package hash")),
+                        "%s %s" % (
                             purple(hash_type.upper()),
-                            blue(_("matches")),
+                            darkgreen(_("matches")),
                         ),
                         importance = 0,
                         type = "info",
-                        header = red("   ## ")
+                        header = "      : "
                     )
             return 0
 
