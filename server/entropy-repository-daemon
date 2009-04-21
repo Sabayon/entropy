@@ -13,12 +13,41 @@ if "--ssl" in sys.argv:
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
-import entropyTools
-from entropy.services.repository.interfaces import Server as RepositorySocketServerInterface
+from entropy.output import print_menu, nocolor
+from entropy.tools import get_year
+from entropy.misc import ParallelTask
+from entropy.core import SystemSettings
+SysSettings = SystemSettings()
+
+myopts = [
+    None,
+    (0," ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ",1,'Repository Services daemon - (C) %s' % (get_year(),) ),
+    None,
+    (0,_('Basic Options'),0,None),
+    None,
+    (1,'--help',2,_('this output')),
+    (1,'--nocolor',1,_('disable colorized output')),
+    None,
+    (0,_('Application Options'),0,None),
+    None,
+    (1,'--ssl',2,_('enable SSL service too')),
+    (1,'--nostdout',1,_('disable output to stdout, redirect to log file')),
+    None,
+]
+
+if "--nocolor" in sys.argv:
+    nocolor()
+
+if "--help" in sys.argv:
+    print_menu(myopts)
+    raise SystemExit(1)
+
+
+from entropy.services.repository.interfaces import Server
 from entropy.services.auth_interfaces import phpBB3Auth as phpBB3AuthInterface
-from entropy.services.authenticators import phpBB3 as phpbb3Authenticator
-from entropy.services.commands import phpBB3 as phpbb3Commands
-from entropy.services.ugc.commands import UGC as DistributionUGCCommands
+from entropy.services.authenticators import phpBB3
+from entropy.services.commands import phpBB3 as phpBB3Commands
+from entropy.services.ugc.commands import UGC
 
 connection_data = {
     'hostname': 'localhost',
@@ -43,8 +72,8 @@ ugc_args = [ugc_connection_data,ugc_store_path,ugc_store_url]
 
 # configure my repositories
 repositories = {
-    ('sabayonlinux.org','amd64','standard','3.5',): {
-        'dbpath': '/home/fabio/new.sabayonlinux.org/standard/amd64/3.5',
+    ('sabayonlinux.org','amd64','standard','4',): {
+        'dbpath': '/home/fabio/new.sabayonlinux.org/standard/amd64/4',
         'cmethod': 'bz2',
     },
 }
@@ -55,30 +84,30 @@ def run_srv(s):
     except (KeyboardInterrupt, SystemExit,):
         s.killall()
 
-sock_auth = (phpbb3Authenticator,[],connection_data)
+sock_auth = (phpBB3,[],connection_data)
 srv_ssl = None
-srv = RepositorySocketServerInterface(
+srv = Server(
         do_ssl = False,
         repositories = repositories,
         stdout_logging = do_stdout_logging,
         sock_auth = sock_auth,
-        external_cmd_classes = [phpbb3Commands,(DistributionUGCCommands,ugc_args,)]
+        external_cmd_classes = [phpBB3Commands,(UGC,ugc_args,)]
     )
 if do_ssl:
-    srv_ssl = RepositorySocketServerInterface(
+    srv_ssl = Server(
         do_ssl = True,
         repositories = repositories,
         stdout_logging = do_stdout_logging,
         sock_auth = sock_auth,
-        external_cmd_classes = [phpbb3Commands,(DistributionUGCCommands,ugc_args,)]
+        external_cmd_classes = [phpBB3Commands,(UGC,ugc_args,)]
     )
 
-task = entropyTools.parallelTask(run_srv, srv)
+task = ParallelTask(run_srv, srv)
 task.setName('repodaemon')
 task.start()
 task2 = None
 if srv_ssl != None:
-    task2 = entropyTools.parallelTask(run_srv, srv_ssl)
+    task2 = ParallelTask(run_srv, srv_ssl)
     task2.setName('repodaemon_ssl')
     task2.start()
 
