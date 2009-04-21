@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2
 import sys, time
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
@@ -8,11 +8,48 @@ sys.path.insert(0,'../client')
 sys.argv.append("--no-pid-handling")
 do_ssl = False
 do_stdout_logging = True
+community_repo = False
 do_port = 1027
+
+from entropy.const import *
+etpConst['community']['mode'] = community_repo
+etpConst['socket_service']['session_ttl'] = 300
+from entropy.core import SystemSettings
+SysSettings = SystemSettings()
+from entropy.tools import get_year
+from entropy.output import print_menu, nocolor
+
+myopts = [
+    None,
+    (0," ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ",1,'Entropy Package Manager - (C) %s' % (get_year(),) ),
+    None,
+    (0,_('Basic Options'),0,None),
+    None,
+    (1,'--help',2,_('this output')),
+    (1,'--nocolor',1,_('disable colorized output')),
+    None,
+    (0,_('Application Options'),0,None),
+    None,
+    (1,'--ssl',2,_('enable SSL service too')),
+    (1,'--nostdout',1,_('disable output to stdout, redirect to log file')),
+    (1,'--community',1,_('this service hosts a community repository')),
+    (1,'--port=N',1,_('specify listening port (SSL will be N+1)')),
+    None,
+]
+
+if "--nocolor" in sys.argv:
+    nocolor()
+
+if "--help" in sys.argv:
+    print_menu(myopts)
+    raise SystemExit(1)
+
 if "--ssl" in sys.argv:
     do_ssl = True
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
+if "--community" in sys.argv:
+    community_repo = True
 if "--port" in sys.argv:
     idx = sys.argv.index("--port")+1
     try:
@@ -20,14 +57,11 @@ if "--port" in sys.argv:
     except (IndexError, ValueError,):
         pass
 
-from entropy.const import *
-etpConst['community']['mode'] = True
-etpConst['socket_service']['session_ttl'] = 300
-import entropy.tools as entropyTools
-from entropy.services.system.interfaces import Server as SystemManagerServerInterface
-from entropy.services.system.executors import Base as SystemManagerExecutorServerRepositoryInterface
-from entropy.services.system.commands import Repository as SystemManagerRepositoryCommands
-from entropy.server.interfaces import Server as ServerInterface
+from entropy.services.system.interfaces import Server as ServiceServer
+from entropy.services.system.executors import Base
+from entropy.services.system.commands import Repository
+from entropy.server.interfaces import Server
+from entropy.misc import ParallelTask
 
 def run_srv(s):
     try:
@@ -35,18 +69,20 @@ def run_srv(s):
     except (KeyboardInterrupt, SystemExit,):
         s.killall()
 
-srv = SystemManagerServerInterface(
-        ServerInterface,
+srv = ServiceServer(
+        Server,
         do_ssl = do_ssl,
         stdout_logging = do_stdout_logging,
-        external_cmd_classes = [SystemManagerRepositoryCommands],
-        external_executor_cmd_classes = [(SystemManagerExecutorServerRepositoryInterface,[],{},)],
-        entropy_interface_kwargs = {'community_repo': etpConst['community']['mode']}
+        external_cmd_classes = [Repository],
+        external_executor_cmd_classes = [(Base,[],{},)],
+        entropy_interface_kwargs = {
+            'community_repo': etpConst['community']['mode']
+        }
     )
 srv.port = do_port
 
 thread_names = ["system_socket"]
-task = entropyTools.parallelTask(run_srv, srv)
+task = ParallelTask(run_srv, srv)
 task.setName(thread_names[0])
 task.start()
 
