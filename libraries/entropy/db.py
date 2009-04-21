@@ -57,6 +57,15 @@ class Status(Singleton):
             self.__data[db] = {}
             self.__data[db]['tainted'] = False
             self.__data[db]['bumped'] = False
+            self.__data[db]['unlock_msg'] = False
+
+    def set_unlock_msg(self, db):
+        self.__create_if_necessary(db)
+        self.__data[db]['unlock_msg'] = True
+
+    def unset_unlock_msg(self, db):
+        self.__create_if_necessary(db)
+        self.__data[db]['unlock_msg'] = False
 
     def set_tainted(self, db):
         self.__create_if_necessary(db)
@@ -81,6 +90,10 @@ class Status(Singleton):
     def is_bumped(self, db):
         self.__create_if_necessary(db)
         return self.__data[db]['bumped']
+
+    def is_unlock_msg(self, db):
+        self.__create_if_necessary(db)
+        return self.__data[db]['unlock_msg']
 
 
 class Schema:
@@ -464,11 +477,12 @@ class LocalRepository:
             self.connection.close()
             return
 
-        if not Status().is_tainted(self.dbFile):
+        sts = Status()
+        if not sts.is_tainted(self.dbFile):
             # we can unlock it, no changes were made
             self.ServiceInterface.MirrorsService.lock_mirrors(False,
                 repo = self.server_repo)
-        else:
+        elif not sts.is_unlock_msg(self.dbFile):
             u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
             self.updateProgress(
                 darkgreen(u_msg),
@@ -476,6 +490,7 @@ class LocalRepository:
                 type = "info",
                 header = brown(" * ")
             )
+            sts.set_unlock_msg(self.dbFile) # avoid spamming
 
         self.commitChanges()
         self.cursor.close()
