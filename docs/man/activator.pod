@@ -14,15 +14,152 @@ B<activator> --version
 
 =head1 DESCRIPTION
 
- work in progress
+B<activator> is a server-side repository administration tool used to handle
+remote Entropy repository mirrors.
 
 =head1 BASIC_OPTIONS
 
- work in progress
+=over
+
+=item B<--help (-h)>
+
+this output
+
+=item B<--version>
+
+print version
+
+=item B<--nocolor>
+
+disable colorized output
+
+=back
 
 =head1 OPTIONS
 
- work in progress
+=over
+
+
+=item B<sync>
+
+sync packages, database and also do some tidy
+
+=over
+
+
+=item B<--branch=<branch>>
+
+choose on what branch operating
+
+=item B<--noask>
+
+do not ask anything except critical things
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=back
+
+
+=item B<tidy>
+
+remove binary packages not in repositories and expired
+
+=item B<packages>
+
+package repositories handling functions
+
+=over
+
+
+=item B<sync>
+
+sync package repositories across primary mirrors
+
+=over
+
+
+=item B<--ask>
+
+ask before making any changes
+
+=item B<--pretend>
+
+only show what would be done
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=item B<--do-packages-check>
+
+also verify packages integrity
+
+=back
+
+=back
+
+
+=item B<database>
+
+database handling functions
+
+=over
+
+
+=item B<sync>
+
+sync the current repository database across primary mirrors
+
+=item B<lock>
+
+lock the current repository database (server-side)
+
+=item B<unlock>
+
+unlock the current repository database (server-side)
+
+=item B<download-lock>
+
+lock the current repository database (client-side)
+
+=item B<download-unlock>
+
+unlock the current repository database (client-side)
+
+=item B<lock-status>
+
+show current lock status
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=back
+
+
+=item B<notice>
+
+notice board handling functions
+
+=over
+
+
+=item B<add>
+
+add a news item to the notice board
+
+=item B<remove>
+
+remove a news item from the notice board
+
+=item B<read>
+
+read the current notice board
+
+
+=back
 
 =head1 ENVIRONMENT
 
@@ -34,10 +171,6 @@ setting.
 =head1 BUGS
 
 Please report bugs to http://bugs.sabayonlinux.org.
-
-=head1 EXAMPLES
-
- work in progress
 
 =head1 EXIT STATUS
 

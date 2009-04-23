@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2009-04-19" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2009-04-23" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -143,30 +143,236 @@
 \&\fBreagent\fR \-\-version
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-.Vb 1
-\& work in progress
-.Ve
+\&\fBreagent\fR is a server-side repository administration tool used to sync Portage
+database with Entropy by phisically creating package files and updating Entropy
+repository database.
 .SH "BASIC_OPTIONS"
 .IX Header "BASIC_OPTIONS"
-.Vb 1
-\& work in progress
-.Ve
+.IP "\fB\-\-help (\-h)\fR" 4
+.IX Item "--help (-h)"
+this output
+.IP "\fB\-\-version\fR" 4
+.IX Item "--version"
+print version
+.IP "\fB\-\-nocolor\fR" 4
+.IX Item "--nocolor"
+disable colorized output
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-.Vb 1
-\& work in progress
-.Ve
+.IP "\fBupdate\fR" 4
+.IX Item "update"
+scan the System looking for newly compiled packages
+.RS 4
+.IP "\fB\-\-seekstore\fR" 4
+.IX Item "--seekstore"
+analyze the Entropy Store directory directly
+.IP "\fB\-\-repackage <atoms\fR>" 4
+.IX Item "--repackage <atoms>"
+repackage the specified atoms
+.IP "\fB\-\-noask\fR" 4
+.IX Item "--noask"
+do not ask anything except critical things
+.IP "\fB\-\-atoms <atoms\fR>" 4
+.IX Item "--atoms <atoms>"
+manage only the specified atoms
+.RE
+.RS 4
+.RE
+.IP "\fBinject <packages\fR>" 4
+.IX Item "inject <packages>"
+add binary packages to repository w/o affecting scopes (multipackages)
+.IP "\fBquery\fR" 4
+.IX Item "query"
+do some searches into repository databases
+.RS 4
+.IP "\fBsearch\fR" 4
+.IX Item "search"
+search packages inside the default repository database
+.IP "\fBneeded\fR" 4
+.IX Item "needed"
+show runtime libraries needed by the provided atoms
+.IP "\fBdepends\fR" 4
+.IX Item "depends"
+show what packages depend on the provided atoms
+.IP "\fBtags\fR" 4
+.IX Item "tags"
+show packages owning the specified tags
+.IP "\fBsets\fR" 4
+.IX Item "sets"
+search available package sets
+.IP "\fBfiles\fR" 4
+.IX Item "files"
+show files owned by the provided atoms
+.IP "\fBbelongs\fR" 4
+.IX Item "belongs"
+show from what package the provided files belong
+.IP "\fBdescription\fR" 4
+.IX Item "description"
+search packages by description
+.IP "\fBeclass\fR" 4
+.IX Item "eclass"
+search packages using the provided eclasses
+.IP "\fBlist\fR" 4
+.IX Item "list"
+list all the packages in the default repository
+.IP "\fB\-\-verbose\fR" 4
+.IX Item "--verbose"
+show more details
+.IP "\fB\-\-quiet\fR" 4
+.IX Item "--quiet"
+print results in a scriptable way
+.RE
+.RS 4
+.RE
+.IP "\fBdatabase\fR" 4
+.IX Item "database"
+repository database functions
+.RS 4
+.IP "\fB\-\-initialize\fR" 4
+.IX Item "--initialize"
+(re)initialize the current repository database
+.RS 4
+.IP "\fB\-\-empty\fR" 4
+.IX Item "--empty"
+do not refill database using packages on mirrors
+.IP "\fB\-\-repo=<repo\fR>" 4
+.IX Item "--repo=<repo>"
+(re)create the database for the specified repository
+.RE
+.RS 4
+.RE
+.IP "\fBbump\fR" 4
+.IX Item "bump"
+manually force a revision bump for the current repository database
+.RS 4
+.IP "\fB\-\-sync\fR" 4
+.IX Item "--sync"
+synchronize the database
+.RE
+.RS 4
+.RE
+.IP "\fBremove\fR" 4
+.IX Item "remove"
+remove the provided atoms from the current repository database
+.IP "\fBmultiremove\fR" 4
+.IX Item "multiremove"
+remove the provided injected atoms (all if no atom specified)
+.IP "\fBcreate-empty-database\fR" 4
+.IX Item "create-empty-database"
+create an empty repository database in the provided path
+.IP "\fBswitchbranch <from branch\fR <to branch>>" 4
+.IX Item "switchbranch <from branch <to branch>>"
+switch to the specified branch the repository
+.IP "\fBmd5check\fR" 4
+.IX Item "md5check"
+verify integrity of the provided atoms (or world)
+.IP "\fBmd5remote\fR" 4
+.IX Item "md5remote"
+verify remote integrity of the provided atoms (or world)
+.IP "\fBbackup\fR" 4
+.IX Item "backup"
+backup current repository database
+.IP "\fBrestore\fR" 4
+.IX Item "restore"
+restore a previously backed-up repository database
+.RE
+.RS 4
+.RE
+.IP "\fBrepo\fR" 4
+.IX Item "repo"
+manage a repository
+.RS 4
+.IP "\fBenable <repo\fR>" 4
+.IX Item "enable <repo>"
+enable the specified repository
+.IP "\fBdisable <repo\fR>" 4
+.IX Item "disable <repo>"
+disable the specified repository
+.IP "\fBstatus <repo\fR>" 4
+.IX Item "status <repo>"
+show the current Server Interface status
+.IP "\fBmanual-deps <repo\fR [atoms]>" 4
+.IX Item "manual-deps <repo [atoms]>"
+handle packages manual dependencies
+.IP "\fBpackage-tag <repo\fR <tag\-string> [atoms]>" 4
+.IX Item "package-tag <repo <tag-string> [atoms]>"
+clone a package assigning it an arbitrary tag
+.IP "\fBmove <from\fR <to> [atoms]>" 4
+.IX Item "move <from <to> [atoms]>"
+move packages from a repository to another
+.IP "\fBcopy <from\fR <to> [atoms]>" 4
+.IX Item "copy <from <to> [atoms]>"
+copy packages from a repository to another
+.IP "\fBdefault <repo_id\fR>" 4
+.IX Item "default <repo_id>"
+set the default repository
+.RE
+.RS 4
+.RE
+.IP "\fBspm\fR" 4
+.IX Item "spm"
+source package manager functions
+.RS 4
+.IP "\fBcompile\fR" 4
+.IX Item "compile"
+compilation function
+.RS 4
+.IP "\fBcategories\fR" 4
+.IX Item "categories"
+compile packages belonging to the provided categories
+.RS 4
+.IP "\fB\-\-list\fR" 4
+.IX Item "--list"
+just list packages
+.RE
+.RS 4
+.RE
+.IP "\fBpkgset\fR" 4
+.IX Item "pkgset"
+compile packages in provided package set names
+.RS 4
+.IP "\fB\-\-list\fR" 4
+.IX Item "--list"
+just list packages
+.IP "\fB\-\-rebuild\fR" 4
+.IX Item "--rebuild"
+rebuild everything
+.IP "\fB\-\-dbupdate\fR" 4
+.IX Item "--dbupdate"
+run database update if all went fine
+.IP "\fB\-\-dbsync\fR" 4
+.IX Item "--dbsync"
+run mirror sync if all went fine
+.RE
+.RS 4
+.RE
+.RE
+.RS 4
+.RE
+.IP "\fBorphans\fR" 4
+.IX Item "orphans"
+scan orphaned packages on \s-1SPM\s0
+.RE
+.RS 4
+.RE
+.IP "\fBdeptest\fR" 4
+.IX Item "deptest"
+look for unsatisfied dependencies
+.IP "\fBlibtest\fR" 4
+.IX Item "libtest"
+look for missing libraries
+.IP "\fBdepends\fR" 4
+.IX Item "depends"
+regenerate the depends table
+.IP "\fBcleanup\fR" 4
+.IX Item "cleanup"
+remove downloaded packages and clean temp. directories)
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
 \&\-\fB\s-1ETP_REPO\s0\fR=valid repository id: on-the-fly switch default Entropy repository.
 .SH "BUGS"
 .IX Header "BUGS"
 Please report bugs to http://bugs.sabayonlinux.org.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
-.Vb 1
-\& work in progress
-.Ve
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
 \&\fBreagent\fR returns a zero exit status if the called command succeeded. Non zero

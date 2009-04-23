@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "ACTIVATOR 1"
-.TH ACTIVATOR 1 "2009-04-19" "perl v5.8.8" "Entropy"
+.TH ACTIVATOR 1 "2009-04-23" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBactivator\fR \- Official Sabayon Linux Server\-Side Repositories Management tool.
 .SH "SYNOPSIS"
@@ -143,33 +143,118 @@
 \&\fBactivator\fR \-\-version
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
-.Vb 1
-\& work in progress
-.Ve
+\&\fBactivator\fR is a server-side repository administration tool used to handle
+remote Entropy repository mirrors.
 .SH "BASIC_OPTIONS"
 .IX Header "BASIC_OPTIONS"
-.Vb 1
-\& work in progress
-.Ve
+.IP "\fB\-\-help (\-h)\fR" 4
+.IX Item "--help (-h)"
+this output
+.IP "\fB\-\-version\fR" 4
+.IX Item "--version"
+print version
+.IP "\fB\-\-nocolor\fR" 4
+.IX Item "--nocolor"
+disable colorized output
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-.Vb 1
-\& work in progress
-.Ve
+.IP "\fBsync\fR" 4
+.IX Item "sync"
+sync packages, database and also do some tidy
+.RS 4
+.IP "\fB\-\-branch=<branch\fR>" 4
+.IX Item "--branch=<branch>"
+choose on what branch operating
+.IP "\fB\-\-noask\fR" 4
+.IX Item "--noask"
+do not ask anything except critical things
+.IP "\fB\-\-syncall\fR" 4
+.IX Item "--syncall"
+sync all the configured repositories
+.RE
+.RS 4
+.RE
+.IP "\fBtidy\fR" 4
+.IX Item "tidy"
+remove binary packages not in repositories and expired
+.IP "\fBpackages\fR" 4
+.IX Item "packages"
+package repositories handling functions
+.RS 4
+.IP "\fBsync\fR" 4
+.IX Item "sync"
+sync package repositories across primary mirrors
+.RS 4
+.IP "\fB\-\-ask\fR" 4
+.IX Item "--ask"
+ask before making any changes
+.IP "\fB\-\-pretend\fR" 4
+.IX Item "--pretend"
+only show what would be done
+.IP "\fB\-\-syncall\fR" 4
+.IX Item "--syncall"
+sync all the configured repositories
+.IP "\fB\-\-do\-packages\-check\fR" 4
+.IX Item "--do-packages-check"
+also verify packages integrity
+.RE
+.RS 4
+.RE
+.RE
+.RS 4
+.RE
+.IP "\fBdatabase\fR" 4
+.IX Item "database"
+database handling functions
+.RS 4
+.IP "\fBsync\fR" 4
+.IX Item "sync"
+sync the current repository database across primary mirrors
+.IP "\fBlock\fR" 4
+.IX Item "lock"
+lock the current repository database (server\-side)
+.IP "\fBunlock\fR" 4
+.IX Item "unlock"
+unlock the current repository database (server\-side)
+.IP "\fBdownload-lock\fR" 4
+.IX Item "download-lock"
+lock the current repository database (client\-side)
+.IP "\fBdownload-unlock\fR" 4
+.IX Item "download-unlock"
+unlock the current repository database (client\-side)
+.IP "\fBlock-status\fR" 4
+.IX Item "lock-status"
+show current lock status
+.IP "\fB\-\-syncall\fR" 4
+.IX Item "--syncall"
+sync all the configured repositories
+.RE
+.RS 4
+.RE
+.IP "\fBnotice\fR" 4
+.IX Item "notice"
+notice board handling functions
+.RS 4
+.IP "\fBadd\fR" 4
+.IX Item "add"
+add a news item to the notice board
+.IP "\fBremove\fR" 4
+.IX Item "remove"
+remove a news item from the notice board
+.IP "\fBread\fR" 4
+.IX Item "read"
+read the current notice board
+.RE
+.RS 4
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
 \&\fB\s-1ETP_REPO\s0\fR=valid repository id: on-the-fly switch default Entropy repository.
-.PP
+.Sp
 \&\fB\s-1ETP_EXPIRATION_DAYS\s0\fR=valid number: on-the-fly removed packages expiration days
 setting.
 .SH "BUGS"
 .IX Header "BUGS"
 Please report bugs to http://bugs.sabayonlinux.org.
-.SH "EXAMPLES"
-.IX Header "EXAMPLES"
-.Vb 1
-\& work in progress
-.Ve
 .SH "EXIT STATUS"
 .IX Header "EXIT STATUS"
 \&\fBactivator\fR returns a zero exit status if the called command succeeded. Non zero

@@ -14,15 +14,317 @@ B<reagent> --version
 
 =head1 DESCRIPTION
 
- work in progress
+B<reagent> is a server-side repository administration tool used to sync Portage
+database with Entropy by phisically creating package files and updating Entropy
+repository database.
 
 =head1 BASIC_OPTIONS
 
- work in progress
+=over
+
+=item B<--help (-h)>
+
+this output
+
+=item B<--version>
+
+print version
+
+=item B<--nocolor>
+
+disable colorized output
+
+=back
 
 =head1 OPTIONS
 
- work in progress
+=over
+
+=item B<update>
+
+scan the System looking for newly compiled packages
+
+=over
+
+
+=item B<--seekstore>
+
+analyze the Entropy Store directory directly
+
+=item B<--repackage <atoms>>
+
+repackage the specified atoms
+
+=item B<--noask>
+
+do not ask anything except critical things
+
+=item B<--atoms <atoms>>
+
+manage only the specified atoms
+
+=back
+
+
+=item B<inject <packages>>
+
+add binary packages to repository w/o affecting scopes (multipackages)
+
+=item B<query>
+
+do some searches into repository databases
+
+=over
+
+
+=item B<search>
+
+search packages inside the default repository database
+
+=item B<needed>
+
+show runtime libraries needed by the provided atoms
+
+=item B<depends>
+
+show what packages depend on the provided atoms
+
+=item B<tags>
+
+show packages owning the specified tags
+
+=item B<sets>
+
+search available package sets
+
+=item B<files>
+
+show files owned by the provided atoms
+
+=item B<belongs>
+
+show from what package the provided files belong
+
+=item B<description>
+
+search packages by description
+
+=item B<eclass>
+
+search packages using the provided eclasses
+
+=item B<list>
+
+list all the packages in the default repository
+
+=item B<--verbose>
+
+show more details
+
+=item B<--quiet>
+
+print results in a scriptable way
+
+=back
+
+
+=item B<database>
+
+repository database functions
+
+=over
+
+
+=item B<--initialize>
+
+(re)initialize the current repository database
+
+=over
+
+
+=item B<--empty>
+
+do not refill database using packages on mirrors
+
+=item B<--repo=<repo>>
+
+(re)create the database for the specified repository
+
+=back
+
+
+=item B<bump>
+
+manually force a revision bump for the current repository database
+
+=over
+
+
+=item B<--sync>
+
+synchronize the database
+
+=back
+
+
+=item B<remove>
+
+remove the provided atoms from the current repository database
+
+=item B<multiremove>
+
+remove the provided injected atoms (all if no atom specified)
+
+=item B<create-empty-database>
+
+create an empty repository database in the provided path
+
+=item B<switchbranch <from branch> <to branch>>
+
+switch to the specified branch the repository
+
+=item B<md5check>
+
+verify integrity of the provided atoms (or world)
+
+=item B<md5remote>
+
+verify remote integrity of the provided atoms (or world)
+
+=item B<backup>
+
+backup current repository database
+
+=item B<restore>
+
+restore a previously backed-up repository database
+
+=back
+
+
+=item B<repo>
+
+manage a repository
+
+=over
+
+
+=item B<enable <repo>>
+
+enable the specified repository
+
+=item B<disable <repo>>
+
+disable the specified repository
+
+=item B<status <repo>>
+
+show the current Server Interface status
+
+=item B<manual-deps <repo> [atoms]>
+
+handle packages manual dependencies
+
+=item B<package-tag <repo> <tag-string> [atoms]>
+
+clone a package assigning it an arbitrary tag
+
+=item B<move <from> <to> [atoms]>
+
+move packages from a repository to another
+
+=item B<copy <from> <to> [atoms]>
+
+copy packages from a repository to another
+
+=item B<default <repo_id>>
+
+set the default repository
+
+=back
+
+
+=item B<spm>
+
+source package manager functions
+
+=over
+
+
+=item B<compile>
+
+compilation function
+
+=over
+
+
+=item B<categories>
+
+compile packages belonging to the provided categories
+
+=over
+
+
+=item B<--list>
+
+just list packages
+
+=back
+
+
+=item B<pkgset>
+
+compile packages in provided package set names
+
+=over
+
+
+=item B<--list>
+
+just list packages
+
+=item B<--rebuild>
+
+rebuild everything
+
+=item B<--dbupdate>
+
+run database update if all went fine
+
+=item B<--dbsync>
+
+run mirror sync if all went fine
+
+=back
+
+=back
+
+
+=item B<orphans>
+
+scan orphaned packages on SPM
+
+=back
+
+
+=item B<deptest>
+
+look for unsatisfied dependencies
+
+=item B<libtest>
+
+look for missing libraries
+
+=item B<depends>
+
+regenerate the depends table
+
+=item B<cleanup>
+
+remove downloaded packages and clean temp. directories)
+
+
+=back
 
 =head1 ENVIRONMENT
 
@@ -31,10 +333,6 @@ B<reagent> --version
 =head1 BUGS
 
 Please report bugs to http://bugs.sabayonlinux.org.
-
-=head1 EXAMPLES
-
- work in progress
 
 =head1 EXIT STATUS
 
