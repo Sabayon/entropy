@@ -874,6 +874,11 @@ def const_create_working_dirs():
     if not os.path.exists(piddir) and (etpConst['uid'] == 0):
         os.makedirs(piddir)
 
+    # create tmp dir
+    #if not os.path.isdir(xpakpath_dir):
+    #    os.makedirs(xpakpath_dir,0775)
+    #    const_setup_file(xpakpath_dir, 
+
     # create user if it doesn't exist
     gid = None
     try:
@@ -889,26 +894,34 @@ def const_create_working_dirs():
                 pass
 
     # Create paths
+    keys = [x for x in etpConst if isinstance(etpConst[x],basestring))]
     for key in etpConst:
-        if (type(etpConst[key]) is basestring):
 
-            if not etpConst[key] or \
-            etpConst[key].endswith(".conf") or \
-            not os.path.isabs(etpConst[key]) or \
-            etpConst[key].endswith(".cfg") or \
-            etpConst[key].endswith(".tmp") or \
-            etpConst[key].find(".db") != -1 or \
-            etpConst[key].find(".log") != -1 or \
-            os.path.isdir(etpConst[key]) or \
-            not key.endswith("dir"):
-                continue
+        if not etpConst[key] or \
+        etpConst[key].endswith(".conf") or \
+        not os.path.isabs(etpConst[key]) or \
+        etpConst[key].endswith(".cfg") or \
+        etpConst[key].endswith(".tmp") or \
+        etpConst[key].find(".db") != -1 or \
+        etpConst[key].find(".log") != -1 or \
+        os.path.isdir(etpConst[key]) or \
+        not key.endswith("dir"):
+            continue
 
-            # allow users to create dirs in custom paths,
-            # so don't fail here even if we don't have permissions
-            try:
-                os.makedirs(etpConst[key])
-            except (OSError, IOError,):
-                pass
+        # allow users to create dirs in custom paths,
+        # so don't fail here even if we don't have permissions
+        try:
+            key_dir = etpConst[key]
+            d_paths = []
+            while not os.path.isdir(key_dir):
+                d_paths.append(key_dir)
+                key_dir = os.path.dirname(key_dir)
+            d_paths = sorted(d_paths)
+            for d_path in d_paths:
+                os.mkdir(d_path)
+                const_setup_file(d_path, gid, 0775)
+        except (OSError, IOError,):
+            pass
 
     if gid:
         etpConst['entropygid'] = gid
