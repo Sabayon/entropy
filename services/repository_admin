@@ -1,0 +1,44 @@
+#!/sbin/runscript
+# Copyright 2009 Fabio Erculiani
+# Distributed under the terms of the GNU General Public License v2
+
+DAEMON_EXEC="/usr/sbin/entropy-system-daemon"
+PID="/var/run/entropy_system_daemon.pid"
+CMDLINE="--nostdout"
+
+depend() {
+    use dns net localmount netmount nfsmount hostname
+}
+
+start() {
+
+    ebegin "Starting Entropy system daemon"
+    start-stop-daemon --background --make-pidfile --start --pidfile ${PID} --quiet --exec ${DAEMON} -- ${CMDLINE}
+    sleep 3
+    if [ -f "${PID}" ]; then
+        if [ -d "/proc/$(cat ${PID})" ]; then
+            eend 0
+        else
+            eend 1
+        fi
+    else
+        eend 1
+    fi
+
+}
+
+stop() {
+
+    ebegin "Stopping Entropy system daemon"
+    if [ -f "${PID}" ]; then
+        mypid=$(cat $PID 2&> /dev/null)
+        if [ -d "/proc/$(cat ${mypid})" ]; then
+            eend 0
+        else
+            eend 1
+        fi
+    else
+        eend 1
+    fi
+
+}
