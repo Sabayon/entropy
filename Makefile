@@ -52,8 +52,8 @@ entropy-server-install:
 	ln -sf /$(LIBDIR)/entropy/server/activator.py $(DESTDIR)/usr/sbin/activator
 
 	# copy man pages
-	install -m 644 ../docs/man/man1/reagent.1 $(DESTDIR)/usr/share/man/man1/
-	install -m 644 ../docs/man/man1/activator.1 $(DESTDIR)/usr/share/man/man1/
+	install -m 644 docs/man/man1/reagent.1 $(DESTDIR)/usr/share/man/man1/
+	install -m 644 docs/man/man1/activator.1 $(DESTDIR)/usr/share/man/man1/
 
 equo-install:
 
@@ -74,7 +74,7 @@ equo-install:
 	ln -sf /$(LIBDIR)/entropy/client/equo.py $(DESTDIR)/usr/bin/equo
 
 	# copy man page
-	install -m 644 ../docs/man/man1/equo.1 $(DESTDIR)/usr/share/man/man1/
+	install -m 644 docs/man/man1/equo.1 $(DESTDIR)/usr/share/man/man1/
 
 
 notification-applet-install:
