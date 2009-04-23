@@ -7,7 +7,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - use expiration as a base to have and handle multiple packages in repo?
     - Entropy repository daemon facilities (init script, config, etc)
         # repository services daemon
-        # repository admin daemon
     - Updates daemon + shrink notification applet (dev-python/dbus-python)
 
   1.0_beta1:
