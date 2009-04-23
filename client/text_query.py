@@ -116,6 +116,10 @@ def search_installed_packages(packages, idreturn = False, dbconn = None,
     if not dbconn:
         clientDbconn = Equo.clientDbconn
 
+    if not packages:
+        packages = [x[0] for x in \
+            clientDbconn.listAllPackages(order_by = "atom")]
+
     pkg_data = set() # when idreturn is True
     for package in packages:
         slot = Equo.entropyTools.dep_getslot(package)
