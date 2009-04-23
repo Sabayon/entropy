@@ -7,21 +7,20 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - use expiration as a base to have and handle multiple packages in repo?
     - Updates daemon + shrink notification applet (dev-python/dbus-python)
 
-  1.0_beta1:
+  0.95:
 
-    - Documentation (NLnet Milestone 7)
+    - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
+        -> next kernel 2.6.30
 
     - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
         - iron out multi-threading and GTK issues ? (if any)
         - Add all button doesn't effectively add all the packages to the queue or
         - when calculating the queue some packages are excluded for unknown reasons
         - view mode menu for the main treeview
+        - Implement entropy:// URI handler
+        - Smart applications desktop handler
 
-    - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
-        -> next kernel 2.6.30
+  1.0_beta1:
 
-    - Connect Smart applications stuff to system packages set
-    - Implement Smart applications in Spritz too?
-    - Implement entropy:// URI handler
-
-    - LZMA future support (needs Python 2.6)
+    - Documentation (NLnet Milestone 7)
+    - LZMA (needs Python 2.6)
