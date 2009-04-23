@@ -4,9 +4,9 @@ B<equo> - Official Sabayon Linux Package Manager Client
 
 =head1 SYNOPSIS
 
-B<equo> [action] [basic_options] [options] [atom | package_file | @set] ...
+B<equo> [action] [basic_options] [options|extended_options] [atom | package_file | @set] ...
 
-B<equo> [action] [basic_options] [options] ...
+B<equo> [action] [basic_options] [options|extended_options] ...
 
 B<equo> --info
 
@@ -32,11 +32,1209 @@ Content produced by other users.
 
 =head1 BASIC_OPTIONS
 
- work in progress
+=over
+
+=item B<--help (-h)>
+
+this output
+
+=item B<--version>
+
+print version
+
+=item B<--nocolor>
+
+disable colorized output
+
+=back
 
 =head1 OPTIONS
 
- work in progress
+=over
+
+=item B<update>
+
+update configured repositories
+
+=over
+
+=item B<--force>
+
+force sync regardless repositories status
+
+=back
+
+=item B<repoinfo>
+
+show repositories information
+
+=over
+
+=item B<make.conf [repos]>
+
+show make.conf for the chosen repositories
+
+=item B<package.mask [repos]>
+
+show package.mask for the chosen repositories
+
+=item B<package.unmask [repos]>
+
+show package.unmask for the chosen repositories
+
+=item B<package.keywords [repos]>
+
+show package.keywords for the chosen repositories
+
+=item B<package.use [repos]>
+
+show package.use for the chosen repositories
+
+=item B<profile.link [repos]>
+
+show make.profile link for the chosen repositories
+
+=back
+
+=item B<notice [repos]>
+
+repository notice board reader
+
+=item B<status>
+
+show respositories status
+
+=item B<search [atoms]>
+
+search packages in repositories
+
+=item B<match [atoms]>
+
+match a package in repositories
+
+=over
+
+=item B<--multimatch>
+
+return all the possible matches
+
+=item B<--multirepo>
+
+return matches from every repository
+
+=item B<--showrepo>
+
+print repository information (w/--quiet)
+
+=item B<--showdesc>
+
+print description too (w/--quiet)
+
+=back
+
+=item B<hop <branch>>
+
+upgrade your distribution to a new release (branch)
+
+=item B<world>
+
+update system with the latest available packages
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--fetch>
+
+just download packages
+
+=item B<--pretend (-p)>
+
+only show what would be done
+
+=item B<--verbose (-v)>
+
+show more details about what is going on
+
+=item B<--replay>
+
+reinstall all the packages and their dependencies
+
+=item B<--empty>
+
+same as --replay
+
+=item B<--resume>
+
+resume previously interrupted operations
+
+=item B<--skipfirst>
+
+used with --resume, makes the first package to be skipped
+
+=item B<--nochecksum>
+
+disable package integrity check
+
+=item B<--multifetch>
+
+download multiple packages in parallel (default 3)
+
+=item B<--multifetch=N>
+
+download N packages in parallel (max 10)
+
+=back
+
+=item B<security>
+
+security infrastructure functions
+
+=over
+
+=item B<update>
+
+download the latest Security Advisories
+
+=item B<list>
+
+list all the available Security Advisories
+
+=item B<--affected>
+
+list only affected
+
+=item B<--unaffected>
+
+list only unaffected
+
+=item B<info>
+
+show information about provided advisories identifiers
+
+=item B<install>
+
+automatically install all the available security updates
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--fetch>
+
+just download packages
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=item B<--quiet (-q)>
+
+show less details (useful for scripting)
+
+=back
+
+=item B<install>
+
+install atoms or .tbz2 packages
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=item B<--fetch>
+
+just download packages without doing the install
+
+=item B<--nodeps>
+
+do not pull in any dependency
+
+=item B<--resume>
+
+resume previously interrupted operations
+
+=item B<--skipfirst>
+
+used with --resume, makes the first package in queue to be skipped
+
+=item B<--clean>
+
+remove downloaded packages after being used
+
+=item B<--empty>
+
+pull all the dependencies in, regardless their state
+
+=item B<--deep>
+
+makes dependency rules stricter
+
+=item B<--verbose (-v)>
+
+show more details about what is going on
+
+=item B<--configfiles>
+
+makes old configuration files to be removed
+
+=item B<--nochecksum>
+
+disable package integrity check
+
+=item B<--multifetch>
+
+download multiple packages in parallel (default 3)
+
+=item B<--multifetch=N>
+
+download N packages in parallel (max 10)
+
+=back
+
+=item B<source>
+
+download atoms source code
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=item B<--savehere>
+
+save sources in current working directory
+
+=back
+
+=item B<remove>
+
+remove one or more packages
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=item B<--nodeps>
+
+do not pull in any dependency
+
+=item B<--deep>
+
+also pull unused dependencies where depends list is empty
+
+=item B<--configfiles>
+
+makes configuration files to be removed
+
+=item B<--resume>
+
+resume previously interrupted operations
+
+=back
+
+=item B<config>
+
+configure one or more installed packages
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=item B<deptest>
+
+look for unsatisfied dependencies
+
+=item B<--quiet (-q)>
+
+show less details (useful for scripting)
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=back
+
+=item B<unusedpackages>
+
+look for unused packages (pay attention)
+
+=over
+
+=item B<--quiet (-q)>
+
+show less details (useful for scripting)
+
+=item B<--sortbysize>
+
+sort packages by disk size
+
+=back
+
+=item B<libtest>
+
+look for missing libraries
+
+=over
+
+=item B<--listfiles>
+
+print broken files to stdout
+
+=item B<--quiet (-q)>
+
+show less details (useful for scripting)
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=back
+
+=item B<conf>
+
+configuration files update tool
+
+=over
+
+=item B<info>
+
+show configuration files to be updated
+
+=item B<update>
+
+run the configuration files update function
+
+=back
+
+=item B<query>
+
+do misc queries on repository and local databases
+
+=over
+
+=item B<belongs>
+
+search from what package a file belongs
+
+=item B<changelog>
+
+show packages changelog
+
+=item B<depends>
+
+search what packages depend on the provided atoms
+
+=item B<description>
+
+search packages by description
+
+=item B<files>
+
+show files owned by the provided atoms
+
+=item B<installed>
+
+search a package into the local database
+
+=item B<license>
+
+show packages owning the provided licenses
+
+=item B<list>
+
+list packages based on the chosen parameter below
+
+=over
+
+=item B<installed>
+
+list installed packages
+
+=back
+
+=item B<needed>
+
+show runtime libraries needed by the provided atoms
+
+=item B<orphans>
+
+search files that do not belong to any package
+
+=item B<removal>
+
+show the removal tree for the specified atoms
+
+=item B<required>
+
+show atoms needing the provided libraries
+
+=item B<sets>
+
+search available package sets
+
+=item B<slot>
+
+show packages owning the provided slot
+
+=item B<tags>
+
+show packages owning the provided tags
+
+=item B<--verbose (-v)>
+
+show more details
+
+=item B<--quiet (-q)>
+
+print results in a scriptable way
+
+=back
+
+=back
+
+=head1 EXTENDED_OPTIONS
+
+=over
+
+
+=item B<smart>
+
+handles extended functionalities
+
+=over
+
+
+=item B<application>
+
+make a smart application for the provided atoms (experimental)
+
+=over
+
+
+=item B<--empty>
+
+pull all the dependencies in, regardless their state
+
+=back
+
+
+=item B<package>
+
+make a smart package for the provided atoms (multiple packages into one file)
+
+=item B<quickpkg>
+
+recreate an Entropy package from your System
+
+=over
+
+
+=item B<--savedir>
+
+save new packages into the specified directory
+
+=back
+
+
+=item B<inflate>
+
+convert provided Gentoo .tbz2s into Entropy packages (Portage needed)
+
+=over
+
+
+=item B<--savedir>
+
+save new packages into the specified directory
+
+=back
+
+
+=item B<deflate>
+
+convert provided Entropy packages into Gentoo ones (Portage needed)
+
+=over
+
+
+=item B<--savedir>
+
+save new packages into the specified directory
+
+=back
+
+
+=item B<extract>
+
+extract Entropy metadata from provided .tbz2 packages
+
+=over
+
+
+=item B<--savedir>
+
+save new metadata into the specified directory
+
+=back
+
+=back
+
+
+=item B<database>
+
+handles installed packages database
+
+=over
+
+
+=item B<check>
+
+check System Database for errors
+
+=item B<vacuum>
+
+remove System Database internal indexes to save space
+
+=item B<generate>
+
+generate installed packages database using Portage database (Portage needed)
+
+=item B<resurrect>
+
+generate installed packages database using files on the system [last hope]
+
+=item B<depends>
+
+regenerate depends caching table
+
+=item B<counters>
+
+update/generate counters table (Portage <-> Entropy packages table)
+
+=item B<gentoosync>
+
+makes Entropy aware of your Portage-updated packages
+
+=item B<backup>
+
+backup the current Entropy installed packages database
+
+=item B<restore>
+
+restore a previously backed up Entropy installed packages database
+
+=back
+
+
+=item B<packages>
+
+handles packages helper applications
+
+=over
+
+
+=item B<python-updater>
+
+migrate all Python modules to the latest installed version
+
+=item B<--ask>
+
+ask before making any changes
+
+=item B<--pretend>
+
+just show what would be done
+
+=back
+
+
+=item B<community>
+
+handles community-side features
+
+=over
+
+
+=item B<repos>
+
+community repositories management functions
+
+=over
+
+
+=item B<update>
+
+scan the System looking for newly compiled packages
+
+=over
+
+
+=item B<--branch=<branch>>
+
+choose on what branch operating
+
+=item B<--seekstore>
+
+analyze the Entropy Store directory directly
+
+=item B<--repackage <atoms>>
+
+repackage the specified atoms
+
+=item B<--noask>
+
+do not ask anything except critical things
+
+=item B<--atoms <atoms>>
+
+manage only the specified atoms
+
+=back
+
+
+=item B<inject <packages>>
+
+add binary packages to repository w/o affecting scopes (multipackages)
+
+=over
+
+
+=item B<--branch=<branch>>
+
+choose on what branch operating
+
+=back
+
+=back
+
+
+=item B<mirrors>
+
+community repositories mirrors management functions
+
+=over
+
+
+=item B<sync>
+
+sync packages, database and also do some tidy
+
+=over
+
+
+=item B<--branch=<branch>>
+
+choose on what branch operating
+
+=item B<--noask>
+
+do not ask anything except critical things
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=back
+
+
+=item B<packages-sync>
+
+sync packages across primary mirrors
+
+=over
+
+
+=item B<--ask>
+
+ask before making any changes
+
+=item B<--pretend>
+
+only show what would be done
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=item B<--do-packages-check>
+
+also verify packages integrity
+
+=back
+
+
+=item B<db-sync>
+
+sync the current repository database across primary mirrors
+
+=over
+
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=back
+
+
+=item B<db-lock>
+
+lock the current repository database (server-side)
+
+=item B<db-unlock>
+
+unlock the current repository database (server-side)
+
+=item B<db-download-lock>
+
+lock the current repository database (client-side)
+
+=item B<db-download-unlock>
+
+unlock the current repository database (client-side)
+
+=item B<db-lock-status>
+
+show current lock status
+
+=item B<tidy>
+
+remove binary packages not in repositories and expired
+
+=back
+
+
+=item B<database>
+
+community repositories database functions
+
+=over
+
+
+=item B<--initialize>
+
+(re)initialize the current repository database
+
+=over
+
+
+=item B<--empty>
+
+do not refill database using packages on mirrors
+
+=item B<--repo=<repo>>
+
+(re)create the database for the specified repository
+
+=back
+
+
+=item B<bump>
+
+manually force a revision bump for the current repository database
+
+=over
+
+
+=item B<--sync>
+
+synchronize the database
+
+=back
+
+
+=item B<remove>
+
+remove the provided atoms from the current repository database
+
+=over
+
+
+=item B<--branch=<branch>>
+
+choose on what branch operating
+
+=back
+
+
+=item B<multiremove>
+
+remove the provided injected atoms (all if no atom specified)
+
+=over
+
+
+=item B<--branch=<branch>>
+
+choose on what branch operating
+
+=back
+
+
+=item B<create-empty-database>
+
+create an empty repository database in the provided path
+
+=item B<switchbranch <from branch> <to branch>>
+
+switch to the specified branch the provided atoms (or world)
+
+=item B<md5check>
+
+verify integrity of the provided atoms (or world)
+
+=item B<md5remote>
+
+verify remote integrity of the provided atoms (or world)
+
+=item B<backup>
+
+backup current repository database
+
+=item B<restore>
+
+restore a previously backed-up repository database
+
+=back
+
+
+=item B<repo>
+
+manage a repository
+
+=over
+
+
+=item B<enable <repo>>
+
+enable the specified repository
+
+=item B<disable <repo>>
+
+disable the specified repository
+
+=item B<status <repo>>
+
+show the current Server Interface status
+
+=item B<manual-deps <repo> [atoms]>
+
+handle packages manual dependencies
+
+=item B<package-tag <repo> <tag-string> [atoms]>
+
+clone a package inside a repository assigning it an arbitrary tag
+
+=item B<move <from> <to> [atoms]>
+
+move packages from a repository to another
+
+=item B<copy <from> <to> [atoms]>
+
+copy packages from a repository to another
+
+=item B<default <repo_id>>
+
+set the default repository
+
+=back
+
+
+=item B<query>
+
+do some searches into community repository databases
+
+=over
+
+
+=item B<belongs>
+
+show from what package the provided files belong
+
+=item B<changelog>
+
+show packages changelog
+
+=item B<depends>
+
+show what packages depend on the provided atoms
+
+=item B<description>
+
+search packages by description
+
+=item B<eclass>
+
+search packages using the provided eclasses
+
+=item B<files>
+
+show files owned by the provided atoms
+
+=item B<list>
+
+list all the packages in the default repository
+
+=item B<needed>
+
+show runtime libraries needed by the provided atoms
+
+=item B<search>
+
+search packages inside the default repository database
+
+=item B<sets>
+
+search available package sets
+
+=item B<tags>
+
+show packages owning the specified tags
+
+=item B<--verbose>
+
+show more details
+
+=item B<--quiet>
+
+print results in a scriptable way
+
+=back
+
+
+=item B<spm>
+
+source package manager functions
+
+=over
+
+
+=item B<compile>
+
+compilation function
+
+=over
+
+
+=item B<categories>
+
+compile packages belonging to the provided categories
+
+=over
+
+
+=item B<--list>
+
+just list packages
+
+=back
+
+
+=item B<pkgset>
+
+compile packages in provided package set names
+
+=over
+
+
+=item B<--list>
+
+just list packages
+
+=item B<--rebuild>
+
+rebuild everything
+
+=item B<--dbupdate>
+
+run database update if all went fine
+
+=item B<--dbsync>
+
+run mirror sync if all went fine
+
+=back
+
+=back
+
+
+=item B<orphans>
+
+scan orphaned packages on SPM
+
+=back
+
+
+=item B<notice>
+
+notice board handling functions
+
+=over
+
+
+=item B<add>
+
+add a news item to the notice board
+
+=item B<remove>
+
+remove a news item from the notice board
+
+=item B<read>
+
+read the current notice board
+
+=back
+
+
+=item B<deptest>
+
+look for unsatisfied dependencies across community repositories
+
+=item B<depends>
+
+regenerate the depends table
+
+=back
+
+
+=item B<ugc>
+
+handles User Generated Content features
+
+=over
+
+
+=item B<login <repository>>
+
+login against a specified repository
+
+=item B<logout <repository>>
+
+logout from a specified repository
+
+=over
+
+
+=item B<--force>
+
+force action
+
+=back
+
+
+=item B<documents <repository>>
+
+manage package documents for the selected repository (comments, files, videos)
+
+=over
+
+
+=item B<get <pkgkey>>
+
+get available documents for the specified package key (example: x11-libs/qt)
+
+=item B<add <pkgkey>>
+
+add a new document to the specified package key (example: x11-libs/qt)
+
+=item B<remove <docs ids>>
+
+remove documents from database using their identifiers
+
+=back
+
+
+=item B<vote <repository>>
+
+manage package votes for the selected repository
+
+=over
+
+
+=item B<get <pkgkey>>
+
+get vote for the specified package key (example: x11-libs/qt)
+
+=item B<add <pkgkey>>
+
+add vote for the specified package key (example: x11-libs/qt)
+
+=back
+
+=back
+
+
+=item B<cache>
+
+handles Entropy cache
+
+=over
+
+
+=item B<clean>
+
+clean Entropy cache
+
+=item B<generate>
+
+regenerate Entropy cache
+
+=item B<--verbose>
+
+show more details
+
+=item B<--quiet>
+
+print results in a scriptable way
+
+=back
+
+
+=item B<cleanup>
+
+remove downloaded packages and clean temp. directories
+
+=item B<--info>
+
+show system information
+
+
+=back
 
 =head1 ENVIRONMENT
 
