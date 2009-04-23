@@ -12,9 +12,10 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - Documentation (NLnet Milestone 7) + man pages (complete)
+    - Documentation (NLnet Milestone 7)
 
     - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
+        - iron out multi-threading and GTK issues ? (if any)
         - Add all button doesn't effectively add all the packages to the queue or
         - when calculating the queue some packages are excluded for unknown reasons
         - view mode menu for the main treeview
