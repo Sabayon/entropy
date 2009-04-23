@@ -1,0 +1,50 @@
+#!/sbin/runscript
+# Copyright 2009 Fabio Erculiani
+# Distributed under the terms of the GNU General Public License v2
+
+DAEMON_EXEC="/usr/sbin/repository-services-daemon"
+PID="/var/run/entropy_repo_services.pid"
+CMDLINE="--nostdout"
+
+depend() {
+    use dns net localmount netmount nfsmount hostname
+}
+
+start() {
+
+    if [ -x "${DAEMON_EXEC}" ]; then
+        ebegin "Starting Entropy repository services daemon"
+        start-stop-daemon --background --make-pidfile --start --pidfile ${PID} --quiet --exec ${DAEMON} -- ${CMDLINE}
+        sleep 3
+        if [ -f "${PID}" ]; then
+            if [ -d "/proc/$(cat ${PID})" ]; then
+                eend 0
+            else
+                eend 1
+            fi
+        else
+            eend 1
+        fi
+    else
+        eerror "Entropy repository services daemon load error"
+        eerror "You need to copy and setup ${DAEMON_EXEC}.example to ${DAEMON_EXEC}"
+        eend 1
+    fi
+
+}
+
+stop() {
+
+    ebegin "Stopping Entropy repository services daemon"
+    if [ -f "${PID}" ]; then
+        mypid=$(cat $PID 2&> /dev/null)
+        if [ -d "/proc/$(cat ${mypid})" ]; then
+            eend 0
+        else
+            eend 1
+        fi
+    else
+        eend 1
+    fi
+
+}
