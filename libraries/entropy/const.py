@@ -895,7 +895,7 @@ def const_create_working_dirs():
 
     # Create paths
     keys = [x for x in etpConst if isinstance(etpConst[x],basestring)]
-    for key in etpConst:
+    for key in keys:
 
         if not etpConst[key] or \
         etpConst[key].endswith(".conf") or \
