@@ -271,7 +271,8 @@ class Repository:
         elif self.dbformat_eapi == 2:
             myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[3]]
             try:
-                path = eval("self.entropyTools."+cmethod[1])(myfile)
+                mycall = getattr(self.entropyTools,cmethod[1])
+                path = mycall(myfile)
             except EOFError:
                 rc = 1
             if os.path.isfile(myfile):

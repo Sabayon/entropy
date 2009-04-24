@@ -296,9 +296,9 @@ def const_default_settings(rootdir):
         # Entropy compressed databases format support
         'etpdatabasesupportedcformats': ["bz2", "gz"],
         'etpdatabasecompressclasses': {
-            "bz2": ("bz2.BZ2File", "unpackBzip2", "etpdatabasefilebzip2",
+            "bz2": ("bz2.BZ2File", "unpack_bzip2", "etpdatabasefilebzip2",
                 "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2"),
-            "gz": ("gzip.GzipFile", "unpackGzip", "etpdatabasefilegzip",
+            "gz": ("gzip.GzipFile", "unpack_gzip", "etpdatabasefilegzip",
                 "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip")
         },
         # enable/disable packages RSS feed feature
