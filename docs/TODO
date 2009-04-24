@@ -20,6 +20,10 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - Implement entropy:// URI handler
         - Smart applications desktop handler
 
+    Only if possible:
+    - server side upload digest verification (ditch crappy handlers?)
+    - content table, is there anything that can be done?
+
   1.0_beta1:
 
     - Documentation (NLnet Milestone 7)
