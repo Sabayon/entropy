@@ -279,8 +279,9 @@ myopts_extended = [
             (3,'switchbranch <from branch> <to branch>',2,_('switch to the specified branch the provided atoms (or world)')),
             (3,'md5check',2,_('verify integrity of the provided atoms (or world)')),
             (3,'md5remote',2,_('verify remote integrity of the provided atoms (or world)')),
-            (3,'backup',2,_('backup current repository database')),
-            (3,'restore',2,_('restore a previously backed-up repository database')),
+            (3,'backup',3,_('backup current repository database')),
+            (3,'restore',3,_('restore a previously backed-up repository database')),
+            (3,'counters',2,_('resync counters table (Portage <-> Entropy matching scheme)'),),
 
         None,
 
@@ -627,14 +628,27 @@ try:
                             server_activator.database(mirrors_opts)
 
             elif myopts[0] == "database":
-                try:
-                    import server_reagent
-                except ImportError:
-                    print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
-                    rc = 1
-                else:
-                    server_reagent.database(myopts[1:])
-                    server_reagent.Entropy.close_server_databases()
+
+                do = True
+                # hook to support counters command, which is just
+                # a duplicate of 'equo database counters'
+                # put here for completeness
+                if len(myopts) > 1:
+                    if myopts[1] == "counters":
+                        do = False
+                        import text_rescue
+                        rc = text_rescue.database(myopts[1:])
+                        text_rescue.Equo.destroy()
+
+                if do:
+                    try:
+                        import server_reagent
+                    except ImportError:
+                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        rc = 1
+                    else:
+                        rc = server_reagent.database(myopts[1:])
+                        server_reagent.Entropy.close_server_databases()
 
             elif myopts[0] == "repo":
                 try:
