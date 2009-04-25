@@ -183,6 +183,15 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 except (ValueError, IndexError,):
                     continue
 
+        # add system database if community repository mode is enabled
+        if self._helper.community_repo:
+            data['repositories'][etpConst['clientserverrepoid']] = {}
+            mydata = {}
+            mydata['description'] = "Community Repositories System Database"
+            mydata['mirrors'] = []
+            mydata['community'] = False
+            data['repositories'][etpConst['clientserverrepoid']].update(mydata)
+
         # expand paths
         for repoid in data['repositories']:
             data['repositories'][repoid]['packages_dir'] = \
@@ -256,6 +265,11 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
         # get expiration-based packages removal data from config files
         for repoid in srv_parser_data['repositories']:
+
+            # filter out system repository if community repository
+            # mode is enabled
+            if repoid == etpConst['clientserverrepoid']:
+                continue
 
             idpackages = set()
             exp_fp = self._helper.get_local_exp_based_pkgs_rm_whitelist_file(
@@ -360,15 +374,13 @@ class Server(Singleton,TextInterface):
                         _("repository not configured"),
                     )
             )
-        if etpConst['clientserverrepoid'] in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
+        if etpConst['clientserverrepoid'] == self.default_repository:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         etpConst['clientserverrepoid'],
                         _("protected repository id, can't use this, sorry dude..."),
                     )
             )
 
-        if self.community_repo:
-            self.add_client_database_to_repositories()
         self.switch_default_repository(self.default_repository)
 
     def destroy(self):
@@ -452,15 +464,6 @@ class Server(Singleton,TextInterface):
             f.write("done\n")
             f.flush()
             f.close()
-
-    def add_client_database_to_repositories(self):
-        self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][etpConst['clientserverrepoid']] = {}
-        mydata = {}
-        mydata['description'] = "Community Repositories System Database"
-        mydata['mirrors'] = []
-        mydata['community'] = False
-        self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][etpConst['clientserverrepoid']].update(mydata)
-        print self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
 
     def setup_services(self):
         self.setup_entropy_settings()
@@ -2067,14 +2070,12 @@ class Server(Singleton,TextInterface):
             for server_repo in server_repos:
                 installed_counters.add(spm_counter)
                 server_dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = server_repo)
-                counter = server_dbconn.isCounterAvailable(spm_counter, branch = self.SystemSettings['repositories']['branch'])
+                counter = server_dbconn.isCounterAvailable(spm_counter)
                 if counter:
                     found = True
                     break
             if not found:
                 toBeAdded.add((spm_atom,spm_counter,))
-
-        import pdb; pdb.set_trace()
 
         # packages to be removed from the database
         database_counters = {}

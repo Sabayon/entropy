@@ -458,21 +458,37 @@ def database(options):
         from_branch = options[1]
         to_branch = options[2]
         print_info(darkgreen(" * ")+red(_("Switching branch, be sure to have your packages in sync.")))
-        print_info(darkgreen(" * ")+red("%s %s..." % (_("Collecting packages that would be marked"),to_branch,) ), back = True)
-        dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
 
-        pkglist = dbconn.listAllIdpackages(branch = from_branch)
-        #myatoms = options[3:]
+        sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        for repoid in Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories']:
 
-        print_info(darkgreen(" * ")+red("%s %s: %s %s" % (_("These are the packages that would be marked"),to_branch,len(pkglist),_("packages"),)))
+            print_info(darkgreen(" * ")+"%s %s %s: %s" % (
+                blue(_("Collecting packages that would be marked")),
+                bold(to_branch),blue(_("on")),purple(repoid),) )
 
-        rc = Entropy.askQuestion(_("Would you like to continue ?"))
-        if rc == "No":
-            return 4
+            dbconn = Entropy.open_server_repository(read_only = True,
+                no_upload = True, repo = repo)
+            pkglist = dbconn.listAllIdpackages(branch = from_branch)
 
-        status = Entropy.switch_packages_branch(pkglist, from_branch, to_branch)
-        if status == None:
-            return 1
+            print_info(darkgreen(" * ")+"%s %s: %s %s" % (
+                blue(_("These are the packages that would be marked")),
+                bold(to_branch), len(pkglist), darkgreen(_("packages")),))
+
+            rc = Entropy.askQuestion(_("Would you like to continue ?"))
+            if rc == "No":
+                return 4
+
+            # XXX remove this in future
+            dbconn = Entropy.open_server_repository(read_only = False,
+                no_upload = True, repo = repoid, lock_remote = False)
+            dbconn.moveCountersToBranch(to_branch)
+            # XXX remove this in future, not needed
+
+            status = Entropy.switch_packages_branch(pkglist, from_branch, to_branch)
+            if status == None:
+                return 1
+
         switched, already_switched, ignored, not_found, no_checksum = status
         if not_found or no_checksum:
             return 1

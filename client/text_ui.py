@@ -342,6 +342,7 @@ def branchHop(branch):
             status = False
 
     if status:
+        Equo.clientDbconn.moveCountersToBranch(branch)
         mytxt = "%s %s: %s" % (red(" @@ "),
             darkgreen(_("Succesfully switched to branch")), purple(branch),)
         print_info(mytxt)
