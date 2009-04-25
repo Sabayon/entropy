@@ -988,6 +988,21 @@ def sort_update_files(update_list):
     del sort_dict
     return new_list
 
+def generic_file_content_parser(filepath):
+    data = []
+    if os.access(filepath, os.R_OK | os.F_OK):
+        gen_f = open(filepath,"r")
+        content = gen_f.readlines()
+        gen_f.close()
+        # filter comments and white lines
+        content = [x.strip().rsplit("#", 1)[0].strip() for x in content \
+            if not x.startswith("#") and x.strip()]
+        for line in content:
+            if line in data:
+                continue
+            data.append(line)
+    return data
+
 # used by equo, this function retrieves the new safe Gentoo-aware file path
 def allocate_masked_file(file, fromfile):
 
