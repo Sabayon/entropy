@@ -1336,6 +1336,40 @@ class MiscMixin:
         pkg_matches = set([x[1] for x in self.clientDbconn.searchPackagesByCategory(category)])
         return pkg_matches
 
+    def get_package_match_config_protect(self, match, mask = False):
+
+        idpackage, repoid = match
+        dbconn = self.open_repository(repoid)
+        cl_id = self.sys_settings_client_plugin_id
+        misc_data = self.SystemSettings[cl_id]['misc']
+        if mask:
+            config_protect = set(dbconn.retrieveProtectMask(idpackage).split())
+            config_protect |= set(misc_data['configprotectmask'])
+        else:
+            config_protect = set(dbconn.retrieveProtect(idpackage).split())
+            config_protect |= set(misc_data['configprotect'])
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
+
+        return sorted(config_protect)
+
+    def get_installed_package_config_protect(self, idpackage, mask = False):
+
+        if self.clientDbconn == None:
+            return []
+        cl_id = self.sys_settings_client_plugin_id
+        misc_data = self.SystemSettings[cl_id]['misc']
+        if mask:
+            _pmask = self.clientDbconn.retrieveProtectMask(idpackage).split()
+            config_protect = set(_pmask)
+            config_protect |= set(misc_data['configprotectmask'])
+        else:
+            _protect = self.clientDbconn.retrieveProtect(idpackage).split()
+            config_protect = set(_protect)
+            config_protect |= set(misc_data['configprotect'])
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
+
+        return sorted(config_protect)
+
     def inject_entropy_database_into_package(self, package_filename, data, treeupdates_actions = None):
         dbpath = self.get_tmp_dbpath()
         dbconn = self.open_generic_database(dbpath)

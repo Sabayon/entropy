@@ -436,9 +436,10 @@ class Package:
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         sys_settings = self.Entropy.SystemSettings
-        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        protect = sys_settings[client_plugin_id]['client_repo']['config_protect']
-        mask = sys_settings[client_plugin_id]['client_repo']['config_protect_mask']
+        protect = self.Entropy.get_installed_package_config_protect(
+            self.infoDict['idpackage'])
+        mask = self.Entropy.get_installed_package_config_protect(
+            self.infoDict['idpackage'], mask = True)
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         col_protect = sys_settings[sys_set_plg_id]['misc']['collisionprotect']
@@ -1102,8 +1103,10 @@ class Package:
 
         # load CONFIG_PROTECT and its mask
         repoid = self.infoDict['repository']
-        protect = self.Entropy.SystemSettings['repositories']['available'][repoid]['configprotect']
-        mask = self.Entropy.SystemSettings['repositories']['available'][repoid]['configprotectmask']
+        protect = self.Entropy.get_package_match_config_protect(
+            self.matched_atom)
+        mask = self.Entropy.get_package_match_config_protect(
+            self.matched_atom, mask = True)
         sys_root = etpConst['systemroot']
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -2095,6 +2098,7 @@ class Package:
             self.infoDict['remove_installed_vanished'] = True
             return 0
 
+        self.infoDict['idpackage'] = idpackage
         self.infoDict['configprotect_data'] = []
         self.infoDict['triggers'] = {}
         self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
