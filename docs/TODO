@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.90:
 
-    - use expiration as a base to have and handle multiple packages in repo?
     - Updates daemon + shrink notification applet (dev-python/dbus-python)
 
   0.95:
@@ -22,7 +21,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     Only if possible:
     - server side upload digest verification (ditch crappy handlers?)
-    - content table, is there anything that can be done?
+    - remove db.WriteLock?
 
   1.0_beta1:
 
