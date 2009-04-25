@@ -344,7 +344,11 @@ def update(options):
             for idpackage,repoid in toBeRemoved:
                 dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
-                print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
+                exp_string = ''
+                pkg_expired = Entropy.is_match_expired((idpackage,repoid,))
+                if pkg_expired:
+                    exp_string = "|%s" % (purple(_("expired")),)
+                print_info(brown("    # ")+"["+blue(repoid)+exp_string+"] "+red(atom))
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s" % (_("Would you like to remove them now ?"),) )
             else:

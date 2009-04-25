@@ -2058,9 +2058,7 @@ class Server(Singleton,TextInterface):
         toBeInjected = set()
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         exp_based_scope = my_settings['exp_based_scope']
-        # 3600 * 24 = 86400
-        pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
-        cur_unix_time = self.entropyTools.get_current_unix_time()
+
         server_repos = my_settings['repositories'].keys()
         exp_pkgs_cache = {}
 
@@ -2148,26 +2146,16 @@ class Server(Singleton,TextInterface):
                         plg_id = self.sys_settings_fatscope_plugin_id
                         exp_data = self.SystemSettings[plg_id]['repos'].get(xrepo, set())
 
-                        # all the packages support fat scope
-                        if -1 in exp_data:
-                            continue
                         # only some packages are set, check if our is
                         # in the list
-                        if idpackage not in exp_data:
+                        if (idpackage not in exp_data) and (-1 not in exp_data):
                             toBeRemoved.add((idpackage,xrepo))
                             continue
 
-                        # if packages removal is triggered by expiration
-                        # we will have to check if our package is really
-                        # expired and remove its reverse deps too
-                        mydate = dbconn.retrieveDateCreation(idpackage)
-                        if not isinstance(mydate, basestring):
-                            # broken date entry?
-                            toBeRemoved.add((idpackage,xrepo))
-                            continue
-                        # cross fingers hoping that time is set correctly
-                        mydelta = cur_unix_time - float(mydate)
-                        if mydelta > pkg_exp_secs:
+                        idpackage_expired = self.is_match_expired((idpackage,
+                            xrepo,))
+
+                        if idpackage_expired:
                             # expired !!!
                             # add this and its depends (reverse deps)
                             toBeRemoved.add((idpackage,xrepo))
@@ -2178,6 +2166,24 @@ class Server(Singleton,TextInterface):
                         toBeRemoved.add((idpackage,xrepo))
 
         return toBeAdded, toBeRemoved, toBeInjected
+
+    def is_match_expired(self, match):
+
+        idpackage, repoid = match
+        dbconn = self.open_server_repository(repo = repoid, just_reading = True)
+        # 3600 * 24 = 86400
+        my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
+        cur_unix_time = self.entropyTools.get_current_unix_time()
+        # if packages removal is triggered by expiration
+        # we will have to check if our package is really
+        # expired and remove its reverse deps too
+        mydate = dbconn.retrieveDateCreation(idpackage)
+        # cross fingers hoping that time is set correctly
+        mydelta = cur_unix_time - float(mydate)
+        if mydelta > pkg_exp_secs:
+            return True
+        return False
 
     def is_counter_trashed(self, counter):
         server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
