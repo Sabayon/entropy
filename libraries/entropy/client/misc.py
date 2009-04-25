@@ -95,7 +95,7 @@ class FileUpdates:
                 if z != None:
                     self.scandata = z
                     return self.scandata
-            except:
+            except (CacheCorruptionError, KeyError, IOError, OSError,):
                 pass
 
         scandata = {}
@@ -148,16 +148,15 @@ class FileUpdates:
                                 )
                             if os.path.isfile(etpConst['systemroot']+mydict['source']):
                                 try:
-                                    shutil.move(    etpConst['systemroot']+mydict['source'],
-                                                    etpConst['systemroot']+mydict['destination']
-                                    )
-                                except IOError, e:
+                                    os.rename(etpConst['systemroot']+mydict['source'],
+                                        etpConst['systemroot']+mydict['destination'])
+                                except (OSError, IOError,), e:
                                     if not quiet:
                                         mytxt = "%s :: %s: %s. %s: %s" % (
-                                            red(_("I/O Error")),
+                                            red(_("System Error")),
                                             red(_("Cannot automerge file")),
                                             brown(etpConst['systemroot'] + mydict['source']),
-                                            blue("Error"),
+                                            blue("error"),
                                             e,
                                         )
                                         self.Entropy.updateProgress(
