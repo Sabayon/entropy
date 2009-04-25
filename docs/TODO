@@ -18,6 +18,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - view mode menu for the main treeview
         - Implement entropy:// URI handler
         - Smart applications desktop handler
+        - message when a repo is not avail, asking to download (same for equo?)
 
     Only if possible:
     - server side upload digest verification (ditch crappy handlers?)
