@@ -89,7 +89,7 @@ class SystemSettingsPlugin:
         self.__plugin_id = plugin_id
         self._helper = helper_interface
         parser_postfix = "_parser"
-        for method in dir(self):
+        for method in sorted(dir(self)):
             if method == "add_parser":
                 continue
             elif method.endswith(parser_postfix) and (method != parser_postfix):
