@@ -1219,13 +1219,38 @@ class LocalRepository:
             formatted_content = formattedContent)
 
     def retrieve_packages_to_remove(self, name, category, slot, injected):
+
         removelist = set()
+
+        # support for expiration-based packages handling, also internally
+        # called Fat Scope.
+        filter_similar = False
+        srv_ss_plg = etpConst['system_settings_plugins_ids']['server_plugin']
+        srv_ss_fs_plg = \
+            etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
+
+        if not self.clientDatabase: # server-side db
+            srv_plug_settings = self.SystemSettings.get(srv_ss_plg)
+            if srv_plug_settings != None:
+                if srv_plug_settings['server']['exp_based_scope']:
+                    # in case support is enabled, return an empty set
+                    filter_similar = True
 
         searchsimilar = self.searchPackagesByNameAndCategory(
             name = name,
             category = category,
             sensitive = True
         )
+        if filter_similar:
+            # filter out packages in the same scope that are allowed to stay
+            idpkgs = self.SystemSettings[srv_ss_fs_plg]['repos'].get(
+                self.server_repo)
+            if idpkgs:
+                if -1 in idpkgs:
+                    del searchsimilar[:]
+                else:
+                    searchsimilar = [x for x in searchsimilar if x[1] \
+                        not in idpkgs]
 
         if not injected:
             # read: if package has been injected, we'll skip
@@ -4305,6 +4330,8 @@ class LocalRepository:
 
     def regenerateCountersTable(self, vdb_path, output = False):
         self.createCountersTable()
+        # this is necessary now, counters table should be empty
+        self.cursor.execute("DELETE FROM counters;")
         # assign a counter to an idpackage
         myids = self.listAllIdpackages()
         counter_path = etpConst['spm']['xpak_entries']['counter']

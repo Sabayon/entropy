@@ -944,6 +944,13 @@ class Server:
             if not download:
                 critical.append(data['database_license_whitelist_file'])
 
+        exp_based_pkgs_removal_file = self.Entropy.get_local_exp_based_pkgs_rm_whitelist_file(repo)
+        extra_text_files.append(exp_based_pkgs_removal_file)
+        if os.path.isfile(exp_based_pkgs_removal_file) or download:
+            data['exp_based_pkgs_removal_file'] = exp_based_pkgs_removal_file
+            if not download:
+                critical.append(data['exp_based_pkgs_removal_file'])
+
         database_rss_file = self.Entropy.get_local_database_rss_file(repo)
         if os.path.isfile(database_rss_file) or download:
             data['database_rss_file'] = database_rss_file

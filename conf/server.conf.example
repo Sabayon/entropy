@@ -65,6 +65,21 @@ database-format|bz2
 # everything (backup first!).
 # disabled-eapis|1,2
 
+# WARNING: E X P E R I M E N T A L
+# Automatic multiple packages support through expiration.
+# If you enable this option, your repository will feature multiple package
+# versions support inside the same scope (key + slot + tag).
+# It is disabled by default.
+# To enable this feature you need to explicitly tell Entropy the packages
+# that can be kept by creating a file in the repository database dir called:
+# "packages.db.fatscope", listing atoms one per line. Wildcard char (*) can
+# be used to enable the feature on all packages.
+# ATTENTION !!!: still, there is one unsolved "bad behaviour" for now.
+# Due to the nature of OSS libraries (breaking API/ABI every odd day),
+# YOU are responsible of potential older packages inconsistencies due to this.
+# expiration-based-scope|disable
+
+
 # Online RSS support to track changes of the things happened on the database.
 # Here are basic settings, like the ability to enable/disable this feature or
 # set the name of the feed.

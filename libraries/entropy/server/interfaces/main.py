@@ -35,7 +35,7 @@ from entropy.core import SystemSettings, SystemSettingsPlugin
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
-    def server_parser(self, sys_settings_instance):
+    def server_parser(self, sys_set):
 
         """
         Parses Entropy server system configuration file.
@@ -50,6 +50,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
             'disabled_eapis': set(),
+            'exp_based_scope': etpConst['expiration_based_scope'],
             'rss': {
                 'enabled': etpConst['rss-feed'],
                 'name': etpConst['rss-name'],
@@ -80,8 +81,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 data['branches'] = []
                 for branch in branches.split():
                     data['branches'].append(branch)
-                if sys_settings_instance['repositories']['branch'] not in data['branches']:
-                    data['branches'].append(sys_settings_instance['repositories']['branch'])
+                if sys_set['repositories']['branch'] not in data['branches']:
+                    data['branches'].append(sys_set['repositories']['branch'])
                 data['branches'] = sorted(data['branches'])
 
             elif (line.find("officialserverrepositoryid|") != -1) and \
@@ -90,8 +91,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 if not fake_instance:
                     data['default_repository_id'] = split_line[1].strip()
 
-            elif (line.find("expiration-days|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif line.startswith("expiration-days|") and (split_line_len == 2):
 
                 mydays = split_line[1].strip()
                 try:
@@ -99,6 +99,15 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     data['packages_expiration_days'] = mydays
                 except ValueError:
                     continue
+
+            elif line.startswith("expiration-based-scope|") and \
+                (split_line_len == 2):
+
+                exp_opt = split_line[1].strip().lower()
+                if exp_opt in ("enable", "enabled", "true", "1", "yes"):
+                    data['exp_based_scope'] = True
+                else:
+                    data['exp_based_scope'] = False
 
             elif line.startswith("disabled-eapis|") and (split_line_len == 2):
 
@@ -116,7 +125,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 and (not fake_instance):
 
                 repoid, repodata = const_extract_srv_repo_params(line,
-                    product = sys_settings_instance['repositories']['product'])
+                    product = sys_set['repositories']['product'])
                 if repoid in data['repositories']:
                     # just update mirrors
                     data['repositories'][repoid]['mirrors'].extend(
@@ -205,13 +214,13 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                                 etpSys['arch']
                             )
             data['repositories'][repoid]['packages_relative_path'] = \
-                os.path.join(   sys_settings_instance['repositories']['product'],
+                os.path.join(   sys_set['repositories']['product'],
                                 repoid,
                                 "packages",
                                 etpSys['arch']
                             )+"/"
             data['repositories'][repoid]['database_relative_path'] = \
-                os.path.join(   sys_settings_instance['repositories']['product'],
+                os.path.join(   sys_set['repositories']['product'],
                                 repoid,
                                 "database",
                                 etpSys['arch']
@@ -231,6 +240,44 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 pass
 
         return data
+
+class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
+
+    import entropy.tools as entropyTools
+
+    def repos_parser(self, sys_set):
+
+        data = {}
+        srv_plug_id = etpConst['system_settings_plugins_ids']['server_plugin']
+        # if support is not enabled, don't waste time scanning files
+        srv_parser_data = sys_set[srv_plug_id]['server']
+        if not srv_parser_data['exp_based_scope']:
+            return data
+
+        # get expiration-based packages removal data from config files
+        for repoid in srv_parser_data['repositories']:
+
+            idpackages = set()
+            exp_fp = self._helper.get_local_exp_based_pkgs_rm_whitelist_file(
+                repo = repoid)
+            dbconn = self._helper.open_server_repository(
+                just_reading = True, repo = repoid)
+
+            if os.access(exp_fp, os.R_OK | os.F_OK):
+                pkgs = self.entropyTools.generic_file_content_parser(exp_fp)
+                if '*' in pkgs: # wildcard support
+                    idpackages.add(-1)
+                else:
+                    for pkg in pkgs:
+                        idpackage, rc = dbconn.atomMatch(pkg)
+                        if rc:
+                            continue
+                        idpackages.add(idpackage)
+
+            data[repoid] = idpackages
+
+        return data
+
 
 class Server(Singleton,TextInterface):
 
@@ -292,6 +339,13 @@ class Server(Singleton,TextInterface):
             self.sys_settings_plugin_id, self)
         self.SystemSettings.add_plugin(self.sys_settings_plugin)
 
+        # Fatscope support SystemSettings plugin
+        self.sys_settings_fatscope_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
+        self.sys_settings_fatscope_plugin = ServerFatscopeSystemSettingsPlugin(
+            self.sys_settings_fatscope_plugin_id, self)
+        self.SystemSettings.add_plugin(self.sys_settings_fatscope_plugin)
+
         self.default_repository = default_repository
         if self.default_repository == None:
             self.default_repository = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
@@ -325,8 +379,13 @@ class Server(Singleton,TextInterface):
             self.ClientService.destroy()
         if hasattr(self,'sys_settings_server_plugin'):
             try:
+                self.SystemSettings.remove_plugin(self.sys_settings_plugin_id)
+            except KeyError:
+                pass
+        if hasattr(self,'sys_settings_fatscope_plugin'):
+            try:
                 self.SystemSettings.remove_plugin(
-                    self.sys_settings_plugin_id)
+                    self.sys_settings_fatscope_plugin)
             except KeyError:
                 pass
         self.close_server_databases()
@@ -401,6 +460,7 @@ class Server(Singleton,TextInterface):
         mydata['mirrors'] = []
         mydata['community'] = False
         self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][etpConst['clientserverrepoid']].update(mydata)
+        print self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
 
     def setup_services(self):
         self.setup_entropy_settings()
@@ -1858,6 +1918,12 @@ class Server(Singleton,TextInterface):
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemetafilesnotfound'])
 
+    def get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabaseexpbasedpkgsrm'])
+
     def get_local_database_sets_dir(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
@@ -1987,8 +2053,13 @@ class Server(Singleton,TextInterface):
         toBeAdded = set()
         toBeRemoved = set()
         toBeInjected = set()
-
-        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        exp_based_scope = my_settings['exp_based_scope']
+        # 3600 * 24 = 86400
+        pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
+        cur_unix_time = self.entropyTools.get_current_unix_time()
+        server_repos = my_settings['repositories'].keys()
+        exp_pkgs_cache = {}
 
         # packages to be added
         for spm_atom,spm_counter in installed_packages:
@@ -2002,6 +2073,8 @@ class Server(Singleton,TextInterface):
                     break
             if not found:
                 toBeAdded.add((spm_atom,spm_counter,))
+
+        import pdb; pdb.set_trace()
 
         # packages to be removed from the database
         database_counters = {}
@@ -2061,11 +2134,45 @@ class Server(Singleton,TextInterface):
                     except TypeError: # referred to retrieveKeySlot
                         trashed = True
                 if not trashed:
+
                     dbtag = dbconn.retrieveVersionTag(idpackage)
-                    if dbtag != '':
+                    if dbtag:
                         is_injected = dbconn.isInjected(idpackage)
                         if not is_injected:
                             toBeInjected.add((idpackage,xrepo))
+
+                    elif exp_based_scope:
+
+                        # check if support for this is set
+                        plg_id = self.sys_settings_fatscope_plugin_id
+                        exp_data = self.SystemSettings[plg_id]['repos'].get(xrepo, set())
+
+                        # all the packages support fat scope
+                        if -1 in exp_data:
+                            continue
+                        # only some packages are set, check if our is
+                        # in the list
+                        if idpackage not in exp_data:
+                            toBeRemoved.add((idpackage,xrepo))
+                            continue
+
+                        # if packages removal is triggered by expiration
+                        # we will have to check if our package is really
+                        # expired and remove its reverse deps too
+                        mydate = dbconn.retrieveDateCreation(idpackage)
+                        if not isinstance(mydate, basestring):
+                            # broken date entry?
+                            toBeRemoved.add((idpackage,xrepo))
+                            continue
+                        # cross fingers hoping that time is set correctly
+                        mydelta = cur_unix_time - float(mydate)
+                        if mydelta > pkg_exp_secs:
+                            # expired !!!
+                            # add this and its depends (reverse deps)
+                            toBeRemoved.add((idpackage,xrepo))
+                            for my_id in dbconn.retrieveDepends(idpackage):
+                                toBeRemoved.add((my_id,xrepo))
+
                     else:
                         toBeRemoved.add((idpackage,xrepo))
 

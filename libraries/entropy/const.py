@@ -290,6 +290,8 @@ def const_default_settings(rootdir):
         'etpdatabasedumpgzip': default_etp_dbfile+".dump.gz",
         # Entropy sqlite database dump file
         'etpdatabasedump': default_etp_dbfile+".dump",
+        # expiration based server-side packages removal
+        'etpdatabaseexpbasedpkgsrm': default_etp_dbfile+".fatscope",
 
         # Entropy default compressed database format
         'etpdatabasefileformat': "bz2",
@@ -388,6 +390,10 @@ def const_default_settings(rootdir):
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]),
         # Gentoo compatibility (/var/db/pkg + Portage availability)
         'gentoo-compat': True,
+        # allow multiple packages in single scope server-side?
+        # this makes possible to have multiple versions of packages
+        # and handle the removal through expiration (using creation date)
+        'expiration_based_scope': False,
         'edbcounter': edb_counter,
         'libtest_blacklist': [],
         'libtest_files_blacklist': [],
@@ -533,6 +539,7 @@ def const_default_settings(rootdir):
         'system_settings_plugins_ids': {
             'client_plugin': "client_plugin",
             'server_plugin': "server_plugin",
+            'server_plugin_fatscope': "server_plugin_fatscope",
         },
 
         'clientserverrepoid': "__system__",
