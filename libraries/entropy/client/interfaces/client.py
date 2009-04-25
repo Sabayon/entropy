@@ -82,66 +82,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
         return data
 
-    def repo_setup_parser(self, system_settings_instance):
-
-        # this makes sure that repository metadata is initialized
-        # in fact, CONFIG_PROTECT and CONFIG_PROTECT_MASK are stored
-        # inside the database.
-        # We won't care about load errors since db will be always
-        # initialized
-        avail_repos = system_settings_instance['repositories']['available']
-        for repoid in avail_repos:
-            if not self._helper.is_repository_connection_cached(repoid):
-                continue
-            try:
-                dbconn = self._helper.open_repository(repoid)
-                self._helper.setup_repository_config(repoid, dbconn)
-            except RepositoryError:
-                pass
-
-    def client_repo_parser(self, system_settings_instance):
-
-        data = {
-            'config_protect': [],
-            'config_protect_mask': [],
-        }
-        if self._helper.clientDbconn != None:
-
-            # FIXME: workaround because this method is called
-            # before misc_parser
-            misc_data = self.misc_parser(system_settings_instance)
-            config_protect = []
-            config_protect_mask = []
-            conn = self._helper.clientDbconn
-            try:
-                config_protect = conn.listConfigProtectDirectories()
-            except (dbapi2.Error,):
-                pass
-            try:
-                config_protect_mask = \
-                    conn.listConfigProtectDirectories(mask = True)
-            except (dbapi2.Error,):
-                pass
-
-            config_protect = [etpConst['systemroot']+x for x in config_protect]
-            config_protect_mask = [etpConst['systemroot']+x for x in \
-                config_protect_mask]
-
-            sys_set_plg_id = \
-                etpConst['system_settings_plugins_ids']['client_plugin']
-            sys_conf_protect = misc_data['configprotect']
-            sys_conf_protect_mask = misc_data['configprotectmask']
-
-            data['config_protect'] = config_protect + [
-                etpConst['systemroot']+x for x in sys_conf_protect if \
-                etpConst['systemroot']+x not in config_protect]
-
-            data['config_protect_mask'] = config_protect_mask + [
-                etpConst['systemroot']+x for x in sys_conf_protect_mask if \
-                etpConst['systemroot']+x not in config_protect_mask]
-
-        return data
-
     def misc_parser(self, sys_settings_instance):
 
         """

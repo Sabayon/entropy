@@ -173,12 +173,6 @@ class RepositoryMixin:
                 ServiceInterface = self
             )
 
-        # initialize CONFIG_PROTECT
-        this_repo_data = repo_data[repoid]
-        if (this_repo_data['configprotect'] == None) or \
-            (this_repo_data['configprotectmask'] == None):
-            self.setup_repository_config(repoid, conn)
-
         if (repoid not in etpConst['client_treeupdatescalled']) and \
             (self.entropyTools.is_user_in_entropy_group()) and \
             (not repoid.endswith(etpConst['packagesext'])):
@@ -194,34 +188,6 @@ class RepositoryMixin:
                     self.clear_dump_cache(etpCache['remove'])
                     self.calculate_world_updates(use_cache = False)
         return conn
-
-    def setup_repository_config(self, repoid, dbconn):
-
-        try:
-            self.SystemSettings['repositories']['available'][repoid]['configprotect'] = dbconn.listConfigProtectDirectories()
-        except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
-            self.SystemSettings['repositories']['available'][repoid]['configprotect'] = []
-        try:
-            self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = dbconn.listConfigProtectDirectories(mask = True)
-        except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
-            self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = []
-
-        self.SystemSettings['repositories']['available'][repoid]['configprotect'] = [etpConst['systemroot']+x for \
-            x in self.SystemSettings['repositories']['available'][repoid]['configprotect']]
-        self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] = [etpConst['systemroot']+x for \
-            x in self.SystemSettings['repositories']['available'][repoid]['configprotectmask']]
-
-        sys_set_plg_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
-        conf_protect = self.SystemSettings[sys_set_plg_id]['misc']['configprotect']
-        conf_protect_mask = self.SystemSettings[sys_set_plg_id]['misc']['configprotectmask']
-
-        self.SystemSettings['repositories']['available'][repoid]['configprotect'] += [etpConst['systemroot']+x for \
-            x in conf_protect if etpConst['systemroot']+x not \
-                in self.SystemSettings['repositories']['available'][repoid]['configprotect']]
-        self.SystemSettings['repositories']['available'][repoid]['configprotectmask'] += [etpConst['systemroot']+x for \
-            x in conf_protect_mask if etpConst['systemroot']+x not \
-                in self.SystemSettings['repositories']['available'][repoid]['configprotectmask']]
 
     def get_repository_revision(self, reponame):
         fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
@@ -258,8 +224,6 @@ class RepositoryMixin:
         try:
             self.SystemSettings['repositories']['available'][repodata['repoid']] = {}
             self.SystemSettings['repositories']['available'][repodata['repoid']]['description'] = repodata['description']
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['configprotect'] = None
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['configprotectmask'] = None
         except KeyError:
             t = _("repodata dictionary is corrupted")
             raise InvalidData("InvalidData: %s" % (t,))
@@ -915,7 +879,6 @@ class MiscMixin:
             repositories = self.validRepositories
         for repoid in repositories:
             dbconn = self.open_repository(repoid)
-            self.setup_repository_config(repoid, dbconn)
 
     def switch_chroot(self, chroot = ""):
         # clean caches
@@ -1364,6 +1327,27 @@ class MiscMixin:
             config_protect |= set(misc_data['configprotectmask'])
         else:
             _protect = self.clientDbconn.retrieveProtect(idpackage).split()
+            config_protect = set(_protect)
+            config_protect |= set(misc_data['configprotect'])
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
+
+        return sorted(config_protect)
+
+    def get_system_config_protect(self, mask = False):
+
+        if self.clientDbconn == None:
+            return []
+
+        # FIXME: workaround because this method is called
+        # before misc_parser
+        cl_id = self.sys_settings_client_plugin_id
+        misc_data = self.SystemSettings[cl_id]['misc']
+        if mask:
+            _pmask = self.clientDbconn.listConfigProtectDirectories(mask = True)
+            config_protect = set(_pmask)
+            config_protect |= set(misc_data['configprotectmask'])
+        else:
+            _protect = self.clientDbconn.listConfigProtectDirectories()
             config_protect = set(_protect)
             config_protect |= set(misc_data['configprotect'])
         config_protect = [etpConst['systemroot']+x for x in config_protect]

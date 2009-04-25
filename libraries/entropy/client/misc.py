@@ -101,8 +101,7 @@ class FileUpdates:
         scandata = {}
         counter = 0
         name_cache = set()
-        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        client_conf_protect = self.SystemSettings[client_plugin_id]['client_repo']['config_protect']
+        client_conf_protect = self.Entropy.get_system_config_protect()
         for path in client_conf_protect:
             # it's a file?
             scanfile = False
