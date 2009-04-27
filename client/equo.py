@@ -396,6 +396,11 @@ for opt in options:
         _options.append(opt)
 options = _options
 
+# 'equo help' support
+if options:
+    if options[0] == "help":
+        options.insert(0,"--help")
+
 # print help
 if (not options) or ("--help" in options):
     print_menu(myopts)
