@@ -117,6 +117,43 @@ class LocalRepositoryTest(unittest.TestCase):
         masking_validation.clear()
         self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
 
+    def test_db_insert_compare_match_utf2(self):
+
+        # insert/compare
+        test_pkg = _misc.get_test_package3()
+        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(new_data, db_data)
+
+        # match
+        nf_match = (-1, 1)
+        f_match = (1, 0)
+        pkg_atom = _misc.get_test_package_atom3()
+        pkg_name = _misc.get_test_package_name3()
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
+        self.assertEqual(f_match,
+            self.test_db.atomMatch(pkg_name))
+        self.assertEqual(f_match,
+            self.test_db.atomMatch(pkg_atom))
+
+        # test package masking
+        plug_id = self.client_sysset_plugin_id
+        masking_validation = \
+            self.SystemSettings[plug_id]['masking_validation']['cache']
+        f_match_mask = (1, 
+            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+
+        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+            f_match_mask)
+        masking_validation.clear()
+        self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
+        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+            f_match_mask)
+        masking_validation.clear()
+        self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
     def test_db_import_export(self):
 
         test_pkg = _misc.get_test_package2()

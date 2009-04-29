@@ -19,6 +19,10 @@ def get_test_package2():
     test_pkg = "aspell-es-0.50.2.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_package3():
+    test_pkg = "apache-tools-2.2.11.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_entropy_package():
     test_pkg = "sys-libs:zlib-1.2.3-r1~1.tbz2"
     return get_test_generic_package(test_pkg)
@@ -29,8 +33,14 @@ def get_test_package_name():
 def get_test_package_name2():
     return "aspell-es"
 
-def get_test_package_atom2():
-    return "app-dicts/aspell-es-0.50.2"
+def get_test_package_name3():
+    return "apache-tools"
 
 def get_test_package_atom():
     return "sys-libs/zlib-1.2.3-r1"
+
+def get_test_package_atom2():
+    return "app-dicts/aspell-es-0.50.2"
+
+def get_test_package_atom3():
+    return "app-admin/apache-tools-2.2.11"
