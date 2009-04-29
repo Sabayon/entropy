@@ -201,7 +201,7 @@ class ExtractorsMixin:
                     #if lib.find(".so") != -1:
                     pkg_needed.add((lib,ownelf))
 
-        return list(pkg_needed)
+        return sorted(pkg_needed)
 
     def _extract_pkg_metadata_messages(self, log_dir, category, name, version, silent = False):
 
@@ -247,7 +247,18 @@ class ExtractorsMixin:
                 if os.access(licfile,os.R_OK):
                     if self.entropyTools.istextfile(licfile):
                         f = open(licfile)
-                        pkg_licensedata[mylicense] = f.read().decode('raw_unicode_escape')
+                        content = ''
+                        line = f.readline()
+                        while line:
+                            content += line
+                            line = f.readline()
+                        try:
+                            try:
+                                pkg_licensedata[mylicense] = content.decode('raw_unicode_escape')
+                            except UnicodeDecodeError:
+                                pkg_licensedata[mylicense] = unicode(content,'utf-8')
+                        except (UnicodeDecodeError, UnicodeEncodeError,):
+                            continue # sorry!
                         f.close()
 
         return pkg_licensedata
@@ -260,7 +271,7 @@ class ExtractorsMixin:
             if i.startswith("mirror://"):
                 # parse what mirror I need
                 mirrorURI = i.split("/")[2]
-                mirrorlist = Spm.get_third_party_mirrors(mirrorURI)
+                mirrorlist = set(Spm.get_third_party_mirrors(mirrorURI))
                 pkg_links.append([mirrorURI,mirrorlist])
                 # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
