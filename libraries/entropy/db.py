@@ -4354,9 +4354,8 @@ class LocalRepository:
             myatomcounterpath = "%s%s/%s" % (vdb_path, myatom, counter_path,)
             if os.path.isfile(myatomcounterpath):
                 try:
-                    f = open(myatomcounterpath, "r")
-                    counter = int(f.readline().strip())
-                    f.close()
+                    with open(myatomcounterpath, "r") as f:
+                        counter = int(f.readline().strip())
                 except:
                     if output:
                         mytxt = "%s: %s: %s" % (
