@@ -2880,7 +2880,12 @@ class LocalRepository:
         packagechangelogs.name = baseinfo.name AND 
         packagechangelogs.category = categories.category""", (idpackage,))
         changelog = self.cursor.fetchone()
-        if changelog: return unicode(changelog[0], 'raw_unicode_escape')
+        if changelog:
+            changelog = changelog[0]
+            try:
+                return unicode(changelog, 'raw_unicode_escape')
+            except UnicodeDecodeError:
+                return unicode(changelog, 'utf-8')
 
     def retrieveChangelogByKey(self, category, name):
         if not self.doesTableExist('packagechangelogs'):
@@ -2941,7 +2946,11 @@ class LocalRepository:
             self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
             lictext = self.cursor.fetchone()
             if lictext != None:
-                licdata[licname] = unicode(lictext[0], 'raw_unicode_escape')
+                lictext = lictext[0]
+                try:
+                    licdata[licname] = unicode(lictext, 'raw_unicode_escape')
+                except UnicodeDecodeError:
+                    licdata[licname] = unicode(lictext, 'utf-8')
 
         return licdata
 
