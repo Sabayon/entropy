@@ -15,6 +15,9 @@ def get_test_package():
     test_pkg = "zlib-1.2.3-r1.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_package2():
+    test_pkg = "aspell-es-0.50.2.tbz2"
+    return get_test_generic_package(test_pkg)
 
 def get_test_entropy_package():
     test_pkg = "sys-libs:zlib-1.2.3-r1~1.tbz2"
@@ -22,6 +25,12 @@ def get_test_entropy_package():
 
 def get_test_package_name():
     return "zlib"
+
+def get_test_package_name2():
+    return "aspell-es"
+
+def get_test_package_atom2():
+    return "app-dicts/aspell-es-0.50.2"
 
 def get_test_package_atom():
     return "sys-libs/zlib-1.2.3-r1"

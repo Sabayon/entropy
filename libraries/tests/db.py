@@ -3,7 +3,7 @@ import sys
 import unittest
 import os
 from entropy.client.interfaces import Client
-from entropy.const import etpConst
+from entropy.const import etpConst, etpUi
 from entropy.core import SystemSettings
 from entropy.db import LocalRepository
 import _misc
@@ -73,6 +73,83 @@ class LocalRepositoryTest(unittest.TestCase):
             f_match_mask)
         masking_validation.clear()
         self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
+    def test_db_insert_compare_match_utf(self):
+
+        # insert/compare
+        test_pkg = _misc.get_test_package2()
+        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        # Portage stores them this way
+        data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
+        data['license'] = u'GPL-2'
+        data['licensedata'] = {
+            u'GPL-2': u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel",
+        }
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(new_data, db_data)
+
+        # match
+        nf_match = (-1, 1)
+        f_match = (1, 0)
+        pkg_atom = _misc.get_test_package_atom2()
+        pkg_name = _misc.get_test_package_name2()
+        self.assertEqual(nf_match, self.test_db.atomMatch("slib"))
+        self.assertEqual(f_match,
+            self.test_db.atomMatch(pkg_name))
+        self.assertEqual(f_match,
+            self.test_db.atomMatch(pkg_atom))
+
+        # test package masking
+        plug_id = self.client_sysset_plugin_id
+        masking_validation = \
+            self.SystemSettings[plug_id]['masking_validation']['cache']
+        f_match_mask = (1, 
+            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+
+        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+            f_match_mask)
+        masking_validation.clear()
+        self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
+        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+            f_match_mask)
+        masking_validation.clear()
+        self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+
+    def test_db_import_export(self):
+
+        test_pkg = _misc.get_test_package2()
+        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        # Portage stores them this way
+        data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
+        data['license'] = u'GPL-2'
+        data['licensedata'] = {
+            u'GPL-2': u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel",
+        }
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(new_data, db_data)
+
+        etpUi['mute'] = True
+
+        # export
+        buf_file = "dbtst.txt"
+        buf = open(buf_file,"w")
+        self.test_db.doDatabaseExport(buf)
+        buf.flush()
+        buf.close()
+
+        new_db_path = "test_db_import_export.db"
+        self.test_db.doDatabaseImport(buf_file, new_db_path)
+        new_db = self.Client.open_generic_database(new_db_path)
+        new_db_data = new_db.getPackageData(idpackage)
+        new_db.closeDB()
+        etpUi['mute'] = False
+        self.assertEqual(new_db_data, db_data)
+        os.remove(buf_file)
+        os.remove(new_db_path)
+
 
     def test_db_package_sets(self):
 
