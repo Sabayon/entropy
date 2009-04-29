@@ -1383,11 +1383,8 @@ class LocalRepository:
         self.insertMirrors(etpData['mirrorlinks'])
         # package ChangeLog
         if etpData.get('changelog'):
-            try:
-                self.insertChangelog(etpData['category'], etpData['name'],
-                    etpData['changelog'])
-            except (UnicodeEncodeError, UnicodeDecodeError,):
-                pass
+            self.insertChangelog(etpData['category'], etpData['name'],
+                etpData['changelog'])
         # package signatures
         if etpData.get('signatures'):
             self.insertSignatures(idpackage, etpData['signatures'])
@@ -1771,11 +1768,8 @@ class LocalRepository:
             if already_formatted:
                 self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',((idpackage, x, y,) for a, x, y in content))
                 return
-            do_encode = [1 for x in content if type(x) is unicode]
             def my_cmap(xfile):
-                contenttype = content[xfile]
-                if do_encode: xfile = xfile.encode('raw_unicode_escape')
-                return (idpackage, xfile, contenttype,)
+                return (idpackage, xfile, content[xfile],)
             self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap, content))
 
     def insertAutomergefiles(self, idpackage, automerge_data):
@@ -1797,8 +1791,7 @@ class LocalRepository:
 
     def insertChangelog(self, category, name, changelog_txt):
         with self.WriteLock:
-            mytxt = changelog_txt
-            if isinstance(mytxt, unicode): mytxt = mytxt.encode('raw_unicode_escape')
+            mytxt = changelog_txt.encode('raw_unicode_escape')
             self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
             self.cursor.execute('INSERT INTO packagechangelogs VALUES (?,?,?)', (category, name, buffer(mytxt),))
 
@@ -1814,7 +1807,9 @@ class LocalRepository:
             return not is_lic_avail(mylicense)
 
         def my_mm(mylicense):
-            return (mylicense, buffer(licenses_data.get(mylicense)), 0,)
+            lic_data = licenses_data.get(mylicense,u'')
+            lic_data = lic_data.encode('raw_unicode_escape')
+            return (mylicense, buffer(lic_data), 0,)
 
         with self.WriteLock:
             self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',map(my_mm, list(set(filter(my_mf, mylicenses)))))
@@ -2824,9 +2819,6 @@ class LocalRepository:
 
     def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False, order_by = ''):
 
-        # like portage does
-        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-
         extstring = ''
         if extended:
             extstring = ",type"
@@ -2844,30 +2836,43 @@ class LocalRepository:
         if order_by:
             order_by_string = ' order by %s' % (order_by,)
 
-        self.cursor.execute('SELECT %s file%s FROM content WHERE idpackage = (?) %s%s' % (extstring_idpackage, extstring, contentstring, order_by_string,), searchkeywords)
+        did_try = False
+        while 1:
+            try:
 
-        if extended and insert_formatted:
-            fl = self.cursor.fetchall()
-        elif extended and formatted:
-            fl = {}
-            items = self.cursor.fetchone()
-            while items:
-                fl[items[0]] = items[1]
-                items = self.cursor.fetchone()
-        elif extended:
-            fl = self.cursor.fetchall()
-        else:
-            if order_by:
-                fl = self.fetchall2list(self.cursor.fetchall())
-            else:
-                fl = self.fetchall2set(self.cursor.fetchall())
+                self.cursor.execute('SELECT %s file%s FROM content WHERE idpackage = (?) %s%s' % (
+                    extstring_idpackage, extstring, contentstring, order_by_string,),
+                    searchkeywords)
 
+                if extended and insert_formatted:
+                    fl = self.cursor.fetchall()
+                elif extended and formatted:
+                    fl = {}
+                    items = self.cursor.fetchone()
+                    while items:
+                        fl[items[0]] = items[1]
+                        items = self.cursor.fetchone()
+                elif extended:
+                    fl = self.cursor.fetchall()
+                else:
+                    if order_by:
+                        fl = self.fetchall2list(self.cursor.fetchall())
+                    else:
+                        fl = self.fetchall2set(self.cursor.fetchall())
+                break
+            except (self.dbapi2.OperationalError,):
+                if did_try:
+                    raise
+                did_try = True
+                # XXX support for old entropy db entries, which were
+                # not inserted in utf-8
+                self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+                continue
         return fl
 
     def retrieveChangelog(self, idpackage):
         if not self.doesTableExist('packagechangelogs'):
             return None
-        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         self.cursor.execute("""
         SELECT packagechangelogs.changelog FROM packagechangelogs,baseinfo,categories 
         WHERE baseinfo.idpackage = (?) AND 
@@ -2912,7 +2917,6 @@ class LocalRepository:
         data = {}
         if not self.doesTableExist("categoriesdescription"):
             return data
-        #self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         self.cursor.execute('SELECT description,locale FROM categoriesdescription WHERE category = (?)', (category,))
         description_data = self.cursor.fetchall()
         for description, locale in description_data:
@@ -2934,12 +2938,10 @@ class LocalRepository:
             if not self.entropyTools.is_valid_string(licname):
                 continue
 
-            self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-
             self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
             lictext = self.cursor.fetchone()
             if lictext != None:
-                licdata[licname] = str(lictext[0])
+                licdata[licname] = unicode(lictext[0], 'raw_unicode_escape')
 
         return licdata
 
@@ -5212,7 +5214,6 @@ class LocalRepository:
                             if pkgcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
                             elif (matchRevision != None) and pkgcmp <= 0 and revcmp < 0:
-                                #print "found >",self.retrieveAtom(idpackage)
                                 dbpkginfo.add((idpackage, dbver))
                             elif (matchTag != None) and tagcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
@@ -5220,7 +5221,6 @@ class LocalRepository:
                             if pkgcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
                             elif (matchRevision != None) and pkgcmp >= 0 and revcmp > 0:
-                                #print "found <",self.retrieveAtom(idpackage)
                                 dbpkginfo.add((idpackage, dbver))
                             elif (matchTag != None) and tagcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
@@ -5229,7 +5229,6 @@ class LocalRepository:
                                 if pkgcmp == 0:
                                     if revcmp <= 0:
                                         dbpkginfo.add((idpackage, dbver))
-                                        #print "found >=",self.retrieveAtom(idpackage)
                                 else:
                                     dbpkginfo.add((idpackage, dbver))
                             elif pkgcmp <= 0 and matchRevision == None:
@@ -5241,7 +5240,6 @@ class LocalRepository:
                                 if pkgcmp == 0:
                                     if revcmp >= 0:
                                         dbpkginfo.add((idpackage, dbver))
-                                        #print "found <=",self.retrieveAtom(idpackage)
                                 else:
                                     dbpkginfo.add((idpackage, dbver))
                             elif pkgcmp >= 0 and matchRevision == None:

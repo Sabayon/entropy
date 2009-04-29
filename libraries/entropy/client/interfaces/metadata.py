@@ -115,8 +115,9 @@ class ExtractorsMixin:
         pkg_content = {}
 
         if os.path.isfile(content_file):
+
             f = open(content_file,"r")
-            content = f.readlines()
+            content = [x.decode('raw_unicode_escape') for x in f.readlines()]
             f.close()
             outcontent = set()
             for line in content:
@@ -143,14 +144,9 @@ class ExtractorsMixin:
                 except:
                     pass
 
-            _outcontent = set()
-            for i in outcontent:
-                i = list(i)
-                datatype = i[1]
-                _outcontent.add((i[0],i[1]))
-            outcontent = sorted(_outcontent)
-            for i in outcontent:
-                pkg_content[i[0]] = i[1]
+            outcontent = sorted(outcontent)
+            for datafile, datatype in outcontent:
+                pkg_content[datafile] = datatype
 
         else:
 
@@ -163,19 +159,22 @@ class ExtractorsMixin:
                 os.makedirs(mytempdir)
 
             self.entropyTools.uncompress_tar_bz2(package_path, extractPath = mytempdir, catchEmpty = True)
+            tmpdir_len = len(mytempdir)
             for currentdir, subdirs, files in os.walk(mytempdir):
-                pkg_content[currentdir[len(mytempdir):]] = "dir"
+                pkg_content[currentdir[tmpdir_len:]] = u"dir"
                 for item in files:
                     item = currentdir+"/"+item
                     if os.path.islink(item):
-                        pkg_content[item[len(mytempdir):]] = "sym"
+                        pkg_content[item[tmpdir_len:]] = u"sym"
                     else:
-                        pkg_content[item[len(mytempdir):]] = "obj"
+                        pkg_content[item[tmpdir_len:]] = u"obj"
 
             # now remove
             shutil.rmtree(mytempdir,True)
-            try: os.rmdir(mytempdir)
-            except (OSError,): pass
+            try:
+                os.rmdir(mytempdir)
+            except (OSError,):
+                pass
 
         return pkg_content
 
@@ -186,7 +185,7 @@ class ExtractorsMixin:
 
         try:
             f = open(needed_file,"r")
-            lines = [x.strip() for x in f.readlines() if x.strip()]
+            lines = [x.decode('raw_unicode_escape').strip() for x in f.readlines() if x.strip()]
             f.close()
         except IOError:
             return lines
@@ -224,7 +223,7 @@ class ExtractorsMixin:
                 messages = self.entropyTools.extract_elog(os.path.join(log_dir,elogfile))
                 for message in messages:
                     message = message.replace("emerge","install")
-                    pkg_messages.append(message)
+                    pkg_messages.append(message.decode('raw_unicode_escape'))
 
         elif not silent:
 
@@ -248,7 +247,7 @@ class ExtractorsMixin:
                 if os.access(licfile,os.R_OK):
                     if self.entropyTools.istextfile(licfile):
                         f = open(licfile)
-                        pkg_licensedata[mylicense] = f.read()
+                        pkg_licensedata[mylicense] = f.read().decode('raw_unicode_escape')
                         f.close()
 
         return pkg_licensedata
@@ -271,7 +270,7 @@ class ExtractorsMixin:
         search_tag = etpConst['spm']['ebuild_pkg_tag_var']
         ebuild_tag = ''
         f = open(ebuild,"r")
-        tags = [x.strip() for x in f.readlines() if x.strip() and x.strip().startswith(search_tag)]
+        tags = [x.strip().decode('raw_unicode_escape') for x in f.readlines() if x.strip() and x.strip().startswith(search_tag)]
         f.close()
         if not tags: return ebuild_tag
         tag = tags[-1]
@@ -338,7 +337,7 @@ class ExtractorsMixin:
             value = ''
             try:
                 f = open(os.path.join(tbz2TmpDir,portage_entries[item]['path']),"r")
-                value = f.readline().strip()
+                value = f.readline().strip().decode('raw_unicode_escape')
                 f.close()
             except IOError:
                 if portage_entries[item]['critical']:
@@ -473,7 +472,7 @@ class ExtractorsMixin:
 
         if (kernelstuff) and (not kernelstuff_kernel):
             # add kname to the dependency
-            data['dependencies']["=sys-kernel/linux-"+kname+"-"+kver+"~-1"] = etpConst['spm']['(r)depend_id']
+            data['dependencies'][u"=sys-kernel/linux-"+kname+"-"+kver+"~-1"] = etpConst['spm']['(r)depend_id']
 
         # Conflicting tagged packages support
         key = data['category']+"/"+data['name']
