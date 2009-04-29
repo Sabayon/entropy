@@ -449,22 +449,27 @@ class RepositoryMixin:
             conn = load_db_from_ram()
             self.entropyTools.print_traceback(f = self.clientLog)
         else:
-            conn = LocalRepository(readOnly = False, dbFile = db_path,
-                clientDatabase = True, dbname = etpConst['clientdbid'],
-                xcache = self.xcache, indexing = self.indexing,
-                OutputInterface = self, ServiceInterface = self
-            )
-            # validate database
-            if not self.noclientdb:
-                try:
-                    conn.validateDatabase()
-                except SystemDatabaseError:
+            try:
+                conn = LocalRepository(readOnly = False, dbFile = db_path,
+                    clientDatabase = True, dbname = etpConst['clientdbid'],
+                    xcache = self.xcache, indexing = self.indexing,
+                    OutputInterface = self, ServiceInterface = self
+                )
+            except (self.dbapi2.DatabaseError,):
+                self.entropyTools.print_traceback(f = self.clientLog)
+                conn = load_db_from_ram()
+            else:
+                # validate database
+                if not self.noclientdb:
                     try:
-                        conn.closeDB()
-                    except:
-                        pass
-                    self.entropyTools.print_traceback(f = self.clientLog)
-                    conn = load_db_from_ram()
+                        conn.validateDatabase()
+                    except SystemDatabaseError:
+                        try:
+                            conn.closeDB()
+                        except:
+                            pass
+                        self.entropyTools.print_traceback(f = self.clientLog)
+                        conn = load_db_from_ram()
 
         self.clientDbconn = conn
         return self.clientDbconn
