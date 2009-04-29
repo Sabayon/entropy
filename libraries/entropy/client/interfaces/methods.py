@@ -672,81 +672,6 @@ class RepositoryMixin:
                     os.access(os.path.join(client_dbdir,x),os.R_OK)
         ]
 
-    """
-        XXX deprecated XXX
-    """
-
-    def backupDatabase(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use backup_database instead")
-        return self.backup_database(*args, **kwargs)
-
-    def restoreDatabase(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use restore_database instead")
-        return self.restore_database(*args, **kwargs)
-
-    def openGenericDatabase(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use open_generic_database instead")
-        return self.open_generic_database(*args, **kwargs)
-
-    def openMemoryDatabase(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use open_memory_database instead")
-        return self.open_memory_database(*args, **kwargs)
-
-    def clientDatabaseSanityCheck(self):
-        import warnings
-        warnings.warn("deprecated, use client_repository_sanity_check instead")
-        return self.client_repository_sanity_check()
-
-    def openClientDatabase(self):
-        import warnings
-        warnings.warn("deprecated, use open_client_repository instead")
-        return self.open_client_repository()
-
-    def reopenClientDbconn(self):
-        import warnings
-        warnings.warn("deprecated, use reopen_client_repository instead")
-        return self.reopen_client_repository()
-
-    def openRepositoryDatabase(self, repoid):
-        import warnings
-        warnings.warn("deprecated, use open_repository instead")
-        return self.open_repository(repoid)
-
-    def closeAllRepositoryDatabases(self, mask_clear = True):
-        import warnings
-        warnings.warn("deprecated, use close_all_repositories instead")
-        return self.close_all_repositories(mask_clear = mask_clear)
-
-    def addRepository(self, repodata):
-        import warnings
-        warnings.warn("deprecated, use add_repository instead")
-        return self.add_repository(repodata)
-
-    def removeRepository(self, repoid, disable = False):
-        import warnings
-        warnings.warn("deprecated, use remove_repository instead")
-        return self.remove_repository(repoid, disable = disable)
-
-    def shiftRepository(self, repoid, toidx):
-        import warnings
-        warnings.warn("deprecated, use shift_repository instead")
-        return self.shift_repository(repoid, toidx)
-
-    def enableRepository(self, repoid):
-        import warnings
-        warnings.warn("deprecated, use enable_repository instead")
-        return self.enable_repository(repoid)
-
-    def disableRepository(self, repoid):
-        import warnings
-        warnings.warn("deprecated, use disable_repository instead")
-        return self.disable_repository(repoid)
-
-
 class MiscMixin:
 
     def reload_constants(self):
@@ -1469,15 +1394,6 @@ class MiscMixin:
         if os.path.isfile(dirpath):
             return dirpath
         return None
-
-    """
-        XXX deprecated XXX
-    """
-
-    def switchChroot(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use switch_chroot instead")
-        return self.switch_chroot(*args, **kwargs)
 
 
 class MatchMixin:
