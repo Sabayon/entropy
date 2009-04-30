@@ -57,7 +57,7 @@ DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'],"client-updater.log")
 DAEMON_LOG = LogFile(SYS_SETTINGS['system']['log_level']+1,
     DAEMON_LOGFILE, header = "[client-updater]")
 DAEMON_DEBUG = False
-CHECK_DELAY_SECS = 60
+CHECK_DELAY_SECS = 3600
 if "--debug" in sys.argv:
     DAEMON_DEBUG = True
 for xopt in sys.argv:
