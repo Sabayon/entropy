@@ -78,6 +78,11 @@ equo-install:
 	install -m 644 docs/man/man1/equo.1 $(DESTDIR)/usr/share/man/man1/
 
 
+updates-daemon-install:
+
+	mkdir -p $(DESTDIR)/etc/dbus-1/system.d/
+	install -m 644 misc/dbus/org.entropy.conf $(DESTDIR)/etc/dbus-1/system.d/
+
 notification-applet-install:
 
 	make DESTDIR="$(DESTDIR)" -C entropy-notification-applet install
@@ -95,4 +100,4 @@ pycompile-all:
 
 	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)/usr/', force = True, quiet = True)"
 
-install: entropy-install entropy-server-install equo-install notification-applet-install spritz-install pycompile-all
+install: entropy-install entropy-server-install equo-install notification-applet-install spritz-install pycompile-all updates-daemon-install

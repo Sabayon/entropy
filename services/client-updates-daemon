@@ -20,12 +20,15 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 """
+from __future__ import with_statement
 import os
 import sys
 import gobject
 import dbus
 import dbus.service
 import dbus.mainloop.glib
+import signal
+from threading import Lock
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -46,38 +49,65 @@ from entropy.misc import LogFile, TimeScheduled
 from entropy.core import SystemSettings as SysSet
 from entropy.output import TextInterface
 
+
 SYS_SETTINGS = SysSet()
 TEXT = TextInterface()
 DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'],"client-updater.log")
-DAEMON_LOG = LogFile(level = SYS_SETTINGS['system']['log_level'],
-    filename = DAEMON_LOGFILE, header = "[client-updater]")
+DAEMON_LOG = LogFile(SYS_SETTINGS['system']['log_level']+1,
+    DAEMON_LOGFILE, header = "[client-updater]")
 DAEMON_DEBUG = False
 CHECK_DELAY_SECS = 60
 if "--debug" in sys.argv:
     DAEMON_DEBUG = True
+for xopt in sys.argv:
+    if xopt.startswith("--secs=") and (len(xopt.split("=")) > 1):
+        try:
+            delay_secs = int(xopt.split("=")[1])
+            CHECK_DELAY_SECS = delay_secs
+        except ValueError:
+            continue
 
 class DaemonUrlFetcher(urlFetcher):
 
     daemon_last_avg = 100
+    __average = 0
+    __downloadedsize = 0
+    __remotesize = 0
+    __datatransfer = 0
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__average = average
+        self.__downloadedsize = downloaded_size
+        self.__remotesize = total_size
+        self.__datatransfer = data_transfer
 
     def updateProgress(self):
         myavg = abs(int(round(float(self.__average),1)))
         if abs((myavg - self.daemon_last_avg)) < 1: return
         if int(myavg) % 10 == 0:
-            DAEMON_LOG.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL,
-                "fetch @ %s%s" % (myavg,"%",))
+            DAEMON_LOG.write("fetch @ %s%s" % (myavg,"%",))
             self.daemon_last_avg = myavg
 
 class Entropy(Client):
 
+    __previous_progress = ''
     def init_singleton(self):
-        Client.init_singleton(self, noclientdb = 2, load_ugc = False,
+        Client.init_singleton(self, noclientdb = False, load_ugc = False,
             url_fetcher = DaemonUrlFetcher, repo_validation = False)
         self.nocolor()
-        self.updateProgress("Loading Entropy Updates daemon")
+        self.updateProgress(
+            "Loading Entropy Updates daemon: check every %s secs, logfile: %s" % (
+                CHECK_DELAY_SECS, DAEMON_LOGFILE,)
+            )
 
     def updateProgress(self, *args, **kwargs):
-        DAEMON_LOG.write(args[0]+"\n")
+        message = args[0]
+        if self.__previous_progress == message:
+            return
+        self.__previous_progress = message
+        DAEMON_LOG.write(message)
         DAEMON_LOG.flush()
         if DAEMON_DEBUG:
             TEXT.updateProgress(*args,**kwargs)
@@ -85,65 +115,108 @@ class Entropy(Client):
 
 class UpdatesDaemon(dbus.service.Object):
 
-    def __init__(self, conn, object_path = "/org/entropy/client_updates"):
+    def __init__(self):
+
         if not entropyTools.is_user_in_entropy_group():
             raise PermissionDenied('insufficient permissions')
-        dbus.service.Object.__init__ ( self, conn, object_path )
         self.Entropy = Entropy()
+        self.__alive = False
         self.__updater = None
+        self.__oncall_updater = None
+        self.__trigger_oncall_updater = False
+        self.__fetch_mutex = Lock()
+
+        gobject.threads_init()
+        # start dbus service
+        object_path = "/org/entropy/Client"
+        dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
+        system_bus = dbus.SystemBus()
+        name = dbus.service.BusName("org.entropy.Client", system_bus)
+        dbus.service.Object.__init__ (self, system_bus, object_path)
+
 
     def start(self):
-        if self.__updater != None:
-            self.__updater.kill()
-        self.__updater = TimeScheduled(CHECK_DELAY_SECS, self.run_fetcher)
-        self.__updater.set_delay_before(True)
-        self.__updater.start()
+        self.stop()
+        self.__alive = True
+        self.__updater = gobject.timeout_add(
+            CHECK_DELAY_SECS*1000, self.run_fetcher)
+        self.__oncall_updater = gobject.timeout_add(
+            1000, self.run_oncall_fetcher)
 
     def stop(self):
-        if self.__updater != None:
-            self.__updater.kill()
+        if self.__alive:
+            self.__alive = False
+            if self.__updater != None:
+                gobject.source_remove(self.__updater)
+            if self.__oncall_updater != None:
+                gobject.source_remove(self.__oncall_updater)
 
     def do_alert(self, string, msg, urgency = "critical"):
         TEXT.updateProgress('alert: %s, %s, urgency: %s' % (
             string, msg, urgency,))
 
-    def run_fetcher(self):
-        rc = 0
-        repositories_to_update, rc = self.compare_repositories_status()
+    def run_oncall_fetcher(self):
+        if not self.__trigger_oncall_updater:
+            return self.__alive
+        with self.__fetch_mutex:
+            self.__trigger_oncall_updater = False
+            self.__run_fetcher()
+        return self.__alive
 
-        if repositories_to_update and not rc:
-            repos = repositories_to_update.keys()
+    def run_fetcher(self):
+        with self.__fetch_mutex:
+            self.__run_fetcher()
+        return self.__alive
+
+    def __run_fetcher(self):
+
+        if DAEMON_DEBUG:
+            self.Entropy.updateProgress(
+                "__run_fetcher: called")
+
+        if self.__updater == None:
+            return 0
+
+        # this makes sure we are always using the very best
+        # client db
+        self.Entropy.reopen_client_repository()
+
+        rc = 0
+        repos_to_up = self.compare_repositories_status()
+
+        if repos_to_up:
+            repos = repos_to_up.keys()
 
             try:
                 repoConn = self.Entropy.Repositories(
                     repos, fetchSecurity = False, noEquoCheck = True)
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress(
-                        "run_refresh: repository interface loaded")
+                        "__run_fetcher: repository interface loaded")
             except MissingParameter, e:
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress(
-                        "run_refresh: MissingParameter exception, error: %s" % (e,))
+                        "__run_fetcher: MissingParameter exception, error: %s" % (e,))
             except Exception, e:
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress(
-                        "run_refresh: Unhandled exception, error: %s" % (e,))
+                        "__run_fetcher: Unhandled exception, error: %s" % (e,))
             else:
                 # -128: sync error, something bad happened
                 # -2: repositories not available (all)
                 # -1: not able to update all the repositories
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress(
-                        "run_refresh: preparing to run sync")
+                        "__run_fetcher: preparing to run sync")
                 rc = repoConn.sync()
                 rc = rc*-1
                 del repoConn
                 if DAEMON_DEBUG:
-                    self.Entropy.updateProgress("run_refresh: sync done")
+                    self.Entropy.updateProgress("__run_fetcher: sync done")
 
             if DAEMON_DEBUG:
                 self.Entropy.updateProgress(
-                    "run_refresh: sync closed, rc: %s" % (rc,))
+                    "__run_fetcher: sync closed, rc: %s" % (rc,))
 
         if rc == 1:
             err = _("No repositories specified. Cannot check for package updates.")
@@ -173,6 +246,7 @@ class UpdatesDaemon(dbus.service.Object):
             update, remove, fine = self.Entropy.calculate_world_updates()
             del fine, remove
         except Exception, e:
+            entropyTools.print_traceback(f = DAEMON_LOG)
             msg = "%s: %s" % (_("Updates: error"),e,)
             self.do_alert(_("Updates: error"), msg)
             return 1
@@ -188,52 +262,48 @@ class UpdatesDaemon(dbus.service.Object):
         return 0
 
     # compare repos status for updates
-    @dbus.service.method ( "org.entropy", in_signature = '',
+    @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = '')
     def compare_repositories_status(self):
-        repos = {}
 
+        repos = {}
         try:
             repoConn = self.Entropy.Repositories(
                 noEquoCheck = True, fetchSecurity = False)
         except MissingParameter:
-            return repos, 1 # no repositories specified
+            return repos
         except Exception, e:
-            return repos, 3 # unknown error
+            return repos
 
         # now get remote
         for repoid in self.Entropy.SystemSettings['repositories']['available']:
-            print repoid
+            self.Entropy.update_repository_revision(repoid)
             if repoConn.is_repository_updatable(repoid):
+                if DAEMON_DEBUG:
+                    self.Entropy.updateProgress(
+                        "compare_repositories_status: repo needs to be updated: %s" % (repoid,))
                 self.Entropy.repository_move_clear_cache(repoid)
                 repo_rev = self.Entropy.get_repository_revision(repoid)
                 online_rev = repoConn.get_online_repository_revision(repoid)
-                repos[repoid] = {}
-                repos[repoid]['local_revision'] = repo_rev
-                repos[repoid]['remote_revision'] = online_rev
+                repos[repoid] = {
+                    'local': repo_rev,
+                    'remote': online_rev,
+                }
 
         del repoConn
-        return repos, 0
+        return repos
 
     # signal sent when updates are available for retrive
-    @dbus.service.signal(dbus_interface = 'org.entropy.client_updates',
+    @dbus.service.signal(dbus_interface = 'org.entropy.Client',
         signature = '')
     def signal_updates(self):
        pass
 
-
-def run():
-
-    dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
-    session_bus = dbus.SessionBus()
-    name = dbus.service.BusName("org.entropy", session_bus)
-
-    backend = UpdatesDaemon(session_bus)
-    backend.start()
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    ud = UpdatesDaemon()
+    ud.start()
     mainloop = gobject.MainLoop()
     mainloop.run()
-    backend.stop()
-
-if __name__ == "__main__":
-    run()
+    ud.stop()
     raise SystemExit(0)
