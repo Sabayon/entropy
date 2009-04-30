@@ -630,10 +630,14 @@ class LogFile:
     def open(self, file_path = None):
 
         if isinstance(file_path, basestring):
-            if os.access(file_path, os.W_OK) and os.path.isfile(file_path):
+            if not os.access(file_path, os.F_OK) and os.access(
+                os.path.dirname(file_path), os.W_OK):
                 self.__logfile = open(file_path, "aw")
             else:
-                self.__logfile = open("/dev/null", "aw")
+                if os.access(file_path, os.W_OK | os.F_OK):
+                    self.__logfile = open(file_path, "aw")
+                else:
+                    self.__logfile = open("/dev/null", "aw")
         elif hasattr(file_path, 'write'):
             self.__logfile = file_path
         else:
