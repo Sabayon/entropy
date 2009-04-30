@@ -288,6 +288,11 @@ class UpdatesDaemon(dbus.service.Object):
         del repoConn
         return repos
 
+    @dbus.service.method ( "org.entropy.Client", in_signature = '',
+        out_signature = '')
+    def trigger_check(self):
+        self.__trigger_oncall_updater = True
+
     # signal sent when updates are available for retrive
     @dbus.service.signal(dbus_interface = 'org.entropy.Client',
         signature = '')
