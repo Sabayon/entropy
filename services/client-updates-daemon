@@ -95,7 +95,7 @@ class Entropy(Client):
 
     __previous_progress = ''
     def init_singleton(self):
-        Client.init_singleton(self, noclientdb = False, load_ugc = False,
+        Client.init_singleton(self, load_ugc = False,
             url_fetcher = DaemonUrlFetcher, repo_validation = False)
         self.nocolor()
         self.updateProgress(
@@ -171,24 +171,26 @@ class UpdatesDaemon(dbus.service.Object):
 
     def __run_fetcher(self):
 
+        if self.__updater == None:
+            return 0
+
         if DAEMON_DEBUG:
             self.Entropy.updateProgress(
                 "__run_fetcher: called %s" % (time.time(),))
 
-        if self.__updater == None:
-            return 0
-
         # this makes sure we are always using the very best
         # client db
         self.Entropy.reopen_client_repository()
+        self.Entropy.SystemSettings.clear()
 
-        rc = 0
         repos_to_up = self.compare_repositories_status()
 
+        rc = 0
         if repos_to_up:
             repos = repos_to_up.keys()
 
             try:
+
                 repoConn = self.Entropy.Repositories(
                     repos, fetchSecurity = False, noEquoCheck = True)
                 if DAEMON_DEBUG:
@@ -203,45 +205,37 @@ class UpdatesDaemon(dbus.service.Object):
                     self.Entropy.updateProgress(
                         "__run_fetcher: Unhandled exception, error: %s" % (e,))
             else:
-                # -128: sync error, something bad happened
-                # -2: repositories not available (all)
-                # -1: not able to update all the repositories
+
+                # 128: sync error, something bad happened
+                # 2: repositories not available (all)
+                # 1: not able to update all the repositories
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress(
                         "__run_fetcher: preparing to run sync")
                 rc = repoConn.sync()
-                rc = rc*-1
                 del repoConn
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress("__run_fetcher: sync done")
 
+                if rc == 1:
+                    err = _("Not all the repositories have been fetched for checking")
+                    self.do_alert( _("Updates: repository issues"), err )
+                    return rc
+                elif rc == 2:
+                    err = _("No repositories found online")
+                    self.do_alert( _("Updates: repository issues"), err )
+                    return rc
+                elif rc == 128:
+                    err = _("Synchronization errors. Cannot update repositories. Check logs.")
+                    self.do_alert( _("Updates: sync issues"), err )
+                    return rc
+                elif isinstance(rc, basestring):
+                    self.do_alert( _("Updates: unhandled error"), rc )
+                    return rc
+
             if DAEMON_DEBUG:
                 self.Entropy.updateProgress(
                     "__run_fetcher: sync closed, rc: %s" % (rc,))
-
-        if rc == 1:
-            err = _("No repositories specified. Cannot check for package updates.")
-            self.do_alert( _("Updates: attention"), err )
-            return rc
-        elif rc == 2:
-            err = _("Cannot connect to the Updates Service, you're probably not connected to the world.")
-            self.do_alert( _("Updates: connection issues"), err )
-            return rc
-        elif rc == -1:
-            err = _("Not all the repositories have been fetched for checking")
-            self.do_alert( _("Updates: repository issues"), err )
-            return rc
-        elif rc == -2:
-            err = _("No repositories found online")
-            self.do_alert( _("Updates: repository issues"), err )
-            return rc
-        elif rc == -128:
-            err = _("Synchronization errors. Cannot update repositories. Check logs.")
-            self.do_alert( _("Updates: sync issues"), err )
-            return rc
-        elif isinstance(rc,basestring):
-            self.do_alert( _("Updates: unhandled error"), rc )
-            return rc
 
         try:
             update, remove, fine = self.Entropy.calculate_world_updates()
@@ -278,7 +272,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         # now get remote
         for repoid in self.Entropy.SystemSettings['repositories']['available']:
-            self.Entropy.update_repository_revision(repoid)
+            #self.Entropy.update_repository_revision(repoid)
             if repoConn.is_repository_updatable(repoid):
                 if DAEMON_DEBUG:
                     self.Entropy.updateProgress(
@@ -298,7 +292,8 @@ class UpdatesDaemon(dbus.service.Object):
     @dbus.service.signal(dbus_interface = 'org.entropy.Client',
         signature = '')
     def signal_updates(self):
-       pass
+        if DAEMON_DEBUG:
+            self.Entropy.updateProgress("signal_updates: updates available!")
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
