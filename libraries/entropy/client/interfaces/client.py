@@ -270,6 +270,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.validate_repositories_cache()
         if self.repo_validation:
             self.validate_repositories()
+        else:
+            self.validRepositories.extend(
+                self.SystemSettings['repositories']['order'])
 
     def destroy(self):
         self.__instance_destroyed = True
