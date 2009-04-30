@@ -23,6 +23,9 @@
 from __future__ import with_statement
 import os
 import sys
+# this makes the daemon to not write the entropy pid file
+# avoiding to lock other instances
+sys.argv.append('--no-pid-handling')
 import time
 import gobject
 import dbus
@@ -172,6 +175,14 @@ class UpdatesDaemon(dbus.service.Object):
     def __run_fetcher(self):
 
         if self.__updater == None:
+            return 0
+
+        # entropy resources locked?
+        locked = self.Entropy._resources_run_check_lock()
+        if locked:
+            if DAEMON_DEBUG:
+                self.Entropy.updateProgress(
+                    "__run_fetcher: resources locked, skipping")
             return 0
 
         if DAEMON_DEBUG:
