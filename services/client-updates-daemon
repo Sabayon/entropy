@@ -23,6 +23,7 @@
 from __future__ import with_statement
 import os
 import sys
+import time
 import gobject
 import dbus
 import dbus.service
@@ -172,7 +173,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         if DAEMON_DEBUG:
             self.Entropy.updateProgress(
-                "__run_fetcher: called")
+                "__run_fetcher: called %s" % (time.time(),))
 
         if self.__updater == None:
             return 0
@@ -263,7 +264,7 @@ class UpdatesDaemon(dbus.service.Object):
 
     # compare repos status for updates
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
-        out_signature = '')
+        out_signature = 'a{si}')
     def compare_repositories_status(self):
 
         repos = {}
