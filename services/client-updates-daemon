@@ -133,8 +133,8 @@ class UpdatesDaemon(dbus.service.Object):
         gobject.threads_init()
         # start dbus service
         object_path = "/notifier"
-        dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
-        system_bus = dbus.SystemBus()
+        dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
+        system_bus = dbus.SystemBus(mainloop = dbus_loop)
         name = dbus.service.BusName("org.entropy.Client", system_bus)
         dbus.service.Object.__init__ (self, system_bus, object_path)
 
@@ -313,7 +313,10 @@ class UpdatesDaemon(dbus.service.Object):
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
-    ud = UpdatesDaemon()
+    try:
+        ud = UpdatesDaemon()
+    except dbus.exceptions.DBusException:
+        raise SystemExit(1)
     ud.start()
     mainloop = gobject.MainLoop()
     mainloop.run()
