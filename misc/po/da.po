@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-26 01:25+0200\n"
+"POT-Creation-Date: 2009-05-01 18:53+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -689,7 +689,7 @@ msgid "revision"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:2414
-#: ../../libraries/entropy/client/interfaces/methods.py:1122
+#: ../../libraries/entropy/client/interfaces/methods.py:1052
 #: ../../libraries/entropy/client/interfaces/repository.py:1315
 #: ../../libraries/entropy/client/interfaces/repository.py:1352
 #: ../../libraries/entropy/client/interfaces/repository.py:1367
@@ -742,7 +742,7 @@ msgid "digest verification of"
 msgstr "_Beskrivelse"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2555
-#: ../../libraries/entropy/client/interfaces/metadata.py:138
+#: ../../libraries/entropy/client/interfaces/metadata.py:139
 #: ../../libraries/entropy/transceivers.py:1132
 #, fuzzy
 msgid "not supported"
@@ -2320,29 +2320,29 @@ msgstr "Tilgængelige"
 msgid "timeout, giving up"
 msgstr "Opsætning af Yum Konfiguration"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:139
+#: ../../libraries/entropy/client/interfaces/metadata.py:140
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:231
+#: ../../libraries/entropy/client/interfaces/metadata.py:230
 #, fuzzy
 msgid "not set"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:231
+#: ../../libraries/entropy/client/interfaces/metadata.py:230
 msgid "have you configured make.conf properly?"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:293
+#: ../../libraries/entropy/client/interfaces/metadata.py:303
 #, fuzzy
 msgid "Extracting package metadata"
 msgstr "Behandler metadata fra : %s"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:431
+#: ../../libraries/entropy/client/interfaces/metadata.py:441
 msgid "changelog string conversion error"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:518
+#: ../../libraries/entropy/client/interfaces/metadata.py:528
 #, fuzzy
 msgid "Package extraction complete"
 msgstr "Indlæsning af pakker afsluttet"
@@ -2406,185 +2406,185 @@ msgstr "Kører Transaktion"
 msgid "running in safe mode using empty database from RAM"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:474
-#: ../../libraries/entropy/client/interfaces/methods.py:505
-#: ../../libraries/entropy/client/interfaces/methods.py:513
+#: ../../libraries/entropy/client/interfaces/methods.py:479
+#: ../../libraries/entropy/client/interfaces/methods.py:510
+#: ../../libraries/entropy/client/interfaces/methods.py:518
 msgid "Sanity Check"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:474
+#: ../../libraries/entropy/client/interfaces/methods.py:479
 #, fuzzy
 msgid "system database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:482
+#: ../../libraries/entropy/client/interfaces/methods.py:487
 #, fuzzy
 msgid "Scanning..."
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:499
+#: ../../libraries/entropy/client/interfaces/methods.py:504
 #, python-format
 msgid "Errors on idpackage %s, error: %s"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:505
+#: ../../libraries/entropy/client/interfaces/methods.py:510
 msgid "PASSED"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:513
+#: ../../libraries/entropy/client/interfaces/methods.py:518
 msgid "CORRUPTED"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:572
+#: ../../libraries/entropy/client/interfaces/methods.py:577
 #, fuzzy
 msgid "Cannot backup selected database"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:572
-#: ../../libraries/entropy/client/interfaces/methods.py:626
+#: ../../libraries/entropy/client/interfaces/methods.py:577
+#: ../../libraries/entropy/client/interfaces/methods.py:631
 #, fuzzy
 msgid "permission denied"
 msgstr "Installer som afhængighed"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:589
+#: ../../libraries/entropy/client/interfaces/methods.py:594
 #, fuzzy
 msgid "Backing up database to"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:603
+#: ../../libraries/entropy/client/interfaces/methods.py:608
 msgid "Unable to compress"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:606
+#: ../../libraries/entropy/client/interfaces/methods.py:611
 #, fuzzy
 msgid "Database backed up successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:614
-#: ../../libraries/entropy/client/interfaces/methods.py:665
-#: ../../libraries/entropy/client/interfaces/methods.py:967
-#: ../../libraries/entropy/client/interfaces/methods.py:990
+#: ../../libraries/entropy/client/interfaces/methods.py:619
+#: ../../libraries/entropy/client/interfaces/methods.py:670
+#: ../../libraries/entropy/client/interfaces/methods.py:897
+#: ../../libraries/entropy/client/interfaces/methods.py:920
 #: ../../libraries/entropy/const.py:528
 msgid "All fine"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:625
+#: ../../libraries/entropy/client/interfaces/methods.py:630
 #, fuzzy
 msgid "Cannot restore selected backup"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:636
+#: ../../libraries/entropy/client/interfaces/methods.py:641
 #, fuzzy
 msgid "Restoring backed up database"
 msgstr "Vis Pakker Opdateringer"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:652
+#: ../../libraries/entropy/client/interfaces/methods.py:657
 msgid "Unable to unpack"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:655
+#: ../../libraries/entropy/client/interfaces/methods.py:660
 #, fuzzy
 msgid "Database restored successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:810
+#: ../../libraries/entropy/client/interfaces/methods.py:740
 msgid ""
 "Another Entropy instance is currently active, cannot satisfy your request."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:830
+#: ../../libraries/entropy/client/interfaces/methods.py:760
 msgid "Resources unlocked, let's go!"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:839
+#: ../../libraries/entropy/client/interfaces/methods.py:769
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:847
+#: ../../libraries/entropy/client/interfaces/methods.py:777
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:871
+#: ../../libraries/entropy/client/interfaces/methods.py:801
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:945
-#: ../../libraries/entropy/client/interfaces/methods.py:974
+#: ../../libraries/entropy/client/interfaces/methods.py:875
+#: ../../libraries/entropy/client/interfaces/methods.py:904
 msgid "must be an ASCII string"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:948
-#: ../../libraries/entropy/client/interfaces/methods.py:977
+#: ../../libraries/entropy/client/interfaces/methods.py:878
+#: ../../libraries/entropy/client/interfaces/methods.py:907
 #, fuzzy
 msgid "cannot start with"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:950
+#: ../../libraries/entropy/client/interfaces/methods.py:880
 #, fuzzy
 msgid "Name already taken"
 msgstr "Slettet"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:958
+#: ../../libraries/entropy/client/interfaces/methods.py:888
 #, fuzzy
 msgid "Cannot remove the old element"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:960
+#: ../../libraries/entropy/client/interfaces/methods.py:890
 #, fuzzy
 msgid "Cannot create the element"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:980
+#: ../../libraries/entropy/client/interfaces/methods.py:910
 #, fuzzy
 msgid "Already removed"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:984
+#: ../../libraries/entropy/client/interfaces/methods.py:914
 msgid "Not defined by user"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:991
+#: ../../libraries/entropy/client/interfaces/methods.py:921
 #, fuzzy
 msgid "Set not found or unable to remove"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1044
+#: ../../libraries/entropy/client/interfaces/methods.py:974
 #: ../../spritz/src/spritz.glade.h:106
 msgid "Libraries test"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1059
+#: ../../libraries/entropy/client/interfaces/methods.py:989
 #, fuzzy
 msgid "Cannot find "
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1117
+#: ../../libraries/entropy/client/interfaces/methods.py:1047
 #, fuzzy
 msgid "Collecting broken executables"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1123
+#: ../../libraries/entropy/client/interfaces/methods.py:1053
 msgid "don't worry about libraries that are shown here but not later."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1136
+#: ../../libraries/entropy/client/interfaces/methods.py:1066
 #, fuzzy
 msgid "Scanning libraries"
 msgstr "behøvet af %s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1171
+#: ../../libraries/entropy/client/interfaces/methods.py:1101
 msgid "various broken symbols"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1188
+#: ../../libraries/entropy/client/interfaces/methods.py:1118
 #, fuzzy
 msgid "Matching broken libraries/executables"
 msgstr "Sorterer Pakker"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1597
+#: ../../libraries/entropy/client/interfaces/methods.py:1518
 #, fuzzy
 msgid "not a valid method"
 msgstr "Sorterer Pakker"
@@ -3310,7 +3310,7 @@ msgid "Injecting downloaded dump"
 msgstr "Henter Pakker:"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1430
-#: ../../libraries/entropy/db.py:3814 ../../spritz/src/spritz.glade.h:289
+#: ../../libraries/entropy/db.py:3825 ../../spritz/src/spritz.glade.h:289
 msgid "please wait"
 msgstr ""
 
@@ -3727,8 +3727,8 @@ msgid "can't do that on a readonly database"
 msgstr "Kilde"
 
 #: ../../libraries/entropy/db.py:667 ../../libraries/entropy/db.py:736
-#: ../../libraries/entropy/db.py:1125 ../../libraries/entropy/db.py:4352
-#: ../../libraries/entropy/db.py:4372 ../../client/text_rescue.py:72
+#: ../../libraries/entropy/db.py:1125 ../../libraries/entropy/db.py:4362
+#: ../../libraries/entropy/db.py:4382 ../../client/text_rescue.py:72
 #: ../../client/text_rescue.py:224 ../../client/text_rescue.py:232
 #: ../../client/text_rescue.py:237 ../../client/text_ui.py:451
 #: ../../client/text_ui.py:1180 ../../client/text_ui.py:1272
@@ -3829,50 +3829,50 @@ msgstr "Ingen pakker i køen"
 msgid "Moving old entry"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/db.py:3777
+#: ../../libraries/entropy/db.py:3788
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 
-#: ../../libraries/entropy/db.py:3782
+#: ../../libraries/entropy/db.py:3793
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 
-#: ../../libraries/entropy/db.py:3814
+#: ../../libraries/entropy/db.py:3825
 #, fuzzy
 msgid "Syncing current database"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy/db.py:3826
+#: ../../libraries/entropy/db.py:3837
 #, fuzzy
 msgid "Removing entry"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/db.py:3841
+#: ../../libraries/entropy/db.py:3852
 #, fuzzy
 msgid "Adding entry"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/db.py:3880
+#: ../../libraries/entropy/db.py:3891
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr ""
 
-#: ../../libraries/entropy/db.py:3898
+#: ../../libraries/entropy/db.py:3909
 #, fuzzy
 msgid "Exporting database table"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy/db.py:3937
+#: ../../libraries/entropy/db.py:3948
 #, fuzzy
 msgid "Database Export completed."
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy/db.py:4353
+#: ../../libraries/entropy/db.py:4363
 msgid "cannot open Spm counter file for"
 msgstr ""
 
-#: ../../libraries/entropy/db.py:4373
+#: ../../libraries/entropy/db.py:4383
 msgid "counter for atom is duplicated, ignoring"
 msgstr ""
 
@@ -5243,134 +5243,133 @@ msgstr ""
 msgid "show system information"
 msgstr "Filkilder"
 
-#: ../../client/equo.py:465
+#: ../../client/equo.py:470
 msgid "Caching equo conf"
 msgstr ""
 
-#: ../../client/equo.py:474
+#: ../../client/equo.py:479
 #, fuzzy
 msgid "Caching not run."
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/equo.py:478
+#: ../../client/equo.py:483
 #, fuzzy
 msgid "Caching complete."
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/equo.py:484
-#: ../../entropy-notification-applet/src/etp_applet.py:594
+#: ../../client/equo.py:489
 msgid "There are"
 msgstr ""
 
-#: ../../client/equo.py:486
+#: ../../client/equo.py:491
 #, fuzzy
 msgid "configuration file(s) needing update"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../client/equo.py:489
+#: ../../client/equo.py:494
 #, fuzzy
 msgid "Please run"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../client/equo.py:600 ../../client/equo.py:615 ../../client/equo.py:647
-#: ../../client/equo.py:657 ../../client/equo.py:677 ../../client/equo.py:686
-#: ../../client/equo.py:696 ../../client/equo.py:706
+#: ../../client/equo.py:605 ../../client/equo.py:620 ../../client/equo.py:652
+#: ../../client/equo.py:662 ../../client/equo.py:682 ../../client/equo.py:691
+#: ../../client/equo.py:701 ../../client/equo.py:711
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 
-#: ../../client/equo.py:668
+#: ../../client/equo.py:673
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 
-#: ../../client/equo.py:733
+#: ../../client/equo.py:738
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
 msgstr ""
 
-#: ../../client/equo.py:736 ../../client/equo.py:740 ../../client/equo.py:743
-#: ../../client/equo.py:746 ../../client/equo.py:749 ../../client/equo.py:752
+#: ../../client/equo.py:741 ../../client/equo.py:745 ../../client/equo.py:748
+#: ../../client/equo.py:751 ../../client/equo.py:754 ../../client/equo.py:757
 #: ../../client/text_smart.py:127 ../../client/text_smart.py:272
 #: ../../client/text_smart.py:407
 #, fuzzy
 msgid "Cannot continue"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../client/equo.py:757
+#: ../../client/equo.py:762
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr ""
 
-#: ../../client/equo.py:768
+#: ../../client/equo.py:773
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
 msgstr ""
 
-#: ../../client/equo.py:782
+#: ../../client/equo.py:787
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
 msgstr ""
 
-#: ../../client/equo.py:783
+#: ../../client/equo.py:788
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr ""
 
-#: ../../client/equo.py:784
+#: ../../client/equo.py:789
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 
-#: ../../client/equo.py:785
+#: ../../client/equo.py:790
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 
-#: ../../client/equo.py:811
+#: ../../client/equo.py:816
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
 msgstr ""
 
-#: ../../client/equo.py:816
+#: ../../client/equo.py:821
 msgid "Of course you are on the Internet..."
 msgstr ""
 
-#: ../../client/equo.py:817
+#: ../../client/equo.py:822
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
 "logged)"
 msgstr ""
 
-#: ../../client/equo.py:819
+#: ../../client/equo.py:824
 msgid "Ok, ok ok ok... Sorry!"
 msgstr ""
 
-#: ../../client/equo.py:822
+#: ../../client/equo.py:827
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
 msgstr ""
 
-#: ../../client/equo.py:823
+#: ../../client/equo.py:828
 msgid "Your Full name:"
 msgstr ""
 
-#: ../../client/equo.py:824
+#: ../../client/equo.py:829
 msgid "Your E-Mail address:"
 msgstr ""
 
-#: ../../client/equo.py:825
+#: ../../client/equo.py:830
 msgid "What you were doing:"
 msgstr ""
 
-#: ../../client/equo.py:831
+#: ../../client/equo.py:836
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
 msgstr ""
 
-#: ../../client/equo.py:833
+#: ../../client/equo.py:838
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -5472,7 +5471,7 @@ msgstr ""
 
 #: ../../client/text_configuration.py:250
 #: ../../client/text_repositories.py:253
-#: ../../entropy-notification-applet/src/etp_applet.py:224
+#: ../../entropy-notification-applet/src/etp_applet.py:156
 #, fuzzy
 msgid "Exit"
 msgstr "Extra"
@@ -5810,7 +5809,7 @@ msgstr "_Beskrivelse"
 #. client info
 #: ../../client/text_query.py:1078 ../../client/text_ui.py:488
 #: ../../client/text_ui.py:517
-#: ../../entropy-notification-applet/src/etp_applet.py:748
+#: ../../entropy-notification-applet/src/etp_applet.py:446
 #, fuzzy
 msgid "Not installed"
 msgstr "Installeret"
@@ -5832,7 +5831,7 @@ msgid "Name"
 msgstr "Navn"
 
 #: ../../client/text_query.py:1121 ../../spritz/src/dialogs.py:852
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:44
+#: ../../entropy-notification-applet/src/etp_applet_components.py:65
 #: ../../spritz/src/spritz.glade.h:15
 msgid "Available"
 msgstr "Tilgængelige"
@@ -6020,14 +6019,12 @@ msgstr "Filkilder"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:333
 #: ../../spritz/src/spritz.py:1247
-#: ../../entropy-notification-applet/src/etp_applet.py:510
 #, fuzzy
 msgid "No repositories specified in"
 msgstr "Ingen valgte pakker"
 
 #: ../../client/text_repositories.py:178 ../../client/text_ui.py:337
 #: ../../spritz/src/spritz.py:1256
-#: ../../entropy-notification-applet/src/etp_applet.py:520
 #, fuzzy
 msgid "Unhandled exception"
 msgstr "_Beskrivelse"
@@ -6551,7 +6548,7 @@ msgid "This is the list of the packages that would be quickpkg'd"
 msgstr "Vis Installerede Pakker"
 
 #: ../../client/text_smart.py:113
-#: ../../entropy-notification-applet/src/etp_applet.py:771
+#: ../../entropy-notification-applet/src/etp_applet.py:469
 #, fuzzy
 msgid "installed"
 msgstr "Installeret"
@@ -9253,222 +9250,148 @@ msgstr "Filkilde"
 msgid "Recursive Package Set"
 msgstr "Vis Installerede Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:42
+#: ../../entropy-notification-applet/src/etp_applet_components.py:60
 #, fuzzy
 msgid "Package Name"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:43
+#: ../../entropy-notification-applet/src/etp_applet_components.py:63
 #, fuzzy
 msgid "Version Installed"
 msgstr "Installeret"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:87
+#: ../../entropy-notification-applet/src/etp_applet_components.py:110
 #, fuzzy
 msgid "Critical Information"
 msgstr "I_nformation"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:377
+#: ../../entropy-notification-applet/src/etp_applet_components.py:264
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to "
 "sabayon@sabayonlinux.org.  Thank you."
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:56
+#: ../../entropy-notification-applet/src/etp_applet.py:59
 #, fuzzy
 msgid "Updates Notification"
 msgstr "_Beskrivelse"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:216
+#: ../../entropy-notification-applet/src/etp_applet.py:142
 msgid "_Disable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:216
+#: ../../entropy-notification-applet/src/etp_applet.py:143
 msgid "Disable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:217
+#: ../../entropy-notification-applet/src/etp_applet.py:144
 msgid "_Enable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:217
+#: ../../entropy-notification-applet/src/etp_applet.py:145
 msgid "Enable Notification Applet"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:218
+#: ../../entropy-notification-applet/src/etp_applet.py:146
 msgid "_Check for updates"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:218
+#: ../../entropy-notification-applet/src/etp_applet.py:147
 msgid "Check for updates"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:219
+#: ../../entropy-notification-applet/src/etp_applet.py:148
 #, fuzzy
 msgid "_Launch Package Manager"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:219
+#: ../../entropy-notification-applet/src/etp_applet.py:149
 #, fuzzy
 msgid "Launch Package Manager"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:220
+#: ../../entropy-notification-applet/src/etp_applet.py:150
 #, fuzzy
 msgid "_Packages Website"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:220
+#: ../../entropy-notification-applet/src/etp_applet.py:151
 #, fuzzy
 msgid "Use Packages web interface"
 msgstr "Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:221
+#: ../../entropy-notification-applet/src/etp_applet.py:152
 msgid "_Sabayon Linux Website"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:221
+#: ../../entropy-notification-applet/src/etp_applet.py:153
 msgid "Launch Sabayon Linux Website"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:223
+#: ../../entropy-notification-applet/src/etp_applet.py:155
 #, fuzzy
 msgid "_About"
 msgstr "Om"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:223
+#: ../../entropy-notification-applet/src/etp_applet.py:155
 #, fuzzy
 msgid "About..."
 msgstr "Om"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:224
+#: ../../entropy-notification-applet/src/etp_applet.py:156
 #, fuzzy
 msgid "_Exit"
 msgstr "R_ediger"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:265
-msgid "You must add yourself to this group"
+#: ../../entropy-notification-applet/src/etp_applet.py:226
+msgid "Cannot monitor Sabayon updates"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:268
-msgid "Please run Equo/Spritz as root to update Entropy permissions"
+#: ../../entropy-notification-applet/src/etp_applet.py:228
+#, fuzzy
+msgid "Entropy DBus service not available"
+msgstr "Tilgængelige"
+
+#: ../../entropy-notification-applet/src/etp_applet.py:229
+msgid "unable to communicate with the updates service"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:383
+#: ../../entropy-notification-applet/src/etp_applet.py:236
+#, fuzzy
+msgid "Sabayon updates service loaded"
+msgstr "Tilgængelige"
+
+#: ../../entropy-notification-applet/src/etp_applet.py:238
+msgid "Entropy DBus service loaded"
+msgstr ""
+
+#: ../../entropy-notification-applet/src/etp_applet.py:239
+msgid "your Sabayon will notify your once updates are available"
+msgstr ""
+
+#: ../../entropy-notification-applet/src/etp_applet.py:328
 msgid "Updates Notification Applet Disabled"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:392
+#: ../../entropy-notification-applet/src/etp_applet.py:338
 msgid "Updates Notification Applet Enabled"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:487
-#, fuzzy
-msgid "Checking for updates..."
-msgstr "Ingen pakker i køen"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:514
-#, fuzzy
-msgid "Repository Network Error"
-msgstr "Filkilder"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:534
-#, fuzzy
-msgid "No repositories specified. Cannot check for package updates."
-msgstr "Ingen valgte pakker"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:535
-#, fuzzy
-msgid "Updates: attention"
-msgstr "Opdateringer"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:539
-msgid ""
-"Cannot connect to the Updates Service, you're probably not connected to the "
-"world."
-msgstr ""
-
-#: ../../entropy-notification-applet/src/etp_applet.py:540
-#: ../../entropy-notification-applet/src/etp_applet.py:565
-#, fuzzy
-msgid "Updates: connection issues"
-msgstr "Ønsker du at forsættet ?"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:544
-msgid "Not all the repositories have been fetched for checking"
-msgstr ""
-
-#: ../../entropy-notification-applet/src/etp_applet.py:545
-#: ../../entropy-notification-applet/src/etp_applet.py:550
-#, fuzzy
-msgid "Updates: repository issues"
-msgstr "Filkilder"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:549
-#, fuzzy
-msgid "No repositories found online"
-msgstr "Ingen valgte pakker"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:554
-msgid "Synchronization errors. Cannot update repositories. Check logs."
-msgstr ""
-
-#: ../../entropy-notification-applet/src/etp_applet.py:555
-#, fuzzy
-msgid "Updates: sync issues"
-msgstr "Opdateringer"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:559
-#, fuzzy
-msgid "Updates: unhandled error"
-msgstr "Opdateringer"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:574
-#: ../../entropy-notification-applet/src/etp_applet.py:575
-#, fuzzy
-msgid "Updates: error"
-msgstr "Opdateringer"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:582
-#, fuzzy
-msgid "Updates issue:"
-msgstr "Opdateringer"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:594
-#, fuzzy
-msgid "updates available."
-msgstr "Tilgængelige"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:596
-#, fuzzy
-msgid "Updates available"
-msgstr "Tilgængelige"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:605
-#: ../../entropy-notification-applet/src/etp_applet.py:607
-msgid "So far, so good. w00t!"
-msgstr ""
-
-#: ../../entropy-notification-applet/src/etp_applet.py:606
-#, fuzzy
-msgid "Everything up-to-date"
-msgstr "Ingen pakker i køen"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:691
+#: ../../entropy-notification-applet/src/etp_applet.py:398
 msgid "Waiting before checkin..."
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:769
+#: ../../entropy-notification-applet/src/etp_applet.py:467
 msgid "Your system currently has"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:772
+#: ../../entropy-notification-applet/src/etp_applet.py:470
 #, fuzzy
 msgid "but the latest available version is"
 msgstr "Vis Installerede Pakker"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:774
+#: ../../entropy-notification-applet/src/etp_applet.py:472
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
@@ -10596,6 +10519,62 @@ msgstr ""
 #: ../../spritz/src/spritz.glade.h:292
 msgid "type your username here"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Checking for updates..."
+#~ msgstr "Ingen pakker i køen"
+
+#, fuzzy
+#~ msgid "Repository Network Error"
+#~ msgstr "Filkilder"
+
+#, fuzzy
+#~ msgid "No repositories specified. Cannot check for package updates."
+#~ msgstr "Ingen valgte pakker"
+
+#, fuzzy
+#~ msgid "Updates: attention"
+#~ msgstr "Opdateringer"
+
+#, fuzzy
+#~ msgid "Updates: connection issues"
+#~ msgstr "Ønsker du at forsættet ?"
+
+#, fuzzy
+#~ msgid "Updates: repository issues"
+#~ msgstr "Filkilder"
+
+#, fuzzy
+#~ msgid "No repositories found online"
+#~ msgstr "Ingen valgte pakker"
+
+#, fuzzy
+#~ msgid "Updates: sync issues"
+#~ msgstr "Opdateringer"
+
+#, fuzzy
+#~ msgid "Updates: unhandled error"
+#~ msgstr "Opdateringer"
+
+#, fuzzy
+#~ msgid "Updates: error"
+#~ msgstr "Opdateringer"
+
+#, fuzzy
+#~ msgid "Updates issue:"
+#~ msgstr "Opdateringer"
+
+#, fuzzy
+#~ msgid "updates available."
+#~ msgstr "Tilgængelige"
+
+#, fuzzy
+#~ msgid "Updates available"
+#~ msgstr "Tilgængelige"
+
+#, fuzzy
+#~ msgid "Everything up-to-date"
+#~ msgstr "Ingen pakker i køen"
 
 #, fuzzy
 #~ msgid "I/O Error"

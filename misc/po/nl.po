@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-04-26 01:25+0200\n"
+"POT-Creation-Date: 2009-05-01 18:53+0200\n"
 "PO-Revision-Date: 2009-03-05 12:19-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -633,7 +633,7 @@ msgid "revision"
 msgstr "Herziening"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2414
-#: ../../libraries/entropy/client/interfaces/methods.py:1122
+#: ../../libraries/entropy/client/interfaces/methods.py:1052
 #: ../../libraries/entropy/client/interfaces/repository.py:1315
 #: ../../libraries/entropy/client/interfaces/repository.py:1352
 #: ../../libraries/entropy/client/interfaces/repository.py:1367
@@ -680,7 +680,7 @@ msgid "digest verification of"
 msgstr "'digest' controle voor"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2555
-#: ../../libraries/entropy/client/interfaces/metadata.py:138
+#: ../../libraries/entropy/client/interfaces/metadata.py:139
 #: ../../libraries/entropy/transceivers.py:1132
 msgid "not supported"
 msgstr "niet ondersteund"
@@ -2087,27 +2087,27 @@ msgstr "tijd verstreken, opnieuw proberen met deze mirror"
 msgid "timeout, giving up"
 msgstr "tijd verstreken, ik geef op‏‎"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:139
+#: ../../libraries/entropy/client/interfaces/metadata.py:140
 msgid "Probably Portage API has changed"
 msgstr "Waarschijnlijk is Portage API veranderd"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:231
+#: ../../libraries/entropy/client/interfaces/metadata.py:230
 msgid "not set"
 msgstr "Niet ingesteld"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:231
+#: ../../libraries/entropy/client/interfaces/metadata.py:230
 msgid "have you configured make.conf properly?"
 msgstr "Is je make.conf juist geconfigureerd?"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:293
+#: ../../libraries/entropy/client/interfaces/metadata.py:303
 msgid "Extracting package metadata"
 msgstr "Uitpakken van pakket metadata"
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:431
+#: ../../libraries/entropy/client/interfaces/metadata.py:441
 msgid "changelog string conversion error"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/metadata.py:518
+#: ../../libraries/entropy/client/interfaces/metadata.py:528
 msgid "Package extraction complete"
 msgstr "Uitpakken van pakket is compleet"
 
@@ -2164,170 +2164,170 @@ msgstr "Systeem database niet gevonden of corrupt"
 msgid "running in safe mode using empty database from RAM"
 msgstr " in veilige modes gebruik makend van de lege database vanaf RAM"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:474
-#: ../../libraries/entropy/client/interfaces/methods.py:505
-#: ../../libraries/entropy/client/interfaces/methods.py:513
+#: ../../libraries/entropy/client/interfaces/methods.py:479
+#: ../../libraries/entropy/client/interfaces/methods.py:510
+#: ../../libraries/entropy/client/interfaces/methods.py:518
 msgid "Sanity Check"
 msgstr "Gezondheids check"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:474
+#: ../../libraries/entropy/client/interfaces/methods.py:479
 msgid "system database"
 msgstr "systeem database"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:482
+#: ../../libraries/entropy/client/interfaces/methods.py:487
 msgid "Scanning..."
 msgstr "Scannen..."
 
-#: ../../libraries/entropy/client/interfaces/methods.py:499
+#: ../../libraries/entropy/client/interfaces/methods.py:504
 #, python-format
 msgid "Errors on idpackage %s, error: %s"
 msgstr "Fouten in idpackage %s, fout: %s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:505
+#: ../../libraries/entropy/client/interfaces/methods.py:510
 msgid "PASSED"
 msgstr "VOLTOOID"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:513
+#: ../../libraries/entropy/client/interfaces/methods.py:518
 msgid "CORRUPTED"
 msgstr "CORRUPT"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:572
+#: ../../libraries/entropy/client/interfaces/methods.py:577
 msgid "Cannot backup selected database"
 msgstr "Kan geen back-up maken van de geselecteerde database"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:572
-#: ../../libraries/entropy/client/interfaces/methods.py:626
+#: ../../libraries/entropy/client/interfaces/methods.py:577
+#: ../../libraries/entropy/client/interfaces/methods.py:631
 msgid "permission denied"
 msgstr "toegang geweigerd"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:589
+#: ../../libraries/entropy/client/interfaces/methods.py:594
 msgid "Backing up database to"
 msgstr "Back-up maken van database naar"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:603
+#: ../../libraries/entropy/client/interfaces/methods.py:608
 msgid "Unable to compress"
 msgstr "Onmogelijk te comprimeren"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:606
+#: ../../libraries/entropy/client/interfaces/methods.py:611
 msgid "Database backed up successfully"
 msgstr "Database back-up succesvol"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:614
-#: ../../libraries/entropy/client/interfaces/methods.py:665
-#: ../../libraries/entropy/client/interfaces/methods.py:967
-#: ../../libraries/entropy/client/interfaces/methods.py:990
+#: ../../libraries/entropy/client/interfaces/methods.py:619
+#: ../../libraries/entropy/client/interfaces/methods.py:670
+#: ../../libraries/entropy/client/interfaces/methods.py:897
+#: ../../libraries/entropy/client/interfaces/methods.py:920
 #: ../../libraries/entropy/const.py:528
 msgid "All fine"
 msgstr "Alles is goed"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:625
+#: ../../libraries/entropy/client/interfaces/methods.py:630
 msgid "Cannot restore selected backup"
 msgstr "Kan geselecteerde back-up niet herstellen"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:636
+#: ../../libraries/entropy/client/interfaces/methods.py:641
 msgid "Restoring backed up database"
 msgstr "Herstellen van database back-up"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:652
+#: ../../libraries/entropy/client/interfaces/methods.py:657
 msgid "Unable to unpack"
 msgstr "Onmogelijk om uit te pakken"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:655
+#: ../../libraries/entropy/client/interfaces/methods.py:660
 msgid "Database restored successfully"
 msgstr "Database succesvol hersteld"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:810
+#: ../../libraries/entropy/client/interfaces/methods.py:740
 msgid ""
 "Another Entropy instance is currently active, cannot satisfy your request."
 msgstr ""
 "Een andere instantie van Entropy is actief, ik kan je verzoek niet "
 "behandelen."
 
-#: ../../libraries/entropy/client/interfaces/methods.py:830
+#: ../../libraries/entropy/client/interfaces/methods.py:760
 msgid "Resources unlocked, let's go!"
 msgstr "Middelen ontsloten, laten we gaan!"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:839
+#: ../../libraries/entropy/client/interfaces/methods.py:769
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr "Middelen nog steeds geblokkeerd na %s minuten, Ik geef het op!"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:847
+#: ../../libraries/entropy/client/interfaces/methods.py:777
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr "Middelen geblokkeerd, slapend voor %s seconden, check #%s/%s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:871
+#: ../../libraries/entropy/client/interfaces/methods.py:801
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr "Niets te backuppen in etpConst met sleutel %s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:945
-#: ../../libraries/entropy/client/interfaces/methods.py:974
+#: ../../libraries/entropy/client/interfaces/methods.py:875
+#: ../../libraries/entropy/client/interfaces/methods.py:904
 msgid "must be an ASCII string"
 msgstr "moet een ASCII string zijn"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:948
-#: ../../libraries/entropy/client/interfaces/methods.py:977
+#: ../../libraries/entropy/client/interfaces/methods.py:878
+#: ../../libraries/entropy/client/interfaces/methods.py:907
 msgid "cannot start with"
 msgstr "Kan niet starten met"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:950
+#: ../../libraries/entropy/client/interfaces/methods.py:880
 msgid "Name already taken"
 msgstr "Naam reeds in gebruik"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:958
+#: ../../libraries/entropy/client/interfaces/methods.py:888
 msgid "Cannot remove the old element"
 msgstr "Kan oud element niet verwijderen"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:960
+#: ../../libraries/entropy/client/interfaces/methods.py:890
 msgid "Cannot create the element"
 msgstr "Kan element niet aanmaken"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:980
+#: ../../libraries/entropy/client/interfaces/methods.py:910
 msgid "Already removed"
 msgstr "Reeds verwijderd"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:984
+#: ../../libraries/entropy/client/interfaces/methods.py:914
 msgid "Not defined by user"
 msgstr "Niet gedefinieerd door gebruiker"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:991
+#: ../../libraries/entropy/client/interfaces/methods.py:921
 msgid "Set not found or unable to remove"
 msgstr "Set niet gevonden of onmogelijk te verwijderen"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1044
+#: ../../libraries/entropy/client/interfaces/methods.py:974
 #: ../../spritz/src/spritz.glade.h:106
 msgid "Libraries test"
 msgstr "Bibliotheken test"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1059
+#: ../../libraries/entropy/client/interfaces/methods.py:989
 msgid "Cannot find "
 msgstr "Kan het niet vinden"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1117
+#: ../../libraries/entropy/client/interfaces/methods.py:1047
 msgid "Collecting broken executables"
 msgstr "Opzoeken van beschadigde opstartbestanden"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1123
+#: ../../libraries/entropy/client/interfaces/methods.py:1053
 msgid "don't worry about libraries that are shown here but not later."
 msgstr ""
 "maak je geen zorgen over bibliotheken die hier worden getoond maar niet "
 "later."
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1136
+#: ../../libraries/entropy/client/interfaces/methods.py:1066
 msgid "Scanning libraries"
 msgstr "Scannen van bibliotheken"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1171
+#: ../../libraries/entropy/client/interfaces/methods.py:1101
 msgid "various broken symbols"
 msgstr "meerdere gebroken symbolen"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1188
+#: ../../libraries/entropy/client/interfaces/methods.py:1118
 msgid "Matching broken libraries/executables"
 msgstr "vergelijken van gebroken bibliotheken/opstartbestanden"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1597
+#: ../../libraries/entropy/client/interfaces/methods.py:1518
 msgid "not a valid method"
 msgstr "geen geldige methode"
 
@@ -2976,7 +2976,7 @@ msgid "Injecting downloaded dump"
 msgstr "Injecteren van gedownloade dump"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1430
-#: ../../libraries/entropy/db.py:3814 ../../spritz/src/spritz.glade.h:289
+#: ../../libraries/entropy/db.py:3825 ../../spritz/src/spritz.glade.h:289
 msgid "please wait"
 msgstr "even wachten"
 
@@ -3346,8 +3346,8 @@ msgid "can't do that on a readonly database"
 msgstr "kan niet op een alleen-lezen database"
 
 #: ../../libraries/entropy/db.py:667 ../../libraries/entropy/db.py:736
-#: ../../libraries/entropy/db.py:1125 ../../libraries/entropy/db.py:4352
-#: ../../libraries/entropy/db.py:4372 ../../client/text_rescue.py:72
+#: ../../libraries/entropy/db.py:1125 ../../libraries/entropy/db.py:4362
+#: ../../libraries/entropy/db.py:4382 ../../client/text_rescue.py:72
 #: ../../client/text_rescue.py:224 ../../client/text_rescue.py:232
 #: ../../client/text_rescue.py:237 ../../client/text_ui.py:451
 #: ../../client/text_ui.py:1180 ../../client/text_ui.py:1272
@@ -3440,47 +3440,47 @@ msgstr "update de pakketten handmatig a.u.b."
 msgid "Moving old entry"
 msgstr "Verplaatsen van oude ingang"
 
-#: ../../libraries/entropy/db.py:3777
+#: ../../libraries/entropy/db.py:3788
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 "baseinfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy/db.py:3782
+#: ../../libraries/entropy/db.py:3793
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 "extrainfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy/db.py:3814
+#: ../../libraries/entropy/db.py:3825
 msgid "Syncing current database"
 msgstr "Synchroniseren van huidige database"
 
-#: ../../libraries/entropy/db.py:3826
+#: ../../libraries/entropy/db.py:3837
 msgid "Removing entry"
 msgstr "Verwijderen van ingang"
 
-#: ../../libraries/entropy/db.py:3841
+#: ../../libraries/entropy/db.py:3852
 msgid "Adding entry"
 msgstr "Toevoegen van ingang"
 
-#: ../../libraries/entropy/db.py:3880
+#: ../../libraries/entropy/db.py:3891
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr "Repository EAPI > Entropy EAPI. update Equo/Entropy zo snel mogelijk !"
 
-#: ../../libraries/entropy/db.py:3898
+#: ../../libraries/entropy/db.py:3909
 msgid "Exporting database table"
 msgstr "Database tabel exporteren"
 
-#: ../../libraries/entropy/db.py:3937
+#: ../../libraries/entropy/db.py:3948
 msgid "Database Export completed."
 msgstr "Database Export voltooid."
 
-#: ../../libraries/entropy/db.py:4353
+#: ../../libraries/entropy/db.py:4363
 msgid "cannot open Spm counter file for"
 msgstr "kan Spm teller bestand niet openen voor"
 
-#: ../../libraries/entropy/db.py:4373
+#: ../../libraries/entropy/db.py:4383
 msgid "counter for atom is duplicated, ignoring"
 msgstr "teller voor atoom is gedupliceerd, negeren"
 
@@ -4732,42 +4732,41 @@ msgstr "verwijder gedownloade pakketten en gooi temp. mappen leeg"
 msgid "show system information"
 msgstr "systeem informatie weergeven"
 
-#: ../../client/equo.py:465
+#: ../../client/equo.py:470
 msgid "Caching equo conf"
 msgstr "Caching equo conf"
 
-#: ../../client/equo.py:474
+#: ../../client/equo.py:479
 msgid "Caching not run."
 msgstr "Caching niet gestart"
 
-#: ../../client/equo.py:478
+#: ../../client/equo.py:483
 msgid "Caching complete."
 msgstr "Cachen compleet."
 
-#: ../../client/equo.py:484
-#: ../../entropy-notification-applet/src/etp_applet.py:594
+#: ../../client/equo.py:489
 msgid "There are"
 msgstr "Er is/zijn"
 
-#: ../../client/equo.py:486
+#: ../../client/equo.py:491
 msgid "configuration file(s) needing update"
 msgstr "configuratie bestand(en) toe aan een update"
 
-#: ../../client/equo.py:489
+#: ../../client/equo.py:494
 msgid "Please run"
 msgstr "Voer eerst uit"
 
-#: ../../client/equo.py:600 ../../client/equo.py:615 ../../client/equo.py:647
-#: ../../client/equo.py:657 ../../client/equo.py:677 ../../client/equo.py:686
-#: ../../client/equo.py:696 ../../client/equo.py:706
+#: ../../client/equo.py:605 ../../client/equo.py:620 ../../client/equo.py:652
+#: ../../client/equo.py:662 ../../client/equo.py:682 ../../client/equo.py:691
+#: ../../client/equo.py:701 ../../client/equo.py:711
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr "Je moet sys-apps/entropy-server installeren. :-) Doe het !"
 
-#: ../../client/equo.py:668
+#: ../../client/equo.py:673
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr "Je moet sys-apps/entropy-server installeren/updaten. :-) Doe het !"
 
-#: ../../client/equo.py:733
+#: ../../client/equo.py:738
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
@@ -4775,18 +4774,18 @@ msgstr ""
 "Geinstalleerde pakketten database niet gevonden of corrupt. Genereer een "
 "nieuwe database met 'equo database' gereedschap"
 
-#: ../../client/equo.py:736 ../../client/equo.py:740 ../../client/equo.py:743
-#: ../../client/equo.py:746 ../../client/equo.py:749 ../../client/equo.py:752
+#: ../../client/equo.py:741 ../../client/equo.py:745 ../../client/equo.py:748
+#: ../../client/equo.py:751 ../../client/equo.py:754 ../../client/equo.py:757
 #: ../../client/text_smart.py:127 ../../client/text_smart.py:272
 #: ../../client/text_smart.py:407
 msgid "Cannot continue"
 msgstr "Kan niet verder"
 
-#: ../../client/equo.py:757
+#: ../../client/equo.py:762
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr "Kan niet doorgaan. Uw harde schijf is waarschijnlijk beschadigd."
 
-#: ../../client/equo.py:768
+#: ../../client/equo.py:773
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
@@ -4794,7 +4793,7 @@ msgstr ""
 "Je harddisk is vol! Volgende keer moet je niet vergeten even te kijken voor "
 "je start. Sorry, er is niets dat ik kan doen.'T is jouw fout :-("
 
-#: ../../client/equo.py:782
+#: ../../client/equo.py:787
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
@@ -4802,23 +4801,23 @@ msgstr ""
 "He. Mijn naam is Bug Reporter. Het spijt me dat ik je moet informeren dat "
 "Equo is gecrashed. Nou ja, weet je, shit happens."
 
-#: ../../client/equo.py:783
+#: ../../client/equo.py:788
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr "Maar er is iets dat je kan doen om Equo een beter programma te maken."
 
-#: ../../client/equo.py:784
+#: ../../client/equo.py:789
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 "-- OOK AL WIL IK NIET DAT JE MEERDERE KEREN HETZELFDE RAPPORT STUURT --"
 
-#: ../../client/equo.py:785
+#: ../../client/equo.py:790
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 "Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te "
 "helpen."
 
-#: ../../client/equo.py:811
+#: ../../client/equo.py:816
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
@@ -4826,11 +4825,11 @@ msgstr ""
 "Ach ja, Ik kan niet eens schrijven naar /tmp. Dus, kopieer de fout en mail "
 "hem naar lxnay@sabayonlinux.org."
 
-#: ../../client/equo.py:816
+#: ../../client/equo.py:821
 msgid "Of course you are on the Internet..."
 msgstr "Natuurlijk zijn we verbonden met Internet..."
 
-#: ../../client/equo.py:817
+#: ../../client/equo.py:822
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
@@ -4840,11 +4839,11 @@ msgstr ""
 "   over je hardware naar mijn makers zodat zij me kunnen repareren? (Je IP "
 "wordt gelogged)"
 
-#: ../../client/equo.py:819
+#: ../../client/equo.py:824
 msgid "Ok, ok ok ok... Sorry!"
 msgstr "Oké, oké oké oké... Sorry!"
 
-#: ../../client/equo.py:822
+#: ../../client/equo.py:827
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
@@ -4852,19 +4851,19 @@ msgstr ""
 "Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan "
 "ook deze vragen:"
 
-#: ../../client/equo.py:823
+#: ../../client/equo.py:828
 msgid "Your Full name:"
 msgstr "Je volledige naam:"
 
-#: ../../client/equo.py:824
+#: ../../client/equo.py:829
 msgid "Your E-Mail address:"
 msgstr "Je e-mail adres:"
 
-#: ../../client/equo.py:825
+#: ../../client/equo.py:830
 msgid "What you were doing:"
 msgstr "Waar was je mee bezig:"
 
-#: ../../client/equo.py:831
+#: ../../client/equo.py:836
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
@@ -4872,7 +4871,7 @@ msgstr ""
 "Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo "
 "snel mogelijk verholpen."
 
-#: ../../client/equo.py:833
+#: ../../client/equo.py:838
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -4967,7 +4966,7 @@ msgstr "Andere opties zijn:"
 
 #: ../../client/text_configuration.py:250
 #: ../../client/text_repositories.py:253
-#: ../../entropy-notification-applet/src/etp_applet.py:224
+#: ../../entropy-notification-applet/src/etp_applet.py:156
 msgid "Exit"
 msgstr "Afsluiten"
 
@@ -5262,7 +5261,7 @@ msgstr "Zoeken op Beschrijving"
 #. client info
 #: ../../client/text_query.py:1078 ../../client/text_ui.py:488
 #: ../../client/text_ui.py:517
-#: ../../entropy-notification-applet/src/etp_applet.py:748
+#: ../../entropy-notification-applet/src/etp_applet.py:446
 msgid "Not installed"
 msgstr "niet geïnstalleerd"
 
@@ -5282,7 +5281,7 @@ msgid "Name"
 msgstr "Naam"
 
 #: ../../client/text_query.py:1121 ../../spritz/src/dialogs.py:852
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:44
+#: ../../entropy-notification-applet/src/etp_applet_components.py:65
 #: ../../spritz/src/spritz.glade.h:15
 msgid "Available"
 msgstr "Beschikbaar"
@@ -5451,13 +5450,11 @@ msgstr "Repository database controlesom"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:333
 #: ../../spritz/src/spritz.py:1247
-#: ../../entropy-notification-applet/src/etp_applet.py:510
 msgid "No repositories specified in"
 msgstr "Geen repositories opgegeven in"
 
 #: ../../client/text_repositories.py:178 ../../client/text_ui.py:337
 #: ../../spritz/src/spritz.py:1256
-#: ../../entropy-notification-applet/src/etp_applet.py:520
 msgid "Unhandled exception"
 msgstr "Niet afgehandelde exceptie"
 
@@ -5944,7 +5941,7 @@ msgid "This is the list of the packages that would be quickpkg'd"
 msgstr "De volgende pakketten zullen worden ge-quickpkgt"
 
 #: ../../client/text_smart.py:113
-#: ../../entropy-notification-applet/src/etp_applet.py:771
+#: ../../entropy-notification-applet/src/etp_applet.py:469
 msgid "installed"
 msgstr "Geïnstalleerd"
 
@@ -8364,19 +8361,19 @@ msgstr "Herziening"
 msgid "Recursive Package Set"
 msgstr "Recursieve Pakket Set"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:42
+#: ../../entropy-notification-applet/src/etp_applet_components.py:60
 msgid "Package Name"
 msgstr "Pakket Naam"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:43
+#: ../../entropy-notification-applet/src/etp_applet_components.py:63
 msgid "Version Installed"
 msgstr "Geïnstalleerde versie"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:87
+#: ../../entropy-notification-applet/src/etp_applet_components.py:110
 msgid "Critical Information"
 msgstr "Kritische Informatie"
 
-#: ../../entropy-notification-applet/src/etp_applet_dialogs.py:377
+#: ../../entropy-notification-applet/src/etp_applet_components.py:264
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to "
@@ -8386,180 +8383,118 @@ msgstr ""
 "bug. Kopieer a.u.b. de volledige text van de exceptie en mail deze naar "
 "sabayon@sabayonlinux.org. Hartelijk dank."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:56
+#: ../../entropy-notification-applet/src/etp_applet.py:59
 msgid "Updates Notification"
 msgstr "Updates Notificatie"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:216
+#: ../../entropy-notification-applet/src/etp_applet.py:142
 msgid "_Disable Notification Applet"
 msgstr "_Schakel Notificatie Applet Uit"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:216
+#: ../../entropy-notification-applet/src/etp_applet.py:143
 msgid "Disable Notification Applet"
 msgstr "Schakel Notificatie Applet Uit"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:217
+#: ../../entropy-notification-applet/src/etp_applet.py:144
 msgid "_Enable Notification Applet"
 msgstr "_Schakel Notificatie Applet In"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:217
+#: ../../entropy-notification-applet/src/etp_applet.py:145
 msgid "Enable Notification Applet"
 msgstr "Schakel Notificatie Applet In"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:218
+#: ../../entropy-notification-applet/src/etp_applet.py:146
 msgid "_Check for updates"
 msgstr "_Controleren op updates"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:218
+#: ../../entropy-notification-applet/src/etp_applet.py:147
 msgid "Check for updates"
 msgstr "Controleren op updates"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:219
+#: ../../entropy-notification-applet/src/etp_applet.py:148
 msgid "_Launch Package Manager"
 msgstr "_Start Pakketten Beheerder"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:219
+#: ../../entropy-notification-applet/src/etp_applet.py:149
 msgid "Launch Package Manager"
 msgstr "Start Pakketten Beheerder"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:220
+#: ../../entropy-notification-applet/src/etp_applet.py:150
 msgid "_Packages Website"
 msgstr "_Pakketten Website"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:220
+#: ../../entropy-notification-applet/src/etp_applet.py:151
 msgid "Use Packages web interface"
 msgstr "Gebruik Pakketten web interface"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:221
+#: ../../entropy-notification-applet/src/etp_applet.py:152
 msgid "_Sabayon Linux Website"
 msgstr "_Sabayon Linux Website"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:221
+#: ../../entropy-notification-applet/src/etp_applet.py:153
 msgid "Launch Sabayon Linux Website"
 msgstr "Ga naar Sabayon Linux Website"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:223
+#: ../../entropy-notification-applet/src/etp_applet.py:155
 msgid "_About"
 msgstr "_Over"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:223
+#: ../../entropy-notification-applet/src/etp_applet.py:155
 msgid "About..."
 msgstr "Over..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:224
+#: ../../entropy-notification-applet/src/etp_applet.py:156
 msgid "_Exit"
 msgstr "_Beeindig"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:265
-msgid "You must add yourself to this group"
-msgstr "Je moet jezelf toevoegen aan deze groep"
+#: ../../entropy-notification-applet/src/etp_applet.py:226
+msgid "Cannot monitor Sabayon updates"
+msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:268
-msgid "Please run Equo/Spritz as root to update Entropy permissions"
-msgstr "start Equo/Spritz als root om Entropy permissies bij te werken"
+#: ../../entropy-notification-applet/src/etp_applet.py:228
+#, fuzzy
+msgid "Entropy DBus service not available"
+msgstr "service is tijdelijk niet beschikbaar"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:383
+#: ../../entropy-notification-applet/src/etp_applet.py:229
+msgid "unable to communicate with the updates service"
+msgstr ""
+
+#: ../../entropy-notification-applet/src/etp_applet.py:236
+#, fuzzy
+msgid "Sabayon updates service loaded"
+msgstr "Geen updates beschikbaar"
+
+#: ../../entropy-notification-applet/src/etp_applet.py:238
+#, fuzzy
+msgid "Entropy DBus service loaded"
+msgstr "Entropy Server Mirrors Interface geladen"
+
+#: ../../entropy-notification-applet/src/etp_applet.py:239
+msgid "your Sabayon will notify your once updates are available"
+msgstr ""
+
+#: ../../entropy-notification-applet/src/etp_applet.py:328
 msgid "Updates Notification Applet Disabled"
 msgstr "Updates Notificatie Applet Uitgeschakeld"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:392
+#: ../../entropy-notification-applet/src/etp_applet.py:338
 msgid "Updates Notification Applet Enabled"
 msgstr "Updates Notificatie Applet Geactiveerd"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:487
-msgid "Checking for updates..."
-msgstr "Zoeken naar updates..."
-
-#: ../../entropy-notification-applet/src/etp_applet.py:514
-msgid "Repository Network Error"
-msgstr "Repository Netwerk fout."
-
-#: ../../entropy-notification-applet/src/etp_applet.py:534
-msgid "No repositories specified. Cannot check for package updates."
-msgstr ""
-"Geen repositories gespecificeerd. Kan niet checken voor pakket updates."
-
-#: ../../entropy-notification-applet/src/etp_applet.py:535
-msgid "Updates: attention"
-msgstr "Updates: aandacht"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:539
-msgid ""
-"Cannot connect to the Updates Service, you're probably not connected to the "
-"world."
-msgstr ""
-"Kan niet met de Update Service verbinden, je bent waarschijnlijk niet "
-"verbonden met de wereld."
-
-#: ../../entropy-notification-applet/src/etp_applet.py:540
-#: ../../entropy-notification-applet/src/etp_applet.py:565
-msgid "Updates: connection issues"
-msgstr "Updates: verbindings problemen"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:544
-msgid "Not all the repositories have been fetched for checking"
-msgstr "Niet alle repositories zijn binnengehaald voor het checken"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:545
-#: ../../entropy-notification-applet/src/etp_applet.py:550
-msgid "Updates: repository issues"
-msgstr "Updates: repository problemen"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:549
-msgid "No repositories found online"
-msgstr "Geen repositories online gevonden"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:554
-msgid "Synchronization errors. Cannot update repositories. Check logs."
-msgstr "Synchronisatie fouten. Kan repositories niet updaten. Check logs."
-
-#: ../../entropy-notification-applet/src/etp_applet.py:555
-msgid "Updates: sync issues"
-msgstr "Updates: sync problemen"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:559
-msgid "Updates: unhandled error"
-msgstr "Updates: Onafgehandelde fout"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:574
-#: ../../entropy-notification-applet/src/etp_applet.py:575
-msgid "Updates: error"
-msgstr "Updates: fout"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:582
-msgid "Updates issue:"
-msgstr "Updates problemen:"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:594
-msgid "updates available."
-msgstr "updates beschikbaar."
-
-#: ../../entropy-notification-applet/src/etp_applet.py:596
-msgid "Updates available"
-msgstr "Updates beschikbaar"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:605
-#: ../../entropy-notification-applet/src/etp_applet.py:607
-msgid "So far, so good. w00t!"
-msgstr "Tot zo ver, alles goed. w00t!"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:606
-msgid "Everything up-to-date"
-msgstr "Alles is bijgewerkt"
-
-#: ../../entropy-notification-applet/src/etp_applet.py:691
+#: ../../entropy-notification-applet/src/etp_applet.py:398
 msgid "Waiting before checkin..."
 msgstr "Wacht voor checken..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:769
+#: ../../entropy-notification-applet/src/etp_applet.py:467
 msgid "Your system currently has"
 msgstr "Jouw systeem heeft op dit moment"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:772
+#: ../../entropy-notification-applet/src/etp_applet.py:470
 msgid "but the latest available version is"
 msgstr "maar de laatst beschikbare versie is"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:774
+#: ../../entropy-notification-applet/src/etp_applet.py:472
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
@@ -9543,6 +9478,71 @@ msgstr "voer uw password hier in"
 #: ../../spritz/src/spritz.glade.h:292
 msgid "type your username here"
 msgstr "voer uw gebruikersnaam hier in"
+
+#~ msgid "You must add yourself to this group"
+#~ msgstr "Je moet jezelf toevoegen aan deze groep"
+
+#~ msgid "Please run Equo/Spritz as root to update Entropy permissions"
+#~ msgstr "start Equo/Spritz als root om Entropy permissies bij te werken"
+
+#~ msgid "Checking for updates..."
+#~ msgstr "Zoeken naar updates..."
+
+#~ msgid "Repository Network Error"
+#~ msgstr "Repository Netwerk fout."
+
+#~ msgid "No repositories specified. Cannot check for package updates."
+#~ msgstr ""
+#~ "Geen repositories gespecificeerd. Kan niet checken voor pakket updates."
+
+#~ msgid "Updates: attention"
+#~ msgstr "Updates: aandacht"
+
+#~ msgid ""
+#~ "Cannot connect to the Updates Service, you're probably not connected to "
+#~ "the world."
+#~ msgstr ""
+#~ "Kan niet met de Update Service verbinden, je bent waarschijnlijk niet "
+#~ "verbonden met de wereld."
+
+#~ msgid "Updates: connection issues"
+#~ msgstr "Updates: verbindings problemen"
+
+#~ msgid "Not all the repositories have been fetched for checking"
+#~ msgstr "Niet alle repositories zijn binnengehaald voor het checken"
+
+#~ msgid "Updates: repository issues"
+#~ msgstr "Updates: repository problemen"
+
+#~ msgid "No repositories found online"
+#~ msgstr "Geen repositories online gevonden"
+
+#~ msgid "Synchronization errors. Cannot update repositories. Check logs."
+#~ msgstr "Synchronisatie fouten. Kan repositories niet updaten. Check logs."
+
+#~ msgid "Updates: sync issues"
+#~ msgstr "Updates: sync problemen"
+
+#~ msgid "Updates: unhandled error"
+#~ msgstr "Updates: Onafgehandelde fout"
+
+#~ msgid "Updates: error"
+#~ msgstr "Updates: fout"
+
+#~ msgid "Updates issue:"
+#~ msgstr "Updates problemen:"
+
+#~ msgid "updates available."
+#~ msgstr "updates beschikbaar."
+
+#~ msgid "Updates available"
+#~ msgstr "Updates beschikbaar"
+
+#~ msgid "So far, so good. w00t!"
+#~ msgstr "Tot zo ver, alles goed. w00t!"
+
+#~ msgid "Everything up-to-date"
+#~ msgstr "Alles is bijgewerkt"
 
 #~ msgid "I/O Error"
 #~ msgstr "I/O-fout"

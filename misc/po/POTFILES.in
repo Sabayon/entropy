@@ -85,8 +85,7 @@
 ../spritz/src/etpgui/packages.py
 ../spritz/src/etpgui/widgets.py
 ../entropy-notification-applet/src/applet.py
-../entropy-notification-applet/src/etp_applet_animation.py
+../entropy-notification-applet/src/etp_applet_components.py
 ../entropy-notification-applet/src/etp_applet_config.py
-../entropy-notification-applet/src/etp_applet_dialogs.py
 ../entropy-notification-applet/src/etp_applet.py
 ../spritz/src/spritz.glade
