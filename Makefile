@@ -83,9 +83,11 @@ updates-daemon-install:
 	mkdir -p $(DESTDIR)/etc/dbus-1/system.d/
 	mkdir -p $(DESTDIR)/usr/sbin/
 	mkdir -p $(DESTDIR)/etc/init.d/
+	mkdir -p $(DESTDIR)/usr/share/dbus-1/services/
 	install -m 755 services/client-updates-daemon $(DESTDIR)/usr/sbin/
 	install -m 755 services/client-updates $(DESTDIR)/etc/init.d/
 	install -m 644 misc/dbus/org.entropy.conf $(DESTDIR)/etc/dbus-1/system.d/
+	install -m 644 misc/dbus/org.entropy.Client.service $(DESTDIR)/usr/share/dbus-1/services/
 
 notification-applet-install:
 
