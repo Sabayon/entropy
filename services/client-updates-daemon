@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """
     # DESCRIPTION:
-    # Entropy Object Oriented Interface
+    # Entropy Client Updates daemon
 
     Copyright (C) 2007-2009 Fabio Erculiani
 
@@ -132,7 +132,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         gobject.threads_init()
         # start dbus service
-        object_path = "/org/entropy/Client"
+        object_path = "/notifier"
         dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
         system_bus = dbus.SystemBus()
         name = dbus.service.BusName("org.entropy.Client", system_bus)
