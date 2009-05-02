@@ -8,8 +8,10 @@
 import os
 import entropy.dump as dumpTools
 
-APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY", "CRITICAL", "BUSY", "ERROR", "DISCONNECTED", "DISABLE" ]
-APPLET_MENUS = [ "about", "update_now", "web_panel", "web_site", "configure_applet", "check_now" ]
+APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY",
+    "CRITICAL", "BUSY", "ERROR", "DISCONNECTED", "DISABLE" ]
+APPLET_MENUS = [ "about", "update_now", "web_panel", "web_site",
+    "configure_applet", "check_now" ]
 
 APPLET_SENSITIVE_MENU = {
     "STARTUP"     : [ "" ],
@@ -33,7 +35,8 @@ ANIMATION_TOTAL_TIME = 0.75
 
 home = os.getenv("HOME")
 if not home: home = "/tmp"
-SETTINGS_FILE = os.path.join(home, ".config/entropy/entropy-notification-applet.conf")
+SETTINGS_FILE = os.path.join(home,
+    ".config/entropy/entropy-notification-applet.conf")
 
 def save_settings(settings):
     global SETTINGS_FILE
@@ -49,8 +52,6 @@ if settings == None:
     settings = {}
 
 myconst = [
-            ['REFRESH_INTERVAL',int],
-            ['NETWORK_RETRY_INTERVAL',int],
             ['ERROR_THRESHOLD',int],
             ['ANIMATION_TOTAL_TIME',float],
             ['APPLET_ENABLED',int],

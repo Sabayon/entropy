@@ -1,11 +1,25 @@
-# This file is a portion of the Red Hat Network Panel Applet
-#
-# Copyright (C) 1999-2002 Red Hat, Inc. All Rights Reserved.
-# Distributed under GPL version 2.
-#
-# Author: Chip Turner
-#
-# $Id: rhn_applet_dialogs.py,v 1.30 2003/10/14 17:41:34 veillard Exp $
+# -*- coding: utf-8 -*-
+"""
+    # DESCRIPTION:
+    # Entropy updates Notification Applet
+
+    Copyright (C) 2007-2009 Fabio Erculiani
+    Forking RHN Applet
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+"""
 
 import os
 import gnome
@@ -20,7 +34,8 @@ from entropy.i18n import _
 from entropy.core import SystemSettings
 SysSettings = SystemSettings()
 
-class rhnGladeWindow:
+class GladeWindow:
+
     def __init__(self, filename, window_name):
         self.filename = filename
         if not os.path.isfile(filename):
@@ -31,24 +46,28 @@ class rhnGladeWindow:
     def get_widget(self, widget):
         return self.xml.get_widget(widget)
 
-class rhnAppletNoticeWindow(rhnGladeWindow):
+class AppletNoticeWindow(GladeWindow):
+
     def __init__(self, parent):
-        rhnGladeWindow.__init__(self, "etp_applet.glade", "notice_window_2")
+        GladeWindow.__init__(self, "etp_applet.glade", "notice_window_2")
 
         self.parent = parent
         self.window.connect('delete_event', self.close_window)
 
         self.package_list = self.get_widget('update_clist')
-        self.package_list.append_column(gtk.TreeViewColumn(_("Package Name"), gtk.CellRendererText(), text=0))
-        self.package_list.append_column(gtk.TreeViewColumn(_("Version Installed"), gtk.CellRendererText(), text=1))
-        self.package_list.append_column(gtk.TreeViewColumn(_("Available"), gtk.CellRendererText(), text=2))
+        self.package_list.append_column(
+            gtk.TreeViewColumn(
+                _("Application"), gtk.CellRendererText(), text=0))
+        self.package_list.append_column(
+            gtk.TreeViewColumn(_("Latest version"), gtk.CellRendererText(), text=1))
         self.package_list.get_selection().set_mode(gtk.SELECTION_NONE)
 
         self.notebook = self.get_widget('notice_notebook')
         self.critical_tab = None
         self.critical_tab_contents = None
 
-        self.package_list_model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
+        self.package_list_model = gtk.ListStore(gobject.TYPE_STRING,
+            gobject.TYPE_STRING)
         self.package_list.set_model(self.package_list_model)
 
         self.xml.signal_autoconnect (
@@ -74,6 +93,7 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         print "url: %s" % url
 
     def set_critical(self, text, critical_active):
+
         if not self.critical_tab_contents:
             html_view = gtkhtml2.View()
             self.html_view = html_view
@@ -94,8 +114,9 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
             self.critical_tab_contents = sw
 
             if critical_active:
-                self.notebook.set_current_page(self.notebook.page_num(self.critical_tab_contents))
-            
+                self.notebook.set_current_page(
+                    self.notebook.page_num(self.critical_tab_contents))
+
             self.set_critical_tab_text(text)
         else:
             if self.critical_tab_text != text:
@@ -107,7 +128,8 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         self.html_doc.clear()
         self.html_doc.connect('link_clicked', self.on_link_clicked)
         self.html_doc.open_stream("text/html")
-        self.html_doc.write_stream('<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' + text)
+        self.html_doc.write_stream(
+            '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">' + text)
         self.html_doc.close_stream()
         self.html_view.set_document(self.html_doc)
 
@@ -115,53 +137,24 @@ class rhnAppletNoticeWindow(rhnGladeWindow):
         if not self.critical_tab_contents:
             return
 
-        self.notebook.remove_page(self.notebook.page_num(self.critical_tab_contents))
+        self.notebook.remove_page(
+            self.notebook.page_num(self.critical_tab_contents))
 
-    def add_package(self, name, installed, avail):
-        myiter = self.package_list_model.append()
-        self.package_list_model.set_value(myiter, 0, name)
-        self.package_list_model.set_value(myiter, 1, installed)
-        self.package_list_model.set_value(myiter, 2, avail)
+    def fill(self, pkg_data):
+        self.package_list_model.clear()
+        for name, avail in pkg_data:
+            self.package_list_model.append((name, avail,))
 
 
-class rhnRegistrationPromptDialog(rhnGladeWindow):
-    def __init__(self, parent):
-        rhnGladeWindow.__init__(self, "etp_applet.glade", "need_to_register_dialog")
-
-        self.parent = parent
-        self.window.connect('delete_event', self.close_dialog)
-        self.xml.signal_autoconnect (
-            {
-            "on_launch_rhnreg_clicked" : self.on_rhnreg,
-            "on_close_clicked" : self.on_close,
-            })
-
-    def raise_(self):
-        self.window.window.raise_()
-
-    def set_transient(self, papa):
-        self.window.set_transient_for(papa.window)
-
-    def on_rhnreg(self, button):
-        self.parent.launch_rhnreg()
-        self.close_dialog()
-
-    def close_dialog(self, *rest):
-        self.window.destroy()
-        self.parent.rhnreg_dialog_closed()
-
-    def on_close(self, close_button):
-        self.close_dialog()
-
-class rhnAppletAboutWindow:
+class AppletAboutWindow:
 
     def __init__(self, parent):
         self.window = gnome.ui.About("%s Updates Applet" % (
                 SysSettings['system']['name'],
             ),
             etpConst['entropyversion'], "Copyright (C) 2009, Sabayon Linux",
-            "Sabayon Linux. What else?",
-            [ "Sabayon Linux Team", "devel@sabayonlinux.org" ])
+            "Sabayon, what else?",
+            [ "Sabayon Linux", "sabayon@sabayonlinux.org" ])
         self.window.connect("destroy", self.on_close)
         self.parent = parent
         self.window.show()
@@ -172,122 +165,11 @@ class rhnAppletAboutWindow:
     def on_close(self, *data):
         self.close_dialog()
 
-class rhnAppletFirstTimeDruid(rhnGladeWindow):
-    def __init__(self, parent, proxy_url, proxy_username, proxy_password):
-        rhnGladeWindow.__init__(self, "etp_applet.glade", "first_time_druid")
-
-        self.parent = parent
-        self.window.connect('delete_event', self.close_dialog)
-        self.xml.signal_autoconnect (
-            {
-            "on_cancel" : self.on_cancel,
-            "on_remove_from_panel" : self.on_remove_from_panel,
-            "on_finish" : self.on_finish,
-            })
-
-        color = gtk.gdk.color_parse("#cc0000")
-        page = self.xml.get_widget("druidpagestart1")
-        page.set_bg_color(color)
-        page = self.xml.get_widget("druidpagefinish1")
-        page.set_bg_color(color)
-
-        html_sw = self.get_widget("tos_window")
-        self.tos_document = gtkhtml2.Document()
-        self.tos_view = gtkhtml2.View()
-        html_sw.add(self.tos_view)
-        self.tos_view.show()
-        html_sw.show()
-        self.tos_document.clear()
-        self.tos_document.connect('link_clicked', self.on_link_clicked)
-        self.tos_document.open_stream("text/html")
-
-        self.tos_document.close_stream()
-        self.tos_view.set_document(self.tos_document)
-
-        self.enable_proxy = self.get_widget("enable_proxy_check")
-        self.enable_proxy.connect("toggled", self.on_enable_proxy_toggle)
-
-        self.enable_auth = self.get_widget("use_auth_check")
-        self.enable_auth.connect("toggled", self.on_use_auth_toggle)
-
-        self.proxy_entry = self.get_widget("proxy_entry")
-        self.username_entry = self.get_widget("username_entry")
-        self.password_entry = self.get_widget("password_entry")
-        self.username_entry_label = self.get_widget("username_entry_label")
-        self.password_entry_label = self.get_widget("password_entry_label")
-
-        self.use_auth = 0
-        self.use_proxy = 0
-
-        self.proxy_entry.set_text(proxy_url)
-        if proxy_url:
-            self.use_proxy = 1
-            self.enable_proxy.set_sensitive(gtk.TRUE)
-            self.enable_proxy.activate()
-
-            if proxy_username:
-                self.use_auth = 1
-                self.username_entry.set_text(proxy_username)
-                self.password_entry.set_text(proxy_password)
-                self.enable_auth.set_sensitive(gtk.TRUE)
-                self.enable_auth.activate()
-        self.window.show_all()
-
-    def on_link_clicked(self, html, url):
-        gnome.url_show(url)
-        
-    def on_enable_proxy_toggle(self, button):
-        state = button.get_active()
-        self.use_proxy = state
-
-        self.get_widget("proxy_entry").set_sensitive(state)
-        self.enable_auth.set_sensitive(state)
-
-        if self.use_auth:
-            self.username_entry.set_sensitive(state)
-            self.username_entry_label.set_sensitive(state)
-            self.password_entry.set_sensitive(state)
-            self.password_entry_label.set_sensitive(state)
-        
-    def on_use_auth_toggle(self, button):
-        state = button.get_active()
-        self.use_auth = state
-
-        self.username_entry.set_sensitive(state)
-        self.username_entry_label.set_sensitive(state)
-        self.password_entry.set_sensitive(state)
-        self.password_entry_label.set_sensitive(state)
-        
-    def close_dialog(self, *data, **kwarg):
-        if kwarg.has_key("remove"):
-            self.parent.first_time_druid_closed(kwarg["remove"])
-        else:
-            self.parent.first_time_druid_closed(0)
-        self.window.hide()
-
-    def on_cancel(self, cancel_button):
-        self.close_dialog(remove=0)
-
-    def on_remove_from_panel(self, cancel_button):
-        self.close_dialog(remove=1)
-
-    def on_finish(self, *data):
-        if self.use_proxy:
-            args = [ self.proxy_entry.get_text() ]
-            if self.use_auth:
-                args.append(self.username_entry.get_text())
-                args.append(self.password_entry.get_text())
-            apply(self.parent.set_proxy, args)
-        else:
-            self.parent.set_proxy()
-
-        self.parent.user_consented()
-        self.close_dialog()
-
-class rhnAppletErrorDialog(rhnGladeWindow):
+class AppletErrorDialog(GladeWindow):
     def __init__(self, parent, error):
-        rhnGladeWindow.__init__(self)
-        self.window = gtk.MessageDialog(None, 0, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, str(error))
+        GladeWindow.__init__(self)
+        self.window = gtk.MessageDialog(None, 0,
+            gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, str(error))
         self.window.set_modal(gtk.TRUE)
         self.window.connect("close", self.on_close)
         self.window.connect('response', self.on_close)
@@ -355,13 +237,14 @@ class WrappingLabel(gtk.Label):
         self.ignoreEvents = 0
         self.connect("size-allocate", growToParent)
 
-class rhnAppletExceptionDialog:
+class AppletExceptionDialog:
+
     def __init__ (self, parent, text):
         self.parent = parent
         win = gtk.Dialog("Exception Occured", None)
         self.window = win
         win.add_button('gtk-ok', 0)
-        
+
         mybuf = gtk.TextBuffer(None)
         mybuf.set_text(text)
         textbox = gtk.TextView()
@@ -396,3 +279,41 @@ class rhnAppletExceptionDialog:
 
     def on_close(self, *data):
         self.close_dialog()
+
+class AppletIconPixbuf:
+
+    def __init__(self):
+        self.images = {}
+
+    def add_file(self, name, filename):
+
+        if not self.images.has_key(name):
+            self.images[name] = []
+        from spritz_setup import const
+        filepath = const.PIXMAPS_PATH + "/applet/" + filename
+        if not os.path.isfile(filepath):
+            filename = "../gfx/applet/" + filename
+        else:
+            filename = filepath
+
+        if not os.access(filename, os.R_OK):
+            raise Exception,"Cannot open image file %s" % filename
+
+        pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
+
+        self.add(name, pixbuf)
+
+    def add(self, name, pixbuf):
+        self.images[name].append(pixbuf)
+
+    def best_match(self, name, size):
+        best = None
+
+        for image in self.images[name]:
+            if not best:
+                best = image
+                continue
+            if abs(size - image.height) < abs(size - best.height):
+                best = image
+
+        return best
