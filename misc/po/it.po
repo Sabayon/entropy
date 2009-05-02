@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Spritz 0.14\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-01 18:53+0200\n"
+"POT-Creation-Date: 2009-05-02 17:06+0200\n"
 "PO-Revision-Date: 2009-04-03 13:00+0100\n"
 "Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
 "Language-Team: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
@@ -4751,6 +4751,8 @@ msgid "Caching complete."
 msgstr "Scrittura cache completata."
 
 #: ../../client/equo.py:489
+#: ../../entropy-notification-applet/src/etp_applet.py:263
+#: ../../entropy-notification-applet/src/etp_applet.py:271
 msgid "There are"
 msgstr "Ci sono"
 
@@ -4975,7 +4977,7 @@ msgstr "Altre opzioni sono:"
 
 #: ../../client/text_configuration.py:250
 #: ../../client/text_repositories.py:253
-#: ../../entropy-notification-applet/src/etp_applet.py:156
+#: ../../entropy-notification-applet/src/etp_applet.py:157
 msgid "Exit"
 msgstr "Esci"
 
@@ -5269,7 +5271,6 @@ msgstr "Ricerca Descrizione"
 #. client info
 #: ../../client/text_query.py:1078 ../../client/text_ui.py:488
 #: ../../client/text_ui.py:517
-#: ../../entropy-notification-applet/src/etp_applet.py:446
 msgid "Not installed"
 msgstr "Non installato"
 
@@ -5289,7 +5290,6 @@ msgid "Name"
 msgstr "Nome"
 
 #: ../../client/text_query.py:1121 ../../spritz/src/dialogs.py:852
-#: ../../entropy-notification-applet/src/etp_applet_components.py:65
 #: ../../spritz/src/spritz.glade.h:15
 msgid "Available"
 msgstr "Disponibile"
@@ -5945,7 +5945,7 @@ msgid "This is the list of the packages that would be quickpkg'd"
 msgstr "Questa è la lista dei pacchetti che vorrebbero essere generati"
 
 #: ../../client/text_smart.py:113
-#: ../../entropy-notification-applet/src/etp_applet.py:469
+#: ../../entropy-notification-applet/src/etp_applet.py:539
 msgid "installed"
 msgstr "installato"
 
@@ -8358,18 +8358,20 @@ msgid "Recursive Package Set"
 msgstr "Package Set Ricorsivo"
 
 #: ../../entropy-notification-applet/src/etp_applet_components.py:60
-msgid "Package Name"
-msgstr "Nome Pacchetto"
+#, fuzzy
+msgid "Application"
+msgstr "Opzioni Applicazione"
 
-#: ../../entropy-notification-applet/src/etp_applet_components.py:63
-msgid "Version Installed"
-msgstr "Versione Installata"
+#: ../../entropy-notification-applet/src/etp_applet_components.py:62
+#, fuzzy
+msgid "Latest version"
+msgstr "stampa versione"
 
-#: ../../entropy-notification-applet/src/etp_applet_components.py:110
+#: ../../entropy-notification-applet/src/etp_applet_components.py:107
 msgid "Critical Information"
 msgstr "Informazione Critica"
 
-#: ../../entropy-notification-applet/src/etp_applet_components.py:264
+#: ../../entropy-notification-applet/src/etp_applet_components.py:260
 msgid ""
 "An unhandled exception has occured.  This is most likely a bug.  Please copy "
 "the full text of this exception into an email and send it to "
@@ -8379,118 +8381,142 @@ msgstr ""
 "completo dell'errore in una e-mail ed invialo a sabayon@sabayonlinux.org. "
 "Grazie."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:59
+#: ../../entropy-notification-applet/src/etp_applet.py:61
 msgid "Updates Notification"
 msgstr "Notifica Aggiornamenti"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:142
+#: ../../entropy-notification-applet/src/etp_applet.py:143
 msgid "_Disable Notification Applet"
 msgstr "_Disabilita applet di notifica"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:143
+#: ../../entropy-notification-applet/src/etp_applet.py:144
 msgid "Disable Notification Applet"
 msgstr "Disabilita applet di notifica"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:144
+#: ../../entropy-notification-applet/src/etp_applet.py:145
 msgid "_Enable Notification Applet"
 msgstr "_Abilita applet di notifica"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:145
+#: ../../entropy-notification-applet/src/etp_applet.py:146
 msgid "Enable Notification Applet"
 msgstr "Abilita applet di notifica"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:146
+#: ../../entropy-notification-applet/src/etp_applet.py:147
 msgid "_Check for updates"
 msgstr "_Controlla aggiornamenti"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:147
+#: ../../entropy-notification-applet/src/etp_applet.py:148
 msgid "Check for updates"
 msgstr "Controlla aggiornamenti"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:148
+#: ../../entropy-notification-applet/src/etp_applet.py:149
 msgid "_Launch Package Manager"
 msgstr "_Lancia il Gestore dei pacchetti"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:149
+#: ../../entropy-notification-applet/src/etp_applet.py:150
 msgid "Launch Package Manager"
 msgstr "Lancia il Gestore dei pacchetti"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:150
+#: ../../entropy-notification-applet/src/etp_applet.py:151
 msgid "_Packages Website"
 msgstr "_Sito web applicazioni"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:151
+#: ../../entropy-notification-applet/src/etp_applet.py:152
 msgid "Use Packages web interface"
 msgstr "Usa interfaccia web pacchetti"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:152
+#: ../../entropy-notification-applet/src/etp_applet.py:153
 msgid "_Sabayon Linux Website"
 msgstr "_Sito web Sabayon Linux"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:153
+#: ../../entropy-notification-applet/src/etp_applet.py:154
 msgid "Launch Sabayon Linux Website"
 msgstr "Carica il sito web di Sabayon Linux"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:155
+#: ../../entropy-notification-applet/src/etp_applet.py:156
 msgid "_About"
 msgstr "_Informazioni"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:155
+#: ../../entropy-notification-applet/src/etp_applet.py:156
 msgid "About..."
 msgstr "Informazioni..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:156
+#: ../../entropy-notification-applet/src/etp_applet.py:157
 msgid "_Exit"
 msgstr "_Esci"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:226
+#: ../../entropy-notification-applet/src/etp_applet.py:232
 msgid "Cannot monitor Sabayon updates"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:228
+#: ../../entropy-notification-applet/src/etp_applet.py:234
 #, fuzzy
 msgid "Entropy DBus service not available"
 msgstr "servizio temporaneamente non disponibile"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:229
+#: ../../entropy-notification-applet/src/etp_applet.py:235
 msgid "unable to communicate with the updates service"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:236
+#: ../../entropy-notification-applet/src/etp_applet.py:243
 #, fuzzy
 msgid "Sabayon updates service loaded"
 msgstr "Nessun aggiornamento disponibile"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:238
+#: ../../entropy-notification-applet/src/etp_applet.py:245
 #, fuzzy
 msgid "Entropy DBus service loaded"
 msgstr "Interfaccia Mirror Entropy caricata"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:239
+#: ../../entropy-notification-applet/src/etp_applet.py:246
 msgid "your Sabayon will notify your once updates are available"
 msgstr ""
 
-#: ../../entropy-notification-applet/src/etp_applet.py:328
+#: ../../entropy-notification-applet/src/etp_applet.py:265
+#: ../../entropy-notification-applet/src/etp_applet.py:273
+#, fuzzy
+msgid "updates available"
+msgstr "aggiornamenti disponibili."
+
+#: ../../entropy-notification-applet/src/etp_applet.py:269
+#, fuzzy
+msgid "Sabayon updates available"
+msgstr "Nessun aggiornamento disponibile"
+
+#. all fine, no updates
+#: ../../entropy-notification-applet/src/etp_applet.py:279
+#: ../../entropy-notification-applet/src/etp_applet.py:281
+msgid "Your Sabayon is up-to-date"
+msgstr ""
+
+#: ../../entropy-notification-applet/src/etp_applet.py:282
+#, fuzzy
+msgid "No updates available at this time, cool!"
+msgstr "Nessun aggiornamento disponibile"
+
+#: ../../entropy-notification-applet/src/etp_applet.py:403
 msgid "Updates Notification Applet Disabled"
 msgstr "Applet di notifica aggiornamenti disabilitata"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:338
+#: ../../entropy-notification-applet/src/etp_applet.py:414
 msgid "Updates Notification Applet Enabled"
 msgstr "Applet di notifica aggiornamenti abilitata"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:398
+#: ../../entropy-notification-applet/src/etp_applet.py:475
 msgid "Waiting before checkin..."
 msgstr "In attesa prima del checkin..."
 
-#: ../../entropy-notification-applet/src/etp_applet.py:467
-msgid "Your system currently has"
+#: ../../entropy-notification-applet/src/etp_applet.py:538
+#, fuzzy
+msgid "Your system currently has an outdated version of"
 msgstr "Sul sistema è installato"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:470
-msgid "but the latest available version is"
+#: ../../entropy-notification-applet/src/etp_applet.py:540
+#, fuzzy
+msgid "the latest available version is"
 msgstr "ma l'ultima versione disponibile è"
 
-#: ../../entropy-notification-applet/src/etp_applet.py:472
+#: ../../entropy-notification-applet/src/etp_applet.py:542
 msgid ""
 "It is recommended that you upgrade to the latest before updating any other "
 "packages"
@@ -9478,6 +9504,12 @@ msgstr "scrivi qui la tua password"
 msgid "type your username here"
 msgstr "inserire nome utente qui"
 
+#~ msgid "Package Name"
+#~ msgstr "Nome Pacchetto"
+
+#~ msgid "Version Installed"
+#~ msgstr "Versione Installata"
+
 #~ msgid "You must add yourself to this group"
 #~ msgstr "Devi aggiungerti a questo gruppo"
 
@@ -9534,9 +9566,6 @@ msgstr "inserire nome utente qui"
 
 #~ msgid "Updates issue:"
 #~ msgstr "Errori aggiornamento:"
-
-#~ msgid "updates available."
-#~ msgstr "aggiornamenti disponibili."
 
 #~ msgid "Updates available"
 #~ msgstr "Aggiornamenti disponibili"
