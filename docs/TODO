@@ -2,10 +2,6 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  0.90:
-
-    - server-side: old branch pruning
-
   0.95:
 
     - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
@@ -23,6 +19,9 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     Only if possible:
     - server side upload digest verification (ditch crappy handlers?)
     - remove db.WriteLock?
+
+    - server-side: old branch remote packages move (when a branch is dropped,
+        remote packages should be moved to another location)
 
   1.0_beta1:
 
