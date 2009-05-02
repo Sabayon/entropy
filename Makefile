@@ -85,7 +85,7 @@ updates-daemon-install:
 	mkdir -p $(DESTDIR)/usr/share/dbus-1/system-services/
 	mkdir -p $(DESTDIR)/usr/share/dbus-1/interfaces/
 	install -m 744 services/client-updates-daemon $(DESTDIR)/usr/sbin/
-	install -m 644 misc/dbus/system.d/org.entropy.conf $(DESTDIR)/etc/dbus-1/system.d/
+	install -m 644 misc/dbus/system.d/org.entropy.Client.conf $(DESTDIR)/etc/dbus-1/system.d/
 	install -m 644 misc/dbus/system-services/org.entropy.Client.service $(DESTDIR)/usr/share/dbus-1/system-services/
 	install -m 644 misc/dbus/interfaces/org.entropy.Client.xml $(DESTDIR)/usr/share/dbus-1/interfaces/
 
