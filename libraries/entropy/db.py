@@ -570,7 +570,11 @@ class LocalRepository:
         self.checkReadOnly()
         my = Schema()
         for table in self.listAllTables():
-            self.cursor.execute("DROP TABLE %s" % (table,))
+            try:
+                self.cursor.execute("DROP TABLE %s" % (table,))
+            except self.dbapi2.OperationalError:
+                # skip tables that can't be dropped
+                continue
         self.cursor.executescript(my.get_init())
         self.databaseStructureUpdates()
         # set cache size
