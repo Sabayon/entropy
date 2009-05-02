@@ -47,17 +47,17 @@ sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
 if DAEMON_DEBUG:
     sys.path.insert(0,'/home/fabio/entropy/libraries')
-from entropy.misc import TimeScheduled, ParallelTask
+from entropy.misc import LogFile
 from entropy.i18n import _
-from entropy.exceptions import *
+from entropy.exceptions import PermissionDenied, RepositoryError, \
+    MissingParameter
 import entropy.tools as entropyTools
 from entropy.client.interfaces import Client
-from entropy.client.interfaces import Repository as RepoInterface
 from entropy.transceivers import urlFetcher
-from entropy.const import etpConst, ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL
-from entropy.misc import LogFile, TimeScheduled
+from entropy.const import etpConst
 from entropy.core import SystemSettings as SysSet
-from entropy.output import TextInterface
+from entropy.output import TextInterface, nocolor
+nocolor()
 
 
 SYS_SETTINGS = SysSet()
@@ -84,7 +84,7 @@ def write_output(*args, **kwargs):
     DAEMON_LOG.write(message)
     DAEMON_LOG.flush()
     if DAEMON_DEBUG:
-        TEXT.updateProgress(*args,**kwargs)
+        TEXT.updateProgress(*args, **kwargs)
 
 class DaemonUrlFetcher(urlFetcher):
 
@@ -103,10 +103,11 @@ class DaemonUrlFetcher(urlFetcher):
         self.__datatransfer = data_transfer
 
     def updateProgress(self):
-        myavg = abs(int(round(float(self.__average),1)))
-        if abs((myavg - self.daemon_last_avg)) < 1: return
+        myavg = abs(int(round(float(self.__average), 1)))
+        if abs((myavg - self.daemon_last_avg)) < 1:
+            return
         if int(myavg) % 10 == 0:
-            DAEMON_LOG.write("fetch @ %s%s" % (myavg,"%",))
+            DAEMON_LOG.write("fetch @ %s%s" % (myavg, "%",))
             self.daemon_last_avg = myavg
 
 
@@ -116,9 +117,8 @@ class Entropy(Client):
     def init_singleton(self):
         Client.init_singleton(self, load_ugc = False,
             url_fetcher = DaemonUrlFetcher, repo_validation = False)
-        self.nocolor()
         self.updateProgress(
-            "Loading Entropy Updates daemon: check every %s secs, logfile: %s" % (
+            "Loading Entropy Updates daemon: check every %ss, logfile: %s" % (
                 CHECK_DELAY_SECS, DAEMON_LOGFILE,)
             )
 
@@ -198,16 +198,19 @@ class UpdatesDaemon(dbus.service.Object):
     def __run_sync(self, repos, entropy):
 
         try:
-            repoConn = entropy.Repositories(
+            repo_conn = entropy.Repositories(
                 repos, fetchSecurity = False, noEquoCheck = True)
             if DAEMON_DEBUG:
                 write_output("__run_fetcher: repository interface loaded")
-        except MissingParameter, e:
+        except MissingParameter, err:
             if DAEMON_DEBUG:
-                write_output("__run_fetcher: MissingParameter exception, error: %s" % (e,))
-        except Exception, e:
+                write_output(
+                    "__run_fetcher: MissingParameter exception, error: %s" % (
+                        err,))
+        except Exception, err:
             if DAEMON_DEBUG:
-                write_output("__run_fetcher: Unhandled exception, error: %s" % (e,))
+                write_output(
+                    "__run_fetcher: Unhandled exception, error: %s" % (err,))
         else:
 
             # 128: sync error, something bad happened
@@ -215,34 +218,34 @@ class UpdatesDaemon(dbus.service.Object):
             # 1: not able to update all the repositories
             if DAEMON_DEBUG:
                 write_output("__run_fetcher: preparing to run sync")
-            rc = repoConn.sync()
-            del repoConn
+            rc_res = repo_conn.sync()
+            del repo_conn
             if DAEMON_DEBUG:
                 write_output("__run_fetcher: sync done")
 
-            if rc == 1:
-                err = _("Not all the repositories have been fetched for checking")
+            if rc_res == 1:
+                err = _("Not all the repositories have been fetched")
                 self.do_alert( _("Updates: repository issues"), err )
                 entropy.destroy()
                 del entropy
-                return rc
-            elif rc == 2:
+                return rc_res
+            elif rc_res == 2:
                 err = _("No repositories found online")
                 self.do_alert( _("Updates: repository issues"), err )
                 entropy.destroy()
                 del entropy
-                return rc
-            elif rc == 128:
-                err = _("Synchronization errors. Cannot update repositories. Check logs.")
+                return rc_res
+            elif rc_res == 128:
+                err = _("Synchronization errors. Cannot update repositories.")
                 self.do_alert( _("Updates: sync issues"), err )
                 entropy.destroy()
                 del entropy
-                return rc
-            elif isinstance(rc, basestring):
-                self.do_alert( _("Updates: unhandled error"), rc )
+                return rc_res
+            elif isinstance(rc_res, basestring):
+                self.do_alert( _("Updates: unhandled error"), rc_res )
                 entropy.destroy()
                 del entropy
-                return rc
+                return rc_res
 
         return 0
 
@@ -253,7 +256,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         with self.__is_working_mutex:
 
-            rc = 0
+            rc_fetch = 0
             entropy = Entropy()
             # entropy resources locked?
             locked = entropy._resources_run_check_lock()
@@ -262,8 +265,7 @@ class UpdatesDaemon(dbus.service.Object):
                     write_output("__run_fetcher: resources locked, skipping")
                 entropy.destroy()
                 del entropy
-                self.__is_working = False
-                return rc
+                return rc_fetch
 
             if DAEMON_DEBUG:
                 write_output("__run_fetcher: called %s" % (time.time(),))
@@ -273,18 +275,19 @@ class UpdatesDaemon(dbus.service.Object):
             if repos_to_up:
 
                 repos = repos_to_up.keys()
-                rc = self.__run_sync(repos, entropy)
-                if rc != 0:
-                    return rc
+                rc_fetch = self.__run_sync(repos, entropy)
+                if rc_fetch != 0:
+                    return rc_fetch
                 if DAEMON_DEBUG:
-                    write_output("__run_fetcher: sync closed, rc: %s" % (rc,))
+                    write_output("__run_fetcher: sync closed, rc: %s" % (
+                        rc_fetch,))
 
             try:
                 update, remove, fine = entropy.calculate_world_updates()
                 del fine, remove
-            except Exception, e:
+            except Exception, err:
                 entropyTools.print_traceback(f = DAEMON_LOG)
-                msg = "%s: %s" % (_("Updates: error"), e,)
+                msg = "%s: %s" % (_("Updates: error"), err,)
                 self.do_alert(_("Updates: error"), msg)
                 entropy.destroy()
                 del entropy
@@ -313,7 +316,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         repos = {}
         try:
-            repoConn = entropy.Repositories(
+            repo_conn = entropy.Repositories(
                 noEquoCheck = True, fetchSecurity = False)
         except MissingParameter:
             return repos
@@ -323,19 +326,20 @@ class UpdatesDaemon(dbus.service.Object):
         # now get remote
         for repoid in entropy.SystemSettings['repositories']['available']:
             #entropy.update_repository_revision(repoid)
-            if repoConn.is_repository_updatable(repoid):
+            if repo_conn.is_repository_updatable(repoid):
                 if DAEMON_DEBUG:
                     write_output(
-                        "get_repo_status: repo needs to be updated: %s" % (repoid,))
+                        "get_repo_status: repo needs to be updated: %s" % (
+                            repoid,))
                 entropy.repository_move_clear_cache(repoid)
                 repo_rev = entropy.get_repository_revision(repoid)
-                online_rev = repoConn.get_online_repository_revision(repoid)
+                online_rev = repo_conn.get_online_repository_revision(repoid)
                 repos[repoid] = {
                     'local': repo_rev,
                     'remote': online_rev,
                 }
 
-        del repoConn
+        del repo_conn
         return repos
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
@@ -386,11 +390,11 @@ class UpdatesDaemon(dbus.service.Object):
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
     try:
-        ud = UpdatesDaemon()
+        ud_i = UpdatesDaemon()
     except dbus.exceptions.DBusException:
         raise SystemExit(1)
-    ud.start()
-    mainloop = gobject.MainLoop()
-    mainloop.run()
-    ud.stop()
+    ud_i.start()
+    main_loop = gobject.MainLoop()
+    main_loop.run()
+    ud_i.stop()
     raise SystemExit(0)
