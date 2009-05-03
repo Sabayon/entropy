@@ -886,7 +886,14 @@ class Trigger:
         oldstdout = sys.stdout
         sys.stderr = stdfile
 
-        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(etpConst['spm']['source_build_ext'])]
+        myebuild = None
+        if os.path.isdir(self.pkgdata['xpakdir']) and \
+            os.access(self.pkgdata['xpakdir'], os.R_OK):
+
+            myebuild = [self.pkgdata['xpakdir']+"/"+x for x \
+                in os.listdir(self.pkgdata['xpakdir']) if \
+                x.endswith(etpConst['spm']['source_build_ext'])]
+
         if myebuild:
             myebuild = myebuild[0]
             portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
@@ -972,7 +979,14 @@ class Trigger:
         oldstdout = sys.stdout
         sys.stderr = stdfile
 
-        myebuild = [self.pkgdata['xpakdir']+"/"+x for x in os.listdir(self.pkgdata['xpakdir']) if x.endswith(etpConst['spm']['source_build_ext'])]
+        myebuild = None
+        if os.path.isdir(self.pkgdata['xpakdir']) and \
+            os.access(self.pkgdata['xpakdir'], os.R_OK):
+
+            myebuild = [self.pkgdata['xpakdir']+"/"+x for x in \
+                os.listdir(self.pkgdata['xpakdir']) if \
+                x.endswith(etpConst['spm']['source_build_ext'])]
+
         if myebuild:
             myebuild = myebuild[0]
             portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
