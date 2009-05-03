@@ -47,8 +47,8 @@ entropy-server-install:
 
 	install -m 644 conf/server.conf.example $(DESTDIR)/etc/entropy/
 
-	install -m 755 server/reagent.py $(DESTDIR)/$(LIBDIR)/entropy/server/
-	install -m 755 server/activator.py $(DESTDIR)/$(LIBDIR)/entropy/server/
+	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
+	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	ln -sf /$(LIBDIR)/entropy/server/reagent.py $(DESTDIR)/usr/sbin/reagent
 	ln -sf /$(LIBDIR)/entropy/server/activator.py $(DESTDIR)/usr/sbin/activator
 
