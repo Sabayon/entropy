@@ -7,11 +7,15 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
         -> next kernel 2.6.30
 
-    - Spritz codebase refactoring (fileupdates: show changes button using internal viewer)
+    - Spritz codebase refactoring:
+        - message when a repo is not avail, asking to download (same for equo?)
+        - fileupdates: show changes button using internal viewer
+        - simple mode vs extended mode
         - view mode menu for the main treeview
         - Implement entropy:// URI handler
         - Smart applications desktop handler
-        - message when a repo is not avail, asking to download (same for equo?)
+        - 800x600 resolution
+        - try unmasking more than one package
 
     Only if possible:
     - server side upload digest verification (ditch crappy handlers?)
@@ -25,4 +29,4 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   1.0_beta1:
 
     - Documentation (NLnet Milestone 7)
-    - LZMA (needs Python 2.6)
+    - LZMA (needs Python 2.6) ?
