@@ -399,10 +399,6 @@ class RepositoryManagerMenu(MenuSkel):
         self.setup_pinboard_view()
         self.setup_console()
 
-        self.TaskQueueAlive = True
-        self.TaskQueue = []
-        self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
-
         self.QueueUpdater = TimeScheduled(5, self.update_queue_view)
         self.OutputUpdater = TimeScheduled(0.5, self.update_output_view)
         self.PinboardUpdater = TimeScheduled(60, self.update_pinboard_view)
@@ -445,22 +441,6 @@ class RepositoryManagerMenu(MenuSkel):
 
     def set_notebook_page(self, page):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
-
-    def task_queue_executor(self):
-        while 1:
-            try:
-                data = self.TaskQueue.pop(0)
-            except IndexError:
-                return self.TaskQueueAlive
-            self.debug_print("task_queue_executor","executing: %s" % (data,))
-            func, args, kwargs = data
-            gtk.gdk.threads_enter()
-            try:
-                func(*args,**kwargs)
-            finally:
-                gtk.gdk.threads_leave()
-            if not self.TaskQueueAlive:
-                return False
 
     def setup_console(self):
 
@@ -997,7 +977,8 @@ class RepositoryManagerMenu(MenuSkel):
 
     def service_status_message(self, e):
         self.entropyTools.print_traceback()
-        self.TaskQueue.append((okDialog, [self.sm_ui.repositoryManager, unicode(e)], {'title': _("Communication error")},))
+        gobject.timeout_add(0, okDialog, self.sm_ui.repositoryManager,
+            unicode(e), title = _("Communication error"))
 
     def get_available_repositories(self):
         with self.BufferLock:
@@ -1045,7 +1026,7 @@ class RepositoryManagerMenu(MenuSkel):
                     self.repos_loaded = True
                     self.uiLock(False)
 
-            self.TaskQueue.append((task, [repo_info], {},))
+            gobject.timeout_add(0, task, repo_info)
 
     def update_queue_view(self):
 
@@ -1068,7 +1049,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.QueueLock:
             if queue == self.Queue: return
             self.Queue = queue.copy()
-            self.TaskQueue.append((self.fill_queue_view, [queue], {},))
+            gobject.timeout_add(0, self.fill_queue_view, queue)
 
     def fill_queue_view(self, queue):
         self.QueueStore.clear()
@@ -1132,7 +1113,7 @@ class RepositoryManagerMenu(MenuSkel):
             def task(pindata):
                 self.fill_pinboard_view(pindata)
                 self.PinboardData = pindata.copy()
-            self.TaskQueue.append((task,[pindata],{},))
+            gobject.timeout_add(0, task, pindata)
 
     def fill_pinboard_view(self, pinboard_data):
         if isinstance(pinboard_data,dict):
@@ -1502,8 +1483,11 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, data = item['result']
             if not status: return
-            def reload_function(): self.on_repoManagerInstalledPackages_clicked(None, categories = categories, world = world)
-            self.TaskQueue.append((self.categories_updates_data_view, [data, categories], {'expand': True, 'reload_function': reload_function,},))
+            def reload_function():
+                self.on_repoManagerInstalledPackages_clicked(None,
+                    categories = categories, world = world)
+            gobject.timeout_add(0, self.categories_updates_data_view, data,
+                categories, expand = True, reload_function = reload_function)
 
         if status:
             t = ParallelTask(task, queue_id, categories, world)
@@ -1629,8 +1613,10 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, data = item['result']
             if not status: return
-            def reload_function(): self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = clear)
-            self.TaskQueue.append((self.categories_updates_data_view, [data,categories], {'expand': True, 'reload_function': reload_function,},))
+            def reload_function():
+                self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = clear)
+            gobject.timeout_add(0, self.categories_updates_data_view, data,
+                categories, expand = True, reload_function = reload_function)
 
         if status:
             t = ParallelTask(task, categories, atoms)
@@ -1668,7 +1654,8 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, data = item['result']
             if not status: return
-            self.TaskQueue.append((self.categories_updates_data_view, [data, categories, expand], {},))
+            gobject.timeout_add(0, self.categories_updates_data_view, data,
+                categories, expand)
 
         if status:
             t = ParallelTask(queue_id, task, categories, expand)
@@ -1736,7 +1723,8 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, repo_data = item['result']
             if not status: return
-            self.TaskQueue.append((self.entropy_mirror_updates_data_view, [repo_data],{},))
+            gobject.timeout_add(0, self.entropy_mirror_updates_data_view,
+                repo_data)
 
         if status:
             t = ParallelTask(task, queue_id, repos)
@@ -1789,8 +1777,10 @@ class RepositoryManagerMenu(MenuSkel):
                 return
 
         if status:
-            def reload_func(): self.run_package_search(search_type, search_string, repoid)
-            self.TaskQueue.append((self.entropy_available_packages_data_view, [data, repoid], {'reload_func': reload_func,},))
+            def reload_func():
+                self.run_package_search(search_type, search_string, repoid)
+            gobject.timeout_add(0, self.entropy_available_packages_data_view,
+                data, repoid, reload_func = reload_func)
         else:
             self.service_status_message(data)
 
@@ -1855,7 +1845,7 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, data = item['result']
             if not status: return
-            self.TaskQueue.append((reload_func,[],{},))
+            gobject.timeout_add(0, reload_func)
 
         t = ParallelTask(task, queue_id, reload_func)
         t.start()
@@ -1876,7 +1866,8 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, data = item['result']
             if not status: return
-            self.TaskQueue.append((self.entropy_database_updates_data_view, [data], {},))
+            gobject.timeout_add(0, self.entropy_database_updates_data_view,
+                data)
 
         if status:
             t = ParallelTask(task, queue_id)
@@ -1927,7 +1918,7 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, result = item['result']
             if not status: return
-            self.TaskQueue.append((reload_func,[],{},))
+            gobject.timeout_add(0, reload_func)
 
         if status:
             t = ParallelTask(task, queue_id, repoid, title, notice_text, link, reload_func)
@@ -1951,7 +1942,7 @@ class RepositoryManagerMenu(MenuSkel):
             if item == None: return
             status, result = item['result']
             if not status: return
-            self.TaskQueue.append((reload_func,[],{},))
+            gobject.timeout_add(0, reload_func)
 
         if status:
             t = ParallelTask(task, queue_id, repoid, ids, reload_func)
@@ -2662,7 +2653,7 @@ class RepositoryManagerMenu(MenuSkel):
             if atoms:
                 status = self.on_addUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
                 if status:
-                    self.TaskQueue.append((reload_function,[],{},))
+                    gobject.timeout_add(0, reload_function)
 
         def remove_use_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2675,7 +2666,7 @@ class RepositoryManagerMenu(MenuSkel):
             if atoms:
                 status = self.on_removeUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
                 if status:
-                    self.TaskQueue.append((reload_function,[],{},))
+                    gobject.timeout_add(0, reload_function)
 
         h1 = self.DataViewButtons['categories_updates']['compile_button'].connect('clicked',compile_button_clicked)
         h2 = self.DataViewButtons['categories_updates']['add_use_button'].connect('clicked',add_use_button_clicked)
@@ -2883,7 +2874,8 @@ class RepositoryManagerMenu(MenuSkel):
                     pass
         else:
             # back from pause, schedule refresh
-            self.TaskQueue.append((self.update_output_view, [], {'force': True, 'queue_id': self.paused_queue_id,},))
+            gobject.timeout_add(0, self.update_output_view, force = True,
+                queue_id = self.paused_queue_id)
             self.paused_queue_id = None
         self.output_pause = not self.output_pause
 
@@ -2908,7 +2900,6 @@ class RepositoryManagerMenu(MenuSkel):
         self.QueueUpdater.kill()
         self.OutputUpdater.kill()
         self.PinboardUpdater.kill()
-        self.TaskQueueAlive = False
         self.destroy()
 
     def on_portageSync_clicked(self, widget):
@@ -3008,7 +2999,8 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['data'])
         if data['atoms'] and data['use']:
             if parallel:
-                self.TaskQueue.append((self.run_enable_uses_for_atoms, [data['atoms'], data['use'], load_view], {},))
+                gobject.timeout_add(0, self.run_enable_uses_for_atoms,
+                    data['atoms'], data['use'], load_view)
             else:
                 return self.run_enable_uses_for_atoms(data['atoms'], data['use'], load_view)
 
@@ -3018,7 +3010,8 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['data'])
         if data['atoms'] and data['use']:
             if parallel:
-                self.TaskQueue.append((self.run_disable_uses_for_atoms, [data['atoms'], data['use'], load_view], {},))
+                gobject.timeout_add(0, self.run_disable_uses_for_atoms,
+                    data['atoms'], data['use'], load_view)
             else:
                 return self.run_disable_uses_for_atoms(data['atoms'], data['use'], load_view)
 
@@ -3090,19 +3083,18 @@ class RepositoryManagerMenu(MenuSkel):
         )
         if data == None: return
 
-        mykwargs = {
-            'force': True,
-            'queue_id': queue_id,
-        }
-        if data['full']: mykwargs['n_bytes'] = 0
-
         if data.has_key('autorefresh'):
             if data['autorefresh']:
                 self.is_writing_output = True
                 self.is_processing = {'queue_id': queue_id}
 
         self.set_notebook_page(self.notebook_pages['output'])
-        self.TaskQueue.append((self.update_output_view, [], mykwargs,))
+        if data.get('full'):
+            gobject.timeout_add(0, self.update_output_view, force = True,
+                queue_id = queue_id, n_bytes = 0)
+        else:
+            gobject.timeout_add(0, self.update_output_view, force = True,
+                queue_id = queue_id)
 
 
     def on_repoManagerPinboardRefreshButton_clicked(self, widget):
@@ -3217,7 +3209,7 @@ class RepositoryManagerMenu(MenuSkel):
             except TypeError:
                 status = False
             if not status: return
-            self.TaskQueue.append((self.glsa_data_view,[data],{},))
+            gobject.timeout_add(0, self.glsa_data_view, data)
 
         if status:
             t = ParallelTask(task, queue_id, data)
@@ -3242,7 +3234,9 @@ class RepositoryManagerMenu(MenuSkel):
 
         def task():
             repo_info = self.get_available_repositories()
-            if repo_info: self.TaskQueue.append((self.load_available_repositories,[],{'repo_info': repo_info,},))
+            if repo_info:
+                gobject.timeout_add(0, self.load_available_repositories,
+                    repo_info = repo_info)
 
         if status:
             t = ParallelTask(task)
@@ -3284,8 +3278,10 @@ class RepositoryManagerMenu(MenuSkel):
 
         def task(repo_data, data):
             def reload_func():
-                self.on_repoManagerAvailablePackagesButton_clicked(widget, repoid = data['repoid'])
-            self.TaskQueue.append((self.entropy_available_packages_data_view,[repo_data,data['repoid']],{'reload_func': reload_func},))
+                self.on_repoManagerAvailablePackagesButton_clicked(widget,
+                    repoid = data['repoid'])
+            gobject.timeout_add(0, self.entropy_available_packages_data_view,
+                repo_data, data['repoid'], reload_func = reload_func)
 
         if status:
             t = ParallelTask(task, repo_data, data)
