@@ -3649,7 +3649,6 @@ class PkgInfoMenu(MenuSkel):
         self.star_empty_pixmap = const.star_empty_pixmap
 
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
-        self.ugc_preview_fetcher = None
         self.ugc_data = None
         self.ugc_status_message = None
         self.pkg = pkg
@@ -3806,8 +3805,6 @@ class PkgInfoMenu(MenuSkel):
     def reset_ugc_data(self):
         del self.ugc_data
         self.ugc_data = None
-        if self.ugc_preview_fetcher != None:
-            self.ugc_preview_fetcher.kill()
 
     def show_loading(self):
         self.pkginfo_ui.ugcButtonBox.hide()
@@ -3961,8 +3958,7 @@ class PkgInfoMenu(MenuSkel):
                     counter += 1
 
         if spawn_fetch:
-            self.ugc_preview_fetcher = ParallelTask(self.spawn_docs_fetch)
-            self.ugc_preview_fetcher.start()
+            gobject.timeout_add(0, self.spawn_docs_fetch)
 
         #search_col = 0
         #self.view.set_search_column( search_col )
