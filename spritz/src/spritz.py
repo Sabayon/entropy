@@ -249,7 +249,7 @@ class SpritzApplication(Controller):
             self.safe_mode_txt = _("Safe Mode")
 
         self.isBusy = False
-        self.etpbase = EntropyPackages(Equo())
+        self.etpbase = EntropyPackages(self.Equo)
 
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
@@ -257,6 +257,7 @@ class SpritzApplication(Controller):
         wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui, addrepo_ui, wait_ui )
+        self.ui.main.maximize()
 
         # Setup GUI
         self.setupGUI()
