@@ -21,6 +21,7 @@ import gtk
 import sys
 from spritz_setup import const
 from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
+import gobject
 
 # Entropy Imports
 from entropy.const import *
@@ -40,22 +41,29 @@ class QueueExecutor:
     def __init__(self, SpritzApplication):
         self.Spritz = SpritzApplication
         self.Entropy = SpritzApplication.Equo
+        self.__on_lic_request = False
+        self.__on_lic_rc = None
 
     def handle_licenses(self, queue):
 
         ### Before even starting the fetch, make sure that the user accepts their licenses
         licenses = self.Entropy.get_licenses_to_accept(queue)
         if licenses:
-            gtk.gdk.threads_enter()
-            try:
+
+            self.__on_lic_request = True
+            def do_handle():
                 dialog = LicenseDialog(self.Spritz, self.Entropy, licenses)
                 accept = dialog.run()
                 dialog.destroy()
-                return accept,licenses
-            finally:
-                gtk.gdk.threads_leave()
-        else:
-            return 0,licenses
+                self.__on_lic_rc = accept,licenses
+                self.__on_lic_request = False
+                return False
+            gobject.timeout_add(0, do_handle)
+            while self.__on_lic_request:
+                time.sleep(0.2)
+            return self.__on_lic_rc
+
+        return 0,licenses
 
     def run(self, install_queue, removal_queue, do_purge_cache = [],
         fetch_only = False, download_sources = False, selected_by_user = None):
