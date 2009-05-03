@@ -2381,6 +2381,8 @@ class SpritzApplication(Controller):
 
 
     def on_skipMirror_clicked(self,widget):
+        # set the working mirror as failing
+        self.Equo.MirrorStatus.add_failing_working_mirror(75)
         self.skipMirrorNow = True
 
     def on_abortQueue_clicked(self,widget):
