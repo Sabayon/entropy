@@ -757,16 +757,9 @@ class CalculatorsMixin:
                 mydep = mybuffer.pop()
                 continue
 
-            # already analyzed by the calling function
-            if match in matchfilter:
-                mydep = mybuffer.pop()
-                continue
-            matchfilter.add(match)
-
-            treedepth = dep_level+1
-
             # all checks passed, well done
             matchfilter.add(match)
+            treedepth = dep_level+1
             deptree.add((dep_level,match)) # add match
 
             # extra hooks
@@ -794,7 +787,9 @@ class CalculatorsMixin:
             # PDEPENDs support
             if myundeps:
                 post_deps = [x for x in matchdb.retrievePostDependencies(m_idpackage) if x in myundeps]
-                myundeps = [x for x in myundeps if x not in post_deps]
+                if post_deps:
+                    # only filter if post_deps contains something
+                    myundeps = [x for x in myundeps if x not in post_deps]
                 for x in post_deps: mybuffer.push((-1,x)) # always after the package itself
 
             for x in myundeps: mybuffer.push((treedepth,x))
@@ -806,9 +801,12 @@ class CalculatorsMixin:
         if flat: return [x[1] for x in deptree],0
 
         newdeptree = {}
-        for key,item in deptree:
-            if key not in newdeptree: newdeptree[key] = set()
-            newdeptree[key].add(item)
+        for key, item in deptree:
+            if key >= 0:
+                # this makes sure that key is never = 0
+                key += 1
+            obj = newdeptree.setdefault(key, set())
+            obj.add(item)
         # conflicts
         newdeptree[0] = conflicts
 
