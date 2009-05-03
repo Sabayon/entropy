@@ -67,7 +67,8 @@ class EntropyPackages:
         for flt in masks: self.populateSingle(flt)
 
     def populateSingle(self, mask, force = False):
-        if self._packages.has_key(mask) and not force: return
+        if self._packages.has_key(mask) and not force:
+            return
         self._packages[mask] = self._getPackages(mask)
 
     def setCategoryPackages(self,pkgdict = {}):
@@ -146,9 +147,10 @@ class EntropyPackages:
         return [x for x in map(fm,self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom')) if type(x) != int]
 
     def _pkg_get_queued(self):
+        data = []
         for qkey in self.queue.packages:
-            for item in self.queue.packages[qkey]:
-                yield item
+            data.extend(self.queue.packages[qkey])
+        return data
 
     def _pkg_get_available(self):
         gp_call = self.getPackageItem
