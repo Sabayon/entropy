@@ -243,7 +243,7 @@ class EntropyApplet:
             _("Sabayon updates service loaded"),
             "%s: %s." % (
                 _("Entropy DBus service loaded"),
-                _("your Sabayon will notify your once updates are available"),
+                _("your Sabayon will notify you once updates are available"),
             )
         )
 
