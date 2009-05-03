@@ -250,6 +250,8 @@ class FetchersMixin:
                 fetch_files_list = []
                 for repo, branch, fname, cksum, signatures in my_download_list:
                     best_mirror = get_best_mirror(repo)
+                    # set working mirror, dont care if its None
+                    self.MirrorStatus.set_working_mirror(best_mirror)
                     if best_mirror != None:
                         mirror_fail_check(repo, best_mirror)
                         best_mirror = get_best_mirror(repo)
@@ -376,8 +378,10 @@ class FetchersMixin:
 
             if not remaining:
                 # tried all the mirrors, quitting for error
+                self.MirrorStatus.set_working_mirror(None)
                 return 3
 
+            self.MirrorStatus.set_working_mirror(uri)
             mirrorcount += 1
             mirrorCountText = "( mirror #%s ) " % (mirrorcount,)
             url = uri+"/"+filename
@@ -446,6 +450,7 @@ class FetchersMixin:
                             header = red("   ## ")
                         )
 
+                        self.MirrorStatus.set_working_mirror(None)
                         return 0
                     elif resumed and (rc not in (-3,-4,-100,)):
                         do_resume = False
@@ -485,12 +490,17 @@ class FetchersMixin:
                             if timeout_try_count > 0:
                                 continue
                         elif rc == -100: # user discarded fetch
+                            self.MirrorStatus.set_working_mirror(None)
                             return 1
                         remaining.discard(uri)
                         # make sure we don't have nasty issues
                         if not remaining:
+                            self.MirrorStatus.set_working_mirror(None)
                             return 3
                         break
                 except KeyboardInterrupt:
+                    self.MirrorStatus.set_working_mirror(None)
                     return 1
+
+        self.MirrorStatus.set_working_mirror(None)
         return 0
