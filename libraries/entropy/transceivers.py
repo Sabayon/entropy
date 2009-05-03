@@ -337,6 +337,8 @@ class urlFetcher:
         # we have the diff size
         x_delta = self.__downloadedsize - self.__startingposition
         self.__datatransfer = x_delta / self.__elapsed
+        if self.__datatransfer < 0:
+            self.__datatransfer = 0
         try:
             rounded_remote = int(round(self.__remotesize*1024,0))
             rounded_downloaded = int(round(self.__downloadedsize,0))
@@ -1018,6 +1020,8 @@ class FtpInterface:
         self.__elapsed += self.__transferpollingtime
         # we have the diff size
         self.__datatransfer = (self.__transfersize-self.__startingposition) / self.__elapsed
+        if self.__datatransfer < 0:
+            self.__datatransfer = 0
         try:
             self.__time_remaining_secs = int(round((int(round(self.__filesize*1024,0))-int(round(self.__transfersize,0)))/self.__datatransfer,0))
             self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
