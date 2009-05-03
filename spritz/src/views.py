@@ -676,6 +676,12 @@ class EntropyPackageView:
             for obj in objs:
                 obj.queued = q_cache.get(obj.matched_atom)
         else:
+            # if we remove packages from the queued view
+            # we need to completely remove them from the list
+            if self.Spritz != None:
+                if self.Spritz.lastPkgPB == "queued":
+                    self.etpbase.populateSingle("queued", force = True)
+                    self.Spritz.addPackages()
             # disable user selection
             for obj in objs:
                 obj.selected_by_user = False
