@@ -150,28 +150,20 @@ class SpritzProgress:
         self.ui.progressBar.set_fraction( 0 )
         self.ui.progressBar.set_text( " " )
         self.lastFrac = -1
-        self.do_upd_async = False
-        if hasattr(self.parent,'TaskQueue'):
-            if isinstance(self.parent.TaskQueue,list):
-                self.do_upd_async = True
 
     def show( self ):
         def run():
             self.ui.progressBox.show()
             self.set_page_func( 'output' )
             self.lastFrac = -1
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[],{},))
-        return run()
+        gobject.timeout_add(0, run)
 
     def reset_progress( self ):
         def run():
             self.lastFrac = -1
             self.ui.progressBar.set_fraction( 0 )
             self.ui.progressBar.set_text(" ")
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[],{},))
-        return run()
+        gobject.timeout_add(0, run)
 
     def hide( self, clean=False ):
         def run():
@@ -182,16 +174,12 @@ class SpritzProgress:
                 self.ui.progressExtraLabel.set_text( "" )
                 self.ui.progressBar.set_fraction( 0 )
                 self.ui.progressBar.set_text( " " )
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[],{},))
-        return run()
+        gobject.timeout_add(0, run)
 
     def setTotal( self, now, total ):
         def run(now, total):
             self.total.setProgress( now, total )
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[now, total],{},))
-        return run(now, total)
+        gobject.timeout_add(0, run, now, total)
 
     def set_progress( self, frac, text=None ):
         def run(frac, text):
@@ -206,25 +194,19 @@ class SpritzProgress:
             self.lastFrac = frac
             self.gtkLoop()
 
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[frac, text],{},))
-        return run(frac, text)
+        gobject.timeout_add(0, run, frac, text)
 
     def set_text(self, text):
         def run(text):
             self.ui.progressBar.set_text( text )
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[text],{},))
-        return run(text)
+        gobject.timeout_add(0, run, text)
 
     def set_mainLabel( self, text ):
         def run(text):
             self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
             self.ui.progressSubLabel.set_text( "" )
             self.ui.progressExtraLabel.set_text( "" )
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[text],{},))
-        return run(text)
+        gobject.timeout_add(0, run, text)
 
     def set_subLabel( self, text ):
         def run(text):
@@ -233,9 +215,7 @@ class SpritzProgress:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
             self.ui.progressExtraLabel.set_text( "" )
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[text],{},))
-        return run(text)
+        gobject.timeout_add(0, run, text)
 
     def set_extraLabel( self, text ):
         def run(text):
@@ -244,9 +224,7 @@ class SpritzProgress:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
             self.lastFrac = -1
-        if self.do_upd_async:
-            return self.parent.TaskQueue.append((run,[text],{},))
-        return run(text)
+        gobject.timeout_add(0, run, text)
 
     def gtkLoop(self):
         while gtk.events_pending():
@@ -257,9 +235,6 @@ class SpritzApplication(Controller):
     def __init__(self):
 
         self.Equo = Equo()
-        self.TaskQueueAlive = True
-        self.TaskQueue = []
-        self.TaskQueueId = gobject.timeout_add(100, self.task_queue_executor)
 
         self.do_debug = False
         locked = self.Equo._resources_run_check_lock()
@@ -288,7 +263,6 @@ class SpritzApplication(Controller):
         self.packagesInstall()
 
     def quit(self, widget = None, event = None, sysexit = True ):
-        self.TaskQueueAlive = False
         if self.ugcTask != None:
             self.ugcTask.kill()
             while self.ugcTask.isAlive():
@@ -307,17 +281,6 @@ class SpritzApplication(Controller):
     def gtkLoop(self):
         while gtk.events_pending():
            gtk.main_iteration()
-
-    def task_queue_executor(self):
-        while 1:
-            try:
-                data = self.TaskQueue.pop(0)
-            except IndexError:
-                return self.TaskQueueAlive
-            func, args, kwargs = data
-            func(*args,**kwargs)
-            if not self.TaskQueueAlive:
-                return False
 
     def load_url(self, url):
         import subprocess
