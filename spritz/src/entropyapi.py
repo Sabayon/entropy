@@ -19,6 +19,7 @@
 
 import gtk
 import sys
+import time
 from spritz_setup import const
 from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
