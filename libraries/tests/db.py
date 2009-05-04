@@ -203,6 +203,12 @@ class LocalRepositoryTest(unittest.TestCase):
         set_search = self.test_db.searchSets(set_name2)
         self.assertEqual(set([set_name2]),set_search)
 
+    def test_db_license_data_str_insert(self):
+        lic_txt = '[3]\xab foo\n\n'
+        lic_data = {u'CCPL-Attribution-2.0': lic_txt}
+        self.test_db.insertLicenses(lic_data)
+        db_lic_txt = self.test_db.retrieveLicenseText('CCPL-Attribution-2.0')
+        self.assertEqual(db_lic_txt, lic_txt)
 
     # XXX complete
 
