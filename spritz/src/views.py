@@ -676,6 +676,9 @@ class EntropyPackageView:
             for obj in objs:
                 obj.queued = q_cache.get(obj.matched_atom)
         else:
+            # queued tab content is tainted
+            if "queued" in self.etpbase._packages:
+                del self.etpbase._packages["queued"]
             # if we remove packages from the queued view
             # we need to completely remove them from the list
             if self.Spritz != None:
@@ -702,6 +705,9 @@ class EntropyPackageView:
             for obj in objs:
                 obj.queued = q_cache.get(obj.matched_atom)
         else:
+            # queued tab content is tainted
+            if "queued" in self.etpbase._packages:
+                del self.etpbase._packages["queued"]
             # enable user selection
             for obj in objs:
                 obj.selected_by_user = True
