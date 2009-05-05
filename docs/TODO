@@ -8,7 +8,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         -> next kernel 2.6.30
 
     - Spritz codebase refactoring:
-        - message when a repo is not avail, asking to download (same for equo?)
         - fileupdates: show changes button using internal viewer
         - simple mode vs extended mode
         - view mode menu for the main treeview
